@@ -1,0 +1,32 @@
+name: LTS Health Smoke
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          node --check app.js
+          node --check app-v8.js
+          node --check app-v11.js
+          node --check config.js
+      - name: Dedicated backend guardrails
+        run: |
+          grep -q "plztdqyuqcjohiimudnr" config.js
+          ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git .
+      - name: Product layer references
+        run: |
+          test -f v10.css
+          test -f v11.css
+          test -f app-v11.js
+          grep -q "v11.css" config.js
+          grep -q "app-v11.js" config.js
+      - name: No private health payloads in repository
+        run: |
+          ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
