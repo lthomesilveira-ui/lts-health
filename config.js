@@ -10,7 +10,7 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
     publishableKey: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI'
   }),
   storageBucket: 'health-inbox',
-  inspectFunction: 'health-inspect-upload'
+  inspectFunction: 'health-inspect-upload-v2'
 });
 
 // Product layers are loaded from the dedicated Health repository only.
