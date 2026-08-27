@@ -15,6 +15,7 @@ jobs:
           node --check app.js
           node --check app-v8.js
           node --check app-v11.js
+          node --check app-v12.js
           node --check config.js
       - name: Dedicated backend guardrails
         run: |
@@ -24,9 +25,13 @@ jobs:
         run: |
           test -f v10.css
           test -f v11.css
+          test -f v12.css
           test -f app-v11.js
+          test -f app-v12.js
           grep -q "v11.css" config.js
+          grep -q "v12.css" config.js
           grep -q "app-v11.js" config.js
+          grep -q "app-v12.js" config.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
