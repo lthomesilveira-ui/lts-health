@@ -1,0 +1,11 @@
+{
+  "name": "LTS Health",
+  "short_name": "LTS Health",
+  "description": "Cockpit longitudinal de saúde e performance com histórico e proveniência preservados.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f8fb",
+  "theme_color": "#102c47",
+  "lang": "pt-BR"
+}
