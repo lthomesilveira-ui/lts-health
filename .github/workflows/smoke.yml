@@ -19,6 +19,7 @@ jobs:
           node --check app-v13.js
           node --check app-v14.js
           node --check app-v15.js
+          node --check app-v16.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -34,21 +35,25 @@ jobs:
           test -f v13.css
           test -f v14.css
           test -f v15.css
+          test -f v16.css
           test -f app-v11.js
           test -f app-v12.js
           test -f app-v13.js
           test -f app-v14.js
           test -f app-v15.js
+          test -f app-v16.js
           test -f manifest.webmanifest
           test -f sw.js
-          grep -q "v15.css" config.js
-          grep -q "app-v15.js" config.js
+          grep -q "v16.css" config.js
+          grep -q "app-v16.js" config.js
           grep -q "manifest.webmanifest" app-v13.js
           grep -q "supabase.co" sw.js
           grep -q "health_body_composition" app-v14.js
           grep -q "health_workouts" app-v14.js
           grep -q "health_medication_events" app-v15.js
           grep -q "Esta tela não mostra doses" app-v15.js
+          grep -q "Peso · massa muscular · gordura" app-v16.js
+          grep -q "Fonte bruta" app-v16.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
