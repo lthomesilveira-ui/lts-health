@@ -14,7 +14,7 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
 });
 
 // Product layers are loaded from the dedicated Health repository only.
-['./v10.css','./v11.css','./v12.css','./v13.css','./v14.css','./v15.css'].forEach(href=>{
+['./v10.css','./v11.css','./v12.css','./v13.css','./v14.css','./v15.css','./v16.css'].forEach(href=>{
   if(!document.querySelector(`link[href="${href}"]`)){
     const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);
   }
@@ -32,5 +32,6 @@ window.addEventListener('load',async()=>{
     await loadHealthLayer('./app-v13.js','data-lts-health-v13');
     await loadHealthLayer('./app-v14.js','data-lts-health-v14');
     await loadHealthLayer('./app-v15.js','data-lts-health-v15');
+    await loadHealthLayer('./app-v16.js','data-lts-health-v16');
   }catch(e){console.error('LTS Health product layer load failed',e)}
 });
