@@ -14,12 +14,20 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
 });
 
 // Product layers are loaded from the dedicated Health repository only.
-['./v10.css','./v11.css'].forEach(href=>{
+['./v10.css','./v11.css','./v12.css'].forEach(href=>{
   if(!document.querySelector(`link[href="${href}"]`)){
     const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);
   }
 });
-window.addEventListener('load',()=>{
-  if(document.querySelector('script[data-lts-health-v11]'))return;
-  const s=document.createElement('script');s.src='./app-v11.js';s.dataset.ltsHealthV11='1';document.body.appendChild(s);
+function loadHealthLayer(src,marker){
+  return new Promise((resolve,reject)=>{
+    const existing=document.querySelector(`script[${marker}]`);if(existing){resolve();return}
+    const s=document.createElement('script');s.src=src;s.setAttribute(marker,'1');s.onload=resolve;s.onerror=reject;document.body.appendChild(s);
+  });
+}
+window.addEventListener('load',async()=>{
+  try{
+    await loadHealthLayer('./app-v11.js','data-lts-health-v11');
+    await loadHealthLayer('./app-v12.js','data-lts-health-v12');
+  }catch(e){console.error('LTS Health product layer load failed',e)}
 });
