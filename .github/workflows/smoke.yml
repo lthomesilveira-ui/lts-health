@@ -14,7 +14,7 @@ jobs:
         run: |
           node --check app.js
           node --check app-v8.js
-          for n in 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26; do node --check "app-v${n}.js"; done
+          for n in 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27; do node --check "app-v${n}.js"; done
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -24,11 +24,11 @@ jobs:
           ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude=smoke.yml --include='*.js' --include='*.html' --include='*.css' --include='*.md' .
       - name: Product layer references
         run: |
-          for n in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26; do test -f "v${n}.css"; done
-          for n in 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26; do test -f "app-v${n}.js"; done
+          for n in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27; do test -f "v${n}.css"; done
+          for n in 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27; do test -f "app-v${n}.js"; done
           test -f manifest.webmanifest
           test -f sw.js
-          for n in 17 18 19 20 21 22 23 24 25 26; do grep -q "v${n}.css" config.js; grep -q "app-v${n}.js" config.js; done
+          for n in 17 18 19 20 21 22 23 24 25 26 27; do grep -q "v${n}.css" config.js; grep -q "app-v${n}.js" config.js; done
           for n in 11 12 13 14 15 16; do ! grep -q "app-v${n}.js" config.js; done
           grep -q "manifest.webmanifest" app-v13.js
           grep -q "health_body_composition" app-v14.js
@@ -45,7 +45,8 @@ jobs:
           grep -q "lts-health:last-tab" app-v24.js
           grep -q "Central de processamento" app-v25.js
           grep -q "Relatório do período" app-v26.js
-          grep -q "lts-health-shell-v26" sw.js
+          grep -q "if(V27.lock)return V27.lock" app-v27.js
+          grep -q "lts-health-shell-v27" sw.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não são diagnóstico" app-v23.js
