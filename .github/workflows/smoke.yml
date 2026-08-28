@@ -28,7 +28,7 @@ jobs:
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v53" sw.js
+          grep -q "lts-health-shell-product-v54" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -75,9 +75,15 @@ jobs:
       - name: Claude parity contract
         run: |
           grep -q "Última bio" claude-parity.js
-          grep -q "Evolução segmentar" claude-parity.js
           grep -q "Bio · Treinos · Evolução · Análise" claude-parity.js
-          grep -q "ANÁLISE CONSOLIDADA" claude-parity.js
+          grep -q "PARIDADE CLAUDE · BIO" claude-parity.js
+          grep -q "Peso · MME · Gordura (kg)" claude-parity.js
+          grep -q "data-cp-core=\"bio\"" claude-parity.js
+          grep -q "data-cp-core=\"tratamentos\"" claude-parity.js
+          grep -q "TRATAMENTOS · CONTEXTO LONGITUDINAL" claude-parity.js
+          grep -q "não mostra doses, ciclos, frequências" claude-parity.js
+          grep -q "event_date,medication,event_type,source,confidence" claude-parity.js
+          ! grep -q "dose_mg\|dose_ml\|frequency\|injection_site" claude-parity.js
           grep -q "lts-health:evolution-mode" claude-parity.js
       - name: Search navigation contract
         run: |
