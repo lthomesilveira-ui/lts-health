@@ -12,6 +12,13 @@ async function assertScreen(page,title,label){
   if(overflow>3) throw new Error(`${label}: horizontal overflow ${overflow}px`);
 }
 
+async function openMoreRoute(page,nav,route,title,label){
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.click(`#moreSheet [data-route="${route}"]`);
+  await assertScreen(page,title,label);
+}
+
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport});
@@ -51,33 +58,45 @@ async function run(viewport,label){
   if((await page.locator('.exerciseEntry:first-child .setEntry').count())!==2) throw new Error(`${label}: add set control failed`);
   await page.click('#closeEntry');
 
-  for(const [route,screenTitle] of [['evolucao','Evolução'],['analise','Análise']]){
-    await page.click(`${nav} [data-route="${route}"]`);
-    await assertScreen(page,screenTitle,`${label}/${route}`);
-  }
+  await page.click(`${nav} [data-route="evolucao"]`);
+  await assertScreen(page,'Evolução',`${label}/evolucao`);
+  await page.click('[data-evolution-metric="skeletal_muscle_mass_kg"]');
+  await page.waitForFunction(()=>document.querySelector('[data-evolution-metric="skeletal_muscle_mass_kg"]')?.classList.contains('active'));
+  if((await page.locator('[data-segmental-date]').count())!==2) throw new Error(`${label}: segmental dates missing`);
+  await page.click('[data-segmental-date="2026-01-01"]');
+  await page.waitForFunction(()=>document.querySelector('[data-segmental-date="2026-01-01"]')?.classList.contains('active'));
 
-  for(const [route,screenTitle] of [['hoje','Hoje'],['timeline','Timeline'],['saude','Saúde & exames'],['nutricao','Nutrição'],['dados','Dados'],['tratamentos','Tratamentos']]){
-    await page.click(`${nav} [data-route="mais"]`);
-    await page.waitForSelector('#moreSheet:not(.hidden)');
-    await page.click(`#moreSheet [data-route="${route}"]`);
-    await assertScreen(page,screenTitle,`${label}/${route}`);
-    if(route!=='tratamentos') await page.waitForFunction(n=>document.querySelectorAll(`${n} [data-route="mais"].active`).length===1,nav);
-  }
+  await page.click(`${nav} [data-route="analise"]`);
+  await assertScreen(page,'Análise',`${label}/analise`);
 
-  await page.click(`${nav} [data-route="mais"]`);
-  await page.click('#moreSheet [data-route="timeline"]');
-  await assertScreen(page,'Timeline',`${label}/timeline-expanded`);
+  await openMoreRoute(page,nav,'hoje','Hoje',`${label}/hoje`);
+  const todayText=await page.textContent('#screenHost');
+  if(!todayText.includes('Último treino')||!todayText.includes('Última bio')) throw new Error(`${label}: Today essentials missing`);
+
+  await openMoreRoute(page,nav,'timeline','Timeline',`${label}/timeline`);
   const timelineText=await page.textContent('#screenHost');
   if(!timelineText.includes('Caminhada')||!timelineText.includes('Sono')) throw new Error(`${label}: activity/sleep timeline events missing`);
 
-  await page.click(`${nav} [data-route="mais"]`);
-  await page.click('#moreSheet [data-route="dados"]');
+  await openMoreRoute(page,nav,'saude','Saúde & exames',`${label}/saude`);
+  if((await page.locator('#collectionSelect option').count())!==1) throw new Error(`${label}: lab collection selector missing`);
+  if((await page.locator('.markerList button').count())!==2) throw new Error(`${label}: biomarker explorer missing`);
+  await page.fill('#labQuery','Marcador A');
+  await page.waitForFunction(()=>document.querySelectorAll('.markerList button').length===1);
+
+  await openMoreRoute(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
+  await page.selectOption('#nutritionPeriod','all');
+  await page.click('[data-nutrition-date="2026-02-02"]');
+  const nutritionText=await page.textContent('#screenHost');
+  if(!nutritionText.includes('Almoço')||!nutritionText.includes('Jantar')) throw new Error(`${label}: nutrition day drilldown missing meals`);
+
+  await openMoreRoute(page,nav,'dados','Dados',`${label}/dados`);
   await page.waitForSelector('#uploadForm');
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
   if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
   await page.click('[data-source-upload="apple_health"]');
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
 
+  await openMoreRoute(page,nav,'tratamentos','Tratamentos',`${label}/tratamentos`);
   if(errors.length) throw new Error(`${label}: page errors: ${errors.join(' | ')}`);
   await browser.close();
 }
