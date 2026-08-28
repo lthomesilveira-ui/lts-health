@@ -37,7 +37,8 @@ const LTS_HEALTH_MODULES = [
   ['source-onboarding','./source-onboarding.css','./source-onboarding.js'],
   ['insights-evidence','./insights-evidence.css','./insights-evidence.js'],
   ['search-product','./search-product.css','./search-product.js'],
-  ['claude-parity','./claude-parity.css','./claude-parity.js']
+  ['claude-parity','./claude-parity.css','./claude-parity.js'],
+  ['claude-cockpit','./claude-cockpit.css','./claude-cockpit.js']
 ];
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
