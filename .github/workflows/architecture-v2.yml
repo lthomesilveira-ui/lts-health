@@ -1,0 +1,41 @@
+name: LTS Health architecture v2
+on:
+  push:
+    branches: [architecture-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static architecture gates
+        run: |
+          node --check v2/app.js
+          node --check v2/browser-smoke.mjs
+          test -f v2/index.html
+          test -f v2/styles.css
+          grep -q 'data-route="bio"' v2/index.html
+          grep -q 'data-route="treinos"' v2/index.html
+          grep -q 'data-route="evolucao"' v2/index.html
+          grep -q 'data-route="analise"' v2/index.html
+          grep -q 'data-route="tratamentos"' v2/index.html
+          ! grep -q 'loadAll' v2/app.js
+          ! grep -q 'activateTab' v2/app.js
+          ! grep -q 'MutationObserver' v2/app.js
+          ! grep -q 'app-v[0-9]' v2/index.html
+          ! grep -q 'product.js' v2/index.html
+          ! grep -R 'tadhkamnwtsbdozwkyut' v2
+      - name: Install browser test runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Browser interaction smoke
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/browser-smoke.mjs
