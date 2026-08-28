@@ -1,5 +1,5 @@
-const CACHE='lts-health-shell-v17';
-const SHELL=['./','./index.html','./styles.css','./v10.css','./v11.css','./v12.css','./v13.css','./v14.css','./v15.css','./v16.css','./v17.css','./config.js','./app.js','./app-v8.js','./app-v11.js','./app-v12.js','./app-v13.js','./app-v14.js','./app-v15.js','./app-v16.js','./app-v17.js','./manifest.webmanifest'];
+const CACHE='lts-health-shell-v19';
+const SHELL=['./','./index.html','./styles.css','./v10.css','./v11.css','./v12.css','./v13.css','./v14.css','./v15.css','./v16.css','./v17.css','./v18.css','./v19.css','./config.js','./app.js','./app-v8.js','./app-v11.js','./app-v12.js','./app-v13.js','./app-v14.js','./app-v15.js','./app-v16.js','./app-v17.js','./app-v18.js','./app-v19.js','./manifest.webmanifest'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{
