@@ -1,0 +1,34 @@
+/* Final UX cleanup: remove deprecated marketing overview and keep the mobile cockpit compact. */
+.productV29 #v10Overview,.productV29 .v10-overview,.claudeCockpit #v10Overview,.claudeCockpit .v10-overview{display:none!important}
+.claudeCockpit #systemNotice.notice.info[aria-hidden="true"]{display:none!important}
+.claudeCockpit .hdr .brandtext small{max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.claudeCockpit .wrap{padding-bottom:96px}
+.claudeCockpit .ccHead p,.claudeCockpit .tdHeroMain p,.claudeCockpit .cpClassicHead p{max-width:720px}
+@media(max-width:850px){
+  .claudeCockpit .cpStats{display:none!important}
+  .claudeCockpit .hdrin{padding-bottom:7px}
+  .claudeCockpit .top{gap:8px;align-items:center}
+  .claudeCockpit .brand{min-width:0}
+  .claudeCockpit .brandtext{min-width:0}
+  .claudeCockpit .brandtext b{font-size:15px}
+  .claudeCockpit .brandtext small{font-size:9px;max-width:185px}
+  .claudeCockpit .topActions{gap:5px}
+  .claudeCockpit .topActions button{padding:7px 8px;font-size:9px;border-radius:9px}
+  .claudeCockpit #productSearchBtn{display:none}
+  .claudeCockpit .wrap{padding-top:10px;padding-left:12px;padding-right:12px;padding-bottom:108px}
+  .claudeCockpit .productRoot>*,.claudeCockpit .ccAnalysis>*,.claudeCockpit .tdHero>*,.claudeCockpit .tdGrid>*{scroll-margin-top:82px}
+  .claudeCockpit .tdHeroMain,.claudeCockpit .ccHead,.claudeCockpit .cpClassicHead{padding:13px 14px;border-radius:14px}
+  .claudeCockpit .tdHeroMain h1,.claudeCockpit .epTitle h1{font-size:22px!important;line-height:1.08}
+  .claudeCockpit .ccHead h2,.claudeCockpit .cpClassicHead h2{font-size:15px}
+  .claudeCockpit .tdHeroMain p,.claudeCockpit .ccHead p,.claudeCockpit .cpClassicHead p{font-size:9px;line-height:1.45}
+  .claudeCockpit .cpMobileDock{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));border-radius:15px}
+  .claudeCockpit .cpMobileDock button{padding:11px 2px;font-size:9px}
+}
+@media(max-width:520px){
+  .claudeCockpit .wrap{padding-left:10px;padding-right:10px}
+  .claudeCockpit .ccMetrics,.claudeCockpit .ccCoverage,.claudeCockpit .tdMetrics,.claudeCockpit .tdHeroGrid{grid-template-columns:1fr 1fr!important}
+  .claudeCockpit .ccMetric strong{font-size:16px}
+  .claudeCockpit .cpMetricGrid{gap:6px}
+  .claudeCockpit .cpMetric{padding:9px}
+  .claudeCockpit .cpMetric strong{font-size:16px}
+}
