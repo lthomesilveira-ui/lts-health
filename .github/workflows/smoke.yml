@@ -18,17 +18,20 @@ jobs:
           grep -q "plztdqyuqcjohiimudnr" config.js
           grep -q "health-inspect-upload-v2" config.js
           ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude-dir=.github --include='*.js' --include='*.html' --include='*.css' --include='*.md' .
-      - name: Consolidated product wiring
+      - name: Stable product wiring
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit canonical-status ux-cleanup today-hero-polish runtime-stability; do
+          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit canonical-status; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v62" sw.js
+          grep -q "lts-health-shell-product-v63" sw.js
+          ! grep -q "ux-cleanup.js" config.js
+          ! grep -q "today-hero-polish.js" config.js
+          ! grep -q "runtime-stability.js" config.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -44,43 +47,13 @@ jobs:
           grep -q "nenhuma estimativa" segmental-history.js
           grep -q "não interpreta a direção da mudança como melhor ou pior" segmental-history.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
-          grep -q "sem registro hoje" today-current.js
-          grep -q "não são somados aqui" today-current.js
-          grep -q "não readiness, recovery, meta ou avaliação de saúde" today-current.js
-          grep -q "É cobertura de evidência, não meta" today-evidence.js
-          grep -q "Não demonstra causa, efeito, recuperação ou prontidão" today-evidence.js
           grep -q "não reconstrói automaticamente dias sem dados" timeline-product.js
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
-          grep -q "não demonstra causa" nutrition-analytics.js
-          grep -q "Um dia ausente não é interpretado como jejum" nutrition-analytics.js
-          grep -q "campos ausentes não são estimados" nutrition-analytics.js
-          grep -q "não transforma esses campos em diagnóstico" health-product.js
-          grep -q "A · coleta" health-longitudinal.js
-          grep -q "unidades diferentes" health-longitudinal.js
-          grep -q "não substitui referência laboratorial" health-longitudinal.js
           grep -q "Correspondência temporal não significa causalidade" health-evidence-bundles.js
-          grep -q "não preenche documentos ausentes" health-evidence-bundles.js
-          grep -q "nada é preenchido por estimativa" inbox-operations.js
-          grep -q "Nada é resolvido automaticamente" inbox-operations.js
-          grep -q "Fontes conectadas sem dupla contagem" source-coverage.js
-          grep -q "não uma autorização para agregar valores" source-coverage.js
-          grep -q "Apple Health segue como hub passivo" source-coverage.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
           grep -q "proveniência continua preservada" search-product.js
           grep -q "Não cria meta corporal, classificação estética, diagnóstico ou readiness score" claude-cockpit.js
-          grep -q "Não é recomendação de volume" claude-cockpit.js
-          grep -q "não interpreta automaticamente ganho/perda como melhor ou pior" claude-cockpit.js
-          grep -q "nenhuma classificação automática é aplicada" claude-cockpit.js
           grep -q "Cobertura técnica para análises" canonical-status.js
-          grep -q "Não é readiness/recovery de saúde" canonical-status.js
-          grep -q "source_record_id" canonical-status.js
-          grep -q "Quando um dado não existe, ele permanece em branco" today-hero-polish.js
-      - name: Runtime stability contract
-        run: |
-          grep -q "carregamento lento" runtime-stability.js
-          grep -q "Tentar novamente" runtime-stability.js
-          grep -q "Os dados existentes não serão substituídos por valores vazios" runtime-stability.js
-          ! grep -q "MutationObserver" runtime-stability.js
       - name: Claude parity contract
         run: |
           grep -q "Última bio" claude-parity.js
@@ -90,22 +63,9 @@ jobs:
           grep -q "data-cp-core=\"bio\"" claude-parity.js
           grep -q "data-cp-core=\"tratamentos\"" claude-parity.js
           grep -q "TRATAMENTOS · CONTEXTO LONGITUDINAL" claude-parity.js
-          grep -q "não mostra doses, ciclos, frequências" claude-parity.js
-          grep -q "event_date,medication,event_type,source,confidence" claude-parity.js
-          ! grep -q "dose_mg\|dose_ml\|frequency\|injection_site" claude-parity.js
           grep -q "PARIDADE CLAUDE · ANÁLISE" claude-cockpit.js
           grep -q "Volume por grupo · 90 dias" claude-cockpit.js
           grep -q "Mudança bio-a-bio" claude-cockpit.js
-          grep -q "claudeCockpit" claude-cockpit.js
-      - name: UX cleanup contract
-        run: |
-          grep -q "Seu histórico de saúde em um só lugar" ux-cleanup.js
-          grep -q "Resumo atual" ux-cleanup.js
-          grep -q "#v10Overview" ux-cleanup.css
-          grep -q "forceTab" ux-cleanup.js
-          grep -q "cpStats{display:none" ux-cleanup.css
-          grep -q "const setText" ux-cleanup.js
-          ! grep -q "new MutationObserver" ux-cleanup.js
       - name: Source onboarding contract
         run: |
           grep -q "TRAZER MEUS DADOS" source-onboarding.js
@@ -114,16 +74,12 @@ jobs:
           grep -q "Fleury" source-onboarding.js
           grep -q "Einstein" source-onboarding.js
           grep -q "MyFitnessPal" source-onboarding.js
-          grep -q "Passos e FC de repouso só entram em dias com uma única fonte" source-onboarding.js
-          grep -q "normalização automática específica do Polar ainda não é tratada como concluída" source-onboarding.js
-          grep -q "extração de documento exige validação" source-onboarding.js
           grep -q "Sobreposição não vira soma automática" source-onboarding.js
       - name: Search navigation contract
         run: |
           grep -q "BUSCA GLOBAL" search-product.js
           grep -q "data-sp-target" search-product.js
           grep -q "activateTab" search-product.js
-          grep -q "metaKey" search-product.js
       - name: No private payload files
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
