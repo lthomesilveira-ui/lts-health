@@ -1,11 +1,12 @@
 import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData} from './data-layer.js';
 import {screenRenderers as baseScreenRenderers} from './screens.js';
+import {renderTrainingScreen} from './training-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
 import {openEntry,setupEntryController} from './entry.js';
 
-const screenRenderers={...baseScreenRenderers,dados:renderDataHub,timeline:renderTimelineHub};
+const screenRenderers={...baseScreenRenderers,treinos:renderTrainingScreen,dados:renderDataHub,timeline:renderTimelineHub};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
