@@ -28,7 +28,7 @@ jobs:
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v47" sw.js
+          grep -q "lts-health-shell-product-v48" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -47,6 +47,9 @@ jobs:
           grep -q "não reconstrói automaticamente dias sem dados" timeline-product.js
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
           grep -q "não demonstra causa" nutrition-analytics.js
+          grep -q "Cobertura mede disponibilidade do export" nutrition-analytics.js
+          grep -q "Um dia ausente não é interpretado como jejum" nutrition-analytics.js
+          grep -q "campos ausentes não são estimados" nutrition-analytics.js
           grep -q "não transforma esses campos em diagnóstico" health-product.js
           grep -q "A · coleta" health-longitudinal.js
           grep -q "B · referência" health-longitudinal.js
