@@ -25,6 +25,7 @@ jobs:
           node --check health-longitudinal.js
           node --check nutrition-analytics.js
           node --check inbox-operations.js
+          node --check insights-evidence.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -53,11 +54,15 @@ jobs:
           test -f inbox-operations.css
           grep -q "inbox-operations.js" config.js
           grep -q "inbox-operations.js" sw.js
+          test -f insights-evidence.js
+          test -f insights-evidence.css
+          grep -q "insights-evidence.js" config.js
+          grep -q "insights-evidence.js" sw.js
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v40" sw.js
+          grep -q "lts-health-shell-product-v41" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -100,6 +105,12 @@ jobs:
           grep -q "Apple Health · contrato conservador" inbox-operations.js
           grep -q "Passos" inbox-operations.js
           grep -q "FC de repouso" inbox-operations.js
+          grep -q "EVIDÊNCIA CRUZADA · DETERMINÍSTICA" insights-evidence.js
+          grep -q "Nutrição × dias com treino" insights-evidence.js
+          grep -q "Sono anterior × treino" insights-evidence.js
+          grep -q "Composição × contexto de treino" insights-evidence.js
+          grep -q "Coletas × cobertura anterior" insights-evidence.js
+          grep -q "epTodayPulse" insights-evidence.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não constituem diagnóstico" product.js
@@ -129,6 +140,10 @@ jobs:
           grep -q "não são somados nem escolhidos arbitrariamente" inbox-operations.js
           grep -q "nada é preenchido por estimativa" inbox-operations.js
           grep -q "storage privado" inbox-operations.js
+          grep -q "A diferença observada não demonstra causalidade" insights-evidence.js
+          grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
+          grep -q "não atribui a mudança corporal ao treino" insights-evidence.js
+          grep -q "não cria metas restritivas, julgamento corporal, diagnóstico ou score de recuperação" insights-evidence.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
