@@ -14,17 +14,22 @@ jobs:
         run: |
           node --check v2/src/core.js
           node --check v2/src/screens.js
+          node --check v2/src/writes.js
+          node --check v2/src/entry.js
           node --check v2/src/main.js
           node --check v2/browser-smoke.mjs
           test -f v2/index.html
           test -f v2/styles.css
+          test -f v2/entry.css
           grep -q 'type="module" src="./src/main.js"' v2/index.html
           grep -q 'data-route="bio"' v2/index.html
           grep -q 'data-route="treinos"' v2/index.html
           grep -q 'data-route="evolucao"' v2/index.html
           grep -q 'data-route="analise"' v2/index.html
           grep -q 'data-route="tratamentos"' v2/index.html
+          grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
+          grep -q "health_log_structured_workout" v2/src/writes.js
           ! grep -R 'loadAll' v2/src v2/index.html
           ! grep -R 'activateTab' v2/src v2/index.html
           ! grep -R 'MutationObserver' v2/src v2/index.html
