@@ -1,26 +1,21 @@
-import {sb,state,fixtureMode,loadData as loadFixtureData} from './core.js';
+import {sb,state,fixtureMode,fixtureData} from './core.js';
 
 const initialKeys=['body','segmental','workouts','exercises','sets','labs','docs','treatments','uploads','quality'];
 const routeDomains={
   bio:[],treinos:[],evolucao:[],tratamentos:[],saude:[],
   hoje:['nutrition','metrics'],
   analise:['nutrition','metrics'],
-  timeline:['nutrition'],
+  timeline:['nutrition','activity','metrics'],
   nutricao:['nutrition','meals'],
   dados:['nutrition','meals','activity','metrics']
 };
-
-state.domainStatus=state.domainStatus||{};
 
 async function fetchAll(table,select='*',orderColumn=null,ascending=false,maxRows=5000){
   const pageSize=1000,rows=[];
   for(let from=0;from<maxRows;from+=pageSize){
     let q=sb.from(table).select(select).range(from,from+pageSize-1);
-    if(orderColumn) q=q.order(orderColumn,{ascending});
-    const {data,error}=await q;
-    if(error) throw error;
-    rows.push(...(data||[]));
-    if(!data||data.length<pageSize) break;
+    if(orderColumn)q=q.order(orderColumn,{ascending});
+    const{data,error}=await q;if(error)throw error;rows.push(...(data||[]));if(!data||data.length<pageSize)break;
   }
   return rows;
 }
@@ -42,59 +37,48 @@ const loaders={
   metrics:()=>fetchAll('health_metrics','source_record_id,measured_at,metric_type,value,unit,source,source_file,confidence,notes','measured_at',false,6000)
 };
 
+function setFixture(){
+  state.data=fixtureData();state.errors={};state.domainStatus={};
+  Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
+  state.loaded=true;state.loading=false;
+}
+
 async function loadKey(key,force=false){
-  if(fixtureMode) return;
-  if(!force&&state.domainStatus[key]==='ready') return;
-  if(state.domainStatus[key]==='loading') return;
+  if(fixtureMode)return;
+  if(!force&&state.domainStatus[key]==='ready')return;
+  if(state.domainStatus[key]==='loading')return;
   state.domainStatus[key]='loading';
   try{
     const rows=await loaders[key]();
     state.data[key]=key==='workouts'?rows.filter(w=>w.is_canonical!==false&&w.record_status!=='quarantined'):rows;
-    state.errors[key]=null;
-    state.domainStatus[key]='ready';
+    delete state.errors[key];state.domainStatus[key]='ready';
   }catch(error){
-    state.data[key]=state.data[key]||[];
-    state.errors[key]=error?.message||String(error);
-    state.domainStatus[key]='error';
+    state.data[key]=state.data[key]||[];state.errors[key]=error?.message||String(error);state.domainStatus[key]='error';
   }
 }
 
 export async function loadInitialData(onProgress=()=>{}){
   state.loading=true;state.errors={};onProgress('Atualizando…');
-  if(fixtureMode){
-    await loadFixtureData(onProgress);
-    Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
-    state.loaded=true;state.loading=false;return;
-  }
+  if(fixtureMode){setFixture();onProgress('Atualizado');return;}
   await Promise.all(initialKeys.map(k=>loadKey(k,true)));
   state.loaded=true;state.loading=false;
   onProgress(initialKeys.some(k=>state.domainStatus[k]==='error')?'Alguns dados não carregaram':'Atualizado');
 }
 
 export function isRouteReady(route){
-  if(!state.loaded) return false;
-  const keys=routeDomains[route]||[];
-  return keys.every(k=>state.domainStatus[k]==='ready'||state.domainStatus[k]==='error');
-}
-
-export function isRouteLoading(route){
-  const keys=routeDomains[route]||[];
-  return keys.some(k=>state.domainStatus[k]==='loading');
+  if(!state.loaded)return false;
+  return(routeDomains[route]||[]).every(k=>state.domainStatus[k]==='ready'||state.domainStatus[k]==='error');
 }
 
 export async function ensureRouteData(route,onProgress=()=>{}){
-  if(fixtureMode) return;
-  const keys=routeDomains[route]||[];
-  const missing=keys.filter(k=>state.domainStatus[k]!=='ready'&&state.domainStatus[k]!=='error');
-  if(!missing.length) return;
-  onProgress('Carregando…');
-  await Promise.all(missing.map(k=>loadKey(k)));
+  if(fixtureMode)return;
+  const keys=routeDomains[route]||[],missing=keys.filter(k=>state.domainStatus[k]!=='ready'&&state.domainStatus[k]!=='error');
+  if(!missing.length)return;
+  onProgress('Carregando…');await Promise.all(missing.map(k=>loadKey(k)));
   onProgress(missing.some(k=>state.domainStatus[k]==='error')?'Alguns dados não carregaram':'Atualizado');
 }
 
 export async function refreshData(route,onProgress=()=>{}){
-  if(fixtureMode){ await loadFixtureData(onProgress);Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');return; }
-  state.domainStatus={};state.data={};state.errors={};
-  await loadInitialData(onProgress);
-  await ensureRouteData(route,onProgress);
+  if(fixtureMode){setFixture();onProgress('Atualizado');return;}
+  state.domainStatus={};state.data={};state.errors={};await loadInitialData(onProgress);await ensureRouteData(route,onProgress);
 }
