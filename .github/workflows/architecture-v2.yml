@@ -22,6 +22,7 @@ jobs:
           test -f v2/index.html
           test -f v2/styles.css
           test -f v2/entry.css
+          test ! -f v2/app.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
           grep -q 'data-route="bio"' v2/index.html
           grep -q 'data-route="treinos"' v2/index.html
@@ -38,7 +39,6 @@ jobs:
           ! grep -R 'MutationObserver' v2/src v2/index.html
           ! grep -q 'app-v[0-9]' v2/index.html
           ! grep -q 'product.js' v2/index.html
-          ! grep -q './app.js' v2/index.html
           ! grep -R 'tadhkamnwtsbdozwkyut' v2/src v2/index.html
       - name: Install browser test runtime
         run: |
