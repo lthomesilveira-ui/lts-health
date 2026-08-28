@@ -28,7 +28,7 @@ jobs:
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v50" sw.js
+          grep -q "lts-health-shell-product-v51" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -63,6 +63,9 @@ jobs:
           grep -q "não prova que o documento pertence a esta coleta" health-evidence-bundles.js
           grep -q "não preenche documentos ausentes" health-evidence-bundles.js
           grep -q "nada é preenchido por estimativa" inbox-operations.js
+          grep -q "Fila que exige decisão" inbox-operations.js
+          grep -q "Uma questão aberta não é automaticamente erro clínico" inbox-operations.js
+          grep -q "Nada é resolvido automaticamente" inbox-operations.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
           grep -q "proveniência continua preservada" search-product.js
       - name: Search navigation contract
