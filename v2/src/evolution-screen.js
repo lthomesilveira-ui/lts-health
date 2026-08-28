@@ -34,18 +34,50 @@ function weeklyCounts(weeks=12){
 }
 
 function segmentBlock(label,right,left,unit='kg'){
-  return `<div class="segmentPair"><div><span>Direito</span><b>${fmtNum(right)} ${esc(unit)}</b></div><strong>${esc(label)}</strong><div><span>Esquerdo</span><b>${fmtNum(left)} ${esc(unit)}</b></div></div>`;
+  return `<div class="segmentPair"><div><span>Direito</span><b>${fmtNum(right,2)} ${esc(unit)}</b></div><strong>${esc(label)}</strong><div><span>Esquerdo</span><b>${fmtNum(left,2)} ${esc(unit)}</b></div></div>`;
+}
+
+function sideDiff(right,left){
+  const r=num(right),l=num(left);if(r==null||l==null)return'—';const d=r-l;return`${d>0?'+':''}${fmtNum(d,2)} kg`;
+}
+
+function sideDifferences(current){
+  return `<div class="sideDifference"><div class="sideDifferenceHead"><b>Diferença entre lados</b><small>D−E, apenas descritivo. Sinal positivo indica valor maior à direita; negativo, à esquerda.</small></div><div class="sideDifferenceGrid">
+    <div><span>Braços · massa magra</span><b>${sideDiff(current.lean_right_arm_kg,current.lean_left_arm_kg)}</b></div>
+    <div><span>Pernas · massa magra</span><b>${sideDiff(current.lean_right_leg_kg,current.lean_left_leg_kg)}</b></div>
+    <div><span>Braços · gordura</span><b>${sideDiff(current.fat_right_arm_kg,current.fat_left_arm_kg)}</b></div>
+    <div><span>Pernas · gordura</span><b>${sideDiff(current.fat_right_leg_kg,current.fat_left_leg_kg)}</b></div>
+  </div></div>`;
 }
 
 function segmentComparison(current,previous){
   if(failed('segmental'))return unavailable('As medições segmentares não carregaram agora.');
   if(!current)return empty('Ainda não há análise segmentar estruturada.');
-  const rows=[['Braço D','lean_right_arm_kg'],['Braço E','lean_left_arm_kg'],['Tronco','lean_trunk_kg'],['Perna D','lean_right_leg_kg'],['Perna E','lean_left_leg_kg']];
-  return `<div class="segmentSummary">
-    ${segmentBlock('Braços · massa magra',current.lean_right_arm_kg,current.lean_left_arm_kg)}
-    ${segmentBlock('Pernas · massa magra',current.lean_right_leg_kg,current.lean_left_leg_kg)}
-    <div class="segmentTrunk"><span>Tronco · massa magra</span><b>${fmtNum(current.lean_trunk_kg)} kg</b></div>
-  </div>${previous?`<div class="segmentDelta"><b>Desde ${fmtDate(previous.measured_at)}</b>${rows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],previous[key],2,'kg')}</span>`).join('')}</div>`:''}`;
+  const leanRows=[['Braço D','lean_right_arm_kg'],['Braço E','lean_left_arm_kg'],['Tronco','lean_trunk_kg'],['Perna D','lean_right_leg_kg'],['Perna E','lean_left_leg_kg']];
+  const fatRows=[['Braço D','fat_right_arm_kg'],['Braço E','fat_left_arm_kg'],['Tronco','fat_trunk_kg'],['Perna D','fat_right_leg_kg'],['Perna E','fat_left_leg_kg']];
+  return `<div class="segmentKinds">
+    <section><div class="segmentKindTitle"><b>Massa magra segmentar</b><small>Valores registrados em kg.</small></div><div class="segmentSummary">
+      ${segmentBlock('Braços',current.lean_right_arm_kg,current.lean_left_arm_kg)}
+      ${segmentBlock('Pernas',current.lean_right_leg_kg,current.lean_left_leg_kg)}
+      <div class="segmentTrunk"><span>Tronco · massa magra</span><b>${fmtNum(current.lean_trunk_kg,2)} kg</b></div>
+    </div></section>
+    <section><div class="segmentKindTitle"><b>Gordura segmentar</b><small>Valores registrados em kg.</small></div><div class="segmentSummary">
+      ${segmentBlock('Braços',current.fat_right_arm_kg,current.fat_left_arm_kg)}
+      ${segmentBlock('Pernas',current.fat_right_leg_kg,current.fat_left_leg_kg)}
+      <div class="segmentTrunk"><span>Tronco · gordura</span><b>${fmtNum(current.fat_trunk_kg,2)} kg</b></div>
+    </div></section>
+  </div>
+  ${sideDifferences(current)}
+  ${previous?`<div class="segmentDeltaGroup"><div><b>Mudança de massa magra desde ${fmtDate(previous.measured_at)}</b><div class="segmentDelta">${leanRows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],previous[key],2,'kg')}</span>`).join('')}</div></div><div><b>Mudança de gordura segmentar desde ${fmtDate(previous.measured_at)}</b><div class="segmentDelta">${fatRows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],previous[key],2,'kg')}</span>`).join('')}</div></div></div>`:''}`;
+}
+
+function bodyChangeTable(rows){
+  if(rows.length<2)return empty('São necessárias pelo menos duas medições corporais para comparar mudanças entre medições.');
+  const pairs=rows.slice(1).map((current,i)=>({current,previous:rows[i]})).slice(-12).reverse();
+  return `<div class="evolutionChangeTable" role="table" aria-label="Mudança entre medições corporais">
+    <div class="changeRow changeHead" role="row"><span>Data</span><span>Peso</span><span>MME</span><span>Δ MME</span><span>Gordura</span><span>Δ gordura</span></div>
+    ${pairs.map(({current,previous})=>`<div class="changeRow" role="row"><time>${fmtDate(current.measured_at)}</time><span>${fmtNum(current.weight_kg)} kg</span><span>${fmtNum(current.skeletal_muscle_mass_kg)} kg</span><strong>${neutralDelta(current.skeletal_muscle_mass_kg,previous.skeletal_muscle_mass_kg,1,'kg')}</strong><span>${fmtNum(current.fat_mass_kg)} kg</span><strong>${neutralDelta(current.fat_mass_kg,previous.fat_mass_kg,1,'kg')}</strong></div>`).join('')}
+  </div>`;
 }
 
 export function renderEvolutionHub(){
@@ -64,8 +96,9 @@ export function renderEvolutionHub(){
       ${metric('Intervalo corporal',bodyFailed?'—':first&&last?`${Math.round((new Date(last.measured_at)-new Date(first.measured_at))/86400000)} dias`:'—',bodyFailed?'indisponível agora':'entre primeiro e último registro')}
     </div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Composição corporal</b><small>Escolha uma medida para acompanhar. O gráfico é descritivo.</small></div><div class="segmented">${Object.entries(metrics).map(([key,m])=>`<button type="button" data-evolution-metric="${key}" class="${key===metricKey?'active':''}" ${bodyFailed?'disabled':''}>${esc(m.label)}${key==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):lineChart(body,metricKey,`${meta.label} (${meta.unit})`)}${!bodyFailed&&first&&last?`<div class="evoDelta"><span>Primeiro ${fmtNum(first[metricKey])} ${esc(meta.unit)}</span><b>Diferença ${neutralDelta(last[metricKey],first[metricKey],1,meta.unit)}</b><span>Último ${fmtNum(last[metricKey])} ${esc(meta.unit)}</span></div>`:''}</div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Mudança entre medições</b><small>Últimas mudanças consecutivas registradas. Sem classificação de melhor ou pior.</small></div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):bodyChangeTable(body)}</div>
     <div class="grid cols2 sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Análise segmentar</b><small>Escolha uma das medições disponíveis.</small></div><div class="segmented compactSeg">${segFailed?'':segmental.map(s=>`<button type="button" data-segmental-date="${esc(s.measured_at)}" class="${s.measured_at===state.ui.segmentalDate?'active':''}">${fmtDate(s.measured_at)}</button>`).join('')}</div></div>${segmentComparison(currentSeg,previousSeg)}<p class="footerNote">Diferenças entre datas são mostradas sem classificação estética ou meta corporal.</p></div>
+      <div class="card"><div class="cardHead"><div><b>Análise segmentar</b><small>Escolha uma das medições disponíveis.</small></div><div class="segmented compactSeg">${segFailed?'':segmental.map(s=>`<button type="button" data-segmental-date="${esc(s.measured_at)}" class="${s.measured_at===state.ui.segmentalDate?'active':''}">${fmtDate(s.measured_at)}</button>`).join('')}</div></div>${segmentComparison(currentSeg,previousSeg)}<p class="footerNote">Diferenças entre datas e lados são descritivas; o app não atribui julgamento estético nem meta a esses valores.</p></div>
       <div class="card"><div class="cardHead"><div><b>Treinos por semana</b><small>Frequência registrada nas últimas 12 semanas.</small></div></div>${workoutFailed?unavailable('Os treinos não carregaram; a frequência semanal não pode ser calculada agora.'):`<div class="weekBars detailed">${weeks.map(w=>`<div><i style="height:${Math.max(4,w.count/maxWeek*100)}%"></i><b>${w.count}</b><span>${esc(w.label)}</span></div>`).join('')}</div>`}</div>
     </div>`;
 }
