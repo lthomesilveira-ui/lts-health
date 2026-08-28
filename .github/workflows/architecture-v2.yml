@@ -13,6 +13,7 @@ jobs:
       - name: Static architecture gates
         run: |
           node --check v2/src/core.js
+          node --check v2/src/data-layer.js
           node --check v2/src/screens.js
           node --check v2/src/writes.js
           node --check v2/src/entry.js
@@ -30,6 +31,8 @@ jobs:
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
           grep -q "health_log_structured_workout" v2/src/writes.js
+          grep -q 'ensureRouteData' v2/src/data-layer.js
+          grep -q 'isRouteReady' v2/src/main.js
           ! grep -R 'loadAll' v2/src v2/index.html
           ! grep -R 'activateTab' v2/src v2/index.html
           ! grep -R 'MutationObserver' v2/src v2/index.html
