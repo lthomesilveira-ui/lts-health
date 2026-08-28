@@ -10,13 +10,9 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
     publishableKey: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI'
   }),
   storageBucket: 'health-inbox',
-  // v2 forwards non-Apple sources to the stable parser and uses the
-  // conservative Apple Health parser for validated, non-overlapping metrics.
   inspectFunction: 'health-inspect-upload-v2'
 });
 
-// Modular product surfaces extend the consolidated shell without reviving
-// the deprecated numbered-layer runtime.
 const LTS_HEALTH_MODULES = [
   ['training-product','./training-product.css','./training-product.js'],
   ['training-progression-deep','./training-progression-deep.css','./training-progression-deep.js'],
@@ -41,11 +37,9 @@ const LTS_HEALTH_MODULES = [
   ['claude-cockpit','./claude-cockpit.css','./claude-cockpit.js'],
   ['canonical-status','./canonical-status.css','./canonical-status.js'],
   ['ux-cleanup','./ux-cleanup.css','./ux-cleanup.js'],
-  ['today-hero-polish','./today-hero-polish.css','./today-hero-polish.js']
+  ['today-hero-polish','./today-hero-polish.css','./today-hero-polish.js'],
+  ['runtime-stability','./runtime-stability.css','./runtime-stability.js']
 ];
-// The recovered Claude experience is now the visual baseline, so the shell
-// takes the cockpit skin as soon as config is evaluated rather than flashing
-// through the older light product shell first.
 document.body?.classList.add('claudeCockpit');
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
