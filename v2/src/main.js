@@ -1,9 +1,11 @@
-import {state,routes,fixtureMode,sb,loadData,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
+import {state,routes,loadData,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
 import {screenRenderers} from './screens.js';
+import {openEntry,setupEntryController} from './entry.js';
 
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
+const secondaryRoutes=new Set(['hoje','timeline','saude','nutricao','dados']);
 
 function setSync(text){ const el=$('syncText'); if(el) el.textContent=text; }
 
@@ -11,12 +13,24 @@ function showLogin(message=''){
   $('login').classList.remove('hidden');
   $('app').classList.add('hidden');
   $('moreSheet').classList.add('hidden');
+  $('entryModal').classList.add('hidden');
   $('loginMsg').textContent=message;
 }
 
 function showApp(){
   $('login').classList.add('hidden');
   $('app').classList.remove('hidden');
+}
+
+function syncNav(){
+  document.querySelectorAll('[data-route]').forEach(b=>{
+    const r=b.dataset.route;
+    b.classList.toggle('active',r===state.route || (r==='mais'&&secondaryRoutes.has(state.route)));
+  });
+  const action=$('routeAction');
+  if(state.route==='bio'){ action.textContent='Registrar bio'; action.dataset.entry='body'; action.classList.remove('hidden'); }
+  else if(state.route==='treinos'){ action.textContent='Registrar treino'; action.dataset.entry='workout'; action.classList.remove('hidden'); }
+  else{ action.classList.add('hidden'); action.dataset.entry=''; }
 }
 
 function setRoute(route,{replace=true}={}){
@@ -30,7 +44,7 @@ function setRoute(route,{replace=true}={}){
   try{ localStorage.setItem('lts-health-v2-route',route); }catch{}
   const url=`#${route}`;
   if(replace) history.replaceState(null,'',url); else history.pushState(null,'',url);
-  document.querySelectorAll('[data-route]').forEach(b=>b.classList.toggle('active',b.dataset.route===route));
+  syncNav();
   scheduleRender();
   requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'auto'}));
 }
@@ -50,7 +64,7 @@ function render(){
   renderQueued=false;
   if(!$('app')||$('app').classList.contains('hidden')) return;
   const host=$('screenHost');
-  if(!state.loaded){ host.innerHTML=loadingView(); return; }
+  if(!state.loaded){ host.innerHTML=loadingView(); syncNav(); return; }
   const renderer=screenRenderers[state.route]||screenRenderers.bio;
   try{ host.innerHTML=renderer(); }
   catch(error){
@@ -58,6 +72,7 @@ function render(){
     host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';
   }
   applyControlState();
+  syncNav();
 }
 
 function scheduleRender(){
@@ -93,12 +108,10 @@ async function doLogin(){
 
 function bindStaticEvents(){
   document.addEventListener('click',event=>{
+    const entryButton=event.target.closest('[data-entry]');
+    if(entryButton?.dataset.entry){ openEntry(entryButton.dataset.entry); return; }
     const routeButton=event.target.closest('[data-route]');
-    if(routeButton){
-      event.preventDefault();
-      setRoute(routeButton.dataset.route,{replace:false});
-      return;
-    }
+    if(routeButton){ event.preventDefault(); setRoute(routeButton.dataset.route,{replace:false}); return; }
     const metricButton=event.target.closest('[data-bio-metric]');
     if(metricButton){ state.ui.bioMetric=metricButton.dataset.bioMetric; scheduleRender(); return; }
     const workoutButton=event.target.closest('[data-workout]');
@@ -155,15 +168,12 @@ function bindStaticEvents(){
 
 async function boot(){
   bindStaticEvents();
+  setupEntryController({onSaved:refresh});
   state.route=routeFromLocation();
   try{
     const session=await restoreSession();
     if(!session){ showLogin(); }
-    else{
-      showApp();
-      setRoute(state.route);
-      await refresh();
-    }
+    else{ showApp(); setRoute(state.route); await refresh(); }
   }catch(error){
     console.error(error);
     showLogin('Não foi possível restaurar sua sessão.');
