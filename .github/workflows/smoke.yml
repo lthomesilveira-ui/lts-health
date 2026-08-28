@@ -28,7 +28,7 @@ jobs:
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v60" sw.js
+          grep -q "lts-health-shell-product-v61" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -98,6 +98,8 @@ jobs:
           grep -q "#v10Overview" ux-cleanup.css
           grep -q "forceTab" ux-cleanup.js
           grep -q "cpStats{display:none" ux-cleanup.css
+          grep -q "const setText" ux-cleanup.js
+          ! grep -q "new MutationObserver" ux-cleanup.js
       - name: Source onboarding contract
         run: |
           grep -q "TRAZER MEUS DADOS" source-onboarding.js
