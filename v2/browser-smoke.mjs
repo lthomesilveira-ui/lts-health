@@ -119,8 +119,31 @@ async function runPartialTraining(viewport,label){
   await browser.close();
 }
 
+async function runFailureState(kind,route,title,assertion){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  await page.goto(`${base}&fixtureError=${kind}#${route}`,{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('#app:not(.hidden)');
+  await assertScreen(page,title,`mobile/${route}-${kind}-failure`);
+  const text=(await page.textContent('#screenHost'))||'';
+  await assertion(page,text);
+  await browser.close();
+}
+
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 await runPartialTraining({width:1280,height:900},'desktop');
 await runPartialTraining({width:390,height:844},'mobile');
+await runFailureState('labs','saude','Saúde & exames',async(_page,text)=>{
+  if(!text.includes('não carregou agora')||/Coletas\s*0\b/i.test(text)||/Resultados\s*0\b/i.test(text)) throw new Error('lab failure rendered as zero or hid the failure');
+});
+await runFailureState('nutrition','nutricao','Nutrição',async(_page,text)=>{
+  if(!text.includes('não carregaram agora')||/Dias registrados\s*0\b/i.test(text)) throw new Error('nutrition failure rendered as zero or hid the failure');
+});
+await runFailureState('meals','nutricao','Nutrição',async(page,text)=>{
+  await page.selectOption('#nutritionPeriod','all');
+  await page.click('[data-nutrition-date="2026-02-02"]');
+  const updated=(await page.textContent('#screenHost'))||'';
+  if(!updated.includes('detalhes indisponíveis agora')||updated.includes('0 item(ns)')) throw new Error('meal failure rendered as empty instead of unavailable');
+});
 console.log('LTS Health v2 browser smoke passed');
