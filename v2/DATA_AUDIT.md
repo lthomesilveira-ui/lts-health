@@ -8,7 +8,8 @@ Snapshot auditado em 2026-08-28 no projeto Supabase dedicado do LTS Health. Este
 | --- | ---: | --- |
 | Composição corporal | 35 | 2024-08-30 → 2026-08-24 |
 | Composição segmentar | 4 | 2026-03-20 → 2026-08-24 |
-| Treinos | 44 | 2026-04-28 → 2026-08-27 |
+| Treinos validados no histórico principal | 43 | 2026-04-28 → 2026-08-27 |
+| Treinos fora do histórico principal | 1 | registro não canônico em quarentena |
 | Exercícios estruturados | 69 | 2026-08-03 → 2026-08-27 |
 | Séries estruturadas | 162 | 2026-08-03 → 2026-08-27 |
 | Resultados laboratoriais | 33 | 2026-02-26 |
@@ -18,11 +19,12 @@ Snapshot auditado em 2026-08-28 no projeto Supabase dedicado do LTS Health. Este
 | Atividade | 3.794 | 2018-06-04 → 2026-08-26 |
 | Métricas gerais | 1.096 | 2018-06-04 → 2026-07-16 |
 | Uploads | 1 | 2026-08-27 |
+| Previews de ingestão | 1 | 2026-08-27 |
 | Questões de qualidade | 26 | 2026-08-25 → 2026-08-28 |
 | Eventos de tratamentos | 30 | 2026-07-03 → 2026-08-28 |
 | Regimes de tratamento preservados | 6 | snapshot de 2026-08-26 |
 
-Questões de qualidade no snapshot: 17 abertas, 4 aceitas e 5 resolvidas.
+Questões de qualidade no snapshot: 17 abertas, 4 aceitas e 5 resolvidas. O registro de treino em quarentena não entra nas contagens exibidas pela interface v2.
 
 ## Reconciliação dos treinos recentes
 
@@ -34,6 +36,10 @@ Os três treinos recentes presentes no contexto do projeto foram conferidos cont
 - Zero séries sem `source_record_id`.
 - Zero `source_record_id` duplicado em `health_workout_sets`.
 - Nenhum campo foi criado ou completado por inferência nesta auditoria.
+
+## Reconciliação da composição segmentar
+
+As quatro medições segmentares estruturadas foram conferidas nas datas 20/03, 03/07, 16/07 e 24/08/2026. Todas têm os cinco campos de massa magra segmentar e os cinco campos de gordura segmentar preenchidos na fonte estruturada, com confiança alta. A interface pode portanto mostrar esses valores e diferenças entre datas/lados sem estimar campos ausentes.
 
 ## Regras de sobreposição e deduplicação
 
