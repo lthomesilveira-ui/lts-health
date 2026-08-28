@@ -1,13 +1,17 @@
 import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
 
-const initialKeys=['body','segmental','workouts','exercises','sets','labs','docs','treatments','uploads','quality'];
+const initialKeys=['body','segmental','workouts','exercises','sets'];
 const routeDomains={
-  bio:[],treinos:[],evolucao:[],tratamentos:[],saude:[],
-  hoje:['nutrition','metrics'],
-  analise:['nutrition','metrics'],
-  timeline:['nutrition','activity','metrics'],
+  bio:[],
+  treinos:[],
+  evolucao:[],
+  analise:['nutrition','metrics','labs'],
+  tratamentos:['treatments'],
+  hoje:['nutrition','metrics','labs','uploads'],
+  timeline:['nutrition','activity','metrics','labs','docs','treatments'],
+  saude:['labs','docs'],
   nutricao:['nutrition','meals'],
-  dados:['nutrition','meals','activity','metrics']
+  dados:['nutrition','meals','activity','metrics','labs','docs','uploads','quality']
 };
 
 async function fetchAll(table,select='*',orderColumn=null,ascending=false,maxRows=5000){
