@@ -12,21 +12,26 @@ jobs:
       - uses: actions/checkout@v4
       - name: Static architecture gates
         run: |
-          node --check v2/app.js
+          node --check v2/src/core.js
+          node --check v2/src/screens.js
+          node --check v2/src/main.js
           node --check v2/browser-smoke.mjs
           test -f v2/index.html
           test -f v2/styles.css
+          grep -q 'type="module" src="./src/main.js"' v2/index.html
           grep -q 'data-route="bio"' v2/index.html
           grep -q 'data-route="treinos"' v2/index.html
           grep -q 'data-route="evolucao"' v2/index.html
           grep -q 'data-route="analise"' v2/index.html
           grep -q 'data-route="tratamentos"' v2/index.html
-          ! grep -q 'loadAll' v2/app.js
-          ! grep -q 'activateTab' v2/app.js
-          ! grep -q 'MutationObserver' v2/app.js
+          grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
+          ! grep -R 'loadAll' v2/src v2/index.html
+          ! grep -R 'activateTab' v2/src v2/index.html
+          ! grep -R 'MutationObserver' v2/src v2/index.html
           ! grep -q 'app-v[0-9]' v2/index.html
           ! grep -q 'product.js' v2/index.html
-          ! grep -R 'tadhkamnwtsbdozwkyut' v2
+          ! grep -q './app.js' v2/index.html
+          ! grep -R 'tadhkamnwtsbdozwkyut' v2/src v2/index.html
       - name: Install browser test runtime
         run: |
           npm init -y >/dev/null 2>&1
