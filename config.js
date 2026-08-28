@@ -40,7 +40,8 @@ const LTS_HEALTH_MODULES = [
   ['claude-parity','./claude-parity.css','./claude-parity.js'],
   ['claude-cockpit','./claude-cockpit.css','./claude-cockpit.js'],
   ['canonical-status','./canonical-status.css','./canonical-status.js'],
-  ['ux-cleanup','./ux-cleanup.css','./ux-cleanup.js']
+  ['ux-cleanup','./ux-cleanup.css','./ux-cleanup.js'],
+  ['today-hero-polish','./today-hero-polish.css','./today-hero-polish.js']
 ];
 // The recovered Claude experience is now the visual baseline, so the shell
 // takes the cockpit skin as soon as config is evaluated rather than flashing
