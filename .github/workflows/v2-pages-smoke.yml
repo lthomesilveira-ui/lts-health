@@ -1,0 +1,39 @@
+name: LTS Health v2 Pages Smoke
+
+on:
+  workflow_run:
+    workflows: ["Deploy LTS Health"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify public fallback and isolated v2 candidate
+        run: |
+          set -euo pipefail
+          ROOT="https://lthomesilveira-ui.github.io/lts-health/"
+          V2="https://lthomesilveira-ui.github.io/lts-health/v2/"
+
+          root_html="$(curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$ROOT")"
+          v2_html="$(curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2")"
+
+          echo "$root_html" | grep -q 'canonical v16'
+          echo "$root_html" | grep -q './product.js?v=29'
+          ! echo "$root_html" | grep -q 'type="module" src="./src/main.js"'
+
+          echo "$v2_html" | grep -q 'Seu histórico de saúde em um só lugar'
+          echo "$v2_html" | grep -q 'type="module" src="./src/main.js"'
+          echo "$v2_html" | grep -q './evolution.css'
+          echo "$v2_html" | grep -q './data.css'
+
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/main.js" | grep -q 'renderTrainingScreen'
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-layer.js" | grep -q 'health_ingestion_previews'
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/core.js" | grep -q "inspectFunction: 'health-inspect-upload'"
+
+          echo 'Root fallback preserved and /v2 candidate reachable.'
