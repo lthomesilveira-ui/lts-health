@@ -24,6 +24,7 @@ jobs:
           node --check health-product.js
           node --check health-longitudinal.js
           node --check nutrition-analytics.js
+          node --check inbox-operations.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -48,11 +49,15 @@ jobs:
           test -f nutrition-analytics.css
           grep -q "nutrition-analytics.js" config.js
           grep -q "nutrition-analytics.js" sw.js
+          test -f inbox-operations.js
+          test -f inbox-operations.css
+          grep -q "inbox-operations.js" config.js
+          grep -q "inbox-operations.js" sw.js
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v39" sw.js
+          grep -q "lts-health-shell-product-v40" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -90,6 +95,11 @@ jobs:
           grep -q "Coleta versus coleta anterior" health-longitudinal.js
           grep -q "Mapa de documentos" health-longitudinal.js
           grep -q "par(es) retido(s) por unidade/valor não comparável" health-longitudinal.js
+          grep -q "Inbox em uma visão" inbox-operations.js
+          grep -q "Fila operacional" inbox-operations.js
+          grep -q "Apple Health · contrato conservador" inbox-operations.js
+          grep -q "Passos" inbox-operations.js
+          grep -q "FC de repouso" inbox-operations.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não constituem diagnóstico" product.js
@@ -116,6 +126,9 @@ jobs:
           grep -q "ausência de série não vira valor zero" health-product.js
           grep -q "não substituem referência laboratorial ou interpretação clínica" health-longitudinal.js
           grep -q "Ausência de documento ou status de extração não é interpretada" health-longitudinal.js
+          grep -q "não são somados nem escolhidos arbitrariamente" inbox-operations.js
+          grep -q "nada é preenchido por estimativa" inbox-operations.js
+          grep -q "storage privado" inbox-operations.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
