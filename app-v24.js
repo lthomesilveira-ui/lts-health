@@ -5,11 +5,10 @@
     document.body.classList.add('healthV24');
     const actions=document.querySelector('.topActions');
     const refresh=ensureButton('v24Refresh','Atualizar',actions);refresh.className='v24Refresh';refresh.onclick=async()=>{if(refresh.disabled)return;refresh.disabled=true;refresh.textContent='Atualizando…';try{await loadAll()}finally{refresh.disabled=false;refresh.textContent='Atualizar'}};
-    const net=document.createElement('span');net.id='v24Network';net.className='v24Network';actions?.insertBefore(net,refresh);updateNetwork();
+    if(!q('v24Network')){const net=document.createElement('span');net.id='v24Network';net.className='v24Network';actions?.insertBefore(net,refresh)}updateNetwork();
     window.addEventListener('online',updateNetwork);window.addEventListener('offline',updateNetwork);
     const priorActivate=activateTab;
     activateTab=function(tab){priorActivate(tab);if(!VALID.has(tab))return;try{localStorage.setItem('lts-health:last-tab',tab)}catch{}if(location.hash!==`#${tab}`)history.replaceState(null,'',`${location.pathname}${location.search}#${tab}`)};
-    document.querySelectorAll('[data-tab]').forEach(b=>{if(b.dataset.v24Bound)return;b.dataset.v24Bound='1';b.addEventListener('click',()=>{if(VALID.has(b.dataset.tab))activateTab(b.dataset.tab)})});
     window.addEventListener('hashchange',restoreRoute);
     installUpdateWatcher();
   }
