@@ -37,7 +37,7 @@ jobs:
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v34" sw.js
+          grep -q "lts-health-shell-product-v35" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -49,6 +49,9 @@ jobs:
           grep -q "reps_raw" training-product.js
           grep -q "Séries por grupo" training-product.js
           grep -q "Evolução por exercício" training-product.js
+          grep -q "Evidência da sessão" training-product.js
+          grep -q "Última comparação observada" training-product.js
+          grep -q "falha registrada" training-product.js
           grep -q "Série longitudinal" evolution-product.js
           grep -q "Comparar duas medições" evolution-product.js
           grep -q "Composição segmentar" evolution-product.js
@@ -56,6 +59,7 @@ jobs:
           grep -q "Último treino registrado" today-product.js
           grep -q "Frescor das fontes" today-product.js
           grep -q "Pendências de evidência" today-product.js
+          grep -q "fonte preservada" today-product.js
           grep -q "Cobertura por mês" nutrition-product.js
           grep -q "Refeições recentes" nutrition-product.js
           grep -q "health_nutrition_meals" nutrition-product.js
@@ -72,6 +76,7 @@ jobs:
           grep -q "Arquivos binários privados do Inbox não estão embutidos" product.js
           grep -q "não meta de frequência" training-product.js
           grep -q "unidades permanecem separadas" training-product.js
+          grep -q "não mede sozinho desempenho total" training-product.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "sem transformar diferença em julgamento corporal" evolution-product.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
