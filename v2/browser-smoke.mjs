@@ -31,7 +31,7 @@ async function run(viewport,label){
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
 
   const initial=await page.textContent('#screenHost');
-  if(!initial.includes('90,0')||!initial.includes('91,0')) throw new Error(`${label}: fixture body history did not render`);
+  if(!initial.includes('90,0')||!initial.includes('91,0')||!initial.includes('Primeiro e último registro')) throw new Error(`${label}: fixture body history did not render`);
   await page.click('[data-bio-metric="skeletal_muscle_mass_kg"]');
   await page.waitForFunction(()=>document.querySelector('[data-bio-metric="skeletal_muscle_mass_kg"]')?.classList.contains('active'));
   await page.selectOption('#compareA','2026-01-01');
@@ -134,6 +134,9 @@ await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 await runPartialTraining({width:1280,height:900},'desktop');
 await runPartialTraining({width:390,height:844},'mobile');
+await runFailureState('body','bio','Bio',async(_page,text)=>{
+  if(!text.includes('não carregaram agora')||/Peso\s*0(?:[,.]0)?\b/i.test(text)||/MME\s*0(?:[,.]0)?\b/i.test(text)) throw new Error('body failure rendered as zero or hid the failure');
+});
 await runFailureState('labs','saude','Saúde & exames',async(_page,text)=>{
   if(!text.includes('não carregou agora')||/Coletas\s*0\b/i.test(text)||/Resultados\s*0\b/i.test(text)) throw new Error('lab failure rendered as zero or hid the failure');
 });
