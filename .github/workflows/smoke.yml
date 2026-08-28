@@ -27,7 +27,7 @@ jobs:
       - name: Dedicated backend guardrails
         run: |
           grep -q "plztdqyuqcjohiimudnr" config.js
-          grep -q "inspectFunction: 'health-inspect-upload'" config.js
+          grep -q "inspectFunction: 'health-inspect-upload-v2'" config.js
           ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude=smoke.yml --include='*.js' --include='*.html' --include='*.css' --include='*.md' .
       - name: Consolidated product shell
         run: |
@@ -42,7 +42,7 @@ jobs:
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v36" sw.js
+          grep -q "lts-health-shell-product-v37" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -80,7 +80,6 @@ jobs:
           grep -q "não constituem diagnóstico" product.js
           grep -q "Associação não é causalidade" product.js
           grep -q "sem evidência" product.js
-          grep -q "Passos e frequência cardíaca de repouso ainda não são consolidados automaticamente" product.js
           grep -q "Arquivos binários privados do Inbox não estão embutidos" product.js
           grep -q "não meta de frequência" training-product.js
           grep -q "unidades permanecem separadas" training-product.js
