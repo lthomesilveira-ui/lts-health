@@ -10,7 +10,9 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
     publishableKey: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI'
   }),
   storageBucket: 'health-inbox',
-  inspectFunction: 'health-inspect-upload'
+  // v2 forwards non-Apple sources to the stable parser and uses the
+  // conservative Apple Health parser for validated, non-overlapping metrics.
+  inspectFunction: 'health-inspect-upload-v2'
 });
 
 // Modular product surfaces extend the consolidated shell without reviving
