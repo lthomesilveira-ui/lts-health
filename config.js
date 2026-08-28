@@ -15,7 +15,7 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
 
 // index.html owns the canonical v11-v16 layers. Only newer product layers
 // are appended here, once, to avoid duplicate execution of loadAll wrappers.
-['./v17.css','./v18.css','./v19.css','./v20.css'].forEach(href=>{
+['./v17.css','./v18.css','./v19.css','./v20.css','./v21.css'].forEach(href=>{
   if(!document.querySelector(`link[href="${href}"]`)){
     const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);
   }
@@ -32,5 +32,6 @@ window.addEventListener('load',async()=>{
     await loadHealthLayer('./app-v18.js','data-lts-health-v18');
     await loadHealthLayer('./app-v19.js','data-lts-health-v19');
     await loadHealthLayer('./app-v20.js','data-lts-health-v20');
+    await loadHealthLayer('./app-v21.js','data-lts-health-v21');
   }catch(e){console.error('LTS Health product layer load failed',e)}
 });
