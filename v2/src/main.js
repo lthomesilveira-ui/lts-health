@@ -62,7 +62,7 @@ function render(){
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
 function applyControlState(){
-  const values={trainingPeriod:state.ui.trainingPeriod,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
+  const values={trainingPeriod:state.ui.trainingPeriod,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
@@ -85,6 +85,7 @@ function bindStaticEvents(){
     const evolutionMetric=event.target.closest('[data-evolution-metric]');if(evolutionMetric){state.ui.evolutionMetric=evolutionMetric.dataset.evolutionMetric;scheduleRender();return;}
     const segmentDate=event.target.closest('[data-segmental-date]');if(segmentDate){state.ui.segmentalDate=segmentDate.dataset.segmentalDate;scheduleRender();return;}
     const nutritionDate=event.target.closest('[data-nutrition-date]');if(nutritionDate){state.ui.nutritionDate=nutritionDate.dataset.nutritionDate;scheduleRender();return;}
+    const nutritionYear=event.target.closest('[data-nutrition-year]');if(nutritionYear){state.ui.nutritionPeriod='all';state.ui.nutritionYear=nutritionYear.dataset.nutritionYear;state.ui.nutritionDate=null;scheduleRender();return;}
     const workoutButton=event.target.closest('[data-workout]');if(workoutButton){const id=workoutButton.dataset.workout;state.ui.openWorkout=state.ui.openWorkout===id?null:id;scheduleRender();return;}
     const exerciseButton=event.target.closest('[data-exercise]');if(exerciseButton){state.ui.selectedExercise=exerciseButton.dataset.exercise;scheduleRender();return;}
     const markerButton=event.target.closest('[data-marker]');if(markerButton){state.ui.selectedBiomarker=markerButton.dataset.marker;scheduleRender();return;}
@@ -101,7 +102,8 @@ function bindStaticEvents(){
   document.addEventListener('change',event=>{
     if(event.target.id==='trainingPeriod'){state.ui.trainingPeriod=event.target.value;scheduleRender();}
     if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;scheduleRender();}
-    if(event.target.id==='nutritionPeriod'){state.ui.nutritionPeriod=event.target.value;scheduleRender();}
+    if(event.target.id==='nutritionPeriod'){state.ui.nutritionPeriod=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
+    if(event.target.id==='nutritionYear'){state.ui.nutritionYear=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='compareA'){state.ui.compareA=event.target.value;scheduleRender();}
     if(event.target.id==='compareB'){state.ui.compareB=event.target.value;scheduleRender();}
     if(event.target.id==='collectionSelect'){state.ui.selectedCollection=event.target.value;scheduleRender();}
