@@ -88,8 +88,10 @@ async function runPartialTraining(viewport,label){
   await page.goto(`${base}&fixtureError=sets#treinos`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await assertScreen(page,'Treinos',`${label}/partial-training`);
+  await page.selectOption('#trainingPeriod','all');
   const seriesMetric=await page.locator('.metric').filter({hasText:'Séries'}).first().textContent();
   if(!seriesMetric?.includes('—')||!seriesMetric?.includes('não carregado')) throw new Error(`${label}: failed sets were rendered as a numeric zero`);
+  await page.waitForSelector('[data-workout="workout-2"]');
   await page.click('[data-workout="workout-2"]');
   const sessionText=await page.locator('.session.open').textContent();
   if(!sessionText?.includes('séries indisponíveis')||!sessionText?.includes('Detalhes das séries indisponíveis agora')) throw new Error(`${label}: session hides partial set loading failure`);
