@@ -38,6 +38,7 @@ jobs:
           test -f v2/analysis.css
           test -f v2/bio.css
           test -f v2/training.css
+          test -f v2/evolution.css
           test ! -f v2/app.js
           test ! -f v2/src/screens.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
@@ -45,6 +46,7 @@ jobs:
           grep -q 'analysis.css' v2/index.html
           grep -q 'bio.css' v2/index.html
           grep -q 'training.css' v2/index.html
+          grep -q 'evolution.css' v2/index.html
           grep -q 'data-route="bio"' v2/index.html
           grep -q 'data-route="treinos"' v2/index.html
           grep -q 'data-route="evolucao"' v2/index.html
@@ -71,6 +73,10 @@ jobs:
           grep -q "Calendário de treinos" v2/src/training-screen.js
           grep -q "trainingTelemetry" v2/src/training-screen.js
           grep -q "Parte da evolução está indisponível agora" v2/src/evolution-screen.js
+          grep -q "Gordura segmentar" v2/src/evolution-screen.js
+          grep -q "Diferença entre lados" v2/src/evolution-screen.js
+          grep -q "Mudança entre medições" v2/src/evolution-screen.js
+          ! grep -Eiq '\b(recomp|bulk|cut|ideal)\b' v2/src/evolution-screen.js
           grep -q "Algumas análises estão incompletas agora" v2/src/analysis-screen.js
           grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
           grep -q "não verificado" v2/src/data-screen.js
