@@ -67,9 +67,10 @@ jobs:
           grep -q "Apple Health segue como hub passivo" source-coverage.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
           grep -q "proveniência continua preservada" search-product.js
-          grep -q "não cria meta corporal, classificação estética, diagnóstico ou readiness score" claude-cockpit.js
+          grep -q "Não cria meta corporal, classificação estética, diagnóstico ou readiness score" claude-cockpit.js
           grep -q "Não é recomendação de volume" claude-cockpit.js
           grep -q "não interpreta automaticamente ganho/perda como melhor ou pior" claude-cockpit.js
+          grep -q "nenhuma classificação automática é aplicada" claude-cockpit.js
       - name: Claude parity contract
         run: |
           grep -q "Última bio" claude-parity.js
@@ -84,6 +85,7 @@ jobs:
           ! grep -q "dose_mg\|dose_ml\|frequency\|injection_site" claude-parity.js
           grep -q "PARIDADE CLAUDE · ANÁLISE" claude-cockpit.js
           grep -q "Volume por grupo · 90 dias" claude-cockpit.js
+          grep -q "Mudança bio-a-bio" claude-cockpit.js
           grep -q "claudeCockpit" claude-cockpit.js
       - name: Source onboarding contract
         run: |
