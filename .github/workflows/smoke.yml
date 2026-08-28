@@ -22,6 +22,7 @@ jobs:
           node --check today-product.js
           node --check nutrition-product.js
           node --check health-product.js
+          node --check health-longitudinal.js
           node --check nutrition-analytics.js
           node --check sw.js
           node --check config.js
@@ -39,6 +40,10 @@ jobs:
           test -f segmental-history.css
           grep -q "segmental-history.js" config.js
           grep -q "segmental-history.js" sw.js
+          test -f health-longitudinal.js
+          test -f health-longitudinal.css
+          grep -q "health-longitudinal.js" config.js
+          grep -q "health-longitudinal.js" sw.js
           test -f nutrition-analytics.js
           test -f nutrition-analytics.css
           grep -q "nutrition-analytics.js" config.js
@@ -47,7 +52,7 @@ jobs:
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v38" sw.js
+          grep -q "lts-health-shell-product-v39" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -82,6 +87,9 @@ jobs:
           grep -q "Coleta completa" health-product.js
           grep -q "Documentos" health-product.js
           grep -q "Atividade & sono" health-product.js
+          grep -q "Coleta versus coleta anterior" health-longitudinal.js
+          grep -q "Mapa de documentos" health-longitudinal.js
+          grep -q "par(es) retido(s) por unidade/valor não comparável" health-longitudinal.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não constituem diagnóstico" product.js
@@ -106,6 +114,8 @@ jobs:
           grep -q "não transforma esses campos em diagnóstico" health-product.js
           grep -q "Metadados de documento não provam" health-product.js
           grep -q "ausência de série não vira valor zero" health-product.js
+          grep -q "não substituem referência laboratorial ou interpretação clínica" health-longitudinal.js
+          grep -q "Ausência de documento ou status de extração não é interpretada" health-longitudinal.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
