@@ -81,6 +81,7 @@ function bindStaticEvents(){
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
     const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
+    const bodyDate=event.target.closest('[data-body-date]');if(bodyDate){state.ui.selectedBodyDate=bodyDate.dataset.bodyDate;scheduleRender();return;}
     const evolutionMetric=event.target.closest('[data-evolution-metric]');if(evolutionMetric){state.ui.evolutionMetric=evolutionMetric.dataset.evolutionMetric;scheduleRender();return;}
     const segmentDate=event.target.closest('[data-segmental-date]');if(segmentDate){state.ui.segmentalDate=segmentDate.dataset.segmentalDate;scheduleRender();return;}
     const nutritionDate=event.target.closest('[data-nutrition-date]');if(nutritionDate){state.ui.nutritionDate=nutritionDate.dataset.nutritionDate;scheduleRender();return;}
