@@ -19,6 +19,7 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
 // the deprecated numbered-layer runtime.
 const LTS_HEALTH_MODULES = [
   ['training-product','./training-product.css','./training-product.js'],
+  ['training-progression-deep','./training-progression-deep.css','./training-progression-deep.js'],
   ['evolution-product','./evolution-product.css','./evolution-product.js'],
   ['segmental-history','./segmental-history.css','./segmental-history.js'],
   ['today-product','./today-product.css','./today-product.js'],
