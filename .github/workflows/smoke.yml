@@ -28,7 +28,7 @@ jobs:
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v45" sw.js
+          grep -q "lts-health-shell-product-v46" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -37,6 +37,10 @@ jobs:
           grep -q "unidades nunca são misturadas" training-progression-deep.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "nenhuma estimativa" segmental-history.js
+          grep -q "A · medição" segmental-history.js
+          grep -q "B · referência" segmental-history.js
+          grep -q "A − B" segmental-history.js
+          grep -q "não interpreta a direção da mudança como melhor ou pior" segmental-history.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
           grep -q "É cobertura de evidência, não meta" today-evidence.js
           grep -q "Não demonstra causa, efeito, recuperação ou prontidão" today-evidence.js
