@@ -40,6 +40,10 @@ const LTS_HEALTH_MODULES = [
   ['claude-parity','./claude-parity.css','./claude-parity.js'],
   ['claude-cockpit','./claude-cockpit.css','./claude-cockpit.js']
 ];
+// The recovered Claude experience is now the visual baseline, so the shell
+// takes the cockpit skin as soon as config is evaluated rather than flashing
+// through the older light product shell first.
+document.body?.classList.add('claudeCockpit');
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
   const link = document.createElement('link');
