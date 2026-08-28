@@ -3,6 +3,7 @@ import {loadInitialData,ensureRouteData,isRouteReady,refreshData} from './data-l
 import {screenRenderers as baseScreenRenderers} from './screens.js';
 import {renderTrainingScreen} from './training-screen.js';
 import {renderEvolutionHub} from './evolution-screen.js';
+import {renderAnalysisHub} from './analysis-screen.js';
 import {renderHealthHub} from './health-screen.js';
 import {renderNutritionHub} from './nutrition-screen.js';
 import {renderTodayHub} from './today-screen.js';
@@ -10,7 +11,7 @@ import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
 import {openEntry,setupEntryController} from './entry.js';
 
-const screenRenderers={...baseScreenRenderers,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
+const screenRenderers={...baseScreenRenderers,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
