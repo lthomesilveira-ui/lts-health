@@ -23,6 +23,7 @@ const LTS_HEALTH_MODULES = [
   ['evolution-product','./evolution-product.css','./evolution-product.js'],
   ['segmental-history','./segmental-history.css','./segmental-history.js'],
   ['today-product','./today-product.css','./today-product.js'],
+  ['timeline-product','./timeline-product.css','./timeline-product.js'],
   ['nutrition-product','./nutrition-product.css','./nutrition-product.js'],
   ['health-product','./health-product.css','./health-product.js'],
   ['health-longitudinal','./health-longitudinal.css','./health-longitudinal.js'],
