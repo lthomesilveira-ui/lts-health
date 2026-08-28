@@ -20,6 +20,7 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
 const LTS_HEALTH_MODULES = [
   ['training-product','./training-product.css','./training-product.js'],
   ['training-progression-deep','./training-progression-deep.css','./training-progression-deep.js'],
+  ['structured-workout-entry','./structured-workout-entry.css','./structured-workout-entry.js'],
   ['evolution-product','./evolution-product.css','./evolution-product.js'],
   ['segmental-history','./segmental-history.css','./segmental-history.js'],
   ['today-product','./today-product.css','./today-product.js'],
