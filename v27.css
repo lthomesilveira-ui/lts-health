@@ -1,0 +1,1 @@
+.healthV27 .sync{min-width:86px;text-align:center}.healthV27 .sync:before{content:'';display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:50%;background:rgba(255,255,255,.55);vertical-align:1px}.healthV27 .sync:has(+ .logout){white-space:nowrap}@media(max-width:760px){.healthV27 .sync{min-width:0;font-size:8px}}
