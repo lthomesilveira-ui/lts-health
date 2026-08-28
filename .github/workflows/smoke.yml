@@ -73,7 +73,7 @@ jobs:
           grep -q "Última bio" claude-parity.js
           grep -q "Evolução segmentar" claude-parity.js
           grep -q "Bio · Treinos · Evolução · Análise" claude-parity.js
-          grep -q "Análise consolidada" claude-parity.js
+          grep -q "ANÁLISE CONSOLIDADA" claude-parity.js
           grep -q "lts-health:evolution-mode" claude-parity.js
       - name: Search navigation contract
         run: |
