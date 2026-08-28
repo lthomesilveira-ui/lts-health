@@ -16,6 +16,12 @@ jobs:
           node --check v2/src/data-layer.js
           node --check v2/src/screens.js
           node --check v2/src/training-screen.js
+          node --check v2/src/evolution-screen.js
+          node --check v2/src/health-screen.js
+          node --check v2/src/nutrition-screen.js
+          node --check v2/src/today-screen.js
+          node --check v2/src/data-screen.js
+          node --check v2/src/timeline-screen.js
           node --check v2/src/writes.js
           node --check v2/src/entry.js
           node --check v2/src/main.js
@@ -23,16 +29,24 @@ jobs:
           test -f v2/index.html
           test -f v2/styles.css
           test -f v2/entry.css
+          test -f v2/secondary.css
+          test -f v2/details.css
           test ! -f v2/app.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
+          grep -q 'details.css' v2/index.html
           grep -q 'data-route="bio"' v2/index.html
           grep -q 'data-route="treinos"' v2/index.html
           grep -q 'data-route="evolucao"' v2/index.html
           grep -q 'data-route="analise"' v2/index.html
           grep -q 'data-route="tratamentos"' v2/index.html
           grep -q 'id="entryModal"' v2/index.html
-          grep -q "inspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
+          grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
+          ! grep -q "inspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
           grep -q "renderTrainingScreen" v2/src/main.js
+          grep -q "renderEvolutionHub" v2/src/main.js
+          grep -q "renderHealthHub" v2/src/main.js
+          grep -q "renderNutritionHub" v2/src/main.js
+          grep -q "renderTodayHub" v2/src/main.js
           grep -q "failed('sets')" v2/src/training-screen.js
           grep -q "health_log_structured_workout" v2/src/writes.js
           grep -q 'ensureRouteData' v2/src/data-layer.js
