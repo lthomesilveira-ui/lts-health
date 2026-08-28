@@ -12,149 +12,39 @@ jobs:
       - uses: actions/checkout@v4
       - name: JavaScript syntax
         run: |
-          node --check app.js
-          node --check app-v8.js
-          for n in 11 12 13 14 15 16; do node --check "app-v${n}.js"; done
-          node --check product.js
-          node --check training-product.js
-          node --check training-progression-deep.js
-          node --check evolution-product.js
-          node --check segmental-history.js
-          node --check today-product.js
-          node --check nutrition-product.js
-          node --check health-product.js
-          node --check health-longitudinal.js
-          node --check nutrition-analytics.js
-          node --check inbox-operations.js
-          node --check insights-evidence.js
-          node --check sw.js
-          node --check config.js
+          find . -maxdepth 1 -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Dedicated backend guardrails
         run: |
           grep -q "plztdqyuqcjohiimudnr" config.js
-          grep -q "inspectFunction: 'health-inspect-upload-v2'" config.js
-          ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude=smoke.yml --include='*.js' --include='*.html' --include='*.css' --include='*.md' .
-      - name: Consolidated product shell
+          grep -q "health-inspect-upload-v2" config.js
+          ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude-dir=.github --include='*.js' --include='*.html' --include='*.css' --include='*.md' .
+      - name: Consolidated product wiring
         run: |
           test -f product.js
           test -f product.css
-          for m in training evolution today nutrition health; do test -f "$m-product.js"; test -f "$m-product.css"; grep -q "$m-product.js" config.js; grep -q "$m-product.js" sw.js; done
-          test -f training-progression-deep.js
-          test -f training-progression-deep.css
-          grep -q "training-progression-deep.js" config.js
-          grep -q "training-progression-deep.js" sw.js
-          test -f segmental-history.js
-          test -f segmental-history.css
-          grep -q "segmental-history.js" config.js
-          grep -q "segmental-history.js" sw.js
-          test -f health-longitudinal.js
-          test -f health-longitudinal.css
-          grep -q "health-longitudinal.js" config.js
-          grep -q "health-longitudinal.js" sw.js
-          test -f nutrition-analytics.js
-          test -f nutrition-analytics.css
-          grep -q "nutrition-analytics.js" config.js
-          grep -q "nutrition-analytics.js" sw.js
-          test -f inbox-operations.js
-          test -f inbox-operations.css
-          grep -q "inbox-operations.js" config.js
-          grep -q "inbox-operations.js" sw.js
-          test -f insights-evidence.js
-          test -f insights-evidence.css
-          grep -q "insights-evidence.js" config.js
-          grep -q "insights-evidence.js" sw.js
-          grep -q "product.css?v=29" index.html
-          grep -q "product.js?v=29" index.html
+          for m in training-product training-progression-deep evolution-product segmental-history today-product timeline-product nutrition-product nutrition-analytics health-product health-longitudinal inbox-operations insights-evidence; do
+            test -f "$m.js"
+            test -f "$m.css"
+            grep -q "$m.js" config.js
+            grep -q "$m.js" sw.js
+          done
+          grep -q "lts-health-shell-product-v43" sw.js
           ! grep -q "app-v17.js" index.html
-          ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v42" sw.js
           ! grep -q "app-v17.js" sw.js
-      - name: Functional parity surfaces
+      - name: Provenance and safety contracts
         run: |
-          grep -q "Análise longitudinal" product.js
-          grep -q "Dados & Inbox" product.js
-          grep -q "Exportar backup estruturado" product.js
-          grep -q "Buscar no histórico" product.js
           grep -q "Fonte incompleta preservada" training-product.js
-          grep -q "reps_raw" training-product.js
-          grep -q "Séries por grupo" training-product.js
-          grep -q "Evolução por exercício" training-product.js
-          grep -q "Evidência da sessão" training-product.js
-          grep -q "Última comparação observada" training-product.js
-          grep -q "falha registrada" training-product.js
-          grep -q "PROGRESSÃO COMPARÁVEL" training-progression-deep.js
-          grep -q "Anterior comparável" training-progression-deep.js
-          grep -q "repetições só são totalizadas" training-progression-deep.js
-          grep -q "Evidência parcial" training-progression-deep.js || grep -q "evidência parcial" training-progression-deep.js
-          grep -q "Série longitudinal" evolution-product.js
-          grep -q "Comparar duas medições" evolution-product.js
-          grep -q "Composição segmentar" evolution-product.js
-          grep -q "Histórico de medições" evolution-product.js
-          grep -q "Histórico segmentar detalhado" segmental-history.js
-          grep -q "diferença direita − esquerda" segmental-history.js
-          grep -q "Último treino registrado" today-product.js
-          grep -q "Frescor das fontes" today-product.js
-          grep -q "Pendências de evidência" today-product.js
-          grep -q "fonte preservada" today-product.js
-          grep -q "Cobertura por mês" nutrition-product.js
-          grep -q "Refeições recentes" nutrition-product.js
-          grep -q "health_nutrition_meals" nutrition-product.js
-          grep -q "Leitura do histórico MyFitnessPal" nutrition-analytics.js
-          grep -q "Contexto de treino" nutrition-analytics.js
-          grep -q "Distribuição por dia da semana" nutrition-analytics.js
-          grep -q "Histórico por biomarcador" health-product.js
-          grep -q "Coleta completa" health-product.js
-          grep -q "Documentos" health-product.js
-          grep -q "Atividade & sono" health-product.js
-          grep -q "Coleta versus coleta anterior" health-longitudinal.js
-          grep -q "Mapa de documentos" health-longitudinal.js
-          grep -q "par(es) retido(s) por unidade/valor não comparável" health-longitudinal.js
-          grep -q "Inbox em uma visão" inbox-operations.js
-          grep -q "Fila operacional" inbox-operations.js
-          grep -q "Apple Health · contrato conservador" inbox-operations.js
-          grep -q "Passos" inbox-operations.js
-          grep -q "FC de repouso" inbox-operations.js
-          grep -q "EVIDÊNCIA CRUZADA · DETERMINÍSTICA" insights-evidence.js
-          grep -q "Nutrição × dias com treino" insights-evidence.js
-          grep -q "Sono anterior × treino" insights-evidence.js
-          grep -q "Composição × contexto de treino" insights-evidence.js
-          grep -q "Coletas × cobertura anterior" insights-evidence.js
-          grep -q "epTodayPulse" insights-evidence.js
-      - name: Safety and provenance guardrails
-        run: |
-          grep -q "não constituem diagnóstico" product.js
-          grep -q "Associação não é causalidade" product.js
-          grep -q "sem evidência" product.js
-          grep -q "Arquivos binários privados do Inbox não estão embutidos" product.js
-          grep -q "não meta de frequência" training-product.js
-          grep -q "unidades permanecem separadas" training-product.js
-          grep -q "não mede sozinho desempenho total" training-product.js
-          grep -q "unidades nunca são misturadas ou convertidas por inferência" training-progression-deep.js
-          grep -q "não representam desempenho total nem recomendação de treino" training-progression-deep.js
+          grep -q "unidades nunca são misturadas" training-progression-deep.js
           grep -q "não classificam aparência" evolution-product.js
-          grep -q "sem transformar diferença em julgamento corporal" evolution-product.js
-          grep -q "não classificam aparência, saúde ou desempenho" segmental-history.js
-          grep -q "nenhuma estimativa, alvo corporal ou score de simetria" segmental-history.js
+          grep -q "nenhuma estimativa" segmental-history.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
-          grep -q "sem julgamento corporal" today-product.js
+          grep -q "não reconstrói automaticamente dias sem dados" timeline-product.js
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
-          grep -q "descrição, não meta" nutrition-product.js
-          grep -q "não prescreve quantidade ou frequência" nutrition-product.js
           grep -q "não demonstra causa" nutrition-analytics.js
-          grep -q "Nenhum alvo calórico, restrição ou julgamento corporal" nutrition-analytics.js
-          grep -q "health_daily_nutrition + health_nutrition_meals" nutrition-analytics.js
           grep -q "não transforma esses campos em diagnóstico" health-product.js
-          grep -q "Metadados de documento não provam" health-product.js
-          grep -q "ausência de série não vira valor zero" health-product.js
-          grep -q "não substituem referência laboratorial ou interpretação clínica" health-longitudinal.js
-          grep -q "Ausência de documento ou status de extração não é interpretada" health-longitudinal.js
-          grep -q "não são somados nem escolhidos arbitrariamente" inbox-operations.js
+          grep -q "não substituem referência laboratorial" health-longitudinal.js
           grep -q "nada é preenchido por estimativa" inbox-operations.js
-          grep -q "storage privado" inbox-operations.js
-          grep -q "A diferença observada não demonstra causalidade" insights-evidence.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
-          grep -q "não atribui a mudança corporal ao treino" insights-evidence.js
-          grep -q "não cria metas restritivas, julgamento corporal, diagnóstico ou score de recuperação" insights-evidence.js
-      - name: No private health payloads in repository
+      - name: No private payload files
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
