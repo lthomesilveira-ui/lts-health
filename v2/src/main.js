@@ -2,11 +2,15 @@ import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile} fro
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData} from './data-layer.js';
 import {screenRenderers as baseScreenRenderers} from './screens.js';
 import {renderTrainingScreen} from './training-screen.js';
+import {renderEvolutionHub} from './evolution-screen.js';
+import {renderHealthHub} from './health-screen.js';
+import {renderNutritionHub} from './nutrition-screen.js';
+import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
 import {openEntry,setupEntryController} from './entry.js';
 
-const screenRenderers={...baseScreenRenderers,treinos:renderTrainingScreen,dados:renderDataHub,timeline:renderTimelineHub};
+const screenRenderers={...baseScreenRenderers,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
@@ -75,6 +79,9 @@ function bindStaticEvents(){
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
     const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
+    const evolutionMetric=event.target.closest('[data-evolution-metric]');if(evolutionMetric){state.ui.evolutionMetric=evolutionMetric.dataset.evolutionMetric;scheduleRender();return;}
+    const segmentDate=event.target.closest('[data-segmental-date]');if(segmentDate){state.ui.segmentalDate=segmentDate.dataset.segmentalDate;scheduleRender();return;}
+    const nutritionDate=event.target.closest('[data-nutrition-date]');if(nutritionDate){state.ui.nutritionDate=nutritionDate.dataset.nutritionDate;scheduleRender();return;}
     const workoutButton=event.target.closest('[data-workout]');if(workoutButton){const id=workoutButton.dataset.workout;state.ui.openWorkout=state.ui.openWorkout===id?null:id;scheduleRender();return;}
     const exerciseButton=event.target.closest('[data-exercise]');if(exerciseButton){state.ui.selectedExercise=exerciseButton.dataset.exercise;scheduleRender();return;}
     const markerButton=event.target.closest('[data-marker]');if(markerButton){state.ui.selectedBiomarker=markerButton.dataset.marker;scheduleRender();return;}
