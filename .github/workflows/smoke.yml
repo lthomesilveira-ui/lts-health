@@ -18,6 +18,7 @@ jobs:
           node --check product.js
           node --check training-product.js
           node --check evolution-product.js
+          node --check segmental-history.js
           node --check today-product.js
           node --check nutrition-product.js
           node --check health-product.js
@@ -34,6 +35,10 @@ jobs:
           test -f product.js
           test -f product.css
           for m in training evolution today nutrition health; do test -f "$m-product.js"; test -f "$m-product.css"; grep -q "$m-product.js" config.js; grep -q "$m-product.js" sw.js; done
+          test -f segmental-history.js
+          test -f segmental-history.css
+          grep -q "segmental-history.js" config.js
+          grep -q "segmental-history.js" sw.js
           test -f nutrition-analytics.js
           test -f nutrition-analytics.css
           grep -q "nutrition-analytics.js" config.js
@@ -42,7 +47,7 @@ jobs:
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v37" sw.js
+          grep -q "lts-health-shell-product-v38" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -61,6 +66,8 @@ jobs:
           grep -q "Comparar duas medições" evolution-product.js
           grep -q "Composição segmentar" evolution-product.js
           grep -q "Histórico de medições" evolution-product.js
+          grep -q "Histórico segmentar detalhado" segmental-history.js
+          grep -q "diferença direita − esquerda" segmental-history.js
           grep -q "Último treino registrado" today-product.js
           grep -q "Frescor das fontes" today-product.js
           grep -q "Pendências de evidência" today-product.js
@@ -86,6 +93,8 @@ jobs:
           grep -q "não mede sozinho desempenho total" training-product.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "sem transformar diferença em julgamento corporal" evolution-product.js
+          grep -q "não classificam aparência, saúde ou desempenho" segmental-history.js
+          grep -q "nenhuma estimativa, alvo corporal ou score de simetria" segmental-history.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
           grep -q "sem julgamento corporal" today-product.js
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
