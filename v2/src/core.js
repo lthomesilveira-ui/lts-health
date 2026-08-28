@@ -2,7 +2,7 @@ export const CONFIG = Object.freeze({
   url: 'https://plztdqyuqcjohiimudnr.supabase.co',
   key: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI',
   bucket: 'health-inbox',
-  inspectFunction: 'health-inspect-upload-v2'
+  inspectFunction: 'health-inspect-upload'
 });
 
 export const fixtureMode = new URLSearchParams(location.search).has('fixture');
