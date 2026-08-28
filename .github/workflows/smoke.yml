@@ -20,6 +20,7 @@ jobs:
           node --check evolution-product.js
           node --check today-product.js
           node --check nutrition-product.js
+          node --check health-product.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -31,31 +32,15 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          test -f training-product.js
-          test -f training-product.css
-          test -f evolution-product.js
-          test -f evolution-product.css
-          test -f today-product.js
-          test -f today-product.css
-          test -f nutrition-product.js
-          test -f nutrition-product.css
+          for m in training evolution today nutrition health; do test -f "$m-product.js"; test -f "$m-product.css"; grep -q "$m-product.js" config.js; grep -q "$m-product.js" sw.js; done
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "training-product.js" config.js
-          grep -q "evolution-product.js" config.js
-          grep -q "today-product.js" config.js
-          grep -q "nutrition-product.js" config.js
-          grep -q "lts-health-shell-product-v33" sw.js
-          grep -q "training-product.js" sw.js
-          grep -q "evolution-product.js" sw.js
-          grep -q "today-product.js" sw.js
-          grep -q "nutrition-product.js" sw.js
+          grep -q "lts-health-shell-product-v34" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
-          grep -q "Histórico por biomarcador" product.js
           grep -q "Análise longitudinal" product.js
           grep -q "Dados & Inbox" product.js
           grep -q "Exportar backup estruturado" product.js
@@ -74,7 +59,10 @@ jobs:
           grep -q "Cobertura por mês" nutrition-product.js
           grep -q "Refeições recentes" nutrition-product.js
           grep -q "health_nutrition_meals" nutrition-product.js
-          grep -q "Treino + nutrição" nutrition-product.js
+          grep -q "Histórico por biomarcador" health-product.js
+          grep -q "Coleta completa" health-product.js
+          grep -q "Documentos" health-product.js
+          grep -q "Atividade & sono" health-product.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não constituem diagnóstico" product.js
@@ -91,6 +79,9 @@ jobs:
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
           grep -q "descrição, não meta" nutrition-product.js
           grep -q "não prescreve quantidade ou frequência" nutrition-product.js
+          grep -q "não transforma esses campos em diagnóstico" health-product.js
+          grep -q "Metadados de documento não provam" health-product.js
+          grep -q "ausência de série não vira valor zero" health-product.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
