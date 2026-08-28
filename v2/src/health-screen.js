@@ -2,7 +2,9 @@ import {state,esc,fmtDate,fmtNum,num,norm,unique} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
+const unavailable=text=>`<div class="errorState"><b>Esta parte não carregou agora.</b><span>${esc(text)}</span></div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
+const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 
 function collectionKey(row){return `${row.collection_date||''}__${row.laboratory||''}`;}
 function collections(){
@@ -31,7 +33,6 @@ function markerHistory(group){
   else trend='<div class="note">Há um único ponto estruturado para este marcador. Novas coletas permitirão comparação longitudinal.</div>';
   return `<div class="markerHead"><b>${esc(group.label)}</b><small>${rows.length} resultado(s) estruturado(s)</small></div>${trend}<div class="list labHistory">${history}</div>`;
 }
-
 function collectionPanel(collection){
   if(!collection)return empty('Nenhuma coleta laboratorial estruturada.');
   const q=norm(state.ui.labQuery),rows=collection.rows.filter(r=>!q||norm(`${r.biomarker} ${r.result_raw} ${r.unit} ${r.reference_range}`).includes(q)).sort((a,b)=>String(a.biomarker).localeCompare(String(b.biomarker),'pt-BR'));
@@ -39,21 +40,22 @@ function collectionPanel(collection){
 }
 
 export function renderHealthHub(){
-  const labs=state.data.labs||[],docs=[...(state.data.docs||[])].sort((a,b)=>String(b.document_date||'').localeCompare(String(a.document_date||''))),cols=collections(),groups=biomarkerGroups(),q=norm(state.ui.labQuery);
+  const labFailed=failed('labs'),docsFailed=failed('docs'),labs=state.data.labs||[],docs=[...(state.data.docs||[])].sort((a,b)=>String(b.document_date||'').localeCompare(String(a.document_date||''))),cols=collections(),groups=biomarkerGroups(),q=norm(state.ui.labQuery);
   if(!state.ui.selectedCollection||!cols.some(c=>c.key===state.ui.selectedCollection))state.ui.selectedCollection=cols[0]?.key||null;
   if(!state.ui.selectedBiomarker||!groups.some(g=>g.key===state.ui.selectedBiomarker))state.ui.selectedBiomarker=groups[0]?.key||null;
   const collection=cols.find(c=>c.key===state.ui.selectedCollection),filteredGroups=groups.filter(g=>!q||norm(g.label).includes(q)),marker=groups.find(g=>g.key===state.ui.selectedBiomarker);
   return `${title('Saúde & exames','Resultados laboratoriais e documentos organizados por coleta e marcador.')}
+    ${labFailed?unavailable('Os exames continuam preservados; tente atualizar para carregar os resultados.') : ''}
     <div class="grid cols4">
-      <div class="card metric"><span>Coletas</span><strong>${cols.length}</strong><em>datas e laboratórios estruturados</em></div>
-      <div class="card metric"><span>Resultados</span><strong>${labs.length}</strong><em>marcadores estruturados</em></div>
-      <div class="card metric"><span>Marcadores</span><strong>${groups.length}</strong><em>nomes distintos</em></div>
-      <div class="card metric"><span>Documentos</span><strong>${docs.length}</strong><em>metadados preservados</em></div>
+      <div class="card metric"><span>Coletas</span><strong>${labFailed?'—':cols.length}</strong><em>${labFailed?'não carregado':'datas e laboratórios estruturados'}</em></div>
+      <div class="card metric"><span>Resultados</span><strong>${labFailed?'—':labs.length}</strong><em>${labFailed?'não carregado':'marcadores estruturados'}</em></div>
+      <div class="card metric"><span>Marcadores</span><strong>${labFailed?'—':groups.length}</strong><em>${labFailed?'não carregado':'nomes distintos'}</em></div>
+      <div class="card metric"><span>Documentos</span><strong>${docsFailed?'—':docs.length}</strong><em>${docsFailed?'não carregado':'metadados preservados'}</em></div>
     </div>
     <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Coleta</b><small>Escolha uma coleta para ver os resultados disponíveis.</small></div><select id="collectionSelect">${cols.map(c=>`<option value="${esc(c.key)}">${fmtDate(c.date)} · ${esc(c.lab)}</option>`).join('')}</select></div><input id="labQuery" class="fullInput" type="search" placeholder="Buscar marcador ou resultado" value="${esc(state.ui.labQuery)}">${collectionPanel(collection)}</div>
-      <div class="card"><div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando os valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div></div>
+      <div class="card">${labFailed?unavailable('Não é possível listar coletas enquanto os resultados estão indisponíveis.'):`<div class="cardHead"><div><b>Coleta</b><small>Escolha uma coleta para ver os resultados disponíveis.</small></div><select id="collectionSelect">${cols.map(c=>`<option value="${esc(c.key)}">${fmtDate(c.date)} · ${esc(c.lab)}</option>`).join('')}</select></div><input id="labQuery" class="fullInput" type="search" placeholder="Buscar marcador ou resultado" value="${esc(state.ui.labQuery)}">${collectionPanel(collection)}`}</div>
+      <div class="card">${labFailed?unavailable('O histórico por marcador ficará disponível após o carregamento dos exames.'):`<div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando os valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div>`}</div>
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Documentos</b><small>Esta lista mostra metadados do histórico. Um item aqui não significa, por si só, que o arquivo original esteja disponível para abrir.</small></div>${pill(`${docs.length}`)}</div><div class="documentGrid">${docs.slice(0,80).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div></article>`).join('')||empty('Nenhum documento registrado.')}</div></div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Documentos</b><small>Esta lista mostra metadados do histórico. Um item aqui não significa, por si só, que o arquivo original esteja disponível para abrir.</small></div>${!docsFailed?pill(`${docs.length}`):''}</div>${docsFailed?unavailable('Os documentos não carregaram agora.'):`<div class="documentGrid">${docs.slice(0,80).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div></article>`).join('')||empty('Nenhum documento registrado.')}</div>`}</div>
     <p class="footerNote">A tela organiza os resultados registrados; interpretação clínica e decisões de tratamento devem considerar o contexto médico completo.</p>`;
 }
