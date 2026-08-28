@@ -28,6 +28,7 @@ const LTS_HEALTH_MODULES = [
   ['nutrition-product','./nutrition-product.css','./nutrition-product.js'],
   ['health-product','./health-product.css','./health-product.js'],
   ['health-longitudinal','./health-longitudinal.css','./health-longitudinal.js'],
+  ['health-evidence-bundles','./health-evidence-bundles.css','./health-evidence-bundles.js'],
   ['nutrition-analytics','./nutrition-analytics.css','./nutrition-analytics.js'],
   ['inbox-operations','./inbox-operations.css','./inbox-operations.js'],
   ['insights-evidence','./insights-evidence.css','./insights-evidence.js'],
