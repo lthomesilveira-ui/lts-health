@@ -93,6 +93,8 @@ async function run(viewport,label){
   await page.waitForSelector('#uploadForm');
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
   if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
+  const dataText=(await page.textContent('#screenHost'))||'';
+  if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('Documento preservado')) throw new Error(`${label}: import capability labels missing`);
   await page.click('[data-source-upload="apple_health"]');
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
 
@@ -156,5 +158,8 @@ await runFailureState('nutrition','hoje','Hoje',async(_page,text)=>{
 });
 await runFailureState('metrics','hoje','Hoje',async(_page,text)=>{
   if(!text.includes('Sono')||!text.includes('Indisponível agora')||text.includes('Ainda sem dado importado')) throw new Error('Today metrics failure rendered as no imported data');
+});
+await runFailureState('previews','dados','Dados',async(_page,text)=>{
+  if(!text.includes('detalhes do processamento estão indisponíveis agora')) throw new Error('import preview failure is not explicit to the user');
 });
 console.log('LTS Health v2 browser smoke passed');
