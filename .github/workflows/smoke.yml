@@ -16,6 +16,7 @@ jobs:
           node --check app-v8.js
           for n in 11 12 13 14 15 16; do node --check "app-v${n}.js"; done
           node --check product.js
+          node --check training-product.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -27,25 +28,32 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
+          test -f training-product.js
+          test -f training-product.css
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v29" sw.js
-          grep -q "product.js" sw.js
+          grep -q "training-product.js" config.js
+          grep -q "training-product.css" config.js
+          grep -q "lts-health-shell-product-v30" sw.js
+          grep -q "training-product.js" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
           grep -q "Evolução corporal" product.js
           grep -q "Comparar duas medições" product.js
-          grep -q "Volume registrado por grupo" product.js
-          grep -q "Evolução por exercício" product.js
           grep -q "Histórico por biomarcador" product.js
           grep -q "Cobertura por mês" product.js
           grep -q "Análise longitudinal" product.js
           grep -q "Dados & Inbox" product.js
           grep -q "Exportar backup estruturado" product.js
           grep -q "Buscar no histórico" product.js
+          grep -q "Fonte incompleta preservada" training-product.js
+          grep -q "reps_raw" training-product.js
+          grep -q "registro parcial" training-product.js
+          grep -q "Séries por grupo" training-product.js
+          grep -q "Evolução por exercício" training-product.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não classificam aparência" product.js
@@ -54,6 +62,8 @@ jobs:
           grep -q "sem evidência" product.js
           grep -q "Passos e frequência cardíaca de repouso ainda não são consolidados automaticamente" product.js
           grep -q "Arquivos binários privados do Inbox não estão embutidos" product.js
+          grep -q "não meta de frequência" training-product.js
+          grep -q "unidades permanecem separadas" training-product.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
