@@ -97,6 +97,8 @@ async function run(viewport,label){
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
 
   await openMoreRoute(page,nav,'tratamentos','Tratamentos',`${label}/tratamentos`);
+  const treatmentText=await page.textContent('#screenHost');
+  if(!treatmentText.includes('Histórico')||treatmentText.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i)) throw new Error(`${label}: treatment history screen exposed operational guidance`);
   if(errors.length) throw new Error(`${label}: page errors: ${errors.join(' | ')}`);
   await browser.close();
 }
@@ -148,5 +150,11 @@ await runFailureState('meals','nutricao','Nutrição',async(page,text)=>{
   await page.click('[data-nutrition-date="2026-02-02"]');
   const updated=(await page.textContent('#screenHost'))||'';
   if(!updated.includes('detalhes indisponíveis agora')||updated.includes('0 item(ns)')) throw new Error('meal failure rendered as empty instead of unavailable');
+});
+await runFailureState('nutrition','hoje','Hoje',async(_page,text)=>{
+  if(!text.includes('Alimentação hoje')||!text.includes('Indisponível agora')||text.includes('Sem registro para hoje')) throw new Error('Today nutrition failure rendered as missing data');
+});
+await runFailureState('metrics','hoje','Hoje',async(_page,text)=>{
+  if(!text.includes('Sono')||!text.includes('Indisponível agora')||text.includes('Ainda sem dado importado')) throw new Error('Today metrics failure rendered as no imported data');
 });
 console.log('LTS Health v2 browser smoke passed');
