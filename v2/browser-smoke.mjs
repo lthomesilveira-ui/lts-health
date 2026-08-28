@@ -30,6 +30,8 @@ async function run(viewport,label){
 
   await page.click(`${nav} [data-route="treinos"]`);
   await assertScreen(page,'Treinos',`${label}/treinos`);
+  await page.selectOption('#trainingPeriod','all');
+  await page.waitForSelector('[data-workout="workout-2"]');
   await page.click('[data-workout="workout-2"]');
   await page.waitForSelector('.session.open .sessionBody');
   const trainingText=await page.textContent('#screenHost');
