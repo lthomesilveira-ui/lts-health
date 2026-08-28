@@ -29,7 +29,8 @@ const LTS_HEALTH_MODULES = [
   ['health-longitudinal','./health-longitudinal.css','./health-longitudinal.js'],
   ['nutrition-analytics','./nutrition-analytics.css','./nutrition-analytics.js'],
   ['inbox-operations','./inbox-operations.css','./inbox-operations.js'],
-  ['insights-evidence','./insights-evidence.css','./insights-evidence.js']
+  ['insights-evidence','./insights-evidence.css','./insights-evidence.js'],
+  ['search-product','./search-product.css','./search-product.js']
 ];
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
