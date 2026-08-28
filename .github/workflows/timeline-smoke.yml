@@ -1,0 +1,42 @@
+name: LTS Health Timeline Smoke
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  timeline-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Timeline JavaScript syntax
+        run: node --check timeline-product.js
+      - name: Timeline product wiring
+        run: |
+          test -f timeline-product.js
+          test -f timeline-product.css
+          grep -q "timeline-product.js" config.js
+          grep -q "timeline-product.css" config.js
+          grep -q "timeline-product.js" sw.js
+          grep -q "timeline-product.css" sw.js
+          grep -q "lts-health-shell-product-v43" sw.js
+      - name: Timeline functional contract
+        run: |
+          grep -q "LINHA DO TEMPO LONGITUDINAL" timeline-product.js
+          grep -q "health_activity_records" timeline-product.js
+          grep -q "Dias com evidência" timeline-product.js
+          grep -q "Mostrar mais" timeline-product.js
+          grep -q "Todos os domínios" timeline-product.js
+      - name: Timeline provenance guardrails
+        run: |
+          grep -q "Ausência de evento significa ausência de registro, não valor zero" timeline-product.js
+          grep -q "não reconstrói automaticamente dias sem dados" timeline-product.js
+          grep -q "não converte associação temporal em causalidade" timeline-product.js
+      - name: Dedicated backend isolation
+        run: |
+          grep -q "plztdqyuqcjohiimudnr" config.js
+          ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude='*.yml' --include='*.js' --include='*.html' --include='*.css' .
+      - name: No private health payloads
+        run: |
+          ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
