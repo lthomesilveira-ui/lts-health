@@ -22,13 +22,13 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep evolution-product segmental-history today-product today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations insights-evidence search-product; do
+          for m in training-product training-progression-deep evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations insights-evidence search-product; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v49" sw.js
+          grep -q "lts-health-shell-product-v50" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -42,6 +42,9 @@ jobs:
           grep -q "A − B" segmental-history.js
           grep -q "não interpreta a direção da mudança como melhor ou pior" segmental-history.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
+          grep -q "sem registro hoje" today-current.js
+          grep -q "não são somados aqui" today-current.js
+          grep -q "não readiness, recovery, meta ou avaliação de saúde" today-current.js
           grep -q "É cobertura de evidência, não meta" today-evidence.js
           grep -q "Não demonstra causa, efeito, recuperação ou prontidão" today-evidence.js
           grep -q "não reconstrói automaticamente dias sem dados" timeline-product.js
