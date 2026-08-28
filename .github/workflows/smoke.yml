@@ -22,13 +22,13 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit canonical-status ux-cleanup today-hero-polish; do
+          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit canonical-status ux-cleanup today-hero-polish runtime-stability; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v61" sw.js
+          grep -q "lts-health-shell-product-v62" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -75,6 +75,12 @@ jobs:
           grep -q "Não é readiness/recovery de saúde" canonical-status.js
           grep -q "source_record_id" canonical-status.js
           grep -q "Quando um dado não existe, ele permanece em branco" today-hero-polish.js
+      - name: Runtime stability contract
+        run: |
+          grep -q "carregamento lento" runtime-stability.js
+          grep -q "Tentar novamente" runtime-stability.js
+          grep -q "Os dados existentes não serão substituídos por valores vazios" runtime-stability.js
+          ! grep -q "MutationObserver" runtime-stability.js
       - name: Claude parity contract
         run: |
           grep -q "Última bio" claude-parity.js
