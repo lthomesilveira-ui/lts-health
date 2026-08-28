@@ -25,7 +25,7 @@
   <div id="app" class="app hidden">
     <header class="topbar">
       <div class="brand"><div class="brandMark small">L</div><div><b>LTS Health</b><span>Seu histórico de saúde em um só lugar</span></div></div>
-      <div class="topActions"><span id="syncText">carregando…</span><button id="refreshBtn">Atualizar</button><button id="logoutBtn">Sair</button></div>
+      <div class="topActions"><span id="syncText">carregando…</span><button id="routeAction" class="primary hidden"></button><button id="refreshBtn">Atualizar</button><button id="logoutBtn">Sair</button></div>
     </header>
 
     <nav id="primaryNav" class="primaryNav" aria-label="Navegação principal">
@@ -59,6 +59,13 @@
         <button data-route="dados">Dados</button>
         <button data-route="tratamentos">Tratamentos</button>
       </div>
+    </div>
+  </div>
+
+  <div id="entryModal" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Registrar informação">
+    <div class="entryPanel">
+      <div class="sheetHead"><b id="entryTitle">Registrar</b><button id="closeEntry" aria-label="Fechar">×</button></div>
+      <div id="entryHost"></div>
     </div>
   </div>
 
