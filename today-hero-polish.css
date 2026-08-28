@@ -1,0 +1,53 @@
+/* Focused visual cleanup for the Today hero. Keeps the consolidated product shell. */
+.claudeCockpit .productHeroMain{
+  min-height:0;
+  padding:19px 20px;
+  background:#0e1118;
+  border:1px solid #223047;
+  border-left:3px solid #00d4ff;
+  border-radius:16px;
+  box-shadow:none;
+}
+.claudeCockpit .productHeroMain:after{display:none}
+.claudeCockpit .productHeroMain .productKicker{
+  color:#00d4ff;
+  font-size:9px;
+  letter-spacing:.11em;
+}
+.claudeCockpit .productHeroMain h1{
+  margin:7px 0 6px;
+  font-size:24px;
+  line-height:1.12;
+  letter-spacing:-.35px;
+}
+.claudeCockpit .productHeroMain p{
+  max-width:680px;
+  color:#9aabba;
+  font-size:11px;
+  line-height:1.5;
+}
+.claudeCockpit .productHeroStats{
+  margin-top:14px;
+  gap:7px;
+}
+.claudeCockpit .productHeroStat{
+  padding:9px 10px;
+  border-radius:10px;
+  background:#141820!important;
+  border:1px solid #222b3a!important;
+}
+.claudeCockpit .productHeroStat span{
+  color:#718198;
+  font-size:8px;
+  letter-spacing:.04em;
+}
+.claudeCockpit .productHeroStat strong{
+  margin-top:4px;
+  font-size:16px;
+  color:#e2e8f0;
+}
+@media(max-width:720px){
+  .claudeCockpit .productHeroMain{padding:16px;border-radius:14px}
+  .claudeCockpit .productHeroMain h1{font-size:21px}
+  .claudeCockpit .productHeroStats{grid-template-columns:1fr 1fr}
+}
