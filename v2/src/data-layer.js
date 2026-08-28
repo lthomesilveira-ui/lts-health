@@ -1,4 +1,4 @@
-import {sb,state,fixtureMode,fixtureData} from './core.js';
+import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
 
 const initialKeys=['body','segmental','workouts','exercises','sets','labs','docs','treatments','uploads','quality'];
 const routeDomains={
@@ -40,6 +40,11 @@ const loaders={
 function setFixture(){
   state.data=fixtureData();state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
+  if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
+    state.data[fixtureError]=[];
+    state.errors[fixtureError]='Falha simulada de carregamento.';
+    state.domainStatus[fixtureError]='error';
+  }
   state.loaded=true;state.loading=false;
 }
 
@@ -59,7 +64,7 @@ async function loadKey(key,force=false){
 
 export async function loadInitialData(onProgress=()=>{}){
   state.loading=true;state.errors={};onProgress('Atualizando…');
-  if(fixtureMode){setFixture();onProgress('Atualizado');return;}
+  if(fixtureMode){setFixture();onProgress(fixtureError?'Alguns dados não carregaram':'Atualizado');return;}
   await Promise.all(initialKeys.map(k=>loadKey(k,true)));
   state.loaded=true;state.loading=false;
   onProgress(initialKeys.some(k=>state.domainStatus[k]==='error')?'Alguns dados não carregaram':'Atualizado');
@@ -79,6 +84,6 @@ export async function ensureRouteData(route,onProgress=()=>{}){
 }
 
 export async function refreshData(route,onProgress=()=>{}){
-  if(fixtureMode){setFixture();onProgress('Atualizado');return;}
+  if(fixtureMode){setFixture();onProgress(fixtureError?'Alguns dados não carregaram':'Atualizado');return;}
   state.domainStatus={};state.data={};state.errors={};await loadInitialData(onProgress);await ensureRouteData(route,onProgress);
 }
