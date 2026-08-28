@@ -149,7 +149,7 @@ await runFailureState('meals','nutricao','Nutrição',async(page,text)=>{
   await page.selectOption('#nutritionPeriod','all');
   await page.click('[data-nutrition-date="2026-02-02"]');
   const updated=(await page.textContent('#screenHost'))||'';
-  if(!updated.includes('detalhes indisponíveis agora')||updated.includes('0 item(ns)')) throw new Error('meal failure rendered as empty instead of unavailable');
+  if(!updated.includes('refeições estão indisponíveis agora')||updated.includes('0 item(ns)')) throw new Error('meal failure rendered as empty instead of unavailable');
 });
 await runFailureState('nutrition','hoje','Hoje',async(_page,text)=>{
   if(!text.includes('Alimentação hoje')||!text.includes('Indisponível agora')||text.includes('Sem registro para hoje')) throw new Error('Today nutrition failure rendered as missing data');
