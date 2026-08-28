@@ -1,4 +1,5 @@
-import {state,routes,loadData,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
+import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
+import {loadInitialData,ensureRouteData,isRouteReady,refreshData} from './data-layer.js';
 import {screenRenderers} from './screens.js';
 import {openEntry,setupEntryController} from './entry.js';
 
@@ -17,10 +18,7 @@ function showLogin(message=''){
   $('loginMsg').textContent=message;
 }
 
-function showApp(){
-  $('login').classList.add('hidden');
-  $('app').classList.remove('hidden');
-}
+function showApp(){ $('login').classList.add('hidden'); $('app').classList.remove('hidden'); }
 
 function syncNav(){
   document.querySelectorAll('[data-route]').forEach(b=>{
@@ -34,18 +32,15 @@ function syncNav(){
 }
 
 function setRoute(route,{replace=true}={}){
-  if(route==='mais'){
-    $('moreSheet').classList.remove('hidden');
-    return;
-  }
+  if(route==='mais'){ $('moreSheet').classList.remove('hidden'); return; }
   if(!routes.has(route)) route='bio';
   state.route=route;
   $('moreSheet').classList.add('hidden');
   try{ localStorage.setItem('lts-health-v2-route',route); }catch{}
   const url=`#${route}`;
   if(replace) history.replaceState(null,'',url); else history.pushState(null,'',url);
-  syncNav();
-  scheduleRender();
+  syncNav();scheduleRender();
+  if(state.loaded) ensureRouteData(route,setSync).then(scheduleRender);
   requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'auto'}));
 }
 
@@ -56,8 +51,8 @@ function routeFromLocation(){
   return 'bio';
 }
 
-function loadingView(){
-  return '<div class="loadingState"><div class="spinner"></div><b>Carregando seus dados</b><span>Isso pode levar alguns segundos na primeira abertura.</span></div>';
+function loadingView(text='Carregando seus dados'){
+  return `<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;
 }
 
 function render(){
@@ -65,21 +60,17 @@ function render(){
   if(!$('app')||$('app').classList.contains('hidden')) return;
   const host=$('screenHost');
   if(!state.loaded){ host.innerHTML=loadingView(); syncNav(); return; }
+  if(!isRouteReady(state.route)){ host.innerHTML=loadingView('Carregando esta área'); syncNav(); return; }
   const renderer=screenRenderers[state.route]||screenRenderers.bio;
   try{ host.innerHTML=renderer(); }
   catch(error){
     console.error(error);
     host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';
   }
-  applyControlState();
-  syncNav();
+  applyControlState();syncNav();
 }
 
-function scheduleRender(){
-  if(renderQueued) return;
-  renderQueued=true;
-  requestAnimationFrame(render);
-}
+function scheduleRender(){ if(renderQueued) return; renderQueued=true; requestAnimationFrame(render); }
 
 function applyControlState(){
   const values={trainingPeriod:state.ui.trainingPeriod,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
@@ -88,22 +79,17 @@ function applyControlState(){
 
 async function refresh(){
   if(state.loading) return;
-  setSync('Atualizando…');
-  scheduleRender();
-  await loadData(setSync);
-  scheduleRender();
+  setSync('Atualizando…');scheduleRender();
+  await refreshData(state.route,setSync);scheduleRender();
 }
 
 async function doLogin(){
   const email=$('email').value.trim(),password=$('password').value;
   $('loginMsg').textContent='Entrando…';
   try{
-    await signIn(email,password);
-    $('loginMsg').textContent='';
-    showApp();
-    setRoute(routeFromLocation());
-    await refresh();
-  }catch(error){ $('loginMsg').textContent='Não foi possível entrar. Confira e tente novamente.'; }
+    await signIn(email,password);$('loginMsg').textContent='';showApp();setRoute(routeFromLocation());
+    await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();
+  }catch(error){ console.error(error);$('loginMsg').textContent='Não foi possível entrar. Confira e tente novamente.'; }
 }
 
 function bindStaticEvents(){
@@ -142,45 +128,34 @@ function bindStaticEvents(){
     if(event.target.id!=='uploadForm') return;
     event.preventDefault();
     const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',msg=$('uploadMsg'),button=event.target.querySelector('button[type="submit"]');
-    if(msg) msg.textContent='Enviando…';
-    if(button) button.disabled=true;
-    try{
-      await uploadFile(file,type);
-      if(msg) msg.textContent='Arquivo recebido. O processamento foi iniciado.';
-      await refresh();
-    }catch(error){
-      console.error(error);
-      if(msg) msg.textContent='Não foi possível enviar este arquivo agora.';
-    }finally{ if(button) button.disabled=false; }
+    if(msg) msg.textContent='Enviando…';if(button) button.disabled=true;
+    try{ await uploadFile(file,type);if(msg) msg.textContent='Arquivo recebido. O processamento foi iniciado.';await refresh(); }
+    catch(error){ console.error(error);if(msg) msg.textContent='Não foi possível enviar este arquivo agora.'; }
+    finally{ if(button) button.disabled=false; }
   });
 
   $('loginBtn').addEventListener('click',doLogin);
   $('password').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
   $('refreshBtn').addEventListener('click',refresh);
-  $('logoutBtn').addEventListener('click',async()=>{ await signOut(); state.loaded=false; state.data={}; showLogin(); });
+  $('logoutBtn').addEventListener('click',async()=>{ await signOut();state.loaded=false;state.data={};state.domainStatus={};showLogin(); });
   $('closeMore').addEventListener('click',()=>$('moreSheet').classList.add('hidden'));
   $('moreSheet').addEventListener('click',e=>{ if(e.target===$('moreSheet')) $('moreSheet').classList.add('hidden'); });
   window.addEventListener('popstate',()=>setRoute(routeFromLocation()));
-  window.addEventListener('hashchange',()=>{ const route=routeFromLocation(); if(route!==state.route) setRoute(route); });
+  window.addEventListener('hashchange',()=>{ const route=routeFromLocation();if(route!==state.route) setRoute(route); });
   window.addEventListener('online',()=>setSync(state.loaded?'Online':'Conectado'));
   window.addEventListener('offline',()=>setSync('Sem conexão'));
 }
 
 async function boot(){
-  bindStaticEvents();
-  setupEntryController({onSaved:refresh});
-  state.route=routeFromLocation();
+  bindStaticEvents();setupEntryController({onSaved:refresh});state.route=routeFromLocation();
   try{
     const session=await restoreSession();
     if(!session){ showLogin(); }
-    else{ showApp(); setRoute(state.route); await refresh(); }
-  }catch(error){
-    console.error(error);
-    showLogin('Não foi possível restaurar sua sessão.');
-  }
+    else{ showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender(); }
+  }catch(error){ console.error(error);showLogin('Não foi possível restaurar sua sessão.'); }
   authSubscription=subscribeAuth(session=>{
     state.session=session;
-    if(!session){ state.loaded=false; state.data={}; showLogin(); }
+    if(!session){ state.loaded=false;state.data={};state.domainStatus={};showLogin(); }
   });
 }
 
