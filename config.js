@@ -24,6 +24,7 @@ const LTS_HEALTH_MODULES = [
   ['today-product','./today-product.css','./today-product.js'],
   ['nutrition-product','./nutrition-product.css','./nutrition-product.js'],
   ['health-product','./health-product.css','./health-product.js'],
+  ['health-longitudinal','./health-longitudinal.css','./health-longitudinal.js'],
   ['nutrition-analytics','./nutrition-analytics.css','./nutrition-analytics.js']
 ];
 for (const [name, css] of LTS_HEALTH_MODULES) {
