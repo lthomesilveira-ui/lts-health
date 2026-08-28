@@ -38,7 +38,7 @@
   function deltaText(current,previous){const a=n(current),b=n(previous);if(a==null||b==null)return{main:'—',small:'comparação indisponível',tone:''};const d=a-b;return{main:`${d>0?'+':''}${fmtNum(d,1)}`,small:'diferença entre janelas registradas',tone:d>0?'up':d<0?'down':''}}
   function renderChanges(){
     const w=state.canonicalWorkouts||[],nut=(state.mfp?.trendNutrition?.length?state.mfp.trendNutrition:state.nutrition)||[],body=[...(state.body||[])].sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at))),labs=state.labs||[],quality=state.quality||[];
-    const cur14=d=>day(d)>=cut(14),prev14=range(15,28);
+    const cur14=d=>day(d)>=cut(14),prev14=range(14,28);
     const wNow=w.filter(x=>cur14(x.workout_date)).length,wPrev=w.filter(x=>prev14(x.workout_date)).length;
     const nNow=unique(nut.filter(x=>cur14(x.nutrition_date)).map(x=>day(x.nutrition_date))).length,nPrev=unique(nut.filter(x=>prev14(x.nutrition_date)).map(x=>day(x.nutrition_date))).length;
     const wd=deltaText(wNow,wPrev),nd=deltaText(nNow,nPrev),latest=body[0],previous=body[1];
