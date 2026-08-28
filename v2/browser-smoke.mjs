@@ -8,6 +8,8 @@ async function assertScreen(page,title,label){
   const text=(await page.textContent('#screenHost'))||'';
   if(text.trim().length<20) throw new Error(`${label}: screen unexpectedly empty`);
   if(text.match(forbidden)) throw new Error(`${label}: implementation jargon visible`);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  if(overflow>3) throw new Error(`${label}: horizontal overflow ${overflow}px`);
 }
 
 async function run(viewport,label){
@@ -15,7 +17,7 @@ async function run(viewport,label){
   const page=await browser.newPage({viewport});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  page.on('console',msg=>{if(msg.type()==='error') errors.push(msg.text())});
+  page.on('console',msg=>{if(msg.type()==='error')errors.push(msg.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await assertScreen(page,'Bio',`${label}/bio`);
@@ -59,12 +61,23 @@ async function run(viewport,label){
     await page.waitForSelector('#moreSheet:not(.hidden)');
     await page.click(`#moreSheet [data-route="${route}"]`);
     await assertScreen(page,screenTitle,`${label}/${route}`);
+    if(route!=='tratamentos') await page.waitForFunction(n=>document.querySelectorAll(`${n} [data-route="mais"].active`).length===1,nav);
   }
+
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.click('#moreSheet [data-route="timeline"]');
+  await assertScreen(page,'Timeline',`${label}/timeline-expanded`);
+  const timelineText=await page.textContent('#screenHost');
+  if(!timelineText.includes('Caminhada')||!timelineText.includes('Sono')) throw new Error(`${label}: activity/sleep timeline events missing`);
 
   await page.click(`${nav} [data-route="mais"]`);
   await page.click('#moreSheet [data-route="dados"]');
   await page.waitForSelector('#uploadForm');
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
+  if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
+  await page.click('[data-source-upload="apple_health"]');
+  if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
+
   if(errors.length) throw new Error(`${label}: page errors: ${errors.join(' | ')}`);
   await browser.close();
 }
