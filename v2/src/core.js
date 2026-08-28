@@ -2,10 +2,11 @@ export const CONFIG = Object.freeze({
   url: 'https://plztdqyuqcjohiimudnr.supabase.co',
   key: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI',
   bucket: 'health-inbox',
-  inspectFunction: 'health-inspect-upload'
+  inspectFunction: 'health-inspect-upload-v2'
 });
 
 export const fixtureMode = new URLSearchParams(location.search).has('fixture');
+export const fixtureError = new URLSearchParams(location.search).get('fixtureError')||'';
 export const sb = fixtureMode ? null : window.supabase.createClient(CONFIG.url, CONFIG.key, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
