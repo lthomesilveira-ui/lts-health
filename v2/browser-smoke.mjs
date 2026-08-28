@@ -82,6 +82,24 @@ async function run(viewport,label){
   await browser.close();
 }
 
+async function runPartialTraining(viewport,label){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport});
+  await page.goto(`${base}&fixtureError=sets#treinos`,{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('#app:not(.hidden)');
+  await assertScreen(page,'Treinos',`${label}/partial-training`);
+  const seriesMetric=await page.locator('.metric').filter({hasText:'Séries'}).first().textContent();
+  if(!seriesMetric?.includes('—')||!seriesMetric?.includes('não carregado')) throw new Error(`${label}: failed sets were rendered as a numeric zero`);
+  await page.click('[data-workout="workout-2"]');
+  const sessionText=await page.locator('.session.open').textContent();
+  if(!sessionText?.includes('séries indisponíveis')||!sessionText?.includes('Detalhes das séries indisponíveis agora')) throw new Error(`${label}: session hides partial set loading failure`);
+  const full=(await page.textContent('#screenHost'))||'';
+  if(full.match(/Séries\s*0\b/i)) throw new Error(`${label}: contradictory zero-count series state visible`);
+  await browser.close();
+}
+
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
+await runPartialTraining({width:1280,height:900},'desktop');
+await runPartialTraining({width:390,height:844},'mobile');
 console.log('LTS Health v2 browser smoke passed');
