@@ -24,6 +24,7 @@ jobs:
           node --check app-v18.js
           node --check app-v19.js
           node --check app-v20.js
+          node --check app-v21.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -33,18 +34,20 @@ jobs:
           ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude=smoke.yml --include='*.js' --include='*.html' --include='*.css' --include='*.md' .
       - name: Product layer references
         run: |
-          for n in 10 11 12 13 14 15 16 17 18 19 20; do test -f "v${n}.css"; done
-          for n in 11 12 13 14 15 16 17 18 19 20; do test -f "app-v${n}.js"; done
+          for n in 10 11 12 13 14 15 16 17 18 19 20 21; do test -f "v${n}.css"; done
+          for n in 11 12 13 14 15 16 17 18 19 20 21; do test -f "app-v${n}.js"; done
           test -f manifest.webmanifest
           test -f sw.js
           grep -q "v17.css" config.js
           grep -q "v18.css" config.js
           grep -q "v19.css" config.js
           grep -q "v20.css" config.js
+          grep -q "v21.css" config.js
           grep -q "app-v17.js" config.js
           grep -q "app-v18.js" config.js
           grep -q "app-v19.js" config.js
           grep -q "app-v20.js" config.js
+          grep -q "app-v21.js" config.js
           ! grep -q "app-v11.js" config.js
           ! grep -q "app-v12.js" config.js
           ! grep -q "app-v13.js" config.js
@@ -70,6 +73,9 @@ jobs:
           grep -q "Exportar backup estruturado" app-v20.js
           grep -q "event_date,medication,event_type,source,confidence" app-v20.js
           grep -q "não inclui os bytes originais" app-v20.js
+          grep -q "Laboratório de evidência cruzada" app-v21.js
+          grep -q "não certeza clínica" app-v21.js
+          grep -q "Não implica efeito ou causalidade" app-v21.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
