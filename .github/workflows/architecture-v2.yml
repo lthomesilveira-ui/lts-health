@@ -15,6 +15,7 @@ jobs:
           node --check v2/src/core.js
           node --check v2/src/data-layer.js
           node --check v2/src/screens.js
+          node --check v2/src/bio-screen.js
           node --check v2/src/training-screen.js
           node --check v2/src/evolution-screen.js
           node --check v2/src/analysis-screen.js
@@ -45,12 +46,14 @@ jobs:
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
           ! grep -q "inspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
+          grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
           grep -q "renderAnalysisHub" v2/src/main.js
           grep -q "renderHealthHub" v2/src/main.js
           grep -q "renderNutritionHub" v2/src/main.js
           grep -q "renderTodayHub" v2/src/main.js
+          grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
           grep -q "health_log_structured_workout" v2/src/writes.js
           grep -q 'ensureRouteData' v2/src/data-layer.js
