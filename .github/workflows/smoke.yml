@@ -28,7 +28,7 @@ jobs:
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v46" sw.js
+          grep -q "lts-health-shell-product-v47" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -48,7 +48,11 @@ jobs:
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
           grep -q "não demonstra causa" nutrition-analytics.js
           grep -q "não transforma esses campos em diagnóstico" health-product.js
-          grep -q "não substituem referência laboratorial" health-longitudinal.js
+          grep -q "A · coleta" health-longitudinal.js
+          grep -q "B · referência" health-longitudinal.js
+          grep -q "A − B mostra somente" health-longitudinal.js
+          grep -q "unidades diferentes" health-longitudinal.js
+          grep -q "não substitui referência laboratorial" health-longitudinal.js
           grep -q "nada é preenchido por estimativa" inbox-operations.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
           grep -q "proveniência continua preservada" search-product.js
