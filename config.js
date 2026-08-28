@@ -33,7 +33,8 @@ const LTS_HEALTH_MODULES = [
   ['nutrition-analytics','./nutrition-analytics.css','./nutrition-analytics.js'],
   ['inbox-operations','./inbox-operations.css','./inbox-operations.js'],
   ['insights-evidence','./insights-evidence.css','./insights-evidence.js'],
-  ['search-product','./search-product.css','./search-product.js']
+  ['search-product','./search-product.css','./search-product.js'],
+  ['claude-parity','./claude-parity.css','./claude-parity.js']
 ];
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
