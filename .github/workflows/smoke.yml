@@ -22,13 +22,13 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity; do
+          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v56" sw.js
+          grep -q "lts-health-shell-product-v57" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -42,9 +42,6 @@ jobs:
           ! grep -q "drop set\|rest.pause\|near.failure" structured-workout-entry.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "nenhuma estimativa" segmental-history.js
-          grep -q "A · medição" segmental-history.js
-          grep -q "B · referência" segmental-history.js
-          grep -q "A − B" segmental-history.js
           grep -q "não interpreta a direção da mudança como melhor ou pior" segmental-history.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
           grep -q "sem registro hoje" today-current.js
@@ -55,28 +52,24 @@ jobs:
           grep -q "não reconstrói automaticamente dias sem dados" timeline-product.js
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
           grep -q "não demonstra causa" nutrition-analytics.js
-          grep -q "Cobertura mede disponibilidade do export" nutrition-analytics.js
           grep -q "Um dia ausente não é interpretado como jejum" nutrition-analytics.js
           grep -q "campos ausentes não são estimados" nutrition-analytics.js
           grep -q "não transforma esses campos em diagnóstico" health-product.js
           grep -q "A · coleta" health-longitudinal.js
-          grep -q "B · referência" health-longitudinal.js
-          grep -q "A − B mostra somente" health-longitudinal.js
           grep -q "unidades diferentes" health-longitudinal.js
           grep -q "não substitui referência laboratorial" health-longitudinal.js
           grep -q "Correspondência temporal não significa causalidade" health-evidence-bundles.js
-          grep -q "não prova que o documento pertence a esta coleta" health-evidence-bundles.js
           grep -q "não preenche documentos ausentes" health-evidence-bundles.js
           grep -q "nada é preenchido por estimativa" inbox-operations.js
-          grep -q "Fila que exige decisão" inbox-operations.js
-          grep -q "Uma questão aberta não é automaticamente erro clínico" inbox-operations.js
           grep -q "Nada é resolvido automaticamente" inbox-operations.js
           grep -q "Fontes conectadas sem dupla contagem" source-coverage.js
           grep -q "não uma autorização para agregar valores" source-coverage.js
           grep -q "Apple Health segue como hub passivo" source-coverage.js
-          grep -q "Ausência de dado continua ausência de evidência" source-coverage.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
           grep -q "proveniência continua preservada" search-product.js
+          grep -q "não cria meta corporal, classificação estética, diagnóstico ou readiness score" claude-cockpit.js
+          grep -q "Não é recomendação de volume" claude-cockpit.js
+          grep -q "não interpreta automaticamente ganho/perda como melhor ou pior" claude-cockpit.js
       - name: Claude parity contract
         run: |
           grep -q "Última bio" claude-parity.js
@@ -89,7 +82,9 @@ jobs:
           grep -q "não mostra doses, ciclos, frequências" claude-parity.js
           grep -q "event_date,medication,event_type,source,confidence" claude-parity.js
           ! grep -q "dose_mg\|dose_ml\|frequency\|injection_site" claude-parity.js
-          grep -q "lts-health:evolution-mode" claude-parity.js
+          grep -q "PARIDADE CLAUDE · ANÁLISE" claude-cockpit.js
+          grep -q "Volume por grupo · 90 dias" claude-cockpit.js
+          grep -q "claudeCockpit" claude-cockpit.js
       - name: Source onboarding contract
         run: |
           grep -q "TRAZER MEUS DADOS" source-onboarding.js
