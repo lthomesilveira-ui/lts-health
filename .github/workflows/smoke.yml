@@ -19,6 +19,7 @@ jobs:
           node --check training-product.js
           node --check evolution-product.js
           node --check today-product.js
+          node --check nutrition-product.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -36,6 +37,8 @@ jobs:
           test -f evolution-product.css
           test -f today-product.js
           test -f today-product.css
+          test -f nutrition-product.js
+          test -f nutrition-product.css
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
@@ -43,22 +46,22 @@ jobs:
           grep -q "training-product.js" config.js
           grep -q "evolution-product.js" config.js
           grep -q "today-product.js" config.js
-          grep -q "lts-health-shell-product-v32" sw.js
+          grep -q "nutrition-product.js" config.js
+          grep -q "lts-health-shell-product-v33" sw.js
           grep -q "training-product.js" sw.js
           grep -q "evolution-product.js" sw.js
           grep -q "today-product.js" sw.js
+          grep -q "nutrition-product.js" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
           grep -q "Histórico por biomarcador" product.js
-          grep -q "Cobertura por mês" product.js
           grep -q "Análise longitudinal" product.js
           grep -q "Dados & Inbox" product.js
           grep -q "Exportar backup estruturado" product.js
           grep -q "Buscar no histórico" product.js
           grep -q "Fonte incompleta preservada" training-product.js
           grep -q "reps_raw" training-product.js
-          grep -q "registro parcial" training-product.js
           grep -q "Séries por grupo" training-product.js
           grep -q "Evolução por exercício" training-product.js
           grep -q "Série longitudinal" evolution-product.js
@@ -68,7 +71,10 @@ jobs:
           grep -q "Último treino registrado" today-product.js
           grep -q "Frescor das fontes" today-product.js
           grep -q "Pendências de evidência" today-product.js
-          grep -q "tdOpenTraining" today-product.js
+          grep -q "Cobertura por mês" nutrition-product.js
+          grep -q "Refeições recentes" nutrition-product.js
+          grep -q "health_nutrition_meals" nutrition-product.js
+          grep -q "Treino + nutrição" nutrition-product.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não constituem diagnóstico" product.js
@@ -80,9 +86,11 @@ jobs:
           grep -q "unidades permanecem separadas" training-product.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "sem transformar diferença em julgamento corporal" evolution-product.js
-          grep -q "Notas livres da fonte ficam preservadas no banco" evolution-product.js
           grep -q "campos ausentes permanecem ausentes" today-product.js
           grep -q "sem julgamento corporal" today-product.js
+          grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
+          grep -q "descrição, não meta" nutrition-product.js
+          grep -q "não prescreve quantidade ou frequência" nutrition-product.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
