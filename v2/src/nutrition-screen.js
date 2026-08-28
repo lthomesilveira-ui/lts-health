@@ -1,7 +1,9 @@
-import {state,esc,fmtDate,fmtNum,num,since,day,unique} from './core.js';
+import {state,esc,fmtDate,fmtNum,num,since,day} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
+const unavailable=text=>`<div class="errorState"><b>Os dados de alimentação não carregaram agora.</b><span>${esc(text)}</span></div>`;
+const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 const avg=(rows,key)=>{const vals=rows.map(r=>num(r[key])).filter(v=>v!=null);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;};
 const sum=(rows,key)=>rows.map(r=>num(r[key])).filter(v=>v!=null).reduce((a,b)=>a+b,0);
 
@@ -13,7 +15,7 @@ function periodRows(){
 function mealsFor(date){return (state.data.meals||[]).filter(m=>day(m.meal_date)===date).sort((a,b)=>String(a.meal_name||'').localeCompare(String(b.meal_name||''),'pt-BR'));}
 function daySummary(row){
   if(!row)return empty('Selecione um dia com registro.');
-  const meals=mealsFor(row.nutrition_date),mealCalories=sum(meals,'calories_kcal');
+  const mealFailed=failed('meals'),meals=mealFailed?[]:mealsFor(row.nutrition_date),mealCalories=sum(meals,'calories_kcal');
   return `<div class="nutritionDayHead"><div><span>${fmtDate(row.nutrition_date)}</span><b>${num(row.calories_kcal)!=null?`${fmtNum(row.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${esc(row.source||'origem registrada')}</small></div></div>
     <div class="macroGrid">
       <div><span>Proteína</span><b>${num(row.protein_g)!=null?`${fmtNum(row.protein_g,0)} g`:'—'}</b></div>
@@ -21,12 +23,14 @@ function daySummary(row){
       <div><span>Gorduras</span><b>${num(row.fat_g)!=null?`${fmtNum(row.fat_g,0)} g`:'—'}</b></div>
       <div><span>Fibras</span><b>${num(row.fiber_g)!=null?`${fmtNum(row.fiber_g,0)} g`:'—'}</b></div>
     </div>
-    <div class="mealList"><div class="cardHead"><div><b>Refeições registradas</b><small>${meals.length} item(ns) encontrado(s) para o dia.</small></div></div>${meals.map(m=>`<div class="mealRow"><div><b>${esc(m.meal_name||'Refeição')}</b><small>${esc(m.source||'origem registrada')}</small></div><span>${num(m.calories_kcal)!=null?`${fmtNum(m.calories_kcal,0)} kcal`:'—'}</span><em>${[num(m.protein_g)!=null?`${fmtNum(m.protein_g,0)}g P`:null,num(m.carbs_g)!=null?`${fmtNum(m.carbs_g,0)}g C`:null,num(m.fat_g)!=null?`${fmtNum(m.fat_g,0)}g G`:null].filter(Boolean).join(' · ')}</em></div>`).join('')||empty('Não há refeições estruturadas para este dia.')}</div>
-    ${meals.length&&num(row.calories_kcal)!=null?`<p class="footerNote">A soma das refeições estruturadas é ${fmtNum(mealCalories,0)} kcal; ela pode diferir do total diário quando o export contém registros incompletos ou agregações diferentes.</p>`:''}`;
+    <div class="mealList"><div class="cardHead"><div><b>Refeições registradas</b><small>${mealFailed?'detalhes indisponíveis agora':`${meals.length} item(ns) encontrado(s) para o dia.`}</small></div></div>${mealFailed?unavailable('O total diário continua disponível; apenas o detalhamento por refeição falhou.'):(meals.map(m=>`<div class="mealRow"><div><b>${esc(m.meal_name||'Refeição')}</b><small>${esc(m.source||'origem registrada')}</small></div><span>${num(m.calories_kcal)!=null?`${fmtNum(m.calories_kcal,0)} kcal`:'—'}</span><em>${[num(m.protein_g)!=null?`${fmtNum(m.protein_g,0)}g P`:null,num(m.carbs_g)!=null?`${fmtNum(m.carbs_g,0)}g C`:null,num(m.fat_g)!=null?`${fmtNum(m.fat_g,0)}g G`:null].filter(Boolean).join(' · ')}</em></div>`).join('')||empty('Não há refeições estruturadas para este dia.'))}</div>
+    ${!mealFailed&&meals.length&&num(row.calories_kcal)!=null?`<p class="footerNote">A soma das refeições estruturadas é ${fmtNum(mealCalories,0)} kcal; ela pode diferir do total diário quando o export contém registros incompletos ou agregações diferentes.</p>`:''}`;
 }
 
 export function renderNutritionHub(){
-  const rows=periodRows(),all=state.data.nutrition||[],dates=rows.map(r=>r.nutrition_date),p=state.ui.nutritionPeriod||'90';
+  const nutritionFailed=failed('nutrition');
+  if(nutritionFailed)return `${title('Nutrição','Histórico de alimentação registrado. Dias ausentes não são tratados como zero.')}${unavailable('Tente atualizar. O histórico existente não foi substituído por zeros.')}`;
+  const rows=periodRows(),all=state.data.nutrition||[];
   if(!state.ui.nutritionDate||!rows.some(r=>r.nutrition_date===state.ui.nutritionDate))state.ui.nutritionDate=rows[0]?.nutrition_date||null;
   const selected=rows.find(r=>r.nutrition_date===state.ui.nutritionDate),range=rows.length?`${fmtDate(rows.at(-1).nutrition_date)} → ${fmtDate(rows[0].nutrition_date)}`:'sem registros';
   const recent=rows.slice(0,60);
