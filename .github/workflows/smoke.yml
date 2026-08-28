@@ -21,6 +21,7 @@ jobs:
           node --check today-product.js
           node --check nutrition-product.js
           node --check health-product.js
+          node --check nutrition-analytics.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -33,11 +34,15 @@ jobs:
           test -f product.js
           test -f product.css
           for m in training evolution today nutrition health; do test -f "$m-product.js"; test -f "$m-product.css"; grep -q "$m-product.js" config.js; grep -q "$m-product.js" sw.js; done
+          test -f nutrition-analytics.js
+          test -f nutrition-analytics.css
+          grep -q "nutrition-analytics.js" config.js
+          grep -q "nutrition-analytics.js" sw.js
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v35" sw.js
+          grep -q "lts-health-shell-product-v36" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -63,6 +68,9 @@ jobs:
           grep -q "Cobertura por mês" nutrition-product.js
           grep -q "Refeições recentes" nutrition-product.js
           grep -q "health_nutrition_meals" nutrition-product.js
+          grep -q "Leitura do histórico MyFitnessPal" nutrition-analytics.js
+          grep -q "Contexto de treino" nutrition-analytics.js
+          grep -q "Distribuição por dia da semana" nutrition-analytics.js
           grep -q "Histórico por biomarcador" health-product.js
           grep -q "Coleta completa" health-product.js
           grep -q "Documentos" health-product.js
@@ -84,6 +92,9 @@ jobs:
           grep -q "Ausência de registro significa ausência de evidência" nutrition-product.js
           grep -q "descrição, não meta" nutrition-product.js
           grep -q "não prescreve quantidade ou frequência" nutrition-product.js
+          grep -q "não demonstra causa" nutrition-analytics.js
+          grep -q "Nenhum alvo calórico, restrição ou julgamento corporal" nutrition-analytics.js
+          grep -q "health_daily_nutrition + health_nutrition_meals" nutrition-analytics.js
           grep -q "não transforma esses campos em diagnóstico" health-product.js
           grep -q "Metadados de documento não provam" health-product.js
           grep -q "ausência de série não vira valor zero" health-product.js
