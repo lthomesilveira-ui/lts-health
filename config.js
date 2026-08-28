@@ -13,11 +13,12 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
   inspectFunction: 'health-inspect-upload'
 });
 
-// Modular product surfaces may extend the consolidated shell without reviving
-// the deprecated version-stack runtime.
+// Modular product surfaces extend the consolidated shell without reviving
+// the deprecated numbered-layer runtime.
 const LTS_HEALTH_MODULES = [
   ['training-product','./training-product.css','./training-product.js'],
-  ['evolution-product','./evolution-product.css','./evolution-product.js']
+  ['evolution-product','./evolution-product.css','./evolution-product.js'],
+  ['today-product','./today-product.css','./today-product.js']
 ];
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
