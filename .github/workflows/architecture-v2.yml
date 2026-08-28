@@ -19,6 +19,7 @@ jobs:
           node --check v2/src/training-screen.js
           node --check v2/src/evolution-screen.js
           node --check v2/src/analysis-screen.js
+          node --check v2/src/treatment-screen.js
           node --check v2/src/health-screen.js
           node --check v2/src/nutrition-screen.js
           node --check v2/src/today-screen.js
@@ -50,11 +51,13 @@ jobs:
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
           grep -q "renderAnalysisHub" v2/src/main.js
+          grep -q "renderTreatmentHub" v2/src/main.js
           grep -q "renderHealthHub" v2/src/main.js
           grep -q "renderNutritionHub" v2/src/main.js
           grep -q "renderTodayHub" v2/src/main.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
+          grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
           grep -q "health_log_structured_workout" v2/src/writes.js
           grep -q 'ensureRouteData' v2/src/data-layer.js
           grep -q 'isRouteReady' v2/src/main.js
