@@ -17,6 +17,7 @@ jobs:
           for n in 11 12 13 14 15 16; do node --check "app-v${n}.js"; done
           node --check product.js
           node --check training-product.js
+          node --check training-progression-deep.js
           node --check evolution-product.js
           node --check segmental-history.js
           node --check today-product.js
@@ -38,6 +39,10 @@ jobs:
           test -f product.js
           test -f product.css
           for m in training evolution today nutrition health; do test -f "$m-product.js"; test -f "$m-product.css"; grep -q "$m-product.js" config.js; grep -q "$m-product.js" sw.js; done
+          test -f training-progression-deep.js
+          test -f training-progression-deep.css
+          grep -q "training-progression-deep.js" config.js
+          grep -q "training-progression-deep.js" sw.js
           test -f segmental-history.js
           test -f segmental-history.css
           grep -q "segmental-history.js" config.js
@@ -62,7 +67,7 @@ jobs:
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
-          grep -q "lts-health-shell-product-v41" sw.js
+          grep -q "lts-health-shell-product-v42" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -77,6 +82,10 @@ jobs:
           grep -q "Evidência da sessão" training-product.js
           grep -q "Última comparação observada" training-product.js
           grep -q "falha registrada" training-product.js
+          grep -q "PROGRESSÃO COMPARÁVEL" training-progression-deep.js
+          grep -q "Anterior comparável" training-progression-deep.js
+          grep -q "repetições só são totalizadas" training-progression-deep.js
+          grep -q "Evidência parcial" training-progression-deep.js || grep -q "evidência parcial" training-progression-deep.js
           grep -q "Série longitudinal" evolution-product.js
           grep -q "Comparar duas medições" evolution-product.js
           grep -q "Composição segmentar" evolution-product.js
@@ -120,6 +129,8 @@ jobs:
           grep -q "não meta de frequência" training-product.js
           grep -q "unidades permanecem separadas" training-product.js
           grep -q "não mede sozinho desempenho total" training-product.js
+          grep -q "unidades nunca são misturadas ou convertidas por inferência" training-progression-deep.js
+          grep -q "não representam desempenho total nem recomendação de treino" training-progression-deep.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "sem transformar diferença em julgamento corporal" evolution-product.js
           grep -q "não classificam aparência, saúde ou desempenho" segmental-history.js
