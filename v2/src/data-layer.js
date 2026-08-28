@@ -11,7 +11,7 @@ const routeDomains={
   timeline:['nutrition','activity','metrics','labs','docs','treatments'],
   saude:['labs','docs'],
   nutricao:['nutrition','meals'],
-  dados:['nutrition','meals','activity','metrics','labs','docs','uploads','quality']
+  dados:['nutrition','meals','activity','metrics','labs','docs','uploads','previews','quality']
 };
 
 async function fetchAll(table,select='*',orderColumn=null,ascending=false,maxRows=5000){
@@ -34,6 +34,7 @@ const loaders={
   docs:()=>fetchAll('health_documents','source_record_id,document_date,title,document_type,source_file,source,extraction_status,confidence,notes','document_date',false,1500),
   treatments:()=>fetchAll('health_medication_events','source_record_id,event_date,medication,event_type,source,confidence','event_date',false,1500),
   uploads:()=>fetchAll('health_uploads','id,source_type,original_filename,mime_type,size_bytes,status,created_at,processed_at,notes','created_at',false,1000),
+  previews:()=>fetchAll('health_ingestion_previews','upload_id,source_type,parser_version,detected_format,detected_schema,row_count,date_min,date_max,status,warnings,error_message,updated_at','updated_at',false,1000),
   quality:()=>fetchAll('health_data_quality_issues','source_record_id,issue_code,category,severity,status,entity_name,record_ref,description,detected_at,resolution_notes','detected_at',false,1500),
   nutrition:()=>fetchAll('health_daily_nutrition','source_record_id,nutrition_date,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,source,source_file,confidence','nutrition_date',false,5000),
   meals:()=>fetchAll('health_nutrition_meals','source_record_id,meal_date,meal_name,calories_kcal,protein_g,carbs_g,fat_g,source,source_file,confidence,record_status','meal_date',false,7000),
