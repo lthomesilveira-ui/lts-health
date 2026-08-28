@@ -27,6 +27,9 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('[data-bio-metric="skeletal_muscle_mass_kg"]')?.classList.contains('active'));
   await page.selectOption('#compareA','2026-01-01');
   await page.selectOption('#compareB','2026-02-01');
+  await page.click('#routeAction');
+  await page.waitForSelector('#entryModal:not(.hidden) #bodyEntryForm');
+  await page.click('#closeEntry');
 
   await page.click(`${nav} [data-route="treinos"]`);
   await assertScreen(page,'Treinos',`${label}/treinos`);
@@ -38,6 +41,13 @@ async function run(viewport,label){
   if(!trainingText.includes('Supino máquina')||!trainingText.includes('90 kg')) throw new Error(`${label}: workout drilldown did not render`);
   await page.fill('#exerciseQuery','supino');
   await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length===1);
+  await page.click('#routeAction');
+  await page.waitForSelector('#entryModal:not(.hidden) #workoutEntryForm');
+  await page.click('[data-add-exercise]');
+  if((await page.locator('.exerciseEntry').count())!==2) throw new Error(`${label}: add exercise control failed`);
+  await page.click('.exerciseEntry:first-child [data-add-set]');
+  if((await page.locator('.exerciseEntry:first-child .setEntry').count())!==2) throw new Error(`${label}: add set control failed`);
+  await page.click('#closeEntry');
 
   for(const [route,screenTitle] of [['evolucao','Evolução'],['analise','Análise']]){
     await page.click(`${nav} [data-route="${route}"]`);
@@ -55,7 +65,6 @@ async function run(viewport,label){
   await page.click('#moreSheet [data-route="dados"]');
   await page.waitForSelector('#uploadForm');
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
-
   if(errors.length) throw new Error(`${label}: page errors: ${errors.join(' | ')}`);
   await browser.close();
 }
