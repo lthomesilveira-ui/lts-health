@@ -22,13 +22,13 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations insights-evidence search-product claude-parity; do
+          for m in training-product training-progression-deep evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage insights-evidence search-product claude-parity; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v52" sw.js
+          grep -q "lts-health-shell-product-v53" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -66,6 +66,10 @@ jobs:
           grep -q "Fila que exige decisão" inbox-operations.js
           grep -q "Uma questão aberta não é automaticamente erro clínico" inbox-operations.js
           grep -q "Nada é resolvido automaticamente" inbox-operations.js
+          grep -q "Fontes conectadas sem dupla contagem" source-coverage.js
+          grep -q "não uma autorização para agregar valores" source-coverage.js
+          grep -q "Apple Health segue como hub passivo" source-coverage.js
+          grep -q "Ausência de dado continua ausência de evidência" source-coverage.js
           grep -q "Nenhum readiness/recovery score é calculado" insights-evidence.js
           grep -q "proveniência continua preservada" search-product.js
       - name: Claude parity contract
