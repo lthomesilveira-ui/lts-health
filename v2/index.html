@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090d12">
+  <title>LTS Health</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="login" class="login hidden">
+    <div class="loginCard">
+      <div class="brandMark">L</div>
+      <h1>LTS Health</h1>
+      <p>Entre para acessar seu histórico de saúde.</p>
+      <label>E-mail<input id="email" type="email" autocomplete="email"></label>
+      <label>Senha<input id="password" type="password" autocomplete="current-password"></label>
+      <button id="loginBtn" class="primary">Entrar</button>
+      <div id="loginMsg" class="msg"></div>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <div class="brand"><div class="brandMark small">L</div><div><b>LTS Health</b><span>Seu histórico de saúde em um só lugar</span></div></div>
+      <div class="topActions"><span id="syncText">carregando…</span><button id="refreshBtn">Atualizar</button><button id="logoutBtn">Sair</button></div>
+    </header>
+
+    <nav id="primaryNav" class="primaryNav" aria-label="Navegação principal">
+      <button data-route="bio">Bio</button>
+      <button data-route="treinos">Treinos</button>
+      <button data-route="evolucao">Evolução</button>
+      <button data-route="analise">Análise</button>
+      <button data-route="tratamentos">Tratamentos</button>
+      <button data-route="mais" class="moreButton">Mais</button>
+    </nav>
+
+    <main id="screenHost" class="screenHost" aria-live="polite"></main>
+
+    <nav id="mobileNav" class="mobileNav" aria-label="Navegação no celular">
+      <button data-route="bio">Bio</button>
+      <button data-route="treinos">Treinos</button>
+      <button data-route="evolucao">Evolução</button>
+      <button data-route="analise">Análise</button>
+      <button data-route="mais">Mais</button>
+    </nav>
+  </div>
+
+  <div id="moreSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Mais áreas">
+    <div class="sheetPanel">
+      <div class="sheetHead"><b>Mais</b><button id="closeMore" aria-label="Fechar">×</button></div>
+      <div class="sheetGrid">
+        <button data-route="hoje">Hoje</button>
+        <button data-route="timeline">Timeline</button>
+        <button data-route="saude">Saúde & exames</button>
+        <button data-route="nutricao">Nutrição</button>
+        <button data-route="dados">Dados</button>
+        <button data-route="tratamentos">Tratamentos</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
