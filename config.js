@@ -13,6 +13,7 @@ window.LTS_HEALTH_CONFIG = Object.freeze({
   inspectFunction: 'health-inspect-upload-v2'
 });
 
+// Stable production runtime. New architecture work must not be layered here.
 const LTS_HEALTH_MODULES = [
   ['training-product','./training-product.css','./training-product.js'],
   ['training-progression-deep','./training-progression-deep.css','./training-progression-deep.js'],
@@ -35,11 +36,9 @@ const LTS_HEALTH_MODULES = [
   ['search-product','./search-product.css','./search-product.js'],
   ['claude-parity','./claude-parity.css','./claude-parity.js'],
   ['claude-cockpit','./claude-cockpit.css','./claude-cockpit.js'],
-  ['canonical-status','./canonical-status.css','./canonical-status.js'],
-  ['ux-cleanup','./ux-cleanup.css','./ux-cleanup.js'],
-  ['today-hero-polish','./today-hero-polish.css','./today-hero-polish.js'],
-  ['runtime-stability','./runtime-stability.css','./runtime-stability.js']
+  ['canonical-status','./canonical-status.css','./canonical-status.js']
 ];
+
 document.body?.classList.add('claudeCockpit');
 for (const [name, css] of LTS_HEALTH_MODULES) {
   if (document.querySelector(`link[data-lts-${name}]`)) continue;
