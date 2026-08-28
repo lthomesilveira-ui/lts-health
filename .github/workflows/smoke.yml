@@ -18,6 +18,7 @@ jobs:
           node --check product.js
           node --check training-product.js
           node --check evolution-product.js
+          node --check today-product.js
           node --check sw.js
           node --check config.js
       - name: Dedicated backend guardrails
@@ -33,17 +34,19 @@ jobs:
           test -f training-product.css
           test -f evolution-product.js
           test -f evolution-product.css
+          test -f today-product.js
+          test -f today-product.css
           grep -q "product.css?v=29" index.html
           grep -q "product.js?v=29" index.html
           ! grep -q "app-v17.js" index.html
           ! grep -q "loadHealthLayer" config.js
           grep -q "training-product.js" config.js
-          grep -q "training-product.css" config.js
           grep -q "evolution-product.js" config.js
-          grep -q "evolution-product.css" config.js
-          grep -q "lts-health-shell-product-v31" sw.js
+          grep -q "today-product.js" config.js
+          grep -q "lts-health-shell-product-v32" sw.js
           grep -q "training-product.js" sw.js
           grep -q "evolution-product.js" sw.js
+          grep -q "today-product.js" sw.js
           ! grep -q "app-v17.js" sw.js
       - name: Functional parity surfaces
         run: |
@@ -62,8 +65,10 @@ jobs:
           grep -q "Comparar duas medições" evolution-product.js
           grep -q "Composição segmentar" evolution-product.js
           grep -q "Histórico de medições" evolution-product.js
-          grep -q "body_water_l" evolution-product.js
-          grep -q "waist_hip_ratio" evolution-product.js
+          grep -q "Último treino registrado" today-product.js
+          grep -q "Frescor das fontes" today-product.js
+          grep -q "Pendências de evidência" today-product.js
+          grep -q "tdOpenTraining" today-product.js
       - name: Safety and provenance guardrails
         run: |
           grep -q "não constituem diagnóstico" product.js
@@ -76,6 +81,8 @@ jobs:
           grep -q "não classificam aparência" evolution-product.js
           grep -q "sem transformar diferença em julgamento corporal" evolution-product.js
           grep -q "Notas livres da fonte ficam preservadas no banco" evolution-product.js
+          grep -q "campos ausentes permanecem ausentes" today-product.js
+          grep -q "sem julgamento corporal" today-product.js
       - name: No private health payloads in repository
         run: |
           ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
