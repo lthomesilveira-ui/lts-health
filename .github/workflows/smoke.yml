@@ -22,13 +22,13 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit canonical-status; do
+          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity claude-cockpit canonical-status ux-cleanup; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v58" sw.js
+          grep -q "lts-health-shell-product-v59" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
@@ -90,6 +90,13 @@ jobs:
           grep -q "Volume por grupo · 90 dias" claude-cockpit.js
           grep -q "Mudança bio-a-bio" claude-cockpit.js
           grep -q "claudeCockpit" claude-cockpit.js
+      - name: UX cleanup contract
+        run: |
+          grep -q "Seu histórico de saúde em um só lugar" ux-cleanup.js
+          grep -q "Resumo atual" ux-cleanup.js
+          grep -q "#v10Overview" ux-cleanup.css
+          grep -q "forceTab" ux-cleanup.js
+          grep -q "cpStats{display:none" ux-cleanup.css
       - name: Source onboarding contract
         run: |
           grep -q "TRAZER MEUS DADOS" source-onboarding.js
