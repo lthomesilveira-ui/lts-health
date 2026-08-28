@@ -22,19 +22,24 @@ jobs:
         run: |
           test -f product.js
           test -f product.css
-          for m in training-product training-progression-deep evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity; do
+          for m in training-product training-progression-deep structured-workout-entry evolution-product segmental-history today-product today-current today-evidence timeline-product nutrition-product nutrition-analytics health-product health-longitudinal health-evidence-bundles inbox-operations source-coverage source-onboarding insights-evidence search-product claude-parity; do
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
             grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v55" sw.js
+          grep -q "lts-health-shell-product-v56" sw.js
           ! grep -q "app-v17.js" index.html
           ! grep -q "app-v17.js" sw.js
       - name: Provenance and safety contracts
         run: |
           grep -q "Fonte incompleta preservada" training-product.js
           grep -q "unidades nunca são misturadas" training-progression-deep.js
+          grep -q "não recomenda intensidade, falha, técnicas de esforço ou metas de treino" structured-workout-entry.js
+          grep -q "health_log_structured_workout" structured-workout-entry.js
+          grep -q "weight_unit" structured-workout-entry.js
+          grep -q "plate_index" structured-workout-entry.js
+          ! grep -q "drop set\|rest.pause\|near.failure" structured-workout-entry.js
           grep -q "não classificam aparência" evolution-product.js
           grep -q "nenhuma estimativa" segmental-history.js
           grep -q "A · medição" segmental-history.js
