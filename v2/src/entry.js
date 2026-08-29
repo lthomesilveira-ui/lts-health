@@ -72,12 +72,18 @@ function workoutForm(){
 }
 
 export function openEntry(type){
+  $('entryModal').dataset.saving='false';
   $('entryModal').classList.remove('hidden');
   $('entryTitle').textContent=type==='workout'?'Registrar treino':'Registrar bio';
   $('entryHost').innerHTML=type==='workout'?workoutForm():bodyForm();
 }
 
-function closeEntry(){ $('entryModal').classList.add('hidden'); $('entryHost').innerHTML=''; }
+function closeEntry(){
+  if($('entryModal')?.dataset.saving==='true')return false;
+  $('entryModal').classList.add('hidden');
+  $('entryHost').innerHTML='';
+  return true;
+}
 
 function formObject(form){ return Object.fromEntries(new FormData(form).entries()); }
 
@@ -126,8 +132,9 @@ export function setupEntryController({onSaved}={}){
   document.addEventListener('submit',async e=>{
     if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm') return;
     e.preventDefault();
-    const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]');
+    const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=$('entryModal');
     let saved=false;
+    modal.dataset.saving='true';
     msg.textContent='Salvando…'; button.disabled=true;
     try{
       if(form.id==='bodyEntryForm') await saveBodyRecord(formObject(form));
@@ -135,8 +142,9 @@ export function setupEntryController({onSaved}={}){
       saved=true;
       msg.textContent='Salvo.';
       await refreshCallback();
-      setTimeout(closeEntry,450);
+      setTimeout(()=>{modal.dataset.saving='false';closeEntry();},450);
     }catch(error){
+      modal.dataset.saving='false';
       if(!validationMessages[error?.message])console.error(error);
       msg.textContent=entryErrorMessage(error);
     }finally{
