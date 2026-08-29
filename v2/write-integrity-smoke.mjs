@@ -47,12 +47,16 @@ await page.locator('#bodyEntryForm button[type="submit"]').click();
 await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='Use apenas valores iguais ou maiores que zero.');
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('validation closed the entry dialog');
 
-// A successful save must remain locked until the modal closes, preventing a rapid duplicate submit.
+// A successful save must stay locked and visible through completion, preventing duplicate submits and ambiguous dismissal.
 await page.locator('#bodyEntryForm [name="weight_kg"]').fill('93,1');
 const submit=page.locator('#bodyEntryForm button[type="submit"]');
 await submit.click();
 await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='Salvo.');
 if(!(await submit.isDisabled()))throw new Error('successful submit was re-enabled before dialog close');
+await page.keyboard.press('Escape');
+if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('Escape closed the dialog while save completion was locked');
+await page.locator('#closeEntry').click();
+if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('close button closed the dialog while save completion was locked');
 await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
 
 if(errors.length)throw new Error(`browser errors: ${errors.join(' | ')}`);
