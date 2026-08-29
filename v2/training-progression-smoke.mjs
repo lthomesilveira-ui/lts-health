@@ -63,8 +63,11 @@ async function run(viewport,label){
   if(!summaryDetail.includes('Registro histórico da fonte')||!summaryDetail.includes('sem detalhe')||!summaryDetail.includes('sem criar exercícios ou séries'))throw new Error(`${label}: summary-only legacy workout was not preserved conservatively`);
 
   await page.fill('#trainingQuery','');
+  await page.waitForFunction(()=>document.querySelectorAll('.sessions .session').length>1);
   await page.fill('#exerciseQuery','remada teste');
-  await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length===2);
+  await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length>=2);
+  const exerciseButtons=await page.locator('.exerciseList button').count();
+  if(exerciseButtons!==2)throw new Error(`${label}: expected two machine-separated exercise groups, got ${exerciseButtons}`);
   await page.click('.exerciseList button:has-text("Máquina A")');
   await page.waitForSelector('.trainingRecent');
   const text=(await page.locator('.exerciseDetail').textContent())||'';
