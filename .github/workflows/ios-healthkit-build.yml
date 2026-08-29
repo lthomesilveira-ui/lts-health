@@ -38,3 +38,13 @@ jobs:
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             build
+      - name: Build for physical iPhone SDK
+        working-directory: ios/LTSHealthSync
+        run: |
+          xcodebuild \
+            -project LTSHealthSync.xcodeproj \
+            -scheme LTSHealthSync \
+            -sdk iphoneos \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build
