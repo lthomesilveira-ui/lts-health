@@ -1,17 +1,29 @@
-import {state,esc,day,fmtNum,fmtDate,norm,unique,since} from './core.js';
+import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
-const metricLabels={sleep_duration_h:'Sono',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate:'FC de repouso',weight_kg:'Peso'};
+const metricLabels={sleep_duration_h:'Sono',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'FC de repouso',weight_kg:'Peso'};
 const domainMap={workouts:'Treinos',body:'Composição',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Sono e métricas',treatments:'Tratamentos'};
 const yearOf=value=>String(value||'').slice(0,4);
 function unavailable(){return Object.entries(domainMap).filter(([key])=>failed(key)).map(([,label])=>label);}
+function bodyEventTitle(row){
+  const parts=[];
+  if(num(row.weight_kg)!=null)parts.push(`Peso ${fmtNum(row.weight_kg)} kg`);
+  if(num(row.skeletal_muscle_mass_kg)!=null)parts.push(`MME ${fmtNum(row.skeletal_muscle_mass_kg)} kg`);
+  return parts.join(' · ')||'Composição corporal registrada';
+}
+function bodyEventSub(row){return num(row.body_fat_pct)!=null?`Gordura registrada ${fmtNum(row.body_fat_pct)}%`:'';}
+function metricEventSub(row){
+  const value=num(row.value);
+  if(value==null)return 'Registro disponível';
+  return `${fmtNum(value,row.metric_type==='steps'?0:1)} ${row.unit||''}`.trim();
+}
 
 function events(){
   const out=[];
   if(!failed('workouts'))for(const w of state.data.workouts||[])out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:w.source||'',route:'treinos',kind:'workout',ref:w.source_record_id});
-  if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição',title:`Peso ${fmtNum(b.weight_kg)} kg · MME ${fmtNum(b.skeletal_muscle_mass_kg)} kg`,sub:`Gordura registrada ${fmtNum(b.body_fat_pct)}%`,source:b.source||'',route:'bio',kind:'body',ref:b.measured_at});
+  if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição',title:bodyEventTitle(b),sub:bodyEventSub(b),source:b.source||'',route:'bio',kind:'body',ref:b.measured_at});
   if(!failed('labs')){
     const collections=new Map();
     for(const row of state.data.labs||[]){const lab=row.laboratory||'',key=`${row.collection_date||''}__${lab}`;if(!collections.has(key))collections.set(key,{date:row.collection_date,lab,rows:[]});collections.get(key).rows.push(row);}
@@ -20,7 +32,7 @@ function events(){
   if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:d.source||'',route:'saude',kind:'document',ref:d.source_record_id||''});
   if(!failed('nutrition'))for(const n of state.data.nutrition||[])out.push({date:n.nutrition_date,domain:'Alimentação',title:n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:n.protein_g!=null?`${fmtNum(n.protein_g,0)} g proteína`:'' ,source:n.source||'',route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
   if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:a.source||''});}
-  if(!failed('metrics'))for(const m of state.data.metrics||[]){const label=metricLabels[m.metric_type];if(!label)continue;const domain=m.metric_type==='sleep_duration_h'?'Sono':'Métricas';out.push({date:day(m.measured_at),domain,title:label,sub:`${fmtNum(m.value,m.metric_type==='steps'?0:1)} ${m.unit||''}`.trim(),source:m.source||''});}
+  if(!failed('metrics'))for(const m of state.data.metrics||[]){const label=metricLabels[m.metric_type];if(!label)continue;const domain=m.metric_type==='sleep_duration_h'?'Sono':'Métricas';out.push({date:day(m.measured_at),domain,title:label,sub:metricEventSub(m),source:m.source||''});}
   if(!failed('treatments'))for(const t of state.data.treatments||[])out.push({date:t.event_date,domain:'Tratamentos',title:t.medication||'Tratamento registrado',sub:'Confirmação registrada',source:t.source||'',route:'tratamentos',kind:'treatment',ref:t.source_record_id||''});
   return out.filter(e=>e.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(a.domain).localeCompare(String(b.domain),'pt-BR'));
 }
