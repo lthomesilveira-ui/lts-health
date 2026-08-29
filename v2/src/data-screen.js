@@ -50,15 +50,20 @@ const sensitiveQualityPattern=/(^|_)(dose|dosage|frequency|injection|application
 function sourceLabel(value){return sourceLabels[value]||String(value||'Origem não informada').replaceAll('_',' ');}
 function uploadStatus(value){return uploadStatusLabels[value]||String(value||'status não informado').replaceAll('_',' ');}
 function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name].some(value=>sensitiveQualityPattern.test(norm(value).replaceAll(' ','_')));}
-function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||issue?.entity_name||'Revisão de qualidade';}
+function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||'Revisão de qualidade';}
 
-function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||String(status||'sem detalhe').replaceAll('_',' ');}
+function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||'status não detalhado';}
 function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
+function previewNotice(preview){
+  if(preview?.status==='failed')return'O processamento não foi concluído. O arquivo original continua guardado.';
+  if(preview?.status==='review_required'||preview?.status==='needs_specialized_parser')return'Há detalhes que precisam de revisão antes de concluir a leitura.';
+  if(Array.isArray(preview?.warnings)&&preview.warnings.length)return'Há observações do processamento para revisão.';
+  return'';
+}
 function previewDetail(preview){
   if(!preview)return'<span class="processingMuted">Processamento sem detalhe disponível.</span>';
-  const facts=[preview.detected_format?`Formato: ${preview.detected_format}`:null,preview.row_count!=null?`${preview.row_count} registro(s)`:null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean);
-  const warnings=Array.isArray(preview.warnings)?preview.warnings.slice(0,2):[];
-  return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='review_required'||preview.status==='needs_specialized_parser'?'warn':'ok')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${warnings.length?`<ul>${warnings.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:''}${preview.error_message?`<small>${esc(preview.error_message)}</small>`:''}</div>`;
+  const facts=[preview.detected_format?`Formato: ${preview.detected_format}`:null,preview.row_count!=null?`${preview.row_count} registro(s)`:null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean),notice=previewNotice(preview);
+  return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='review_required'||preview.status==='needs_specialized_parser'?'warn':'ok')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${notice?`<small>${esc(notice)}</small>`:''}</div>`;
 }
 function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
 
@@ -86,7 +91,7 @@ function nextStep(uploads,actionIssues){
 }
 
 function qualityRow(issue,mode){
-  const detail=sensitiveQuality(issue)?'Registro histórico preservado sem detalhe operacional nesta tela.':mode==='accepted'?(issue.resolution_notes||issue.description||'Limitação conhecida.'):(issue.description||'Revisão necessária.');
+  const known=!!issueCategoryLabels[issue?.category],detail=sensitiveQuality(issue)?'Registro histórico preservado sem detalhe operacional nesta tela.':!known?'Revisão registrada sem detalhe exibido nesta tela.':mode==='accepted'?(issue.resolution_notes||issue.description||'Limitação conhecida.'):(issue.description||'Revisão necessária.');
   return `<div class="row"><div style="grid-column:1/3"><b>${esc(issueTitle(issue))}</b><small>${esc(detail)}</small></div></div>`;
 }
 function qualityOverview(all){
