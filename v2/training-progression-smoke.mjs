@@ -15,13 +15,14 @@ async function run(viewport,label){
 
   const latest=page.locator('.sessions .session').first();
   if(!(await latest.evaluate(el=>el.classList.contains('latest'))))throw new Error(`${label}: latest structured workout is not visually prioritized`);
-  const latestHead=latest.locator('.sessionHead');
-  if((await latestHead.getAttribute('aria-expanded'))!=='false')throw new Error(`${label}: collapsed workout does not expose its state`);
+  if((await latest.locator('.sessionHead').getAttribute('aria-expanded'))!=='false')throw new Error(`${label}: collapsed workout does not expose its state`);
   const latestText=(await latest.textContent())||'';
   if(!latestText.includes('mais recente'))throw new Error(`${label}: latest workout label missing`);
-  await latestHead.click();
-  if((await latestHead.getAttribute('aria-expanded'))!=='true')throw new Error(`${label}: workout expansion state is not reflected for accessibility`);
-  await latestHead.click();
+  await latest.locator('.sessionHead').click();
+  await page.waitForSelector('.sessions .session.latest.open .sessionBody');
+  if((await page.locator('.sessions .session.latest .sessionHead').getAttribute('aria-expanded'))!=='true')throw new Error(`${label}: workout expansion state is not reflected for accessibility`);
+  await page.locator('.sessions .session.latest .sessionHead').click();
+  await page.waitForFunction(()=>document.querySelector('.sessions .session.latest .sessionHead')?.getAttribute('aria-expanded')==='false');
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
