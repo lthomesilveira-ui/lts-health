@@ -131,8 +131,13 @@ export async function uploadFile(file,sourceType){
   const safeName=file.name.replace(/[^a-zA-Z0-9._-]+/g,'_');const path=`${session.user.id}/${new Date().toISOString().slice(0,10)}/${crypto.randomUUID()}-${safeName}`;
   const{error:storageError}=await sb.storage.from(CONFIG.bucket).upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});if(storageError)throw storageError;
   const payload={user_id:session.user.id,source_type:sourceType||'other',original_filename:file.name,storage_path:path,mime_type:file.type||null,size_bytes:file.size,status:'uploaded'};
-  const{data:row,error:dbError}=await sb.from('health_uploads').insert(payload).select('id').single();if(dbError)throw dbError;
+  const{data:row,error:dbError}=await sb.from('health_uploads').insert(payload).select('id').single();
+  if(dbError){try{await sb.storage.from(CONFIG.bucket).remove([path]);}catch{}throw dbError;}
   const functionName=inspectFunctionForSource(sourceType);
-  const{error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});if(fnError){await sb.from('health_uploads').update({status:'review_required',notes:'Processamento automático não concluído; arquivo preservado para revisão.'}).eq('id',row.id);throw fnError;}
-  return row.id;
+  const{error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});
+  if(fnError){
+    const{error:statusError}=await sb.from('health_uploads').update({status:'review_required',notes:'Processamento automático não concluído; arquivo preservado para revisão.'}).eq('id',row.id);
+    return{id:row.id,received:true,processing:statusError?'status_unknown':'review_required'};
+  }
+  return{id:row.id,received:true,processing:'started'};
 }
