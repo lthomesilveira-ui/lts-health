@@ -32,9 +32,15 @@ async function run(viewport,label){
 
   const parserRouting=await page.evaluate(async()=>{
     const {inspectFunctionForSource}=await import('./src/core.js');
-    return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal'),polar:inspectFunctionForSource('polar_flow')};
+    return {
+      apple:inspectFunctionForSource('apple_health'),
+      mfp:inspectFunctionForSource('myfitnesspal'),
+      polar:inspectFunctionForSource('polar_flow'),
+      fleury:inspectFunctionForSource('fleury'),
+      einstein:inspectFunctionForSource('einstein')
+    };
   });
-  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.polar!=='health-inspect-upload')throw new Error(`${label}: source-aware ingestion routing is incorrect`);
+  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.polar!=='health-inspect-upload'||parserRouting.fleury!=='health-inspect-lab'||parserRouting.einstein!=='health-inspect-lab')throw new Error(`${label}: source-aware ingestion routing is incorrect`);
 
   const initial=await page.textContent('#screenHost');
   if(!initial.includes('90,0')||!initial.includes('91,0')||!initial.includes('Primeiro e último registro')) throw new Error(`${label}: fixture body history did not render`);
@@ -118,11 +124,16 @@ async function run(viewport,label){
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
   if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
   const dataText=(await page.textContent('#screenHost'))||'';
-  if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('Documento preservado')) throw new Error(`${label}: import capability labels missing`);
+  if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('CSV estruturado + documento preservado')) throw new Error(`${label}: import capability labels missing`);
   if(!dataText.includes('energia ativa')||!dataText.includes('minutos de exercício')||!dataText.includes('horas em pé')||!dataText.includes('duração do sono'))throw new Error(`${label}: validated Apple Health automatic scope missing`);
   if(!dataText.includes('Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte'))throw new Error(`${label}: conditional Apple Health metrics rule is not explicit`);
+  if(!dataText.includes('Resultados textuais permanecem textuais')||!dataText.includes('aguardam leitura especializada validada'))throw new Error(`${label}: structured-lab safety copy missing`);
   await page.click('[data-source-upload="apple_health"]');
-  if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
+  if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: Apple upload shortcut failed`);
+  await page.click('[data-source-upload="fleury"]');
+  if(await page.inputValue('#uploadType')!=='fleury') throw new Error(`${label}: Fleury upload shortcut failed`);
+  await page.click('[data-source-upload="einstein"]');
+  if(await page.inputValue('#uploadType')!=='einstein') throw new Error(`${label}: Einstein upload shortcut failed`);
 
   await openMoreRoute(page,nav,'tratamentos','Tratamentos',`${label}/tratamentos`);
   const treatmentText=await page.textContent('#screenHost');
