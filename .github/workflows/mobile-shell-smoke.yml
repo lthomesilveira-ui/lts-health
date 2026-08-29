@@ -1,0 +1,36 @@
+name: LTS Health v2 Mobile Shell Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/index.html'
+      - 'v2/styles.css'
+      - 'v2/shell.css'
+      - 'v2/mobile-shell-smoke.mjs'
+      - '.github/workflows/mobile-shell-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/mobile-shell-smoke.mjs
+          test -f v2/shell.css
+          grep -q './shell.css' v2/index.html
+          grep -q 'grid-template-rows:auto minmax(0,1fr) auto' v2/shell.css
+          grep -q 'position:relative' v2/shell.css
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Verify mobile shell
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/mobile-shell-smoke.mjs
