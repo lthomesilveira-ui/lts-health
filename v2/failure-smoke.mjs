@@ -28,7 +28,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 {
   const ctx=await open('workouts','evolucao','Evolução');
   const metric=await ctx.page.locator('.metric').filter({hasText:'Treinos'}).first().textContent();
-  if(!metric?.includes('—')||!ctx.text.includes('frequência semanal não pode ser calculada'))throw new Error('evolucao/workouts: failure hidden or rendered as zero');
+  if(!metric?.includes('—')||!ctx.text.includes('ritmo semanal não pode ser calculado'))throw new Error('evolucao/workouts: failure hidden or rendered as zero');
   await finish(ctx,'evolucao/workouts');
 }
 {
