@@ -42,7 +42,7 @@ As telas calculam contagens e intervalos a partir dos registros carregados na se
 
 1. Treino estruturado do LTS Health é a sessão principal quando representa o mesmo evento observado por outras fontes.
 2. Apple Saúde pode atuar como hub passivo para métricas com regra de consolidação explicitamente validada.
-3. Energia ativa, minutos de exercício, horas em pé e duração do sono possuem caminhos automáticos validados no parser Apple atual.
+3. Energia ativa, minutos de exercício, horas em pé e duração do sono possuem caminhos automáticos validados no parser estável atual.
 4. Passos e frequência cardíaca de repouso não fazem parte da ingestão automática validada atual e não devem ser apresentados como importação automática suportada.
 5. Polar pode complementar uma sessão com detalhe adicional quando o arquivo real permitir validação, sem criar uma segunda sessão nem somar valores duplicados.
 6. Nenhum valor de múltiplas fontes é agregado automaticamente sem regra determinística específica.
@@ -52,17 +52,19 @@ As telas calculam contagens e intervalos a partir dos registros carregados na se
 
 - Resultados estruturados permanecem vinculados a coleta, laboratório, unidade, referência, método e origem quando esses campos existem.
 - Tendência só é calculada entre valores numéricos com unidades compatíveis.
-- CSV laboratorial reconhecido pode gerar resultados estruturados; resultado textual é preservado como texto quando não houver valor numérico seguro.
+- Resultado textual é preservado como texto quando não houver valor numérico seguro.
 - Linhas ambíguas permanecem retidas para revisão em vez de serem forçadas para a tabela estruturada.
-- PDF ou imagem de Fleury, Einstein ou outra fonte laboratorial é preservado como documento e aguarda extração especializada; o frontend nunca fabrica biomarcadores a partir do nome do arquivo ou de metadados incompletos.
+- CSV, PDF ou imagem de Fleury, Einstein ou outra fonte laboratorial é preservado; a extração especializada só pode ser conectada ao frontend após validação com amostras reais suficientes.
+- O frontend nunca fabrica biomarcadores a partir do nome do arquivo ou de metadados incompletos.
 - Inventário de metadados não é tratado como prova de que o arquivo original esteja disponível para abertura.
 - Coincidência temporal entre exame, treino, alimentação, sono ou tratamento não é apresentada como causalidade.
 
 ## Roteamento de ingestão
 
-- Apple Saúde usa o inspetor específico validado para o export Apple atual.
-- Fleury, Einstein e fonte laboratorial explícita usam o inspetor laboratorial verificado por sessão.
-- Fontes genéricas e demais origens usam o inspetor geral validado.
+- O frontend v2 usa `health-inspect-upload` como inspetor estável para todas as origens enquanto os parsers especializados não completarem seu gate de validação.
+- Lógicas experimentais ou mais amplas podem existir separadamente, mas não são selecionadas silenciosamente pelo frontend.
+- Apple Saúde só anuncia como ingestão automática as métricas já validadas no inspetor estável.
+- Fleury e Einstein preservam o arquivo e a revisão; um parser especializado só entra no fluxo normal depois de validado em amostras reais.
 - O arquivo original permanece no armazenamento privado independentemente do caminho de processamento.
 
 ## Pendências de qualidade
