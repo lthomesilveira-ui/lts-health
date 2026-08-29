@@ -1,5 +1,5 @@
 import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
-import {loadInitialData,ensureRouteData,isRouteReady,refreshData} from './data-layer.js';
+import {loadInitialData,ensureRouteData,isRouteReady,refreshData,downloadStructuredBackup} from './data-layer.js';
 import {renderBioHub} from './bio-screen.js';
 import {renderTrainingScreen} from './training-screen.js';
 import {renderEvolutionHub} from './evolution-screen.js';
@@ -84,7 +84,15 @@ function openTimelineTarget(button){
 }
 
 function bindStaticEvents(){
-  document.addEventListener('click',event=>{
+  document.addEventListener('click',async event=>{
+    const backupButton=event.target.closest('#backupExportBtn');
+    if(backupButton){
+      const msg=$('backupExportMsg');backupButton.disabled=true;if(msg)msg.textContent='Preparando backup…';
+      try{const result=await downloadStructuredBackup(text=>{if(msg)msg.textContent=text;setSync(text);});if(msg)msg.textContent=`Backup criado: ${result.filename}`;setSync('Atualizado');}
+      catch(error){console.error(error);if(msg)msg.textContent='Não foi possível criar o backup agora.';setSync('Falha no backup');}
+      finally{backupButton.disabled=false;}
+      return;
+    }
     const sourceButton=event.target.closest('[data-source-upload]');
     if(sourceButton){const select=$('uploadType');if(select)select.value=sourceButton.dataset.sourceUpload;$('uploadFile')?.focus();return;}
     const timelineMore=event.target.closest('[data-timeline-more]');if(timelineMore){state.ui.timelineLimit=Number(state.ui.timelineLimit||250)+250;scheduleRender();return;}
