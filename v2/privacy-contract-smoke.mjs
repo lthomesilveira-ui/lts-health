@@ -34,6 +34,6 @@ if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceM
 const provenance=dataScreen.match(/function provenanceOverview\(rows\)\{[\s\S]*?\n\}/)?.[0]||'';
 if(!provenance)throw new Error('safe provenance summary missing');
 if(/row\.value\b|source_payload|source_record_id/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
-for(const token of ['Proveniência das métricas','Candidatos permanecem separados das métricas canônicas','não são somadas à Timeline'])if(!dataScreen.includes(token))throw new Error(`provenance privacy guardrail missing: ${token}`);
+for(const token of ['Proveniência das métricas','Candidatos permanecem separados das métricas canônicas','não são somados à Timeline'])if(!dataScreen.includes(token))throw new Error(`provenance privacy guardrail missing: ${token}`);
 
 console.log('LTS Health privacy contract smoke passed');

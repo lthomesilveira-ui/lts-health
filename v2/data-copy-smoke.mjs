@@ -77,14 +77,14 @@ async function run(viewport,label){
   await rerenderData();
   const appleCardLocator=page.locator('.sourceStatus:has([data-source-upload="apple_health"])');
   let appleCard=(await appleCardLocator.textContent())||'';
-  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: candidate Apple steps incorrectly proved canonical Apple readiness`);
+  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: Apple steps incorrectly proved stable Apple readiness`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.metrics.push({source_record_id:'apple-sleep',measured_at:'2026-02-04T12:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h',source:'Apple Health'});
   });
   await rerenderData();
   appleCard=(await appleCardLocator.textContent())||'';
-  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: sleep incorrectly proved canonical Apple readiness`);
+  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: Apple sleep incorrectly proved canonical Apple readiness`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'});
