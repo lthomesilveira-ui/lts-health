@@ -7,6 +7,7 @@ on:
       - 'supabase/migrations/20260829190410_add_source_daily_metrics_for_apple_bridge.sql'
       - 'supabase/migrations/20260829202400_preserve_source_metric_status.sql'
       - 'supabase/migrations/20260829202600_preserve_reviewed_source_metric_status.sql'
+      - 'supabase/migrations/20260829203200_atomic_apple_activity_promotion.sql'
       - 'v2/src/data-layer.js'
       - 'v2/apple-bridge-contract-smoke.mjs'
       - '.github/workflows/apple-bridge-contract.yml'
@@ -25,4 +26,5 @@ jobs:
           test -f supabase/migrations/20260829190410_add_source_daily_metrics_for_apple_bridge.sql
           test -f supabase/migrations/20260829202400_preserve_source_metric_status.sql
           test -f supabase/migrations/20260829202600_preserve_reviewed_source_metric_status.sql
+          test -f supabase/migrations/20260829203200_atomic_apple_activity_promotion.sql
           node v2/apple-bridge-contract-smoke.mjs

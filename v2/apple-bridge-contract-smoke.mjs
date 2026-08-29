@@ -4,12 +4,12 @@ const fn=await readFile('supabase/functions/health-apple-sync-batch/index.ts','u
 const migration=await readFile('supabase/migrations/20260829190410_add_source_daily_metrics_for_apple_bridge.sql','utf8');
 const statusMigration=await readFile('supabase/migrations/20260829202400_preserve_source_metric_status.sql','utf8');
 const reviewedMigration=await readFile('supabase/migrations/20260829202600_preserve_reviewed_source_metric_status.sql','utf8');
+const atomicMigration=await readFile('supabase/migrations/20260829203200_atomic_apple_activity_promotion.sql','utf8');
 const backup=await readFile('v2/src/data-layer.js','utf8');
 
 for(const token of [
   "const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours'])",
   "const historicalExportFamilies=new Set(['apple_watch','iphone','polar_flow'])",
-  "const reviewedStatuses=new Set(['held','superseded'])",
   "const maxRequestBytes=1_000_000",
   "const maxSourcePayloadBytes=8_192",
   "sourceFamily==='apple_activity_summary'&&canonicalActivity.has(metric)",
@@ -19,14 +19,12 @@ for(const token of [
   "reason:'source_payload_too_large'",
   "const sid=sourceId(sourceFamily,metric,d,sourceName)",
   "client_source_record_id:clientSourceRecordId",
-  "source_metric_id:sid",
-  ".select('source_record_id,canonical_status')",
-  "error:'source_status_read_failed'",
-  "blockedCanonicalSourceIds.add(String(row.source_record_id))",
-  "const eligibleCanonical=canonical.filter(x=>!blockedCanonicalSourceIds.has(x.source_metric_id))",
-  "map(({source_metric_id,...row})=>row)",
-  "!blockedCanonicalSourceIds.has(row.source_record_id)",
-  "review_blocked:blockedCanonicalSourceIds.size"
+  "canonicalSourceIds.push(sid)",
+  "sb.rpc('health_promote_apple_activity_summary'",
+  "p_source_record_ids:sourceIds",
+  "error:'canonical_promotion_failed'",
+  "canonicalized:Number(promotion.promoted||0)",
+  "review_blocked:Number(promotion.blocked||0)"
 ]){
   if(!fn.includes(token))throw new Error(`Apple bridge contract missing: ${token}`);
 }
@@ -39,10 +37,10 @@ if(!fn.includes("return `apple_export:${sourceFamily}:${metric}:${d}:${md5(sourc
 if(!fn.includes("return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,sourceName])}`"))throw new Error('fallback Apple bridge source identity is not deterministic/unambiguous');
 if(!fn.includes("new TextEncoder().encode(raw).length>maxRequestBytes"))throw new Error('actual request body size is not bounded');
 if(!fn.includes("payloadSize(r.source_payload)>maxSourcePayloadBytes"))throw new Error('per-row source payload size is not bounded');
-if(/for\(const row of normalized\)\{if\(ids\.has/.test(fn))throw new Error('candidate source rows can be incorrectly marked canonical by metric/date collision');
+if(fn.includes("sb.from('health_metrics')"))throw new Error('Edge Function must not write canonical health_metrics directly');
 const payloadBlock=fn.match(/source_payload:\{[\s\S]*?\n\s*\},\n\s*updated_at/)?.[0]||'';
 const spread='...(r.source_payload&&typeof r.source_payload===\'object\'?r.source_payload:{})';
-const spreadAt=payloadBlock.indexOf(spread),clientIdAt=payloadBlock.indexOf('client_source_record_id:clientSourceRecordId'),batchAt=payloadBlock.indexOf('batch_id:batchId'),bridgeAt=payloadBlock.indexOf('bridge_version:clean(body?.bridge_version,80)'),sourceAt=payloadBlock.indexOf('original_source:sourceName');
+const spreadAt=payloadBlock.indexOf(spread),clientIdAt=payloadBlock.indexOf('client_source_record_id:clientSourceRecordId'),batchAt=payloadBlock.indexOf('batch_id:batchId'),bridgeAt=payloadBlock.indexOf('bridge_version:bridgeVersion'),sourceAt=payloadBlock.indexOf('original_source:sourceName');
 if(spreadAt<0||clientIdAt<0||batchAt<0||bridgeAt<0||sourceAt<0)throw new Error('Apple provenance payload contract missing protected fields');
 if(!(spreadAt<clientIdAt&&clientIdAt<batchAt&&batchAt<bridgeAt&&bridgeAt<sourceAt))throw new Error('client payload can overwrite server-normalized Apple provenance fields');
 if(!migration.includes('enable row level security'))throw new Error('Apple source metric table must have RLS enabled');
@@ -64,6 +62,20 @@ for(const token of [
   "new.canonical_status = 'candidate'",
   'new.canonical_status := old.canonical_status'
 ])if(!reviewedMigration.includes(token))throw new Error(`reviewed source status protection missing: ${token}`);
+for(const token of [
+  'health_promote_apple_activity_summary',
+  'security invoker',
+  'v_user uuid := auth.uid()',
+  'for update',
+  "v_row.source_family <> 'apple_activity_summary'",
+  "v_row.metric_type not in ('active_energy_kcal','exercise_minutes','stand_hours')",
+  "v_row.canonical_status in ('held','superseded')",
+  "'apple_health:' || v_row.metric_type || ':' || v_row.metric_date::text",
+  'v_row.value',
+  "set canonical_status = 'canonical'",
+  'revoke all on function public.health_promote_apple_activity_summary',
+  'grant execute on function public.health_promote_apple_activity_summary'
+])if(!atomicMigration.toLowerCase().includes(token.toLowerCase()))throw new Error(`atomic Apple promotion contract missing: ${token}`);
 if(backup.includes("source_file,source_payload','metric_date'"))throw new Error('raw source payload must not be exported in structured backup');
 if(!backup.includes("source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file','metric_date'"))throw new Error('structured source metric backup projection drifted');
 console.log('LTS Health Apple bridge contract smoke passed');
