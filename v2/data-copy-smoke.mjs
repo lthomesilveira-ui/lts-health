@@ -27,13 +27,27 @@ async function run(viewport,label){
   await page.waitForSelector('#moreSheet:not(.hidden)');
   await page.click('#moreSheet [data-route="dados"]');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
-  const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão']){
+  let text=(await page.textContent('#screenHost'))||'';
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há itens para conferir.']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
+  const overview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
+  if(overview.join('|')!=='1|1|2|0')throw new Error(`${label}: unexpected processing overview ${overview.join('|')}`);
   for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing']){
     if(text.includes(forbidden))throw new Error(`${label}: raw internal value visible: ${forbidden}`);
   }
+
+  await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
+  await page.click(`${nav} [data-route="bio"]`);
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.click('#moreSheet [data-route="dados"]');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  text=(await page.textContent('#screenHost'))||'';
+  const failedOverview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
+  if(failedOverview.join('|')!=='—|—|—|—')throw new Error(`${label}: unloaded uploads rendered numeric counts ${failedOverview.join('|')}`);
+  if(!text.includes('Não foi possível verificar os arquivos agora.'))throw new Error(`${label}: missing upload-domain failure state`);
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
