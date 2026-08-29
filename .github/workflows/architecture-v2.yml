@@ -68,7 +68,10 @@ jobs:
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
           grep -q "appleInspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
           grep -q "labInspectFunction: 'health-inspect-lab'" v2/src/core.js
+          grep -q "sourceType==='apple_health'" v2/src/core.js
           grep -q "\['fleury','einstein','lab'\].includes(sourceType)" v2/src/core.js
+          grep -q 'inspectFunctionForSource(sourceType)' v2/src/core.js
+          grep -q "bucket: 'health-inbox'" v2/src/core.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
@@ -88,9 +91,10 @@ jobs:
           grep -q "downloadStructuredBackup" v2/src/main.js
           grep -q "backupExportBtn" v2/src/data-screen.js
           grep -q "A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
-          grep -q "Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte" v2/src/data-screen.js
+          grep -q "Outros campos só aparecem quando já existem como registros válidos de outra origem" v2/src/data-screen.js
           grep -q "CSV estruturado + documento preservado" v2/src/data-screen.js
-          grep -q "Resultados textuais permanecem textuais" v2/src/data-screen.js
+          grep -q "Resultado textual permanece textual" v2/src/data-screen.js
+          grep -q "PDF e imagem ficam preservados como documentos e não criam resultados" v2/src/data-screen.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "data-body-date" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
@@ -106,13 +110,17 @@ jobs:
           grep -q "Algumas análises estão incompletas agora" v2/src/analysis-screen.js
           grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
           grep -q "markerChart" v2/src/health-screen.js
+          grep -q "resultKind" v2/src/health-screen.js
+          grep -q "Resultados numéricos" v2/src/health-screen.js
+          grep -q "Resultados textuais" v2/src/health-screen.js
+          grep -q "Documentos aguardando leitura" v2/src/health-screen.js
+          grep -q "sem criar resultados por estimativa" v2/src/health-screen.js
           grep -q "não classifica o resultado" v2/src/health-screen.js
           grep -q "documentSummary" v2/src/health-screen.js
           grep -q "evidenceByDate" v2/src/health-screen.js
           grep -q "Coincidência de data não demonstra causa" v2/src/health-screen.js
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Leitura automática parcial" v2/src/data-screen.js
-          grep -q "Documento preservado" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
           grep -q "resting_heart_rate_bpm" v2/src/today-screen.js
           grep -q "metricOrder" v2/src/today-screen.js
