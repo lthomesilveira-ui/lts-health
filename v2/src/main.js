@@ -62,7 +62,7 @@ function render(){
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
 function applyControlState(){
-  const values={trainingPeriod:state.ui.trainingPeriod,analysisPeriod:state.ui.analysisPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,segmentalCompareDate:state.ui.segmentalCompareDate,collectionSelect:state.ui.selectedCollection};
+  const values={trainingPeriod:state.ui.trainingPeriod,analysisPeriod:state.ui.analysisPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,segmentalCompareDate:state.ui.segmentalCompareDate,collectionSelect:state.ui.selectedCollection,dataUploadStatus:state.ui.dataUploadStatus,dataUploadSource:state.ui.dataUploadSource};
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
@@ -130,6 +130,8 @@ function bindStaticEvents(){
     if(event.target.id==='compareB'){state.ui.compareB=event.target.value;scheduleRender();}
     if(event.target.id==='segmentalCompareDate'){state.ui.segmentalCompareDate=event.target.value;scheduleRender();}
     if(event.target.id==='collectionSelect'){state.ui.selectedCollection=event.target.value;scheduleRender();}
+    if(event.target.id==='dataUploadStatus'){state.ui.dataUploadStatus=event.target.value;scheduleRender();}
+    if(event.target.id==='dataUploadSource'){state.ui.dataUploadSource=event.target.value;scheduleRender();}
   });
 
   document.addEventListener('submit',async event=>{
