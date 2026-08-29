@@ -9,6 +9,7 @@ on:
       - 'v2/src/data-layer.js'
       - 'v2/src/main.js'
       - 'v2/src/entry.js'
+      - 'v2/src/shell-accessibility.js'
       - 'v2/navigation-resilience-smoke.mjs'
       - '.github/workflows/navigation-resilience-smoke.yml'
   workflow_dispatch:
@@ -23,9 +24,11 @@ jobs:
         run: |
           node --check v2/src/main.js
           node --check v2/src/entry.js
+          node --check v2/src/shell-accessibility.js
           node --check v2/navigation-resilience-smoke.mjs
           grep -q "localStorage.setItem('lts-health-v2-route'" v2/src/main.js
           grep -q "routeFromLocation" v2/src/main.js
+          grep -q "event.key!=='Escape'" v2/src/shell-accessibility.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
