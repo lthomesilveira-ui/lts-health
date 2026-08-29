@@ -98,10 +98,18 @@ async function run(viewport,label){
     state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),{source_record_id:'mfp-dietary',metric_date:'2026-02-04',metric_type:'dietary_protein_g',value:150,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'}];
   });
   await rerenderData();
-  const mfpCard=(await page.locator('.sourceStatus:has([data-source-upload="myfitnesspal"])').textContent())||'';
-  if(!mfpCard.includes('com dados'))throw new Error(`${label}: MyFitnessPal source candidate did not prove source readiness`);
+  const mfpCardLocator=page.locator('.sourceStatus:has([data-source-upload="myfitnesspal"])');
+  let mfpCard=(await mfpCardLocator.textContent())||'';
+  if(!mfpCard.includes('arquivo recebido')||mfpCard.includes('com dados'))throw new Error(`${label}: MyFitnessPal candidate incorrectly proved canonical readiness`);
   const provenance=(await page.locator('.provenancePanel').textContent())||'';
   if(!provenance.includes('MyFitnessPal')||!provenance.includes('candidato'))throw new Error(`${label}: MyFitnessPal provenance candidate missing`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.nutrition=[...(state.data.nutrition||[]),{source_record_id:'mfp-canonical-day',nutrition_date:'2026-02-04',calories_kcal:2100,protein_g:150,source:'MyFitnessPal'}];
+  });
+  await rerenderData();
+  mfpCard=(await mfpCardLocator.textContent())||'';
+  if(!mfpCard.includes('com dados'))throw new Error(`${label}: canonical MyFitnessPal nutrition did not prove readiness`);
 
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
   await rerenderData();
