@@ -202,6 +202,6 @@ await runFailureState('metrics','hoje','Hoje',async(_page,text)=>{
   if(!text.includes('Indisponível agora')||text.includes('Sem dado importado')) throw new Error('Today metrics failure rendered as missing data instead of unavailable');
 });
 await runFailureState('previews','dados','Dados',async(_page,text)=>{
-  if(!text.includes('detalhes do processamento estão indisponíveis agora')) throw new Error('import preview failure is not explicit to the user');
+  if(!text.includes('processamento está indisponível agora')) throw new Error('import preview failure is not explicit to the user');
 });
 console.log('LTS Health v2 browser smoke passed');
