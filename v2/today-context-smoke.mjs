@@ -17,10 +17,11 @@ async function run(viewport,label){
   for(const expected of ['Contexto recente','peso +1,0 kg','MME +1,0 kg','gordura -1,3 p.p.','Duas sessões mais recentes','1 tipo(s) de métrica em 02/02/2026','2 resultado(s) na coleta mais recente','Progressão de treino','Sem exercício comparável nas duas sessões']){
     if(!text.includes(expected))throw new Error(`${label}: missing recent-context fact: ${expected}`);
   }
-  const metrics=(await page.locator('.todayMetricGrid').textContent())||'';
+  const metricGrid=page.locator('.todayMetricGrid').first();
+  const metrics=(await metricGrid.textContent())||'';
   for(const expected of ['Energia ativa','Exercício','Horas em pé','Sono'])if(!metrics.includes(expected))throw new Error(`${label}: missing validated Apple metric ${expected}`);
   for(const forbidden of ['Passos','FC de repouso'])if(metrics.includes(forbidden))throw new Error(`${label}: unsupported automatic Apple metric leaked into Today: ${forbidden}`);
-  const sectionCopy=(await page.locator('.todaySection').filter({hasText:'Atividade e sono'}).first().textContent())||'';
+  const sectionCopy=(await metricGrid.locator('xpath=..').textContent())||'';
   if(!sectionCopy.includes('energia ativa, minutos de exercício, horas em pé e duração do sono'))throw new Error(`${label}: validated Apple metric scope is not explicit`);
   if(!text.includes('sem transformar coincidências em causa ou meta'))throw new Error(`${label}: recent-context limitation is not explicit`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
