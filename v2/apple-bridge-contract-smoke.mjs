@@ -17,6 +17,11 @@ if(/canonicalActivity[^\n]*steps/.test(fn))throw new Error('steps must not be ca
 if(/canonicalActivity[^\n]*oxygen_saturation_pct/.test(fn))throw new Error('oxygen saturation must not be canonicalized automatically');
 if(!fn.includes("allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg'])"))throw new Error('allowed Apple bridge metric set drifted');
 if(/for\(const row of normalized\)\{if\(ids\.has/.test(fn))throw new Error('candidate source rows can be incorrectly marked canonical by metric/date collision');
+const payloadBlock=fn.match(/source_payload:\{[\s\S]*?\n\s*\},\n\s*updated_at/)?.[0]||'';
+const spread='...(r.source_payload&&typeof r.source_payload===\'object\'?r.source_payload:{})';
+const spreadAt=payloadBlock.indexOf(spread),batchAt=payloadBlock.indexOf('batch_id:batchId'),bridgeAt=payloadBlock.indexOf('bridge_version:clean(body?.bridge_version,80)'),sourceAt=payloadBlock.indexOf('original_source:sourceName');
+if(spreadAt<0||batchAt<0||bridgeAt<0||sourceAt<0)throw new Error('Apple provenance payload contract missing protected fields');
+if(!(spreadAt<batchAt&&batchAt<bridgeAt&&bridgeAt<sourceAt))throw new Error('client payload can overwrite server-normalized Apple provenance fields');
 if(!migration.includes('enable row level security'))throw new Error('Apple source metric table must have RLS enabled');
 for(const op of ['select','insert','update','delete'])if(!migration.includes(`health_source_daily_metrics_${op}_own`))throw new Error(`missing ${op} own-row policy`);
 if(!migration.includes("canonical_status in ('candidate','canonical','held','superseded')"))throw new Error('canonical status constraint missing');
