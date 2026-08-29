@@ -48,3 +48,26 @@ jobs:
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             build
+      - name: Archive unsigned iPhone app
+        working-directory: ios/LTSHealthSync
+        run: |
+          xcodebuild \
+            -project LTSHealthSync.xcodeproj \
+            -scheme LTSHealthSync \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/LTSHealthSync.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            archive
+      - name: Package unsigned archive
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/LTSHealthSync.xcarchive" \
+            "$RUNNER_TEMP/LTSHealthSync-unsigned.xcarchive.zip"
+      - name: Upload unsigned archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: LTSHealthSync-unsigned-xcarchive
+          path: ${{ runner.temp }}/LTSHealthSync-unsigned.xcarchive.zip
+          if-no-files-found: error
+          retention-days: 14

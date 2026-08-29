@@ -12,6 +12,7 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
     private let anchorBatchSize = 500
     private let anchorMaxBatches = 40
     private let anchorLookbackDays = 14
+    private let backgroundSyncGate = BackgroundSyncGate()
     private var observers: [HKObserverQuery] = []
 
     private init() {}
@@ -37,7 +38,7 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
         try await requestAuthorization()
         defaults.set(true, forKey: "healthSetupCompleted")
         _ = ensureAnchorStartDate()
-        try await primeAnchors()
+        _ = try await primeAnchors()
         try await enableBackgroundDelivery()
         startObservers()
     }
@@ -48,9 +49,10 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
             guard let self else { return }
             do {
                 _ = self.ensureAnchorStartDate()
-                try await self.primeAnchors()
+                let changed = try await self.primeAnchors()
                 try await self.enableBackgroundDelivery()
                 self.startObservers()
+                if changed { await self.syncRecentIfAuthenticated() }
             } catch {
                 // Manual sync/setup remains available if background bootstrap cannot finish.
             }
@@ -110,17 +112,31 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
     private func consumeChanges(for type: HKQuantityType) async {
         do {
             let changed = try await advanceAnchor(for: type)
-            guard changed, await api.hasSession else { return }
-            _ = try await recentSync(days: 7)
+            guard changed else { return }
+            await syncRecentIfAuthenticated()
         } catch {
             // Observer completion must still run; next launch/manual sync is idempotent.
         }
     }
 
-    private func primeAnchors() async throws {
-        for type in triggerTypes {
-            _ = try await advanceAnchor(for: type)
+    private func syncRecentIfAuthenticated() async {
+        guard await api.hasSession else { return }
+        guard await backgroundSyncGate.begin() else { return }
+        do {
+            _ = try await recentSync(days: 7)
+        } catch {
+            // A later observer/manual sync retries the same idempotent daily summaries.
         }
+        await backgroundSyncGate.end()
+    }
+
+    private func primeAnchors() async throws -> Bool {
+        var changed = false
+        for type in triggerTypes {
+            let typeChanged = try await advanceAnchor(for: type)
+            changed = changed || typeChanged
+        }
+        return changed
     }
 
     private func advanceAnchor(for type: HKSampleType) async throws -> Bool {
@@ -262,6 +278,20 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
         if let data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true) {
             defaults.set(data, forKey: key)
         }
+    }
+}
+
+private actor BackgroundSyncGate {
+    private var running = false
+
+    func begin() -> Bool {
+        guard !running else { return false }
+        running = true
+        return true
+    }
+
+    func end() {
+        running = false
     }
 }
 

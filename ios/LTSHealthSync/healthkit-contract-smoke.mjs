@@ -1,13 +1,14 @@
 import { readFile } from 'node:fs/promises';
 
-const [project,info,entitlements,api,health,appDelegate,readme] = await Promise.all([
+const [project,info,entitlements,api,health,appDelegate,readme,workflow] = await Promise.all([
   readFile('ios/LTSHealthSync/project.yml','utf8'),
   readFile('ios/LTSHealthSync/Resources/Info.plist','utf8'),
   readFile('ios/LTSHealthSync/Resources/LTSHealthSync.entitlements','utf8'),
   readFile('ios/LTSHealthSync/Sources/SupabaseAPI.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/HealthKitSyncCoordinator.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/AppDelegate.swift','utf8'),
-  readFile('ios/LTSHealthSync/README.md','utf8')
+  readFile('ios/LTSHealthSync/README.md','utf8'),
+  readFile('.github/workflows/ios-healthkit-build.yml','utf8')
 ]);
 
 for (const token of [
@@ -41,8 +42,13 @@ for (const token of [
   'HKQuery.predicateForSamples(',
   'limit: anchorBatchSize',
   'let changed = try await advanceAnchor(for: type)',
-  'guard changed, await api.hasSession else { return }',
-  'try await primeAnchors()'
+  'private let backgroundSyncGate = BackgroundSyncGate()',
+  'private actor BackgroundSyncGate',
+  'guard await backgroundSyncGate.begin() else { return }',
+  'await backgroundSyncGate.end()',
+  'private func primeAnchors() async throws -> Bool',
+  'let changed = try await self.primeAnchors()',
+  'if changed { await self.syncRecentIfAuthenticated() }'
 ]) if (!health.includes(token)) throw new Error(`HealthKit sync contract missing: ${token}`);
 
 if (health.includes('HKObjectQueryNoLimit')) throw new Error('HealthKit anchor query must not materialize unbounded history');
@@ -58,5 +64,14 @@ if (!health.includes('requiringSecureCoding: true')) throw new Error('HealthKit 
 if (!appDelegate.includes('didFinishLaunchingWithOptions') || !appDelegate.includes('startObserversIfConfigured')) throw new Error('background observers are not bootstrapped on launch');
 if (!project.includes('platform: iOS') || !project.includes('iOS: "17.0"')) throw new Error('iOS project target contract drifted');
 if (!readme.includes('teste precisa ser feito em iPhone físico')) throw new Error('device-only background-delivery limitation is not documented');
+for (const token of [
+  '-sdk iphonesimulator',
+  '-sdk iphoneos',
+  'Archive unsigned iPhone app',
+  '-archivePath "$RUNNER_TEMP/LTSHealthSync.xcarchive"',
+  'CODE_SIGNING_ALLOWED=NO',
+  'actions/upload-artifact@v4',
+  'LTSHealthSync-unsigned-xcarchive'
+]) if (!workflow.includes(token)) throw new Error(`iOS build/archive workflow missing: ${token}`);
 
 console.log('LTS Health iOS HealthKit contract smoke passed');
