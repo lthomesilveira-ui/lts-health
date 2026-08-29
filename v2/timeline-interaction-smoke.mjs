@@ -12,6 +12,11 @@ async function run(viewport,label){
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
+  await page.waitForSelector('.timelineStats');
+  await page.waitForSelector('.timelineContext');
+  const contextText=(await page.locator('.timelineContext').textContent())||'';
+  if(!contextText.includes('Visão cruzada por dia'))throw new Error(`${label}: cross-domain daily context is missing`);
+  if(!contextText.includes('não demonstra causa'))throw new Error(`${label}: cross-domain context lost the non-causal guardrail`);
 
   await page.selectOption('#timelinePeriod','all');
   await page.waitForSelector('#timelineYear');
