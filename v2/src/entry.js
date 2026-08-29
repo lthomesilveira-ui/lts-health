@@ -4,7 +4,12 @@ const $=id=>document.getElementById(id);
 let refreshCallback=async()=>{};
 let exerciseCounter=0;
 
-const today=()=>new Date().toISOString().slice(0,10);
+export function localDateValue(value=new Date()){
+  const d=value instanceof Date?value:new Date(value);
+  const year=d.getFullYear(),month=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${year}-${month}-${day}`;
+}
+const today=()=>localDateValue();
 
 function bodyForm(){
   return `<form id="bodyEntryForm" class="entryForm">
