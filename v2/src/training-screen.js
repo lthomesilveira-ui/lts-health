@@ -112,13 +112,46 @@ function exerciseProgression(group){
   }).join('')}<p class="footerNote">O gráfico usa somente a maior carga explicitamente registrada em cada sessão e mantém cada unidade separada. Não estima repetição máxima nem converte placas ou unidades ausentes.</p></div>`;
 }
 
+function comparisonSnapshot(group,date){
+  const exercises=group.rows.filter(r=>day(r.workout_date)===date);
+  const sets=exercises.flatMap(setsFor);
+  const byUnit=new Map();
+  for(const set of sets){
+    const weight=num(set.weight);if(weight==null)continue;
+    const unit=set.weight_unit||'sem unidade';
+    const current=byUnit.get(unit);
+    if(!current||weight>current.weight){byUnit.set(unit,{weight,reps:num(set.reps_numeric)});continue;}
+    if(weight===current.weight&&current.reps==null&&num(set.reps_numeric)!=null)current.reps=num(set.reps_numeric);
+  }
+  return {date,sets,byUnit};
+}
+
+function sessionComparison(group){
+  if(failed('exercises'))return domainError('O histórico de exercícios não pôde ser carregado.');
+  if(failed('sets'))return domainError('As séries necessárias para comparar sessões não puderam ser carregadas.');
+  if(!group)return empty('Selecione um exercício.');
+  const dates=unique(group.rows.map(r=>day(r.workout_date))).filter(Boolean).sort().reverse().slice(0,2);
+  if(dates.length<2)return `<div class="trainingComparisonEmpty"><b>Comparação entre sessões</b><span>É preciso ter o mesmo exercício registrado em pelo menos duas sessões para comparar.</span></div>`;
+  const latest=comparisonSnapshot(group,dates[0]),previous=comparisonSnapshot(group,dates[1]);
+  const units=unique([...latest.byUnit.keys(),...previous.byUnit.keys()]);
+  const rows=units.map(unit=>{
+    const a=previous.byUnit.get(unit),b=latest.byUnit.get(unit),digits=[a?.weight,b?.weight].some(v=>v!=null&&!Number.isInteger(v))?1:0;
+    const av=a?`${fmtNum(a.weight,digits)} ${displayUnit(unit)}${a.reps!=null?` · ${fmtNum(a.reps,0)} reps`:''}`:'—';
+    const bv=b?`${fmtNum(b.weight,digits)} ${displayUnit(unit)}${b.reps!=null?` · ${fmtNum(b.reps,0)} reps`:''}`:'—';
+    const delta=a&&b?b.weight-a.weight:null;
+    const change=delta==null?'sem comparação direta':`diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${displayUnit(unit)}`;
+    return `<div class="trainingComparisonRow"><b>${esc(displayUnit(unit))}</b><span>${esc(av)}</span><span>${esc(bv)}</span><small>${esc(change)}</small></div>`;
+  }).join('');
+  return `<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesma descrição de exercício e mesma unidade, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div><p class="footerNote">A comparação descreve somente o que foi registrado. Não estima esforço, repetição máxima ou equivalência entre máquinas.</p></section>`;
+}
+
 function exerciseHistory(group){
   if(failed('exercises')) return domainError('O histórico de exercícios não pôde ser carregado.');
   if(failed('sets')) return domainError('As séries necessárias para comparar cargas não puderam ser carregadas.');
   if(!group)return empty('Selecione um exercício.');
   const rows=[...group.rows].sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
   const days=unique(rows.map(r=>r.workout_date)).slice(0,20);
-  return `<div class="exerciseHistoryHead"><b>${esc(group.label)}</b><small>Cargas de unidades diferentes permanecem separadas.</small></div>${exerciseProgression(group)}<div class="exerciseHistoryRows list">${days.map(date=>{
+  return `<div class="exerciseHistoryHead"><b>${esc(group.label)}</b><small>Cargas de unidades diferentes permanecem separadas.</small></div>${sessionComparison(group)}${exerciseProgression(group)}<div class="exerciseHistoryRows list">${days.map(date=>{
     const exercises=rows.filter(r=>r.workout_date===date),sets=exercises.flatMap(setsFor),units=unique(sets.map(s=>s.weight_unit||'sem unidade'));
     const tops=units.map(unit=>{const values=sets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);if(!values.length)return null;const top=Math.max(...values);return`${fmtNum(top,Number.isInteger(top)?0:1)} ${esc(displayUnit(unit))}`;}).filter(Boolean).join(' · ');
     const numericReps=sets.map(s=>num(s.reps_numeric)).filter(v=>v!=null);
@@ -161,7 +194,7 @@ export function renderTrainingScreen(){
       <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map(sessionCard).join('')||empty('Nenhum treino encontrado.')}</div></div>
       <div class="stack">
         <div class="card"><div class="cardHead"><div><b>Séries por grupo</b><small>Contagem no período selecionado.</small></div></div><div class="barList">${volumeHtml}</div></div>
-        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico e maior carga registrada por sessão, sempre preservando a unidade original.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
+        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico, comparação das sessões recentes e maior carga registrada, sempre preservando a unidade original.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
       </div>
     </div>`;
 }
