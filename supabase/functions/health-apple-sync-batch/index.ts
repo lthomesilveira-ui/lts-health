@@ -57,10 +57,10 @@ Deno.serve(async(req:Request)=>{
       confidence:'high',
       source_file:clean(body?.source_file,180),
       source_payload:{
+        ...(r.source_payload&&typeof r.source_payload==='object'?r.source_payload:{}),
         batch_id:batchId,
         bridge_version:clean(body?.bridge_version,80),
-        original_source:sourceName,
-        ...(r.source_payload&&typeof r.source_payload==='object'?r.source_payload:{})
+        original_source:sourceName
       },
       updated_at:new Date().toISOString()
     };
