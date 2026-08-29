@@ -55,25 +55,30 @@ function contextCard(label,headline,detail,route='',ref='',kind=''){
   const button=route?action(route,'Abrir',ref,kind):'';
   return `<article class="todayContextCard"><span>${esc(label)}</span><b>${esc(headline)}</b><p>${esc(detail)}</p>${button?`<div class="todayActions">${button}</div>`:''}</article>`;
 }
+function exerciseMatchKey(exercise){
+  const name=norm(exercise?.exercise),machine=norm(exercise?.machine)||'sem-maquina';
+  return name?`${name}||${machine}`:'';
+}
 function workoutProgressCard(workouts){
   if(failed('workouts'))return domainUnavailable('Progressão de treino','As sessões não carregaram agora.');
   if(failed('exercises')||failed('sets'))return domainUnavailable('Progressão de treino','Exercícios ou séries não carregaram agora; as sessões continuam disponíveis.');
   if(workouts.length<2)return contextCard('Progressão de treino','Sem comparação entre sessões','São necessárias pelo menos duas sessões carregadas.');
   const latest=workouts[0],previous=workouts[1];
-  const prevMap=new Map(exercisesFor(previous).map(e=>[norm(e.exercise),e]));
+  const prevMap=new Map(exercisesFor(previous).map(e=>[exerciseMatchKey(e),e]).filter(([key])=>key));
   const comparisons=[];
   for(const currentExercise of exercisesFor(latest)){
-    const key=norm(currentExercise.exercise),previousExercise=prevMap.get(key);if(!key||!previousExercise)continue;
+    const key=exerciseMatchKey(currentExercise),previousExercise=prevMap.get(key);if(!key||!previousExercise)continue;
     const currentSets=setsFor(currentExercise),previousSets=setsFor(previousExercise),units=unique([...currentSets,...previousSets].map(s=>s.weight_unit||'sem unidade'));
     for(const unit of units){
       const currentWeights=currentSets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);
       const previousWeights=previousSets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);
       if(!currentWeights.length||!previousWeights.length)continue;
       const now=Math.max(...currentWeights),before=Math.max(...previousWeights),delta=now-before;
-      comparisons.push(`${currentExercise.exercise}: ${before} → ${now} ${unit==='plate_index'?'placa':unit}${delta===0?'':` (${delta>0?'+':''}${fmtNum(delta,Number.isInteger(delta)?0:1)})`}`);
+      const machine=currentExercise.machine?` · ${currentExercise.machine}`:'';
+      comparisons.push(`${currentExercise.exercise}${machine}: ${before} → ${now} ${unit==='plate_index'?'placa':unit}${delta===0?'':` (${delta>0?'+':''}${fmtNum(delta,Number.isInteger(delta)?0:1)})`}`);
     }
   }
-  if(!comparisons.length)return contextCard('Progressão de treino','Sem exercício comparável nas duas sessões','A comparação exige a mesma descrição de exercício e a mesma unidade nas duas sessões.','treinos',latest.source_record_id,'workout');
+  if(!comparisons.length)return contextCard('Progressão de treino','Sem exercício comparável nas duas sessões','A comparação exige o mesmo exercício, a mesma máquina e a mesma unidade nas duas sessões.','treinos',latest.source_record_id,'workout');
   return contextCard('Progressão de treino',`${fmtDate(previous.workout_date)} → ${fmtDate(latest.workout_date)}`,comparisons.slice(0,3).join(' · '),'treinos',latest.source_record_id,'workout');
 }
 function recentContext(body,workouts,metrics,lab){
