@@ -47,7 +47,12 @@ export const state = {
 export const routes = new Set(['bio','treinos','evolucao','analise','tratamentos','hoje','timeline','saude','nutricao','dados']);
 export const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const day = value => String(value ?? '').slice(0,10);
-export const num = value => { const n=Number(value); return Number.isFinite(n)?n:null; };
+export const num = value => {
+  if(value==null)return null;
+  if(typeof value==='string'&&value.trim()==='')return null;
+  const n=Number(value);
+  return Number.isFinite(n)?n:null;
+};
 export const fmtNum = (value,digits=1) => num(value)==null?'—':Number(value).toLocaleString('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits});
 export const fmtDate = value => { const s=day(value);if(!s)return'—';const[y,m,d]=s.split('-');return y&&m&&d?`${d}/${m}/${y}`:s; };
 export const unique = values => [...new Set((values||[]).filter(Boolean))];
