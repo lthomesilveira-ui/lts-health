@@ -53,7 +53,7 @@ for (const token of [
 ]) if (!health.includes(token)) throw new Error(`HealthKit sync contract missing: ${token}`);
 
 if (health.includes('HKObjectQueryNoLimit')) throw new Error('HealthKit anchor query must not materialize unbounded history');
-for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h']) {
+for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g']) {
   const canonicalPayloadPattern = new RegExp(`metric_type:\\s*"${metric}"`);
   if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the v1 canonical ActivitySummary client`);
 }
@@ -66,18 +66,32 @@ for (const token of [
   'metricType: "hrv_sdnn_ms"',
   'metricType: "respiratory_rate_bpm"',
   'metricType: "weight_kg"',
+  'identifier: .dietaryEnergyConsumed',
+  'metricType: "dietary_energy_kcal"',
+  'identifier: .dietaryProtein',
+  'metricType: "dietary_protein_g"',
+  'identifier: .dietaryCarbohydrates',
+  'metricType: "dietary_carbs_g"',
+  'identifier: .dietaryFatTotal',
+  'metricType: "dietary_fat_g"',
+  'identifier: .dietaryFiber',
+  'metricType: "dietary_fiber_g"',
+  'unit: .kilocalorie()',
+  'unit: .gram()',
+  'options: [.cumulativeSum, .separateBySource]',
   'source_name: source.name',
   'source_family: self.sourceFamily(for: source.name)',
+  'return "myfitnesspal"',
   'return "polar_flow"',
   'return "apple_watch"',
   'return "iphone"',
   'return "healthkit_candidate"',
-  'ios-healthkit-candidates-v1',
+  'ios-healthkit-candidates-v2',
   'frequency: .hourly'
 ]) if (!candidates.includes(token)) throw new Error(`Candidate HealthKit contract missing: ${token}`);
 
 if (candidates.includes('apple_activity_summary')) throw new Error('Candidate coordinator must never emit the canonical ActivitySummary family');
-if (candidates.includes('sleep_duration_h') || candidates.includes('oxygen_saturation_pct')) throw new Error('Sleep/oxygen remain outside candidate v1 until dedicated aggregation validation');
+if (candidates.includes('sleep_duration_h') || candidates.includes('oxygen_saturation_pct')) throw new Error('Sleep/oxygen remain outside candidate v2 until dedicated aggregation validation');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)')) throw new Error('active energy observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleExerciseTime)')) throw new Error('exercise-time observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleStandTime)')) throw new Error('stand-time observer trigger missing');
