@@ -12,6 +12,12 @@ async function run(viewport,label){
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.nutrition=[...(state.data.nutrition||[]),{source_record_id:'timeline-context-nutrition',nutrition_date:'2026-02-02',calories_kcal:null,protein_g:null,source:'Fixture de interface'}];
+  });
+  await page.selectOption('#timelinePeriod','90');
+  await page.selectOption('#timelinePeriod','365');
   await page.waitForSelector('.timelineStats');
   await page.waitForSelector('.timelineContext');
   const contextText=(await page.locator('.timelineContext').textContent())||'';
@@ -19,7 +25,7 @@ async function run(viewport,label){
   if(!contextText.includes('não demonstra causa'))throw new Error(`${label}: cross-domain context lost the non-causal guardrail`);
   if(!contextText.includes('Toque em um registro para abrir o detalhe'))throw new Error(`${label}: cross-domain drilldown instruction is missing`);
   const contextJump=page.locator('.timelineContext [data-timeline-jump][data-timeline-kind="workout"]').first();
-  if(!await contextJump.count())throw new Error(`${label}: actionable workout is missing from cross-domain context`);
+  if(!await contextJump.count())throw new Error(`${label}: actionable workout is missing from explicit cross-domain fixture`);
   await contextJump.click();
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   await page.waitForSelector('.session.open .sessionBody');
