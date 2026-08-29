@@ -64,6 +64,32 @@ function trainingCalendar(rows){
   }).join('')}</div>`;
 }
 
+function mondayOf(value){
+  const d=day(value);if(!d)return'';
+  const date=new Date(`${d}T12:00:00`);if(Number.isNaN(date.getTime()))return'';
+  const shift=(date.getDay()+6)%7;date.setDate(date.getDate()-shift);
+  return date.toISOString().slice(0,10);
+}
+
+function trainingRhythm(rows){
+  if(!rows.length)return empty('Sem sessões registradas para mostrar o ritmo semanal.');
+  const weeks=new Map();
+  for(const workout of rows){
+    const key=mondayOf(workout.workout_date);if(!key)continue;
+    if(!weeks.has(key))weeks.set(key,{sessions:0,days:new Set(),types:new Set()});
+    const bucket=weeks.get(key);bucket.sessions+=1;bucket.days.add(day(workout.workout_date));if(workout.workout_type)bucket.types.add(workout.workout_type);
+  }
+  const entries=[...weeks.entries()].sort((a,b)=>b[0].localeCompare(a[0])).slice(0,12);
+  if(!entries.length)return empty('Sem semanas comparáveis no período.');
+  const max=Math.max(1,...entries.map(([,v])=>v.sessions));
+  return `<div class="barList">${entries.map(([start,info])=>{
+    const end=new Date(`${start}T12:00:00`);end.setDate(end.getDate()+6);
+    const endDay=end.toISOString().slice(0,10);
+    const typeText=info.types.size?`${info.types.size} tipo(s) de treino`:'tipo não informado';
+    return `<div class="barRow"><span>${fmtDate(start)}–${fmtDate(endDay)}</span><div><i style="width:${Math.max(6,info.sessions/max*100)}%"></i></div><b>${info.sessions}</b><small>${info.days.size} dia(s) com sessão · ${esc(typeText)}</small></div>`;
+  }).join('')}</div><p class="footerNote">Mostra somente sessões estruturadas registradas. Semanas sem registro não são interpretadas como ausência de atividade física.</p>`;
+}
+
 function exerciseGroups(){
   if(failed('exercises')) return [];
   const map=new Map();
@@ -189,7 +215,10 @@ export function renderTrainingScreen(){
       ${metric('Séries',setMetric,setsFailed?'não carregado':'séries detalhadas')}
       ${metric('Último treino',rows[0]?fmtDate(rows[0].workout_date):'—')}
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Calendário de treinos</b><small>Dias com sessões registradas no período. A ausência de marca não significa inatividade.</small></div></div>${trainingCalendar(periodRows)}</div>
+    <div class="grid split sectionGap">
+      <div class="card"><div class="cardHead"><div><b>Calendário de treinos</b><small>Dias com sessões registradas no período. A ausência de marca não significa inatividade.</small></div></div>${trainingCalendar(periodRows)}</div>
+      <div class="card"><div class="cardHead"><div><b>Ritmo semanal</b><small>Sessões estruturadas por semana, sem inferir atividade nos dias sem registro.</small></div></div>${trainingRhythm(periodRows)}</div>
+    </div>
     <div class="grid split sectionGap">
       <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map(sessionCard).join('')||empty('Nenhum treino encontrado.')}</div></div>
       <div class="stack">
