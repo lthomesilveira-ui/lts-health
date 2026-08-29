@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { readFile } from 'node:fs/promises';
 
 const base=process.env.LTS_HEALTH_BASE_URL||'https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1';
 const forbidden=/\b(canonical|parity|backend|provenance[- ]first|readiness|PWA)\b/i;
@@ -21,7 +22,7 @@ async function more(page,nav,route,title,label){
 
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
-  const page=await browser.newPage({viewport});
+  const page=await browser.newPage({viewport,acceptDownloads:true});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
@@ -62,7 +63,7 @@ async function run(viewport,label){
 
   await more(page,nav,'hoje','Hoje',`${label}/hoje`);
   const today=(await page.textContent('#screenHost'))||'';
-  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed Apple metric ${text}`);
+  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm','Contexto recente','peso +1,0 kg','3 tipo(s) de métrica em 02/02/2026'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed fact ${text}`);
 
   await more(page,nav,'timeline','Timeline',`${label}/timeline`);
   await page.evaluate(async()=>{
@@ -75,7 +76,12 @@ async function run(viewport,label){
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
-  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado')||!data.includes('fonte única'))throw new Error(`${label}: Data import capabilities or overlap guard missing`);
+  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado')||!data.includes('fonte única')||!data.includes('Backup estruturado'))throw new Error(`${label}: Data import or backup capabilities missing`);
+  const downloadPromise=page.waitForEvent('download');
+  await page.click('#backupExportBtn');
+  const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
+  const backup=JSON.parse(await readFile(path,'utf8'));
+  if(backup.format!=='lts-health-structured-backup'||backup.counts?.body!==2||backup.counts?.metrics!==3)throw new Error(`${label}: deployed backup contents invalid`);
   await more(page,nav,'tratamentos','Tratamentos',`${label}/tratamentos`);
   const treatment=(await page.textContent('#screenHost'))||'';
   if(treatment.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error(`${label}: treatment screen exposed operational guidance`);
