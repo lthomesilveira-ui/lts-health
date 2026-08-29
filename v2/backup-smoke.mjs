@@ -21,9 +21,16 @@ async function run(viewport,label){
   if(!/^lts-health-backup-\d{4}-\d{2}-\d{2}\.json$/.test(download.suggestedFilename()))throw new Error(`${label}: unexpected backup filename ${download.suggestedFilename()}`);
   const path=await download.path();if(!path)throw new Error(`${label}: browser did not produce backup file`);
   const raw=await readFile(path,'utf8'),backup=JSON.parse(raw);
-  if(backup.format!=='lts-health-structured-backup'||backup.schema_version!==1||backup.scope!=='structured_records_only')throw new Error(`${label}: backup envelope invalid`);
+  if(backup.format!=='lts-health-structured-backup'||backup.schema_version!==2||backup.scope!=='structured_records_only')throw new Error(`${label}: backup envelope invalid`);
+  if(backup.complete!==true)throw new Error(`${label}: backup is not explicitly complete`);
+  if(!Array.isArray(backup.domains)||backup.domains.length!==backup.domain_count)throw new Error(`${label}: backup domain manifest mismatch`);
+  if(Object.keys(backup.counts||{}).length!==backup.domain_count)throw new Error(`${label}: backup counts do not cover all domains`);
   if(backup.counts?.body!==2||backup.counts?.workouts!==2||backup.counts?.labs!==2||backup.counts?.metrics!==3)throw new Error(`${label}: backup did not include all fixture structured domains`);
-  for(const key of ['body','segmental','workouts','exercises','sets','labs','docs','treatments','uploads','previews','quality','nutrition','meals','activity','metrics'])if(!Array.isArray(backup.data?.[key]))throw new Error(`${label}: backup missing domain ${key}`);
+  for(const key of ['body','segmental','workouts','exercises','sets','labs','docs','treatments','uploads','previews','quality','nutrition','meals','activity','metrics']){
+    if(!backup.domains.includes(key))throw new Error(`${label}: backup manifest missing domain ${key}`);
+    if(!Array.isArray(backup.data?.[key]))throw new Error(`${label}: backup missing domain ${key}`);
+  }
+  if(!backup.notes?.some?.(n=>String(n).includes('nenhum arquivo de backup é baixado')))throw new Error(`${label}: incomplete-backup guardrail note missing`);
   if(/"(dose_mg|dose_ml|frequency|injection_site|source_payload|access_token|refresh_token|password)"\s*:/.test(raw))throw new Error(`${label}: backup contains a prohibited operational or secret field`);
   await page.waitForFunction(()=>document.querySelector('#backupExportMsg')?.textContent?.includes('Backup criado:'));
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`${label}: backup panel caused horizontal overflow ${overflow}px`);
