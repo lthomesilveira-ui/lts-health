@@ -121,11 +121,16 @@ export async function buildStructuredBackup(onProgress=()=>{}){
     exported_at:new Date().toISOString(),
     scope:'structured_records_only',
     complete:true,
+    structured_complete:true,
+    includes_private_files:false,
+    includes_credentials:false,
+    components:{structured_records:'included',private_original_files:'not_included',credentials_and_tokens:'not_included'},
     domain_count:domains.length,
     domains,
     counts,
     notes:[
       'Backup estruturado completo dos domínios suportados e acessíveis à sessão atual no momento da exportação.',
+      'O campo complete se refere somente ao escopo structured_records_only; não significa cópia dos arquivos privados originais.',
       'Se qualquer domínio falhar durante a leitura, nenhum arquivo de backup é baixado.',
       'Arquivos originais armazenados na área privada não são incorporados neste JSON.',
       'Credenciais, tokens e segredos de autenticação não são exportados.',
@@ -141,5 +146,5 @@ export async function downloadStructuredBackup(onProgress=()=>{}){
   const backup=await buildStructuredBackup(onProgress),date=new Date().toISOString().slice(0,10),filename=`lts-health-backup-${date}.json`;
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download=filename;link.style.display='none';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-  return{filename,counts:backup.counts,complete:backup.complete,domainCount:backup.domain_count};
+  return{filename,counts:backup.counts,complete:backup.complete,structuredComplete:backup.structured_complete,domainCount:backup.domain_count};
 }
