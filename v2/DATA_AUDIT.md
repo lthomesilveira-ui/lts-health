@@ -12,7 +12,7 @@ A auditoria operacional deve verificar, no backend privado, a existência e a in
 - nutrição diária, refeições e atividade;
 - métricas gerais e fontes passivas;
 - eventos históricos de tratamentos;
-- uploads, previews de ingestão e pendências de qualidade.
+- uploads, previews de ingestão e qualidade dos dados.
 
 As telas calculam contagens e intervalos a partir dos registros carregados na sessão autenticada. Nenhum total pessoal é fixado no código ou em documentação pública.
 
@@ -21,15 +21,17 @@ As telas calculam contagens e intervalos a partir dos registros carregados na se
 - A sessão estruturada é a representação principal do treino quando a fonte oferece evidência suficiente.
 - Exercícios e séries só são derivados quando o texto ou arquivo de origem permite a decomposição sem inferência.
 - Texto bruto histórico é preservado quando não houver estrutura suficiente.
+- Um exercício pode ser recuperado como registro navegável a partir de evidência textual sem que séries sejam inventadas; nesse caso o texto original permanece explícito como registro da fonte.
 - Registros sem evidência corroborante permanecem fora do histórico principal e não são promovidos por conveniência.
 - Repetições, cargas, unidades, máquinas e nomes de exercícios ausentes não são preenchidos por suposição.
+- Uma correção de migração deve manter rastreabilidade no ledger de qualidade e registrar explicitamente quando nenhuma série foi inferida.
 
 ## Reconciliação de composição corporal
 
 - A linha temporal estruturada deve preservar as datas e valores provenientes das fontes originais.
 - Dados segmentares só aparecem quando os campos necessários existem na fonte estruturada.
 - Diferenças entre datas ou lados são descritivas e não recebem rótulos de ideal, melhor ou pior.
-- Conflitos entre inventário de documentos e dados estruturados permanecem pendentes até existir fonte original suficiente para reconciliar.
+- Conflitos entre inventário de documentos e dados estruturados não são reconciliados por proximidade de data; dependem da fonte original.
 
 ## Nutrição
 
@@ -67,15 +69,15 @@ As telas calculam contagens e intervalos a partir dos registros carregados na se
 - Fleury e Einstein preservam o arquivo e a revisão; um parser especializado só entra no fluxo normal depois de validado em amostras reais.
 - O arquivo original permanece no armazenamento privado independentemente do caminho de processamento.
 
-## Pendências de qualidade
+## Qualidade dos dados
 
-O ledger privado diferencia:
+O ledger privado diferencia estado operacional de limitação conhecida:
 
-- `open`: exige nova evidência, arquivo ou revisão real;
-- `accepted`: lacuna conhecida e intencional que não deve ser preenchida por inferência;
-- `resolved`: inconsistência efetivamente reconciliada com evidência suficiente.
+- `open`: existe uma ação interna concreta que pode ser executada agora; este estado é o backlog operacional real;
+- `accepted`: a limitação está identificada e corretamente contida, mas depende de arquivo, identificação ou outra evidência externa para mudar; não deve bloquear o produto nem ser preenchida por inferência;
+- `resolved`: houve uma ação concreta e auditável que encerrou a inconsistência.
 
-A interface normal deve traduzir isso para linguagem simples e nunca expor termos de implementação desnecessários.
+A interface deve apresentar esses grupos separadamente como **Ação necessária**, **Limitações conhecidas** e **Resolvidos**. Uma limitação aceita nunca pode ser usada para inflar artificialmente o número de pendências internas.
 
 ## Gate para a nova interface
 
