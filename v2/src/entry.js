@@ -133,22 +133,27 @@ export function setupEntryController({onSaved}={}){
     if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm') return;
     e.preventDefault();
     const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=$('entryModal');
-    let saved=false;
     modal.dataset.saving='true';
-    msg.textContent='Salvando…'; button.disabled=true;
+    msg.textContent='Salvando…';button.disabled=true;
+
     try{
-      if(form.id==='bodyEntryForm') await saveBodyRecord(formObject(form));
+      if(form.id==='bodyEntryForm')await saveBodyRecord(formObject(form));
       else await saveWorkout(collectWorkout(form));
-      saved=true;
-      msg.textContent='Salvo.';
-      await refreshCallback();
-      setTimeout(()=>{modal.dataset.saving='false';closeEntry();},450);
     }catch(error){
       modal.dataset.saving='false';
       if(!validationMessages[error?.message])console.error(error);
       msg.textContent=entryErrorMessage(error);
-    }finally{
-      if(!saved&&button.isConnected)button.disabled=false;
+      if(button.isConnected)button.disabled=false;
+      return;
     }
+
+    msg.textContent='Salvo.';
+    try{
+      await refreshCallback();
+    }catch(error){
+      console.warn('entry_refresh_failed',error);
+      msg.textContent='Salvo. A tela não pôde ser atualizada agora.';
+    }
+    setTimeout(()=>{modal.dataset.saving='false';closeEntry();},450);
   });
 }
