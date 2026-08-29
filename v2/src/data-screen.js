@@ -5,10 +5,7 @@ const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
 const failed=key=>state.domainStatus[key]==='error';
 
-function contains(rows,fields,term){
-  term=norm(term);
-  return (rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));
-}
+function contains(rows,fields,term){term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));}
 function sourceStatus(found,keys=[]){return found?'ready':keys.some(failed)?'unknown':'missing';}
 
 function sourceState(){
@@ -34,86 +31,66 @@ function statusCard(source){
   const detail=ready?source.readyDetail:unknown?'Não foi possível verificar esta fonte agora.':source.missingDetail;
   return `<article class="sourceStatus ${ready?'ready':''}"><div class="sourceStatusTop"><b>${esc(source.name)}</b>${pill(label,ready?'ok':unknown?'warn':'')}</div><span class="sourceCapability">${esc(source.capability)}</span><p>${esc(detail)}</p><button type="button" data-source-upload="${esc(source.key)}">${esc(source.action)}</button><details class="sourceMore"><summary>Como funciona</summary><small class="sourceScope">${esc(source.scope)}</small></details></article>`;
 }
-function area(label,key){return [label,failed(key)?'—':String((state.data[key]||[]).length),failed(key)?'indisponível agora':'registros'];}
+function area(label,key){return[label,failed(key)?'—':String((state.data[key]||[]).length),failed(key)?'indisponível agora':'registros'];}
 
 const sourceLabels={apple_health:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',fleury:'Fleury',einstein:'Einstein',lab:'Exame laboratorial',other:'Outra origem'};
 const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'revisão necessária',rejected:'não processado',failed:'falha no processamento'};
-const issueCategoryLabels={
-  limited_longitudinal_coverage:'Histórico ainda limitado',
-  metadata_only:'Arquivo original ainda não disponível',
-  migration_integrity:'Conferência de histórico',
-  missing_data:'Informação ainda ausente',
-  parsing:'Leitura do arquivo precisa de revisão',
-  source_date_conflict_risk:'Data da fonte precisa de conferência',
-  workout_normalization:'Nome do treino precisa de conferência',
-  workout_parsing:'Detalhe do treino precisa de revisão'
-};
+const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão'};
 function sourceLabel(value){return sourceLabels[value]||String(value||'Origem não informada').replaceAll('_',' ');}
 function uploadStatus(value){return uploadStatusLabels[value]||String(value||'status não informado').replaceAll('_',' ');}
-function issueTitle(issue){return issueCategoryLabels[issue?.category]||issue?.entity_name||'Pendência de revisão';}
+function issueTitle(issue){return issueCategoryLabels[issue?.category]||issue?.entity_name||'Revisão de qualidade';}
 
-function previewStatus(status){
-  return ({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||String(status||'sem detalhe').replaceAll('_',' ');
-}
+function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||String(status||'sem detalhe').replaceAll('_',' ');}
 function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
 function previewDetail(preview){
-  if(!preview)return '<span class="processingMuted">Processamento sem detalhe disponível.</span>';
+  if(!preview)return'<span class="processingMuted">Processamento sem detalhe disponível.</span>';
   const facts=[preview.detected_format?`Formato: ${preview.detected_format}`:null,preview.row_count!=null?`${preview.row_count} registro(s)`:null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean);
   const warnings=Array.isArray(preview.warnings)?preview.warnings.slice(0,2):[];
   return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='review_required'||preview.status==='needs_specialized_parser'?'warn':'ok')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${warnings.length?`<ul>${warnings.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:''}${preview.error_message?`<small>${esc(preview.error_message)}</small>`:''}</div>`;
 }
-function uploadRows(uploads,previews){
-  return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');
-}
+function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
 
-function uploadBucket(upload){
-  const status=String(upload?.status||'').toLowerCase();
-  if(status==='uploaded'||status==='processing')return'in_progress';
-  if(status==='processed'||status==='imported')return'done';
-  if(status==='review_required'||status==='rejected'||status==='failed')return'attention';
-  return'other';
-}
-function filteredUploads(uploads){
-  const status=state.ui.dataUploadStatus||'all',source=state.ui.dataUploadSource||'all';
-  return uploads.filter(upload=>(status==='all'||uploadBucket(upload)===status)&&(source==='all'||String(upload.source_type||'other')===source));
-}
-function uploadFilters(uploads){
-  const sources=[...new Set(uploads.map(u=>String(u.source_type||'other')).filter(Boolean))].sort((a,b)=>sourceLabel(a).localeCompare(sourceLabel(b),'pt-BR'));
-  return `<div class="controls"><label>Status<select id="dataUploadStatus"><option value="all">Todos</option><option value="attention">Precisa de atenção</option><option value="in_progress">Em andamento</option><option value="done">Concluídos</option></select></label><label>Origem<select id="dataUploadSource"><option value="all">Todas</option>${sources.map(source=>`<option value="${esc(source)}">${esc(sourceLabel(source))}</option>`).join('')}</select></label></div>`;
-}
+function uploadBucket(upload){const status=String(upload?.status||'').toLowerCase();if(status==='uploaded'||status==='processing')return'in_progress';if(status==='processed'||status==='imported')return'done';if(status==='review_required'||status==='rejected'||status==='failed')return'attention';return'other';}
+function filteredUploads(uploads){const status=state.ui.dataUploadStatus||'all',source=state.ui.dataUploadSource||'all';return uploads.filter(upload=>(status==='all'||uploadBucket(upload)===status)&&(source==='all'||String(upload.source_type||'other')===source));}
+function uploadFilters(uploads){const sources=[...new Set(uploads.map(u=>String(u.source_type||'other')).filter(Boolean))].sort((a,b)=>sourceLabel(a).localeCompare(sourceLabel(b),'pt-BR'));return `<div class="controls"><label>Status<select id="dataUploadStatus"><option value="all">Todos</option><option value="attention">Precisa de atenção</option><option value="in_progress">Em andamento</option><option value="done">Concluídos</option></select></label><label>Origem<select id="dataUploadSource"><option value="all">Todas</option>${sources.map(source=>`<option value="${esc(source)}">${esc(sourceLabel(source))}</option>`).join('')}</select></label></div>`;}
 
 function processingCounts(uploads){
   const counts={waiting:0,done:0,review:0,failed:0};
-  for(const upload of uploads){
-    const status=String(upload.status||'').toLowerCase();
-    if(status==='uploaded'||status==='processing')counts.waiting+=1;
-    else if(status==='processed'||status==='imported')counts.done+=1;
-    else if(status==='review_required'||status==='rejected')counts.review+=1;
-    else if(status==='failed')counts.failed+=1;
-  }
+  for(const upload of uploads){const status=String(upload.status||'').toLowerCase();if(status==='uploaded'||status==='processing')counts.waiting+=1;else if(status==='processed'||status==='imported')counts.done+=1;else if(status==='review_required'||status==='rejected')counts.review+=1;else if(status==='failed')counts.failed+=1;}
   return counts;
 }
 function processingOverview(uploads){
-  if(failed('uploads'))return `<div class="sourceGrid"><div class="sourceCard"><div><b>Recebidos</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Concluídos</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Para revisar</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Com falha</b><small>indisponível agora</small></div><span>—</span></div></div>`;
+  if(failed('uploads'))return `<div class="sourceGrid"><div class="sourceCard"><div><b>Em andamento</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Concluídos</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Para revisar</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Com falha</b><small>indisponível agora</small></div><span>—</span></div></div>`;
   const c=processingCounts(uploads);
   return `<div class="sourceGrid"><div class="sourceCard"><div><b>Em andamento</b><small>recebidos ou processando</small></div><span>${c.waiting}</span></div><div class="sourceCard"><div><b>Concluídos</b><small>processados ou importados</small></div><span>${c.done}</span></div><div class="sourceCard"><div><b>Para revisar</b><small>pedem conferência</small></div><span>${c.review}</span></div><div class="sourceCard"><div><b>Com falha</b><small>original permanece guardado</small></div><span>${c.failed}</span></div></div>`;
 }
-function nextStep(uploads,issues){
-  if(failed('uploads'))return '<div class="note warn"><b>Não foi possível verificar os arquivos agora.</b><span>Atualize para acompanhar os envios. As outras áreas continuam disponíveis.</span></div>';
+function nextStep(uploads,actionIssues){
+  if(failed('uploads'))return'<div class="note warn"><b>Não foi possível verificar os arquivos agora.</b><span>Atualize para acompanhar os envios. As outras áreas continuam disponíveis.</span></div>';
   const c=processingCounts(uploads);
-  if(c.review||(!failed('quality')&&issues.length))return `<div class="note warn"><b>Há itens para conferir.</b><span>Abra as pendências abaixo antes de considerar a importação concluída. Nenhum campo ambíguo é preenchido automaticamente.</span></div>`;
-  if(c.failed)return '<div class="note warn"><b>Há arquivo com processamento incompleto.</b><span>O original continua guardado. Você pode tentar novamente depois sem perder o envio.</span></div>';
-  if(c.waiting)return '<div class="note"><b>Há arquivo em processamento.</b><span>Atualize em alguns instantes para acompanhar o resultado.</span></div>';
-  if(!uploads.length)return '<div class="note"><b>Comece por uma fonte.</b><span>Escolha a origem do arquivo. O original é guardado antes do processamento.</span></div>';
-  return '<div class="note"><b>Envios sem ação pendente.</b><span>Novas fontes podem ser adicionadas quando necessário.</span></div>';
+  if(c.review||(!failed('quality')&&actionIssues.length))return'<div class="note warn"><b>Há ação necessária.</b><span>Confira os itens abaixo. Nenhum campo ambíguo é preenchido automaticamente.</span></div>';
+  if(c.failed)return'<div class="note warn"><b>Há arquivo com processamento incompleto.</b><span>O original continua guardado. Você pode tentar novamente depois sem perder o envio.</span></div>';
+  if(c.waiting)return'<div class="note"><b>Há arquivo em processamento.</b><span>Atualize em alguns instantes para acompanhar o resultado.</span></div>';
+  if(!uploads.length)return'<div class="note"><b>Comece por uma fonte.</b><span>Escolha a origem do arquivo. O original é guardado antes do processamento.</span></div>';
+  return'<div class="note"><b>Sem ação interna pendente.</b><span>Limitações que dependem de arquivos ou evidência externa aparecem separadas abaixo.</span></div>';
+}
+
+function qualityRow(issue,mode){
+  const detail=mode==='accepted'?(issue.resolution_notes||issue.description||'Limitação conhecida.'):(issue.description||'Revisão necessária.');
+  return `<div class="row"><div style="grid-column:1/3"><b>${esc(issueTitle(issue))}</b><small>${esc(detail)}</small></div></div>`;
+}
+function qualityOverview(all){
+  const actions=all.filter(q=>String(q.status).toLowerCase()==='open');
+  const accepted=all.filter(q=>String(q.status).toLowerCase()==='accepted');
+  const resolved=all.filter(q=>String(q.status).toLowerCase()==='resolved');
+  return {actions,accepted,resolved,html:`<div class="sourceGrid"><div class="sourceCard"><div><b>Ação necessária</b><small>algo que o app pode resolver agora</small></div><span>${actions.length}</span></div><div class="sourceCard"><div><b>Limitações conhecidas</b><small>dependem de evidência externa ou foram preservadas de propósito</small></div><span>${accepted.length}</span></div><div class="sourceCard"><div><b>Resolvidos</b><small>ações concluídas e auditáveis</small></div><span>${resolved.length}</span></div></div>`};
 }
 
 export function renderDataHub(){
-  const uploads=[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))),visibleUploads=filteredUploads(uploads),previews=state.data.previews||[],issues=(state.data.quality||[]).filter(q=>String(q.status).toLowerCase()==='open'),sources=sourceState();
+  const uploads=[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))),visibleUploads=filteredUploads(uploads),previews=state.data.previews||[],quality=state.data.quality||[],q=qualityOverview(quality),sources=sourceState();
   const areas=[area('Bio','body'),area('Treinos','workouts'),area('Alimentação','nutrition'),area('Refeições','meals'),area('Exames','labs'),area('Documentos','docs'),area('Atividade','activity'),area('Métricas','metrics')];
   return `${title('Dados','Importe, acompanhe e faça backup das suas fontes.')}
     <div class="sourceStatusGrid">${sources.map(statusCard).join('')}</div>
-    <section class="card sectionGap"><div class="cardHead"><div><b>Acompanhamento dos arquivos</b><small>Veja rapidamente o que terminou e o que ainda precisa de atenção.</small></div></div>${processingOverview(uploads)}${nextStep(uploads,issues)}</section>
+    <section class="card sectionGap"><div class="cardHead"><div><b>Acompanhamento dos arquivos</b><small>Veja rapidamente o que terminou e o que ainda precisa de atenção.</small></div></div>${processingOverview(uploads)}${nextStep(uploads,q.actions)}</section>
     <section class="backupPanel sectionGap"><div><span>Backup</span><b>Exportar registros organizados</b><p>Gera um JSON com os dados estruturados disponíveis. Arquivos privados e credenciais ficam de fora.</p><small>O arquivo contém dados de saúde; guarde-o com segurança.</small></div><div class="backupActions"><button id="backupExportBtn" type="button" class="primary">Exportar backup</button><span id="backupExportMsg" role="status"></span></div></section>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Enviar arquivo</b><small>Escolha a origem e envie.</small></div></div><form id="uploadForm" class="uploadForm"><label>Origem<select id="uploadType"><option value="apple_health">Apple Saúde</option><option value="polar_flow">Polar Flow</option><option value="myfitnesspal">MyFitnessPal</option><option value="fleury">Fleury</option><option value="einstein">Einstein</option><option value="other">Outro</option></select></label><label>Arquivo<input id="uploadFile" type="file" accept=".zip,.csv,.xml,.json,.pdf,image/*"></label><button class="primary" type="submit">Enviar</button><div id="uploadMsg" class="msg" role="status"></div></form></div>
@@ -121,6 +98,6 @@ export function renderDataHub(){
     </div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Arquivos recebidos</b><small>Filtre por situação ou origem.</small></div>${failed('uploads')?pill('indisponível','warn'):pill(`${visibleUploads.length} de ${uploads.length}`)}</div>${failed('uploads')?'<div class="errorState"><b>Arquivos indisponíveis agora.</b><span>Tente atualizar.</span></div>':`${uploadFilters(uploads)}${failed('previews')?`<div class="note warn">Os arquivos carregaram, mas o processamento está indisponível agora.</div><div class="uploadAudit">${uploadRows(visibleUploads,[])}</div>`:`<div class="uploadAudit">${uploadRows(visibleUploads,previews)}</div>`}`}</div>
-      <div class="card"><div class="cardHead"><div><b>Pendências</b><small>Itens que precisam de revisão.</small></div>${failed('quality')?pill('indisponível','warn'):pill(`${issues.length}`)}</div>${failed('quality')?'<div class="errorState"><b>Pendências indisponíveis agora.</b><span>Tente atualizar.</span></div>':`<div class="list">${issues.slice(0,40).map(i=>`<div class="row"><div style="grid-column:1/3"><b>${esc(issueTitle(i))}</b><small>${esc(i.description||'Revisão necessária.')}</small></div></div>`).join('')||empty('Nenhuma pendência aberta.')}</div>`}</div>
+      <div class="card"><div class="cardHead"><div><b>Qualidade dos dados</b><small>Ação interna e limitações externas ficam separadas.</small></div>${failed('quality')?pill('indisponível','warn'):pill(`${quality.length} registros`)}</div>${failed('quality')?'<div class="errorState"><b>Qualidade indisponível agora.</b><span>Tente atualizar.</span></div>':`${q.html}<div class="sectionGap"><b>Ação necessária</b><div class="list">${q.actions.slice(0,40).map(i=>qualityRow(i,'open')).join('')||empty('Nenhuma ação interna pendente.')}</div></div><details class="sourceMore sectionGap"><summary>Limitações conhecidas (${q.accepted.length})</summary><div class="list">${q.accepted.slice(0,40).map(i=>qualityRow(i,'accepted')).join('')||empty('Nenhuma limitação conhecida.')}</div></details><details class="sourceMore sectionGap"><summary>Resolvidos (${q.resolved.length})</summary><div class="list">${q.resolved.slice(0,40).map(i=>qualityRow(i,'resolved')).join('')||empty('Nenhum item resolvido registrado.')}</div></details>`}</div>
     </div>`;
 }
