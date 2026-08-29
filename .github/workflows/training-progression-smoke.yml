@@ -4,6 +4,8 @@ on:
     branches: [architecture-v2]
     paths:
       - 'v2/src/training-screen.js'
+      - 'v2/src/core.js'
+      - 'v2/src/data-layer.js'
       - 'v2/training.css'
       - 'v2/training-progression-smoke.mjs'
       - '.github/workflows/training-progression-smoke.yml'
