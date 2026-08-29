@@ -11,7 +11,7 @@ const routeDomains={
   timeline:['nutrition','activity','metrics','labs','docs','treatments'],
   saude:['labs','docs'],
   nutricao:['nutrition','meals'],
-  dados:['nutrition','meals','activity','metrics','labs','docs','uploads','previews','quality']
+  dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality']
 };
 
 export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb){
@@ -44,20 +44,18 @@ const loaders={
   nutrition:()=>fetchAll('health_daily_nutrition','source_record_id,nutrition_date,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,source,source_file,confidence','nutrition_date',false),
   meals:()=>fetchAll('health_nutrition_meals','source_record_id,meal_date,meal_name,calories_kcal,protein_g,carbs_g,fat_g,source,source_file,confidence,record_status','meal_date',false),
   activity:()=>fetchAll('health_activity_records','source_record_id,activity_date,activity_name,activity_type,calories_kcal,duration_minutes,steps,source,source_file,confidence,record_status,is_adjustment','activity_date',false),
-  metrics:()=>fetchAll('health_metrics','source_record_id,measured_at,metric_type,value,unit,source,source_file,confidence,notes','measured_at',false)
-};
-
-const backupOnlyLoaders={
+  metrics:()=>fetchAll('health_metrics','source_record_id,measured_at,metric_type,value,unit,source,source_file,confidence,notes','measured_at',false),
   sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file','metric_date',false)
 };
-const backupLoaders={...loaders,...backupOnlyLoaders};
+
+const backupLoaders={...loaders};
 const fixtureSourceMetrics=[{
   source_record_id:'source-metric-candidate-1',metric_date:'2026-02-02',metric_type:'steps',value:7100,unit:'count',
   source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
 }];
 
 function setFixture(){
-  state.data=fixtureData();state.errors={};state.domainStatus={};
+  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
   if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
     state.data[fixtureError]=[];
