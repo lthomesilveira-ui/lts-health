@@ -65,9 +65,10 @@ async function run(viewport,label){
   await page.fill('#trainingQuery','');
   await page.waitForFunction(()=>document.querySelectorAll('.sessions .session').length>1);
   await page.fill('#exerciseQuery','remada teste');
-  await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length>=2);
-  const exerciseButtons=await page.locator('.exerciseList button').count();
-  if(exerciseButtons!==2)throw new Error(`${label}: expected two machine-separated exercise groups, got ${exerciseButtons}`);
+  await page.waitForFunction(()=>{
+    const buttons=[...document.querySelectorAll('.exerciseList button')];
+    return buttons.length===2&&buttons.every(button=>button.textContent?.toLowerCase().includes('remada teste'));
+  });
   await page.click('.exerciseList button:has-text("Máquina A")');
   await page.waitForSelector('.trainingRecent');
   const text=(await page.locator('.exerciseDetail').textContent())||'';
