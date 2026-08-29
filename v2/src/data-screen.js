@@ -36,8 +36,24 @@ function statusCard(source){
 }
 function area(label,key){return [label,failed(key)?'—':String((state.data[key]||[]).length),failed(key)?'indisponível agora':'registros'];}
 
+const sourceLabels={apple_health:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',fleury:'Fleury',einstein:'Einstein',lab:'Exame laboratorial',other:'Outra origem'};
+const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',review_required:'revisão necessária',failed:'falha no processamento'};
+const issueCategoryLabels={
+  limited_longitudinal_coverage:'Histórico ainda limitado',
+  metadata_only:'Arquivo original ainda não disponível',
+  migration_integrity:'Conferência de histórico',
+  missing_data:'Informação ainda ausente',
+  parsing:'Leitura do arquivo precisa de revisão',
+  source_date_conflict_risk:'Data da fonte precisa de conferência',
+  workout_normalization:'Nome do treino precisa de conferência',
+  workout_parsing:'Detalhe do treino precisa de revisão'
+};
+function sourceLabel(value){return sourceLabels[value]||String(value||'Origem não informada').replaceAll('_',' ');}
+function uploadStatus(value){return uploadStatusLabels[value]||String(value||'status não informado').replaceAll('_',' ');}
+function issueTitle(issue){return issueCategoryLabels[issue?.category]||issue?.entity_name||'Pendência de revisão';}
+
 function previewStatus(status){
-  return ({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||status||'sem detalhe';
+  return ({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||String(status||'sem detalhe').replaceAll('_',' ');
 }
 function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
 function previewDetail(preview){
@@ -47,7 +63,7 @@ function previewDetail(preview){
   return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='review_required'||preview.status==='needs_specialized_parser'?'warn':'ok')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${warnings.length?`<ul>${warnings.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:''}${preview.error_message?`<small>${esc(preview.error_message)}</small>`:''}</div>`;
 }
 function uploadRows(uploads,previews){
-  return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(u.source_type||'origem não informada')} · ${esc(u.status||'status não informado')}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo enviado.');
+  return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo enviado.');
 }
 
 export function renderDataHub(){
@@ -62,6 +78,6 @@ export function renderDataHub(){
     </div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Arquivos recebidos</b><small>Status de cada envio.</small></div>${failed('uploads')?pill('indisponível','warn'):pill(`${uploads.length}`)}</div>${failed('uploads')?'<div class="errorState"><b>Arquivos indisponíveis agora.</b><span>Tente atualizar.</span></div>':failed('previews')?`<div class="note warn">Os arquivos carregaram, mas o processamento está indisponível agora.</div><div class="uploadAudit">${uploadRows(uploads,[])}</div>`:`<div class="uploadAudit">${uploadRows(uploads,previews)}</div>`}</div>
-      <div class="card"><div class="cardHead"><div><b>Pendências</b><small>Itens que precisam de revisão.</small></div>${failed('quality')?pill('indisponível','warn'):pill(`${issues.length}`)}</div>${failed('quality')?'<div class="errorState"><b>Pendências indisponíveis agora.</b><span>Tente atualizar.</span></div>':`<div class="list">${issues.slice(0,40).map(i=>`<div class="row"><div style="grid-column:1/3"><b>${esc(i.entity_name||i.category||'Pendência')}</b><small>${esc(i.description||'Revisão necessária.')}</small></div></div>`).join('')||empty('Nenhuma pendência aberta.')}</div>`}</div>
+      <div class="card"><div class="cardHead"><div><b>Pendências</b><small>Itens que precisam de revisão.</small></div>${failed('quality')?pill('indisponível','warn'):pill(`${issues.length}`)}</div>${failed('quality')?'<div class="errorState"><b>Pendências indisponíveis agora.</b><span>Tente atualizar.</span></div>':`<div class="list">${issues.slice(0,40).map(i=>`<div class="row"><div style="grid-column:1/3"><b>${esc(issueTitle(i))}</b><small>${esc(i.description||'Revisão necessária.')}</small></div></div>`).join('')||empty('Nenhuma pendência aberta.')}</div>`}</div>
     </div>`;
 }
