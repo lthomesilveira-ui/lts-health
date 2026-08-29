@@ -33,82 +33,64 @@ function summaryCard(label,main,sub='',actionHtml='',kind=''){
 function domainUnavailable(label,detail){return`<article class="todayStatusCard unavailable"><span>${esc(label)}</span><b>Indisponível agora</b><small>${esc(detail)}</small></article>`;}
 function latestMetric(rows,type){return[...(rows||[])].filter(m=>m.metric_type===type&&metricTypes.has(m.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at)))[0]||null;}
 function availabilityLabel(value,today){const d=day(value);return d&&d===today?'Hoje':d?`Último disponível em ${fmtDate(d)}`:'Último disponível';}
-function metricCard(rows,type,today){
-  const label=metricLabel[type],m=latestMetric(rows,type);if(!m)return`<article class="todayStatusCard"><span>${esc(label)}</span><b>Sem dado importado</b><small>Nenhum registro disponível para esta métrica.</small></article>`;
-  const value=num(m.value),unit=m.unit||metricFallbackUnit[type];
-  const display=value==null?'Registro disponível':`${fmtNum(value,metricDigits[type]??1)} ${esc(unit)}`;
-  const freshness=availabilityLabel(m.measured_at,today);
-  return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${esc(freshness)}${m.source?` · ${esc(m.source)}`:''}</small></article>`;
+function metricCard(metrics,type,today){
+  const row=latestMetric(metrics,type),label=metricLabel[type];
+  if(!row)return`<article class="todayStatusCard"><span>${esc(label)}</span><b>Sem dado importado</b><small>Nenhum registro disponível.</small></article>`;
+  return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${fmtNum(row.value,metricDigits[type])} ${esc(row.unit||metricFallbackUnit[type])}</b><small>${esc(availabilityLabel(row.measured_at,today))}</small></article>`;
 }
-function existingOtherMetricCards(rows,today){
-  const latestByType=new Map();
-  for(const row of [...(rows||[])].filter(r=>otherMetricTypes.has(r.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at))))if(!latestByType.has(row.metric_type))latestByType.set(row.metric_type,row);
-  return [...latestByType.entries()].map(([type,row])=>{
-    const value=num(row.value),label=type==='steps'?'Passos':'FC de repouso';
-    const display=value==null?'Registro disponível':type==='steps'?`${fmtNum(value,0)} passos`:`${fmtNum(value,0)} bpm`;
-    return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${esc(availabilityLabel(row.measured_at,today))}${row.source?` · ${esc(row.source)}`:''}</small></article>`;
-  }).join('');
+function existingOtherMetricCards(metrics,today){
+  return [...otherMetricTypes].map(type=>latestMetricByType(metrics,type)).filter(Boolean).map(row=>`<article class="todayStatusCard secondary"><span>${esc(otherMetricLabel(row.metric_type))}</span><b>${fmtNum(row.value,otherMetricDigits(row.metric_type))} ${esc(row.unit||otherMetricUnit(row.metric_type))}</b><small>${esc(availabilityLabel(row.measured_at,today))}</small></article>`).join('');
 }
-function recentRow(label,date,main,sub='',button=''){
-  return`<div class="todayRecentRow"><div><span>${esc(label)}</span><b>${esc(main)}</b><small>${esc([date?fmtDate(date):'',sub].filter(Boolean).join(' · '))}</small></div>${button}</div>`;
+function latestMetricByType(rows,type){return[...(rows||[])].filter(m=>m.metric_type===type).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at)))[0]||null;}
+function otherMetricLabel(type){return type==='steps'?'Passos':type==='resting_heart_rate_bpm'?'FC de repouso':String(type||'Métrica').replaceAll('_',' ');}
+function otherMetricDigits(type){return type==='steps'?0:0;}
+function otherMetricUnit(type){return type==='steps'?'passos':type==='resting_heart_rate_bpm'?'bpm':'';}
+function contextCard(label,main,sub='',route=''){
+  return`<article class="todayContextCard"><span>${esc(label)}</span><b>${esc(main)}</b>${sub?`<small>${esc(sub)}</small>`:''}${route?`<button class="todayContextAction" data-route="${esc(route)}">Abrir</button>`:''}</article>`;
 }
-function signed(value,digits=1,unit=''){
-  value=num(value);if(value==null)return'—';return`${value>0?'+':''}${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
+function recentRow(label,date,main,sub='',actionHtml=''){
+  return`<div class="todayRecentRow"><div><span>${esc(label)}</span><b>${esc(main)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div><div>${date?`<time>${esc(fmtDate(date))}</time>`:''}${actionHtml||''}</div></div>`;
 }
-function contextCard(label,headline,detail,route='',ref='',kind=''){
-  const button=route?action(route,'Abrir',ref,kind):'';
-  return `<article class="todayContextCard"><span>${esc(label)}</span><b>${esc(headline)}</b><p>${esc(detail)}</p>${button?`<div class="todayActions">${button}</div>`:''}</article>`;
+function bodyDelta(rows,key,digits=1,unit=''){
+  const available=rows.filter(r=>num(r?.[key])!=null);if(available.length<2)return null;
+  const first=available.at(-2),last=available.at(-1),delta=num(last[key])-num(first[key]);
+  return{delta,text:`${delta>0?'+':''}${fmtNum(delta,digits)}${unit?` ${unit}`:''}`,from:first.measured_at,to:last.measured_at};
 }
-function exerciseMatchKey(exercise){
-  const name=norm(exercise?.exercise),machine=norm(exercise?.machine)||'sem-maquina';
-  return name?`${name}||${machine}`:'';
+function latestMetricCount(metrics){
+  const dates=unique(metrics.map(m=>day(m.measured_at)).filter(Boolean)).sort();const latest=dates.at(-1);return latest?{date:latest,count:new Set(metrics.filter(m=>day(m.measured_at)===latest).map(m=>m.metric_type)).size}:null;
+}
+function latestWorkoutPair(workouts){return workouts.length>=2?[workouts[1],workouts[0]]:null;}
+function comparableExerciseKey(exercise){return`${norm(exercise?.exercise)}|${norm(exercise?.machine)}`;}
+function bestLoad(exercise){
+  const rows=setsFor(exercise).filter(s=>num(s.weight)!=null&&s.weight_unit);if(!rows.length)return null;
+  const units=unique(rows.map(s=>norm(s.weight_unit)));if(units.length!==1)return null;
+  return{value:Math.max(...rows.map(s=>num(s.weight))),unit:rows.find(s=>norm(s.weight_unit)===units[0])?.weight_unit||units[0]};
 }
 function workoutProgressCard(workouts){
-  if(failed('workouts'))return domainUnavailable('Progressão de treino','As sessões não carregaram agora.');
-  if(failed('exercises')||failed('sets'))return domainUnavailable('Progressão de treino','Exercícios ou séries não carregaram agora; as sessões continuam disponíveis.');
-  if(workouts.length<2)return contextCard('Progressão de treino','Sem comparação entre sessões','São necessárias pelo menos duas sessões carregadas.');
-  const latest=workouts[0],previous=workouts[1];
-  const prevMap=new Map(exercisesFor(previous).map(e=>[exerciseMatchKey(e),e]).filter(([key])=>key));
-  const comparisons=[];
-  for(const currentExercise of exercisesFor(latest)){
-    const key=exerciseMatchKey(currentExercise),previousExercise=prevMap.get(key);if(!key||!previousExercise)continue;
-    const currentSets=setsFor(currentExercise),previousSets=setsFor(previousExercise),units=unique([...currentSets,...previousSets].map(s=>s.weight_unit||'sem unidade'));
-    for(const unit of units){
-      const currentWeights=currentSets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);
-      const previousWeights=previousSets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);
-      if(!currentWeights.length||!previousWeights.length)continue;
-      const now=Math.max(...currentWeights),before=Math.max(...previousWeights),delta=now-before;
-      const machine=currentExercise.machine?` · ${currentExercise.machine}`:'';
-      comparisons.push(`${currentExercise.exercise}${machine}: ${before} → ${now} ${unit==='plate_index'?'placa':unit}${delta===0?'':` (${delta>0?'+':''}${fmtNum(delta,Number.isInteger(delta)?0:1)})`}`);
-    }
+  const pair=latestWorkoutPair(workouts);if(!pair)return contextCard('Progressão de treino','Histórico insuficiente','São necessárias duas sessões recentes.');
+  const [older,newer]=pair,olderExercises=exercisesFor(older),newerExercises=exercisesFor(newer),olderMap=new Map(olderExercises.map(e=>[comparableExerciseKey(e),e]));
+  for(const exercise of newerExercises){
+    const previous=olderMap.get(comparableExerciseKey(exercise));if(!previous)continue;
+    const a=bestLoad(previous),b=bestLoad(exercise);if(!a||!b||norm(a.unit)!==norm(b.unit))continue;
+    return contextCard('Progressão de treino',`${exercise.exercise}: ${fmtNum(a.value,0)} → ${fmtNum(b.value,0)} ${b.unit}`,`Comparação entre ${fmtDate(older.workout_date)} e ${fmtDate(newer.workout_date)} com o mesmo exercício, a mesma máquina e a mesma unidade.`,'treinos');
   }
-  if(!comparisons.length)return contextCard('Progressão de treino','Sem exercício comparável nas duas sessões','A comparação exige o mesmo exercício, a mesma máquina e a mesma unidade nas duas sessões.','treinos',latest.source_record_id,'workout');
-  return contextCard('Progressão de treino',`${fmtDate(previous.workout_date)} → ${fmtDate(latest.workout_date)}`,comparisons.slice(0,3).join(' · '),'treinos',latest.source_record_id,'workout');
+  return contextCard('Progressão de treino','Sem exercício comparável nas duas sessões','A comparação só usa o mesmo exercício, a mesma máquina e a mesma unidade.');
 }
 function recentContext(body,workouts,metrics,lab){
   const cards=[];
-  if(failed('body'))cards.push(domainUnavailable('Composição corporal','As medições corporais não carregaram agora.'));
-  else if(body.length>=2){
-    const last=body.at(-1),prev=body.at(-2),parts=[];
-    if(num(last.weight_kg)!=null&&num(prev.weight_kg)!=null)parts.push(`peso ${signed(num(last.weight_kg)-num(prev.weight_kg),1,'kg')}`);
-    if(num(last.skeletal_muscle_mass_kg)!=null&&num(prev.skeletal_muscle_mass_kg)!=null)parts.push(`MME ${signed(num(last.skeletal_muscle_mass_kg)-num(prev.skeletal_muscle_mass_kg),1,'kg')}`);
-    if(num(last.body_fat_pct)!=null&&num(prev.body_fat_pct)!=null)parts.push(`gordura ${signed(num(last.body_fat_pct)-num(prev.body_fat_pct),1,'p.p.')}`);
-    cards.push(contextCard('Composição corporal',`${fmtDate(prev.measured_at)} → ${fmtDate(last.measured_at)}`,parts.length?parts.join(' · '):'Duas medições disponíveis para comparação.','bio',day(last.measured_at),'body'));
-  }else cards.push(contextCard('Composição corporal','Sem comparação entre medições','É preciso haver pelo menos duas medições registradas para mostrar diferenças.'));
-
-  if(failed('workouts'))cards.push(domainUnavailable('Treinos','As sessões não carregaram agora.'));
-  else if(workouts.length>=2){const last=workouts[0],prev=workouts[1];cards.push(contextCard('Treinos','Duas sessões mais recentes',`${fmtDate(prev.workout_date)} · ${prev.workout_type||'Treino'} → ${fmtDate(last.workout_date)} · ${last.workout_type||'Treino'}`,'treinos',last.source_record_id,'workout'));}
-  else if(workouts.length===1){const last=workouts[0];cards.push(contextCard('Treinos','Uma sessão registrada',`${fmtDate(last.workout_date)} · ${last.workout_type||'Treino'}`,'treinos',last.source_record_id,'workout'));}
-  else cards.push(contextCard('Treinos','Sem sessão registrada','Nenhuma sessão está disponível no histórico carregado.'));
-
-  if(failed('metrics'))cards.push(domainUnavailable('Atividade e sono','As métricas não carregaram agora.'));
+  if(failed('body'))cards.push(domainUnavailable('Composição corporal','A comparação corporal não carregou agora.'));
   else{
-    const supported=(metrics||[]).filter(m=>metricTypes.has(m.metric_type)&&day(m.measured_at));
-    const latestDay=unique(supported.map(m=>day(m.measured_at))).sort().at(-1)||null;
-    const types=latestDay?unique(supported.filter(m=>day(m.measured_at)===latestDay).map(m=>m.metric_type)):[];
-    cards.push(contextCard('Atividade e sono',latestDay?`${types.length} tipo(s) de métrica em ${fmtDate(latestDay)}`:'Sem métrica importada',latestDay?types.map(t=>metricLabel[t]||t).join(' · '):'As quatro métricas suportadas aparecerão quando houver dados disponíveis.'));
+    const weight=bodyDelta(body,'weight_kg',1,'kg'),muscle=bodyDelta(body,'skeletal_muscle_mass_kg',1,'kg'),fat=bodyDelta(body,'body_fat_pct',1,'p.p.');
+    const facts=[weight?`peso ${weight.text}`:null,muscle?`MME ${muscle.text}`:null,fat?`gordura ${fat.text}`:null].filter(Boolean);
+    cards.push(contextCard('Composição corporal',facts.length?facts.join(' · '):'Sem duas medições comparáveis',facts.length?`Entre ${fmtDate((weight||muscle||fat)?.from)} e ${fmtDate((weight||muscle||fat)?.to)}.`:'Não há dois pontos compatíveis para calcular diferenças.','evolucao'));
   }
-
+  if(failed('workouts'))cards.push(domainUnavailable('Treinos','O histórico de treinos não carregou agora.'));
+  else if(workouts.length)cards.push(contextCard('Treinos',`${Math.min(2,workouts.length)} sessão(ões) mais recente(s)`,workouts.slice(0,2).map(w=>`${fmtDate(w.workout_date)} · ${w.workout_type||'Treino'}`).join(' | '),'treinos'));
+  else cards.push(contextCard('Treinos','Sem sessão registrada','Nenhum treino estruturado está disponível.'));
+  if(failed('metrics'))cards.push(domainUnavailable('Métricas','As métricas não carregaram agora.'));
+  else{
+    const latest=latestMetricCount(metrics);cards.push(contextCard('Métricas',latest?`${latest.count} tipo(s) de métrica em ${fmtDate(latest.date)}`:'Sem métrica estruturada',latest?'Contagem por tipos disponíveis na data mais recente.':'Nenhuma métrica estruturada está disponível.','timeline'));
+  }
   if(failed('labs'))cards.push(domainUnavailable('Exames','Os resultados laboratoriais não carregaram agora.'));
   else if(lab)cards.push(contextCard('Exames',`${lab.count} resultado(s) na coleta mais recente`,`${fmtDate(lab.date)}${lab.lab?` · ${lab.lab}`:''}`,'saude'));
   else cards.push(contextCard('Exames','Sem resultado estruturado','Nenhuma coleta laboratorial estruturada está disponível.'));
@@ -144,11 +126,11 @@ export function renderTodayHub(){
     </section>
 
     <section class="todaySection">
-      <div class="cardHead"><div><b>Atividade e sono</b><small>A importação automática validada mostra energia ativa, minutos de exercício, horas em pé e duração do sono. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
+      <div class="cardHead"><div><b>Atividade e sono</b><small>Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada. Sono pode ser exibido quando já existe como métrica estruturada, mas permanece fora da sincronização automática até existir uma regra validada de deduplicação por origem. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
-    ${otherMetricCards?`<section class="todaySection"><div class="cardHead"><div><b>Outros registros disponíveis</b><small>Estes itens já existem no histórico e podem vir de outras origens. Eles não ampliam o conjunto de importação automática do Apple Saúde.</small></div></div><div class="todayOtherMetricGrid todayMetricGridSecondary">${otherMetricCards}</div></section>`:''}
+    ${otherMetricCards?`<section class="todaySection"><div class="cardHead"><div><b>Outros registros disponíveis</b><small>Estes itens já existem no histórico e podem vir de outras origens. Eles não ampliam o conjunto canônico automático do Apple Saúde.</small></div></div><div class="todayOtherMetricGrid todayMetricGridSecondary">${otherMetricCards}</div></section>`:''}
 
     <div class="grid cols2 sectionGap">
       <section class="card todayRecent"><div class="cardHead"><div><b>Últimos registros</b><small>Acesso rápido ao que entrou mais recentemente.</small></div></div>
