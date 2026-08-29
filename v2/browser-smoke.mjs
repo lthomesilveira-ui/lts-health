@@ -91,9 +91,16 @@ async function run(viewport,label){
   const timelineText=await page.textContent('#screenHost');
   if(!timelineText.includes('Caminhada')||!timelineText.includes('Sono')) throw new Error(`${label}: activity/sleep timeline events missing`);
 
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.labs=[...(state.data.labs||[]),{source_record_id:'lab-history',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'}];
+  });
   await openMoreRoute(page,nav,'saude','Saúde & exames',`${label}/saude`);
-  if((await page.locator('#collectionSelect option').count())!==1) throw new Error(`${label}: lab collection selector missing`);
+  if((await page.locator('#collectionSelect option').count())!==2) throw new Error(`${label}: lab collection history missing`);
   if((await page.locator('.markerList button').count())!==2) throw new Error(`${label}: biomarker explorer missing`);
+  await page.waitForSelector('.labHistoryChart svg');
+  const labHistory=(await page.locator('.exerciseDetail').textContent())||'';
+  if(!labHistory.includes('Série histórica')||!labHistory.includes('Diferença +2,0 u')||!labHistory.includes('não classifica o resultado'))throw new Error(`${label}: compatible-unit lab trend chart missing or over-interpreted`);
   await page.fill('#labQuery','Marcador A');
   await page.waitForFunction(()=>document.querySelectorAll('.markerList button').length===1);
 
