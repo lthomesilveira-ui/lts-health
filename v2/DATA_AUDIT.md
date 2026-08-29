@@ -24,7 +24,7 @@ Snapshot auditado em 2026-08-28 no projeto Supabase dedicado do LTS Health. Este
 | Eventos de tratamentos | 30 | 2026-07-03 → 2026-08-28 |
 | Regimes de tratamento preservados | 6 | snapshot de 2026-08-26 |
 
-Questões de qualidade no snapshot: 17 abertas, 4 aceitas e 5 resolvidas. O registro de treino em quarentena não entra nas contagens exibidas pela interface v2.
+Questões de qualidade após a reconciliação de 28/08: 14 abertas, 5 aceitas e 7 resolvidas. O registro de treino em quarentena não entra nas contagens exibidas pela interface v2. A antiga pendência de treino parcial de 27/08 está resolvida com nota de resolução; duas pendências de arquitetura/UI herdadas da migração também foram encerradas após a validação da camada canônica dedicada. A preservação de texto bruto de treinos foi mantida como estratégia aceita, não como erro a ser corrigido por inferência.
 
 ## Reconciliação dos treinos recentes
 
@@ -64,7 +64,7 @@ O ano de 2025 é uma lacuna na fonte atualmente importada. Isso não significa a
 1. **Treino estruturado do LTS Health é a sessão principal.** Apple Health, Polar ou MyFitnessPal não criam uma segunda sessão quando representam o mesmo treino já registrado.
 2. **Apple Health é o hub passivo preferido para métricas validadas**, desde que o parser tenha uma regra explícita e não haja ambiguidade de múltiplas fontes para o mesmo dia/métrica.
 3. **Polar pode coexistir como evidência complementar** quando trouxer detalhe que o Apple Health não preserva, por exemplo duração/FC detalhada da sessão. Isso não autoriza somar calorias, duração ou outro valor ao registro principal.
-4. **MyFitnessPal descreve nutrição e atividade exportada, mas não substitui o treino estruturado.** Atividade do MFP não é contada como nova sessão se houver correspondência com um treino principal.
+4. **MyFitnessPal descreve nutrição e atividade importada, mas não substitui o treino estruturado.** Atividade do MFP não é contada como nova sessão se houver correspondência com um treino principal.
 5. **Nenhum valor de múltiplas fontes é agregado automaticamente.** Quando duas fontes registrarem a mesma métrica/dia, o dado deve ser marcado para revisão ou resolvido por regra determinística específica antes de entrar em totais.
 6. **Ausência de registro não significa zero.** Telas devem mostrar ausência de dado de forma explícita.
 7. **Unidades incompatíveis nunca são convertidas por suposição.** Progressão de exercício só compara cargas com unidade explicitamente compatível.
