@@ -1,0 +1,40 @@
+name: LTS Health iOS HealthKit build
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'ios/LTSHealthSync/**'
+      - '.github/workflows/ios-healthkit-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: HealthKit contract
+        run: node ios/LTSHealthSync/healthkit-contract-smoke.mjs
+
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios/LTSHealthSync
+        run: xcodegen generate
+      - name: Build for iOS Simulator
+        working-directory: ios/LTSHealthSync
+        run: |
+          xcodebuild \
+            -project LTSHealthSync.xcodeproj \
+            -scheme LTSHealthSync \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build
