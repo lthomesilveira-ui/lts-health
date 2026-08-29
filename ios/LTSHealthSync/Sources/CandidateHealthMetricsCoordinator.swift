@@ -191,7 +191,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
                     let components = self.calendar.dateComponents([.year, .month, .day], from: statistics.startDate)
                     guard let year = components.year, let month = components.month, let day = components.day else { return }
                     let date = String(format: "%04d-%02d-%02d", year, month, day)
-                    for source in statistics.sources() ?? [] {
+                    for source in statistics.sources ?? [] {
                         let quantity: HKQuantity?
                         if spec.options.contains(.cumulativeSum) {
                             quantity = statistics.sumQuantity(for: source)
@@ -258,6 +258,15 @@ enum CandidateHealthError: LocalizedError {
         case .healthDataUnavailable: return "O Apple Saúde não está disponível neste aparelho."
         case .authorizationNotCompleted: return "A autorização adicional do Apple Saúde não foi concluída."
         case .backgroundDeliveryFailed: return "Não foi possível ativar a atualização candidata em segundo plano."
+        }
+    }
+}
+
+private extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        guard size > 0 else { return [self] }
+        return stride(from: 0, to: count, by: size).map { index in
+            Array(self[index..<Swift.min(index + size, count)])
         }
     }
 }
