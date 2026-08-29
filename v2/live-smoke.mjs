@@ -74,6 +74,8 @@ async function run(viewport,label){
   await page.click(`${nav} [data-route="treinos"]`);
   await assertScreen(page,'Treinos',`${label}/treinos`);
   await page.selectOption('#trainingPeriod','all');
+  const latest=page.locator('.sessions .session').first();
+  if(!(await latest.evaluate(el=>el.classList.contains('latest')))||!((await latest.textContent())||'').includes('mais recente'))throw new Error(`${label}: deployed latest workout is not prioritized`);
   await page.click('[data-workout="workout-2"]');
   if(!(await page.locator('.session.open').textContent())?.includes('Supino máquina'))throw new Error(`${label}: training drilldown missing`);
   await page.evaluate(async()=>{
@@ -87,8 +89,14 @@ async function run(viewport,label){
 
   await page.click(`${nav} [data-route="evolucao"]`);
   await assertScreen(page,'Evolução',`${label}/evolucao`);
-  const evolution=(await page.textContent('#screenHost'))||'';
-  for(const text of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições'])if(!evolution.includes(text))throw new Error(`${label}: evolution missing ${text}`);
+  let evolution=(await page.textContent('#screenHost'))||'';
+  for(const text of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições','Comparar com'])if(!evolution.includes(text))throw new Error(`${label}: evolution missing ${text}`);
+  if((await page.locator('#segmentalCompareDate option').count())!==1)throw new Error(`${label}: deployed free segmental comparison selector missing`);
+  if(!evolution.includes('Diferença entre 01/01/2026 e 01/02/2026')||!evolution.includes('Braço D +0,20 kg'))throw new Error(`${label}: deployed segmental comparison values missing`);
+  await page.click('[data-segmental-date="2026-01-01"]');
+  await page.waitForFunction(()=>document.querySelector('[data-segmental-date="2026-01-01"]')?.classList.contains('active'));
+  evolution=(await page.textContent('#screenHost'))||'';
+  if(!evolution.includes('Diferença entre 01/02/2026 e 01/01/2026')||!evolution.includes('Braço D -0,20 kg'))throw new Error(`${label}: deployed reverse segmental comparison missing`);
 
   await page.click(`${nav} [data-route="analise"]`);
   await assertScreen(page,'Análise',`${label}/analise`);
@@ -106,6 +114,11 @@ async function run(viewport,label){
   await page.waitForSelector('.labHistoryChart svg');
   if(!((await page.locator('.exerciseDetail').textContent())||'').includes('Diferença +2,0 u'))throw new Error(`${label}: deployed compatible-unit lab chart missing`);
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.uploads=[{id:'live-upload',created_at:'2026-02-03T12:00:00Z',original_filename:'export.zip',source_type:'apple_health',status:'uploaded'}];
+    state.data.quality=[{status:'open',category:'metadata_only',entity_name:'DOC_TECHNICAL_NAME',description:'Há apenas metadados deste documento; o arquivo original ainda precisa ser disponibilizado.'}];
+  });
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
   for(const text of [
@@ -120,9 +133,11 @@ async function run(viewport,label){
     'só aparecem quando já existem como registros válidos de outra origem',
     'Resultados só são estruturados quando a leitura for validada',
     'valor, unidade ou faixa ambíguos ficam para revisão',
-    'Exportar backup'
-  ])if(!data.includes(text))throw new Error(`${label}: Data import or backup capability missing: ${text}`);
-  if(data.includes('Passos e FC de repouso só entram em dias sem conflito de fontes')||data.includes('CSV estruturado + documento preservado'))throw new Error(`${label}: stale unvalidated ingestion claim visible`);
+    'Exportar backup',
+    'Apple Saúde · recebido',
+    'Arquivo original ainda não disponível'
+  ])if(!data.includes(text))throw new Error(`${label}: Data import, quality copy or backup capability missing: ${text}`);
+  if(data.includes('Passos e FC de repouso só entram em dias sem conflito de fontes')||data.includes('CSV estruturado + documento preservado')||data.includes('metadata_only')||data.includes('DOC_TECHNICAL_NAME'))throw new Error(`${label}: stale or technical ingestion/quality copy visible`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
