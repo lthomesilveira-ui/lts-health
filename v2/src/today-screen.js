@@ -3,9 +3,11 @@ import {state,esc,day,fmtDate,fmtNum,num,workoutRows,bodyRows,unique,norm} from 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1>${description?`<p>${esc(description)}</p>`:''}</div></div>`;
 const localDay=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;};
 const failed=key=>state.domainStatus[key]==='error';
-const metricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h']);
-const metricLabel={active_energy_kcal:'Energia ativa',exercise_minutes:'Exercício',stand_hours:'Horas em pé',sleep_duration_h:'Sono'};
-const metricFallbackUnit={active_energy_kcal:'kcal',exercise_minutes:'min',stand_hours:'h',sleep_duration_h:'h'};
+const metricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h','steps','resting_heart_rate_bpm']);
+const metricLabel={active_energy_kcal:'Energia ativa',exercise_minutes:'Exercício',stand_hours:'Horas em pé',sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'FC de repouso'};
+const metricFallbackUnit={active_energy_kcal:'kcal',exercise_minutes:'min',stand_hours:'h',sleep_duration_h:'h',steps:'passos',resting_heart_rate_bpm:'bpm'};
+const metricDigits={active_energy_kcal:0,exercise_minutes:0,stand_hours:0,sleep_duration_h:1,steps:0,resting_heart_rate_bpm:0};
+const metricOrder=['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm'];
 
 function latestLab(){
   const rows=state.data.labs||[];if(!rows.length)return null;const date=[...rows].map(r=>r.collection_date).filter(Boolean).sort().at(-1),same=rows.filter(r=>r.collection_date===date);return{date,count:same.length,lab:unique(same.map(r=>r.laboratory)).join(', ')};
@@ -29,7 +31,8 @@ function domainUnavailable(label,detail){return`<article class="todayStatusCard 
 function latestMetric(rows,type){return[...(rows||[])].filter(m=>m.metric_type===type&&metricTypes.has(m.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at)))[0]||null;}
 function metricCard(rows,type){
   const label=metricLabel[type],m=latestMetric(rows,type);if(!m)return`<article class="todayStatusCard"><span>${esc(label)}</span><b>Sem dado importado</b><small>Nenhum registro disponível para esta métrica.</small></article>`;
-  const value=num(m.value),display=value==null?'Registro disponível':`${fmtNum(value,type==='active_energy_kcal'||type==='exercise_minutes'||type==='stand_hours'?0:1)} ${esc(m.unit||metricFallbackUnit[type])}`;
+  const value=num(m.value),unit=type==='steps'&&m.unit==='count'?metricFallbackUnit.steps:(m.unit||metricFallbackUnit[type]);
+  const display=value==null?'Registro disponível':`${fmtNum(value,metricDigits[type]??1)} ${esc(unit)}`;
   return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${fmtDate(m.measured_at)}${m.source?` · ${esc(m.source)}`:''}</small></article>`;
 }
 function recentRow(label,date,main,sub='',button=''){
@@ -47,11 +50,11 @@ export function renderTodayHub(){
   const bodySub=lastBody?[`MME ${fmtNum(lastBody.skeletal_muscle_mass_kg)} kg`,fmtDate(lastBody.measured_at)].filter(Boolean).join(' · '):'';
   const nutritionMain=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Registro disponível'):'Sem registro para hoje';
   const nutritionSub=nutrition&&num(nutrition.protein_g)!=null?`${fmtNum(nutrition.protein_g,0)} g de proteína`:'';
-  const metricCards=failed('metrics')?['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'].map(type=>domainUnavailable(metricLabel[type],'Esta métrica não carregou agora. Os registros existentes continuam preservados.')).join(''):['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'].map(type=>metricCard(metrics,type)).join('');
+  const metricCards=failed('metrics')?metricOrder.map(type=>domainUnavailable(metricLabel[type],'Esta métrica não carregou agora. Os registros existentes continuam preservados.')).join(''):metricOrder.map(type=>metricCard(metrics,type)).join('');
 
   return `${title('Hoje',fmtDate(today))}
     <section class="todayLead">
-      <div><span>Resumo</span><h2>Seu histórico mais recente, sem preencher lacunas.</h2><p>Treino, composição, alimentação, atividade, sono e exames aparecem conforme os registros disponíveis.</p></div>
+      <div><span>Resumo</span><h2>Seu histórico mais recente, sem preencher lacunas.</h2><p>Treino, composição, alimentação, atividade, sono, sinais registrados e exames aparecem conforme os dados disponíveis.</p></div>
       <div class="todayLeadActions">${action('treinos','Ver treinos')}${action('dados','Adicionar dados')}</div>
     </section>
 
@@ -63,7 +66,7 @@ export function renderTodayHub(){
     </div>
 
     <section class="todaySection">
-      <div class="cardHead"><div><b>Atividade e sono</b><small>Somente métricas com importação automática já validada são exibidas aqui.</small></div></div>
+      <div class="cardHead"><div><b>Atividade, sono e sinais</b><small>Somente métricas com regra de importação validada são exibidas aqui. Passos e FC de repouso entram apenas quando o arquivo permite consolidação sem ambiguidade de fonte.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
