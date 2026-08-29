@@ -86,6 +86,14 @@ async function run(viewport,label){
   await page.waitForFunction(sel=>document.activeElement===document.querySelector(sel),moreSelector);
   await waitRoute(page,'treinos');
 
+  // System reduced-motion preference must disable the spinner animation in the rendered CSS.
+  await page.emulateMedia({reducedMotion:'reduce'});
+  const reduced=await page.evaluate(()=>{
+    const probe=document.createElement('div');probe.className='spinner';document.body.appendChild(probe);
+    const style=getComputedStyle(probe);const result={name:style.animationName,duration:style.animationDuration};probe.remove();return result;
+  });
+  if(reduced.name!=='none')throw new Error(`${label}: reduced motion still animates spinner (${reduced.name}/${reduced.duration})`);
+
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();
 }
