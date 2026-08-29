@@ -38,6 +38,42 @@ function metricCard(rows,type){
 function recentRow(label,date,main,sub='',button=''){
   return`<div class="todayRecentRow"><div><span>${esc(label)}</span><b>${esc(main)}</b><small>${esc([date?fmtDate(date):'',sub].filter(Boolean).join(' · '))}</small></div>${button}</div>`;
 }
+function signed(value,digits=1,unit=''){
+  value=num(value);if(value==null)return'—';return`${value>0?'+':''}${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
+}
+function contextCard(label,headline,detail,route='',ref='',kind=''){
+  const button=route?action(route,'Abrir',ref,kind):'';
+  return `<article class="todayContextCard"><span>${esc(label)}</span><b>${esc(headline)}</b><p>${esc(detail)}</p>${button?`<div class="todayActions">${button}</div>`:''}</article>`;
+}
+function recentContext(body,workouts,metrics,lab){
+  const cards=[];
+  if(failed('body'))cards.push(domainUnavailable('Composição corporal','As medições corporais não carregaram agora.'));
+  else if(body.length>=2){
+    const last=body.at(-1),prev=body.at(-2),parts=[];
+    if(num(last.weight_kg)!=null&&num(prev.weight_kg)!=null)parts.push(`peso ${signed(num(last.weight_kg)-num(prev.weight_kg),1,'kg')}`);
+    if(num(last.skeletal_muscle_mass_kg)!=null&&num(prev.skeletal_muscle_mass_kg)!=null)parts.push(`MME ${signed(num(last.skeletal_muscle_mass_kg)-num(prev.skeletal_muscle_mass_kg),1,'kg')}`);
+    if(num(last.body_fat_pct)!=null&&num(prev.body_fat_pct)!=null)parts.push(`gordura ${signed(num(last.body_fat_pct)-num(prev.body_fat_pct),1,'p.p.')}`);
+    cards.push(contextCard('Composição corporal',`${fmtDate(prev.measured_at)} → ${fmtDate(last.measured_at)}`,parts.length?parts.join(' · '):'Duas medições disponíveis para comparação.','bio',day(last.measured_at),'body'));
+  }else cards.push(contextCard('Composição corporal','Sem comparação entre medições','É preciso haver pelo menos duas medições registradas para mostrar diferenças.'));
+
+  if(failed('workouts'))cards.push(domainUnavailable('Treinos','As sessões não carregaram agora.'));
+  else if(workouts.length>=2){const last=workouts[0],prev=workouts[1];cards.push(contextCard('Treinos','Duas sessões mais recentes',`${fmtDate(prev.workout_date)} · ${prev.workout_type||'Treino'} → ${fmtDate(last.workout_date)} · ${last.workout_type||'Treino'}`,'treinos',last.source_record_id,'workout'));}
+  else if(workouts.length===1){const last=workouts[0];cards.push(contextCard('Treinos','Uma sessão registrada',`${fmtDate(last.workout_date)} · ${last.workout_type||'Treino'}`,'treinos',last.source_record_id,'workout'));}
+  else cards.push(contextCard('Treinos','Sem sessão registrada','Nenhuma sessão está disponível no histórico carregado.'));
+
+  if(failed('metrics'))cards.push(domainUnavailable('Dados passivos','As métricas não carregaram agora.'));
+  else{
+    const supported=(metrics||[]).filter(m=>metricTypes.has(m.metric_type)&&day(m.measured_at));
+    const latestDay=unique(supported.map(m=>day(m.measured_at))).sort().at(-1)||null;
+    const types=latestDay?unique(supported.filter(m=>day(m.measured_at)===latestDay).map(m=>m.metric_type)):[];
+    cards.push(contextCard('Dados passivos',latestDay?`${types.length} tipo(s) de métrica em ${fmtDate(latestDay)}`:'Sem métrica importada',latestDay?types.map(t=>metricLabel[t]||t).join(' · '):'Atividade, sono e sinais aparecerão quando houver dados suportados.'));
+  }
+
+  if(failed('labs'))cards.push(domainUnavailable('Exames','Os resultados laboratoriais não carregaram agora.'));
+  else if(lab)cards.push(contextCard('Exames',`${lab.count} resultado(s) na coleta mais recente`,`${fmtDate(lab.date)}${lab.lab?` · ${lab.lab}`:''}`,'saude'));
+  else cards.push(contextCard('Exames','Sem resultado estruturado','Nenhuma coleta laboratorial estruturada está disponível.'));
+  return cards.join('');
+}
 
 export function renderTodayHub(){
   const today=localDay(),workouts=workoutRows(),body=bodyRows(),lastWorkout=workouts[0],lastBody=body.at(-1),nutrition=(state.data.nutrition||[]).find(n=>day(n.nutrition_date)===today),metrics=state.data.metrics||[],lab=latestLab();
@@ -64,6 +100,11 @@ export function renderTodayHub(){
       ${failed('nutrition')?domainUnavailable('Alimentação hoje','Os registros de alimentação não carregaram.'):summaryCard('Alimentação hoje',nutritionMain,nutritionSub,nutrition?action('nutricao','Ver dia',today,'nutrition'):action('nutricao','Ver histórico'))}
       ${failed('labs')?domainUnavailable('Exames','Os exames não carregaram.'):lab?summaryCard('Exames mais recentes',`${lab.count} resultado(s)`,`${fmtDate(lab.date)}${lab.lab?` · ${lab.lab}`:''}`,action('saude','Ver exames')):summaryCard('Exames','Sem resultados estruturados')}
     </div>
+
+    <section class="todaySection todayContextSection">
+      <div class="cardHead"><div><b>Contexto recente</b><small>Diferenças e registros recentes apresentados de forma descritiva, sem transformar coincidências em causa ou meta.</small></div></div>
+      <div class="todayContextGrid">${recentContext(body,workouts,metrics,lab)}</div>
+    </section>
 
     <section class="todaySection">
       <div class="cardHead"><div><b>Atividade, sono e sinais</b><small>Somente métricas com regra de importação validada são exibidas aqui. Passos e FC de repouso entram apenas quando o arquivo permite consolidação sem ambiguidade de fonte.</small></div></div>
