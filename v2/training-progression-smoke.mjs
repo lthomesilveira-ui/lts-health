@@ -12,6 +12,17 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   await page.selectOption('#trainingPeriod','all');
+
+  const latest=page.locator('.sessions .session').first();
+  if(!(await latest.evaluate(el=>el.classList.contains('latest'))))throw new Error(`${label}: latest structured workout is not visually prioritized`);
+  const latestHead=latest.locator('.sessionHead');
+  if((await latestHead.getAttribute('aria-expanded'))!=='false')throw new Error(`${label}: collapsed workout does not expose its state`);
+  const latestText=(await latest.textContent())||'';
+  if(!latestText.includes('mais recente'))throw new Error(`${label}: latest workout label missing`);
+  await latestHead.click();
+  if((await latestHead.getAttribute('aria-expanded'))!=='true')throw new Error(`${label}: workout expansion state is not reflected for accessibility`);
+  await latestHead.click();
+
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.exercises=[...(state.data.exercises||[]),
@@ -42,6 +53,10 @@ async function run(viewport,label){
   if(rows<4)throw new Error(`${label}: recent-session trend did not render expected unit-separated rows`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: training progression caused horizontal overflow ${overflow}px`);
+  if(viewport.width<620){
+    const head=await page.locator('.sessions .session').first().locator('.sessionHead').evaluate(el=>({width:el.getBoundingClientRect().width,viewport:innerWidth}));
+    if(head.width>head.viewport-20)throw new Error(`${label}: workout header exceeds usable mobile width`);
+  }
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();
 }
