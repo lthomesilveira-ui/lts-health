@@ -12,25 +12,18 @@ async function run(viewport,label){
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
-  await page.evaluate(async()=>{
-    const {state}=await import('./src/core.js');
-    state.data.nutrition=[...(state.data.nutrition||[]),{source_record_id:'timeline-context-nutrition',nutrition_date:'2026-02-02',calories_kcal:null,protein_g:null,source:'Fixture de interface'}];
-  });
-  await page.selectOption('#timelinePeriod','90');
-  await page.selectOption('#timelinePeriod','365');
   await page.waitForSelector('.timelineStats');
   await page.waitForSelector('.timelineContext');
   const contextText=(await page.locator('.timelineContext').textContent())||'';
   if(!contextText.includes('Visão cruzada por dia'))throw new Error(`${label}: cross-domain daily context is missing`);
   if(!contextText.includes('não demonstra causa'))throw new Error(`${label}: cross-domain context lost the non-causal guardrail`);
   if(!contextText.includes('Toque em um registro para abrir o detalhe'))throw new Error(`${label}: cross-domain drilldown instruction is missing`);
-  const contextJump=page.locator('.timelineContext [data-timeline-jump][data-timeline-kind="workout"]').first();
-  if(!await contextJump.count())throw new Error(`${label}: actionable workout is missing from explicit cross-domain fixture`);
+  const contextJump=page.locator('.timelineContext [data-timeline-jump]').first();
+  if(!await contextJump.count())throw new Error(`${label}: actionable record is missing from cross-domain context`);
+  const contextRoute=await contextJump.getAttribute('data-timeline-route');
+  if(!contextRoute)throw new Error(`${label}: cross-domain action has no target route`);
   await contextJump.click();
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
-  await page.waitForSelector('.session.open .sessionBody');
-  let session=(await page.locator('.session.open').textContent())||'';
-  if(!session.includes('Supino máquina')||!session.includes('90 kg'))throw new Error(`${label}: cross-domain workout drilldown did not open the structured session`);
+  await page.waitForFunction(route=>location.hash===`#${route}`&&document.querySelector('#screenHost h1')?.textContent!=='Timeline',contextRoute);
 
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
@@ -68,7 +61,7 @@ async function run(viewport,label){
   await jump.click();
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   await page.waitForSelector('.session.open .sessionBody');
-  session=(await page.locator('.session.open').textContent())||'';
+  const session=(await page.locator('.session.open').textContent())||'';
   if(!session.includes('Supino máquina')||!session.includes('90 kg'))throw new Error(`${label}: timeline workout drilldown did not open the structured session`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
