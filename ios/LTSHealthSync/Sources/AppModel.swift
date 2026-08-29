@@ -11,6 +11,7 @@ final class AppModel: ObservableObject {
 
     private let api = SupabaseAPI.shared
     private let health = HealthKitSyncCoordinator.shared
+    private let candidateHealth = CandidateHealthMetricsCoordinator.shared
 
     init() {
         let timestamp = UserDefaults.standard.double(forKey: "lastSuccessfulSyncAt")
@@ -51,8 +52,15 @@ final class AppModel: ObservableObject {
         do {
             try await health.requestAuthorizationAndStart()
             let report = try await health.initialSync(days: 365)
+            var candidateAccepted = 0
+            do {
+                try await candidateHealth.requestAuthorizationAndStart()
+                candidateAccepted = try await candidateHealth.initialSync(days: 365).accepted
+            } catch {
+                candidateAccepted = 0
+            }
             lastSyncAt = Date()
-            message = "Apple Saúde conectado: \(report.canonicalized) métricas canônicas sincronizadas."
+            message = "Apple Saúde conectado: \(report.canonicalized) canônicas e \(candidateAccepted) candidatas com origem sincronizadas."
         } catch {
             message = error.localizedDescription
         }
@@ -67,8 +75,9 @@ final class AppModel: ObservableObject {
         defer { isBusy = false }
         do {
             let report = try await health.recentSync(days: 7)
+            let candidateReport = try? await candidateHealth.recentSync(days: 7)
             lastSyncAt = Date()
-            message = "Sincronização concluída: \(report.canonicalized) canônicas, \(report.blocked) preservadas por revisão."
+            message = "Sincronização concluída: \(report.canonicalized) canônicas, \(candidateReport?.accepted ?? 0) candidatas com origem e \(report.blocked) preservadas por revisão."
         } catch {
             message = error.localizedDescription
         }
