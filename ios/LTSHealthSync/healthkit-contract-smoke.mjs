@@ -29,7 +29,6 @@ for (const token of [
   'enableBackgroundDelivery',
   'frequency: .hourly',
   'activitySummaryType()',
-  'canonicalSourceIds',
   'active_energy_kcal',
   'exercise_minutes',
   'stand_hours',
