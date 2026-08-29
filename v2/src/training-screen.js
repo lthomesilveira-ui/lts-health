@@ -13,7 +13,12 @@ const displayUnit=unit=>unit==='plate_index'?'placa':unit==='unitless'?'sem unid
 function setSummary(exercise){
   if(failed('sets')) return '<span class="set muted">Detalhes das séries indisponíveis agora.</span>';
   const rows=setsFor(exercise);
-  if(!rows.length) return '<span class="set muted">Séries detalhadas não disponíveis.</span>';
+  if(!rows.length){
+    const preserved=String(exercise.source_text||'').trim();
+    return preserved
+      ? `<span class="set muted">Séries detalhadas não disponíveis.</span><span class="set"><b>Registro da fonte</b>${esc(preserved)}</span>`
+      : '<span class="set muted">Séries detalhadas não disponíveis.</span>';
+  }
   return rows.map(s=>`<span class="set"><b>S${s.set_index??'—'}</b>${num(s.weight)!=null?`${fmtNum(s.weight,Number.isInteger(num(s.weight))?0:1)} ${esc(displayUnit(s.weight_unit))}`:'carga não informada'} · ${esc(s.reps_raw??s.reps_numeric??'—')} reps${s.phase==='warmup'?' · aquecimento':''}${s.phase==='drop'?' · sequência registrada':''}</span>`).join('');
 }
 
@@ -38,9 +43,10 @@ function sessionCard(workout,isLatest=false){
   const setCount=setUnavailable?null:exercises.reduce((total,e)=>total+setsFor(e).length,0);
   const open=state.ui.openWorkout===workout.source_record_id;
   const partial=workout.record_status==='review_required';
+  const preservedSession=String(workout.raw_exercises||'').trim();
   const detail=exerciseUnavailable
     ? domainError('Os exercícios desta sessão não puderam ser carregados.')
-    : exercises.map(e=>`<section class="exercise"><div><b>${esc(e.exercise||'Exercício')}</b><small>${[e.machine,e.muscle_group].filter(Boolean).map(esc).join(' · ')}</small></div><div class="sets">${setSummary(e)}</div></section>`).join('')||empty('Sessão sem exercícios estruturados.');
+    : exercises.map(e=>`<section class="exercise"><div><b>${esc(e.exercise||'Exercício')}</b><small>${[e.machine,e.muscle_group].filter(Boolean).map(esc).join(' · ')}</small></div><div class="sets">${setSummary(e)}</div></section>`).join('')||(preservedSession?`<div class="note"><b>Registro histórico da fonte</b><span>${esc(preservedSession)}</span><small>O texto foi preservado sem criar exercícios ou séries que a fonte não detalha.</small></div>`:empty('Sessão sem exercícios estruturados.'));
   const counts=exerciseUnavailable
     ? 'detalhes indisponíveis'
     : `${exercises.length} exercício(s) · ${setCount==null?'séries indisponíveis':`${setCount} série(s)`}`;
