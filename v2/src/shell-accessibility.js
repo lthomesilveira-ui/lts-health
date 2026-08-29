@@ -3,6 +3,7 @@ let moreReturnFocus=null;
 let entryReturnFocus=null;
 
 function visible(id){const el=$(id);return !!el&&!el.classList.contains('hidden');}
+function entrySaving(){return $('entryModal')?.dataset.saving==='true';}
 function restoreFocus(target){if(!target?.isConnected)return;requestAnimationFrame(()=>target.focus?.());}
 function focusDialog(id){
   requestAnimationFrame(()=>{
@@ -20,14 +21,24 @@ document.addEventListener('click',event=>{
   if(entryTrigger?.dataset.entry){entryReturnFocus=entryTrigger;focusDialog('entryModal');return;}
 
   if(event.target.closest('#closeMore')){const target=moreReturnFocus;moreReturnFocus=null;restoreFocus(target);return;}
-  if(event.target.closest('#closeEntry')){const target=entryReturnFocus;entryReturnFocus=null;restoreFocus(target);return;}
+  if(event.target.closest('#closeEntry')){
+    if(entrySaving())return;
+    const target=entryReturnFocus;entryReturnFocus=null;restoreFocus(target);return;
+  }
 
   if(event.target===$('moreSheet')){const target=moreReturnFocus;moreReturnFocus=null;restoreFocus(target);return;}
-  if(event.target===$('entryModal')){const target=entryReturnFocus;entryReturnFocus=null;restoreFocus(target);}
+  if(event.target===$('entryModal')){
+    if(entrySaving())return;
+    const target=entryReturnFocus;entryReturnFocus=null;restoreFocus(target);
+  }
 },true);
 
 document.addEventListener('keydown',event=>{
   if(event.key!=='Escape')return;
-  if(visible('entryModal')){event.preventDefault();$('closeEntry')?.click();return;}
+  if(visible('entryModal')){
+    event.preventDefault();
+    if(entrySaving())return;
+    $('closeEntry')?.click();return;
+  }
   if(visible('moreSheet')){event.preventDefault();$('closeMore')?.click();}
 });
