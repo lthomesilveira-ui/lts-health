@@ -39,13 +39,23 @@ const result=await page.evaluate(async()=>{
 
 if(result.failures.length)throw new Error(result.failures.join(' | '));
 
-// Expected validation stays visible and does not close the dialog.
+// Expected validation stays visible and marks the form as containing unsaved changes.
 await page.locator('#routeAction').click();
 await page.waitForSelector('#entryModal:not(.hidden)');
 await page.locator('#bodyEntryForm [name="weight_kg"]').fill('-1');
 await page.locator('#bodyEntryForm button[type="submit"]').click();
 await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='Use apenas valores iguais ou maiores que zero.');
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('validation closed the entry dialog');
+
+// Accidental close with unsaved data must ask before discarding. Cancel keeps the dialog and focus inside it.
+let discardPrompt='';
+page.once('dialog',async dialog=>{discardPrompt=dialog.message();await dialog.dismiss();});
+await page.locator('#closeEntry').click();
+await page.waitForTimeout(50);
+if(discardPrompt!=='Descartar alterações não salvas?')throw new Error(`unexpected discard prompt: ${discardPrompt}`);
+if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('dirty entry closed after discard was cancelled');
+const focusInside=await page.evaluate(()=>document.querySelector('#entryModal')?.contains(document.activeElement));
+if(!focusInside)throw new Error('focus escaped behind a dirty entry after discard was cancelled');
 
 // A successful save must stay locked and visible through completion, preventing duplicate submits and ambiguous dismissal.
 await page.locator('#bodyEntryForm [name="weight_kg"]').fill('93,1');
@@ -58,6 +68,17 @@ if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden'
 await page.locator('#closeEntry').click();
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('close button closed the dialog while save completion was locked');
 await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
+
+// Explicit discard confirmation closes an edited form and restores focus to the opener.
+await page.locator('#routeAction').click();
+await page.waitForSelector('#entryModal:not(.hidden)');
+await page.locator('#bodyEntryForm [name="weight_kg"]').fill('94,2');
+page.once('dialog',dialog=>dialog.accept());
+await page.locator('#closeEntry').click();
+await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
+await page.waitForFunction(()=>document.activeElement?.id==='routeAction');
+const stored=await page.evaluate(()=>Object.values(localStorage).join('\n'));
+if(stored.includes('94,2'))throw new Error('unsaved health entry leaked into localStorage');
 
 if(errors.length)throw new Error(`browser errors: ${errors.join(' | ')}`);
 await context.close();
