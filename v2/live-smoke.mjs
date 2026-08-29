@@ -43,6 +43,14 @@ async function run(viewport,label){
   await page.selectOption('#trainingPeriod','all');
   await page.click('[data-workout="workout-2"]');
   if(!(await page.locator('.session.open').textContent())?.includes('Supino máquina'))throw new Error(`${label}: training drilldown missing`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.exercises=[...(state.data.exercises||[]),{source_record_id:'live-ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',order_index:4,exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito',source:'Fixture de interface'}];
+    state.data.sets=[...(state.data.sets||[]),{source_record_id:'live-set-progression',exercise_source_record_id:'live-ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',set_index:1,phase:'working',weight:70,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'}];
+  });
+  await page.fill('#exerciseQuery','supino');
+  await page.waitForSelector('.exerciseProgressUnit svg');
+  if(!((await page.locator('.exerciseProgression').textContent())||'').includes('70 → 90 kg'))throw new Error(`${label}: deployed exercise progression chart missing`);
 
   await page.click(`${nav} [data-route="evolucao"]`);
   await assertScreen(page,'Evolução',`${label}/evolucao`);
@@ -57,7 +65,13 @@ async function run(viewport,label){
   for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed Apple metric ${text}`);
 
   await more(page,nav,'timeline','Timeline',`${label}/timeline`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.labs=[...(state.data.labs||[]),{source_record_id:'live-lab-history',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'}];
+  });
   await more(page,nav,'saude','Saúde & exames',`${label}/saude`);
+  await page.waitForSelector('.labHistoryChart svg');
+  if(!((await page.locator('.exerciseDetail').textContent())||'').includes('Diferença +2,0 u'))throw new Error(`${label}: deployed compatible-unit lab chart missing`);
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
