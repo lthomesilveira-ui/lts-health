@@ -1,0 +1,35 @@
+name: LTS Health v2 Auth Flow Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/main.js'
+      - 'v2/src/core.js'
+      - 'v2/auth-flow-smoke.mjs'
+      - '.github/workflows/auth-flow-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  auth-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/main.js
+          node --check v2/src/core.js
+          node --check v2/auth-flow-smoke.mjs
+          grep -q 'if(loginBusy)return' v2/src/main.js
+          grep -q "setAttribute('aria-busy','true')" v2/src/main.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Validate authentication flow
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/auth-flow-smoke.mjs
