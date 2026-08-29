@@ -33,7 +33,9 @@ async function run(viewport,label){
   await page.waitForSelector('.collectionCompareList');
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
-  if(!compare.includes('Marcador textual')||!compare.includes('comparação lado a lado'))throw new Error(`${label}: textual results were not preserved side by side`);
+  await page.click('[data-marker="marcador textual"]');
+  const textual=(await page.locator('.exerciseDetail').textContent())||'';
+  if(!textual.includes('Presente')||!textual.includes('Ausente')||!textual.includes('textual'))throw new Error(`${label}: textual lab results were not preserved as text`);
   await page.click('[data-marker="marcador a"]');
   await page.waitForSelector('.labUnitCohort');
   const marker=(await page.locator('.exerciseDetail').textContent())||'';
