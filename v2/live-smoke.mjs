@@ -32,9 +32,15 @@ async function run(viewport,label){
 
   const parserRouting=await page.evaluate(async()=>{
     const {inspectFunctionForSource}=await import('./src/core.js');
-    return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal'),fleury:inspectFunctionForSource('fleury'),einstein:inspectFunctionForSource('einstein')};
+    return {
+      apple:inspectFunctionForSource('apple_health'),
+      mfp:inspectFunctionForSource('myfitnesspal'),
+      polar:inspectFunctionForSource('polar_flow'),
+      fleury:inspectFunctionForSource('fleury'),
+      einstein:inspectFunctionForSource('einstein')
+    };
   });
-  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.fleury!=='health-inspect-lab'||parserRouting.einstein!=='health-inspect-lab')throw new Error(`${label}: deployed source-specific inspector routing is incorrect`);
+  if(Object.values(parserRouting).some(value=>value!=='health-inspect-upload'))throw new Error(`${label}: deployed stable ingestion routing is incorrect`);
 
   await assertScreen(page,'Bio',`${label}/bio`);
   if((await page.locator('[data-body-date]').count())<2)throw new Error(`${label}: Bio history missing`);
@@ -76,7 +82,21 @@ async function run(viewport,label){
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
-  if(!data.includes('Leitura automática parcial')||!data.includes('CSV estruturado + documento preservado')||!data.includes('Passos e FC de repouso só entram em dias sem conflito de fontes')||!data.includes('Exportar backup')||!data.includes('Resultado textual permanece textual'))throw new Error(`${label}: Data import or backup capabilities missing`);
+  for(const text of [
+    'Leitura automática parcial',
+    'Leitura automática de nutrição',
+    'Arquivo preservado + revisão',
+    'energia ativa',
+    'minutos de exercício',
+    'horas em pé',
+    'duração do sono',
+    'Passos e FC de repouso não são importados automaticamente por este fluxo',
+    'só aparecem quando já existem como registros válidos de outra origem',
+    'Resultados só são estruturados quando a leitura for validada',
+    'valor, unidade ou faixa ambíguos ficam para revisão',
+    'Exportar backup'
+  ])if(!data.includes(text))throw new Error(`${label}: Data import or backup capability missing: ${text}`);
+  if(data.includes('Passos e FC de repouso só entram em dias sem conflito de fontes')||data.includes('CSV estruturado + documento preservado'))throw new Error(`${label}: stale unvalidated ingestion claim visible`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
