@@ -14,10 +14,10 @@ const routeDomains={
   dados:['nutrition','meals','activity','metrics','labs','docs','uploads','previews','quality']
 };
 
-async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id'){
+export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb){
   const pageSize=1000,rows=[];
   for(let from=0;;from+=pageSize){
-    let q=sb.from(table).select(select).range(from,from+pageSize-1);
+    let q=client.from(table).select(select).range(from,from+pageSize-1);
     if(orderColumn)q=q.order(orderColumn,{ascending});
     if(tieBreaker&&tieBreaker!==orderColumn)q=q.order(tieBreaker,{ascending:true});
     const{data,error}=await q;
