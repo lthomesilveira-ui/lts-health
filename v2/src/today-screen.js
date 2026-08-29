@@ -17,7 +17,11 @@ function sourceRow(label,stateValue,missingText){
   if(stateValue==='unknown')return`<div><span>${esc(label)}</span><b>Não foi possível confirmar agora</b><small>Atualize para tentar carregar essa fonte novamente.</small></div>`;
   return`<div><span>${esc(label)}</span><b>${esc(missingText)}</b><small>Use a área Dados para trazer essa fonte.</small></div>`;
 }
-function action(route,label,ref='',kind=''){return`<button class="todayAction" data-today-route="${esc(route)}"${ref?` data-today-ref="${esc(ref)}"`:''}${kind?` data-today-kind="${esc(kind)}"`:''}>${esc(label)}</button>`;}
+function action(route,label,ref='',kind=''){
+  if(kind&&ref)return`<button class="todayAction" data-timeline-jump data-timeline-route="${esc(route)}" data-timeline-kind="${esc(kind)}" data-timeline-ref="${esc(ref)}">${esc(label)}</button>`;
+  if(kind==='nutrition'&&ref)return`<button class="todayAction" data-timeline-jump data-timeline-route="${esc(route)}" data-timeline-kind="nutrition" data-timeline-date="${esc(ref)}">${esc(label)}</button>`;
+  return`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
+}
 function summaryCard(label,main,sub='',actionHtml='',kind=''){
   return`<article class="todaySummaryCard ${kind}"><span>${esc(label)}</span><b>${esc(main)}</b>${sub?`<small>${esc(sub)}</small>`:''}${actionHtml?`<div class="todayActions">${actionHtml}</div>`:''}</article>`;
 }
