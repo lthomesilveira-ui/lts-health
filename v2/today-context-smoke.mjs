@@ -39,10 +39,10 @@ async function run(viewport,label){
       {source_record_id:'machine-set-new',exercise_source_record_id:'machine-ex-new',workout_source_record_id:'machine-new',weight:80,weight_unit:'kg',reps_numeric:8},
       {source_record_id:'machine-set-old',exercise_source_record_id:'machine-ex-old',workout_source_record_id:'machine-old',weight:70,weight_unit:'kg',reps_numeric:10}
     ];
+    location.hash='bio';
   });
-  await page.click('[data-route="bio"]');
-  await page.click('[data-route="mais"]');
-  await page.click('#moreSheet [data-route="hoje"]');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
   text=(await page.locator('.todayContextSection').textContent())||'';
   if(!text.includes('Sem exercício comparável nas duas sessões'))throw new Error(`${label}: Today compared the same exercise across different machines`);
