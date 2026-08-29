@@ -1,0 +1,24 @@
+name: LTS Health Apple bridge contract
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/functions/health-apple-sync-batch/**'
+      - 'supabase/migrations/20260829190410_add_source_daily_metrics_for_apple_bridge.sql'
+      - 'v2/src/data-layer.js'
+      - 'v2/apple-bridge-contract-smoke.mjs'
+      - '.github/workflows/apple-bridge-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apple-bridge-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static contract checks
+        run: |
+          node --check v2/apple-bridge-contract-smoke.mjs
+          test -f supabase/functions/health-apple-sync-batch/index.ts
+          test -f supabase/migrations/20260829190410_add_source_daily_metrics_for_apple_bridge.sql
+          node v2/apple-bridge-contract-smoke.mjs
