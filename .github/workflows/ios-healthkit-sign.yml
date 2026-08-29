@@ -1,0 +1,145 @@
+name: LTS Health iOS signed distribution
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_testflight:
+        description: Upload signed IPA to TestFlight
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  sign-and-package:
+    runs-on: macos-latest
+    env:
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY_BASE64 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify required signing material
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(APPLE_TEAM_ID APPLE_CERTIFICATE_P12_BASE64 APPLE_CERTIFICATE_PASSWORD APPLE_PROVISIONING_PROFILE_BASE64)
+          for key in "${required[@]}"; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "Missing required GitHub Actions secret: $key" >&2
+              exit 1
+            fi
+          done
+          if [[ "${{ inputs.upload_testflight }}" == "true" ]]; then
+            test -n "${APP_STORE_CONNECT_KEY_ID:-}" || { echo "Missing APP_STORE_CONNECT_KEY_ID" >&2; exit 1; }
+            test -n "${APP_STORE_CONNECT_ISSUER_ID:-}" || { echo "Missing APP_STORE_CONNECT_ISSUER_ID" >&2; exit 1; }
+            test -n "${APP_STORE_CONNECT_PRIVATE_KEY_BASE64:-}" || { echo "Missing APP_STORE_CONNECT_PRIVATE_KEY_BASE64" >&2; exit 1; }
+          fi
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: ios/LTSHealthSync
+        run: xcodegen generate
+
+      - name: Import signing certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/lts-health-signing.keychain-db"
+          P12="$RUNNER_TEMP/distribution.p12"
+          echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > "$P12"
+          security create-keychain -p "runner" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "runner" "$KEYCHAIN"
+          security import "$P12" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "runner" "$KEYCHAIN"
+          security list-keychain -d user -s "$KEYCHAIN"
+
+      - name: Install provisioning profile
+        id: profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROFILE="$RUNNER_TEMP/profile.mobileprovision"
+          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE"
+          security cms -D -i "$PROFILE" > "$RUNNER_TEMP/profile.plist"
+          UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")
+          NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE" "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
+          echo "uuid=$UUID" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Archive signed app
+        working-directory: ios/LTSHealthSync
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project LTSHealthSync.xcodeproj \
+            -scheme LTSHealthSync \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/LTSHealthSync.xcarchive" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ steps.profile.outputs.name }}" \
+            CODE_SIGN_STYLE=Manual \
+            archive
+
+      - name: Create export options
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>stripSwiftSymbols</key><true/>
+          </dict></plist>
+          EOF
+
+      - name: Export signed IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/LTSHealthSync.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Upload signed IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LTSHealthSync-signed-ipa
+          path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Prepare App Store Connect API key
+        if: ${{ inputs.upload_testflight }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY_BASE64" | base64 --decode > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+
+      - name: Upload to TestFlight
+        if: ${{ inputs.upload_testflight }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          IPA=$(find "$RUNNER_TEMP/export" -maxdepth 1 -name '*.ipa' -print -quit)
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA" \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
