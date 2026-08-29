@@ -75,14 +75,15 @@ async function run(viewport,label){
     state.data.metrics=[{source_record_id:'apple-steps-only',measured_at:'2026-02-04T12:00:00Z',metric_type:'steps',value:1000,unit:'count',source:'Apple Health'}];
   });
   await rerenderData();
-  let appleCard=(await page.locator('.sourceStatus').filter({hasText:'Apple Saúde'}).textContent())||'';
+  const appleCardLocator=page.locator('.sourceStatus:has([data-source-upload="apple_health"])');
+  let appleCard=(await appleCardLocator.textContent())||'';
   if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: unsupported Apple steps incorrectly proved stable Apple data`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'});
   });
   await rerenderData();
-  appleCard=(await page.locator('.sourceStatus').filter({hasText:'Apple Saúde'}).textContent())||'';
+  appleCard=(await appleCardLocator.textContent())||'';
   if(!appleCard.includes('com dados'))throw new Error(`${label}: supported Apple metric did not prove stable Apple data`);
 
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
