@@ -45,7 +45,32 @@ function markerHistory(group){
 function collectionPanel(collection){
   if(!collection)return empty('Nenhuma coleta laboratorial estruturada.');
   const q=norm(state.ui.labQuery),rows=collection.rows.filter(r=>!q||norm(`${r.biomarker} ${r.result_raw} ${r.unit} ${r.reference_range}`).includes(q)).sort((a,b)=>String(a.biomarker).localeCompare(String(b.biomarker),'pt-BR'));
-  return `<div class="collectionHeader"><div><span>${fmtDate(collection.date)}</span><b>${esc(collection.lab)}</b><small>${collection.rows.length} resultado(s) estruturado(s)</small></div>${pill(`${rows.length} visíveis`)}</div><div class="labTable">${rows.map(r=>`<div class="labTableRow"><div><b>${esc(r.biomarker||'Marcador')}</b><small>${r.reference_range?`Referência ${esc(r.reference_range)}`:'Sem faixa de referência registrada'}</small></div><strong>${esc(resultText(r))}${r.unit&&!String(resultText(r)).includes(r.unit)?` <small>${esc(r.unit)}</small>`:''}</strong>${r.flag?pill(r.flag,'warn'):''}</div>`).join('')||empty('Nenhum resultado corresponde à busca.')}</div>`;
+  const flagged=collection.rows.filter(r=>r.flag).length,units=unique(collection.rows.map(r=>r.unit).filter(Boolean)).length;
+  return `<div class="collectionHeader"><div><span>${fmtDate(collection.date)}</span><b>${esc(collection.lab)}</b><small>${collection.rows.length} resultado(s) estruturado(s)</small></div>${pill(`${rows.length} visíveis`)}</div><div class="collectionFacts"><div><span>Resultados</span><b>${collection.rows.length}</b></div><div><span>Com sinalização na fonte</span><b>${flagged}</b></div><div><span>Unidades registradas</span><b>${units}</b></div></div><div class="labTable">${rows.map(r=>`<div class="labTableRow"><div><b>${esc(r.biomarker||'Marcador')}</b><small>${r.reference_range?`Referência ${esc(r.reference_range)}`:'Sem faixa de referência registrada'}</small></div><strong>${esc(resultText(r))}${r.unit&&!String(resultText(r)).includes(r.unit)?` <small>${esc(r.unit)}</small>`:''}</strong>${r.flag?pill(r.flag,'warn'):''}</div>`).join('')||empty('Nenhum resultado corresponde à busca.')}</div>`;
+}
+function documentStatus(doc){
+  const status=norm(doc.extraction_status);
+  if(status==='structured'||status==='extracted')return pill('dados extraídos','ok');
+  if(status.includes('review'))return pill('revisão necessária','warn');
+  if(status.includes('failed'))return pill('leitura não concluída','warn');
+  return pill('documento registrado');
+}
+function documentSummary(docs){
+  const types=new Map(),sources=new Map(),years=new Map();
+  for(const doc of docs){
+    const type=doc.document_type||'Tipo não informado',source=doc.source||'Origem não informada',year=String(doc.document_date||'').slice(0,4)||'Sem data';
+    types.set(type,(types.get(type)||0)+1);sources.set(source,(sources.get(source)||0)+1);years.set(year,(years.get(year)||0)+1);
+  }
+  const top=map=>[...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
+  return `<div class="documentSummary"><div><span>Tipos de documento</span>${top(types).map(([k,v])=>`<b>${esc(k)} <em>${v}</em></b>`).join('')||'<b>Sem registros</b>'}</div><div><span>Origens</span>${top(sources).map(([k,v])=>`<b>${esc(k)} <em>${v}</em></b>`).join('')||'<b>Sem registros</b>'}</div><div><span>Por ano</span>${top(years).map(([k,v])=>`<b>${esc(k)} <em>${v}</em></b>`).join('')||'<b>Sem registros</b>'}</div></div>`;
+}
+function evidenceByDate(cols,docs){
+  const dateMap=new Map();
+  for(const c of cols){if(!c.date)continue;if(!dateMap.has(c.date))dateMap.set(c.date,{date:c.date,collections:[],docs:[]});dateMap.get(c.date).collections.push(c);}
+  for(const d of docs){if(!d.document_date)continue;if(!dateMap.has(d.document_date))dateMap.set(d.document_date,{date:d.document_date,collections:[],docs:[]});dateMap.get(d.document_date).docs.push(d);}
+  const rows=[...dateMap.values()].filter(x=>x.collections.length&&x.docs.length).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,12);
+  if(!rows.length)return empty('Ainda não há datas com coleta estruturada e documento registrado no mesmo dia.');
+  return `<div class="evidenceDateList">${rows.map(x=>`<article><time>${fmtDate(x.date)}</time><div><b>${x.collections.reduce((s,c)=>s+c.rows.length,0)} resultado(s) · ${x.docs.length} documento(s)</b><small>${esc(unique(x.collections.map(c=>c.lab)).join(' · '))}</small><div class="evidenceDocNames">${x.docs.slice(0,4).map(d=>`<span>${esc(d.title||d.document_type||'Documento')}</span>`).join('')}</div></div></article>`).join('')}</div>`;
 }
 
 export function renderHealthHub(){
@@ -53,18 +78,22 @@ export function renderHealthHub(){
   if(!state.ui.selectedCollection||!cols.some(c=>c.key===state.ui.selectedCollection))state.ui.selectedCollection=cols[0]?.key||null;
   if(!state.ui.selectedBiomarker||!groups.some(g=>g.key===state.ui.selectedBiomarker))state.ui.selectedBiomarker=groups[0]?.key||null;
   const collection=cols.find(c=>c.key===state.ui.selectedCollection),filteredGroups=groups.filter(g=>!q||norm(g.label).includes(q)),marker=groups.find(g=>g.key===state.ui.selectedBiomarker);
-  return `${title('Saúde & exames','Resultados laboratoriais e documentos organizados por coleta e marcador.')}
+  const labDates=unique(labs.map(r=>r.collection_date)),docDates=unique(docs.map(r=>r.document_date));
+  return `${title('Saúde & exames','Resultados, coletas e documentos organizados para consulta longitudinal.')}
     ${labFailed?unavailable('Os exames continuam preservados; tente atualizar para carregar os resultados.') : ''}
     <div class="grid cols4">
-      <div class="card metric"><span>Coletas</span><strong>${labFailed?'—':cols.length}</strong><em>${labFailed?'não carregado':'datas e laboratórios estruturados'}</em></div>
+      <div class="card metric"><span>Coletas</span><strong>${labFailed?'—':cols.length}</strong><em>${labFailed?'não carregado':labDates.length?`${fmtDate(labDates.sort().at(0))} → ${fmtDate(labDates.sort().at(-1))}`:'sem datas'}</em></div>
       <div class="card metric"><span>Resultados</span><strong>${labFailed?'—':labs.length}</strong><em>${labFailed?'não carregado':'marcadores estruturados'}</em></div>
       <div class="card metric"><span>Marcadores</span><strong>${labFailed?'—':groups.length}</strong><em>${labFailed?'não carregado':'nomes distintos'}</em></div>
-      <div class="card metric"><span>Documentos</span><strong>${docsFailed?'—':docs.length}</strong><em>${docsFailed?'não carregado':'metadados preservados'}</em></div>
+      <div class="card metric"><span>Documentos</span><strong>${docsFailed?'—':docs.length}</strong><em>${docsFailed?'não carregado':docDates.length?`${docDates.length} data(s)`:'sem datas'}</em></div>
     </div>
     <div class="grid split sectionGap">
       <div class="card">${labFailed?unavailable('Não é possível listar coletas enquanto os resultados estão indisponíveis.'):`<div class="cardHead"><div><b>Coleta</b><small>Escolha uma coleta para ver os resultados disponíveis.</small></div><select id="collectionSelect">${cols.map(c=>`<option value="${esc(c.key)}">${fmtDate(c.date)} · ${esc(c.lab)}</option>`).join('')}</select></div><input id="labQuery" class="fullInput" type="search" placeholder="Buscar marcador ou resultado" value="${esc(state.ui.labQuery)}">${collectionPanel(collection)}`}</div>
       <div class="card">${labFailed?unavailable('O histórico por marcador ficará disponível após o carregamento dos exames.'):`<div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando os valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div>`}</div>
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Documentos</b><small>Esta lista mostra metadados do histórico. Um item aqui não significa, por si só, que o arquivo original esteja disponível para abrir.</small></div>${!docsFailed?pill(`${docs.length}`):''}</div>${docsFailed?unavailable('Os documentos não carregaram agora.'):`<div class="documentGrid">${docs.slice(0,80).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div></article>`).join('')||empty('Nenhum documento registrado.')}</div>`}</div>
-    <p class="footerNote">A tela organiza os resultados registrados; interpretação clínica e decisões de tratamento devem considerar o contexto médico completo.</p>`;
+    <div class="grid cols2 sectionGap">
+      <div class="card"><div class="cardHead"><div><b>Documentos</b><small>Metadados do histórico, origem e estado da leitura quando disponíveis.</small></div>${!docsFailed?pill(`${docs.length}`):''}</div>${docsFailed?unavailable('Os documentos não carregaram agora.'):`${documentSummary(docs)}<div class="documentGrid">${docs.slice(0,100).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div>${documentStatus(d)}</article>`).join('')||empty('Nenhum documento registrado.')}</div>`}</div>
+      <div class="card"><div class="cardHead"><div><b>Resultados e documentos na mesma data</b><small>Ajuda a localizar evidências relacionadas pela data sem assumir que um item explica o outro.</small></div></div>${labFailed||docsFailed?unavailable('Esta visão precisa dos resultados e dos documentos carregados ao mesmo tempo.'):evidenceByDate(cols,docs)}</div>
+    </div>
+    <p class="footerNote">A tela organiza os resultados registrados. Coincidência de data não demonstra causa, e interpretação clínica ou decisões de tratamento devem considerar o contexto médico completo.</p>`;
 }
