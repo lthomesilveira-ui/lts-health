@@ -30,11 +30,17 @@ async function run(viewport,label){
   await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=5);
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
-  await page.waitForSelector('.collectionCompareList');
+  await page.waitForFunction(()=>{
+    const select=document.querySelector('#collectionSelect');
+    const text=document.querySelector('.collectionCompareList')?.textContent||'';
+    return select?.value==='2026-01-03__Laboratório de teste'&&text.includes('Marcador A')&&text.includes('+2,0 u');
+  });
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
   await page.click('[data-marker="marcador textual"]');
   await page.waitForFunction(()=>{const t=document.querySelector('.exerciseDetail')?.textContent||'';return t.includes('Presente')&&t.includes('Ausente')&&t.includes('textual');});
+  const textual=(await page.locator('.exerciseDetail').textContent())||'';
+  if(textual.match(/0,0\s*(?:u|mg\/dL)?/))throw new Error(`${label}: textual or missing lab value was coerced to zero`);
   await page.click('[data-marker="marcador a"]');
   await page.waitForFunction(()=>document.querySelectorAll('.labUnitCohort').length===2);
   const marker=(await page.locator('.exerciseDetail').textContent())||'';
