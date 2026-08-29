@@ -19,21 +19,25 @@ jobs:
           set -euo pipefail
           ROOT="https://lthomesilveira-ui.github.io/lts-health/"
           V2="https://lthomesilveira-ui.github.io/lts-health/v2/"
+          TMP="$(mktemp -d)"
+          trap 'rm -rf "$TMP"' EXIT
 
-          root_html="$(curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$ROOT")"
-          v2_html="$(curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2")"
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$ROOT" -o "$TMP/root.html"
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2" -o "$TMP/v2.html"
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/main.js" -o "$TMP/main.js"
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-layer.js" -o "$TMP/data-layer.js"
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/core.js" -o "$TMP/core.js"
 
-          echo "$root_html" | grep -q 'canonical v16'
-          echo "$root_html" | grep -q './product.js?v=29'
-          ! echo "$root_html" | grep -q 'type="module" src="./src/main.js"'
+          grep -q 'canonical v16' "$TMP/root.html"
+          grep -q './product.js?v=29' "$TMP/root.html"
+          ! grep -q 'type="module" src="./src/main.js"' "$TMP/root.html"
 
-          echo "$v2_html" | grep -q 'Seu histórico de saúde em um só lugar'
-          echo "$v2_html" | grep -q 'type="module" src="./src/main.js"'
-          echo "$v2_html" | grep -q './evolution.css'
-          echo "$v2_html" | grep -q './data.css'
-
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/main.js" | grep -q 'renderTrainingScreen'
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-layer.js" | grep -q 'health_ingestion_previews'
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/core.js" | grep -q "inspectFunction: 'health-inspect-upload'"
+          grep -q 'Seu histórico de saúde em um só lugar' "$TMP/v2.html"
+          grep -q 'type="module" src="./src/main.js"' "$TMP/v2.html"
+          grep -q './evolution.css' "$TMP/v2.html"
+          grep -q './data.css' "$TMP/v2.html"
+          grep -q 'renderTrainingScreen' "$TMP/main.js"
+          grep -q 'health_ingestion_previews' "$TMP/data-layer.js"
+          grep -q "inspectFunction: 'health-inspect-upload'" "$TMP/core.js"
 
           echo 'Root fallback preserved and /v2 candidate reachable.'
