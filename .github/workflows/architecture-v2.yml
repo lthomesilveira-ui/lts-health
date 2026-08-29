@@ -75,7 +75,7 @@ jobs:
           grep -q "active_energy_kcal" v2/src/source-status.js
           grep -q "exercise_minutes" v2/src/source-status.js
           grep -q "stand_hours" v2/src/source-status.js
-          grep -q "sleep_duration_h" v2/src/source-status.js
+          ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
           grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "renderBioHub" v2/src/main.js
@@ -96,9 +96,9 @@ jobs:
           grep -q "downloadStructuredBackup" v2/src/data-layer.js
           grep -q "downloadStructuredBackup" v2/src/main.js
           grep -q "backupExportBtn" v2/src/data-screen.js
-          grep -q "Automático canônico: energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
-          grep -q "intervalos sobrepostos são unidos antes do total diário" v2/src/data-screen.js
-          grep -q "Passos e FC de repouso não entram automaticamente por este fluxo" v2/src/data-screen.js
+          grep -q "Automático canônico: energia ativa, minutos de exercício e horas em pé" v2/src/data-screen.js
+          grep -q "Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos" v2/src/data-screen.js
+          grep -q "Sono permanece fora da sincronização automática" v2/src/data-screen.js
           grep -q "Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde" v2/src/data-screen.js
           grep -q "Arquivo preservado + revisão" v2/src/data-screen.js
           grep -q "Resultados só são estruturados quando a leitura for validada" v2/src/data-screen.js
@@ -134,9 +134,8 @@ jobs:
           grep -q "sleep_duration_h" v2/src/today-screen.js
           grep -q "sourceStatusFor('apple_health')" v2/src/today-screen.js
           grep -q "Arquivo recebido; dados ainda não confirmados" v2/src/today-screen.js
-          grep -q "Energia ativa, minutos de exercício, horas em pé e duração do sono têm sincronização automática validada" v2/src/today-screen.js
-          grep -q "intervalos sobrepostos são unidos antes do total diário" v2/src/today-screen.js
-          grep -q "Passos e FC de repouso não são adicionados automaticamente pelo fluxo Apple estável" v2/src/today-screen.js
+          grep -q "Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada" v2/src/today-screen.js
+          grep -q "Sono pode ser exibido quando já existe como métrica estruturada" v2/src/today-screen.js
           grep -q "Progressão de treino" v2/src/today-screen.js
           grep -q "metricOrder" v2/src/today-screen.js
           grep -q "recentContext" v2/src/today-screen.js

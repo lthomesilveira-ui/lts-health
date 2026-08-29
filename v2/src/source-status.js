@@ -1,6 +1,6 @@
 import {state,norm} from './core.js';
 
-export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h']);
+export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
 
 const failed=key=>state.domainStatus[key]==='error';
 const contains=(rows,fields,term)=>{term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
