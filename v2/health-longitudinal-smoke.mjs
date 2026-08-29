@@ -34,13 +34,11 @@ async function run(viewport,label){
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
   await page.click('[data-marker="marcador textual"]');
-  const textual=(await page.locator('.exerciseDetail').textContent())||'';
-  if(!textual.includes('Presente')||!textual.includes('Ausente')||!textual.includes('textual'))throw new Error(`${label}: textual lab results were not preserved as text`);
+  await page.waitForFunction(()=>{const t=document.querySelector('.exerciseDetail')?.textContent||'';return t.includes('Presente')&&t.includes('Ausente')&&t.includes('textual');});
   await page.click('[data-marker="marcador a"]');
-  await page.waitForSelector('.labUnitCohort');
+  await page.waitForFunction(()=>document.querySelectorAll('.labUnitCohort').length===2);
   const marker=(await page.locator('.exerciseDetail').textContent())||'';
   if(!marker.includes('unidades diferentes permanecem em séries separadas'))throw new Error(`${label}: mixed-unit separation guardrail missing`);
-  if((await page.locator('.labUnitCohort').count())!==2)throw new Error(`${label}: compatible unit cohorts were not rendered independently`);
   if(marker.match(/converter|convertid/i))throw new Error(`${label}: interface implies unsupported unit conversion`);
   const full=(await page.textContent('#screenHost'))||'';
   if(full.match(/\b(canonical|parity|backend|provenance[- ]first|readiness|PWA)\b/i))throw new Error(`${label}: implementation jargon visible`);
