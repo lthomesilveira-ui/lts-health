@@ -1,0 +1,33 @@
+name: LTS Health v2 Analysis Smoke
+on:
+  push:
+    branches: [architecture-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/analysis-screen.js
+          node --check v2/src/main.js
+          node --check v2/analysis-history-smoke.mjs
+          grep -q 'id="analysisPeriod"' v2/src/analysis-screen.js
+          grep -q "analysisPeriod" v2/src/main.js
+          grep -q 'Limitações desta leitura' v2/src/analysis-screen.js
+          ! grep -Eiq '\b(readiness score|recovery score|score de recupera[cç][aã]o)\b' v2/src/analysis-screen.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Test longitudinal analysis
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/analysis-history-smoke.mjs
