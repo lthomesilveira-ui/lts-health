@@ -67,7 +67,8 @@ jobs:
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
           grep -q "appleInspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
-          grep -q "inspectFunctionForSource = sourceType => sourceType==='apple_health' ? CONFIG.appleInspectFunction : CONFIG.inspectFunction" v2/src/core.js
+          grep -q "labInspectFunction: 'health-inspect-lab'" v2/src/core.js
+          grep -q "\['fleury','einstein','lab'\].includes(sourceType)" v2/src/core.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
@@ -88,6 +89,8 @@ jobs:
           grep -q "backupExportBtn" v2/src/data-screen.js
           grep -q "A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
           grep -q "Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte" v2/src/data-screen.js
+          grep -q "CSV estruturado + documento preservado" v2/src/data-screen.js
+          grep -q "Resultados textuais permanecem textuais" v2/src/data-screen.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "data-body-date" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
@@ -129,6 +132,8 @@ jobs:
           ! grep -q 'app-v[0-9]' v2/index.html
           ! grep -q 'product.js' v2/index.html
           ! grep -R 'tadhkamnwtsbdozwkyut' v2/src v2/index.html
+          ! grep -Eq '[0-9]{4}-[0-9]{2}-[0-9]{2}' v2/DATA_AUDIT.md
+          ! grep -Eq '[0-9]{4}-[0-9]{2}-[0-9]{2}' v2/PARITY_MATRIX.md
       - name: Install browser test runtime
         run: |
           npm init -y >/dev/null 2>&1
