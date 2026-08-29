@@ -28,20 +28,20 @@ async function run(viewport,label){
   });
 
   await page.selectOption('#timelineDomain','Atividade');
+  await page.waitForTimeout(80);
   await page.fill('#timelineQuery','Teste carga timeline');
   await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='250');
-  const before=(await page.locator('.timelineSummary').textContent())||'';
-  if(!before.includes('de 300'))throw new Error(`${label}: timeline query expected 300 synthetic matches, got ${before}`);
+  await page.waitForFunction(()=>document.querySelector('.timelineSummary span')?.textContent.includes('de 300'));
   await page.waitForSelector('[data-timeline-more]');
   await page.click('[data-timeline-more]');
   await page.waitForFunction(async()=>{const {state}=await import('./src/core.js');return Number(state.ui.timelineLimit)>=500;});
-  await page.waitForTimeout(150);
-  const after=(await page.locator('.timelineSummary').textContent())||'';
-  if(!after.startsWith('300')||!after.includes('de 300'))throw new Error(`${label}: load-more did not reveal all 300 matches, got ${after}`);
+  await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='300');
   if(await page.locator('[data-timeline-more]').count())throw new Error(`${label}: load-more button remained after all matching history became visible`);
 
   await page.fill('#timelineQuery','');
+  await page.waitForTimeout(80);
   await page.selectOption('#timelineDomain','Treinos');
+  await page.waitForTimeout(80);
   const jump=page.locator('[data-timeline-jump][data-timeline-kind="workout"]').first();
   await jump.click();
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
