@@ -5,7 +5,8 @@ const base='http://127.0.0.1:4173/?fixture=1#dados';
 
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
-  const page=await browser.newPage({viewport,acceptDownloads:true});
+  const context=await browser.newContext({viewport,acceptDownloads:true,timezoneId:'America/Sao_Paulo'});
+  const page=await context.newPage();
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
@@ -13,6 +14,13 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   await page.waitForSelector('#backupExportBtn');
+
+  const localDateCheck=await page.evaluate(async()=>{
+    const {localBackupDate}=await import('./src/data-layer.js');
+    return localBackupDate(new Date('2026-08-30T02:30:00Z'));
+  });
+  if(localDateCheck!=='2026-08-29')throw new Error(`${label}: backup filename date drifted to UTC next day (${localDateCheck})`);
+
   const panel=(await page.locator('.backupPanel').textContent())||'';
   if(!panel.includes('Exportar registros organizados')||!panel.includes('Arquivos privados e credenciais ficam de fora')||!panel.includes('dados de saúde'))throw new Error(`${label}: backup privacy/scope copy missing`);
   const downloadPromise=page.waitForEvent('download');
@@ -39,6 +47,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#backupExportMsg')?.textContent?.includes('Backup criado:'));
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`${label}: backup panel caused horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+  await context.close();
   await browser.close();
 }
 
