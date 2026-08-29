@@ -4,32 +4,42 @@ const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
 const failed=key=>state.domainStatus[key]==='error';
+const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h']);
 
 function contains(rows,fields,term){term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));}
-function sourceStatus(found,keys=[]){return found?'ready':keys.some(failed)?'unknown':'missing';}
+function uploadBucket(upload){const status=String(upload?.status||'').toLowerCase();if(status==='uploaded'||status==='processing')return'in_progress';if(status==='processed'||status==='imported')return'done';if(status==='review_required'||status==='rejected'||status==='failed')return'attention';return'other';}
+function latestUploadFor(source,uploads){return [...(uploads||[])].filter(u=>norm(u.source_type)===norm(source)).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0]||null;}
+function sourceStatus({dataFound=false,upload=null,domainKeys=[]}){
+  if(dataFound)return'ready';
+  const bucket=uploadBucket(upload);
+  if(bucket==='attention')return'attention';
+  if(bucket==='in_progress')return'processing';
+  if(domainKeys.some(failed)||failed('uploads'))return'unknown';
+  if(upload)return'received';
+  return'missing';
+}
 
 function sourceState(){
   const uploads=state.data.uploads||[],workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[];
-  const hasUpload=t=>uploads.some(u=>norm(u.source_type)===norm(t));
-  const mfp=!!(nutrition.length||meals.length||hasUpload('myfitnesspal'));
-  const apple=hasUpload('apple_health')||contains(metrics,['source','source_file'],'apple');
-  const polar=hasUpload('polar_flow')||contains(workouts,['source','source_file'],'polar');
-  const fleury=hasUpload('fleury')||contains(labs,['laboratory','source','source_file'],'fleury');
-  const einstein=hasUpload('einstein')||contains(labs,['laboratory','source','source_file'],'einstein');
+  const appleData=metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&contains([m],['source','source_file'],'apple'));
+  const polarData=contains(workouts,['source','source_file'],'polar');
+  const mfpData=contains(nutrition,['source','source_file'],'myfitnesspal')||contains(meals,['source','source_file'],'myfitnesspal');
+  const fleuryData=contains(labs,['laboratory','source','source_file'],'fleury');
+  const einsteinData=contains(labs,['laboratory','source','source_file'],'einstein');
   return [
-    {key:'apple_health',name:'Apple Saúde',status:sourceStatus(apple,['uploads','metrics']),capability:'Leitura automática parcial',readyDetail:'Dados do Apple Saúde encontrados.',missingDetail:'Envie o export do app Saúde.',action:'Enviar Apple Saúde',scope:'A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono. Passos e FC de repouso não são importados automaticamente por este fluxo; só aparecem quando já existem como registros válidos de outra origem.'},
-    {key:'polar_flow',name:'Polar Flow',status:sourceStatus(polar,['uploads','workouts']),capability:'Arquivo + revisão',readyDetail:'Há dados ou arquivo do Polar.',missingDetail:'Envie um export do Polar Flow.',action:'Enviar Polar',scope:'O arquivo é preservado e pode complementar detalhes de treino. O mesmo treino não é contado duas vezes quando outra fonte já o representa.'},
-    {key:'myfitnesspal',name:'MyFitnessPal',status:sourceStatus(mfp,['nutrition','meals','uploads']),capability:'Leitura automática de nutrição',readyDetail:'Histórico de alimentação encontrado.',missingDetail:'Envie o export do MyFitnessPal.',action:'Enviar MyFitnessPal',scope:'CSV reconhecido consolida calorias e macros por dia. Campo ausente continua ausente.'},
-    {key:'fleury',name:'Fleury',status:sourceStatus(fleury,['labs','uploads']),capability:'Arquivo preservado + revisão',readyDetail:'Há exames ou arquivo do Fleury.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Fleury',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'},
-    {key:'einstein',name:'Einstein',status:sourceStatus(einstein,['labs','uploads']),capability:'Arquivo preservado + revisão',readyDetail:'Há exames ou arquivo do Einstein.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Einstein',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'}
+    {key:'apple_health',name:'Apple Saúde',status:sourceStatus({dataFound:appleData,upload:latestUploadFor('apple_health',uploads),domainKeys:['metrics']}),capability:'Leitura automática parcial',readyDetail:'Dados compatíveis do Apple Saúde encontrados.',missingDetail:'Envie o export do app Saúde.',action:'Enviar Apple Saúde',scope:'A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono. Passos e FC de repouso não são importados automaticamente por este fluxo; só aparecem quando já existem como registros válidos de outra origem.'},
+    {key:'polar_flow',name:'Polar Flow',status:sourceStatus({dataFound:polarData,upload:latestUploadFor('polar_flow',uploads),domainKeys:['workouts']}),capability:'Arquivo + revisão',readyDetail:'Dados do Polar encontrados.',missingDetail:'Envie um export do Polar Flow.',action:'Enviar Polar',scope:'O arquivo é preservado e pode complementar detalhes de treino. O mesmo treino não é contado duas vezes quando outra fonte já o representa.'},
+    {key:'myfitnesspal',name:'MyFitnessPal',status:sourceStatus({dataFound:mfpData,upload:latestUploadFor('myfitnesspal',uploads),domainKeys:['nutrition','meals']}),capability:'Leitura automática de nutrição',readyDetail:'Dados do MyFitnessPal encontrados.',missingDetail:'Envie o export do MyFitnessPal.',action:'Enviar MyFitnessPal',scope:'CSV reconhecido consolida calorias e macros por dia. Campo ausente continua ausente.'},
+    {key:'fleury',name:'Fleury',status:sourceStatus({dataFound:fleuryData,upload:latestUploadFor('fleury',uploads),domainKeys:['labs']}),capability:'Arquivo preservado + revisão',readyDetail:'Resultados estruturados do Fleury encontrados.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Fleury',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'},
+    {key:'einstein',name:'Einstein',status:sourceStatus({dataFound:einsteinData,upload:latestUploadFor('einstein',uploads),domainKeys:['labs']}),capability:'Arquivo preservado + revisão',readyDetail:'Resultados estruturados do Einstein encontrados.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Einstein',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'}
   ];
 }
 
 function statusCard(source){
-  const ready=source.status==='ready',unknown=source.status==='unknown';
-  const label=ready?'com dados':unknown?'não verificado':'a importar';
-  const detail=ready?source.readyDetail:unknown?'Não foi possível verificar esta fonte agora.':source.missingDetail;
-  return `<article class="sourceStatus ${ready?'ready':''}"><div class="sourceStatusTop"><b>${esc(source.name)}</b>${pill(label,ready?'ok':unknown?'warn':'')}</div><span class="sourceCapability">${esc(source.capability)}</span><p>${esc(detail)}</p><button type="button" data-source-upload="${esc(source.key)}">${esc(source.action)}</button><details class="sourceMore"><summary>Como funciona</summary><small class="sourceScope">${esc(source.scope)}</small></details></article>`;
+  const labels={ready:'com dados',processing:'processando',attention:'precisa de atenção',received:'arquivo recebido',unknown:'não verificado',missing:'a importar'};
+  const detail=source.status==='ready'?source.readyDetail:source.status==='processing'?'Arquivo recebido e ainda em processamento.':source.status==='attention'?'O arquivo foi preservado, mas precisa de revisão.':source.status==='received'?'Há arquivo desta fonte, sem dado estruturado confirmado nesta tela.':source.status==='unknown'?'Não foi possível confirmar esta fonte agora.':source.missingDetail;
+  const kind=source.status==='ready'?'ok':source.status==='attention'||source.status==='unknown'?'warn':'';
+  return `<article class="sourceStatus ${source.status==='ready'?'ready':''}"><div class="sourceStatusTop"><b>${esc(source.name)}</b>${pill(labels[source.status]||'não verificado',kind)}</div><span class="sourceCapability">${esc(source.capability)}</span><p>${esc(detail)}</p><button type="button" data-source-upload="${esc(source.key)}">${esc(source.action)}</button><details class="sourceMore"><summary>Como funciona</summary><small class="sourceScope">${esc(source.scope)}</small></details></article>`;
 }
 function area(label,key){return[label,failed(key)?'—':String((state.data[key]||[]).length),failed(key)?'indisponível agora':'registros'];}
 
@@ -50,7 +60,6 @@ function previewDetail(preview){
 }
 function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
 
-function uploadBucket(upload){const status=String(upload?.status||'').toLowerCase();if(status==='uploaded'||status==='processing')return'in_progress';if(status==='processed'||status==='imported')return'done';if(status==='review_required'||status==='rejected'||status==='failed')return'attention';return'other';}
 function filteredUploads(uploads){const status=state.ui.dataUploadStatus||'all',source=state.ui.dataUploadSource||'all';return uploads.filter(upload=>(status==='all'||uploadBucket(upload)===status)&&(source==='all'||String(upload.source_type||'other')===source));}
 function uploadFilters(uploads){const sources=[...new Set(uploads.map(u=>String(u.source_type||'other')).filter(Boolean))].sort((a,b)=>sourceLabel(a).localeCompare(sourceLabel(b),'pt-BR'));return `<div class="controls"><label>Status<select id="dataUploadStatus"><option value="all">Todos</option><option value="attention">Precisa de atenção</option><option value="in_progress">Em andamento</option><option value="done">Concluídos</option></select></label><label>Origem<select id="dataUploadSource"><option value="all">Todas</option>${sources.map(source=>`<option value="${esc(source)}">${esc(sourceLabel(source))}</option>`).join('')}</select></label></div>`;}
 
