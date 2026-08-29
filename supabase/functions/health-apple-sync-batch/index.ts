@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import md5 from 'https://esm.sh/blueimp-md5@2.19.0';
 
 const cors={
   'Access-Control-Allow-Origin':'*',
@@ -8,12 +9,17 @@ const cors={
 const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json'}});
 const allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg']);
 const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
+const historicalExportFamilies=new Set(['apple_watch','iphone','polar_flow']);
 const maxRequestBytes=1_000_000;
 const maxSourcePayloadBytes=8_192;
 function day(v:unknown){const s=String(v||'');return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:null}
 function n(v:unknown){const x=Number(v);return Number.isFinite(x)&&x>=0?x:null}
 function clean(v:unknown,max=160){const s=String(v||'').trim();return s?s.slice(0,max):null}
-function sourceId(sourceFamily:string,metric:string,d:string,sourceName:string){return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,sourceName])}`}
+function sourceId(sourceFamily:string,metric:string,d:string,sourceName:string){
+  if(sourceFamily==='apple_activity_summary')return `activity_summary:${metric}:${d}`;
+  if(historicalExportFamilies.has(sourceFamily))return `apple_export:${sourceFamily}:${metric}:${d}:${md5(sourceName)}`;
+  return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,sourceName])}`;
+}
 function payloadSize(value:unknown){try{return new TextEncoder().encode(JSON.stringify(value??{})).length}catch{return Infinity}}
 
 Deno.serve(async(req:Request)=>{
