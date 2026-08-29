@@ -73,6 +73,10 @@ function workoutForm(){
 
 function entryModal(){return $('entryModal');}
 function markEntryDirty(){const modal=entryModal();if(modal&&!modal.classList.contains('hidden')&&modal.dataset.saving!=='true')modal.dataset.dirty='true';}
+export function shouldWarnEntryUnload(){
+  const modal=entryModal();
+  return !!modal&&!modal.classList.contains('hidden')&&(modal.dataset.dirty==='true'||modal.dataset.saving==='true');
+}
 
 export function openEntry(type){
   const modal=entryModal();
@@ -125,6 +129,10 @@ export function setupEntryController({onSaved}={}){
   $('entryModal').addEventListener('click',e=>{ if(e.target===$('entryModal')) closeEntry(); });
   $('entryModal').addEventListener('input',e=>{if(e.target.closest('form'))markEntryDirty();});
   $('entryModal').addEventListener('change',e=>{if(e.target.closest('form'))markEntryDirty();});
+  window.addEventListener('beforeunload',e=>{
+    if(!shouldWarnEntryUnload())return;
+    e.preventDefault();e.returnValue='';
+  });
 
   document.addEventListener('click',e=>{
     const addExercise=e.target.closest('[data-add-exercise]');
