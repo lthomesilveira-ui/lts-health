@@ -10,10 +10,10 @@ function contains(rows,fields,term){term=norm(term);return(rows||[]).some(row=>f
 function uploadBucket(upload){const status=String(upload?.status||'').toLowerCase();if(status==='uploaded'||status==='processing')return'in_progress';if(status==='processed'||status==='imported')return'done';if(status==='review_required'||status==='rejected'||status==='failed')return'attention';return'other';}
 function latestUploadFor(source,uploads){return [...(uploads||[])].filter(u=>norm(u.source_type)===norm(source)).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0]||null;}
 function sourceStatus({dataFound=false,upload=null,domainKeys=[]}){
-  if(dataFound)return'ready';
   const bucket=uploadBucket(upload);
   if(bucket==='attention')return'attention';
   if(bucket==='in_progress')return'processing';
+  if(dataFound)return'ready';
   if(domainKeys.some(failed)||failed('uploads'))return'unknown';
   if(upload)return'received';
   return'missing';
