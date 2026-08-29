@@ -198,7 +198,8 @@ await runFailureState('nutrition','hoje','Hoje',async(_page,text)=>{
   if(!text.includes('Alimentação hoje')||!text.includes('Indisponível agora')||text.includes('Sem registro para hoje')) throw new Error('Today nutrition failure rendered as missing data');
 });
 await runFailureState('metrics','hoje','Hoje',async(_page,text)=>{
-  if(!text.includes('Sono')||!text.includes('Passos')||!text.includes('FC de repouso')||!text.includes('Indisponível agora')||text.includes('Sem dado importado')) throw new Error('Today metrics failure rendered as missing data instead of unavailable');
+  for(const label of ['Energia ativa','Exercício','Horas em pé','Sono'])if(!text.includes(label))throw new Error(`Today metrics failure hid validated metric label: ${label}`);
+  if(!text.includes('Indisponível agora')||text.includes('Sem dado importado')) throw new Error('Today metrics failure rendered as missing data instead of unavailable');
 });
 await runFailureState('previews','dados','Dados',async(_page,text)=>{
   if(!text.includes('detalhes do processamento estão indisponíveis agora')) throw new Error('import preview failure is not explicit to the user');
