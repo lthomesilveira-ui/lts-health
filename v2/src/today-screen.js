@@ -39,12 +39,12 @@ function metricCard(metrics,type,today){
   return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${fmtNum(row.value,metricDigits[type])} ${esc(row.unit||metricFallbackUnit[type])}</b><small>${esc(availabilityLabel(row.measured_at,today))}</small></article>`;
 }
 function existingOtherMetricCards(metrics,today){
-  return [...otherMetricTypes].map(type=>latestMetricByType(metrics,type)).filter(Boolean).map(row=>`<article class="todayStatusCard secondary"><span>${esc(otherMetricLabel(row.metric_type))}</span><b>${fmtNum(row.value,otherMetricDigits(row.metric_type))} ${esc(row.unit||otherMetricUnit(row.metric_type))}</b><small>${esc(availabilityLabel(row.measured_at,today))}</small></article>`).join('');
+  return [...otherMetricTypes].map(type=>latestMetricByType(metrics,type)).filter(Boolean).map(row=>`<article class="todayStatusCard secondary"><span>${esc(otherMetricLabel(row.metric_type))}</span><b>${fmtNum(row.value,otherMetricDigits(row.metric_type))} ${esc(otherMetricUnit(row.metric_type,row.unit))}</b><small>${esc(availabilityLabel(row.measured_at,today))}</small></article>`).join('');
 }
 function latestMetricByType(rows,type){return[...(rows||[])].filter(m=>m.metric_type===type).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at)))[0]||null;}
 function otherMetricLabel(type){return type==='steps'?'Passos':type==='resting_heart_rate_bpm'?'FC de repouso':String(type||'Métrica').replaceAll('_',' ');}
 function otherMetricDigits(type){return type==='steps'?0:0;}
-function otherMetricUnit(type){return type==='steps'?'passos':type==='resting_heart_rate_bpm'?'bpm':'';}
+function otherMetricUnit(type,unit=''){return type==='steps'?'passos':type==='resting_heart_rate_bpm'?'bpm':unit;}
 function contextCard(label,main,sub='',route=''){
   return`<article class="todayContextCard"><span>${esc(label)}</span><b>${esc(main)}</b>${sub?`<small>${esc(sub)}</small>`:''}${route?`<button class="todayContextAction" data-route="${esc(route)}">Abrir</button>`:''}</article>`;
 }
