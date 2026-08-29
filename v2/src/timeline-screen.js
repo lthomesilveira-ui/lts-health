@@ -53,7 +53,7 @@ function contextRow(e){
   return e.route?`<button type="button" class="timelineContextJump" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" aria-label="Abrir ${esc(e.domain)} de ${esc(fmtDate(e.date))}">${body}</button>`:`<div>${body}</div>`;
 }
 function crossDomainCard(entry){
-  const preview=entry.rows.slice(0,4);
+  const preview=[...entry.rows].sort((a,b)=>Number(!!b.route)-Number(!!a.route)||String(a.domain).localeCompare(String(b.domain),'pt-BR')).slice(0,4);
   return `<article class="timelineContextCard"><div class="timelineContextHead"><div><b>${fmtDate(entry.date)}</b><span>${entry.domains.length} áreas com registros</span></div><div class="timelineDomainChips">${entry.domains.map(d=>`<span>${esc(d)}</span>`).join('')}</div></div><div class="timelineContextRows">${preview.map(contextRow).join('')}</div>${entry.rows.length>preview.length?`<small>+ ${entry.rows.length-preview.length} registro(s) neste dia</small>`:''}</article>`;
 }
 
