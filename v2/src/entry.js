@@ -92,6 +92,16 @@ function collectWorkout(form){
   return {...root,exercises};
 }
 
+const validationMessages={
+  negative_number_not_allowed:'Use apenas valores iguais ou maiores que zero.',
+  invalid_number:'Há um número inválido. Confira os campos numéricos.',
+  date_required:'Informe a data da medição.',
+  metric_required:'Informe pelo menos uma medida corporal.',
+  workout_fields_required:'Informe data, tipo de treino e pelo menos um exercício com série.',
+  authentication_required:'Sua sessão terminou. Entre novamente para salvar.'
+};
+function entryErrorMessage(error){return validationMessages[error?.message]||'Não foi possível salvar. Confira os campos e tente novamente.';}
+
 export function setupEntryController({onSaved}={}){
   refreshCallback=onSaved||refreshCallback;
   $('closeEntry').addEventListener('click',closeEntry);
@@ -120,8 +130,8 @@ export function setupEntryController({onSaved}={}){
       await refreshCallback();
       setTimeout(closeEntry,450);
     }catch(error){
-      console.error(error);
-      msg.textContent='Não foi possível salvar. Confira os campos e tente novamente.';
+      if(!validationMessages[error?.message])console.error(error);
+      msg.textContent=entryErrorMessage(error);
     }finally{ button.disabled=false; }
   });
 }
