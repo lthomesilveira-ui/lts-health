@@ -71,16 +71,22 @@ function workoutForm(){
   </form>`;
 }
 
+function entryModal(){return $('entryModal');}
+function markEntryDirty(){const modal=entryModal();if(modal&&!modal.classList.contains('hidden')&&modal.dataset.saving!=='true')modal.dataset.dirty='true';}
+
 export function openEntry(type){
-  $('entryModal').dataset.saving='false';
-  $('entryModal').classList.remove('hidden');
+  const modal=entryModal();
+  modal.dataset.saving='false';modal.dataset.dirty='false';
+  modal.classList.remove('hidden');
   $('entryTitle').textContent=type==='workout'?'Registrar treino':'Registrar bio';
   $('entryHost').innerHTML=type==='workout'?workoutForm():bodyForm();
 }
 
 function closeEntry(){
-  if($('entryModal')?.dataset.saving==='true')return false;
-  $('entryModal').classList.add('hidden');
+  const modal=entryModal();
+  if(modal?.dataset.saving==='true')return false;
+  if(modal?.dataset.dirty==='true'&&!window.confirm('Descartar alterações não salvas?'))return false;
+  modal.dataset.dirty='false';modal.classList.add('hidden');
   $('entryHost').innerHTML='';
   return true;
 }
@@ -117,22 +123,24 @@ export function setupEntryController({onSaved}={}){
   refreshCallback=onSaved||refreshCallback;
   $('closeEntry').addEventListener('click',closeEntry);
   $('entryModal').addEventListener('click',e=>{ if(e.target===$('entryModal')) closeEntry(); });
+  $('entryModal').addEventListener('input',e=>{if(e.target.closest('form'))markEntryDirty();});
+  $('entryModal').addEventListener('change',e=>{if(e.target.closest('form'))markEntryDirty();});
 
   document.addEventListener('click',e=>{
     const addExercise=e.target.closest('[data-add-exercise]');
-    if(addExercise){ $('exerciseEntries').insertAdjacentHTML('beforeend',exerciseCard()); return; }
+    if(addExercise){ $('exerciseEntries').insertAdjacentHTML('beforeend',exerciseCard());markEntryDirty();return; }
     const removeExercise=e.target.closest('[data-remove-exercise]');
-    if(removeExercise){ const cards=[...document.querySelectorAll('.exerciseEntry')]; if(cards.length>1) removeExercise.closest('.exerciseEntry')?.remove(); return; }
+    if(removeExercise){ const cards=[...document.querySelectorAll('.exerciseEntry')];if(cards.length>1){removeExercise.closest('.exerciseEntry')?.remove();markEntryDirty();}return; }
     const addSet=e.target.closest('[data-add-set]');
-    if(addSet){ const card=addSet.closest('.exerciseEntry'),list=card.querySelector('.setEntryList'),next=list.querySelectorAll('.setEntry').length+1; list.insertAdjacentHTML('beforeend',setRow(card.dataset.exerciseId,next)); return; }
+    if(addSet){ const card=addSet.closest('.exerciseEntry'),list=card.querySelector('.setEntryList'),next=list.querySelectorAll('.setEntry').length+1;list.insertAdjacentHTML('beforeend',setRow(card.dataset.exerciseId,next));markEntryDirty();return; }
     const removeSet=e.target.closest('[data-remove-set]');
-    if(removeSet){ const list=removeSet.closest('.setEntryList'); if(list.querySelectorAll('.setEntry').length>1) removeSet.closest('.setEntry')?.remove(); }
+    if(removeSet){ const list=removeSet.closest('.setEntryList');if(list.querySelectorAll('.setEntry').length>1){removeSet.closest('.setEntry')?.remove();markEntryDirty();} }
   });
 
   document.addEventListener('submit',async e=>{
     if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm') return;
     e.preventDefault();
-    const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=$('entryModal');
+    const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=entryModal();
     modal.dataset.saving='true';
     msg.textContent='Salvando…';button.disabled=true;
 
@@ -147,6 +155,7 @@ export function setupEntryController({onSaved}={}){
       return;
     }
 
+    modal.dataset.dirty='false';
     msg.textContent='Salvo.';
     try{
       await refreshCallback();
