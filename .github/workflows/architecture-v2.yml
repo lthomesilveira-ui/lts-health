@@ -66,11 +66,9 @@ jobs:
           grep -q 'data-route="tratamentos"' v2/index.html
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
-          grep -q "appleInspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
-          grep -q "labInspectFunction: 'health-inspect-lab'" v2/src/core.js
-          grep -q "sourceType==='apple_health'" v2/src/core.js
-          grep -q "\['fleury','einstein','lab'\].includes(sourceType)" v2/src/core.js
-          grep -q 'inspectFunctionForSource(sourceType)' v2/src/core.js
+          grep -q "inspectFunctionForSource = () => CONFIG.inspectFunction" v2/src/core.js
+          ! grep -q "health-inspect-upload-v2" v2/src/core.js
+          ! grep -q "health-inspect-lab" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
@@ -91,10 +89,9 @@ jobs:
           grep -q "downloadStructuredBackup" v2/src/main.js
           grep -q "backupExportBtn" v2/src/data-screen.js
           grep -q "A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
-          grep -q "Outros campos só aparecem quando já existem como registros válidos de outra origem" v2/src/data-screen.js
-          grep -q "CSV estruturado + documento preservado" v2/src/data-screen.js
-          grep -q "Resultado textual permanece textual" v2/src/data-screen.js
-          grep -q "PDF e imagem ficam preservados como documentos e não criam resultados" v2/src/data-screen.js
+          grep -q "Passos e FC de repouso não são importados automaticamente por este fluxo" v2/src/data-screen.js
+          grep -q "Arquivo preservado + revisão" v2/src/data-screen.js
+          grep -q "Resultados só são estruturados quando a leitura for validada" v2/src/data-screen.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "data-body-date" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
