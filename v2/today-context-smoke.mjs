@@ -23,7 +23,8 @@ async function run(viewport,label){
   for(const forbidden of ['Passos','FC de repouso'])if(metrics.includes(forbidden))throw new Error(`${label}: candidate-only metric leaked into canonical Today metric grid: ${forbidden}`);
   if(!metrics.includes('Último disponível em 02/02/2026'))throw new Error(`${label}: stale fixture metrics are not identified as latest available`);
   const sectionCopy=(await metricGrid.locator('xpath=..').textContent())||'';
-  if(!sectionCopy.includes('energia ativa, minutos de exercício, horas em pé e duração do sono'))throw new Error(`${label}: available Today metric display scope is not explicit`);
+  if(!sectionCopy.includes('Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada'))throw new Error(`${label}: canonical automatic ActivitySummary scope is not explicit`);
+  if(!sectionCopy.includes('Sono pode ser exibido quando já existe como métrica estruturada')||!sectionCopy.includes('permanece fora da sincronização automática'))throw new Error(`${label}: sleep display and automatic-sync boundary are not explicit`);
   if(!sectionCopy.includes('indica se o dado é de hoje ou apenas o último disponível'))throw new Error(`${label}: Today freshness rule is not explicit`);
   if(!text.includes('sem transformar coincidências em causa ou meta'))throw new Error(`${label}: recent-context limitation is not explicit`);
   const summaryText=(await page.locator('.todaySummaryGrid').textContent())||'';
