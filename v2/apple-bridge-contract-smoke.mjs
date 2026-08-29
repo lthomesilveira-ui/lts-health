@@ -6,6 +6,7 @@ const backup=await readFile('v2/src/data-layer.js','utf8');
 
 for(const token of [
   "const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours'])",
+  "const historicalExportFamilies=new Set(['apple_watch','iphone','polar_flow'])",
   "const maxRequestBytes=1_000_000",
   "const maxSourcePayloadBytes=8_192",
   "sourceFamily==='apple_activity_summary'&&canonicalActivity.has(metric)",
@@ -23,7 +24,9 @@ if(/canonicalActivity[^\n]*steps/.test(fn))throw new Error('steps must not be ca
 if(/canonicalActivity[^\n]*oxygen_saturation_pct/.test(fn))throw new Error('oxygen saturation must not be canonicalized automatically');
 if(!fn.includes("allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg'])"))throw new Error('allowed Apple bridge metric set drifted');
 if(/const sid=providedId\|\|/.test(fn)||/const sid=clientSourceRecordId\|\|/.test(fn))throw new Error('client source_record_id can still control the Apple upsert identity');
-if(!fn.includes("return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,sourceName])}`"))throw new Error('server-derived Apple source identity is not deterministic/unambiguous');
+if(!fn.includes("if(sourceFamily==='apple_activity_summary')return `activity_summary:${metric}:${d}`"))throw new Error('ActivitySummary source id no longer matches historical identity');
+if(!fn.includes("return `apple_export:${sourceFamily}:${metric}:${d}:${md5(sourceName)}`"))throw new Error('Apple export source id no longer matches historical identity');
+if(!fn.includes("return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,sourceName])}`"))throw new Error('fallback Apple bridge source identity is not deterministic/unambiguous');
 if(!fn.includes("new TextEncoder().encode(raw).length>maxRequestBytes"))throw new Error('actual request body size is not bounded');
 if(!fn.includes("payloadSize(r.source_payload)>maxSourcePayloadBytes"))throw new Error('per-row source payload size is not bounded');
 if(/for\(const row of normalized\)\{if\(ids\.has/.test(fn))throw new Error('candidate source rows can be incorrectly marked canonical by metric/date collision');
