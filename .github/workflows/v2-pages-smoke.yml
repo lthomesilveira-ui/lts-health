@@ -47,7 +47,7 @@ jobs:
           grep -q "\['fleury','einstein','lab'\].includes(sourceType)" "$TMP/core.js"
           grep -q 'resting_heart_rate_bpm' "$TMP/today.js"
           grep -q 'CSV estruturado + documento preservado' "$TMP/data.js"
-          grep -q 'Resultados textuais permanecem textuais' "$TMP/data.js"
+          grep -q 'Resultado textual permanece textual' "$TMP/data.js"
       - name: Install deployed-browser runtime
         run: |
           npm init -y >/dev/null 2>&1
