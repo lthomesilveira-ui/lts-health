@@ -16,11 +16,11 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. E
 
 | Área | Capacidade | Estado |
 | --- | --- | --- |
-| Hoje | último treino, última bio, alimentação, sono, exames e fontes | implementado, tolerante a falhas parciais |
+| Hoje | último treino, última bio, alimentação, atividade, sono, FC de repouso, exames e fontes | implementado, tolerante a falhas parciais; passos e FC de repouso só aparecem quando a fonte estruturada contém esses dados |
 | Timeline | treino, composição, exames, documentos, alimentação, atividade, métricas e tratamentos em ordem temporal | implementado com período, navegação anual, busca, filtros, carregar mais e salto para treino/bio/nutrição/coleta correspondente |
 | Saúde & exames | coleta, biomarcadores, referência, método, tendência somente com unidade compatível, documentos | implementado; depende de novas coletas para longitudinal real |
-| Nutrição | MyFitnessPal por período, dia, refeições, anos e cobertura histórica | implementado com navegação anual, detalhe de refeições e lacunas anuais explícitas; 2025 permanece marcado como sem registros disponíveis |
-| Dados / Inbox | Apple Saúde, Polar, MyFitnessPal, Fleury, Einstein, upload privado, capacidade por fonte e resultado de processamento | implementado; leitura especializada de Polar/Fleury/Einstein ainda depende de arquivos reais e validação |
+| Nutrição | MyFitnessPal por período, dia, refeições, anos, meses e cobertura histórica | implementado com navegação anual, detalhe de refeições, resumo mensal, distribuição de refeições e lacunas anuais explícitas; ausência de período continua sendo lacuna, nunca zero |
+| Dados / Inbox | Apple Saúde, Polar, MyFitnessPal, Fleury, Einstein, upload privado, capacidade por fonte e resultado de processamento | implementado; Apple usa rota especializada para consolidação segura; leitura especializada de Polar/Fleury/Einstein ainda depende de arquivos reais e validação |
 
 ## Regras que bloqueiam publicação
 
@@ -36,12 +36,12 @@ A v2 não deve substituir o fallback público enquanto qualquer item abaixo esti
 8. Navegação autenticada funciona em desktop e mobile sem overflow horizontal e sem abas mortas.
 9. Nenhum texto de implementação aparece na interface normal.
 10. Nenhum payload privado de saúde entra no repositório público.
-11. Importador continua apontando para `health-inspect-upload`; não usar o inspector limitado `health-inspect-upload-v2`.
+11. Uploads não Apple continuam em `health-inspect-upload`; Apple Saúde usa `health-inspect-upload-v2`, que aplica a consolidação validada de ActivitySummary/sono e só aceita passos/FC de repouso em dias sem ambiguidade de múltiplas fontes.
 12. Após cada deploy da candidata em `/v2/`, um browser smoke deve exercitar a versão realmente servida pelo GitHub Pages em desktop e mobile, enquanto a raiz anterior permanece intacta.
 
 ## Fontes externas — critério de implementação
 
-- **Apple Saúde:** manter o ZIP original e normalizar somente métricas com regra de consolidação validada. Hoje: energia ativa, minutos de exercício, horas em pé e duração do sono.
+- **Apple Saúde:** manter o ZIP original e normalizar somente métricas com regra de consolidação validada. Energia ativa, minutos de exercício, horas em pé e duração do sono possuem regra automática; passos e FC de repouso entram apenas em dias com uma única fonte no export. Dias com múltiplas fontes ficam retidos para evitar dupla contagem.
 - **Polar Flow:** não criar uma segunda sessão se o mesmo treino já estiver representado no histórico principal. Usar Polar como detalhe complementar quando houver arquivo real que permita validar o mapeamento.
 - **MyFitnessPal:** alimentação e atividade importadas permanecem separadas de sessão de treino estruturada. O preview de ingestão é exibido no Inbox sem expor payload bruto. Ausência de ano/dia importado continua sendo lacuna, nunca zero.
 - **Fleury / Einstein:** PDFs/imagens ficam preservados no Inbox. Extração especializada só deve ser promovida após validação em amostras reais, sem inferir biomarcadores ou unidades ausentes.
