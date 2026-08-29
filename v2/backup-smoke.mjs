@@ -14,7 +14,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   await page.waitForSelector('#backupExportBtn');
   const panel=(await page.locator('.backupPanel').textContent())||'';
-  if(!panel.includes('Backup estruturado')||!panel.includes('Arquivos originais privados')||!panel.includes('dados pessoais de saúde'))throw new Error(`${label}: backup privacy/scope copy missing`);
+  if(!panel.includes('Exportar registros organizados')||!panel.includes('Arquivos privados e credenciais ficam de fora')||!panel.includes('dados de saúde'))throw new Error(`${label}: backup privacy/scope copy missing`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise;
