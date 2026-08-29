@@ -32,9 +32,9 @@ async function run(viewport,label){
 
   const parserRouting=await page.evaluate(async()=>{
     const {inspectFunctionForSource}=await import('./src/core.js');
-    return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal')};
+    return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal'),fleury:inspectFunctionForSource('fleury'),einstein:inspectFunctionForSource('einstein')};
   });
-  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload')throw new Error(`${label}: deployed source-specific inspector routing is incorrect`);
+  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.fleury!=='health-inspect-lab'||parserRouting.einstein!=='health-inspect-lab')throw new Error(`${label}: deployed source-specific inspector routing is incorrect`);
 
   await assertScreen(page,'Bio',`${label}/bio`);
   if((await page.locator('[data-body-date]').count())<2)throw new Error(`${label}: Bio history missing`);
@@ -76,7 +76,7 @@ async function run(viewport,label){
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
-  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado')||!data.includes('uma única fonte')||!data.includes('Backup estruturado'))throw new Error(`${label}: Data import or backup capabilities missing`);
+  if(!data.includes('Leitura automática parcial')||!data.includes('CSV estruturado + documento preservado')||!data.includes('uma única fonte')||!data.includes('Backup estruturado')||!data.includes('Resultados textuais permanecem textuais'))throw new Error(`${label}: Data import or backup capabilities missing`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
