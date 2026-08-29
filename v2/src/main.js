@@ -68,6 +68,12 @@ function applyControlState(){
 
 async function refresh(){if(state.loading)return;setSync('Atualizando…');scheduleRender();await refreshData(state.route,setSync);scheduleRender();}
 
+export function uploadOutcomeMessage(result){
+  if(result?.processing==='review_required')return'Arquivo recebido e preservado. O processamento automático não terminou; ficou para revisão.';
+  if(result?.processing==='status_unknown')return'Arquivo recebido e preservado. Não foi possível atualizar o status do processamento agora; confira em Dados antes de reenviar.';
+  return'Arquivo recebido. O processamento foi iniciado.';
+}
+
 async function doLogin(){
   const email=$('email').value.trim(),password=$('password').value;$('loginMsg').textContent='Entrando…';
   try{await signIn(email,password);$('loginMsg').textContent='';showApp();setRoute(routeFromLocation());await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();}
@@ -138,9 +144,19 @@ function bindStaticEvents(){
     if(event.target.id!=='uploadForm')return;event.preventDefault();
     const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',msg=$('uploadMsg'),button=event.target.querySelector('button[type="submit"]');
     if(msg)msg.textContent='Enviando…';if(button)button.disabled=true;
-    try{await uploadFile(file,type);if(msg)msg.textContent='Arquivo recebido. O processamento foi iniciado.';await refresh();}
-    catch(error){console.error(error);if(msg)msg.textContent='Não foi possível enviar este arquivo agora.';}
-    finally{if(button)button.disabled=false;}
+    let result;
+    try{
+      result=await uploadFile(file,type);
+      if(msg)msg.textContent=uploadOutcomeMessage(result);
+    }catch(error){
+      console.error(error);if(msg)msg.textContent='Não foi possível enviar este arquivo agora.';if(button)button.disabled=false;return;
+    }
+    try{
+      await refresh();
+    }catch(error){
+      console.warn('upload_refresh_failed',error);
+      if(msg)msg.textContent=`${uploadOutcomeMessage(result)} A tela não pôde ser atualizada agora.`;
+    }finally{if(button)button.disabled=false;}
   });
 
   $('loginBtn').addEventListener('click',doLogin);
