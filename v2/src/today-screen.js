@@ -18,8 +18,8 @@ function sourceRow(label,stateValue,missingText){
   return`<div><span>${esc(label)}</span><b>${esc(missingText)}</b><small>Use a área Dados para trazer essa fonte.</small></div>`;
 }
 function action(route,label,ref='',kind=''){
-  if(kind&&ref)return`<button class="todayAction" data-timeline-jump data-timeline-route="${esc(route)}" data-timeline-kind="${esc(kind)}" data-timeline-ref="${esc(ref)}">${esc(label)}</button>`;
   if(kind==='nutrition'&&ref)return`<button class="todayAction" data-timeline-jump data-timeline-route="${esc(route)}" data-timeline-kind="nutrition" data-timeline-date="${esc(ref)}">${esc(label)}</button>`;
+  if(kind&&ref)return`<button class="todayAction" data-timeline-jump data-timeline-route="${esc(route)}" data-timeline-kind="${esc(kind)}" data-timeline-ref="${esc(ref)}">${esc(label)}</button>`;
   return`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
 }
 function summaryCard(label,main,sub='',actionHtml='',kind=''){
