@@ -47,6 +47,30 @@ async function run(viewport,label){
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
+    state.data.uploads=[{id:'apple-upload',created_at:'2026-02-04T12:00:00Z',source_type:'apple_health',status:'imported'}];
+    state.data.metrics=[{source_record_id:'apple-steps-only',measured_at:'2026-02-04T12:00:00Z',metric_type:'steps',value:1000,unit:'count',source:'Apple Health'}];
+    location.hash='bio';
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.evaluate(()=>{location.hash='hoje';});
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  let sourceText=(await page.locator('.quickList').textContent())||'';
+  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Arquivo recebido; dados ainda não confirmados'))throw new Error(`${label}: Apple file-only state is not explicit in Today`);
+  if(sourceText.includes('As fontes principais têm dados estruturados confirmados.'))throw new Error(`${label}: Apple steps/file-only state was falsely marked ready`);
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.metrics=[{source_record_id:'apple-sleep',measured_at:'2026-02-04T12:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h',source:'Apple Health'}];
+    location.hash='bio';
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.evaluate(()=>{location.hash='hoje';});
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  sourceText=(await page.locator('.quickList').textContent())||'';
+  if(sourceText.includes('Apple Saúde'))throw new Error(`${label}: validated Apple sleep still appears as pending in Today`);
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
     state.data.workouts=[
       {source_record_id:'machine-new',workout_date:'2026-03-02',workout_type:'Teste A',record_status:'validated',is_canonical:true},
       {source_record_id:'machine-old',workout_date:'2026-03-01',workout_type:'Teste B',record_status:'validated',is_canonical:true}
