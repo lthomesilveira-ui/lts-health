@@ -62,7 +62,7 @@ function render(){
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
 function applyControlState(){
-  const values={trainingPeriod:state.ui.trainingPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
+  const values={trainingPeriod:state.ui.trainingPeriod,analysisPeriod:state.ui.analysisPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
@@ -112,6 +112,7 @@ function bindStaticEvents(){
 
   document.addEventListener('change',event=>{
     if(event.target.id==='trainingPeriod'){state.ui.trainingPeriod=event.target.value;scheduleRender();}
+    if(event.target.id==='analysisPeriod'){state.ui.analysisPeriod=event.target.value;scheduleRender();}
     if(event.target.id==='timelinePeriod'){state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=250;if(event.target.value!=='all')state.ui.timelineYear=null;scheduleRender();}
     if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
     if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
