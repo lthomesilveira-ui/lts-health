@@ -1,0 +1,24 @@
+name: LTS Health iOS signing contract
+
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - '.github/workflows/ios-healthkit-sign.yml'
+      - '.github/workflows/ios-signing-contract.yml'
+      - 'ios/LTSHealthSync/signing-contract-smoke.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signing-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate manual signing pipeline
+        run: node ios/LTSHealthSync/signing-contract-smoke.mjs
