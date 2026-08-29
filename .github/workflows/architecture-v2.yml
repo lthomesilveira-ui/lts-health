@@ -57,7 +57,8 @@ jobs:
           grep -q 'data-route="tratamentos"' v2/index.html
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
-          ! grep -q "inspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
+          grep -q "appleInspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
+          grep -q "inspectFunctionForSource" v2/src/core.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
@@ -86,8 +87,11 @@ jobs:
           grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Leitura automática parcial" v2/src/data-screen.js
+          grep -q "fonte única" v2/src/data-screen.js
           grep -q "Documento preservado" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
+          grep -q "resting_heart_rate_bpm" v2/src/today-screen.js
+          grep -q "metricOrder" v2/src/today-screen.js
           grep -q "Parte da Timeline está indisponível agora" v2/src/timeline-screen.js
           grep -q "data-timeline-jump" v2/src/timeline-screen.js
           grep -q "id=\"timelineYear\"" v2/src/timeline-screen.js
