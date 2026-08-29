@@ -22,6 +22,7 @@ async function run(viewport,label){
     state.data.quality=[
       {status:'open',category:'workout_parsing',entity_name:'INTERNAL_ENTITY',description:'Detalhe ainda depende de revisão da fonte.'},
       {status:'accepted',category:'metadata_only',entity_name:'HealthDocument',description:'Arquivo ausente.',resolution_notes:'Inventário preservado; depende do arquivo original.'},
+      {status:'accepted',category:'missing_event_dose',issue_code:'treatment_dose_missing',entity_name:'SECRET_TREATMENT_ENTITY',description:'SENSITIVE_OPERATIONAL_DETAIL 999 mg frequência aplicação',resolution_notes:'SENSITIVE_RESOLUTION_DETAIL'},
       {status:'resolved',category:'migration_integrity',entity_name:'WorkoutExercise',description:'Migração corrigida.',resolution_notes:'Exercícios recuperados sem inferir séries.'}
     ];
   });
@@ -35,7 +36,7 @@ async function run(viewport,label){
   };
   await rerenderData();
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.']){
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
   const sourceCards=await page.locator('.sourceStatus').allTextContents();
@@ -48,9 +49,9 @@ async function run(viewport,label){
   const overview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
   if(overview.join('|')!=='1|1|2|0')throw new Error(`${label}: unexpected processing overview ${overview.join('|')}`);
   const qualityOverview=await page.locator('.card:has-text("Qualidade dos dados") > .sourceGrid .sourceCard span').allTextContents();
-  if(qualityOverview.join('|')!=='1|1|1')throw new Error(`${label}: unexpected quality overview ${qualityOverview.join('|')}`);
-  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing']){
-    if(text.includes(forbidden))throw new Error(`${label}: raw internal value visible: ${forbidden}`);
+  if(qualityOverview.join('|')!=='1|2|1')throw new Error(`${label}: unexpected quality overview ${qualityOverview.join('|')}`);
+  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação']){
+    if(text.includes(forbidden))throw new Error(`${label}: raw internal or operational value visible: ${forbidden}`);
   }
 
   await page.selectOption('#dataUploadStatus','attention');
