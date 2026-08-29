@@ -75,18 +75,18 @@ export function fixtureData(){
     ],
     workouts:[
       {source_record_id:'workout-2',workout_date:'2026-02-02',workout_type:'Peito + ombros',location:'Academia de teste',duration_minutes:52,calories_kcal:430,heart_rate_avg:121,heart_rate_max:148,muscle_groups:['Peito','Ombros'],record_status:'validated',is_canonical:true,source:'Teste'},
-      {source_record_id:'workout-1',workout_date:'2026-01-28',workout_type:'Costas + braços',location:'Academia de teste',duration_minutes:48,calories_kcal:390,heart_rate_avg:117,heart_rate_max:143,muscle_groups:['Costas','Bíceps','Tríceps'],record_status:'validated',is_canonical:true,source:'Teste'}
+      {source_record_id:'workout-1',workout_date:'2026-01-28',workout_type:'Peito + ombros',location:'Academia de teste',duration_minutes:48,calories_kcal:390,heart_rate_avg:117,heart_rate_max:143,muscle_groups:['Peito','Ombros'],record_status:'validated',is_canonical:true,source:'Teste'}
     ],
     exercises:[
       {source_record_id:'ex-1',workout_source_record_id:'workout-2',workout_date:'2026-02-02',order_index:1,exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito',source:'Teste'},
       {source_record_id:'ex-2',workout_source_record_id:'workout-2',workout_date:'2026-02-02',order_index:2,exercise:'Voador',machine:'Máquina de teste',muscle_group:'Peito',source:'Teste'},
-      {source_record_id:'ex-3',workout_source_record_id:'workout-1',workout_date:'2026-01-28',order_index:1,exercise:'Puxada alta',machine:'Máquina de teste',muscle_group:'Costas',source:'Teste'}
+      {source_record_id:'ex-3',workout_source_record_id:'workout-1',workout_date:'2026-01-28',order_index:1,exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito',source:'Teste'}
     ],
     sets:[
       {source_record_id:'set-1',exercise_source_record_id:'ex-1',workout_source_record_id:'workout-2',workout_date:'2026-02-02',set_index:1,phase:'working',weight:80,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Teste'},
       {source_record_id:'set-2',exercise_source_record_id:'ex-1',workout_source_record_id:'workout-2',workout_date:'2026-02-02',set_index:2,phase:'working',weight:90,weight_unit:'kg',reps_numeric:8,reps_raw:'8',source:'Teste'},
       {source_record_id:'set-3',exercise_source_record_id:'ex-2',workout_source_record_id:'workout-2',workout_date:'2026-02-02',set_index:1,phase:'working',weight:60,weight_unit:'kg',reps_numeric:12,reps_raw:'12',source:'Teste'},
-      {source_record_id:'set-4',exercise_source_record_id:'ex-3',workout_source_record_id:'workout-1',workout_date:'2026-01-28',set_index:1,phase:'working',weight:55,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Teste'}
+      {source_record_id:'set-4',exercise_source_record_id:'ex-3',workout_source_record_id:'workout-1',workout_date:'2026-01-28',set_index:1,phase:'working',weight:85,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Teste'}
     ],
     labs:[
       {source_record_id:'lab-1',collection_date:'2026-02-03',report_date:'2026-02-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'10',result_numeric:10,unit:'u',reference_range:'5–15',source:'Teste'},
@@ -104,8 +104,9 @@ export function fixtureData(){
     activity:[{source_record_id:'act-1',activity_date:'2026-02-02',activity_name:'Caminhada',activity_type:'walking',steps:7200,source:'Teste'}],
     metrics:[
       {source_record_id:'metric-1',measured_at:'2026-02-02T12:00:00Z',metric_type:'sleep_duration_h',value:7.4,unit:'h',source:'Teste'},
-      {source_record_id:'metric-2',measured_at:'2026-02-02T12:00:00Z',metric_type:'steps',value:7200,unit:'count',source:'Teste'},
-      {source_record_id:'metric-3',measured_at:'2026-02-02T08:00:00Z',metric_type:'resting_heart_rate_bpm',value:61,unit:'bpm',source:'Teste'}
+      {source_record_id:'metric-2',measured_at:'2026-02-02T11:00:00Z',metric_type:'active_energy_kcal',value:540,unit:'kcal',source:'Teste'},
+      {source_record_id:'metric-3',measured_at:'2026-02-02T10:00:00Z',metric_type:'exercise_minutes',value:52,unit:'min',source:'Teste'},
+      {source_record_id:'metric-4',measured_at:'2026-02-02T09:00:00Z',metric_type:'stand_hours',value:10,unit:'h',source:'Teste'}
     ],
     treatments:[{source_record_id:'treat-1',event_date:'2026-02-02',medication:'Tratamento registrado',event_type:'taken',source:'Teste',confidence:'high'}],
     uploads:[],previews:[],quality:[]
