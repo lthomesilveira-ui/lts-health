@@ -1,0 +1,27 @@
+name: LTS Health refresh resilience
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-layer.js'
+      - 'v2/refresh-resilience-smoke.mjs'
+      - '.github/workflows/refresh-resilience-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  refresh-resilience:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser test runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Refresh resilience smoke
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/refresh-resilience-smoke.mjs
