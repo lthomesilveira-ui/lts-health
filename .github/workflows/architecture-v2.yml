@@ -30,6 +30,7 @@ jobs:
           node --check v2/browser-smoke.mjs
           node --check v2/failure-smoke.mjs
           node --check v2/parity-smoke.mjs
+          node --check v2/timeline-interaction-smoke.mjs
           test -f v2/index.html
           test -f v2/styles.css
           test -f v2/entry.css
@@ -88,6 +89,10 @@ jobs:
           grep -q "Documento preservado" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
           grep -q "Parte da Timeline está indisponível agora" v2/src/timeline-screen.js
+          grep -q "data-timeline-jump" v2/src/timeline-screen.js
+          grep -q "id=\"timelineYear\"" v2/src/timeline-screen.js
+          grep -q "data-timeline-more" v2/src/main.js
+          grep -q "timelinePeriod" v2/src/main.js
           grep -q "health_log_structured_workout" v2/src/writes.js
           grep -q 'ensureRouteData' v2/src/data-layer.js
           grep -q 'isRouteReady' v2/src/main.js
@@ -111,3 +116,4 @@ jobs:
           node v2/browser-smoke.mjs
           node v2/failure-smoke.mjs
           node v2/parity-smoke.mjs
+          node v2/timeline-interaction-smoke.mjs
