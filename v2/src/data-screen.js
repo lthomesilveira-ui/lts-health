@@ -66,11 +66,38 @@ function uploadRows(uploads,previews){
   return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo enviado.');
 }
 
+function processingCounts(uploads){
+  const counts={waiting:0,done:0,review:0,failed:0};
+  for(const upload of uploads){
+    const status=String(upload.status||'').toLowerCase();
+    if(status==='uploaded'||status==='processing')counts.waiting+=1;
+    else if(status==='processed'||status==='imported')counts.done+=1;
+    else if(status==='review_required'||status==='rejected')counts.review+=1;
+    else if(status==='failed')counts.failed+=1;
+  }
+  return counts;
+}
+function processingOverview(uploads){
+  if(failed('uploads'))return `<div class="sourceGrid"><div class="sourceCard"><div><b>Recebidos</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Concluídos</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Para revisar</b><small>indisponível agora</small></div><span>—</span></div><div class="sourceCard"><div><b>Com falha</b><small>indisponível agora</small></div><span>—</span></div></div>`;
+  const c=processingCounts(uploads);
+  return `<div class="sourceGrid"><div class="sourceCard"><div><b>Em andamento</b><small>recebidos ou processando</small></div><span>${c.waiting}</span></div><div class="sourceCard"><div><b>Concluídos</b><small>processados ou importados</small></div><span>${c.done}</span></div><div class="sourceCard"><div><b>Para revisar</b><small>pedem conferência</small></div><span>${c.review}</span></div><div class="sourceCard"><div><b>Com falha</b><small>original permanece guardado</small></div><span>${c.failed}</span></div></div>`;
+}
+function nextStep(uploads,issues){
+  if(failed('uploads'))return '<div class="note warn"><b>Não foi possível verificar os arquivos agora.</b><span>Atualize para acompanhar os envios. As outras áreas continuam disponíveis.</span></div>';
+  const c=processingCounts(uploads);
+  if(c.review||(!failed('quality')&&issues.length))return `<div class="note warn"><b>Há itens para conferir.</b><span>Abra as pendências abaixo antes de considerar a importação concluída. Nenhum campo ambíguo é preenchido automaticamente.</span></div>`;
+  if(c.failed)return '<div class="note warn"><b>Há arquivo com processamento incompleto.</b><span>O original continua guardado. Você pode tentar novamente depois sem perder o envio.</span></div>';
+  if(c.waiting)return '<div class="note"><b>Há arquivo em processamento.</b><span>Atualize em alguns instantes para acompanhar o resultado.</span></div>';
+  if(!uploads.length)return '<div class="note"><b>Comece por uma fonte.</b><span>Escolha a origem do arquivo. O original é guardado antes do processamento.</span></div>';
+  return '<div class="note"><b>Envios sem ação pendente.</b><span>Novas fontes podem ser adicionadas quando necessário.</span></div>';
+}
+
 export function renderDataHub(){
   const uploads=[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))),previews=state.data.previews||[],issues=(state.data.quality||[]).filter(q=>String(q.status).toLowerCase()==='open'),sources=sourceState();
   const areas=[area('Bio','body'),area('Treinos','workouts'),area('Alimentação','nutrition'),area('Refeições','meals'),area('Exames','labs'),area('Documentos','docs'),area('Atividade','activity'),area('Métricas','metrics')];
   return `${title('Dados','Importe, acompanhe e faça backup das suas fontes.')}
     <div class="sourceStatusGrid">${sources.map(statusCard).join('')}</div>
+    <section class="card sectionGap"><div class="cardHead"><div><b>Acompanhamento dos arquivos</b><small>Veja rapidamente o que terminou e o que ainda precisa de atenção.</small></div></div>${processingOverview(uploads)}${nextStep(uploads,issues)}</section>
     <section class="backupPanel sectionGap"><div><span>Backup</span><b>Exportar registros organizados</b><p>Gera um JSON com os dados estruturados disponíveis. Arquivos privados e credenciais ficam de fora.</p><small>O arquivo contém dados de saúde; guarde-o com segurança.</small></div><div class="backupActions"><button id="backupExportBtn" type="button" class="primary">Exportar backup</button><span id="backupExportMsg" role="status"></span></div></section>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Enviar arquivo</b><small>Escolha a origem e envie.</small></div></div><form id="uploadForm" class="uploadForm"><label>Origem<select id="uploadType"><option value="apple_health">Apple Saúde</option><option value="polar_flow">Polar Flow</option><option value="myfitnesspal">MyFitnessPal</option><option value="fleury">Fleury</option><option value="einstein">Einstein</option><option value="other">Outro</option></select></label><label>Arquivo<input id="uploadFile" type="file" accept=".zip,.csv,.xml,.json,.pdf,image/*"></label><button class="primary" type="submit">Enviar</button><div id="uploadMsg" class="msg" role="status"></div></form></div>
