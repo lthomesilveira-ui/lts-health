@@ -1,0 +1,39 @@
+name: LTS Health v2 Navigation Resilience Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/index.html'
+      - 'v2/shell.css'
+      - 'v2/src/core.js'
+      - 'v2/src/data-layer.js'
+      - 'v2/src/main.js'
+      - 'v2/src/entry.js'
+      - 'v2/navigation-resilience-smoke.mjs'
+      - '.github/workflows/navigation-resilience-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  navigation-resilience:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/main.js
+          node --check v2/src/entry.js
+          node --check v2/navigation-resilience-smoke.mjs
+          grep -q "localStorage.setItem('lts-health-v2-route'" v2/src/main.js
+          grep -q "routeFromLocation" v2/src/main.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Desktop and mobile route resilience
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/navigation-resilience-smoke.mjs
