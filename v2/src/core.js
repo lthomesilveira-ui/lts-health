@@ -2,7 +2,8 @@ export const CONFIG = Object.freeze({
   url: 'https://plztdqyuqcjohiimudnr.supabase.co',
   key: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI',
   bucket: 'health-inbox',
-  inspectFunction: 'health-inspect-upload'
+  inspectFunction: 'health-inspect-upload',
+  appleInspectFunction: 'health-inspect-upload-v2'
 });
 
 export const fixtureMode = new URLSearchParams(location.search).has('fixture');
@@ -59,6 +60,7 @@ export const bodyRows = () => [...(state.data.body||[])].sort((a,b)=>String(a.me
 export const workoutRows = () => [...(state.data.workouts||[])].sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
 export const exercisesFor = workout => (state.data.exercises||[]).filter(e=>e.workout_source_record_id===workout.source_record_id).sort((a,b)=>(a.order_index??999)-(b.order_index??999));
 export const setsFor = exercise => (state.data.sets||[]).filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(a.set_index??999)-(b.set_index??999));
+export const inspectFunctionForSource = sourceType => norm(sourceType)==='apple_health'?CONFIG.appleInspectFunction:CONFIG.inspectFunction;
 
 export function fixtureData(){
   return {
@@ -99,7 +101,11 @@ export function fixtureData(){
       {source_record_id:'meal-2',meal_date:'2026-02-02',meal_name:'Jantar',calories_kcal:550,protein_g:40,carbs_g:55,fat_g:18,source:'Teste'}
     ],
     activity:[{source_record_id:'act-1',activity_date:'2026-02-02',activity_name:'Caminhada',activity_type:'walking',steps:7200,source:'Teste'}],
-    metrics:[{source_record_id:'metric-1',measured_at:'2026-02-02T12:00:00Z',metric_type:'sleep_duration_h',value:7.4,unit:'h',source:'Teste'}],
+    metrics:[
+      {source_record_id:'metric-1',measured_at:'2026-02-02T12:00:00Z',metric_type:'sleep_duration_h',value:7.4,unit:'h',source:'Teste'},
+      {source_record_id:'metric-2',measured_at:'2026-02-02T12:00:00Z',metric_type:'steps',value:7200,unit:'count',source:'Teste'},
+      {source_record_id:'metric-3',measured_at:'2026-02-02T08:00:00Z',metric_type:'resting_heart_rate_bpm',value:61,unit:'bpm',source:'Teste'}
+    ],
     treatments:[{source_record_id:'treat-1',event_date:'2026-02-02',medication:'Tratamento registrado',event_type:'taken',source:'Teste',confidence:'high'}],
     uploads:[],previews:[],quality:[]
   };
@@ -110,7 +116,7 @@ export async function signIn(email,password){
   const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;state.session=data.session;return data.session;
 }
 export async function signOut(){if(fixtureMode){state.session=null;return;}await sb.auth.signOut();state.session=null;}
-export async function restoreSession(){if(fixtureMode){state.session={user:{id:'fixture-user',email:'fixture@example.com'}};return state.session;}const{data}=await sb.auth.getSession();state.session=data.session;return data.session;}
+export async function restoreSession(){if(fixtureMode){state.session={user:{id:'fixture-user',email:'fixture@example.com'}};return state.session;}const{data}=await sb.auth.getSession();state.session=data.session;return state.session;}
 export function subscribeAuth(callback){if(fixtureMode)return{unsubscribe(){}};const{data}=sb.auth.onAuthStateChange((_event,session)=>{state.session=session;callback(session);});return data.subscription;}
 
 export async function uploadFile(file,sourceType){
@@ -120,6 +126,7 @@ export async function uploadFile(file,sourceType){
   const{error:storageError}=await sb.storage.from(CONFIG.bucket).upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});if(storageError)throw storageError;
   const payload={user_id:session.user.id,source_type:sourceType||'other',original_filename:file.name,storage_path:path,mime_type:file.type||null,size_bytes:file.size,status:'uploaded'};
   const{data:row,error:dbError}=await sb.from('health_uploads').insert(payload).select('id').single();if(dbError)throw dbError;
-  const{error:fnError}=await sb.functions.invoke(CONFIG.inspectFunction,{body:{upload_id:row.id}});if(fnError){await sb.from('health_uploads').update({status:'review_required',notes:'Processamento automático não concluído; arquivo preservado para revisão.'}).eq('id',row.id);throw fnError;}
+  const functionName=inspectFunctionForSource(sourceType);
+  const{error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});if(fnError){await sb.from('health_uploads').update({status:'review_required',notes:'Processamento automático não concluído; arquivo preservado para revisão.'}).eq('id',row.id);throw fnError;}
   return row.id;
 }
