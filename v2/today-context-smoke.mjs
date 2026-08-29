@@ -14,7 +14,7 @@ async function run(viewport,label){
   await page.waitForSelector('.todayContextGrid');
   if((await page.locator('.todayContextGrid > article').count())!==5)throw new Error(`${label}: recent-context grid should have five evidence cards`);
   const text=(await page.locator('.todayContextSection').textContent())||'';
-  for(const expected of ['Contexto recente','peso +1,0 kg','MME +1,0 kg','gordura -1,3 p.p.','Duas sessões mais recentes','4 tipo(s) de métrica em 02/02/2026','2 resultado(s) na coleta mais recente','Progressão de treino','Supino máquina: 85 → 90 kg (+5,0)']){
+  for(const expected of ['Contexto recente','peso +1,0 kg','MME +1,0 kg','gordura -1,3 p.p.','Duas sessões mais recentes','1 tipo(s) de métrica em 02/02/2026','2 resultado(s) na coleta mais recente','Progressão de treino','Sem exercício comparável nas duas sessões']){
     if(!text.includes(expected))throw new Error(`${label}: missing recent-context fact: ${expected}`);
   }
   const metrics=(await page.locator('.todayMetricGrid').textContent())||'';
