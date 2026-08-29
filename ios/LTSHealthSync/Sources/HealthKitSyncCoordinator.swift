@@ -9,6 +9,9 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
     private let defaults = UserDefaults.standard
     private let calendar = Calendar.autoupdatingCurrent
     private let bridgeVersion = "ios-healthkit-v1"
+    private let anchorBatchSize = 500
+    private let anchorMaxBatches = 40
+    private let anchorLookbackDays = 14
     private var observers: [HKObserverQuery] = []
 
     private init() {}
@@ -33,14 +36,25 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
         guard HKHealthStore.isHealthDataAvailable() else { throw HealthSyncError.healthDataUnavailable }
         try await requestAuthorization()
         defaults.set(true, forKey: "healthSetupCompleted")
+        _ = ensureAnchorStartDate()
+        try await primeAnchors()
         try await enableBackgroundDelivery()
         startObservers()
     }
 
     func startObserversIfConfigured() {
         guard defaults.bool(forKey: "healthSetupCompleted"), HKHealthStore.isHealthDataAvailable() else { return }
-        startObservers()
-        Task { try? await enableBackgroundDelivery() }
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                _ = self.ensureAnchorStartDate()
+                try await self.primeAnchors()
+                try await self.enableBackgroundDelivery()
+                self.startObservers()
+            } catch {
+                // Manual sync/setup remains available if background bootstrap cannot finish.
+            }
+        }
     }
 
     func initialSync(days: Int = 365) async throws -> SyncReport {
@@ -95,31 +109,72 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
 
     private func consumeChanges(for type: HKQuantityType) async {
         do {
-            _ = try await advanceAnchor(for: type)
-            guard await api.hasSession else { return }
+            let changed = try await advanceAnchor(for: type)
+            guard changed, await api.hasSession else { return }
             _ = try await recentSync(days: 7)
         } catch {
             // Observer completion must still run; next launch/manual sync is idempotent.
         }
     }
 
+    private func primeAnchors() async throws {
+        for type in triggerTypes {
+            _ = try await advanceAnchor(for: type)
+        }
+    }
+
     private func advanceAnchor(for type: HKSampleType) async throws -> Bool {
         let key = anchorKey(for: type)
-        let currentAnchor = loadAnchor(key: key)
-        return try await withCheckedThrowingContinuation { continuation in
+        var anchor = loadAnchor(key: key)
+        let predicate = HKQuery.predicateForSamples(
+            withStart: ensureAnchorStartDate(),
+            end: nil,
+            options: []
+        )
+        var changed = false
+
+        for _ in 0..<anchorMaxBatches {
+            let batch = try await anchoredBatch(for: type, predicate: predicate, anchor: anchor)
+            let count = batch.sampleCount + batch.deletedCount
+            changed = changed || count > 0
+            guard let newAnchor = batch.newAnchor else { break }
+            saveAnchor(newAnchor, key: key)
+            anchor = newAnchor
+            if batch.sampleCount < anchorBatchSize { break }
+        }
+        return changed
+    }
+
+    private func anchoredBatch(
+        for type: HKSampleType,
+        predicate: NSPredicate,
+        anchor: HKQueryAnchor?
+    ) async throws -> AnchorBatch {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<AnchorBatch, Error>) in
             let query = HKAnchoredObjectQuery(
                 type: type,
-                predicate: nil,
-                anchor: currentAnchor,
-                limit: HKObjectQueryNoLimit
-            ) { [weak self] _, samples, deletedObjects, newAnchor, error in
-                guard let self else { continuation.resume(returning: false); return }
+                predicate: predicate,
+                anchor: anchor,
+                limit: anchorBatchSize
+            ) { _, samples, deletedObjects, newAnchor, error in
                 if let error { continuation.resume(throwing: error); return }
-                if let newAnchor { self.saveAnchor(newAnchor, key: key) }
-                continuation.resume(returning: !(samples ?? []).isEmpty || !(deletedObjects ?? []).isEmpty)
+                continuation.resume(returning: AnchorBatch(
+                    sampleCount: samples?.count ?? 0,
+                    deletedCount: deletedObjects?.count ?? 0,
+                    newAnchor: newAnchor
+                ))
             }
             healthStore.execute(query)
         }
+    }
+
+    private func ensureAnchorStartDate() -> Date {
+        let key = "healthkit.anchor.start"
+        let existing = defaults.double(forKey: key)
+        if existing > 0 { return Date(timeIntervalSince1970: existing) }
+        let start = calendar.date(byAdding: .day, value: -anchorLookbackDays, to: Date()) ?? Date()
+        defaults.set(start.timeIntervalSince1970, forKey: key)
+        return start
     }
 
     private func syncActivitySummaries(from startDate: Date, through endDate: Date) async throws -> SyncReport {
@@ -208,6 +263,12 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
             defaults.set(data, forKey: key)
         }
     }
+}
+
+private struct AnchorBatch {
+    let sampleCount: Int
+    let deletedCount: Int
+    let newAnchor: HKQueryAnchor?
 }
 
 struct SyncReport {
