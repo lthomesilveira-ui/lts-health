@@ -62,7 +62,7 @@ function render(){
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
 function applyControlState(){
-  const values={trainingPeriod:state.ui.trainingPeriod,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
+  const values={trainingPeriod:state.ui.trainingPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,collectionSelect:state.ui.selectedCollection};
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
@@ -74,10 +74,21 @@ async function doLogin(){
   catch(error){console.error(error);$('loginMsg').textContent='Não foi possível entrar. Confira e tente novamente.';}
 }
 
+function openTimelineTarget(button){
+  const route=button.dataset.timelineRoute,kind=button.dataset.timelineKind,ref=button.dataset.timelineRef||'',date=button.dataset.timelineDate||'';
+  if(kind==='workout'){state.ui.trainingPeriod='all';state.ui.openWorkout=ref;}
+  else if(kind==='body'){state.ui.selectedBodyDate=ref||date;}
+  else if(kind==='nutrition'){state.ui.nutritionPeriod='all';state.ui.nutritionYear=String(date).slice(0,4);state.ui.nutritionDate=date;}
+  else if(kind==='labs'){state.ui.selectedCollection=ref;state.ui.labQuery='';}
+  if(route)setRoute(route,{replace:false});
+}
+
 function bindStaticEvents(){
   document.addEventListener('click',event=>{
     const sourceButton=event.target.closest('[data-source-upload]');
     if(sourceButton){const select=$('uploadType');if(select)select.value=sourceButton.dataset.sourceUpload;$('uploadFile')?.focus();return;}
+    const timelineMore=event.target.closest('[data-timeline-more]');if(timelineMore){state.ui.timelineLimit=Number(state.ui.timelineLimit||250)+250;scheduleRender();return;}
+    const timelineJump=event.target.closest('[data-timeline-jump]');if(timelineJump){openTimelineTarget(timelineJump);return;}
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
     const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
@@ -94,14 +105,16 @@ function bindStaticEvents(){
   document.addEventListener('input',event=>{
     if(event.target.id==='trainingQuery'){state.ui.trainingQuery=event.target.value;scheduleRender();}
     if(event.target.id==='exerciseQuery'){state.ui.exerciseQuery=event.target.value;scheduleRender();}
-    if(event.target.id==='timelineQuery'){state.ui.timelineQuery=event.target.value;scheduleRender();}
+    if(event.target.id==='timelineQuery'){state.ui.timelineQuery=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
     if(event.target.id==='labQuery'){state.ui.labQuery=event.target.value;scheduleRender();}
     if(event.target.id==='treatmentQuery'){state.ui.treatmentQuery=event.target.value;scheduleRender();}
   });
 
   document.addEventListener('change',event=>{
     if(event.target.id==='trainingPeriod'){state.ui.trainingPeriod=event.target.value;scheduleRender();}
-    if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;scheduleRender();}
+    if(event.target.id==='timelinePeriod'){state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=250;if(event.target.value!=='all')state.ui.timelineYear=null;scheduleRender();}
+    if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
+    if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
     if(event.target.id==='nutritionPeriod'){state.ui.nutritionPeriod=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='nutritionYear'){state.ui.nutritionYear=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='compareA'){state.ui.compareA=event.target.value;scheduleRender();}
