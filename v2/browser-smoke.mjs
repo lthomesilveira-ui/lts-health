@@ -127,9 +127,9 @@ async function run(viewport,label){
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
   if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
   const dataText=(await page.textContent('#screenHost'))||'';
-  if(!dataText.includes('Sincronização automática parcial')||!dataText.includes('Arquivo + integração Apple em preparação')||!dataText.includes('Arquivo preservado + revisão')) throw new Error(`${label}: import capability labels missing`);
-  if(!dataText.includes('Automático canônico: energia ativa, minutos de exercício e horas em pé')||!dataText.includes('Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos'))throw new Error(`${label}: validated Apple Health canonical and candidate scope missing`);
-  if(!dataText.includes('Sono permanece fora da sincronização automática')||!dataText.includes('não são promovidos automaticamente'))throw new Error(`${label}: Apple Health scope boundary is not explicit`);
+  if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('Arquivo preservado + revisão')) throw new Error(`${label}: import capability labels missing`);
+  if(!dataText.includes('energia ativa, minutos de exercício, horas em pé e duração do sono')||!dataText.includes('Passos e FC de repouso não são importados automaticamente por este fluxo'))throw new Error(`${label}: validated Apple Health scope missing`);
+  if(!dataText.includes('Atividade do MyFitnessPal permanece separada de treinos estruturados'))throw new Error(`${label}: MyFitnessPal activity boundary is not explicit`);
   if(!dataText.includes('Resultados só são estruturados quando a leitura for validada')||!dataText.includes('valor, unidade ou faixa ambíguos ficam para revisão'))throw new Error(`${label}: lab safety copy missing`);
   await page.click('[data-source-upload="apple_health"]');
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: Apple upload shortcut failed`);
