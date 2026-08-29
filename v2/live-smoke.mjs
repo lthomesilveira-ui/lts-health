@@ -76,7 +76,7 @@ async function run(viewport,label){
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
-  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado')||!data.includes('fonte única')||!data.includes('Backup estruturado'))throw new Error(`${label}: Data import or backup capabilities missing`);
+  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado')||!data.includes('uma única fonte')||!data.includes('Backup estruturado'))throw new Error(`${label}: Data import or backup capabilities missing`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
