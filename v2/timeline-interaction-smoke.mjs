@@ -17,7 +17,18 @@ async function run(viewport,label){
   const contextText=(await page.locator('.timelineContext').textContent())||'';
   if(!contextText.includes('Visão cruzada por dia'))throw new Error(`${label}: cross-domain daily context is missing`);
   if(!contextText.includes('não demonstra causa'))throw new Error(`${label}: cross-domain context lost the non-causal guardrail`);
+  if(!contextText.includes('Toque em um registro para abrir o detalhe'))throw new Error(`${label}: cross-domain drilldown instruction is missing`);
+  const contextJump=page.locator('.timelineContext [data-timeline-jump][data-timeline-kind="workout"]').first();
+  if(!await contextJump.count())throw new Error(`${label}: actionable workout is missing from cross-domain context`);
+  await contextJump.click();
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
+  await page.waitForSelector('.session.open .sessionBody');
+  let session=(await page.locator('.session.open').textContent())||'';
+  if(!session.includes('Supino máquina')||!session.includes('90 kg'))throw new Error(`${label}: cross-domain workout drilldown did not open the structured session`);
 
+  await page.goto(base,{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('#app:not(.hidden)');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
   await page.selectOption('#timelinePeriod','all');
   await page.waitForSelector('#timelineYear');
   if(await page.inputValue('#timelineYear')!=='2026')throw new Error(`${label}: timeline year navigation did not select available year`);
@@ -47,11 +58,11 @@ async function run(viewport,label){
   await page.waitForTimeout(80);
   await page.selectOption('#timelineDomain','Treinos');
   await page.waitForTimeout(80);
-  const jump=page.locator('[data-timeline-jump][data-timeline-kind="workout"]').first();
+  const jump=page.locator('.timelineGroups [data-timeline-jump][data-timeline-kind="workout"]').first();
   await jump.click();
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   await page.waitForSelector('.session.open .sessionBody');
-  const session=(await page.locator('.session.open').textContent())||'';
+  session=(await page.locator('.session.open').textContent())||'';
   if(!session.includes('Supino máquina')||!session.includes('90 kg'))throw new Error(`${label}: timeline workout drilldown did not open the structured session`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
