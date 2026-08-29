@@ -20,7 +20,7 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 | Timeline | treino, composição, exames, documentos, alimentação, atividade, métricas e tratamentos em ordem temporal | implementado com período, navegação anual, busca, filtros, carregar mais e salto para o registro correspondente |
 | Saúde & exames | coleta, biomarcadores, referência, método, tendência somente com unidade compatível e documentos | implementado; longitudinal depende da cobertura existente no backend privado |
 | Nutrição | histórico por período, dia, refeições, anos, meses e cobertura | implementado com navegação histórica, resumo mensal, distribuição descritiva e lacunas explícitas |
-| Dados / Inbox | Apple Saúde, Polar, MyFitnessPal, Fleury, Einstein, upload privado, capacidade por fonte, resultado do processamento e backup estruturado | implementado; Apple usa parser especializado e as demais fontes mantêm o caminho estável |
+| Dados / Inbox | Apple Saúde, Polar, MyFitnessPal, Fleury, Einstein, upload privado, capacidade por fonte, resultado do processamento e backup estruturado | implementado com inspetor estável único; parsers especializados ficam fora do fluxo normal até validação completa |
 
 ## Regras que bloqueiam promoção para a raiz pública
 
@@ -34,15 +34,15 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 8. Navegação autenticada funciona em desktop e mobile sem overflow horizontal e sem abas mortas.
 9. Nenhum texto de implementação aparece na interface normal.
 10. Nenhum dado pessoal de saúde é copiado para o repositório público.
-11. Uploads não Apple continuam em `health-inspect-upload`; Apple Saúde usa `health-inspect-upload-v2`, que aplica regras mais conservadoras para dados potencialmente sobrepostos.
+11. O frontend mantém `health-inspect-upload` como inspetor de upload até que qualquer parser especializado passe validação completa e explícita.
 12. Após cada deploy da candidata em `/v2/`, um browser smoke exercita a versão realmente servida pelo GitHub Pages, enquanto a raiz anterior permanece disponível como fallback.
 
 ## Fontes externas — critério de implementação
 
-- **Apple Saúde:** preservar o ZIP original e normalizar somente métricas com regra explícita. Energia ativa, minutos de exercício, horas em pé e duração do sono têm caminho automático. Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte identificada; dias ambíguos ficam retidos.
+- **Apple Saúde:** preservar o ZIP original e normalizar automaticamente somente energia ativa, minutos de exercício, horas em pé e duração do sono no fluxo estável atual. Passos e frequência cardíaca de repouso não são anunciados nem importados automaticamente por esse fluxo; só podem aparecer quando já existirem como registros válidos de outra origem.
 - **Polar Flow:** não criar segunda sessão para o mesmo treino. Usar detalhe complementar apenas quando o arquivo real permitir validar o mapeamento.
 - **MyFitnessPal:** alimentação e atividade importadas permanecem separadas da sessão de treino estruturada. Ausência de período importado continua sendo lacuna, nunca zero.
-- **Fleury / Einstein:** PDFs e imagens ficam preservados no Inbox. Extração especializada só é promovida após validação em amostras reais, sem inferir biomarcadores ou unidades ausentes.
+- **Fleury / Einstein:** arquivos ficam preservados no Inbox. Extração especializada só é promovida após validação em amostras reais, sem inferir biomarcadores ou unidades ausentes.
 
 ## Próxima ordem de execução
 
