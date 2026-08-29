@@ -16,6 +16,7 @@ async function run(viewport,label){
   if(!text.includes('Última medição · 01/02/2026'))throw new Error(`${label}: deployed latest body date missing`);
 
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
+  await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.ui.trainingPeriod='all';});
   await page.click(`${nav} [data-route="treinos"]`);
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   const latestText=(await page.locator('.session.latest .sessionHead').first().textContent())||'';
