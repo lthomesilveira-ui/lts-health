@@ -8,6 +8,7 @@ const metricLabel={active_energy_kcal:'Energia ativa',exercise_minutes:'Exercíc
 const metricFallbackUnit={active_energy_kcal:'kcal',exercise_minutes:'min',stand_hours:'h',sleep_duration_h:'h'};
 const metricDigits={active_energy_kcal:0,exercise_minutes:0,stand_hours:0,sleep_duration_h:1};
 const metricOrder=['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'];
+const otherMetricTypes=new Set(['steps','resting_heart_rate_bpm']);
 
 function latestLab(){
   const rows=state.data.labs||[];if(!rows.length)return null;const date=[...rows].map(r=>r.collection_date).filter(Boolean).sort().at(-1),same=rows.filter(r=>r.collection_date===date);return{date,count:same.length,lab:unique(same.map(r=>r.laboratory)).join(', ')};
@@ -34,6 +35,15 @@ function metricCard(rows,type){
   const value=num(m.value),unit=m.unit||metricFallbackUnit[type];
   const display=value==null?'Registro disponível':`${fmtNum(value,metricDigits[type]??1)} ${esc(unit)}`;
   return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${fmtDate(m.measured_at)}${m.source?` · ${esc(m.source)}`:''}</small></article>`;
+}
+function existingOtherMetricCards(rows){
+  const latestByType=new Map();
+  for(const row of [...(rows||[])].filter(r=>otherMetricTypes.has(r.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at))))if(!latestByType.has(row.metric_type))latestByType.set(row.metric_type,row);
+  return [...latestByType.entries()].map(([type,row])=>{
+    const value=num(row.value),label=type==='steps'?'Passos':'FC de repouso';
+    const display=value==null?'Registro disponível':type==='steps'?`${fmtNum(value,0)} passos`:`${fmtNum(value,0)} bpm`;
+    return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${fmtDate(row.measured_at)}${row.source?` · ${esc(row.source)}`:''}</small></article>`;
+  }).join('');
 }
 function recentRow(label,date,main,sub='',button=''){
   return`<div class="todayRecentRow"><div><span>${esc(label)}</span><b>${esc(main)}</b><small>${esc([date?fmtDate(date):'',sub].filter(Boolean).join(' · '))}</small></div>${button}</div>`;
@@ -108,6 +118,7 @@ export function renderTodayHub(){
   const nutritionMain=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Registro disponível'):'Sem registro para hoje';
   const nutritionSub=nutrition&&num(nutrition.protein_g)!=null?`${fmtNum(nutrition.protein_g,0)} g de proteína`:'';
   const metricCards=failed('metrics')?metricOrder.map(type=>domainUnavailable(metricLabel[type],'Esta métrica não carregou agora. Os registros existentes continuam preservados.')).join(''):metricOrder.map(type=>metricCard(metrics,type)).join('');
+  const otherMetricCards=failed('metrics')?'':existingOtherMetricCards(metrics);
 
   return `${title('Hoje',fmtDate(today))}
     <section class="todayLead">
@@ -131,6 +142,8 @@ export function renderTodayHub(){
       <div class="cardHead"><div><b>Atividade e sono</b><small>A importação automática validada mostra energia ativa, minutos de exercício, horas em pé e duração do sono. Outras métricas não são tratadas aqui como importação automática.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
+
+    ${otherMetricCards?`<section class="todaySection"><div class="cardHead"><div><b>Outros registros disponíveis</b><small>Estes itens já existem no histórico e podem vir de outras origens. Eles não ampliam o conjunto de importação automática do Apple Saúde.</small></div></div><div class="todayOtherMetricGrid todayMetricGridSecondary">${otherMetricCards}</div></section>`:''}
 
     <div class="grid cols2 sectionGap">
       <section class="card todayRecent"><div class="cardHead"><div><b>Últimos registros</b><small>Acesso rápido ao que entrou mais recentemente.</small></div></div>
