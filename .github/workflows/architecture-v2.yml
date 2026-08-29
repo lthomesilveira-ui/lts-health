@@ -43,7 +43,10 @@ jobs:
           test -f v2/bio.css
           test -f v2/training.css
           test -f v2/evolution.css
+          test -f v2/nutrition.css
+          test -f v2/health.css
           test -f v2/data.css
+          test -f v2/today.css
           test ! -f v2/app.js
           test ! -f v2/src/screens.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
@@ -52,7 +55,10 @@ jobs:
           grep -q 'bio.css' v2/index.html
           grep -q 'training.css' v2/index.html
           grep -q 'evolution.css' v2/index.html
+          grep -q 'nutrition.css' v2/index.html
+          grep -q 'health.css' v2/index.html
           grep -q 'data.css' v2/index.html
+          grep -q 'today.css' v2/index.html
           grep -q 'data-route="bio"' v2/index.html
           grep -q 'data-route="treinos"' v2/index.html
           grep -q 'data-route="evolucao"' v2/index.html
@@ -60,8 +66,8 @@ jobs:
           grep -q 'data-route="tratamentos"' v2/index.html
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
-          grep -q "appleInspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
-          grep -q "inspectFunctionForSource" v2/src/core.js
+          ! grep -q "health-inspect-upload-v2" v2/src/core.js
+          grep -q "inspectFunctionForSource = () => CONFIG.inspectFunction" v2/src/core.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
@@ -80,6 +86,8 @@ jobs:
           grep -q "downloadStructuredBackup" v2/src/data-layer.js
           grep -q "downloadStructuredBackup" v2/src/main.js
           grep -q "backupExportBtn" v2/src/data-screen.js
+          grep -q "A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
+          grep -q "Passos e frequência cardíaca de repouso não são tratados como importação automática validada" v2/src/data-screen.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "data-body-date" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
@@ -96,9 +104,11 @@ jobs:
           grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
           grep -q "markerChart" v2/src/health-screen.js
           grep -q "não classifica o resultado" v2/src/health-screen.js
+          grep -q "documentSummary" v2/src/health-screen.js
+          grep -q "evidenceByDate" v2/src/health-screen.js
+          grep -q "Coincidência de data não demonstra causa" v2/src/health-screen.js
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Leitura automática parcial" v2/src/data-screen.js
-          grep -q "fonte única" v2/src/data-screen.js
           grep -q "Documento preservado" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
           grep -q "resting_heart_rate_bpm" v2/src/today-screen.js
