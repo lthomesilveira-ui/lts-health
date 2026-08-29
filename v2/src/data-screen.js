@@ -44,10 +44,12 @@ function statusCard(source){
 function area(label,key){return[label,failed(key)?'—':String((state.data[key]||[]).length),failed(key)?'indisponível agora':'registros'];}
 
 const sourceLabels={apple_health:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',fleury:'Fleury',einstein:'Einstein',lab:'Exame laboratorial',other:'Outra origem'};
+const sourceFamilyLabels={apple_activity_summary:'Apple Saúde · ActivitySummary',apple_watch:'Apple Watch',iphone:'iPhone',polar_flow:'Polar Flow'};
 const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'revisão necessária',rejected:'não processado',failed:'falha no processamento'};
 const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
 const sensitiveQualityPattern=/(^|_)(dose|dosage|frequency|injection|application|aplicacao|medication|medicacao|treatment|tratamento)(_|$)/i;
 function sourceLabel(value){return sourceLabels[value]||String(value||'Origem não informada').replaceAll('_',' ');}
+function sourceFamilyLabel(value){return sourceFamilyLabels[value]||String(value||'Origem não informada').replaceAll('_',' ');}
 function uploadStatus(value){return uploadStatusLabels[value]||String(value||'status não informado').replaceAll('_',' ');}
 function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name].some(value=>sensitiveQualityPattern.test(norm(value).replaceAll(' ','_')));}
 function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||'Revisão de qualidade';}
@@ -90,6 +92,14 @@ function nextStep(uploads,actionIssues){
   return'<div class="note"><b>Sem ação interna pendente.</b><span>Limitações que dependem de arquivos ou evidência externa aparecem separadas abaixo.</span></div>';
 }
 
+function provenanceOverview(rows){
+  if(failed('sourceMetrics'))return'<div class="errorState"><b>Proveniência indisponível agora.</b><span>As métricas consolidadas continuam disponíveis. Atualize para tentar carregar as origens novamente.</span></div>';
+  const groups=new Map();
+  for(const row of rows||[]){const family=String(row.source_family||'unknown');if(!groups.has(family))groups.set(family,{total:0,canonical:0,candidate:0,held:0});const g=groups.get(family);g.total++;const status=String(row.canonical_status||'candidate').toLowerCase();if(status==='canonical')g.canonical++;else if(status==='candidate')g.candidate++;else g.held++;}
+  const cards=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total||sourceFamilyLabel(a[0]).localeCompare(sourceFamilyLabel(b[0]),'pt-BR')).map(([family,g])=>`<div class="sourceCard provenanceCard"><div><b>${esc(sourceFamilyLabel(family))}</b><small>${g.canonical} canônico(s) · ${g.candidate} candidato(s)${g.held?` · ${g.held} preservado(s)`:''}</small></div><span>${g.total}</span></div>`).join('');
+  return `<div class="sourceGrid provenanceGrid">${cards||'<div class="sourceCard"><div><b>Sem métricas por origem</b><small>Nenhum registro de proveniência foi carregado.</small></div><span>0</span></div>'}</div><p class="footerNote">Candidatos permanecem separados das métricas canônicas. Estas contagens servem para rastreabilidade e não são somadas à Timeline.</p>`;
+}
+
 function qualityRow(issue,mode){
   const known=!!issueCategoryLabels[issue?.category],detail=sensitiveQuality(issue)?'Registro histórico preservado sem detalhe operacional nesta tela.':!known?'Revisão registrada sem detalhe exibido nesta tela.':mode==='accepted'?(issue.resolution_notes||issue.description||'Limitação conhecida.'):(issue.description||'Revisão necessária.');
   return `<div class="row"><div style="grid-column:1/3"><b>${esc(issueTitle(issue))}</b><small>${esc(detail)}</small></div></div>`;
@@ -102,8 +112,8 @@ function qualityOverview(all){
 }
 
 export function renderDataHub(){
-  const uploads=[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))),visibleUploads=filteredUploads(uploads),previews=state.data.previews||[],quality=state.data.quality||[],q=qualityOverview(quality),sources=sourceState();
-  const areas=[area('Bio','body'),area('Treinos','workouts'),area('Alimentação','nutrition'),area('Refeições','meals'),area('Exames','labs'),area('Documentos','docs'),area('Atividade','activity'),area('Métricas','metrics')];
+  const uploads=[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))),visibleUploads=filteredUploads(uploads),previews=state.data.previews||[],quality=state.data.quality||[],sourceMetrics=state.data.sourceMetrics||[],q=qualityOverview(quality),sources=sourceState();
+  const areas=[area('Bio','body'),area('Treinos','workouts'),area('Alimentação','nutrition'),area('Refeições','meals'),area('Exames','labs'),area('Documentos','docs'),area('Atividade','activity'),area('Métricas','metrics'),area('Métricas por origem','sourceMetrics')];
   return `${title('Dados','Importe, acompanhe e faça backup das suas fontes.')}
     <div class="sourceStatusGrid">${sources.map(statusCard).join('')}</div>
     <section class="card sectionGap"><div class="cardHead"><div><b>Acompanhamento dos arquivos</b><small>Veja rapidamente o que terminou e o que ainda precisa de atenção.</small></div></div>${processingOverview(uploads)}${nextStep(uploads,q.actions)}</section>
@@ -112,6 +122,7 @@ export function renderDataHub(){
       <div class="card"><div class="cardHead"><div><b>Enviar arquivo</b><small>Escolha a origem e envie.</small></div></div><form id="uploadForm" class="uploadForm"><label>Origem<select id="uploadType"><option value="apple_health">Apple Saúde</option><option value="polar_flow">Polar Flow</option><option value="myfitnesspal">MyFitnessPal</option><option value="fleury">Fleury</option><option value="einstein">Einstein</option><option value="other">Outro</option></select></label><label>Arquivo<input id="uploadFile" type="file" accept=".zip,.csv,.xml,.json,.pdf,image/*"></label><button class="primary" type="submit">Enviar</button><div id="uploadMsg" class="msg" role="status"></div></form></div>
       <div class="card"><div class="cardHead"><div><b>Dados disponíveis</b><small>“—” significa que a área não carregou agora.</small></div></div><div class="sourceGrid">${areas.map(([label,count,sub])=>`<div class="sourceCard"><div><b>${esc(label)}</b><small>${esc(sub)}</small></div><span>${esc(count)}</span></div>`).join('')}</div></div>
     </div>
+    <section class="card sectionGap provenancePanel"><div class="cardHead"><div><b>Proveniência das métricas</b><small>Origem e status dos registros preservados separadamente da visão consolidada.</small></div>${failed('sourceMetrics')?pill('indisponível','warn'):pill(`${sourceMetrics.length} registros`)}</div>${provenanceOverview(sourceMetrics)}</section>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Arquivos recebidos</b><small>Filtre por situação ou origem.</small></div>${failed('uploads')?pill('indisponível','warn'):pill(`${visibleUploads.length} de ${uploads.length}`)}</div>${failed('uploads')?'<div class="errorState"><b>Arquivos indisponíveis agora.</b><span>Tente atualizar.</span></div>':`${uploadFilters(uploads)}${failed('previews')?`<div class="note warn">Os arquivos carregaram, mas o processamento está indisponível agora.</div><div class="uploadAudit">${uploadRows(visibleUploads,[])}</div>`:`<div class="uploadAudit">${uploadRows(visibleUploads,previews)}</div>`}`}</div>
       <div class="card"><div class="cardHead"><div><b>Qualidade dos dados</b><small>Ação interna e limitações externas ficam separadas.</small></div>${failed('quality')?pill('indisponível','warn'):pill(`${quality.length} registros`)}</div>${failed('quality')?'<div class="errorState"><b>Qualidade indisponível agora.</b><span>Tente atualizar.</span></div>':`${q.html}<div class="sectionGap"><b>Ação necessária</b><div class="list">${q.actions.slice(0,40).map(i=>qualityRow(i,'open')).join('')||empty('Nenhuma ação interna pendente.')}</div></div><details class="sourceMore sectionGap"><summary>Limitações conhecidas (${q.accepted.length})</summary><div class="list">${q.accepted.slice(0,40).map(i=>qualityRow(i,'accepted')).join('')||empty('Nenhuma limitação conhecida.')}</div></details><details class="sourceMore sectionGap"><summary>Resolvidos (${q.resolved.length})</summary><div class="list">${q.resolved.slice(0,40).map(i=>qualityRow(i,'resolved')).join('')||empty('Nenhum item resolvido registrado.')}</div></details>`}</div>
