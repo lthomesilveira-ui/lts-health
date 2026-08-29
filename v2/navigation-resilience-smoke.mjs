@@ -50,7 +50,8 @@ async function run(viewport,label){
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
-  if(location.hash!=='#dados')throw new Error(`${label}: saved route was not restored after reload`);
+  const restoredHash=await page.evaluate(()=>location.hash);
+  if(restoredHash!=='#dados')throw new Error(`${label}: saved route was not restored after reload (${restoredHash||'sem hash'})`);
 
   // Entry actions must open and close without losing the current screen.
   await clickRoute(page,nav,'bio');await waitRoute(page,'bio');
