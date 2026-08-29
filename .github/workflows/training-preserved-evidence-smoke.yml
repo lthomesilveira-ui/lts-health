@@ -1,0 +1,38 @@
+name: LTS Health v2 preserved workout evidence
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-layer.js'
+      - 'v2/src/training-screen.js'
+      - 'v2/training-preserved-evidence-smoke.mjs'
+      - '.github/workflows/training-preserved-evidence-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static contract
+        run: |
+          node --check v2/src/data-layer.js
+          node --check v2/src/training-screen.js
+          node --check v2/training-preserved-evidence-smoke.mjs
+          grep -q 'raw_exercises' v2/src/data-layer.js
+          grep -q 'source_text' v2/src/data-layer.js
+          grep -q 'Registro histórico da fonte' v2/src/training-screen.js
+          grep -q 'Registro da fonte' v2/src/training-screen.js
+          ! grep -R 'loadAll\|activateTab\|MutationObserver' v2/src
+      - name: Install browser test runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Desktop and mobile preserved evidence
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/training-preserved-evidence-smoke.mjs
