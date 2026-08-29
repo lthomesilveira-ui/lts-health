@@ -16,6 +16,7 @@ const screenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:re
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
+let loginBusy=false;
 const secondaryRoutes=new Set(['hoje','timeline','saude','nutricao','dados']);
 
 function setSync(text){const el=$('syncText');if(el)el.textContent=text;}
@@ -75,9 +76,12 @@ export function uploadOutcomeMessage(result){
 }
 
 async function doLogin(){
-  const email=$('email').value.trim(),password=$('password').value;$('loginMsg').textContent='Entrando…';
+  if(loginBusy)return;
+  const button=$('loginBtn'),email=$('email').value.trim(),password=$('password').value;
+  loginBusy=true;if(button){button.disabled=true;button.setAttribute('aria-busy','true');}$('loginMsg').textContent='Entrando…';
   try{await signIn(email,password);$('loginMsg').textContent='';showApp();setRoute(routeFromLocation());await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();}
   catch(error){console.error(error);$('loginMsg').textContent='Não foi possível entrar. Confira e tente novamente.';}
+  finally{loginBusy=false;if(button){button.disabled=false;button.removeAttribute('aria-busy');}}
 }
 
 function openTimelineTarget(button){
