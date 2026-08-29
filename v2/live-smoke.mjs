@@ -63,7 +63,7 @@ async function run(viewport,label){
 
   await more(page,nav,'hoje','Hoje',`${label}/hoje`);
   const today=(await page.textContent('#screenHost'))||'';
-  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm','Contexto recente','peso +1,0 kg','3 tipo(s) de métrica em 02/02/2026'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed fact ${text}`);
+  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm','Contexto recente','peso +1,0 kg','1 tipo(s) de métrica em 02/02/2026'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed fact ${text}`);
 
   await more(page,nav,'timeline','Timeline',`${label}/timeline`);
   await page.evaluate(async()=>{
@@ -76,7 +76,7 @@ async function run(viewport,label){
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
-  if(!data.includes('Leitura automática parcial')||!data.includes('CSV estruturado + documento preservado')||!data.includes('uma única fonte')||!data.includes('Backup estruturado')||!data.includes('Resultados textuais permanecem textuais'))throw new Error(`${label}: Data import or backup capabilities missing`);
+  if(!data.includes('Leitura automática parcial')||!data.includes('CSV estruturado + documento preservado')||!data.includes('Passos e FC de repouso só entram em dias sem conflito de fontes')||!data.includes('Exportar backup')||!data.includes('Resultado textual permanece textual'))throw new Error(`${label}: Data import or backup capabilities missing`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
