@@ -1,0 +1,31 @@
+@media (max-width:720px){
+  .app{
+    height:100dvh;
+    min-height:100svh;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr) auto;
+    padding-bottom:0;
+    overflow:hidden;
+  }
+  .topbar{
+    position:relative;
+    top:auto;
+  }
+  .screenHost{
+    min-height:0;
+    height:100%;
+    overflow-y:auto;
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:calc(28px + env(safe-area-inset-bottom));
+    scroll-padding-bottom:calc(28px + env(safe-area-inset-bottom));
+  }
+  .mobileNav{
+    position:relative;
+    left:auto;
+    right:auto;
+    bottom:auto;
+    width:auto;
+    margin:8px 12px max(8px,env(safe-area-inset-bottom));
+  }
+}
