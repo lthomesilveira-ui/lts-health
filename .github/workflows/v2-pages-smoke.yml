@@ -29,6 +29,7 @@ jobs:
           curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-layer.js" -o "$TMP/data-layer.js"
           curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/core.js" -o "$TMP/core.js"
           curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/today-screen.js" -o "$TMP/today.js"
+          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-screen.js" -o "$TMP/data.js"
 
           grep -q 'canonical v16' "$TMP/root.html"
           grep -q './product.js?v=29' "$TMP/root.html"
@@ -42,8 +43,11 @@ jobs:
           grep -q 'health_ingestion_previews' "$TMP/data-layer.js"
           grep -q "inspectFunction: 'health-inspect-upload'" "$TMP/core.js"
           grep -q "appleInspectFunction: 'health-inspect-upload-v2'" "$TMP/core.js"
-          grep -q 'inspectFunctionForSource' "$TMP/core.js"
+          grep -q "labInspectFunction: 'health-inspect-lab'" "$TMP/core.js"
+          grep -q "\['fleury','einstein','lab'\].includes(sourceType)" "$TMP/core.js"
           grep -q 'resting_heart_rate_bpm' "$TMP/today.js"
+          grep -q 'CSV estruturado + documento preservado' "$TMP/data.js"
+          grep -q 'Resultados textuais permanecem textuais' "$TMP/data.js"
       - name: Install deployed-browser runtime
         run: |
           npm init -y >/dev/null 2>&1
