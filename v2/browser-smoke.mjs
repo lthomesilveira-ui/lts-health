@@ -76,7 +76,9 @@ async function run(viewport,label){
   if((await page.locator('.exerciseEntry').count())!==2) throw new Error(`${label}: add exercise control failed`);
   await page.click('.exerciseEntry:first-child [data-add-set]');
   if((await page.locator('.exerciseEntry:first-child .setEntry').count())!==2) throw new Error(`${label}: add set control failed`);
+  page.once('dialog',dialog=>dialog.accept());
   await page.click('#closeEntry');
+  await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
 
   await page.click(`${nav} [data-route="evolucao"]`);
   await assertScreen(page,'Evolução',`${label}/evolucao`);
