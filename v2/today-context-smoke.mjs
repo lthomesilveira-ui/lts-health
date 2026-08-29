@@ -18,12 +18,32 @@ async function run(viewport,label){
     if(!text.includes(expected))throw new Error(`${label}: missing recent-context fact: ${expected}`);
   }
   const metricGrid=page.locator('.todayMetricGrid').first();
-  const metrics=(await metricGrid.textContent())||'';
+  let metrics=(await metricGrid.textContent())||'';
   for(const expected of ['Energia ativa','Exercício','Horas em pé','Sono'])if(!metrics.includes(expected))throw new Error(`${label}: missing validated Apple metric ${expected}`);
   for(const forbidden of ['Passos','FC de repouso'])if(metrics.includes(forbidden))throw new Error(`${label}: unsupported automatic Apple metric leaked into Today: ${forbidden}`);
+  if(!metrics.includes('Último disponível em 02/02/2026'))throw new Error(`${label}: stale fixture metrics are not identified as latest available`);
   const sectionCopy=(await metricGrid.locator('xpath=..').textContent())||'';
   if(!sectionCopy.includes('energia ativa, minutos de exercício, horas em pé e duração do sono'))throw new Error(`${label}: validated Apple metric scope is not explicit`);
+  if(!sectionCopy.includes('indica se o dado é de hoje ou apenas o último disponível'))throw new Error(`${label}: Today freshness rule is not explicit`);
   if(!text.includes('sem transformar coincidências em causa ou meta'))throw new Error(`${label}: recent-context limitation is not explicit`);
+  const summaryText=(await page.locator('.todaySummaryGrid').textContent())||'';
+  if(!summaryText.includes('Último disponível em'))throw new Error(`${label}: summary cards do not distinguish latest available from today`);
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const d=new Date(),p=n=>String(n).padStart(2,'0'),today=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+    state.data.metrics=[
+      {source_record_id:'metric-today',measured_at:`${today}T12:00:00`,metric_type:'active_energy_kcal',value:321,unit:'kcal',source:'Teste'},
+      ...(state.data.metrics||[])
+    ];
+    location.hash='bio';
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.evaluate(()=>{location.hash='hoje';});
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  const energyText=(await page.locator('.todayMetricGrid .todayStatusCard').filter({hasText:'Energia ativa'}).textContent())||'';
+  if(!energyText.includes('Hoje'))throw new Error(`${label}: metric recorded today is not marked as today`);
+  if(energyText.includes('Último disponível em'))throw new Error(`${label}: today metric is mislabeled as historical`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
