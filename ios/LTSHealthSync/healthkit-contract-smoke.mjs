@@ -1,11 +1,12 @@
 import { readFile } from 'node:fs/promises';
 
-const [project,info,entitlements,api,health,appDelegate,readme,workflow] = await Promise.all([
+const [project,info,entitlements,api,health,candidates,appDelegate,readme,workflow] = await Promise.all([
   readFile('ios/LTSHealthSync/project.yml','utf8'),
   readFile('ios/LTSHealthSync/Resources/Info.plist','utf8'),
   readFile('ios/LTSHealthSync/Resources/LTSHealthSync.entitlements','utf8'),
   readFile('ios/LTSHealthSync/Sources/SupabaseAPI.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/HealthKitSyncCoordinator.swift','utf8'),
+  readFile('ios/LTSHealthSync/Sources/CandidateHealthMetricsCoordinator.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/AppDelegate.swift','utf8'),
   readFile('ios/LTSHealthSync/README.md','utf8'),
   readFile('.github/workflows/ios-healthkit-build.yml','utf8')
@@ -57,11 +58,31 @@ for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','
   if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the v1 canonical ActivitySummary client`);
 }
 
+for (const token of [
+  'HKStatisticsCollectionQuery',
+  '.separateBySource',
+  'metricType: "steps"',
+  'metricType: "resting_heart_rate_bpm"',
+  'metricType: "hrv_sdnn_ms"',
+  'metricType: "respiratory_rate_bpm"',
+  'metricType: "weight_kg"',
+  'source_name: source.name',
+  'source_family: self.sourceFamily(for: source.name)',
+  'return "polar_flow"',
+  'return "apple_watch"',
+  'return "iphone"',
+  'return "healthkit_candidate"',
+  'ios-healthkit-candidates-v1',
+  'frequency: .hourly'
+]) if (!candidates.includes(token)) throw new Error(`Candidate HealthKit contract missing: ${token}`);
+
+if (candidates.includes('apple_activity_summary')) throw new Error('Candidate coordinator must never emit the canonical ActivitySummary family');
+if (candidates.includes('sleep_duration_h') || candidates.includes('oxygen_saturation_pct')) throw new Error('Sleep/oxygen remain outside candidate v1 until dedicated aggregation validation');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)')) throw new Error('active energy observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleExerciseTime)')) throw new Error('exercise-time observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleStandTime)')) throw new Error('stand-time observer trigger missing');
 if (!health.includes('requiringSecureCoding: true')) throw new Error('HealthKit anchors must use secure coding');
-if (!appDelegate.includes('didFinishLaunchingWithOptions') || !appDelegate.includes('startObserversIfConfigured')) throw new Error('background observers are not bootstrapped on launch');
+if (!appDelegate.includes('HealthKitSyncCoordinator.shared.startObserversIfConfigured()') || !appDelegate.includes('CandidateHealthMetricsCoordinator.shared.startObserversIfConfigured()')) throw new Error('core and candidate background observers are not bootstrapped on launch');
 if (!project.includes('platform: iOS') || !project.includes('iOS: "17.0"')) throw new Error('iOS project target contract drifted');
 if (!readme.includes('teste precisa ser feito em iPhone físico')) throw new Error('device-only background-delivery limitation is not documented');
 for (const token of [

@@ -38,7 +38,7 @@ struct ContentView: View {
                         }
                     }
 
-                    Text("O primeiro escopo automático envia apenas energia ativa, minutos de exercício e horas em pé do ActivitySummary. Outras métricas continuam fora da promoção automática até validação específica.")
+                    Text("Energia ativa, minutos de exercício e horas em pé seguem como canônicos do ActivitySummary. Passos, FC de repouso, HRV, frequência respiratória e peso podem ser enviados como candidatos com origem preservada; eles não são promovidos automaticamente até validação específica.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
