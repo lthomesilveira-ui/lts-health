@@ -9,6 +9,15 @@ const yearOf=v=>String(v||'').slice(0,4);
 
 function allNutrition(){return[...(state.data.nutrition||[])].sort((a,b)=>String(b.nutrition_date).localeCompare(String(a.nutrition_date)));}
 function availableYears(all){return unique(all.map(r=>yearOf(r.nutrition_date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));}
+function historyYears(all){
+  const values=availableYears(all).map(Number).filter(Number.isFinite);if(!values.length)return[];
+  const min=Math.min(...values),max=Math.max(...values),out=[];for(let y=max;y>=min;y--)out.push(String(y));return out;
+}
+function coverageByYear(all){
+  const map={};
+  for(const row of all){const y=yearOf(row.nutrition_date);if(!y)continue;if(!map[y])map[y]={count:0,first:row.nutrition_date,last:row.nutrition_date};map[y].count++;if(row.nutrition_date<map[y].first)map[y].first=row.nutrition_date;if(row.nutrition_date>map[y].last)map[y].last=row.nutrition_date;}
+  return map;
+}
 function periodRows(all){
   const p=state.ui.nutritionPeriod||'90';
   if(p==='all'){
@@ -35,10 +44,10 @@ function daySummary(row){
 
 export function renderNutritionHub(){
   if(failed('nutrition'))return `${title('Nutrição','Histórico de alimentação registrado.')}<div class="errorState"><b>Os dados de alimentação não carregaram agora.</b><span>O app não substitui essa falha por dias ou valores zerados. Tente atualizar.</span></div>`;
-  const all=allNutrition(),years=availableYears(all),p=state.ui.nutritionPeriod||'90',rows=periodRows(all);
+  const all=allNutrition(),years=availableYears(all),spanYears=historyYears(all),coverage=coverageByYear(all),p=state.ui.nutritionPeriod||'90',rows=periodRows(all);
   if(!state.ui.nutritionDate||!rows.some(r=>r.nutrition_date===state.ui.nutritionDate))state.ui.nutritionDate=rows[0]?.nutrition_date||null;
   const selected=rows.find(r=>r.nutrition_date===state.ui.nutritionDate),range=rows.length?`${fmtDate(rows.at(-1).nutrition_date)} → ${fmtDate(rows[0].nutrition_date)}`:'sem registros';
-  const visible=rows.slice(0,370),coverage=all.reduce((acc,r)=>{const y=yearOf(r.nutrition_date);if(y)acc[y]=(acc[y]||0)+1;return acc;},{});
+  const visible=rows.slice(0,370);
   return `${title('Nutrição','Histórico de alimentação registrado. Médias usam somente os dias que possuem dados; dias ausentes não são tratados como zero.')}
     <div class="controls"><select id="nutritionPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Navegar por ano</option></select>${p==='all'?`<select id="nutritionYear">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select>`:''}</div>
     <div class="grid cols4 sectionGap">
@@ -51,5 +60,5 @@ export function renderNutritionHub(){
       <div class="card"><div class="cardHead"><div><b>Dias com registro</b><small>${p==='all'?`Ano ${esc(state.ui.nutritionYear||'')}.`:'Mais recente primeiro.'}</small></div><span class="pill">${visible.length}${rows.length>visible.length?' de '+rows.length:''}</span></div><div class="nutritionDays">${visible.map(r=>`<button type="button" data-nutrition-date="${esc(r.nutrition_date)}" class="${r.nutrition_date===state.ui.nutritionDate?'active':''}"><time>${fmtDate(r.nutrition_date)}</time><div><b>${num(r.calories_kcal)!=null?`${fmtNum(r.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${[num(r.protein_g)!=null?`${fmtNum(r.protein_g,0)}g proteína`:null,num(r.carbs_g)!=null?`${fmtNum(r.carbs_g,0)}g carbo`:null,num(r.fat_g)!=null?`${fmtNum(r.fat_g,0)}g gordura`:null].filter(Boolean).join(' · ')}</small></div></button>`).join('')||empty('Nenhum dia registrado neste período.')}</div></div>
       <div class="card"><div class="cardHead"><div><b>Detalhe do dia</b><small>Valores preservados do histórico importado.</small></div></div>${daySummary(selected)}</div>
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Cobertura do histórico</b><small>Escolha um ano para navegar pelos registros disponíveis.</small></div></div><div class="yearGrid">${Object.entries(coverage).sort((a,b)=>b[0].localeCompare(a[0])).map(([y,n])=>`<button type="button" data-nutrition-year="${esc(y)}" class="${p==='all'&&state.ui.nutritionYear===y?'active':''}"><b>${esc(y)}</b><span>${n} dias</span></button>`).join('')||empty('Sem histórico anual.')}</div></div>`;
+    <div class="card sectionGap"><div class="cardHead"><div><b>Cobertura do histórico</b><small>Os anos sem registros ficam visíveis como lacunas; ausência de registro não significa consumo zero.</small></div></div><div class="yearGrid">${spanYears.map(y=>{const c=coverage[y];return c?`<button type="button" data-nutrition-year="${esc(y)}" class="${p==='all'&&state.ui.nutritionYear===y?'active':''}"><b>${esc(y)}</b><span>${c.count} dias registrados</span><small>${fmtDate(c.first)} → ${fmtDate(c.last)}</small></button>`:`<div class="yearGap"><b>${esc(y)}</b><span>sem registros disponíveis</span><small>Nenhum dia importado neste ano.</small></div>`;}).join('')||empty('Sem histórico anual.')}</div></div>`;
 }
