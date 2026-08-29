@@ -44,12 +44,17 @@ function sessionCard(workout,isLatest=false){
   const open=state.ui.openWorkout===workout.source_record_id;
   const partial=workout.record_status==='review_required';
   const preservedSession=String(workout.raw_exercises||'').trim();
+  const hasPreservedExerciseEvidence=exercises.some(e=>String(e.source_text||'').trim());
   const detail=exerciseUnavailable
     ? domainError('Os exercícios desta sessão não puderam ser carregados.')
     : exercises.map(e=>`<section class="exercise"><div><b>${esc(e.exercise||'Exercício')}</b><small>${[e.machine,e.muscle_group].filter(Boolean).map(esc).join(' · ')}</small></div><div class="sets">${setSummary(e)}</div></section>`).join('')||(preservedSession?`<div class="note"><b>Registro histórico da fonte</b><span>${esc(preservedSession)}</span><small>O texto foi preservado sem criar exercícios ou séries que a fonte não detalha.</small></div>`:empty('Sessão sem exercícios estruturados.'));
   const counts=exerciseUnavailable
     ? 'detalhes indisponíveis'
-    : `${exercises.length} exercício(s) · ${setCount==null?'séries indisponíveis':`${setCount} série(s)`}`;
+    : !exercises.length&&preservedSession
+      ? 'detalhes preservados na fonte'
+      : exercises.length&&setCount===0&&hasPreservedExerciseEvidence
+        ? `${exercises.length} exercício(s) · séries preservadas na fonte`
+        : `${exercises.length} exercício(s) · ${setCount==null?'séries indisponíveis':`${setCount} série(s)`}`;
   const source=workout.source?`<div class="trainingSource">Origem: ${esc(workout.source)}</div>`:'';
   const status=partial?'incompleto':isLatest?'mais recente':'registrado';
   const statusKind=partial?'warn':isLatest?'accent':'ok';
