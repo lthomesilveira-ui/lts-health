@@ -22,13 +22,22 @@ function resultText(row){
   if(num(row.result_numeric)!=null)return `${fmtNum(row.result_numeric)}${row.unit?` ${row.unit}`:''}`;
   return 'resultado não informado';
 }
+function markerChart(ordered,unit){
+  if(ordered.length<2)return'';
+  const points=ordered.map(r=>({date:r.collection_date,value:num(r.result_numeric)})).filter(p=>p.value!=null),values=points.map(p=>p.value);if(points.length<2)return'';
+  const w=560,h=150,p=20,lo=Math.min(...values),hi=Math.max(...values),span=hi-lo||1,pad=span*.14,min=lo-pad,max=hi+pad;
+  const x=i=>p+i*(w-p*2)/Math.max(1,points.length-1),y=v=>p+(max-v)*(h-p*2)/(max-min||1);
+  const path=points.map((pt,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(pt.value).toFixed(1)}`).join(' ');
+  const dots=points.map((pt,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(pt.value).toFixed(1)}" r="3.5"><title>${esc(fmtDate(pt.date))}: ${esc(fmtNum(pt.value))} ${esc(unit||'')}</title></circle>`).join('');
+  return `<div class="labHistoryChart"><div class="labHistoryChartHead"><b>Série histórica</b><small>${points.length} ponto(s) · mesma unidade (${esc(unit||'sem unidade')})</small></div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Série histórica do marcador selecionado"><path class="labHistoryGrid" d="M20 50H540 M20 100H540"/><path class="labHistoryLine" d="${path}"/>${dots}</svg><div class="labHistoryAxis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points.at(-1).date)}</span></div><small class="labHistoryNote">Valores exibidos de forma descritiva; o gráfico não classifica o resultado nem substitui a interpretação clínica.</small></div>`;
+}
 function markerHistory(group){
   if(!group)return empty('Selecione um marcador para ver o histórico.');
   const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(r=>num(r.result_numeric)!=null),units=unique(numeric.map(r=>r.unit||''));
   const comparable=numeric.length>=2&&units.length===1;
   const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||'Laboratório não informado')}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
   let trend='';
-  if(comparable){const ordered=[...numeric].sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date))),first=ordered[0],last=ordered.at(-1),delta=num(last.result_numeric)-num(first.result_numeric);trend=`<div class="labTrend"><span>${fmtDate(first.collection_date)} · ${fmtNum(first.result_numeric)} ${esc(first.unit||'')}</span><b>Diferença ${delta>0?'+':''}${fmtNum(delta)} ${esc(first.unit||'')}</b><span>${fmtDate(last.collection_date)} · ${fmtNum(last.result_numeric)} ${esc(last.unit||'')}</span></div>`;}
+  if(comparable){const ordered=[...numeric].sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date))),first=ordered[0],last=ordered.at(-1),delta=num(last.result_numeric)-num(first.result_numeric);trend=`<div class="labTrend"><span>${fmtDate(first.collection_date)} · ${fmtNum(first.result_numeric)} ${esc(first.unit||'')}</span><b>Diferença ${delta>0?'+':''}${fmtNum(delta)} ${esc(first.unit||'')}</b><span>${fmtDate(last.collection_date)} · ${fmtNum(last.result_numeric)} ${esc(last.unit||'')}</span></div>${markerChart(ordered,first.unit||'')}`;}
   else if(rows.length>1)trend='<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos ou as unidades não são compatíveis.</div>';
   else trend='<div class="note">Há um único ponto estruturado para este marcador. Novas coletas permitirão comparação longitudinal.</div>';
   return `<div class="markerHead"><b>${esc(group.label)}</b><small>${rows.length} resultado(s) estruturado(s)</small></div>${trend}<div class="list labHistory">${history}</div>`;
