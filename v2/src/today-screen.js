@@ -30,19 +30,21 @@ function summaryCard(label,main,sub='',actionHtml='',kind=''){
 }
 function domainUnavailable(label,detail){return`<article class="todayStatusCard unavailable"><span>${esc(label)}</span><b>Indisponível agora</b><small>${esc(detail)}</small></article>`;}
 function latestMetric(rows,type){return[...(rows||[])].filter(m=>m.metric_type===type&&metricTypes.has(m.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at)))[0]||null;}
-function metricCard(rows,type){
+function availabilityLabel(value,today){const d=day(value);return d&&d===today?'Hoje':d?`Último disponível em ${fmtDate(d)}`:'Último disponível';}
+function metricCard(rows,type,today){
   const label=metricLabel[type],m=latestMetric(rows,type);if(!m)return`<article class="todayStatusCard"><span>${esc(label)}</span><b>Sem dado importado</b><small>Nenhum registro disponível para esta métrica.</small></article>`;
   const value=num(m.value),unit=m.unit||metricFallbackUnit[type];
   const display=value==null?'Registro disponível':`${fmtNum(value,metricDigits[type]??1)} ${esc(unit)}`;
-  return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${fmtDate(m.measured_at)}${m.source?` · ${esc(m.source)}`:''}</small></article>`;
+  const freshness=availabilityLabel(m.measured_at,today);
+  return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${esc(freshness)}${m.source?` · ${esc(m.source)}`:''}</small></article>`;
 }
-function existingOtherMetricCards(rows){
+function existingOtherMetricCards(rows,today){
   const latestByType=new Map();
   for(const row of [...(rows||[])].filter(r=>otherMetricTypes.has(r.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at))))if(!latestByType.has(row.metric_type))latestByType.set(row.metric_type,row);
   return [...latestByType.entries()].map(([type,row])=>{
     const value=num(row.value),label=type==='steps'?'Passos':'FC de repouso';
     const display=value==null?'Registro disponível':type==='steps'?`${fmtNum(value,0)} passos`:`${fmtNum(value,0)} bpm`;
-    return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${fmtDate(row.measured_at)}${row.source?` · ${esc(row.source)}`:''}</small></article>`;
+    return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${esc(availabilityLabel(row.measured_at,today))}${row.source?` · ${esc(row.source)}`:''}</small></article>`;
   }).join('');
 }
 function recentRow(label,date,main,sub='',button=''){
@@ -118,16 +120,16 @@ export function renderTodayHub(){
   const einsteinFound=uploads.some(u=>norm(u.source_type)==='einstein')||hasSource('einstein',labs,['laboratory','source','source_file']);
   const apple=sourceState(appleFound,failed('uploads')||failed('metrics'));
   const einstein=sourceState(einsteinFound,failed('uploads')||failed('labs'));
-  const workoutSub=lastWorkout?[fmtDate(lastWorkout.workout_date),lastWorkout.location].filter(Boolean).join(' · '):'';
-  const bodySub=lastBody?[`MME ${fmtNum(lastBody.skeletal_muscle_mass_kg)} kg`,fmtDate(lastBody.measured_at)].filter(Boolean).join(' · '):'';
+  const workoutSub=lastWorkout?[availabilityLabel(lastWorkout.workout_date,today),lastWorkout.location].filter(Boolean).join(' · '):'';
+  const bodySub=lastBody?[availabilityLabel(lastBody.measured_at,today),num(lastBody.skeletal_muscle_mass_kg)!=null?`MME ${fmtNum(lastBody.skeletal_muscle_mass_kg)} kg`:null].filter(Boolean).join(' · '):'';
   const nutritionMain=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Registro disponível'):'Sem registro para hoje';
   const nutritionSub=nutrition&&num(nutrition.protein_g)!=null?`${fmtNum(nutrition.protein_g,0)} g de proteína`:'';
-  const metricCards=failed('metrics')?metricOrder.map(type=>domainUnavailable(metricLabel[type],'Esta métrica não carregou agora. Os registros existentes continuam preservados.')).join(''):metricOrder.map(type=>metricCard(metrics,type)).join('');
-  const otherMetricCards=failed('metrics')?'':existingOtherMetricCards(metrics);
+  const metricCards=failed('metrics')?metricOrder.map(type=>domainUnavailable(metricLabel[type],'Esta métrica não carregou agora. Os registros existentes continuam preservados.')).join(''):metricOrder.map(type=>metricCard(metrics,type,today)).join('');
+  const otherMetricCards=failed('metrics')?'':existingOtherMetricCards(metrics,today);
 
   return `${title('Hoje',fmtDate(today))}
     <section class="todayLead">
-      <div><span>Resumo</span><h2>Seu histórico mais recente, sem preencher lacunas.</h2><p>Treino, composição, alimentação, atividade, sono e exames aparecem conforme os dados disponíveis.</p></div>
+      <div><span>Resumo</span><h2>O que é de hoje e o último dado disponível.</h2><p>Quando um registro não é de hoje, a data mais recente fica explícita. Nenhuma lacuna é preenchida.</p></div>
       <div class="todayLeadActions">${action('treinos','Ver treinos')}${action('dados','Adicionar dados')}</div>
     </section>
 
@@ -135,7 +137,7 @@ export function renderTodayHub(){
       ${failed('workouts')?domainUnavailable('Último treino','Os treinos não carregaram. Os demais dados continuam disponíveis.'):lastWorkout?summaryCard('Último treino',lastWorkout.workout_type||'Treino',workoutSub,action('treinos','Abrir treino',lastWorkout.source_record_id,'workout'),'accent'):summaryCard('Último treino','Sem treino registrado')}
       ${failed('body')?domainUnavailable('Última bio','As medições corporais não carregaram. Os demais dados continuam disponíveis.'):lastBody?summaryCard('Última bio',num(lastBody.weight_kg)!=null?`${fmtNum(lastBody.weight_kg)} kg`:'Medição disponível',bodySub,action('bio','Abrir bio',day(lastBody.measured_at),'body')):summaryCard('Última bio','Sem bio registrada')}
       ${failed('nutrition')?domainUnavailable('Alimentação hoje','Os registros de alimentação não carregaram.'):summaryCard('Alimentação hoje',nutritionMain,nutritionSub,nutrition?action('nutricao','Ver dia',today,'nutrition'):action('nutricao','Ver histórico'))}
-      ${failed('labs')?domainUnavailable('Exames','Os exames não carregaram.'):lab?summaryCard('Exames mais recentes',`${lab.count} resultado(s)`,`${fmtDate(lab.date)}${lab.lab?` · ${lab.lab}`:''}`,action('saude','Ver exames')):summaryCard('Exames','Sem resultados estruturados')}
+      ${failed('labs')?domainUnavailable('Exames','Os exames não carregaram.'):lab?summaryCard('Exames mais recentes',`${lab.count} resultado(s)`,`${availabilityLabel(lab.date,today)}${lab.lab?` · ${lab.lab}`:''}`,action('saude','Ver exames')):summaryCard('Exames','Sem resultados estruturados')}
     </div>
 
     <section class="todaySection todayContextSection">
@@ -144,7 +146,7 @@ export function renderTodayHub(){
     </section>
 
     <section class="todaySection">
-      <div class="cardHead"><div><b>Atividade e sono</b><small>A importação automática validada mostra energia ativa, minutos de exercício, horas em pé e duração do sono. Outras métricas não são tratadas aqui como importação automática.</small></div></div>
+      <div class="cardHead"><div><b>Atividade e sono</b><small>A importação automática validada mostra energia ativa, minutos de exercício, horas em pé e duração do sono. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
