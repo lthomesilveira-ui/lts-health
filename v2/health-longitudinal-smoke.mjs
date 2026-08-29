@@ -27,8 +27,9 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   });
   await page.fill('#labQuery','x');
-  await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=5);
+  await page.fill('#labQuery','');
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value==='');
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
