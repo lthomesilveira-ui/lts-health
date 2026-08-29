@@ -48,9 +48,13 @@ const loaders={
 };
 
 const backupOnlyLoaders={
-  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file,source_payload','metric_date',false)
+  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file','metric_date',false)
 };
 const backupLoaders={...loaders,...backupOnlyLoaders};
+const fixtureSourceMetrics=[{
+  source_record_id:'source-metric-candidate-1',metric_date:'2026-02-02',metric_type:'steps',value:7100,unit:'count',
+  source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
+}];
 
 function setFixture(){
   state.data=fixtureData();state.errors={};state.domainStatus={};
@@ -105,14 +109,14 @@ export async function refreshData(route,onProgress=()=>{}){
 
 export function localBackupDate(value=new Date()){
   const d=value instanceof Date?value:new Date(value);
-  const year=d.getFullYear(),month=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
-  return `${year}-${month}-${day}`;
+  const year=d.getFullYear(),month=String(d.getMonth()+1).padStart(2,'0'),localDay=String(d.getDate()).padStart(2,'0');
+  return `${year}-${month}-${localDay}`;
 }
 
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:[]};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
@@ -143,6 +147,7 @@ export async function buildStructuredBackup(onProgress=()=>{}){
       'Backup estruturado completo dos domínios suportados e acessíveis à sessão atual no momento da exportação.',
       'O campo complete se refere somente ao escopo structured_records_only; não significa cópia dos arquivos privados originais.',
       'Métricas por origem são preservadas separadamente em sourceMetrics para manter proveniência e candidatos ainda não promovidos a métricas canônicas.',
+      'O backup de sourceMetrics preserva apenas campos estruturados de proveniência; payloads brutos de origem ficam de fora.',
       'Se qualquer domínio falhar durante a leitura, nenhum arquivo de backup é baixado.',
       'Arquivos originais armazenados na área privada não são incorporados neste JSON.',
       'Credenciais, tokens e segredos de autenticação não são exportados.',
