@@ -47,7 +47,8 @@ export function renderBioHub(){
   if(!state.ui.selectedBodyDate||!rows.some(r=>r.measured_at===state.ui.selectedBodyDate))state.ui.selectedBodyDate=last.measured_at;
   const selected=rows.find(r=>r.measured_at===state.ui.selectedBodyDate);
   return `${title('Bio','Sua composição corporal, comparação entre datas e histórico completo.')}
-    <div class="grid cols4">
+    <div class="note"><b>Última medição · ${fmtDate(last.measured_at)}</b><span>${rows.length} medição(ões) no histórico carregado. Os indicadores abaixo usam esta medição mais recente.</span></div>
+    <div class="grid cols4 sectionGap">
       ${metric('Peso',fmtNum(last.weight_kg),'kg',prev?`desde a anterior ${neutralDelta(last.weight_kg,prev.weight_kg,1,'kg')}`:`primeiro registro ${fmtDate(first.measured_at)}`)}
       ${metric('MME',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`:'')}
       ${metric('Gordura',fmtNum(last.body_fat_pct),'%',prev?`desde a anterior ${neutralDelta(last.body_fat_pct,prev.body_fat_pct,1,'%')}`:'')}
