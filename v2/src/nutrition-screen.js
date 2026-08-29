@@ -6,6 +6,8 @@ const avg=(rows,key)=>{const vals=rows.map(r=>num(r[key])).filter(v=>v!=null);re
 const sum=(rows,key)=>rows.map(r=>num(r[key])).filter(v=>v!=null).reduce((a,b)=>a+b,0);
 const failed=key=>state.domainStatus[key]==='error';
 const yearOf=v=>String(v||'').slice(0,4);
+const monthOf=v=>String(v||'').slice(0,7);
+const monthLabel=v=>{if(!v)return'—';const[y,m]=v.split('-').map(Number);return new Intl.DateTimeFormat('pt-BR',{month:'short',year:'2-digit'}).format(new Date(y,m-1,1));};
 
 function allNutrition(){return[...(state.data.nutrition||[])].sort((a,b)=>String(b.nutrition_date).localeCompare(String(a.nutrition_date)));}
 function availableYears(all){return unique(all.map(r=>yearOf(r.nutrition_date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));}
@@ -27,6 +29,28 @@ function periodRows(all){
   const cut=since(Number(p));return all.filter(r=>day(r.nutrition_date)>=cut);
 }
 function mealsFor(date){return (state.data.meals||[]).filter(m=>day(m.meal_date)===date).sort((a,b)=>String(a.meal_name||'').localeCompare(String(b.meal_name||''),'pt-BR'));}
+function monthlySummary(rows){
+  const map=new Map();
+  for(const row of rows){const key=monthOf(row.nutrition_date);if(!key)continue;if(!map.has(key))map.set(key,{key,rows:[]});map.get(key).rows.push(row);}
+  return [...map.values()].sort((a,b)=>a.key.localeCompare(b.key)).map(group=>({key:group.key,count:group.rows.length,calories:avg(group.rows,'calories_kcal'),protein:avg(group.rows,'protein_g'),carbs:avg(group.rows,'carbs_g'),fat:avg(group.rows,'fat_g')}));
+}
+function mealDistribution(rows){
+  if(failed('meals'))return null;
+  const dates=new Set(rows.map(r=>day(r.nutrition_date)).filter(Boolean)),map=new Map();
+  for(const meal of state.data.meals||[]){if(!dates.has(day(meal.meal_date)))continue;const label=String(meal.meal_name||'Refeição').trim()||'Refeição',key=label.toLocaleLowerCase('pt-BR');if(!map.has(key))map.set(key,{label,count:0,calories:0,withCalories:0});const item=map.get(key);item.count++;const kcal=num(meal.calories_kcal);if(kcal!=null){item.calories+=kcal;item.withCalories++;}}
+  return [...map.values()].sort((a,b)=>b.count-a.count||a.label.localeCompare(b.label,'pt-BR')).slice(0,10);
+}
+function monthlyPanel(rows){
+  const months=monthlySummary(rows);if(!months.length)return empty('Não há meses com dados neste período.');
+  const maxDays=Math.max(1,...months.map(m=>m.count));
+  return `<div class="nutritionTrend">${months.slice(-18).map(m=>`<div class="nutritionMonth"><div class="nutritionMonthHead"><b>${esc(monthLabel(m.key))}</b><span>${m.count} dia(s)</span></div><div class="nutritionMonthTrack"><i style="width:${Math.max(4,Math.round(m.count/maxDays*100))}%"></i></div><div class="nutritionMonthStats"><span>${m.calories==null?'kcal —':`${fmtNum(m.calories,0)} kcal/dia`}</span><span>${m.protein==null?'proteína —':`${fmtNum(m.protein,0)} g proteína/dia`}</span></div></div>`).join('')}</div><p class="footerNote">Cada linha resume apenas os dias registrados naquele mês. Meses ou dias ausentes não entram nas médias.</p>`;
+}
+function distributionPanel(rows){
+  const distribution=mealDistribution(rows);if(distribution===null)return `<div class="errorState"><b>Os detalhes das refeições estão indisponíveis agora.</b><span>Os totais diários continuam disponíveis.</span></div>`;
+  if(!distribution.length)return empty('Não há refeições estruturadas neste período.');
+  const max=Math.max(1,...distribution.map(x=>x.count));
+  return `<div class="mealDistribution">${distribution.map(x=>`<div class="mealDistributionRow"><div><b>${esc(x.label)}</b><small>${x.count} registro(s)${x.withCalories?` · média ${fmtNum(x.calories/x.withCalories,0)} kcal nos itens com valor`:''}</small></div><div class="mealDistributionTrack"><i style="width:${Math.max(4,Math.round(x.count/max*100))}%"></i></div></div>`).join('')}</div><p class="footerNote">A frequência mostra quantas entradas existem no histórico importado. Ela não mede qualidade da alimentação nem regularidade de refeições.</p>`;
+}
 function daySummary(row){
   if(!row)return empty('Selecione um dia com registro.');
   if(failed('meals'))return `<div class="nutritionDayHead"><div><span>${fmtDate(row.nutrition_date)}</span><b>${num(row.calories_kcal)!=null?`${fmtNum(row.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${esc(row.source||'origem registrada')}</small></div></div><div class="macroGrid"><div><span>Proteína</span><b>${num(row.protein_g)!=null?`${fmtNum(row.protein_g,0)} g`:'—'}</b></div><div><span>Carboidratos</span><b>${num(row.carbs_g)!=null?`${fmtNum(row.carbs_g,0)} g`:'—'}</b></div><div><span>Gorduras</span><b>${num(row.fat_g)!=null?`${fmtNum(row.fat_g,0)} g`:'—'}</b></div><div><span>Fibras</span><b>${num(row.fiber_g)!=null?`${fmtNum(row.fiber_g,0)} g`:'—'}</b></div></div><div class="errorState"><b>Os detalhes das refeições estão indisponíveis agora.</b><span>O total diário continua visível; tente atualizar para carregar as refeições.</span></div>`;
@@ -55,6 +79,10 @@ export function renderNutritionHub(){
       <div class="card metric"><span>Calorias · média</span><strong>${avg(rows,'calories_kcal')==null?'—':fmtNum(avg(rows,'calories_kcal'),0)}</strong><em>kcal nos dias com valor</em></div>
       <div class="card metric"><span>Proteína · média</span><strong>${avg(rows,'protein_g')==null?'—':fmtNum(avg(rows,'protein_g'),0)}</strong><em>g nos dias com valor</em></div>
       <div class="card metric"><span>Histórico total</span><strong>${all.length}</strong><em>${years.length?`${years.at(-1)} → ${years[0]}`:'dias estruturados disponíveis'}</em></div>
+    </div>
+    <div class="grid split sectionGap">
+      <div class="card"><div class="cardHead"><div><b>Evolução por mês</b><small>Cobertura e médias dos registros disponíveis.</small></div></div>${monthlyPanel(rows)}</div>
+      <div class="card"><div class="cardHead"><div><b>Refeições mais registradas</b><small>Distribuição descritiva das entradas importadas.</small></div></div>${distributionPanel(rows)}</div>
     </div>
     <div class="grid split sectionGap">
       <div class="card"><div class="cardHead"><div><b>Dias com registro</b><small>${p==='all'?`Ano ${esc(state.ui.nutritionYear||'')}.`:'Mais recente primeiro.'}</small></div><span class="pill">${visible.length}${rows.length>visible.length?' de '+rows.length:''}</span></div><div class="nutritionDays">${visible.map(r=>`<button type="button" data-nutrition-date="${esc(r.nutrition_date)}" class="${r.nutrition_date===state.ui.nutritionDate?'active':''}"><time>${fmtDate(r.nutrition_date)}</time><div><b>${num(r.calories_kcal)!=null?`${fmtNum(r.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${[num(r.protein_g)!=null?`${fmtNum(r.protein_g,0)}g proteína`:null,num(r.carbs_g)!=null?`${fmtNum(r.carbs_g,0)}g carbo`:null,num(r.fat_g)!=null?`${fmtNum(r.fat_g,0)}g gordura`:null].filter(Boolean).join(' · ')}</small></div></button>`).join('')||empty('Nenhum dia registrado neste período.')}</div></div>
