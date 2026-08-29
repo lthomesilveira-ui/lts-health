@@ -103,22 +103,34 @@ export async function buildStructuredBackup(onProgress=()=>{}){
   let data;
   if(fixtureMode)data=fixtureData();
   else{
-    const entries=await Promise.all(Object.entries(loaders).map(async([key,loader])=>[key,await loader()]));
-    data=Object.fromEntries(entries);
+    const entries=Object.entries(loaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
+    const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
+    if(failures.length){
+      const error=new Error(`backup_incomplete:${failures.map(f=>f.domain).join(',')}`);
+      error.domains=failures.map(f=>f.domain);error.failures=failures;
+      onProgress('Backup não criado');throw error;
+    }
+    data=Object.fromEntries(results.map((result,index)=>[entries[index][0],result.value]));
   }
   const counts=Object.fromEntries(Object.entries(data).map(([key,rows])=>[key,Array.isArray(rows)?rows.length:0]));
+  const domains=Object.keys(loaders),missingDomains=domains.filter(key=>!Object.hasOwn(data,key));
+  if(missingDomains.length){const error=new Error(`backup_incomplete:${missingDomains.join(',')}`);error.domains=missingDomains;onProgress('Backup não criado');throw error;}
   const backup={
     format:'lts-health-structured-backup',
-    schema_version:1,
+    schema_version:2,
     exported_at:new Date().toISOString(),
     scope:'structured_records_only',
+    complete:true,
+    domain_count:domains.length,
+    domains,
+    counts,
     notes:[
-      'Backup estruturado dos registros acessíveis à sessão atual.',
+      'Backup estruturado completo dos domínios suportados e acessíveis à sessão atual no momento da exportação.',
+      'Se qualquer domínio falhar durante a leitura, nenhum arquivo de backup é baixado.',
       'Arquivos originais armazenados na área privada não são incorporados neste JSON.',
       'Credenciais, tokens e segredos de autenticação não são exportados.',
       'Campos ausentes permanecem ausentes; nenhum valor é reconstruído por estimativa.'
     ],
-    counts,
     data
   };
   onProgress('Backup pronto');
@@ -129,5 +141,5 @@ export async function downloadStructuredBackup(onProgress=()=>{}){
   const backup=await buildStructuredBackup(onProgress),date=new Date().toISOString().slice(0,10),filename=`lts-health-backup-${date}.json`;
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download=filename;link.style.display='none';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-  return{filename,counts:backup.counts};
+  return{filename,counts:backup.counts,complete:backup.complete,domainCount:backup.domain_count};
 }
