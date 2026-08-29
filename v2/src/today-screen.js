@@ -126,11 +126,11 @@ export function renderTodayHub(){
     </section>
 
     <section class="todaySection">
-      <div class="cardHead"><div><b>Atividade e sono</b><small>Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada. Sono pode ser exibido quando já existe como métrica estruturada, mas permanece fora da sincronização automática até existir uma regra validada de deduplicação por origem. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
+      <div class="cardHead"><div><b>Atividade e sono</b><small>Energia ativa, minutos de exercício, horas em pé e duração do sono têm sincronização automática validada. No sono, intervalos sobrepostos são unidos antes do total diário. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
-    ${otherMetricCards?`<section class="todaySection"><div class="cardHead"><div><b>Outros registros disponíveis</b><small>Estes itens já existem no histórico e podem vir de outras origens. Eles não ampliam o conjunto canônico automático do Apple Saúde.</small></div></div><div class="todayOtherMetricGrid todayMetricGridSecondary">${otherMetricCards}</div></section>`:''}
+    ${otherMetricCards?`<section class="todaySection"><div class="cardHead"><div><b>Outros registros disponíveis</b><small>Estes itens já existem no histórico e podem vir de outras origens. Passos e FC de repouso não são adicionados automaticamente pelo fluxo Apple estável.</small></div></div><div class="todayOtherMetricGrid todayMetricGridSecondary">${otherMetricCards}</div></section>`:''}
 
     <div class="grid cols2 sectionGap">
       <section class="card todayRecent"><div class="cardHead"><div><b>Últimos registros</b><small>Acesso rápido ao que entrou mais recentemente.</small></div></div>
