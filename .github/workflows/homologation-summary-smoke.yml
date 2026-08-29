@@ -1,0 +1,39 @@
+name: LTS Health v2 Homologation Summary Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/bio-screen.js'
+      - 'v2/src/training-screen.js'
+      - 'v2/src/core.js'
+      - 'v2/src/data-layer.js'
+      - 'v2/src/main.js'
+      - 'v2/homologation-summary-smoke.mjs'
+      - '.github/workflows/homologation-summary-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  homologation-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/bio-screen.js
+          node --check v2/src/training-screen.js
+          node --check v2/homologation-summary-smoke.mjs
+          grep -q 'Última medição' v2/src/bio-screen.js
+          grep -q 'class="session ${open?' v2/src/training-screen.js
+          grep -q "detalhes indisponíveis" v2/src/training-screen.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Desktop and mobile summaries
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/homologation-summary-smoke.mjs
