@@ -18,7 +18,7 @@ jobs:
           node --check v2/src/today-screen.js
           node --check v2/data-copy-smoke.mjs
           node --check v2/today-context-smoke.mjs
-          grep -q "stableAppleMetricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours'\])" v2/src/source-status.js
+          grep -Fq "stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours'])" v2/src/source-status.js
           grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "backupExportBtn" v2/src/data-screen.js
@@ -32,7 +32,7 @@ jobs:
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Sincronização automática parcial" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
-          grep -q "const metricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'\])" v2/src/today-screen.js
+          grep -Fq "const metricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'])" v2/src/today-screen.js
           grep -q "sourceStatusFor('apple_health')" v2/src/today-screen.js
           grep -q "Arquivo recebido; dados ainda não confirmados" v2/src/today-screen.js
           grep -q "Progressão de treino" v2/src/today-screen.js
