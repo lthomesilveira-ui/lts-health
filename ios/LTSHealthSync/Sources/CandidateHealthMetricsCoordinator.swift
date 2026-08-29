@@ -8,7 +8,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
     private let api = SupabaseAPI.shared
     private let defaults = UserDefaults.standard
     private let calendar = Calendar.autoupdatingCurrent
-    private let bridgeVersion = "ios-healthkit-candidates-v1"
+    private let bridgeVersion = "ios-healthkit-candidates-v2"
     private let syncGate = CandidateSyncGate()
     private var observers: [HKObserverQuery] = []
 
@@ -62,6 +62,41 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
                 unit: .gramUnit(with: .kilo),
                 unitLabel: "kg",
                 options: [.discreteAverage, .separateBySource]
+            ),
+            MetricSpec(
+                identifier: .dietaryEnergyConsumed,
+                metricType: "dietary_energy_kcal",
+                unit: .kilocalorie(),
+                unitLabel: "kcal",
+                options: [.cumulativeSum, .separateBySource]
+            ),
+            MetricSpec(
+                identifier: .dietaryProtein,
+                metricType: "dietary_protein_g",
+                unit: .gram(),
+                unitLabel: "g",
+                options: [.cumulativeSum, .separateBySource]
+            ),
+            MetricSpec(
+                identifier: .dietaryCarbohydrates,
+                metricType: "dietary_carbs_g",
+                unit: .gram(),
+                unitLabel: "g",
+                options: [.cumulativeSum, .separateBySource]
+            ),
+            MetricSpec(
+                identifier: .dietaryFatTotal,
+                metricType: "dietary_fat_g",
+                unit: .gram(),
+                unitLabel: "g",
+                options: [.cumulativeSum, .separateBySource]
+            ),
+            MetricSpec(
+                identifier: .dietaryFiber,
+                metricType: "dietary_fiber_g",
+                unit: .gram(),
+                unitLabel: "g",
+                options: [.cumulativeSum, .separateBySource]
             )
         ]
     }
@@ -222,6 +257,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
             .replacingOccurrences(of: "\u{00A0}", with: " ")
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .lowercased()
+        if normalized.contains("myfitnesspal") { return "myfitnesspal" }
         if normalized.contains("polar") { return "polar_flow" }
         if normalized.contains("watch") { return "apple_watch" }
         if normalized.contains("iphone") { return "iphone" }
