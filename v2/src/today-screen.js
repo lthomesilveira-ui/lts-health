@@ -47,6 +47,7 @@ export function renderTodayHub(){
   const bodySub=lastBody?[`MME ${fmtNum(lastBody.skeletal_muscle_mass_kg)} kg`,fmtDate(lastBody.measured_at)].filter(Boolean).join(' · '):'';
   const nutritionMain=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Registro disponível'):'Sem registro para hoje';
   const nutritionSub=nutrition&&num(nutrition.protein_g)!=null?`${fmtNum(nutrition.protein_g,0)} g de proteína`:'';
+  const metricCards=failed('metrics')?['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'].map(type=>domainUnavailable(metricLabel[type],'Esta métrica não carregou agora. Os registros existentes continuam preservados.')).join(''):['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'].map(type=>metricCard(metrics,type)).join('');
 
   return `${title('Hoje',fmtDate(today))}
     <section class="todayLead">
@@ -63,9 +64,7 @@ export function renderTodayHub(){
 
     <section class="todaySection">
       <div class="cardHead"><div><b>Atividade e sono</b><small>Somente métricas com importação automática já validada são exibidas aqui.</small></div></div>
-      <div class="todayMetricGrid">
-        ${failed('metrics')?domainUnavailable('Métricas','Atividade e sono não carregaram agora.'):['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'].map(type=>metricCard(metrics,type)).join('')}
-      </div>
+      <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
     <div class="grid cols2 sectionGap">
