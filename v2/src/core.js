@@ -3,7 +3,8 @@ export const CONFIG = Object.freeze({
   key: 'sb_publishable_7SdlV1H52wVVbPEsN7i7hg_jbluJ8aI',
   bucket: 'health-inbox',
   inspectFunction: 'health-inspect-upload',
-  appleInspectFunction: 'health-inspect-upload-v2'
+  appleInspectFunction: 'health-inspect-upload-v2',
+  labInspectFunction: 'health-inspect-lab'
 });
 
 export const fixtureMode = new URLSearchParams(location.search).has('fixture');
@@ -60,7 +61,7 @@ export const bodyRows = () => [...(state.data.body||[])].sort((a,b)=>String(a.me
 export const workoutRows = () => [...(state.data.workouts||[])].sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
 export const exercisesFor = workout => (state.data.exercises||[]).filter(e=>e.workout_source_record_id===workout.source_record_id).sort((a,b)=>(a.order_index??999)-(b.order_index??999));
 export const setsFor = exercise => (state.data.sets||[]).filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(a.set_index??999)-(b.set_index??999));
-export const inspectFunctionForSource = sourceType => sourceType==='apple_health' ? CONFIG.appleInspectFunction : CONFIG.inspectFunction;
+export const inspectFunctionForSource = sourceType => sourceType==='apple_health' ? CONFIG.appleInspectFunction : (['fleury','einstein','lab'].includes(sourceType) ? CONFIG.labInspectFunction : CONFIG.inspectFunction);
 
 export function fixtureData(){
   return {
