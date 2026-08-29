@@ -1,0 +1,33 @@
+name: LTS Health v2 Data Copy Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-screen.js'
+      - 'v2/data-copy-smoke.mjs'
+      - '.github/workflows/data-copy-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  data-copy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/data-screen.js
+          node --check v2/data-copy-smoke.mjs
+          grep -q "imported:'importado'" v2/src/data-screen.js
+          grep -q "rejected:'não processado'" v2/src/data-screen.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Data copy desktop and mobile
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/data-copy-smoke.mjs
