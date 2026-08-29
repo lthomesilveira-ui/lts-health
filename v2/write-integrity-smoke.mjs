@@ -39,13 +39,21 @@ const result=await page.evaluate(async()=>{
 
 if(result.failures.length)throw new Error(result.failures.join(' | '));
 
+const warnState=async()=>page.evaluate(async()=>{
+  const {shouldWarnEntryUnload}=await import('./src/entry.js');
+  return shouldWarnEntryUnload();
+});
+
 // Expected validation stays visible and marks the form as containing unsaved changes.
 await page.locator('#routeAction').click();
 await page.waitForSelector('#entryModal:not(.hidden)');
+if(await warnState())throw new Error('untouched entry unexpectedly blocks page unload');
 await page.locator('#bodyEntryForm [name="weight_kg"]').fill('-1');
+if(!(await warnState()))throw new Error('edited entry does not protect page unload');
 await page.locator('#bodyEntryForm button[type="submit"]').click();
 await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='Use apenas valores iguais ou maiores que zero.');
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('validation closed the entry dialog');
+if(!(await warnState()))throw new Error('validation failure cleared unload protection for unsaved entry');
 
 // Accidental close with unsaved data must ask before discarding. Cancel keeps the dialog and focus inside it.
 let discardPrompt='';
@@ -56,6 +64,7 @@ if(discardPrompt!=='Descartar alterações não salvas?')throw new Error(`unexpe
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('dirty entry closed after discard was cancelled');
 const focusInside=await page.evaluate(()=>document.querySelector('#entryModal')?.contains(document.activeElement));
 if(!focusInside)throw new Error('focus escaped behind a dirty entry after discard was cancelled');
+if(!(await warnState()))throw new Error('cancelled discard cleared unload protection');
 
 // A successful save must stay locked and visible through completion, preventing duplicate submits and ambiguous dismissal.
 await page.locator('#bodyEntryForm [name="weight_kg"]').fill('93,1');
@@ -63,20 +72,24 @@ const submit=page.locator('#bodyEntryForm button[type="submit"]');
 await submit.click();
 await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='Salvo.');
 if(!(await submit.isDisabled()))throw new Error('successful submit was re-enabled before dialog close');
+if(!(await warnState()))throw new Error('save completion window does not protect page unload');
 await page.keyboard.press('Escape');
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('Escape closed the dialog while save completion was locked');
 await page.locator('#closeEntry').click();
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('close button closed the dialog while save completion was locked');
 await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
+if(await warnState())throw new Error('closed saved entry still blocks page unload');
 
 // Explicit discard confirmation closes an edited form and restores focus to the opener.
 await page.locator('#routeAction').click();
 await page.waitForSelector('#entryModal:not(.hidden)');
 await page.locator('#bodyEntryForm [name="weight_kg"]').fill('94,2');
+if(!(await warnState()))throw new Error('second edited entry does not protect page unload');
 page.once('dialog',dialog=>dialog.accept());
 await page.locator('#closeEntry').click();
 await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
 await page.waitForFunction(()=>document.activeElement?.id==='routeAction');
+if(await warnState())throw new Error('discarded closed entry still blocks page unload');
 const stored=await page.evaluate(()=>Object.values(localStorage).join('\n'));
 if(stored.includes('94,2'))throw new Error('unsaved health entry leaked into localStorage');
 
