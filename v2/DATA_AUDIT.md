@@ -1,76 +1,71 @@
-# LTS Health v2 — auditoria de dados
+# LTS Health v2 — contrato de auditoria de dados
 
-Snapshot auditado em 2026-08-28 no projeto Supabase dedicado do LTS Health. Este documento registra apenas contagens, intervalos e regras de consolidação; não inclui payloads privados nem valores clínicos individuais.
+Este arquivo é público e contém apenas regras de engenharia. Contagens, datas, valores, nomes de exames, detalhes de treinos e qualquer outro dado pessoal de saúde devem permanecer exclusivamente no backend privado e nos testes autenticados.
 
 ## Cobertura por domínio
 
-| Domínio | Registros | Intervalo observado |
-| --- | ---: | --- |
-| Composição corporal | 35 | 2024-08-30 → 2026-08-24 |
-| Composição segmentar | 4 | 2026-03-20 → 2026-08-24 |
-| Treinos validados no histórico principal | 43 | 2026-04-28 → 2026-08-27 |
-| Treinos fora do histórico principal | 1 | registro não canônico em quarentena |
-| Exercícios estruturados | 69 | 2026-08-03 → 2026-08-27 |
-| Séries estruturadas | 162 | 2026-08-03 → 2026-08-27 |
-| Resultados laboratoriais | 33 | 2026-02-26 |
-| Documentos de saúde | 23 | 2025-08-28 → 2026-08-25 |
-| Nutrição diária | 2.289 | 2018-06-04 → 2026-08-26 |
-| Refeições | 4.901 | 2018-06-04 → 2026-08-26 |
-| Atividade | 3.794 | 2018-06-04 → 2026-08-26 |
-| Métricas gerais | 1.096 | 2018-06-04 → 2026-07-16 |
-| Uploads | 1 | 2026-08-27 |
-| Previews de ingestão | 1 | 2026-08-27 |
-| Questões de qualidade | 26 | 2026-08-25 → 2026-08-28 |
-| Eventos de tratamentos | 30 | 2026-07-03 → 2026-08-28 |
-| Regimes de tratamento preservados | 6 | snapshot de 2026-08-26 |
+A auditoria operacional deve verificar, no backend privado, a existência e a integridade dos seguintes domínios sem copiar resultados para o repositório:
 
-Questões de qualidade após a reconciliação de 28/08: 14 abertas, 5 aceitas e 7 resolvidas. O registro de treino em quarentena não entra nas contagens exibidas pela interface v2. A antiga pendência de treino parcial de 27/08 está resolvida com nota de resolução; duas pendências de arquitetura/UI herdadas da migração também foram encerradas após a validação da camada canônica dedicada. A preservação de texto bruto de treinos foi mantida como estratégia aceita, não como erro a ser corrigido por inferência.
+- composição corporal e composição segmentar;
+- treinos, exercícios e séries;
+- resultados laboratoriais e documentos;
+- nutrição diária, refeições e atividade;
+- métricas gerais e fontes passivas;
+- eventos históricos de tratamentos;
+- uploads, previews de ingestão e pendências de qualidade.
 
-## Reconciliação dos treinos recentes
+As telas calculam contagens e intervalos a partir dos registros carregados na sessão autenticada. Nenhum total pessoal é fixado no código ou em documentação pública.
 
-Os três treinos recentes presentes no contexto do projeto foram conferidos contra `health_workouts`, `health_workout_exercises` e `health_workout_sets`.
+## Reconciliação de treinos
 
-- Todos permanecem `validated` e incluídos no histórico principal.
-- Contagens estruturadas conferem com o contexto do projeto: 8 exercícios/33 séries; 8/28; 7/25.
-- Zero séries sem repetição registrada.
-- Zero séries sem `source_record_id`.
-- Zero `source_record_id` duplicado em `health_workout_sets`.
-- Nenhum campo foi criado ou completado por inferência nesta auditoria.
+- A sessão estruturada é a representação principal do treino quando a fonte oferece evidência suficiente.
+- Exercícios e séries só são derivados quando o texto ou arquivo de origem permite a decomposição sem inferência.
+- Texto bruto histórico é preservado quando não houver estrutura suficiente.
+- Registros sem evidência corroborante permanecem fora do histórico principal e não são promovidos por conveniência.
+- Repetições, cargas, unidades, máquinas e nomes de exercícios ausentes não são preenchidos por suposição.
 
-## Reconciliação da composição segmentar
+## Reconciliação de composição corporal
 
-As quatro medições segmentares estruturadas foram conferidas nas datas 20/03, 03/07, 16/07 e 24/08/2026. Todas têm os cinco campos de massa magra segmentar e os cinco campos de gordura segmentar preenchidos na fonte estruturada, com confiança alta. A interface pode portanto mostrar esses valores e diferenças entre datas/lados sem estimar campos ausentes.
+- A linha temporal estruturada deve preservar as datas e valores provenientes das fontes originais.
+- Dados segmentares só aparecem quando os campos necessários existem na fonte estruturada.
+- Diferenças entre datas ou lados são descritivas e não recebem rótulos de ideal, melhor ou pior.
+- Conflitos entre inventário de documentos e dados estruturados permanecem pendentes até existir fonte original suficiente para reconciliar.
 
-## Cobertura histórica de nutrição
+## Nutrição
 
-A série diária importada foi conferida por ano. A interface deve mostrar explicitamente os períodos ausentes em vez de transformar ausência em zero.
+- Médias usam somente dias que possuem registros.
+- Dias, meses ou anos sem dados permanecem lacunas; ausência não significa consumo zero, jejum ou aderência.
+- Refeições e totais diários podem ter granularidades diferentes e não são forçados a coincidir.
+- MyFitnessPal descreve nutrição e atividade exportada, mas atividade importada não substitui uma sessão de treino estruturada.
 
-| Ano | Dias registrados | Intervalo disponível |
-| --- | ---: | --- |
-| 2018 | 208 | 04/06/2018 → 30/12/2018 |
-| 2019 | 355 | 01/01/2019 → 31/12/2019 |
-| 2020 | 353 | 01/01/2020 → 29/12/2020 |
-| 2021 | 345 | 03/01/2021 → 31/12/2021 |
-| 2022 | 364 | 01/01/2022 → 31/12/2022 |
-| 2023 | 365 | 01/01/2023 → 31/12/2023 |
-| 2024 | 184 | 01/01/2024 → 06/07/2024 |
-| 2025 | 0 | sem registros disponíveis |
-| 2026 | 115 | 03/05/2026 → 26/08/2026 |
+## Apple Saúde, Polar e sobreposição de fontes
 
-O ano de 2025 é uma lacuna na fonte atualmente importada. Isso não significa ausência de alimentação, jejum, aderência ou qualquer outro comportamento; significa apenas que não há registros diários estruturados disponíveis naquele período. A camada de refeições apresenta a mesma lacuna de 2025.
+1. Treino estruturado do LTS Health é a sessão principal quando representa o mesmo evento observado por outras fontes.
+2. Apple Saúde pode atuar como hub passivo para métricas com regra de consolidação explicitamente validada.
+3. Energia ativa, minutos de exercício, horas em pé e duração do sono possuem caminhos automáticos validados no parser Apple atual.
+4. Passos e frequência cardíaca de repouso só entram automaticamente em dias com uma única fonte identificada no export; dias com múltiplas fontes ficam retidos para evitar dupla contagem.
+5. Polar pode complementar uma sessão com detalhe adicional quando o arquivo real permitir validação, sem criar uma segunda sessão nem somar valores duplicados.
+6. Nenhum valor de múltiplas fontes é agregado automaticamente sem regra determinística específica.
+7. Unidades incompatíveis nunca são convertidas por suposição.
 
-## Regras de sobreposição e deduplicação
+## Laboratórios e documentos
 
-1. **Treino estruturado do LTS Health é a sessão principal.** Apple Health, Polar ou MyFitnessPal não criam uma segunda sessão quando representam o mesmo treino já registrado.
-2. **Apple Health é o hub passivo preferido para métricas validadas**, desde que o parser tenha uma regra explícita e não haja ambiguidade de múltiplas fontes para o mesmo dia/métrica.
-3. **Polar pode coexistir como evidência complementar** quando trouxer detalhe que o Apple Health não preserva, por exemplo duração/FC detalhada da sessão. Isso não autoriza somar calorias, duração ou outro valor ao registro principal.
-4. **MyFitnessPal descreve nutrição e atividade importada, mas não substitui o treino estruturado.** Atividade do MFP não é contada como nova sessão se houver correspondência com um treino principal.
-5. **Nenhum valor de múltiplas fontes é agregado automaticamente.** Quando duas fontes registrarem a mesma métrica/dia, o dado deve ser marcado para revisão ou resolvido por regra determinística específica antes de entrar em totais.
-6. **Ausência de registro não significa zero.** Telas devem mostrar ausência de dado de forma explícita.
-7. **Unidades incompatíveis nunca são convertidas por suposição.** Progressão de exercício só compara cargas com unidade explicitamente compatível.
+- Resultados estruturados permanecem vinculados a coleta, laboratório, unidade, referência, método e origem quando esses campos existem.
+- Tendência só é calculada entre valores numéricos com unidades compatíveis.
+- PDF ou imagem enviado é preservado antes de qualquer extração especializada.
+- Inventário de metadados não é tratado como prova de que o arquivo original esteja disponível para abertura.
+- Coincidência temporal entre exame, treino, alimentação, sono ou tratamento não é apresentada como causalidade.
 
-No snapshot auditado, há zero combinação dia + tipo de métrica com múltiplas fontes em `health_metrics`.
+## Pendências de qualidade
+
+O ledger privado diferencia:
+
+- `open`: exige nova evidência, arquivo ou revisão real;
+- `accepted`: lacuna conhecida e intencional que não deve ser preenchida por inferência;
+- `resolved`: inconsistência efetivamente reconciliada com evidência suficiente.
+
+A interface normal deve traduzir isso para linguagem simples e nunca expor termos de implementação desnecessários.
 
 ## Gate para a nova interface
 
-A arquitetura v2 deve usar estas tabelas como fonte única e produzir contagens derivadas diretamente das coleções carregadas. Nenhuma tela pode manter um número fixo de referência para decidir se há ou não dados. Se uma consulta falhar, a tela deve mostrar erro/indisponibilidade; não deve renderizar `0` como substituto.
+A v2 deve derivar seu estado exclusivamente das tabelas dedicadas do LTS Health. Uma consulta que falha produz estado de indisponibilidade, nunca um zero falso. Dados pessoais usados nos gates de QA ficam no ambiente autenticado e não são copiados para este repositório público.
