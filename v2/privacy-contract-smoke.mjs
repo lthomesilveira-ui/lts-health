@@ -26,8 +26,14 @@ if(!dataScreen.includes('sensitiveQualityPattern'))throw new Error('sensitive qu
 if(!dataScreen.includes('sensitiveQuality(issue)'))throw new Error('sensitive quality sanitization is not applied');
 
 const sourceMetricProjection=dataLayer.match(/sourceMetrics:\(\)=>fetchAll\('health_source_daily_metrics','([^']+)'/)?.[1]||'';
-if(!sourceMetricProjection)throw new Error('source metrics backup projection missing');
-if(sourceMetricProjection.includes('source_payload'))throw new Error('raw source_payload entered structured backup');
-if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source metrics backup uses wildcard projection');
+if(!sourceMetricProjection)throw new Error('source metrics projection missing');
+if(sourceMetricProjection.includes('source_payload'))throw new Error('raw source_payload entered structured source metrics');
+if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source metrics use wildcard projection');
+if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality']"))throw new Error('source metrics provenance is not owned by the Data route');
+
+const provenance=dataScreen.match(/function provenanceOverview\(rows\)\{[\s\S]*?\n\}/)?.[0]||'';
+if(!provenance)throw new Error('safe provenance summary missing');
+if(/row\.value\b|source_payload|source_record_id/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
+for(const token of ['Proveniência das métricas','Candidatos permanecem separados das métricas canônicas','não são somadas à Timeline'])if(!dataScreen.includes(token))throw new Error(`provenance privacy guardrail missing: ${token}`);
 
 console.log('LTS Health privacy contract smoke passed');
