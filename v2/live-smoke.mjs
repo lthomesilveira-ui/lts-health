@@ -13,6 +13,31 @@ async function assertScreen(page,title,label){
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
 }
 
+async function assertMobileShell(page,label){
+  const layout=await page.evaluate(()=>{
+    const host=document.querySelector('#screenHost').getBoundingClientRect();
+    const nav=document.querySelector('#mobileNav').getBoundingClientRect();
+    const topbar=document.querySelector('.topbar').getBoundingClientRect();
+    const navPosition=getComputedStyle(document.querySelector('#mobileNav')).position;
+    const metrics=[...document.querySelectorAll('#screenHost>.grid.cols4 .card.metric')].slice(0,4).map(el=>el.getBoundingClientRect());
+    return {
+      hostBottom:host.bottom,
+      navTop:nav.top,
+      navPosition,
+      topbarHeight:topbar.height,
+      metricRects:metrics.map(r=>({top:r.top,width:r.width}))
+    };
+  });
+  if(layout.navPosition==='fixed')throw new Error(`${label}: deployed mobile nav still overlays content`);
+  if(layout.hostBottom>layout.navTop+1)throw new Error(`${label}: deployed mobile content overlaps navigation`);
+  if(layout.topbarHeight>62)throw new Error(`${label}: deployed mobile header is too tall (${Math.round(layout.topbarHeight)}px)`);
+  if(layout.metricRects.length===4){
+    const[a,b,c]=layout.metricRects;
+    if(Math.abs(a.top-b.top)>2||c.top<=a.top+2)throw new Error(`${label}: deployed Bio KPIs are not a compact 2x2 grid`);
+    if(a.width<130||b.width<130)throw new Error(`${label}: deployed Bio KPIs are too narrow`);
+  }
+}
+
 async function more(page,nav,route,title,label){
   await page.click(`${nav} [data-route="mais"]`);
   await page.waitForSelector('#moreSheet:not(.hidden)');
@@ -44,6 +69,7 @@ async function run(viewport,label){
 
   await assertScreen(page,'Bio',`${label}/bio`);
   if((await page.locator('[data-body-date]').count())<2)throw new Error(`${label}: Bio history missing`);
+  if(viewport.width<720)await assertMobileShell(page,label);
 
   await page.click(`${nav} [data-route="treinos"]`);
   await assertScreen(page,'Treinos',`${label}/treinos`);
