@@ -1,0 +1,37 @@
+name: LTS Health v2 Evolution Rhythm Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/evolution-screen.js'
+      - 'v2/evolution.css'
+      - 'v2/evolution-rhythm-smoke.mjs'
+      - '.github/workflows/evolution-rhythm-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evolution-rhythm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/evolution-screen.js
+          node --check v2/evolution-rhythm-smoke.mjs
+          grep -q 'Ritmo semanal de treinos' v2/src/evolution-screen.js
+          grep -q 'Atividade geral de outras fontes não entra nessa contagem' v2/src/evolution-screen.js
+          ! grep -R 'loadAll' v2/src v2/index.html
+          ! grep -R 'activateTab' v2/src v2/index.html
+          ! grep -R 'MutationObserver' v2/src v2/index.html
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Weekly rhythm desktop and mobile
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/evolution-rhythm-smoke.mjs
