@@ -5,6 +5,7 @@ on:
     paths:
       - 'v2/index.html'
       - 'v2/shell.css'
+      - 'v2/accessibility.css'
       - 'v2/src/core.js'
       - 'v2/src/data-layer.js'
       - 'v2/src/main.js'
@@ -29,6 +30,9 @@ jobs:
           grep -q "localStorage.setItem('lts-health-v2-route'" v2/src/main.js
           grep -q "routeFromLocation" v2/src/main.js
           grep -q "event.key!=='Escape'" v2/src/shell-accessibility.js
+          grep -q 'focus-visible' v2/accessibility.css
+          grep -q 'prefers-reduced-motion:reduce' v2/accessibility.css
+          grep -q './accessibility.css' v2/index.html
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
