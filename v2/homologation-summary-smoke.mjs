@@ -17,9 +17,9 @@ async function run(viewport,label){
   if(!text.includes('2 medição(ões) no histórico carregado'))throw new Error(`${label}: body history count missing from latest summary`);
 
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
+  await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.ui.trainingPeriod='all';});
   await page.click(`${nav} [data-route="treinos"]`);
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
-  text=(await page.textContent('#screenHost'))||'';
   const latest=page.locator('.session.latest .sessionHead').first();
   if(await latest.count()!==1)throw new Error(`${label}: latest workout marker missing`);
   const latestText=(await latest.textContent())||'';
@@ -31,6 +31,7 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.domainStatus.exercises='error';
     state.domainStatus.sets='error';
+    state.ui.trainingPeriod='all';
   });
   await page.click(`${nav} [data-route="bio"]`);
   await page.click(`${nav} [data-route="treinos"]`);
