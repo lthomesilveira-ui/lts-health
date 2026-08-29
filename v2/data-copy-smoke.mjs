@@ -26,15 +26,25 @@ async function run(viewport,label){
     ];
   });
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
-  await page.click(`${nav} [data-route="bio"]`);
-  await page.click(`${nav} [data-route="mais"]`);
-  await page.waitForSelector('#moreSheet:not(.hidden)');
-  await page.click('#moreSheet [data-route="dados"]');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  const rerenderData=async()=>{
+    await page.click(`${nav} [data-route="bio"]`);
+    await page.click(`${nav} [data-route="mais"]`);
+    await page.waitForSelector('#moreSheet:not(.hidden)');
+    await page.click('#moreSheet [data-route="dados"]');
+    await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  };
+  await rerenderData();
   let text=(await page.textContent('#screenHost'))||'';
   for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
+  const sourceCards=await page.locator('.sourceStatus').allTextContents();
+  const sourceCard=name=>sourceCards.find(card=>card.includes(name))||'';
+  if(!sourceCard('Apple Saúde').includes('processando')||sourceCard('Apple Saúde').includes('com dados'))throw new Error(`${label}: Apple upload was falsely presented as structured data`);
+  if(!sourceCard('MyFitnessPal').includes('arquivo recebido')||sourceCard('MyFitnessPal').includes('com dados'))throw new Error(`${label}: MyFitnessPal file was falsely presented as structured data`);
+  if(!sourceCard('Fleury').includes('precisa de atenção')||sourceCard('Fleury').includes('com dados'))throw new Error(`${label}: Fleury review upload was falsely presented as structured data`);
+  if(!sourceCard('Einstein').includes('a importar'))throw new Error(`${label}: missing Einstein empty source state`);
+
   const overview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
   if(overview.join('|')!=='1|1|2|0')throw new Error(`${label}: unexpected processing overview ${overview.join('|')}`);
   const qualityOverview=await page.locator('.card:has-text("Qualidade dos dados") > .sourceGrid .sourceCard span').allTextContents();
@@ -52,12 +62,25 @@ async function run(viewport,label){
   text=(await page.textContent('.card:has-text("Arquivos recebidos")'))||'';
   if(!text.includes('Fleury · revisão necessária')||text.includes('Outra origem · não processado'))throw new Error(`${label}: source filter failed`);
 
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.ui.dataUploadStatus='all';state.ui.dataUploadSource='all';
+    state.data.uploads=state.data.uploads.map(u=>u.source_type==='apple_health'?{...u,status:'imported'}:u);
+    state.data.metrics=[{source_record_id:'apple-steps-only',measured_at:'2026-02-04T12:00:00Z',metric_type:'steps',value:1000,unit:'count',source:'Apple Health'}];
+  });
+  await rerenderData();
+  let appleCard=(await page.locator('.sourceStatus').filter({hasText:'Apple Saúde'}).textContent())||'';
+  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: unsupported Apple steps incorrectly proved stable Apple data`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'});
+  });
+  await rerenderData();
+  appleCard=(await page.locator('.sourceStatus').filter({hasText:'Apple Saúde'}).textContent())||'';
+  if(!appleCard.includes('com dados'))throw new Error(`${label}: supported Apple metric did not prove stable Apple data`);
+
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
-  await page.click(`${nav} [data-route="bio"]`);
-  await page.click(`${nav} [data-route="mais"]`);
-  await page.waitForSelector('#moreSheet:not(.hidden)');
-  await page.click('#moreSheet [data-route="dados"]');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await rerenderData();
   text=(await page.textContent('#screenHost'))||'';
   const failedOverview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
   if(failedOverview.join('|')!=='—|—|—|—')throw new Error(`${label}: unloaded uploads rendered numeric counts ${failedOverview.join('|')}`);
