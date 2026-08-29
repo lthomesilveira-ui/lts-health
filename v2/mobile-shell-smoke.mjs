@@ -14,13 +14,17 @@ const layout=await page.evaluate(()=>{
   const app=document.querySelector('#app').getBoundingClientRect();
   const host=document.querySelector('#screenHost').getBoundingClientRect();
   const nav=document.querySelector('#mobileNav').getBoundingClientRect();
+  const topbar=document.querySelector('.topbar').getBoundingClientRect();
   const style=getComputedStyle(document.querySelector('#mobileNav'));
+  const metrics=[...document.querySelectorAll('#screenHost>.grid.cols4 .card.metric')].slice(0,4).map(el=>el.getBoundingClientRect());
   return {
     appTop:app.top,appBottom:app.bottom,
     hostTop:host.top,hostBottom:host.bottom,
     navTop:nav.top,navBottom:nav.bottom,
+    topbarHeight:topbar.height,
     navPosition:style.position,
-    overflow:document.documentElement.scrollWidth-window.innerWidth
+    overflow:document.documentElement.scrollWidth-window.innerWidth,
+    metricRects:metrics.map(r=>({top:r.top,left:r.left,width:r.width,height:r.height}))
   };
 });
 
@@ -28,6 +32,13 @@ if(layout.navPosition==='fixed')throw new Error('mobile nav still overlays the s
 if(layout.hostBottom>layout.navTop+1)throw new Error(`mobile content overlaps nav by ${Math.round(layout.hostBottom-layout.navTop)}px`);
 if(layout.navBottom>layout.appBottom+1)throw new Error('mobile nav exceeds app viewport');
 if(layout.overflow>3)throw new Error(`horizontal overflow ${layout.overflow}px`);
+if(layout.topbarHeight>62)throw new Error(`mobile header is too tall: ${Math.round(layout.topbarHeight)}px`);
+if(layout.metricRects.length===4){
+  const [a,b,c]=layout.metricRects;
+  if(Math.abs(a.top-b.top)>2)throw new Error('first two Bio metrics are not on the same mobile row');
+  if(c.top<=a.top+2)throw new Error('Bio metrics did not form a compact 2x2 mobile grid');
+  if(a.width<130||b.width<130)throw new Error('Bio metric cards became too narrow on mobile');
+}
 
 await page.evaluate(()=>{const host=document.querySelector('#screenHost');host.scrollTop=host.scrollHeight;});
 await page.waitForTimeout(100);
