@@ -56,7 +56,7 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
     }
 
     private func requestAuthorization() async throws {
-        try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             healthStore.requestAuthorization(toShare: [], read: readTypes) { success, error in
                 if let error { continuation.resume(throwing: error) }
                 else if success { continuation.resume(returning: ()) }
@@ -67,7 +67,7 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
 
     private func enableBackgroundDelivery() async throws {
         for type in triggerTypes {
-            try await withCheckedThrowingContinuation { continuation in
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 healthStore.enableBackgroundDelivery(for: type, frequency: .hourly) { success, error in
                     if let error { continuation.resume(throwing: error) }
                     else if success { continuation.resume(returning: ()) }
