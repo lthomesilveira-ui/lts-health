@@ -29,6 +29,12 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
 
+  const parserRouting=await page.evaluate(async()=>{
+    const {inspectFunctionForSource}=await import('./src/core.js');
+    return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal')};
+  });
+  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload')throw new Error(`${label}: deployed source-specific inspector routing is incorrect`);
+
   await assertScreen(page,'Bio',`${label}/bio`);
   if((await page.locator('[data-body-date]').count())<2)throw new Error(`${label}: Bio history missing`);
 
@@ -47,12 +53,15 @@ async function run(viewport,label){
   await assertScreen(page,'Análise',`${label}/analise`);
 
   await more(page,nav,'hoje','Hoje',`${label}/hoje`);
+  const today=(await page.textContent('#screenHost'))||'';
+  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed Apple metric ${text}`);
+
   await more(page,nav,'timeline','Timeline',`${label}/timeline`);
   await more(page,nav,'saude','Saúde & exames',`${label}/saude`);
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
-  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado'))throw new Error(`${label}: Data import capabilities missing`);
+  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado')||!data.includes('fonte única'))throw new Error(`${label}: Data import capabilities or overlap guard missing`);
   await more(page,nav,'tratamentos','Tratamentos',`${label}/tratamentos`);
   const treatment=(await page.textContent('#screenHost'))||'';
   if(treatment.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error(`${label}: treatment screen exposed operational guidance`);
