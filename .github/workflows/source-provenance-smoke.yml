@@ -1,0 +1,28 @@
+name: LTS Health source provenance smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-layer.js'
+      - 'v2/src/data-screen.js'
+      - 'v2/source-provenance-smoke.mjs'
+      - '.github/workflows/source-provenance-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser test runtime
+        run: npm install --no-save playwright@1.55.0 && npx playwright install --with-deps chromium
+      - name: Start fixture server
+        run: |
+          cd v2
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-provenance-server.log 2>&1 &
+      - name: Source provenance interactions
+        run: node v2/source-provenance-smoke.mjs
