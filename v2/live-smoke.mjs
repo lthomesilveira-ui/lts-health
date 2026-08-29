@@ -103,7 +103,8 @@ async function run(viewport,label){
 
   await more(page,nav,'hoje','Hoje',`${label}/hoje`);
   const today=(await page.textContent('#screenHost'))||'';
-  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm','Contexto recente','peso +1,0 kg','1 tipo(s) de métrica em 02/02/2026'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed fact ${text}`);
+  for(const text of ['Passos','FC de repouso','7.200 passos','61 bpm','Contexto recente','peso +1,0 kg','tipo(s) de métrica','02/02/2026'])if(!today.includes(text))throw new Error(`${label}: Today missing deployed fact ${text}`);
+  if(/Métricas\s*0 tipo\(s\) de métrica/.test(today))throw new Error(`${label}: Today rendered metric context as zero`);
 
   await more(page,nav,'timeline','Timeline',`${label}/timeline`);
   await page.evaluate(async()=>{
@@ -122,22 +123,20 @@ async function run(viewport,label){
   await more(page,nav,'dados','Dados',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
   for(const text of [
-    'Leitura automática parcial',
-    'Leitura automática de nutrição',
+    'Sincronização automática parcial',
+    'Apple Saúde candidato + arquivo',
     'Arquivo preservado + revisão',
-    'energia ativa',
-    'minutos de exercício',
-    'horas em pé',
-    'duração do sono',
-    'Passos e FC de repouso não são importados automaticamente por este fluxo',
-    'só aparecem quando já existem como registros válidos de outra origem',
+    'Automático canônico: energia ativa, minutos de exercício e horas em pé',
+    'Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos',
+    'Sono permanece fora da sincronização automática',
+    'Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde',
     'Resultados só são estruturados quando a leitura for validada',
     'valor, unidade ou faixa ambíguos ficam para revisão',
     'Exportar backup',
     'Apple Saúde · recebido',
     'Arquivo original ainda não disponível'
   ])if(!data.includes(text))throw new Error(`${label}: Data import, quality copy or backup capability missing: ${text}`);
-  if(data.includes('Passos e FC de repouso só entram em dias sem conflito de fontes')||data.includes('CSV estruturado + documento preservado')||data.includes('metadata_only')||data.includes('DOC_TECHNICAL_NAME'))throw new Error(`${label}: stale or technical ingestion/quality copy visible`);
+  for(const stale of ['Passos e FC de repouso não são importados automaticamente por este fluxo','A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono','Leitura automática de nutrição','metadata_only','DOC_TECHNICAL_NAME'])if(data.includes(stale))throw new Error(`${label}: stale or technical ingestion/quality copy visible: ${stale}`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
