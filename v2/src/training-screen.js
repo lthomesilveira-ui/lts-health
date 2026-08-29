@@ -31,7 +31,7 @@ function sessionTelemetry(workout){
   return `<div class="trainingTelemetry">${items.join('')}</div>`;
 }
 
-function sessionCard(workout){
+function sessionCard(workout,isLatest=false){
   const exerciseUnavailable=failed('exercises');
   const setUnavailable=failed('sets');
   const exercises=exerciseUnavailable?[]:exercisesFor(workout);
@@ -45,7 +45,9 @@ function sessionCard(workout){
     ? 'detalhes indisponíveis'
     : `${exercises.length} exercício(s) · ${setCount==null?'séries indisponíveis':`${setCount} série(s)`}`;
   const source=workout.source?`<div class="trainingSource">Origem: ${esc(workout.source)}</div>`:'';
-  return `<article class="session ${open?'open':''}"><button class="sessionHead" data-workout="${esc(workout.source_record_id)}"><time>${fmtDate(workout.workout_date)}</time><div><b>${esc(workout.workout_type||'Treino')}</b><small>${esc(workout.location||'Local não informado')} · ${counts}</small></div>${pill(partial?'incompleto':'registrado',partial?'warn':'ok')}</button><div class="sessionBody">${partial?'<div class="note warn">Há campos faltando neste treino. Eles permanecem em branco.</div>':''}${sessionTelemetry(workout)}${source}${detail}</div></article>`;
+  const status=partial?'incompleto':isLatest?'mais recente':'registrado';
+  const statusKind=partial?'warn':isLatest?'accent':'ok';
+  return `<article class="session ${open?'open':''} ${isLatest?'latest':''}"><button class="sessionHead" data-workout="${esc(workout.source_record_id)}" aria-expanded="${open?'true':'false'}"><time>${fmtDate(workout.workout_date)}</time><div><b>${esc(workout.workout_type||'Treino')}</b><small>${esc(workout.location||'Local não informado')} · ${counts}</small></div>${pill(status,statusKind)}</button><div class="sessionBody">${partial?'<div class="note warn">Há campos faltando neste treino. Eles permanecem em branco.</div>':''}${sessionTelemetry(workout)}${source}${detail}</div></article>`;
 }
 
 function trainingCalendar(rows){
@@ -170,12 +172,12 @@ function sessionComparison(group){
     const change=delta==null?'sem comparação direta':`diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${displayUnit(unit)}`;
     return `<div class="trainingComparisonRow"><b>${esc(displayUnit(unit))}</b><span>${esc(av)}</span><span>${esc(bv)}</span><small>${esc(change)}</small></div>`;
   }).join('');
-  return `<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div><p class="footerNote">A comparação descreve somente o que foi registrado. Não estima esforço, repetição máxima ou equivalência entre máquinas.</p></section>`;
+  return `<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div></section>`;
 }
 
 function exerciseSessionTrend(group){
   if(failed('exercises'))return domainError('O histórico de exercícios não pôde ser carregado.');
-  if(failed('sets'))return domainError('As séries necessárias para mostrar as sessões recentes não puderam ser carregadas.');
+  if(failed('sets'))return domainError('As séries necessárias para resumir as sessões não puderam ser carregadas.');
   if(!group)return empty('Selecione um exercício.');
   const dates=unique(group.rows.map(r=>day(r.workout_date))).filter(Boolean).sort().reverse().slice(0,8);
   if(!dates.length)return empty('Sem sessões estruturadas para este exercício.');
@@ -244,7 +246,7 @@ export function renderTrainingScreen(){
       <div class="card"><div class="cardHead"><div><b>Ritmo semanal</b><small>Sessões estruturadas por semana, sem inferir atividade nos dias sem registro.</small></div></div>${trainingRhythm(periodRows)}</div>
     </div>
     <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map(sessionCard).join('')||empty('Nenhum treino encontrado.')}</div></div>
+      <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map((workout,index)=>sessionCard(workout,index===0)).join('')||empty('Nenhum treino encontrado.')}</div></div>
       <div class="stack">
         <div class="card"><div class="cardHead"><div><b>Séries por grupo</b><small>Contagem no período selecionado.</small></div></div><div class="barList">${volumeHtml}</div></div>
         <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico, sessões recentes, comparação e maior carga registrada, mantendo máquina e unidade separadas.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício ou máquina" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${g.machine?`${esc(g.machine)} · `:''}${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
