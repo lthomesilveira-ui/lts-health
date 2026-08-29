@@ -19,11 +19,11 @@ async function run(viewport,label){
   }
   const metricGrid=page.locator('.todayMetricGrid').first();
   let metrics=(await metricGrid.textContent())||'';
-  for(const expected of ['Energia ativa','Exercício','Horas em pé','Sono'])if(!metrics.includes(expected))throw new Error(`${label}: missing validated Apple metric ${expected}`);
-  for(const forbidden of ['Passos','FC de repouso'])if(metrics.includes(forbidden))throw new Error(`${label}: unsupported automatic Apple metric leaked into Today: ${forbidden}`);
+  for(const expected of ['Energia ativa','Exercício','Horas em pé','Sono'])if(!metrics.includes(expected))throw new Error(`${label}: missing available metric display ${expected}`);
+  for(const forbidden of ['Passos','FC de repouso'])if(metrics.includes(forbidden))throw new Error(`${label}: candidate-only metric leaked into canonical Today metric grid: ${forbidden}`);
   if(!metrics.includes('Último disponível em 02/02/2026'))throw new Error(`${label}: stale fixture metrics are not identified as latest available`);
   const sectionCopy=(await metricGrid.locator('xpath=..').textContent())||'';
-  if(!sectionCopy.includes('energia ativa, minutos de exercício, horas em pé e duração do sono'))throw new Error(`${label}: validated Apple metric scope is not explicit`);
+  if(!sectionCopy.includes('energia ativa, minutos de exercício, horas em pé e duração do sono'))throw new Error(`${label}: available Today metric display scope is not explicit`);
   if(!sectionCopy.includes('indica se o dado é de hoje ou apenas o último disponível'))throw new Error(`${label}: Today freshness rule is not explicit`);
   if(!text.includes('sem transformar coincidências em causa ou meta'))throw new Error(`${label}: recent-context limitation is not explicit`);
   const summaryText=(await page.locator('.todaySummaryGrid').textContent())||'';
@@ -55,7 +55,7 @@ async function run(viewport,label){
   await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
   let sourceText=(await page.locator('.quickList').textContent())||'';
-  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Arquivo recebido; dados ainda não confirmados'))throw new Error(`${label}: Apple file-only state is not explicit in Today`);
+  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Arquivo recebido; dados ainda não confirmados'))throw new Error(`${label}: Apple file/candidate-only state is not explicit in Today`);
   if(sourceText.includes('As fontes principais têm dados estruturados confirmados.'))throw new Error(`${label}: Apple steps/file-only state was falsely marked ready`);
 
   await page.evaluate(async()=>{
@@ -67,7 +67,18 @@ async function run(viewport,label){
   await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
   sourceText=(await page.locator('.quickList').textContent())||'';
-  if(sourceText.includes('Apple Saúde'))throw new Error(`${label}: validated Apple sleep still appears as pending in Today`);
+  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Arquivo recebido; dados ainda não confirmados'))throw new Error(`${label}: sleep incorrectly proved automatic Apple source readiness`);
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'}];
+    location.hash='bio';
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.evaluate(()=>{location.hash='hoje';});
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  sourceText=(await page.locator('.quickList').textContent())||'';
+  if(sourceText.includes('Apple Saúde'))throw new Error(`${label}: canonical Apple source still appears pending in Today`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
