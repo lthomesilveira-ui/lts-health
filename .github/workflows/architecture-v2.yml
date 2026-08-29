@@ -71,7 +71,8 @@ jobs:
           ! grep -q "health-inspect-upload-v2" v2/src/core.js
           ! grep -q "health-inspect-lab" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
-          grep -q "stableAppleMetricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'\])" v2/src/source-status.js
+          grep -q "stableAppleMetricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours'\])" v2/src/source-status.js
+          grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
@@ -91,8 +92,10 @@ jobs:
           grep -q "downloadStructuredBackup" v2/src/data-layer.js
           grep -q "downloadStructuredBackup" v2/src/main.js
           grep -q "backupExportBtn" v2/src/data-screen.js
-          grep -q "energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
-          grep -q "Passos e FC de repouso não são importados automaticamente por este fluxo" v2/src/data-screen.js
+          grep -q "Automático canônico: energia ativa, minutos de exercício e horas em pé" v2/src/data-screen.js
+          grep -q "Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos" v2/src/data-screen.js
+          grep -q "Sono permanece fora da sincronização automática" v2/src/data-screen.js
+          grep -q "Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde" v2/src/data-screen.js
           grep -q "Arquivo preservado + revisão" v2/src/data-screen.js
           grep -q "Resultados só são estruturados quando a leitura for validada" v2/src/data-screen.js
           grep -q "sourceStatusFor('apple_health')" v2/src/data-screen.js
@@ -121,7 +124,7 @@ jobs:
           grep -q "evidenceByDate" v2/src/health-screen.js
           grep -q "Coincidência de data não demonstra causa" v2/src/health-screen.js
           grep -q "não verificado" v2/src/data-screen.js
-          grep -q "Leitura automática parcial" v2/src/data-screen.js
+          grep -q "Sincronização automática parcial" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
           grep -q "const metricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'\])" v2/src/today-screen.js
           grep -q "sourceStatusFor('apple_health')" v2/src/today-screen.js
