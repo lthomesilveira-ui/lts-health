@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>LTS Health Sync</string>
+  <key>CFBundleName</key>
+  <string>LTS Health Sync</string>
+  <key>CFBundleIdentifier</key>
+  <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  <key>CFBundleVersion</key>
+  <string>$(CURRENT_PROJECT_VERSION)</string>
+  <key>CFBundleShortVersionString</key>
+  <string>$(MARKETING_VERSION)</string>
+  <key>UILaunchScreen</key>
+  <dict/>
+  <key>NSHealthShareUsageDescription</key>
+  <string>O LTS Health Sync lê seus resumos de atividade para atualizar automaticamente o seu histórico no LTS Health.</string>
+</dict>
+</plist>
