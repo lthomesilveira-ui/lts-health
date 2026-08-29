@@ -54,8 +54,16 @@ async function run(viewport,label){
   await page.waitForSelector('.session.open .sessionBody');
   const trainingText=await page.textContent('#screenHost');
   if(!trainingText.includes('Supino máquina')||!trainingText.includes('90 kg')) throw new Error(`${label}: workout drilldown did not render`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.exercises=[...(state.data.exercises||[]),{source_record_id:'ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',order_index:4,exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito',source:'Fixture de interface'}];
+    state.data.sets=[...(state.data.sets||[]),{source_record_id:'set-progression',exercise_source_record_id:'ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',set_index:1,phase:'working',weight:70,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'}];
+  });
   await page.fill('#exerciseQuery','supino');
   await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length===1);
+  await page.waitForSelector('.exerciseProgressUnit svg');
+  const progression=(await page.locator('.exerciseProgression').textContent())||'';
+  if(!progression.includes('70 → 90 kg')||!progression.includes('Não estima repetição máxima'))throw new Error(`${label}: unit-safe exercise progression did not render`);
   await page.click('#routeAction');
   await page.waitForSelector('#entryModal:not(.hidden) #workoutEntryForm');
   await page.click('[data-add-exercise]');
