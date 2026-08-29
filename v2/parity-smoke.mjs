@@ -25,7 +25,7 @@ for(const [viewport,label] of [[{width:1280,height:900},'desktop'],[{width:390,h
   if((await page.locator('[data-segmental-date]').count())<2)throw new Error(`${label}: segmental history incomplete`);
   if((await page.locator('.evolutionChangeTable .changeRow').count())<2)throw new Error(`${label}: body-to-body change history missing`);
   const evolution=await page.textContent('#screenHost');
-  for(const expected of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições','Treinos por semana'])if(!evolution.includes(expected))throw new Error(`${label}: evolution surface missing: ${expected}`);
+  for(const expected of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições','Ritmo semanal de treinos'])if(!evolution.includes(expected))throw new Error(`${label}: evolution surface missing: ${expected}`);
   if(evolution.match(/\b(recomp|bulk|cut|ideal)\b/i))throw new Error(`${label}: evolution contains qualitative body classification`);
 
   await page.click(`${nav} [data-route="analise"]`);await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
