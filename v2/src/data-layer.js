@@ -47,6 +47,11 @@ const loaders={
   metrics:()=>fetchAll('health_metrics','source_record_id,measured_at,metric_type,value,unit,source,source_file,confidence,notes','measured_at',false)
 };
 
+const backupOnlyLoaders={
+  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file,source_payload','metric_date',false)
+};
+const backupLoaders={...loaders,...backupOnlyLoaders};
+
 function setFixture(){
   state.data=fixtureData();state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
@@ -107,9 +112,9 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data=fixtureData();
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:[]};
   else{
-    const entries=Object.entries(loaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
+    const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
     if(failures.length){
       const error=new Error(`backup_incomplete:${failures.map(f=>f.domain).join(',')}`);
@@ -119,7 +124,7 @@ export async function buildStructuredBackup(onProgress=()=>{}){
     data=Object.fromEntries(results.map((result,index)=>[entries[index][0],result.value]));
   }
   const counts=Object.fromEntries(Object.entries(data).map(([key,rows])=>[key,Array.isArray(rows)?rows.length:0]));
-  const domains=Object.keys(loaders),missingDomains=domains.filter(key=>!Object.hasOwn(data,key));
+  const domains=Object.keys(backupLoaders),missingDomains=domains.filter(key=>!Object.hasOwn(data,key));
   if(missingDomains.length){const error=new Error(`backup_incomplete:${missingDomains.join(',')}`);error.domains=missingDomains;onProgress('Backup não criado');throw error;}
   const backup={
     format:'lts-health-structured-backup',
@@ -137,6 +142,7 @@ export async function buildStructuredBackup(onProgress=()=>{}){
     notes:[
       'Backup estruturado completo dos domínios suportados e acessíveis à sessão atual no momento da exportação.',
       'O campo complete se refere somente ao escopo structured_records_only; não significa cópia dos arquivos privados originais.',
+      'Métricas por origem são preservadas separadamente em sourceMetrics para manter proveniência e candidatos ainda não promovidos a métricas canônicas.',
       'Se qualquer domínio falhar durante a leitura, nenhum arquivo de backup é baixado.',
       'Arquivos originais armazenados na área privada não são incorporados neste JSON.',
       'Credenciais, tokens e segredos de autenticação não são exportados.',
