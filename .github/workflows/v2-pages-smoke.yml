@@ -46,7 +46,9 @@ jobs:
           ! grep -q "health-inspect-upload-v2" "$TMP/core.js"
           ! grep -q "health-inspect-lab" "$TMP/core.js"
           grep -q 'resting_heart_rate_bpm' "$TMP/today.js"
-          grep -q 'Passos e FC de repouso não são importados automaticamente por este fluxo' "$TMP/data.js"
+          grep -q 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
+          grep -q 'Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos' "$TMP/data.js"
+          grep -q 'Sono permanece fora da sincronização automática' "$TMP/data.js"
           grep -q 'Arquivo preservado + revisão' "$TMP/data.js"
       - name: Install deployed-browser runtime
         run: |
