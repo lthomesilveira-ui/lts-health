@@ -45,10 +45,12 @@ function area(label,key){return[label,failed(key)?'—':String((state.data[key]|
 
 const sourceLabels={apple_health:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',fleury:'Fleury',einstein:'Einstein',lab:'Exame laboratorial',other:'Outra origem'};
 const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'revisão necessária',rejected:'não processado',failed:'falha no processamento'};
-const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão'};
+const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
+const sensitiveQualityPattern=/(^|_)(dose|dosage|frequency|injection|application|aplicacao|medication|medicacao|treatment|tratamento)(_|$)/i;
 function sourceLabel(value){return sourceLabels[value]||String(value||'Origem não informada').replaceAll('_',' ');}
 function uploadStatus(value){return uploadStatusLabels[value]||String(value||'status não informado').replaceAll('_',' ');}
-function issueTitle(issue){return issueCategoryLabels[issue?.category]||issue?.entity_name||'Revisão de qualidade';}
+function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name].some(value=>sensitiveQualityPattern.test(norm(value).replaceAll(' ','_')));}
+function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||issue?.entity_name||'Revisão de qualidade';}
 
 function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguarda leitura',review_required:'revisão necessária',failed:'falha no processamento'})[status]||String(status||'sem detalhe').replaceAll('_',' ');}
 function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
@@ -84,7 +86,7 @@ function nextStep(uploads,actionIssues){
 }
 
 function qualityRow(issue,mode){
-  const detail=mode==='accepted'?(issue.resolution_notes||issue.description||'Limitação conhecida.'):(issue.description||'Revisão necessária.');
+  const detail=sensitiveQuality(issue)?'Registro histórico preservado sem detalhe operacional nesta tela.':mode==='accepted'?(issue.resolution_notes||issue.description||'Limitação conhecida.'):(issue.description||'Revisão necessária.');
   return `<div class="row"><div style="grid-column:1/3"><b>${esc(issueTitle(issue))}</b><small>${esc(detail)}</small></div></div>`;
 }
 function qualityOverview(all){
