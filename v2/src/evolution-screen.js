@@ -50,7 +50,7 @@ function sideDifferences(current){
   </div></div>`;
 }
 
-function segmentComparison(current,previous){
+function segmentComparison(current,baseline){
   if(failed('segmental'))return unavailable('As medições segmentares não carregaram agora.');
   if(!current)return empty('Ainda não há análise segmentar estruturada.');
   const leanRows=[['Braço D','lean_right_arm_kg'],['Braço E','lean_left_arm_kg'],['Tronco','lean_trunk_kg'],['Perna D','lean_right_leg_kg'],['Perna E','lean_left_leg_kg']];
@@ -68,7 +68,7 @@ function segmentComparison(current,previous){
     </div></section>
   </div>
   ${sideDifferences(current)}
-  ${previous?`<div class="segmentDeltaGroup"><div><b>Mudança de massa magra desde ${fmtDate(previous.measured_at)}</b><div class="segmentDelta">${leanRows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],previous[key],2,'kg')}</span>`).join('')}</div></div><div><b>Mudança de gordura segmentar desde ${fmtDate(previous.measured_at)}</b><div class="segmentDelta">${fatRows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],previous[key],2,'kg')}</span>`).join('')}</div></div></div>`:''}`;
+  ${baseline?`<div class="segmentDeltaGroup"><div class="segmentDeltaTitle"><b>Diferença entre ${fmtDate(baseline.measured_at)} e ${fmtDate(current.measured_at)}</b><small>Valor da data selecionada menos o valor da data de comparação.</small></div><div><b>Massa magra</b><div class="segmentDelta">${leanRows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],baseline[key],2,'kg')}</span>`).join('')}</div></div><div><b>Gordura segmentar</b><div class="segmentDelta">${fatRows.map(([label,key])=>`<span>${esc(label)} ${neutralDelta(current[key],baseline[key],2,'kg')}</span>`).join('')}</div></div></div>`:''}`;
 }
 
 function bodyChangeTable(rows){
@@ -80,12 +80,23 @@ function bodyChangeTable(rows){
   </div>`;
 }
 
+function segmentCompareControl(segmental,current){
+  const alternatives=segmental.filter(s=>s.measured_at!==current?.measured_at);
+  if(!current||!alternatives.length)return'';
+  return `<label class="segmentCompareControl"><span>Comparar com</span><select id="segmentalCompareDate">${alternatives.map(s=>`<option value="${esc(s.measured_at)}">${fmtDate(s.measured_at)}</option>`).join('')}</select></label>`;
+}
+
 export function renderEvolutionHub(){
   const bodyFailed=failed('body'),segFailed=failed('segmental'),workoutFailed=failed('workouts');
   const body=bodyFailed?[]:bodyRows(),workouts=workoutFailed?[]:workoutRows(),segmental=segFailed?[]:[...(state.data.segmental||[])].sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
   const first=body[0],last=body.at(-1),metricKey=state.ui.evolutionMetric||'weight_kg',meta=metrics[metricKey]||metrics.weight_kg;
   if(!state.ui.segmentalDate||!segmental.some(s=>s.measured_at===state.ui.segmentalDate))state.ui.segmentalDate=segmental.at(-1)?.measured_at||null;
-  const currentSeg=segmental.find(s=>s.measured_at===state.ui.segmentalDate),idx=segmental.findIndex(s=>s.measured_at===state.ui.segmentalDate),previousSeg=idx>0?segmental[idx-1]:null;
+  const currentSeg=segmental.find(s=>s.measured_at===state.ui.segmentalDate),idx=segmental.findIndex(s=>s.measured_at===state.ui.segmentalDate);
+  const compareChoices=segmental.filter(s=>s.measured_at!==state.ui.segmentalDate);
+  if(!state.ui.segmentalCompareDate||!compareChoices.some(s=>s.measured_at===state.ui.segmentalCompareDate)){
+    state.ui.segmentalCompareDate=(idx>0?segmental[idx-1]:compareChoices.at(-1))?.measured_at||null;
+  }
+  const compareSeg=segmental.find(s=>s.measured_at===state.ui.segmentalCompareDate)||null;
   const weeks=weeklyCounts(),maxWeek=Math.max(1,...weeks.map(w=>w.count)),failures=[bodyFailed?'composição corporal':null,segFailed?'análise segmentar':null,workoutFailed?'treinos':null].filter(Boolean);
   return `${title('Evolução','Composição corporal, análise segmentar e ritmo de treinos ao longo do tempo.')}
     ${failures.length?`<div class="errorState"><b>Parte da evolução está indisponível agora.</b><span>Não foi possível carregar: ${esc(failures.join(', '))}. O restante continua visível.</span></div>`:''}
@@ -98,7 +109,7 @@ export function renderEvolutionHub(){
     <div class="card sectionGap"><div class="cardHead"><div><b>Composição corporal</b><small>Escolha uma medida para acompanhar. O gráfico é descritivo.</small></div><div class="segmented">${Object.entries(metrics).map(([key,m])=>`<button type="button" data-evolution-metric="${key}" class="${key===metricKey?'active':''}" ${bodyFailed?'disabled':''}>${esc(m.label)}${key==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):lineChart(body,metricKey,`${meta.label} (${meta.unit})`)}${!bodyFailed&&first&&last?`<div class="evoDelta"><span>Primeiro ${fmtNum(first[metricKey])} ${esc(meta.unit)}</span><b>Diferença ${neutralDelta(last[metricKey],first[metricKey],1,meta.unit)}</b><span>Último ${fmtNum(last[metricKey])} ${esc(meta.unit)}</span></div>`:''}</div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Mudança entre medições</b><small>Últimas mudanças consecutivas registradas. Sem classificação de melhor ou pior.</small></div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):bodyChangeTable(body)}</div>
     <div class="grid cols2 sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Análise segmentar</b><small>Escolha uma das medições disponíveis.</small></div><div class="segmented compactSeg">${segFailed?'':segmental.map(s=>`<button type="button" data-segmental-date="${esc(s.measured_at)}" class="${s.measured_at===state.ui.segmentalDate?'active':''}">${fmtDate(s.measured_at)}</button>`).join('')}</div></div>${segmentComparison(currentSeg,previousSeg)}<p class="footerNote">Diferenças entre datas e lados são descritivas; o app não atribui julgamento estético nem meta a esses valores.</p></div>
+      <div class="card"><div class="cardHead segmentalHead"><div><b>Análise segmentar</b><small>Escolha a medição principal e compare livremente com outra data disponível.</small></div>${segmentCompareControl(segmental,currentSeg)}</div><div class="segmented compactSeg segmentalDates">${segFailed?'':segmental.map(s=>`<button type="button" data-segmental-date="${esc(s.measured_at)}" class="${s.measured_at===state.ui.segmentalDate?'active':''}">${fmtDate(s.measured_at)}</button>`).join('')}</div>${segmentComparison(currentSeg,compareSeg)}<p class="footerNote">Diferenças entre datas e lados são descritivas; o app não atribui julgamento estético nem meta a esses valores.</p></div>
       <div class="card"><div class="cardHead"><div><b>Treinos por semana</b><small>Frequência registrada nas últimas 12 semanas.</small></div></div>${workoutFailed?unavailable('Os treinos não carregaram; a frequência semanal não pode ser calculada agora.'):`<div class="weekBars detailed">${weeks.map(w=>`<div><i style="height:${Math.max(4,w.count/maxWeek*100)}%"></i><b>${w.count}</b><span>${esc(w.label)}</span></div>`).join('')}</div>`}</div>
     </div>`;
 }
