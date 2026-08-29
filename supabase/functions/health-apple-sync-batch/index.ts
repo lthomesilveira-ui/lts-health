@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import md5 from 'https://esm.sh/blueimp-md5@2.19.0';
 
 const cors={
   'Access-Control-Allow-Origin':'*',
@@ -8,15 +9,26 @@ const cors={
 const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json'}});
 const allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg']);
 const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
+const historicalExportFamilies=new Set(['apple_watch','iphone','polar_flow']);
+const maxRequestBytes=1_000_000;
+const maxSourcePayloadBytes=8_192;
 function day(v:unknown){const s=String(v||'');return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:null}
 function n(v:unknown){const x=Number(v);return Number.isFinite(x)&&x>=0?x:null}
 function clean(v:unknown,max=160){const s=String(v||'').trim();return s?s.slice(0,max):null}
+function sourceId(sourceFamily:string,metric:string,d:string,sourceName:string){
+  if(sourceFamily==='apple_activity_summary')return `activity_summary:${metric}:${d}`;
+  if(historicalExportFamilies.has(sourceFamily))return `apple_export:${sourceFamily}:${metric}:${d}:${md5(sourceName)}`;
+  return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,sourceName])}`;
+}
+function payloadSize(value:unknown){try{return new TextEncoder().encode(JSON.stringify(value??{})).length}catch{return Infinity}}
 
 Deno.serve(async(req:Request)=>{
   if(req.method==='OPTIONS')return new Response('ok',{headers:cors});
   if(req.method!=='POST')return json({error:'method_not_allowed'},405);
   const auth=req.headers.get('Authorization');
   if(!auth)return json({error:'missing_authorization'},401);
+  const declaredLength=Number(req.headers.get('content-length')||0);
+  if(Number.isFinite(declaredLength)&&declaredLength>maxRequestBytes)return json({error:'payload_too_large',max_bytes:maxRequestBytes},413);
   const sb=createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_ANON_KEY')!,
@@ -25,7 +37,12 @@ Deno.serve(async(req:Request)=>{
   const {data:{user},error:userError}=await sb.auth.getUser();
   if(userError||!user)return json({error:'invalid_user'},401);
   let body:any;
-  try{body=await req.json()}catch{return json({error:'invalid_json'},400)}
+  let raw='';
+  try{
+    raw=await req.text();
+    if(new TextEncoder().encode(raw).length>maxRequestBytes)return json({error:'payload_too_large',max_bytes:maxRequestBytes},413);
+    body=JSON.parse(raw);
+  }catch{return json({error:'invalid_json'},400)}
   const batchId=clean(body?.batch_id,120);
   const rows=Array.isArray(body?.metrics)?body.metrics:[];
   if(!batchId)return json({error:'batch_id_required'},400);
@@ -42,8 +59,12 @@ Deno.serve(async(req:Request)=>{
       rejected.push({index:i,reason:'invalid_metric'});
       continue;
     }
-    const providedId=clean(r.source_record_id,220);
-    const sid=providedId||`apple_bridge:${sourceFamily}:${metric}:${d}:${sourceName}`;
+    if(payloadSize(r.source_payload)>maxSourcePayloadBytes){
+      rejected.push({index:i,reason:'source_payload_too_large'});
+      continue;
+    }
+    const clientSourceRecordId=clean(r.source_record_id,220);
+    const sid=sourceId(sourceFamily,metric,d,sourceName);
     const base={
       user_id:user.id,
       source_record_id:sid,
@@ -58,6 +79,7 @@ Deno.serve(async(req:Request)=>{
       source_file:clean(body?.source_file,180),
       source_payload:{
         ...(r.source_payload&&typeof r.source_payload==='object'?r.source_payload:{}),
+        client_source_record_id:clientSourceRecordId,
         batch_id:batchId,
         bridge_version:clean(body?.bridge_version,80),
         original_source:sourceName
