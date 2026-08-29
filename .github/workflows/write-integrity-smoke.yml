@@ -1,0 +1,33 @@
+name: LTS Health v2 Write Integrity Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/writes.js'
+      - 'v2/src/core.js'
+      - 'v2/write-integrity-smoke.mjs'
+      - '.github/workflows/write-integrity-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  write-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/writes.js
+          node --check v2/write-integrity-smoke.mjs
+          grep -q 'negative_number_not_allowed' v2/src/writes.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Validate manual write rules
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/write-integrity-smoke.mjs
