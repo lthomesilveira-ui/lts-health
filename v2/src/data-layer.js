@@ -67,17 +67,25 @@ function setFixture(){
   state.loaded=true;state.loading=false;
 }
 
+export function refreshFailureMessage(error,hadPrevious=false){
+  const base=error?.message||String(error||'Falha ao atualizar dados.');
+  return hadPrevious?`${base} Dados anteriores mantidos.`:base;
+}
+
 async function loadKey(key,force=false){
   if(fixtureMode)return;
   if(!force&&state.domainStatus[key]==='ready')return;
   if(state.domainStatus[key]==='loading')return;
+  const hadPrevious=Object.hasOwn(state.data,key);
   state.domainStatus[key]='loading';
   try{
     const rows=await loaders[key]();
     state.data[key]=key==='workouts'?rows.filter(w=>w.is_canonical!==false&&w.record_status!=='quarantined'):rows;
     delete state.errors[key];state.domainStatus[key]='ready';
   }catch(error){
-    state.data[key]=state.data[key]||[];state.errors[key]=error?.message||String(error);state.domainStatus[key]='error';
+    if(!hadPrevious)state.data[key]=[];
+    state.errors[key]=refreshFailureMessage(error,hadPrevious);
+    state.domainStatus[key]='error';
   }
 }
 
@@ -104,7 +112,11 @@ export async function ensureRouteData(route,onProgress=()=>{}){
 
 export async function refreshData(route,onProgress=()=>{}){
   if(fixtureMode){setFixture();onProgress(fixtureError?'Alguns dados não carregaram':'Atualizado');return;}
-  state.domainStatus={};state.data={};state.errors={};await loadInitialData(onProgress);await ensureRouteData(route,onProgress);
+  state.domainStatus={};state.errors={};
+  await loadInitialData(onProgress);
+  await ensureRouteData(route,onProgress);
+  const refreshed=[...new Set([...initialKeys,...(routeDomains[route]||[])])];
+  if(refreshed.some(k=>state.domainStatus[k]==='error'))onProgress('Atualização parcial; dados anteriores foram mantidos onde houve falha.');
 }
 
 export function localBackupDate(value=new Date()){
