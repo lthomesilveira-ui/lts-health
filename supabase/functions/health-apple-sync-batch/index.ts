@@ -93,7 +93,9 @@ Deno.serve(async(req:Request)=>{
       if(error)return json({error:'canonical_metric_write_failed',detail:error.message},400);
     }
     const ids=new Set(canonical.map(x=>x.metric_type+'|'+String(x.measured_at).slice(0,10)));
-    for(const row of normalized){if(ids.has(row.metric_type+'|'+row.metric_date))row.canonical_status='canonical'}
+    for(const row of normalized){
+      if(row.source_family==='apple_activity_summary'&&ids.has(row.metric_type+'|'+row.metric_date))row.canonical_status='canonical';
+    }
     for(let i=0;i<normalized.length;i+=500){
       const patch=normalized.slice(i,i+500).filter(x=>x.canonical_status==='canonical');
       if(patch.length){
