@@ -26,7 +26,12 @@ async function run(viewport,label){
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
+    state.data.workouts=[...(state.data.workouts||[]),
+      {source_record_id:'legacy-workout-detail',workout_date:'2025-12-20',workout_type:'Treino legado detalhado',location:'Fonte histórica',raw_exercises:'Remada histórica 75×6 + drop 55×4',source:'Fixture de interface',record_status:'imported',is_canonical:true},
+      {source_record_id:'legacy-workout-summary',workout_date:'2025-12-19',workout_type:'Treino legado resumo',location:'Fonte histórica',raw_exercises:'Peito / Bíceps / Tríceps — sem detalhe',source:'Fixture de interface',record_status:'imported',is_canonical:true}
+    ];
     state.data.exercises=[...(state.data.exercises||[]),
+      {source_record_id:'legacy-ex-detail',workout_source_record_id:'legacy-workout-detail',workout_date:'2025-12-20',order_index:1,exercise:'Remada histórica',machine:null,muscle_group:'Costas',source_text:'Remada histórica 75×6 + drop 55×4',source:'Fixture de interface'},
       {source_record_id:'trend-ex-1',workout_source_record_id:'workout-1',workout_date:'2026-01-20',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
       {source_record_id:'trend-ex-2',workout_source_record_id:'workout-1',workout_date:'2026-01-27',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
       {source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
@@ -41,6 +46,23 @@ async function run(viewport,label){
       {source_record_id:'trend-set-other-machine',exercise_source_record_id:'trend-ex-other-machine',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:1,phase:'working',weight:100,weight_unit:'kg',reps_numeric:20,reps_raw:'20',source:'Fixture de interface'}
     ];
   });
+
+  await page.fill('#trainingQuery','legado detalhado');
+  await page.waitForFunction(()=>document.querySelectorAll('.sessions .session').length===1);
+  await page.locator('.sessions .session .sessionHead').click();
+  const legacyDetail=(await page.locator('.sessions .session.open .sessionBody').textContent())||'';
+  for(const expected of ['Remada histórica','Séries detalhadas não disponíveis','Registro da fonte','75×6 + drop 55×4']){
+    if(!legacyDetail.includes(expected))throw new Error(`${label}: preserved legacy evidence missing: ${expected}`);
+  }
+  if(/\bS1\b/.test(legacyDetail))throw new Error(`${label}: legacy source text was incorrectly promoted to a structured set`);
+
+  await page.fill('#trainingQuery','legado resumo');
+  await page.waitForFunction(()=>document.querySelectorAll('.sessions .session').length===1);
+  await page.locator('.sessions .session .sessionHead').click();
+  const summaryDetail=(await page.locator('.sessions .session.open .sessionBody').textContent())||'';
+  if(!summaryDetail.includes('Registro histórico da fonte')||!summaryDetail.includes('sem detalhe')||!summaryDetail.includes('sem criar exercícios ou séries'))throw new Error(`${label}: summary-only legacy workout was not preserved conservatively`);
+
+  await page.fill('#trainingQuery','');
   await page.fill('#exerciseQuery','remada teste');
   await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length===2);
   await page.click('.exerciseList button:has-text("Máquina A")');
