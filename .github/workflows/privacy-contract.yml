@@ -1,0 +1,23 @@
+name: LTS Health privacy contract
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-layer.js'
+      - 'v2/src/data-screen.js'
+      - 'v2/src/treatment-screen.js'
+      - 'v2/src/timeline-screen.js'
+      - 'v2/privacy-contract-smoke.mjs'
+      - '.github/workflows/privacy-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  privacy-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Privacy contract checks
+        run: |
+          node --check v2/privacy-contract-smoke.mjs
+          node v2/privacy-contract-smoke.mjs
