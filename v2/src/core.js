@@ -68,7 +68,7 @@ export function fixtureData(){
     ],
     segmental:[
       {source_record_id:'seg-1',measured_at:'2026-01-01',lean_right_arm_kg:4.2,lean_left_arm_kg:4.1,lean_trunk_kg:33.4,lean_right_leg_kg:10.8,lean_left_leg_kg:10.7,fat_right_arm_kg:1.1,fat_left_arm_kg:1.1,fat_trunk_kg:7.4,fat_right_leg_kg:2.2,fat_left_leg_kg:2.1,source:'Teste'},
-      {source_record_id:'seg-2',measured_at:'2026-02-01',lean_right_arm_kg:4.4,lean_left_arm_kg:4.3,lean_trunk_kg:34,lean_right_leg_kg:11,fat_right_arm_kg:1.0,fat_left_arm_kg:1.0,fat_trunk_kg:7,fat_right_leg_kg:2.1,fat_left_leg_kg:2.0,source:'Teste'}
+      {source_record_id:'seg-2',measured_at:'2026-02-01',lean_right_arm_kg:4.4,lean_left_arm_kg:4.3,lean_trunk_kg:34,lean_right_leg_kg:11,lean_left_leg_kg:10.9,fat_right_arm_kg:1.0,fat_left_arm_kg:1.0,fat_trunk_kg:7,fat_right_leg_kg:2.1,fat_left_leg_kg:2.0,source:'Teste'}
     ],
     workouts:[
       {source_record_id:'workout-2',workout_date:'2026-02-02',workout_type:'Peito + ombros',location:'Academia de teste',duration_minutes:52,calories_kcal:430,heart_rate_avg:121,heart_rate_max:148,muscle_groups:['Peito','Ombros'],record_status:'validated',is_canonical:true,source:'Teste'},
