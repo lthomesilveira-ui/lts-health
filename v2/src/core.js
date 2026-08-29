@@ -40,7 +40,9 @@ export const state = {
     treatmentQuery: '',
     labQuery: '',
     selectedBiomarker: null,
-    selectedCollection: null
+    selectedCollection: null,
+    dataUploadStatus: 'all',
+    dataUploadSource: 'all'
   }
 };
 
