@@ -22,7 +22,9 @@ async function run(viewport,label){
   const path=await download.path();if(!path)throw new Error(`${label}: browser did not produce backup file`);
   const raw=await readFile(path,'utf8'),backup=JSON.parse(raw);
   if(backup.format!=='lts-health-structured-backup'||backup.schema_version!==2||backup.scope!=='structured_records_only')throw new Error(`${label}: backup envelope invalid`);
-  if(backup.complete!==true)throw new Error(`${label}: backup is not explicitly complete`);
+  if(backup.complete!==true||backup.structured_complete!==true)throw new Error(`${label}: structured backup is not explicitly complete within its scope`);
+  if(backup.includes_private_files!==false||backup.includes_credentials!==false)throw new Error(`${label}: backup inclusion flags are unsafe or ambiguous`);
+  if(backup.components?.structured_records!=='included'||backup.components?.private_original_files!=='not_included'||backup.components?.credentials_and_tokens!=='not_included')throw new Error(`${label}: backup component manifest is incomplete or ambiguous`);
   if(!Array.isArray(backup.domains)||backup.domains.length!==backup.domain_count)throw new Error(`${label}: backup domain manifest mismatch`);
   if(Object.keys(backup.counts||{}).length!==backup.domain_count)throw new Error(`${label}: backup counts do not cover all domains`);
   if(backup.counts?.body!==2||backup.counts?.workouts!==2||backup.counts?.labs!==2||backup.counts?.metrics!==3)throw new Error(`${label}: backup did not include all fixture structured domains`);
@@ -31,7 +33,9 @@ async function run(viewport,label){
     if(!Array.isArray(backup.data?.[key]))throw new Error(`${label}: backup missing domain ${key}`);
   }
   if(!backup.notes?.some?.(n=>String(n).includes('nenhum arquivo de backup é baixado')))throw new Error(`${label}: incomplete-backup guardrail note missing`);
-  if(/"(dose_mg|dose_ml|frequency|injection_site|source_payload|access_token|refresh_token|password)"\s*:/.test(raw))throw new Error(`${label}: backup contains a prohibited operational or secret field`);
+  if(!backup.notes?.some?.(n=>String(n).includes('complete se refere somente ao escopo structured_records_only')))throw new Error(`${label}: complete-field scope qualification missing`);
+  if(!backup.notes?.some?.(n=>String(n).includes('Arquivos originais armazenados na área privada não são incorporados')))throw new Error(`${label}: private-file exclusion note missing`);
+  if(/"(storage_path|dose_mg|dose_ml|frequency|injection_site|source_payload|access_token|refresh_token|password)"\s*:/.test(raw))throw new Error(`${label}: backup contains a prohibited private, operational or secret field`);
   await page.waitForFunction(()=>document.querySelector('#backupExportMsg')?.textContent?.includes('Backup criado:'));
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`${label}: backup panel caused horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
