@@ -34,7 +34,7 @@ async function run(viewport,label){
     const {inspectFunctionForSource}=await import('./src/core.js');
     return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal'),polar:inspectFunctionForSource('polar_flow')};
   });
-  if(parserRouting.apple!=='health-inspect-upload'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.polar!=='health-inspect-upload')throw new Error(`${label}: validated ingestion function is not the single upload path`);
+  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.polar!=='health-inspect-upload')throw new Error(`${label}: source-aware ingestion routing is incorrect`);
 
   const initial=await page.textContent('#screenHost');
   if(!initial.includes('90,0')||!initial.includes('91,0')||!initial.includes('Primeiro e último registro')) throw new Error(`${label}: fixture body history did not render`);
@@ -120,7 +120,7 @@ async function run(viewport,label){
   const dataText=(await page.textContent('#screenHost'))||'';
   if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('Documento preservado')) throw new Error(`${label}: import capability labels missing`);
   if(!dataText.includes('energia ativa')||!dataText.includes('minutos de exercício')||!dataText.includes('horas em pé')||!dataText.includes('duração do sono'))throw new Error(`${label}: validated Apple Health automatic scope missing`);
-  if(!dataText.includes('Passos e frequência cardíaca de repouso não são tratados como importação automática validada'))throw new Error(`${label}: Apple Health unsupported automatic metrics are not explicit`);
+  if(!dataText.includes('Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte'))throw new Error(`${label}: conditional Apple Health metrics rule is not explicit`);
   await page.click('[data-source-upload="apple_health"]');
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
 
