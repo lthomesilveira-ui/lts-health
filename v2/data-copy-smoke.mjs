@@ -28,7 +28,7 @@ async function run(viewport,label){
   await page.click('#moreSheet [data-route="dados"]');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há itens para conferir.']){
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há itens para conferir.','Filtre por situação ou origem.']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
   const overview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
@@ -36,6 +36,15 @@ async function run(viewport,label){
   for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing']){
     if(text.includes(forbidden))throw new Error(`${label}: raw internal value visible: ${forbidden}`);
   }
+
+  await page.selectOption('#dataUploadStatus','attention');
+  await page.waitForFunction(()=>document.querySelectorAll('.uploadAuditRow').length===2);
+  text=(await page.textContent('.card:has-text("Arquivos recebidos")'))||'';
+  if(!text.includes('Fleury · revisão necessária')||!text.includes('Outra origem · não processado')||text.includes('MyFitnessPal · importado'))throw new Error(`${label}: attention filter failed`);
+  await page.selectOption('#dataUploadSource','fleury');
+  await page.waitForFunction(()=>document.querySelectorAll('.uploadAuditRow').length===1);
+  text=(await page.textContent('.card:has-text("Arquivos recebidos")'))||'';
+  if(!text.includes('Fleury · revisão necessária')||text.includes('Outra origem · não processado'))throw new Error(`${label}: source filter failed`);
 
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
   await page.click(`${nav} [data-route="bio"]`);
