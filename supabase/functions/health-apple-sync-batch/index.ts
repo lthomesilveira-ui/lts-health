@@ -10,6 +10,7 @@ const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,
 const allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg']);
 const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
 const historicalExportFamilies=new Set(['apple_watch','iphone','polar_flow']);
+const reviewedStatuses=new Set(['held','superseded']);
 const maxRequestBytes=1_000_000;
 const maxSourcePayloadBytes=8_192;
 function day(v:unknown){const s=String(v||'');return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:null}
@@ -89,6 +90,7 @@ Deno.serve(async(req:Request)=>{
     normalized.push(base);
     if(sourceFamily==='apple_activity_summary'&&canonicalActivity.has(metric)){
       canonical.push({
+        source_metric_id:sid,
         user_id:user.id,
         source_record_id:`apple_health:${metric}:${d}`,
         measured_at:`${d}T12:00:00Z`,
@@ -109,14 +111,29 @@ Deno.serve(async(req:Request)=>{
     const {error}=await sb.from('health_source_daily_metrics').upsert(normalized.slice(i,i+500),{onConflict:'user_id,source_record_id'});
     if(error)return json({error:'source_metric_write_failed',detail:error.message},400);
   }
-  if(canonical.length){
-    for(let i=0;i<canonical.length;i+=500){
-      const {error}=await sb.from('health_metrics').upsert(canonical.slice(i,i+500),{onConflict:'user_id,source_record_id'});
+
+  const blockedCanonicalSourceIds=new Set<string>();
+  const sourceIds=[...new Set(canonical.map(x=>x.source_metric_id))];
+  for(let i=0;i<sourceIds.length;i+=200){
+    const {data,error}=await sb.from('health_source_daily_metrics')
+      .select('source_record_id,canonical_status')
+      .in('source_record_id',sourceIds.slice(i,i+200));
+    if(error)return json({error:'source_status_read_failed',detail:error.message},400);
+    for(const row of data||[]){
+      if(reviewedStatuses.has(String(row.canonical_status||'')))blockedCanonicalSourceIds.add(String(row.source_record_id));
+    }
+  }
+  const eligibleCanonical=canonical.filter(x=>!blockedCanonicalSourceIds.has(x.source_metric_id));
+
+  if(eligibleCanonical.length){
+    for(let i=0;i<eligibleCanonical.length;i+=500){
+      const writable=eligibleCanonical.slice(i,i+500).map(({source_metric_id,...row})=>row);
+      const {error}=await sb.from('health_metrics').upsert(writable,{onConflict:'user_id,source_record_id'});
       if(error)return json({error:'canonical_metric_write_failed',detail:error.message},400);
     }
-    const ids=new Set(canonical.map(x=>x.metric_type+'|'+String(x.measured_at).slice(0,10)));
+    const ids=new Set(eligibleCanonical.map(x=>x.metric_type+'|'+String(x.measured_at).slice(0,10)));
     for(const row of normalized){
-      if(row.source_family==='apple_activity_summary'&&ids.has(row.metric_type+'|'+row.metric_date))row.canonical_status='canonical';
+      if(row.source_family==='apple_activity_summary'&&!blockedCanonicalSourceIds.has(row.source_record_id)&&ids.has(row.metric_type+'|'+row.metric_date))row.canonical_status='canonical';
     }
     for(let i=0;i<normalized.length;i+=500){
       const patch=normalized.slice(i,i+500).filter(x=>x.canonical_status==='canonical');
@@ -126,5 +143,5 @@ Deno.serve(async(req:Request)=>{
       }
     }
   }
-  return json({ok:true,batch_id:batchId,accepted:normalized.length,rejected:rejected.length,canonicalized:canonical.length,rejected_rows:rejected.slice(0,20)});
+  return json({ok:true,batch_id:batchId,accepted:normalized.length,rejected:rejected.length,canonicalized:eligibleCanonical.length,review_blocked:blockedCanonicalSourceIds.size,rejected_rows:rejected.slice(0,20)});
 });
