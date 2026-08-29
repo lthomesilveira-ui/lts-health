@@ -98,6 +98,12 @@ export async function refreshData(route,onProgress=()=>{}){
   state.domainStatus={};state.data={};state.errors={};await loadInitialData(onProgress);await ensureRouteData(route,onProgress);
 }
 
+export function localBackupDate(value=new Date()){
+  const d=value instanceof Date?value:new Date(value);
+  const year=d.getFullYear(),month=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${year}-${month}-${day}`;
+}
+
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
@@ -143,7 +149,7 @@ export async function buildStructuredBackup(onProgress=()=>{}){
 }
 
 export async function downloadStructuredBackup(onProgress=()=>{}){
-  const backup=await buildStructuredBackup(onProgress),date=new Date().toISOString().slice(0,10),filename=`lts-health-backup-${date}.json`;
+  const backup=await buildStructuredBackup(onProgress),date=localBackupDate(),filename=`lts-health-backup-${date}.json`;
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
   link.href=url;link.download=filename;link.style.display='none';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
   return{filename,counts:backup.counts,complete:backup.complete,structuredComplete:backup.structured_complete,domainCount:backup.domain_count};
