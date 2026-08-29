@@ -19,7 +19,11 @@ async function run(viewport,label){
       {id:'u3',created_at:'2026-02-02T12:00:00Z',original_filename:'lab.pdf',source_type:'fleury',status:'review_required'},
       {id:'u4',created_at:'2026-02-01T12:00:00Z',original_filename:'bad.zip',source_type:'other',status:'rejected'}
     ];
-    state.data.quality=[{status:'open',category:'workout_parsing',entity_name:'INTERNAL_ENTITY',description:'Detalhe ainda depende de revisão da fonte.'}];
+    state.data.quality=[
+      {status:'open',category:'workout_parsing',entity_name:'INTERNAL_ENTITY',description:'Detalhe ainda depende de revisão da fonte.'},
+      {status:'accepted',category:'metadata_only',entity_name:'HealthDocument',description:'Arquivo ausente.',resolution_notes:'Inventário preservado; depende do arquivo original.'},
+      {status:'resolved',category:'migration_integrity',entity_name:'WorkoutExercise',description:'Migração corrigida.',resolution_notes:'Exercícios recuperados sem inferir séries.'}
+    ];
   });
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
   await page.click(`${nav} [data-route="bio"]`);
@@ -28,11 +32,13 @@ async function run(viewport,label){
   await page.click('#moreSheet [data-route="dados"]');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há itens para conferir.','Filtre por situação ou origem.']){
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
   const overview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
   if(overview.join('|')!=='1|1|2|0')throw new Error(`${label}: unexpected processing overview ${overview.join('|')}`);
+  const qualityOverview=await page.locator('.card:has-text("Qualidade dos dados") > .sourceGrid .sourceCard span').allTextContents();
+  if(qualityOverview.join('|')!=='1|1|1')throw new Error(`${label}: unexpected quality overview ${qualityOverview.join('|')}`);
   for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing']){
     if(text.includes(forbidden))throw new Error(`${label}: raw internal value visible: ${forbidden}`);
   }
