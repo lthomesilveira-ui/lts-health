@@ -31,6 +31,7 @@ jobs:
           node --check v2/failure-smoke.mjs
           node --check v2/parity-smoke.mjs
           node --check v2/timeline-interaction-smoke.mjs
+          node --check v2/live-smoke.mjs
           test -f v2/index.html
           test -f v2/styles.css
           test -f v2/entry.css
@@ -78,6 +79,8 @@ jobs:
           grep -q "failed('sets')" v2/src/training-screen.js
           grep -q "Calendário de treinos" v2/src/training-screen.js
           grep -q "trainingTelemetry" v2/src/training-screen.js
+          grep -q "exerciseProgressionSeries" v2/src/training-screen.js
+          grep -q "Não estima repetição máxima" v2/src/training-screen.js
           grep -q "Parte da evolução está indisponível agora" v2/src/evolution-screen.js
           grep -q "Gordura segmentar" v2/src/evolution-screen.js
           grep -q "Diferença entre lados" v2/src/evolution-screen.js
@@ -85,6 +88,8 @@ jobs:
           ! grep -Eiq '\b(recomp|bulk|cut|ideal)\b' v2/src/evolution-screen.js
           grep -q "Algumas análises estão incompletas agora" v2/src/analysis-screen.js
           grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
+          grep -q "markerChart" v2/src/health-screen.js
+          grep -q "não classifica o resultado" v2/src/health-screen.js
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Leitura automática parcial" v2/src/data-screen.js
           grep -q "fonte única" v2/src/data-screen.js
