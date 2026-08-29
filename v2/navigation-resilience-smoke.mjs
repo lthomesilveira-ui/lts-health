@@ -100,4 +100,5 @@ async function run(viewport,label){
 
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
+await run({width:320,height:740},'compact-mobile');
 console.log('LTS Health v2 navigation resilience smoke passed');
