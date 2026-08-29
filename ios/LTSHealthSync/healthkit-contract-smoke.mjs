@@ -1,12 +1,14 @@
 import { readFile } from 'node:fs/promises';
 
-const [project,info,entitlements,api,health,candidates,appDelegate,readme,workflow] = await Promise.all([
+const [project,info,entitlements,api,health,candidates,appModel,contentView,appDelegate,readme,workflow] = await Promise.all([
   readFile('ios/LTSHealthSync/project.yml','utf8'),
   readFile('ios/LTSHealthSync/Resources/Info.plist','utf8'),
   readFile('ios/LTSHealthSync/Resources/LTSHealthSync.entitlements','utf8'),
   readFile('ios/LTSHealthSync/Sources/SupabaseAPI.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/HealthKitSyncCoordinator.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/CandidateHealthMetricsCoordinator.swift','utf8'),
+  readFile('ios/LTSHealthSync/Sources/AppModel.swift','utf8'),
+  readFile('ios/LTSHealthSync/Sources/ContentView.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/AppDelegate.swift','utf8'),
   readFile('ios/LTSHealthSync/README.md','utf8'),
   readFile('.github/workflows/ios-healthkit-build.yml','utf8')
@@ -97,6 +99,32 @@ if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleExerciseTim
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleStandTime)')) throw new Error('stand-time observer trigger missing');
 if (!health.includes('requiringSecureCoding: true')) throw new Error('HealthKit anchors must use secure coding');
 if (!appDelegate.includes('HealthKitSyncCoordinator.shared.startObserversIfConfigured()') || !appDelegate.includes('CandidateHealthMetricsCoordinator.shared.startObserversIfConfigured()')) throw new Error('core and candidate background observers are not bootstrapped on launch');
+
+for (const token of [
+  '@Published var healthConfigured = false',
+  '@Published var sourceSyncConfigured = false',
+  'lastSuccessfulSyncAt',
+  'lastPrimarySyncCount',
+  'lastSourceSyncCount',
+  'lastReviewSyncCount',
+  'recordSuccessfulSync(primary:',
+  'kind: .warning',
+  'candidateHealth.initialSync(days: 365)',
+  'candidateHealth.recentSync(days: 7)'
+]) if (!appModel.includes(token)) throw new Error(`iOS activation/status contract missing: ${token}`);
+
+for (const token of [
+  'Section("Preparação")',
+  'Apple Saúde configurado',
+  'Leitura por origem configurada',
+  'Atualização em segundo plano preparada',
+  'Último sucesso',
+  'Sincronizar agora',
+  'MyFitnessPal compartilha alimentação com o Apple Saúde',
+  'Sono continua fora da sincronização automática'
+]) if (!contentView.includes(token)) throw new Error(`iOS activation UI missing: ${token}`);
+
+if (/canônic|candidat/i.test(contentView)) throw new Error('technical canonical/candidate jargon must not be shown in the iOS activation UI');
 if (!project.includes('platform: iOS') || !project.includes('iOS: "17.0"')) throw new Error('iOS project target contract drifted');
 if (!readme.includes('teste precisa ser feito em iPhone físico')) throw new Error('device-only background-delivery limitation is not documented');
 for (const token of [
