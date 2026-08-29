@@ -34,7 +34,7 @@ async function run(viewport,label){
     const {inspectFunctionForSource}=await import('./src/core.js');
     return {apple:inspectFunctionForSource('apple_health'),mfp:inspectFunctionForSource('myfitnesspal'),polar:inspectFunctionForSource('polar_flow')};
   });
-  if(parserRouting.apple!=='health-inspect-upload-v2'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.polar!=='health-inspect-upload')throw new Error(`${label}: source-specific inspector routing is incorrect`);
+  if(parserRouting.apple!=='health-inspect-upload'||parserRouting.mfp!=='health-inspect-upload'||parserRouting.polar!=='health-inspect-upload')throw new Error(`${label}: validated ingestion function is not the single upload path`);
 
   const initial=await page.textContent('#screenHost');
   if(!initial.includes('90,0')||!initial.includes('91,0')||!initial.includes('Primeiro e último registro')) throw new Error(`${label}: fixture body history did not render`);
@@ -85,7 +85,7 @@ async function run(viewport,label){
 
   await openMoreRoute(page,nav,'hoje','Hoje',`${label}/hoje`);
   const todayText=await page.textContent('#screenHost');
-  if(!todayText.includes('Último treino')||!todayText.includes('Última bio')||!todayText.includes('Passos')||!todayText.includes('FC de repouso')||!todayText.includes('7.200 passos')||!todayText.includes('61 bpm')) throw new Error(`${label}: Today essentials or validated Apple metrics missing`);
+  if(!todayText.includes('Último treino')||!todayText.includes('Última bio')||!todayText.includes('Passos')||!todayText.includes('FC de repouso')||!todayText.includes('7.200 passos')||!todayText.includes('61 bpm')) throw new Error(`${label}: Today essentials or existing metric records missing`);
 
   await openMoreRoute(page,nav,'timeline','Timeline',`${label}/timeline`);
   const timelineText=await page.textContent('#screenHost');
@@ -101,6 +101,9 @@ async function run(viewport,label){
   await page.waitForSelector('.labHistoryChart svg');
   const labHistory=(await page.locator('.exerciseDetail').textContent())||'';
   if(!labHistory.includes('Série histórica')||!labHistory.includes('Diferença +2,0 u')||!labHistory.includes('não classifica o resultado'))throw new Error(`${label}: compatible-unit lab trend chart missing or over-interpreted`);
+  if((await page.locator('.documentSummary').count())!==1||(await page.locator('.evidenceDateList article').count())<1)throw new Error(`${label}: longitudinal document/evidence browsing missing`);
+  const healthText=(await page.textContent('#screenHost'))||'';
+  if(!healthText.includes('Resultados e documentos na mesma data')||!healthText.includes('Coincidência de data não demonstra causa'))throw new Error(`${label}: cross-evidence guardrail missing`);
   await page.fill('#labQuery','Marcador A');
   await page.waitForFunction(()=>document.querySelectorAll('.markerList button').length===1);
 
@@ -115,7 +118,9 @@ async function run(viewport,label){
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
   if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
   const dataText=(await page.textContent('#screenHost'))||'';
-  if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('Documento preservado')||!dataText.includes('fonte única')) throw new Error(`${label}: import capability labels or Apple overlap guard missing`);
+  if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('Documento preservado')) throw new Error(`${label}: import capability labels missing`);
+  if(!dataText.includes('energia ativa')||!dataText.includes('minutos de exercício')||!dataText.includes('horas em pé')||!dataText.includes('duração do sono'))throw new Error(`${label}: validated Apple Health automatic scope missing`);
+  if(!dataText.includes('Passos e frequência cardíaca de repouso não são tratados como importação automática validada'))throw new Error(`${label}: Apple Health unsupported automatic metrics are not explicit`);
   await page.click('[data-source-upload="apple_health"]');
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: source upload shortcut failed`);
 
@@ -164,6 +169,9 @@ await runFailureState('body','bio','Bio',async(_page,text)=>{
 });
 await runFailureState('labs','saude','Saúde & exames',async(_page,text)=>{
   if(!text.includes('não carregou agora')||/Coletas\s*0\b/i.test(text)||/Resultados\s*0\b/i.test(text)) throw new Error('lab failure rendered as zero or hid the failure');
+});
+await runFailureState('docs','saude','Saúde & exames',async(_page,text)=>{
+  if(!text.includes('documentos não carregaram agora')||/Documentos\s*0\b/i.test(text)) throw new Error('document failure rendered as zero or hid the failure');
 });
 await runFailureState('nutrition','nutricao','Nutrição',async(_page,text)=>{
   if(!text.includes('não carregaram agora')||/Dias registrados\s*0\b/i.test(text)) throw new Error('nutrition failure rendered as zero or hid the failure');
