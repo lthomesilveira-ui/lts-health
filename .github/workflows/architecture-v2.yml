@@ -71,7 +71,11 @@ jobs:
           ! grep -q "health-inspect-upload-v2" v2/src/core.js
           ! grep -q "health-inspect-lab" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
-          grep -q "stableAppleMetricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours'\])" v2/src/source-status.js
+          grep -q "stableAppleMetricTypes" v2/src/source-status.js
+          grep -q "active_energy_kcal" v2/src/source-status.js
+          grep -q "exercise_minutes" v2/src/source-status.js
+          grep -q "stand_hours" v2/src/source-status.js
+          ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
           grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "renderBioHub" v2/src/main.js
@@ -126,9 +130,12 @@ jobs:
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Sincronização automática parcial" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
-          grep -q "const metricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'\])" v2/src/today-screen.js
+          grep -q "metricTypes" v2/src/today-screen.js
+          grep -q "sleep_duration_h" v2/src/today-screen.js
           grep -q "sourceStatusFor('apple_health')" v2/src/today-screen.js
           grep -q "Arquivo recebido; dados ainda não confirmados" v2/src/today-screen.js
+          grep -q "Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada" v2/src/today-screen.js
+          grep -q "Sono pode ser exibido quando já existe como métrica estruturada" v2/src/today-screen.js
           grep -q "Progressão de treino" v2/src/today-screen.js
           grep -q "metricOrder" v2/src/today-screen.js
           grep -q "recentContext" v2/src/today-screen.js
