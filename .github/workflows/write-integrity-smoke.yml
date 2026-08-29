@@ -4,6 +4,7 @@ on:
     branches: [architecture-v2]
     paths:
       - 'v2/src/writes.js'
+      - 'v2/src/entry.js'
       - 'v2/src/core.js'
       - 'v2/write-integrity-smoke.mjs'
       - '.github/workflows/write-integrity-smoke.yml'
@@ -18,8 +19,11 @@ jobs:
       - name: Static checks
         run: |
           node --check v2/src/writes.js
+          node --check v2/src/entry.js
           node --check v2/write-integrity-smoke.mjs
           grep -q 'negative_number_not_allowed' v2/src/writes.js
+          grep -q 'localDateValue' v2/src/entry.js
+          grep -q 'Use apenas valores iguais ou maiores que zero.' v2/src/entry.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
