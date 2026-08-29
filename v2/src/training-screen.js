@@ -8,12 +8,13 @@ const failed=key=>state.domainStatus[key]==='error';
 const domainError=text=>`<div class="errorState"><b>${esc(text)}</b><span>Os demais dados continuam disponíveis. Tente atualizar para carregar esta parte novamente.</span></div>`;
 const monthKey=value=>day(value).slice(0,7);
 const monthLabel=value=>{const[y,m]=String(value||'').split('-');if(!y||!m)return'—';return new Date(Number(y),Number(m)-1,1).toLocaleDateString('pt-BR',{month:'short',year:'numeric'}).replace('.','');};
+const displayUnit=unit=>unit==='plate_index'?'placa':unit==='unitless'?'sem unidade':unit||'sem unidade';
 
 function setSummary(exercise){
   if(failed('sets')) return '<span class="set muted">Detalhes das séries indisponíveis agora.</span>';
   const rows=setsFor(exercise);
   if(!rows.length) return '<span class="set muted">Séries detalhadas não disponíveis.</span>';
-  return rows.map(s=>`<span class="set"><b>S${s.set_index??'—'}</b>${num(s.weight)!=null?`${fmtNum(s.weight,Number.isInteger(num(s.weight))?0:1)} ${esc(s.weight_unit||'')}`:'carga não informada'} · ${esc(s.reps_raw??s.reps_numeric??'—')} reps${s.phase==='warmup'?' · aquecimento':''}${s.phase==='drop'?' · sequência registrada':''}</span>`).join('');
+  return rows.map(s=>`<span class="set"><b>S${s.set_index??'—'}</b>${num(s.weight)!=null?`${fmtNum(s.weight,Number.isInteger(num(s.weight))?0:1)} ${esc(displayUnit(s.weight_unit))}`:'carga não informada'} · ${esc(s.reps_raw??s.reps_numeric??'—')} reps${s.phase==='warmup'?' · aquecimento':''}${s.phase==='drop'?' · sequência registrada':''}</span>`).join('');
 }
 
 function sessionTelemetry(workout){
@@ -74,15 +75,52 @@ function exerciseGroups(){
   return [...map.values()].sort((a,b)=>String(a.label).localeCompare(String(b.label),'pt-BR'));
 }
 
+function exerciseProgressionSeries(group){
+  if(!group||failed('sets'))return[];
+  const byUnit=new Map();
+  for(const exercise of group.rows){
+    const date=day(exercise.workout_date);if(!date)continue;
+    for(const set of setsFor(exercise)){
+      const weight=num(set.weight);if(weight==null)continue;
+      const unit=set.weight_unit||'sem unidade';
+      if(!byUnit.has(unit))byUnit.set(unit,new Map());
+      const byDate=byUnit.get(unit),current=byDate.get(date);
+      if(current==null||weight>current)byDate.set(date,weight);
+    }
+  }
+  return [...byUnit.entries()].map(([unit,byDate])=>({unit,points:[...byDate.entries()].map(([date,value])=>({date,value})).sort((a,b)=>a.date.localeCompare(b.date))})).filter(s=>s.points.length).sort((a,b)=>b.points.length-a.points.length||String(a.unit).localeCompare(String(b.unit)));
+}
+
+function progressionSvg(points){
+  if(points.length<2)return'';
+  const w=520,h=132,p=18,values=points.map(x=>x.value),lo=Math.min(...values),hi=Math.max(...values),span=hi-lo||1,pad=span*.12,min=lo-pad,max=hi+pad;
+  const x=i=>p+i*(w-p*2)/Math.max(1,points.length-1),y=v=>p+(max-v)*(h-p*2)/(max-min||1);
+  const path=points.map((pt,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(pt.value).toFixed(1)}`).join(' ');
+  const dots=points.map((pt,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(pt.value).toFixed(1)}" r="3.5"><title>${esc(fmtDate(pt.date))}: ${esc(fmtNum(pt.value,Number.isInteger(pt.value)?0:1))}</title></circle>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Evolução descritiva da maior carga registrada por sessão"><path class="exerciseProgressGrid" d="M18 44H502 M18 88H502"/><path class="exerciseProgressLine" d="${path}"/>${dots}</svg>`;
+}
+
+function exerciseProgression(group){
+  if(failed('exercises'))return domainError('O histórico de exercícios não pôde ser carregado.');
+  if(failed('sets'))return domainError('As séries necessárias para comparar cargas não puderam ser carregadas.');
+  if(!group)return empty('Selecione um exercício.');
+  const series=exerciseProgressionSeries(group);
+  if(!series.length)return empty('Não há cargas estruturadas para este exercício.');
+  return `<div class="exerciseProgression">${series.map(s=>{
+    const points=s.points.slice(-24),first=points[0],last=points.at(-1),delta=last.value-first.value,unit=displayUnit(s.unit),digits=points.some(p=>!Number.isInteger(p.value))?1:0;
+    return `<section class="exerciseProgressUnit"><div class="exerciseProgressHead"><div><b>${esc(unit)}</b><small>${points.length} sessão(ões) com carga estruturada${s.points.length>points.length?' · últimas 24':''}</small></div><div><span>${fmtNum(first.value,digits)} → ${fmtNum(last.value,digits)} ${esc(unit)}</span><small>diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${esc(unit)}</small></div></div>${progressionSvg(points)}<div class="exerciseProgressAxis"><span>${fmtDate(first.date)}</span><span>${fmtDate(last.date)}</span></div></section>`;
+  }).join('')}<p class="footerNote">O gráfico usa somente a maior carga explicitamente registrada em cada sessão e mantém cada unidade separada. Não estima repetição máxima nem converte placas ou unidades ausentes.</p></div>`;
+}
+
 function exerciseHistory(group){
   if(failed('exercises')) return domainError('O histórico de exercícios não pôde ser carregado.');
   if(failed('sets')) return domainError('As séries necessárias para comparar cargas não puderam ser carregadas.');
   if(!group)return empty('Selecione um exercício.');
   const rows=[...group.rows].sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
   const days=unique(rows.map(r=>r.workout_date)).slice(0,20);
-  return `<div class="exerciseHistoryHead"><b>${esc(group.label)}</b><small>Cargas de unidades diferentes permanecem separadas.</small></div><div class="list">${days.map(date=>{
+  return `<div class="exerciseHistoryHead"><b>${esc(group.label)}</b><small>Cargas de unidades diferentes permanecem separadas.</small></div>${exerciseProgression(group)}<div class="exerciseHistoryRows list">${days.map(date=>{
     const exercises=rows.filter(r=>r.workout_date===date),sets=exercises.flatMap(setsFor),units=unique(sets.map(s=>s.weight_unit||'sem unidade'));
-    const tops=units.map(unit=>{const values=sets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);if(!values.length)return null;const top=Math.max(...values);return`${fmtNum(top,Number.isInteger(top)?0:1)} ${esc(unit)}`;}).filter(Boolean).join(' · ');
+    const tops=units.map(unit=>{const values=sets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);if(!values.length)return null;const top=Math.max(...values);return`${fmtNum(top,Number.isInteger(top)?0:1)} ${esc(displayUnit(unit))}`;}).filter(Boolean).join(' · ');
     const numericReps=sets.map(s=>num(s.reps_numeric)).filter(v=>v!=null);
     const repSummary=numericReps.length===sets.length&&sets.length?`${Math.min(...numericReps)}–${Math.max(...numericReps)} reps`:`${numericReps.length}/${sets.length} séries com reps numéricas`;
     return `<div class="row"><time>${fmtDate(date)}</time><div><b>${tops||'carga não estruturada'}</b><small>${sets.length} série(s) registradas · ${esc(repSummary)}</small></div></div>`;
@@ -123,7 +161,7 @@ export function renderTrainingScreen(){
       <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map(sessionCard).join('')||empty('Nenhum treino encontrado.')}</div></div>
       <div class="stack">
         <div class="card"><div class="cardHead"><div><b>Séries por grupo</b><small>Contagem no período selecionado.</small></div></div><div class="barList">${volumeHtml}</div></div>
-        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico das sessões em que o exercício aparece.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
+        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico e maior carga registrada por sessão, sempre preservando a unidade original.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
       </div>
     </div>`;
 }
