@@ -127,16 +127,20 @@ export function setupEntryController({onSaved}={}){
     if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm') return;
     e.preventDefault();
     const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]');
+    let saved=false;
     msg.textContent='Salvando…'; button.disabled=true;
     try{
       if(form.id==='bodyEntryForm') await saveBodyRecord(formObject(form));
       else await saveWorkout(collectWorkout(form));
+      saved=true;
       msg.textContent='Salvo.';
       await refreshCallback();
       setTimeout(closeEntry,450);
     }catch(error){
       if(!validationMessages[error?.message])console.error(error);
       msg.textContent=entryErrorMessage(error);
-    }finally{ button.disabled=false; }
+    }finally{
+      if(!saved&&button.isConnected)button.disabled=false;
+    }
   });
 }
