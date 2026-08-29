@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
 
 const browser=await chromium.launch({headless:true});
-const page=await browser.newPage({viewport:{width:1280,height:900}});
+const context=await browser.newContext({viewport:{width:1280,height:900},timezoneId:'America/Sao_Paulo'});
+const page=await context.newPage();
 const errors=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
@@ -11,9 +12,12 @@ await page.waitForSelector('#app:not(.hidden)');
 const result=await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');
   const {saveBodyRecord,saveWorkout}=await import('./src/writes.js');
+  const {localDateValue}=await import('./src/entry.js');
   const initialBody=state.data.body.length;
   const failures=[];
   async function expectReject(name,fn){try{await fn();failures.push(`${name}:accepted`);}catch(error){if(error?.message!=='negative_number_not_allowed')failures.push(`${name}:${error?.message||error}`);}}
+
+  if(localDateValue(new Date('2026-08-30T02:30:00Z'))!=='2026-08-29')failures.push('local date drifted to UTC next day');
 
   await expectReject('negative body',()=>saveBodyRecord({measured_at:'2026-02-10',weight_kg:'-1'}));
   if(state.data.body.length!==initialBody)failures.push('negative body mutated fixture');
@@ -44,5 +48,6 @@ await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent=
 if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('validation closed the entry dialog');
 if(errors.length)throw new Error(`browser errors: ${errors.join(' | ')}`);
 
+await context.close();
 await browser.close();
 console.log('LTS Health v2 write integrity smoke passed');
