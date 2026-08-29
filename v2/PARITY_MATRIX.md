@@ -6,7 +6,7 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 
 | Área | Piso mínimo | Estado v2 | Gate restante |
 | --- | --- | --- | --- |
-| Bio | histórico completo, gráfico por métrica, comparação livre entre duas datas, formulário de registro e detalhe de uma medição | implementado | validar sessão autenticada em desktop e mobile |
+| Bio | histórico completo, gráfico por métrica, comparação livre entre duas datas, formulário de registro e detalhe de uma medição | implementado; renderização autenticada mobile já conferida contra o backend privado | validar a mesma experiência autenticada em desktop |
 | Treinos | histórico de sessões, sessão → exercício → série, carga/repetições/unidade, volume por grupo, evolução por exercício e formulário detalhado | implementado e ampliado com calendário e telemetria registrada | validar sessão autenticada com o treino mais recente e sua hierarquia real |
 | Evolução | composição longitudinal, segmentar por data e comparação, contexto de frequência de treinos | implementado e ampliado com massa magra/gordura segmentar, diferenças entre lados e mudanças consecutivas | validar renderização autenticada/mobile |
 | Análise | resumo multidomínio e cruzamentos descritivos com limitações explícitas | implementado com períodos, cobertura e lacunas | validar cobertura real e estados parciais em sessão autenticada |
@@ -30,7 +30,7 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 4. Core-experience smoke verde: Bio, Treinos, Evolução, Análise e Tratamentos exercitados por interação.
 5. Smokes dedicados de Timeline, Nutrição e Análise verdes no head candidato.
 6. Sessão autenticada confirma que o treino mais recente aparece com a hierarquia de exercícios/séries esperada no backend privado.
-7. Sessão autenticada confirma que a medição corporal mais recente exibida corresponde ao backend privado.
+7. Sessão autenticada confirma que a medição corporal mais recente exibida corresponde ao backend privado. A conferência mobile já foi concluída; falta desktop.
 8. Navegação autenticada funciona em desktop e mobile sem overflow horizontal e sem abas mortas.
 9. Nenhum texto de implementação aparece na interface normal.
 10. Nenhum dado pessoal de saúde é copiado para o repositório público.
@@ -50,5 +50,5 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 2. Manter documentação pública sem dados pessoais e auditorias detalhadas apenas no backend privado.
 3. Auditar parsers com arquivos reais quando estiverem disponíveis.
 4. Manter a candidata v2 publicada em paralelo e validar cada deploy com browser real automatizado.
-5. Rodar gate autenticado com dados reais em desktop e mobile.
+5. Fechar o gate autenticado restante de treino e desktop.
 6. Somente então promover a candidata para a raiz pública.
