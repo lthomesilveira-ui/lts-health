@@ -57,25 +57,33 @@ async function run(viewport,label){
   const restoredHash=await page.evaluate(()=>location.hash);
   if(restoredHash!=='#dados')throw new Error(`${label}: saved route was not restored after reload (${restoredHash||'sem hash'})`);
 
-  // Entry actions must open and close without losing the current screen.
+  // Entry dialog must focus its contents, close with Escape and return focus to its trigger.
   await clickRoute(page,nav,'bio');await waitRoute(page,'bio');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
-  await page.locator('#closeEntry').click();
+  await page.waitForFunction(()=>document.querySelector('#entryModal')?.contains(document.activeElement));
+  await page.keyboard.press('Escape');
   await waitHidden(page,'#entryModal');
+  await page.waitForFunction(()=>document.activeElement?.id==='routeAction');
   await waitRoute(page,'bio');
+
+  // Workout entry still closes through its explicit close button and restores focus.
   await clickRoute(page,nav,'treinos');await waitRoute(page,'treinos');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
   await page.locator('#closeEntry').click();
   await waitHidden(page,'#entryModal');
+  await page.waitForFunction(()=>document.activeElement?.id==='routeAction');
   await waitRoute(page,'treinos');
 
-  // The More sheet must be dismissible without route changes.
-  await page.locator(`${nav} [data-route="mais"]`).click();
+  // More sheet must focus its contents, close with Escape and restore focus without route changes.
+  const moreSelector=`${nav} [data-route="mais"]`;
+  await page.locator(moreSelector).click();
   await page.waitForSelector('#moreSheet:not(.hidden)');
-  await page.locator('#closeMore').click();
+  await page.waitForFunction(()=>document.querySelector('#moreSheet')?.contains(document.activeElement));
+  await page.keyboard.press('Escape');
   await waitHidden(page,'#moreSheet');
+  await page.waitForFunction(sel=>document.activeElement===document.querySelector(sel),moreSelector);
   await waitRoute(page,'treinos');
 
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
