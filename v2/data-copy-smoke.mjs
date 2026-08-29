@@ -41,7 +41,7 @@ async function run(viewport,label){
   };
   await rerenderData();
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.','Há detalhes que precisam de revisão antes de concluir a leitura.','O processamento não foi concluído. O arquivo original continua guardado.','Revisão registrada sem detalhe exibido nesta tela.','energia ativa, minutos de exercício, horas em pé e duração do sono','Passos e FC de repouso não são importados automaticamente por este fluxo']){
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.','Há detalhes que precisam de revisão antes de concluir a leitura.','O processamento não foi concluído. O arquivo original continua guardado.','Revisão registrada sem detalhe exibido nesta tela.','Automático canônico: energia ativa, minutos de exercício e horas em pé','Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos','Sono permanece fora da sincronização automática','Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
   const sourceCards=await page.locator('.sourceStatus').allTextContents();
@@ -77,14 +77,31 @@ async function run(viewport,label){
   await rerenderData();
   const appleCardLocator=page.locator('.sourceStatus:has([data-source-upload="apple_health"])');
   let appleCard=(await appleCardLocator.textContent())||'';
-  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: unsupported Apple steps incorrectly proved stable Apple data`);
+  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: candidate Apple steps incorrectly proved canonical Apple readiness`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.metrics.push({source_record_id:'apple-sleep',measured_at:'2026-02-04T12:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h',source:'Apple Health'});
   });
   await rerenderData();
   appleCard=(await appleCardLocator.textContent())||'';
-  if(!appleCard.includes('com dados'))throw new Error(`${label}: validated Apple sleep did not prove stable Apple data`);
+  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: sleep incorrectly proved canonical Apple readiness`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'});
+  });
+  await rerenderData();
+  appleCard=(await appleCardLocator.textContent())||'';
+  if(!appleCard.includes('com dados'))throw new Error(`${label}: canonical Apple energy did not prove Apple readiness`);
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),{source_record_id:'mfp-dietary',metric_date:'2026-02-04',metric_type:'dietary_protein_g',value:150,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'}];
+  });
+  await rerenderData();
+  const mfpCard=(await page.locator('.sourceStatus:has([data-source-upload="myfitnesspal"])').textContent())||'';
+  if(!mfpCard.includes('com dados'))throw new Error(`${label}: MyFitnessPal source candidate did not prove source readiness`);
+  const provenance=(await page.locator('.provenancePanel').textContent())||'';
+  if(!provenance.includes('MyFitnessPal')||!provenance.includes('candidato'))throw new Error(`${label}: MyFitnessPal provenance candidate missing`);
 
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
   await rerenderData();
