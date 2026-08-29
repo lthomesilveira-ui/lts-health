@@ -1,13 +1,13 @@
-import {state,esc,day,fmtDate,fmtNum,num,workoutRows,bodyRows,unique,norm} from './core.js';
+import {state,esc,day,fmtDate,fmtNum,num,workoutRows,bodyRows,unique,norm,exercisesFor,setsFor} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1>${description?`<p>${esc(description)}</p>`:''}</div></div>`;
 const localDay=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;};
 const failed=key=>state.domainStatus[key]==='error';
-const metricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h','steps','resting_heart_rate_bpm']);
-const metricLabel={active_energy_kcal:'Energia ativa',exercise_minutes:'Exercício',stand_hours:'Horas em pé',sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'FC de repouso'};
-const metricFallbackUnit={active_energy_kcal:'kcal',exercise_minutes:'min',stand_hours:'h',sleep_duration_h:'h',steps:'passos',resting_heart_rate_bpm:'bpm'};
-const metricDigits={active_energy_kcal:0,exercise_minutes:0,stand_hours:0,sleep_duration_h:1,steps:0,resting_heart_rate_bpm:0};
-const metricOrder=['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm'];
+const metricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h']);
+const metricLabel={active_energy_kcal:'Energia ativa',exercise_minutes:'Exercício',stand_hours:'Horas em pé',sleep_duration_h:'Sono'};
+const metricFallbackUnit={active_energy_kcal:'kcal',exercise_minutes:'min',stand_hours:'h',sleep_duration_h:'h'};
+const metricDigits={active_energy_kcal:0,exercise_minutes:0,stand_hours:0,sleep_duration_h:1};
+const metricOrder=['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'];
 
 function latestLab(){
   const rows=state.data.labs||[];if(!rows.length)return null;const date=[...rows].map(r=>r.collection_date).filter(Boolean).sort().at(-1),same=rows.filter(r=>r.collection_date===date);return{date,count:same.length,lab:unique(same.map(r=>r.laboratory)).join(', ')};
@@ -31,7 +31,7 @@ function domainUnavailable(label,detail){return`<article class="todayStatusCard 
 function latestMetric(rows,type){return[...(rows||[])].filter(m=>m.metric_type===type&&metricTypes.has(m.metric_type)).sort((a,b)=>String(b.measured_at).localeCompare(String(a.measured_at)))[0]||null;}
 function metricCard(rows,type){
   const label=metricLabel[type],m=latestMetric(rows,type);if(!m)return`<article class="todayStatusCard"><span>${esc(label)}</span><b>Sem dado importado</b><small>Nenhum registro disponível para esta métrica.</small></article>`;
-  const value=num(m.value),unit=type==='steps'&&m.unit==='count'?metricFallbackUnit.steps:(m.unit||metricFallbackUnit[type]);
+  const value=num(m.value),unit=m.unit||metricFallbackUnit[type];
   const display=value==null?'Registro disponível':`${fmtNum(value,metricDigits[type]??1)} ${esc(unit)}`;
   return`<article class="todayStatusCard"><span>${esc(label)}</span><b>${display}</b><small>${fmtDate(m.measured_at)}${m.source?` · ${esc(m.source)}`:''}</small></article>`;
 }
@@ -44,6 +44,27 @@ function signed(value,digits=1,unit=''){
 function contextCard(label,headline,detail,route='',ref='',kind=''){
   const button=route?action(route,'Abrir',ref,kind):'';
   return `<article class="todayContextCard"><span>${esc(label)}</span><b>${esc(headline)}</b><p>${esc(detail)}</p>${button?`<div class="todayActions">${button}</div>`:''}</article>`;
+}
+function workoutProgressCard(workouts){
+  if(failed('workouts'))return domainUnavailable('Progressão de treino','As sessões não carregaram agora.');
+  if(failed('exercises')||failed('sets'))return domainUnavailable('Progressão de treino','Exercícios ou séries não carregaram agora; as sessões continuam disponíveis.');
+  if(workouts.length<2)return contextCard('Progressão de treino','Sem comparação entre sessões','São necessárias pelo menos duas sessões carregadas.');
+  const latest=workouts[0],previous=workouts[1];
+  const prevMap=new Map(exercisesFor(previous).map(e=>[norm(e.exercise),e]));
+  const comparisons=[];
+  for(const currentExercise of exercisesFor(latest)){
+    const key=norm(currentExercise.exercise),previousExercise=prevMap.get(key);if(!key||!previousExercise)continue;
+    const currentSets=setsFor(currentExercise),previousSets=setsFor(previousExercise),units=unique([...currentSets,...previousSets].map(s=>s.weight_unit||'sem unidade'));
+    for(const unit of units){
+      const currentWeights=currentSets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);
+      const previousWeights=previousSets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);
+      if(!currentWeights.length||!previousWeights.length)continue;
+      const now=Math.max(...currentWeights),before=Math.max(...previousWeights),delta=now-before;
+      comparisons.push(`${currentExercise.exercise}: ${before} → ${now} ${unit==='plate_index'?'placa':unit}${delta===0?'':` (${delta>0?'+':''}${fmtNum(delta,Number.isInteger(delta)?0:1)})`}`);
+    }
+  }
+  if(!comparisons.length)return contextCard('Progressão de treino','Sem exercício comparável nas duas sessões','A comparação exige a mesma descrição de exercício e a mesma unidade nas duas sessões.','treinos',latest.source_record_id,'workout');
+  return contextCard('Progressão de treino',`${fmtDate(previous.workout_date)} → ${fmtDate(latest.workout_date)}`,comparisons.slice(0,3).join(' · '),'treinos',latest.source_record_id,'workout');
 }
 function recentContext(body,workouts,metrics,lab){
   const cards=[];
@@ -61,12 +82,12 @@ function recentContext(body,workouts,metrics,lab){
   else if(workouts.length===1){const last=workouts[0];cards.push(contextCard('Treinos','Uma sessão registrada',`${fmtDate(last.workout_date)} · ${last.workout_type||'Treino'}`,'treinos',last.source_record_id,'workout'));}
   else cards.push(contextCard('Treinos','Sem sessão registrada','Nenhuma sessão está disponível no histórico carregado.'));
 
-  if(failed('metrics'))cards.push(domainUnavailable('Dados passivos','As métricas não carregaram agora.'));
+  if(failed('metrics'))cards.push(domainUnavailable('Atividade e sono','As métricas não carregaram agora.'));
   else{
     const supported=(metrics||[]).filter(m=>metricTypes.has(m.metric_type)&&day(m.measured_at));
     const latestDay=unique(supported.map(m=>day(m.measured_at))).sort().at(-1)||null;
     const types=latestDay?unique(supported.filter(m=>day(m.measured_at)===latestDay).map(m=>m.metric_type)):[];
-    cards.push(contextCard('Dados passivos',latestDay?`${types.length} tipo(s) de métrica em ${fmtDate(latestDay)}`:'Sem métrica importada',latestDay?types.map(t=>metricLabel[t]||t).join(' · '):'Atividade, sono e sinais aparecerão quando houver dados suportados.'));
+    cards.push(contextCard('Atividade e sono',latestDay?`${types.length} tipo(s) de métrica em ${fmtDate(latestDay)}`:'Sem métrica importada',latestDay?types.map(t=>metricLabel[t]||t).join(' · '):'As quatro métricas suportadas aparecerão quando houver dados disponíveis.'));
   }
 
   if(failed('labs'))cards.push(domainUnavailable('Exames','Os resultados laboratoriais não carregaram agora.'));
@@ -90,7 +111,7 @@ export function renderTodayHub(){
 
   return `${title('Hoje',fmtDate(today))}
     <section class="todayLead">
-      <div><span>Resumo</span><h2>Seu histórico mais recente, sem preencher lacunas.</h2><p>Treino, composição, alimentação, atividade, sono, sinais registrados e exames aparecem conforme os dados disponíveis.</p></div>
+      <div><span>Resumo</span><h2>Seu histórico mais recente, sem preencher lacunas.</h2><p>Treino, composição, alimentação, atividade, sono e exames aparecem conforme os dados disponíveis.</p></div>
       <div class="todayLeadActions">${action('treinos','Ver treinos')}${action('dados','Adicionar dados')}</div>
     </section>
 
@@ -103,11 +124,11 @@ export function renderTodayHub(){
 
     <section class="todaySection todayContextSection">
       <div class="cardHead"><div><b>Contexto recente</b><small>Diferenças e registros recentes apresentados de forma descritiva, sem transformar coincidências em causa ou meta.</small></div></div>
-      <div class="todayContextGrid">${recentContext(body,workouts,metrics,lab)}</div>
+      <div class="todayContextGrid">${recentContext(body,workouts,metrics,lab)}${workoutProgressCard(workouts)}</div>
     </section>
 
     <section class="todaySection">
-      <div class="cardHead"><div><b>Atividade, sono e sinais</b><small>Somente métricas com regra de importação validada são exibidas aqui. Passos e FC de repouso entram apenas quando o arquivo permite consolidação sem ambiguidade de fonte.</small></div></div>
+      <div class="cardHead"><div><b>Atividade e sono</b><small>A importação automática validada mostra energia ativa, minutos de exercício, horas em pé e duração do sono. Outras métricas não são tratadas aqui como importação automática.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
