@@ -76,7 +76,8 @@ jobs:
           grep -q "exercise_minutes" v2/src/source-status.js
           grep -q "stand_hours" v2/src/source-status.js
           ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
-          grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
+          ! grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
+          ! grep -q "sourceMetrics.some(m=>norm(m.source_family)==='polar_flow')" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
