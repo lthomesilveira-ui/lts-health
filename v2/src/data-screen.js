@@ -1,37 +1,18 @@
 import {state,esc,fmtDate,norm} from './core.js';
+import {sourceStatusFor,uploadBucket} from './source-status.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
 const failed=key=>state.domainStatus[key]==='error';
-const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
-
-function contains(rows,fields,term){term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));}
-function uploadBucket(upload){const status=String(upload?.status||'').toLowerCase();if(status==='uploaded'||status==='processing')return'in_progress';if(status==='processed'||status==='imported')return'done';if(status==='review_required'||status==='rejected'||status==='failed')return'attention';return'other';}
-function latestUploadFor(source,uploads){return [...(uploads||[])].filter(u=>norm(u.source_type)===norm(source)).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0]||null;}
-function sourceStatus({dataFound=false,upload=null,domainKeys=[]}){
-  const bucket=uploadBucket(upload);
-  if(bucket==='attention')return'attention';
-  if(bucket==='in_progress')return'processing';
-  if(dataFound)return'ready';
-  if(domainKeys.some(failed)||failed('uploads'))return'unknown';
-  if(upload)return'received';
-  return'missing';
-}
 
 function sourceState(){
-  const uploads=state.data.uploads||[],workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
-  const appleData=metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&contains([m],['source','source_file'],'apple'));
-  const polarData=contains(workouts,['source','source_file'],'polar')||sourceMetrics.some(m=>norm(m.source_family)==='polar_flow');
-  const mfpData=contains(nutrition,['source','source_file'],'myfitnesspal')||contains(meals,['source','source_file'],'myfitnesspal');
-  const fleuryData=contains(labs,['laboratory','source','source_file'],'fleury');
-  const einsteinData=contains(labs,['laboratory','source','source_file'],'einstein');
   return [
-    {key:'apple_health',name:'Apple Saúde',status:sourceStatus({dataFound:appleData,upload:latestUploadFor('apple_health',uploads),domainKeys:['metrics']}),capability:'Sincronização automática parcial',readyDetail:'Dados canônicos compatíveis do Apple Saúde encontrados.',missingDetail:'Envie o export do app Saúde.',action:'Enviar Apple Saúde',scope:'Automático canônico: energia ativa, minutos de exercício e horas em pé. Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos com origem preservada; não são promovidos automaticamente. Sono permanece fora da sincronização automática até validação específica.'},
-    {key:'polar_flow',name:'Polar Flow',status:sourceStatus({dataFound:polarData,upload:latestUploadFor('polar_flow',uploads),domainKeys:['workouts','sourceMetrics']}),capability:'Apple Saúde candidato + arquivo',readyDetail:'Dados do Polar encontrados.',missingDetail:'Envie um export do Polar Flow.',action:'Enviar Polar',scope:'Métricas do Polar presentes no Apple Saúde podem ser preservadas como candidatas por origem. O arquivo continua útil para detalhes de treino; o mesmo treino não é contado duas vezes quando outra fonte já o representa.'},
-    {key:'myfitnesspal',name:'MyFitnessPal',status:sourceStatus({dataFound:mfpData,upload:latestUploadFor('myfitnesspal',uploads),domainKeys:['nutrition','meals']}),capability:'Arquivo + integração Apple em preparação',readyDetail:'Dados estruturados do MyFitnessPal encontrados.',missingDetail:'Envie o export do MyFitnessPal.',action:'Enviar MyFitnessPal',scope:'CSV reconhecido consolida calorias e macros por dia. Campo ausente continua ausente. Dados de nutrição que o MyFitnessPal escreve no Apple Saúde ainda não são sincronizados automaticamente por este companion.'},
-    {key:'fleury',name:'Fleury',status:sourceStatus({dataFound:fleuryData,upload:latestUploadFor('fleury',uploads),domainKeys:['labs']}),capability:'Arquivo preservado + revisão',readyDetail:'Resultados estruturados do Fleury encontrados.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Fleury',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'},
-    {key:'einstein',name:'Einstein',status:sourceStatus({dataFound:einsteinData,upload:latestUploadFor('einstein',uploads),domainKeys:['labs']}),capability:'Arquivo preservado + revisão',readyDetail:'Resultados estruturados do Einstein encontrados.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Einstein',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'}
+    {key:'apple_health',name:'Apple Saúde',status:sourceStatusFor('apple_health'),capability:'Leitura automática parcial',readyDetail:'Dados compatíveis do Apple Saúde encontrados.',missingDetail:'Envie o export do app Saúde.',action:'Enviar Apple Saúde',scope:'A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono. Passos e FC de repouso não são importados automaticamente por este fluxo; só aparecem quando já existem como registros válidos de outra origem.'},
+    {key:'polar_flow',name:'Polar Flow',status:sourceStatusFor('polar_flow'),capability:'Arquivo + revisão',readyDetail:'Dados do Polar encontrados.',missingDetail:'Envie um export do Polar Flow.',action:'Enviar Polar',scope:'O arquivo pode complementar detalhes de treino. O mesmo treino não é contado duas vezes quando outra fonte já o representa.'},
+    {key:'myfitnesspal',name:'MyFitnessPal',status:sourceStatusFor('myfitnesspal'),capability:'Leitura automática de nutrição',readyDetail:'Dados estruturados do MyFitnessPal encontrados.',missingDetail:'Envie o export do MyFitnessPal.',action:'Enviar MyFitnessPal',scope:'CSV reconhecido consolida calorias e macros por dia. Campo ausente continua ausente. Atividade do MyFitnessPal permanece separada de treinos estruturados.'},
+    {key:'fleury',name:'Fleury',status:sourceStatusFor('fleury'),capability:'Arquivo preservado + revisão',readyDetail:'Resultados estruturados do Fleury encontrados.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Fleury',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'},
+    {key:'einstein',name:'Einstein',status:sourceStatusFor('einstein'),capability:'Arquivo preservado + revisão',readyDetail:'Resultados estruturados do Einstein encontrados.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Einstein',scope:'CSV, PDF ou imagem são preservados. Resultados só são estruturados quando a leitura for validada; valor, unidade ou faixa ambíguos ficam para revisão.'}
   ];
 }
 
