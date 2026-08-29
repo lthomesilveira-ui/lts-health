@@ -126,7 +126,7 @@ export function renderTodayHub(){
     </section>
 
     <section class="todaySection">
-      <div class="cardHead"><div><b>Atividade e sono</b><small>Energia ativa, minutos de exercício, horas em pé e duração do sono têm sincronização automática validada. No sono, intervalos sobrepostos são unidos antes do total diário. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
+      <div class="cardHead"><div><b>Atividade e sono</b><small>Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada. Sono pode ser exibido quando já existe como métrica estruturada, mas permanece fora da sincronização automática até validação por origem. Cada cartão indica se o dado é de hoje ou apenas o último disponível.</small></div></div>
       <div class="todayMetricGrid">${metricCards}</div>
     </section>
 
