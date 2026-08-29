@@ -41,6 +41,24 @@ Os três treinos recentes presentes no contexto do projeto foram conferidos cont
 
 As quatro medições segmentares estruturadas foram conferidas nas datas 20/03, 03/07, 16/07 e 24/08/2026. Todas têm os cinco campos de massa magra segmentar e os cinco campos de gordura segmentar preenchidos na fonte estruturada, com confiança alta. A interface pode portanto mostrar esses valores e diferenças entre datas/lados sem estimar campos ausentes.
 
+## Cobertura histórica de nutrição
+
+A série diária importada foi conferida por ano. A interface deve mostrar explicitamente os períodos ausentes em vez de transformar ausência em zero.
+
+| Ano | Dias registrados | Intervalo disponível |
+| --- | ---: | --- |
+| 2018 | 208 | 04/06/2018 → 30/12/2018 |
+| 2019 | 355 | 01/01/2019 → 31/12/2019 |
+| 2020 | 353 | 01/01/2020 → 29/12/2020 |
+| 2021 | 345 | 03/01/2021 → 31/12/2021 |
+| 2022 | 364 | 01/01/2022 → 31/12/2022 |
+| 2023 | 365 | 01/01/2023 → 31/12/2023 |
+| 2024 | 184 | 01/01/2024 → 06/07/2024 |
+| 2025 | 0 | sem registros disponíveis |
+| 2026 | 115 | 03/05/2026 → 26/08/2026 |
+
+O ano de 2025 é uma lacuna na fonte atualmente importada. Isso não significa ausência de alimentação, jejum, aderência ou qualquer outro comportamento; significa apenas que não há registros diários estruturados disponíveis naquele período. A camada de refeições apresenta a mesma lacuna de 2025.
+
 ## Regras de sobreposição e deduplicação
 
 1. **Treino estruturado do LTS Health é a sessão principal.** Apple Health, Polar ou MyFitnessPal não criam uma segunda sessão quando representam o mesmo treino já registrado.
