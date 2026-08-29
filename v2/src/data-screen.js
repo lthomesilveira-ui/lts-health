@@ -37,7 +37,7 @@ function statusCard(source){
 function area(label,key){return [label,failed(key)?'—':String((state.data[key]||[]).length),failed(key)?'indisponível agora':'registros'];}
 
 const sourceLabels={apple_health:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',fleury:'Fleury',einstein:'Einstein',lab:'Exame laboratorial',other:'Outra origem'};
-const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',review_required:'revisão necessária',failed:'falha no processamento'};
+const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'revisão necessária',rejected:'não processado',failed:'falha no processamento'};
 const issueCategoryLabels={
   limited_longitudinal_coverage:'Histórico ainda limitado',
   metadata_only:'Arquivo original ainda não disponível',
