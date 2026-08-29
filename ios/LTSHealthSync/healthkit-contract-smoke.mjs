@@ -33,9 +33,19 @@ for (const token of [
   'exercise_minutes',
   'stand_hours',
   'source_family: family',
-  'apple_activity_summary'
+  'apple_activity_summary',
+  'private let anchorBatchSize = 500',
+  'private let anchorMaxBatches = 40',
+  'private let anchorLookbackDays = 14',
+  'healthkit.anchor.start',
+  'HKQuery.predicateForSamples(',
+  'limit: anchorBatchSize',
+  'let changed = try await advanceAnchor(for: type)',
+  'guard changed, await api.hasSession else { return }',
+  'try await primeAnchors()'
 ]) if (!health.includes(token)) throw new Error(`HealthKit sync contract missing: ${token}`);
 
+if (health.includes('HKObjectQueryNoLimit')) throw new Error('HealthKit anchor query must not materialize unbounded history');
 for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h']) {
   const canonicalPayloadPattern = new RegExp(`metric_type:\\s*"${metric}"`);
   if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the v1 canonical ActivitySummary client`);
