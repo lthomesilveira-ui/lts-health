@@ -1,0 +1,66 @@
+import { chromium } from 'playwright';
+
+const base=process.env.LTS_HEALTH_BASE_URL||'https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1';
+const forbidden=/\b(canonical|parity|backend|provenance[- ]first|readiness|PWA)\b/i;
+
+async function assertScreen(page,title,label){
+  await page.waitForFunction(t=>document.querySelector('#screenHost h1')?.textContent===t,title);
+  const text=(await page.textContent('#screenHost'))||'';
+  if(text.trim().length<20)throw new Error(`${label}: empty screen`);
+  if(forbidden.test(text))throw new Error(`${label}: implementation jargon visible`);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
+}
+
+async function more(page,nav,route,title,label){
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.click(`#moreSheet [data-route="${route}"]`);
+  await assertScreen(page,title,label);
+}
+
+async function run(viewport,label){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport});
+  const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+  await page.goto(base,{waitUntil:'networkidle',timeout:45000});
+  await page.waitForSelector('#app:not(.hidden)');
+  const nav=viewport.width<720?'#mobileNav':'#primaryNav';
+
+  await assertScreen(page,'Bio',`${label}/bio`);
+  if((await page.locator('[data-body-date]').count())<2)throw new Error(`${label}: Bio history missing`);
+
+  await page.click(`${nav} [data-route="treinos"]`);
+  await assertScreen(page,'Treinos',`${label}/treinos`);
+  await page.selectOption('#trainingPeriod','all');
+  await page.click('[data-workout="workout-2"]');
+  if(!(await page.locator('.session.open').textContent())?.includes('Supino máquina'))throw new Error(`${label}: training drilldown missing`);
+
+  await page.click(`${nav} [data-route="evolucao"]`);
+  await assertScreen(page,'Evolução',`${label}/evolucao`);
+  const evolution=(await page.textContent('#screenHost'))||'';
+  for(const text of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições'])if(!evolution.includes(text))throw new Error(`${label}: evolution missing ${text}`);
+
+  await page.click(`${nav} [data-route="analise"]`);
+  await assertScreen(page,'Análise',`${label}/analise`);
+
+  await more(page,nav,'hoje','Hoje',`${label}/hoje`);
+  await more(page,nav,'timeline','Timeline',`${label}/timeline`);
+  await more(page,nav,'saude','Saúde & exames',`${label}/saude`);
+  await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
+  await more(page,nav,'dados','Dados',`${label}/dados`);
+  const data=(await page.textContent('#screenHost'))||'';
+  if(!data.includes('Leitura automática parcial')||!data.includes('Documento preservado'))throw new Error(`${label}: Data import capabilities missing`);
+  await more(page,nav,'tratamentos','Tratamentos',`${label}/tratamentos`);
+  const treatment=(await page.textContent('#screenHost'))||'';
+  if(treatment.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error(`${label}: treatment screen exposed operational guidance`);
+
+  if(errors.length)throw new Error(`${label}: browser errors: ${errors.join(' | ')}`);
+  await browser.close();
+}
+
+await run({width:1280,height:900},'desktop-live');
+await run({width:390,height:844},'mobile-live');
+console.log('LTS Health v2 deployed browser smoke passed');
