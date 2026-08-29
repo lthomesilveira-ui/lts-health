@@ -13,6 +13,7 @@ jobs:
       - name: Static architecture gates
         run: |
           node --check v2/src/core.js
+          node --check v2/src/source-status.js
           node --check v2/src/data-layer.js
           node --check v2/src/bio-screen.js
           node --check v2/src/training-screen.js
@@ -70,6 +71,13 @@ jobs:
           ! grep -q "health-inspect-upload-v2" v2/src/core.js
           ! grep -q "health-inspect-lab" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
+          grep -q "stableAppleMetricTypes" v2/src/source-status.js
+          grep -q "active_energy_kcal" v2/src/source-status.js
+          grep -q "exercise_minutes" v2/src/source-status.js
+          grep -q "stand_hours" v2/src/source-status.js
+          ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
+          grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
+          grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
@@ -91,8 +99,10 @@ jobs:
           grep -q "Automático canônico: energia ativa, minutos de exercício e horas em pé" v2/src/data-screen.js
           grep -q "Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos" v2/src/data-screen.js
           grep -q "Sono permanece fora da sincronização automática" v2/src/data-screen.js
+          grep -q "Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde" v2/src/data-screen.js
           grep -q "Arquivo preservado + revisão" v2/src/data-screen.js
           grep -q "Resultados só são estruturados quando a leitura for validada" v2/src/data-screen.js
+          grep -q "sourceStatusFor('apple_health')" v2/src/data-screen.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "data-body-date" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
@@ -120,7 +130,12 @@ jobs:
           grep -q "não verificado" v2/src/data-screen.js
           grep -q "Sincronização automática parcial" v2/src/data-screen.js
           grep -q "previewDetail" v2/src/data-screen.js
-          grep -q "const metricTypes=new Set(\['active_energy_kcal','exercise_minutes','stand_hours','sleep_duration_h'\])" v2/src/today-screen.js
+          grep -q "metricTypes" v2/src/today-screen.js
+          grep -q "sleep_duration_h" v2/src/today-screen.js
+          grep -q "sourceStatusFor('apple_health')" v2/src/today-screen.js
+          grep -q "Arquivo recebido; dados ainda não confirmados" v2/src/today-screen.js
+          grep -q "Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada" v2/src/today-screen.js
+          grep -q "Sono pode ser exibido quando já existe como métrica estruturada" v2/src/today-screen.js
           grep -q "Progressão de treino" v2/src/today-screen.js
           grep -q "metricOrder" v2/src/today-screen.js
           grep -q "recentContext" v2/src/today-screen.js

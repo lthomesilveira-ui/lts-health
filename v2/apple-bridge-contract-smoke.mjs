@@ -28,9 +28,14 @@ for(const token of [
 ]){
   if(!fn.includes(token))throw new Error(`Apple bridge contract missing: ${token}`);
 }
+const dietary=['dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g'];
+for(const metric of dietary){
+  if(!fn.includes(`'${metric}'`))throw new Error(`dietary candidate metric missing from Apple bridge allowlist: ${metric}`);
+  if(new RegExp(`canonicalActivity[^\\n]*${metric}`).test(fn))throw new Error(`${metric} must never be canonicalized by ActivitySummary promotion`);
+}
 if(/canonicalActivity[^\n]*steps/.test(fn))throw new Error('steps must not be canonicalized automatically');
 if(/canonicalActivity[^\n]*oxygen_saturation_pct/.test(fn))throw new Error('oxygen saturation must not be canonicalized automatically');
-if(!fn.includes("allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg'])"))throw new Error('allowed Apple bridge metric set drifted');
+if(!fn.includes("allowed=new Set(['active_energy_kcal','exercise_minutes','stand_hours','steps','sleep_duration_h','resting_heart_rate_bpm','heart_rate_avg_bpm','hrv_sdnn_ms','respiratory_rate_bpm','oxygen_saturation_pct','weight_kg','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g'])"))throw new Error('allowed Apple bridge metric set drifted');
 if(/const sid=providedId\|\|/.test(fn)||/const sid=clientSourceRecordId\|\|/.test(fn))throw new Error('client source_record_id can still control the Apple upsert identity');
 if(!fn.includes("if(sourceFamily==='apple_activity_summary')return `activity_summary:${metric}:${d}`"))throw new Error('ActivitySummary source id no longer matches historical identity');
 if(!fn.includes("return `apple_export:${sourceFamily}:${metric}:${d}:${md5(sourceName)}`"))throw new Error('Apple export source id no longer matches historical identity');
@@ -38,6 +43,7 @@ if(!fn.includes("return `apple_bridge:${JSON.stringify([sourceFamily,metric,d,so
 if(!fn.includes("new TextEncoder().encode(raw).length>maxRequestBytes"))throw new Error('actual request body size is not bounded');
 if(!fn.includes("payloadSize(r.source_payload)>maxSourcePayloadBytes"))throw new Error('per-row source payload size is not bounded');
 if(fn.includes("sb.from('health_metrics')"))throw new Error('Edge Function must not write canonical health_metrics directly');
+if(fn.includes("sb.from('health_daily_nutrition')"))throw new Error('Edge Function must not write canonical daily nutrition directly');
 const payloadBlock=fn.match(/source_payload:\{[\s\S]*?\n\s*\},\n\s*updated_at/)?.[0]||'';
 const spread='...(r.source_payload&&typeof r.source_payload===\'object\'?r.source_payload:{})';
 const spreadAt=payloadBlock.indexOf(spread),clientIdAt=payloadBlock.indexOf('client_source_record_id:clientSourceRecordId'),batchAt=payloadBlock.indexOf('batch_id:batchId'),bridgeAt=payloadBlock.indexOf('bridge_version:bridgeVersion'),sourceAt=payloadBlock.indexOf('original_source:sourceName');
