@@ -20,6 +20,12 @@ jobs:
           node --check v2/data-copy-smoke.mjs
           grep -q "imported:'importado'" v2/src/data-screen.js
           grep -q "rejected:'não processado'" v2/src/data-screen.js
+          grep -q "previewNotice" v2/src/data-screen.js
+          ! grep -q 'esc(preview.error_message)' v2/src/data-screen.js
+          ! grep -q 'warnings.map' v2/src/data-screen.js
+          grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
+          ! grep -q 'health-inspect-upload-v2' v2/src/core.js
+          ! grep -q 'health-inspect-lab' v2/src/core.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
