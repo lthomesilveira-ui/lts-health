@@ -1,0 +1,35 @@
+name: LTS Health Longitudinal Smoke
+on:
+  push:
+    branches: [architecture-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  health-longitudinal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static health gates
+        run: |
+          node --check v2/src/health-screen.js
+          node --check v2/health-longitudinal-smoke.mjs
+          grep -q "collectionComparison" v2/src/health-screen.js
+          grep -q "unidades diferentes permanecem em séries separadas" v2/src/health-screen.js
+          grep -q "nenhuma conversão é feita automaticamente" v2/src/health-screen.js
+          grep -q "Resultados textuais" v2/src/health-screen.js
+          grep -q "PDF e imagem podem ficar guardados sem gerar resultados" v2/src/health-screen.js
+          ! grep -R 'MutationObserver\|loadAll\|activateTab' v2/src v2/index.html
+          ! grep -R 'health-inspect-upload-v2' v2/src/data-screen.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Longitudinal lab browser smoke
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-health.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/health-longitudinal-smoke.mjs
