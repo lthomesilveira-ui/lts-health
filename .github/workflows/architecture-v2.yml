@@ -66,8 +66,8 @@ jobs:
           grep -q 'data-route="tratamentos"' v2/index.html
           grep -q 'id="entryModal"' v2/index.html
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
-          ! grep -q "health-inspect-upload-v2" v2/src/core.js
-          grep -q "inspectFunctionForSource = () => CONFIG.inspectFunction" v2/src/core.js
+          grep -q "appleInspectFunction: 'health-inspect-upload-v2'" v2/src/core.js
+          grep -q "inspectFunctionForSource = sourceType => sourceType==='apple_health' ? CONFIG.appleInspectFunction : CONFIG.inspectFunction" v2/src/core.js
           grep -q "renderBioHub" v2/src/main.js
           grep -q "renderTrainingScreen" v2/src/main.js
           grep -q "renderEvolutionHub" v2/src/main.js
@@ -87,7 +87,7 @@ jobs:
           grep -q "downloadStructuredBackup" v2/src/main.js
           grep -q "backupExportBtn" v2/src/data-screen.js
           grep -q "A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono" v2/src/data-screen.js
-          grep -q "Passos e frequência cardíaca de repouso não são tratados como importação automática validada" v2/src/data-screen.js
+          grep -q "Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte" v2/src/data-screen.js
           grep -q "bodyFailed" v2/src/bio-screen.js
           grep -q "data-body-date" v2/src/bio-screen.js
           grep -q "failed('sets')" v2/src/training-screen.js
