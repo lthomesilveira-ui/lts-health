@@ -3,21 +3,30 @@ import { readFile } from 'node:fs/promises';
 const fn=await readFile('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const migration=await readFile('supabase/migrations/20260829190410_add_source_daily_metrics_for_apple_bridge.sql','utf8');
 const statusMigration=await readFile('supabase/migrations/20260829202400_preserve_source_metric_status.sql','utf8');
+const reviewedMigration=await readFile('supabase/migrations/20260829202600_preserve_reviewed_source_metric_status.sql','utf8');
 const backup=await readFile('v2/src/data-layer.js','utf8');
 
 for(const token of [
   "const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours'])",
   "const historicalExportFamilies=new Set(['apple_watch','iphone','polar_flow'])",
+  "const reviewedStatuses=new Set(['held','superseded'])",
   "const maxRequestBytes=1_000_000",
   "const maxSourcePayloadBytes=8_192",
   "sourceFamily==='apple_activity_summary'&&canonicalActivity.has(metric)",
-  "row.source_family==='apple_activity_summary'&&ids.has(row.metric_type+'|'+row.metric_date)",
   "canonical_status:'candidate'",
   "rows.length>1000",
   "error:'payload_too_large'",
   "reason:'source_payload_too_large'",
   "const sid=sourceId(sourceFamily,metric,d,sourceName)",
-  "client_source_record_id:clientSourceRecordId"
+  "client_source_record_id:clientSourceRecordId",
+  "source_metric_id:sid",
+  ".select('source_record_id,canonical_status')",
+  "error:'source_status_read_failed'",
+  "blockedCanonicalSourceIds.add(String(row.source_record_id))",
+  "const eligibleCanonical=canonical.filter(x=>!blockedCanonicalSourceIds.has(x.source_metric_id))",
+  "map(({source_metric_id,...row})=>row)",
+  "!blockedCanonicalSourceIds.has(row.source_record_id)",
+  "review_blocked:blockedCanonicalSourceIds.size"
 ]){
   if(!fn.includes(token))throw new Error(`Apple bridge contract missing: ${token}`);
 }
@@ -48,6 +57,13 @@ for(const token of [
   'before update of canonical_status',
   'health_source_daily_metrics_preserve_status_trg'
 ])if(!statusMigration.includes(token))throw new Error(`source status downgrade protection missing: ${token}`);
+for(const token of [
+  "old.canonical_status in ('held','superseded')",
+  "new.canonical_status in ('candidate','canonical')",
+  "old.canonical_status = 'canonical'",
+  "new.canonical_status = 'candidate'",
+  'new.canonical_status := old.canonical_status'
+])if(!reviewedMigration.includes(token))throw new Error(`reviewed source status protection missing: ${token}`);
 if(backup.includes("source_file,source_payload','metric_date'"))throw new Error('raw source payload must not be exported in structured backup');
 if(!backup.includes("source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file','metric_date'"))throw new Error('structured source metric backup projection drifted');
 console.log('LTS Health Apple bridge contract smoke passed');
