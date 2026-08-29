@@ -34,6 +34,15 @@ const result=await page.evaluate(async()=>{
 });
 
 if(result.failures.length)throw new Error(result.failures.join(' | '));
+
+// Exercise the actual form: expected validation stays visible and does not close the dialog.
+await page.locator('#routeAction').click();
+await page.waitForSelector('#entryModal:not(.hidden)');
+await page.locator('#bodyEntryForm [name="weight_kg"]').fill('-1');
+await page.locator('#bodyEntryForm button[type="submit"]').click();
+await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='Use apenas valores iguais ou maiores que zero.');
+if(await page.locator('#entryModal').evaluate(el=>el.classList.contains('hidden')))throw new Error('validation closed the entry dialog');
 if(errors.length)throw new Error(`browser errors: ${errors.join(' | ')}`);
+
 await browser.close();
 console.log('LTS Health v2 write integrity smoke passed');
