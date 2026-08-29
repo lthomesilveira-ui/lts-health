@@ -148,15 +148,19 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Browser interaction smoke
+      - name: Start fixture server
         run: |
           python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          node v2/browser-smoke.mjs
-          node v2/failure-smoke.mjs
-          node v2/parity-smoke.mjs
-          node v2/timeline-interaction-smoke.mjs
-          node v2/today-context-smoke.mjs
-          node v2/backup-smoke.mjs
+      - name: Core browser interactions
+        run: node v2/browser-smoke.mjs
+      - name: Partial-domain failure states
+        run: node v2/failure-smoke.mjs
+      - name: Product surface smoke
+        run: node v2/parity-smoke.mjs
+      - name: Timeline interactions
+        run: node v2/timeline-interaction-smoke.mjs
+      - name: Today context
+        run: node v2/today-context-smoke.mjs
+      - name: Backup smoke
+        run: node v2/backup-smoke.mjs
