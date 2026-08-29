@@ -25,8 +25,9 @@ async function run(viewport,label){
     state.ui.selectedCollection=null;
     state.ui.selectedBiomarker='marcador a';
   });
-  await page.selectOption('#collectionSelect',{index:1});
-  await page.selectOption('#collectionSelect',{index:0});
+  await page.fill('#labQuery','x');
+  await page.fill('#labQuery','');
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=4);
   await page.waitForSelector('.collectionCompareList');
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
