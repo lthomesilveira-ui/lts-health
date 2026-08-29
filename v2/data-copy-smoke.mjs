@@ -19,8 +19,13 @@ async function run(viewport,label){
       {id:'u3',created_at:'2026-02-02T12:00:00Z',original_filename:'lab.pdf',source_type:'fleury',status:'review_required'},
       {id:'u4',created_at:'2026-02-01T12:00:00Z',original_filename:'bad.zip',source_type:'other',status:'rejected'}
     ];
+    state.data.previews=[
+      {upload_id:'u3',status:'review_required',detected_format:'pdf',warnings:['RAW_PARSER_WARNING private_field=example'],error_message:'STACK_TRACE parser failed at internal.module:42'},
+      {upload_id:'u4',status:'failed',detected_format:'zip',warnings:['RAW_FAILURE_DIAGNOSTIC'],error_message:'INTERNAL_ERROR_PAYLOAD {"secret":"value"}'}
+    ];
     state.data.quality=[
       {status:'open',category:'workout_parsing',entity_name:'INTERNAL_ENTITY',description:'Detalhe ainda depende de revisão da fonte.'},
+      {status:'open',category:'unknown_internal_category',entity_name:'RAW_INTERNAL_ENTITY',description:'RAW_INTERNAL_DESCRIPTION backend_table=row'},
       {status:'accepted',category:'metadata_only',entity_name:'HealthDocument',description:'Arquivo ausente.',resolution_notes:'Inventário preservado; depende do arquivo original.'},
       {status:'accepted',category:'missing_event_dose',issue_code:'treatment_dose_missing',entity_name:'SECRET_TREATMENT_ENTITY',description:'SENSITIVE_OPERATIONAL_DETAIL 999 mg frequência aplicação',resolution_notes:'SENSITIVE_RESOLUTION_DETAIL'},
       {status:'resolved',category:'migration_integrity',entity_name:'WorkoutExercise',description:'Migração corrigida.',resolution_notes:'Exercícios recuperados sem inferir séries.'}
@@ -36,7 +41,7 @@ async function run(viewport,label){
   };
   await rerenderData();
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.']){
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.','Há detalhes que precisam de revisão antes de concluir a leitura.','O processamento não foi concluído. O arquivo original continua guardado.','Revisão registrada sem detalhe exibido nesta tela.']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
   const sourceCards=await page.locator('.sourceStatus').allTextContents();
@@ -49,8 +54,8 @@ async function run(viewport,label){
   const overview=await page.locator('.card:has-text("Acompanhamento dos arquivos") .sourceCard span').allTextContents();
   if(overview.join('|')!=='1|1|2|0')throw new Error(`${label}: unexpected processing overview ${overview.join('|')}`);
   const qualityOverview=await page.locator('.card:has-text("Qualidade dos dados") > .sourceGrid .sourceCard span').allTextContents();
-  if(qualityOverview.join('|')!=='1|2|1')throw new Error(`${label}: unexpected quality overview ${qualityOverview.join('|')}`);
-  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação']){
+  if(qualityOverview.join('|')!=='2|2|1')throw new Error(`${label}: unexpected quality overview ${qualityOverview.join('|')}`);
+  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação','RAW_PARSER_WARNING','STACK_TRACE','RAW_FAILURE_DIAGNOSTIC','INTERNAL_ERROR_PAYLOAD','RAW_INTERNAL_ENTITY','RAW_INTERNAL_DESCRIPTION','backend_table=row']){
     if(text.includes(forbidden))throw new Error(`${label}: raw internal or operational value visible: ${forbidden}`);
   }
 
