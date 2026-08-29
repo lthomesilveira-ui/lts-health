@@ -110,6 +110,7 @@ async function run(viewport,label){
   if((await page.locator('.documentSummary').count())!==1||(await page.locator('.evidenceDateList article').count())<1)throw new Error(`${label}: longitudinal document/evidence browsing missing`);
   const healthText=(await page.textContent('#screenHost'))||'';
   if(!healthText.includes('Resultados e documentos na mesma data')||!healthText.includes('Coincidência de data não demonstra causa'))throw new Error(`${label}: cross-evidence guardrail missing`);
+  if(!healthText.includes('Comparação com a coleta anterior')||!healthText.includes('Diferenças só são calculadas'))throw new Error(`${label}: collection comparison guardrail missing`);
   await page.fill('#labQuery','Marcador A');
   await page.waitForFunction(()=>document.querySelectorAll('.markerList button').length===1);
 
@@ -126,8 +127,8 @@ async function run(viewport,label){
   const dataText=(await page.textContent('#screenHost'))||'';
   if(!dataText.includes('Leitura automática parcial')||!dataText.includes('Leitura automática de nutrição')||!dataText.includes('CSV estruturado + documento preservado')) throw new Error(`${label}: import capability labels missing`);
   if(!dataText.includes('energia ativa')||!dataText.includes('minutos de exercício')||!dataText.includes('horas em pé')||!dataText.includes('duração do sono'))throw new Error(`${label}: validated Apple Health automatic scope missing`);
-  if(!dataText.includes('Passos e frequência cardíaca de repouso entram somente em dias com uma única fonte'))throw new Error(`${label}: conditional Apple Health metrics rule is not explicit`);
-  if(!dataText.includes('Resultados textuais permanecem textuais')||!dataText.includes('aguardam leitura especializada validada'))throw new Error(`${label}: structured-lab safety copy missing`);
+  if(!dataText.includes('Outros campos só aparecem quando já existem como registros válidos de outra origem'))throw new Error(`${label}: Apple Health scope boundary is not explicit`);
+  if(!dataText.includes('Resultado textual permanece textual')||!dataText.includes('PDF e imagem ficam preservados como documentos e não criam resultados'))throw new Error(`${label}: structured-lab safety copy missing`);
   await page.click('[data-source-upload="apple_health"]');
   if(await page.inputValue('#uploadType')!=='apple_health') throw new Error(`${label}: Apple upload shortcut failed`);
   await page.click('[data-source-upload="fleury"]');
