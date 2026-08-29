@@ -21,6 +21,10 @@ async function clickRoute(page,nav,route){
   await page.locator(`#moreSheet [data-route="${route}"]`).click();
 }
 
+async function waitHidden(page,selector){
+  await page.waitForFunction(sel=>document.querySelector(sel)?.classList.contains('hidden')===true,selector);
+}
+
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport});
@@ -58,20 +62,20 @@ async function run(viewport,label){
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
   await page.locator('#closeEntry').click();
-  await page.waitForSelector('#entryModal.hidden');
+  await waitHidden(page,'#entryModal');
   await waitRoute(page,'bio');
   await clickRoute(page,nav,'treinos');await waitRoute(page,'treinos');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
   await page.locator('#closeEntry').click();
-  await page.waitForSelector('#entryModal.hidden');
+  await waitHidden(page,'#entryModal');
   await waitRoute(page,'treinos');
 
   // The More sheet must be dismissible without route changes.
   await page.locator(`${nav} [data-route="mais"]`).click();
   await page.waitForSelector('#moreSheet:not(.hidden)');
   await page.locator('#closeMore').click();
-  await page.waitForSelector('#moreSheet.hidden');
+  await waitHidden(page,'#moreSheet');
   await waitRoute(page,'treinos');
 
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
