@@ -92,3 +92,37 @@ export async function refreshData(route,onProgress=()=>{}){
   if(fixtureMode){setFixture();onProgress(fixtureError?'Alguns dados não carregaram':'Atualizado');return;}
   state.domainStatus={};state.data={};state.errors={};await loadInitialData(onProgress);await ensureRouteData(route,onProgress);
 }
+
+export async function buildStructuredBackup(onProgress=()=>{}){
+  onProgress('Preparando backup…');
+  let data;
+  if(fixtureMode)data=fixtureData();
+  else{
+    const entries=await Promise.all(Object.entries(loaders).map(async([key,loader])=>[key,await loader()]));
+    data=Object.fromEntries(entries);
+  }
+  const counts=Object.fromEntries(Object.entries(data).map(([key,rows])=>[key,Array.isArray(rows)?rows.length:0]));
+  const backup={
+    format:'lts-health-structured-backup',
+    schema_version:1,
+    exported_at:new Date().toISOString(),
+    scope:'structured_records_only',
+    notes:[
+      'Backup estruturado dos registros acessíveis à sessão atual.',
+      'Arquivos originais armazenados na área privada não são incorporados neste JSON.',
+      'Credenciais, tokens e segredos de autenticação não são exportados.',
+      'Campos ausentes permanecem ausentes; nenhum valor é reconstruído por estimativa.'
+    ],
+    counts,
+    data
+  };
+  onProgress('Backup pronto');
+  return backup;
+}
+
+export async function downloadStructuredBackup(onProgress=()=>{}){
+  const backup=await buildStructuredBackup(onProgress),date=new Date().toISOString().slice(0,10),filename=`lts-health-backup-${date}.json`;
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download=filename;link.style.display='none';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  return{filename,counts:backup.counts};
+}
