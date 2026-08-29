@@ -23,12 +23,22 @@ function lineChart(rows,key,label){
   return `<div class="evoChart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path class="gridline" d="M28 58H932 M28 115H932 M28 172H932"/><path class="evoLine" d="${path}"/>${dots}</svg></div><div class="evoAxis"><span>${fmtDate(pts[0].date)}</span><b>${esc(label)}</b><span>${fmtDate(pts.at(-1).date)}</span></div>`;
 }
 
+function localDate(value){
+  const parts=day(value).split('-').map(Number);if(parts.length!==3||parts.some(v=>!Number.isFinite(v)))return null;
+  return new Date(parts[0],parts[1]-1,parts[2],12,0,0,0);
+}
+function dateKey(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;}
+function mondayOf(date){const d=new Date(date);const weekday=(d.getDay()+6)%7;d.setDate(d.getDate()-weekday);return d;}
 function weeklyCounts(weeks=12){
-  const rows=failed('workouts')?[]:workoutRows(),now=new Date();now.setHours(12,0,0,0);const out=[];
+  if(failed('workouts'))return[];
+  const rows=workoutRows().filter(w=>localDate(w.workout_date));if(!rows.length)return[];
+  const latest=localDate(rows[0].workout_date),today=new Date();today.setHours(12,0,0,0);
+  const latestWeek=mondayOf(latest),currentWeek=mondayOf(today),anchor=latestWeek.getTime()===currentWeek.getTime()?today:latest;
+  const anchorMonday=mondayOf(anchor),out=[];
   for(let i=weeks-1;i>=0;i--){
-    const end=new Date(now);end.setDate(end.getDate()-i*7);const start=new Date(end);start.setDate(start.getDate()-6);
-    const a=start.toISOString().slice(0,10),b=end.toISOString().slice(0,10);
-    out.push({a,b,label:a.slice(5).replace('-','/'),count:rows.filter(w=>day(w.workout_date)>=a&&day(w.workout_date)<=b).length});
+    const start=new Date(anchorMonday);start.setDate(start.getDate()-i*7);const end=new Date(start);end.setDate(end.getDate()+6);
+    const a=dateKey(start),b=dateKey(end),sessions=rows.filter(w=>day(w.workout_date)>=a&&day(w.workout_date)<=b),days=new Set(sessions.map(w=>day(w.workout_date))).size;
+    out.push({a,b,label:`${String(start.getDate()).padStart(2,'0')}/${String(start.getMonth()+1).padStart(2,'0')}`,sessions:sessions.length,days});
   }
   return out;
 }
@@ -97,7 +107,7 @@ export function renderEvolutionHub(){
     state.ui.segmentalCompareDate=(idx>0?segmental[idx-1]:compareChoices.at(-1))?.measured_at||null;
   }
   const compareSeg=segmental.find(s=>s.measured_at===state.ui.segmentalCompareDate)||null;
-  const weeks=weeklyCounts(),maxWeek=Math.max(1,...weeks.map(w=>w.count)),failures=[bodyFailed?'composição corporal':null,segFailed?'análise segmentar':null,workoutFailed?'treinos':null].filter(Boolean);
+  const weeks=weeklyCounts(),maxWeek=Math.max(1,...weeks.map(w=>w.days)),failures=[bodyFailed?'composição corporal':null,segFailed?'análise segmentar':null,workoutFailed?'treinos':null].filter(Boolean);
   return `${title('Evolução','Composição corporal, análise segmentar e ritmo de treinos ao longo do tempo.')}
     ${failures.length?`<div class="errorState"><b>Parte da evolução está indisponível agora.</b><span>Não foi possível carregar: ${esc(failures.join(', '))}. O restante continua visível.</span></div>`:''}
     <div class="grid cols4 sectionGap">
@@ -110,6 +120,6 @@ export function renderEvolutionHub(){
     <div class="card sectionGap"><div class="cardHead"><div><b>Mudança entre medições</b><small>Últimas mudanças consecutivas registradas. Sem classificação de melhor ou pior.</small></div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):bodyChangeTable(body)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead segmentalHead"><div><b>Análise segmentar</b><small>Escolha a medição principal e compare livremente com outra data disponível.</small></div>${segmentCompareControl(segmental,currentSeg)}</div><div class="segmented compactSeg segmentalDates">${segFailed?'':segmental.map(s=>`<button type="button" data-segmental-date="${esc(s.measured_at)}" class="${s.measured_at===state.ui.segmentalDate?'active':''}">${fmtDate(s.measured_at)}</button>`).join('')}</div>${segmentComparison(currentSeg,compareSeg)}<p class="footerNote">Diferenças entre datas e lados são descritivas; o app não atribui julgamento estético nem meta a esses valores.</p></div>
-      <div class="card"><div class="cardHead"><div><b>Treinos por semana</b><small>Frequência registrada nas últimas 12 semanas.</small></div></div>${workoutFailed?unavailable('Os treinos não carregaram; a frequência semanal não pode ser calculada agora.'):`<div class="weekBars detailed">${weeks.map(w=>`<div><i style="height:${Math.max(4,w.count/maxWeek*100)}%"></i><b>${w.count}</b><span>${esc(w.label)}</span></div>`).join('')}</div>`}</div>
+      <div class="card"><div class="cardHead"><div><b>Ritmo semanal de treinos</b><small>Dias com sessão estruturada nas últimas 12 semanas do histórico recente.</small></div></div>${workoutFailed?unavailable('Os treinos não carregaram; o ritmo semanal não pode ser calculado agora.'):weeks.length?`<div class="weekBars detailed weeklyRhythm">${weeks.map(w=>`<div title="${esc(fmtDate(w.a))} a ${esc(fmtDate(w.b))}"><i style="height:${w.days?Math.max(8,w.days/maxWeek*100):2}%"></i><b>${w.days}d</b><small>${w.sessions} ${w.sessions===1?'sessão':'sessões'}</small><span>${esc(w.label)}</span></div>`).join('')}</div><p class="footerNote">Cada barra mostra dias distintos com sessão de treino estruturada. Atividade geral de outras fontes não entra nessa contagem.</p>`:empty('Ainda não há sessões estruturadas para montar esta visão semanal.')}</div>
     </div>`;
 }
