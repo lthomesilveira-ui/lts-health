@@ -1,5 +1,5 @@
-import {sb,state,fixtureMode,fixtureError,fixtureData,norm} from './core.js';
-import {stableAppleMetricTypes} from './source-status.js';
+import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
+import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFitnessPalViaApple} from './source-status.js';
 
 const initialKeys=['body','segmental','workouts','exercises','sets'];
 const routeDomains={
@@ -55,25 +55,12 @@ const fixtureSourceMetrics=[{
   source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
 }];
 
-function appleMetricSource(row){return norm([row?.source,row?.source_file].filter(Boolean).join(' '));}
-function isAppleMetric(row){
-  const source=appleMetricSource(row);
-  return ['apple health','healthkit','activitysummary','activity summary','apple watch','apple_watch','iphone'].some(term=>source.includes(term));
-}
-function isAppleActivitySummary(row){
-  const source=appleMetricSource(row);
-  return source.includes('activitysummary')||source.includes('activity summary');
-}
-
 export function visibleRowsForDomain(key,rows=[]){
   if(key==='metrics')return rows.filter(row=>{
-    if(!isAppleMetric(row))return true;
-    return isAppleActivitySummary(row)&&stableAppleMetricTypes.has(row?.metric_type);
+    if(!isAppleSource(row))return true;
+    return isAppleActivitySummarySource(row)&&stableAppleMetricTypes.has(row?.metric_type);
   });
-  if(key==='nutrition')return rows.filter(row=>{
-    const source=norm(row?.source);
-    return !(source.includes('myfitnesspal')&&source.includes('apple health'));
-  });
+  if(key==='nutrition')return rows.filter(row=>!isMyFitnessPalViaApple(row));
   if(key==='workouts')return rows.filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined');
   return rows;
 }
