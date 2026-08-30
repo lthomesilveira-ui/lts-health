@@ -11,7 +11,7 @@ const routeDomains={
   hoje:['nutrition','metrics','sourceMetrics','labs','uploads'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
-  nutricao:['nutrition','meals'],
+  nutricao:['nutrition','meals','sourceMetrics'],
   dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality']
 };
 
