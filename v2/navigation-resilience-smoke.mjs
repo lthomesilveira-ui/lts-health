@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1';
 const routeTitles={bio:'Bio',treinos:'Treinos',evolucao:'Evolução',analise:'Análise',tratamentos:'Tratamentos',hoje:'Hoje',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
+const focusableSelector='button:not([disabled]),a[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 async function waitRoute(page,route){
   await page.waitForFunction(({route,title})=>location.hash===`#${route}`&&document.querySelector('#screenHost h1')?.textContent?.includes(title),{route,title:routeTitles[route]});
@@ -23,6 +24,40 @@ async function clickRoute(page,nav,route){
 
 async function waitHidden(page,selector){
   await page.waitForFunction(sel=>document.querySelector(sel)?.classList.contains('hidden')===true,selector);
+}
+
+async function assertModalIsolation(page,id,label){
+  await page.waitForFunction(id=>{
+    const dialog=document.getElementById(id),app=document.getElementById('app');
+    return !!dialog&&!dialog.classList.contains('hidden')&&dialog.contains(document.activeElement)&&app?.inert===true&&app.getAttribute('aria-hidden')==='true';
+  },id);
+  const count=await page.evaluate(({id,focusableSelector})=>[...document.getElementById(id).querySelectorAll(focusableSelector)].filter(el=>el.tabIndex>=0&&!el.hasAttribute('hidden')&&!el.closest('[hidden]')).length,{id,focusableSelector});
+  if(count<1)throw new Error(`${label}/${id}: dialog has no focusable controls`);
+
+  await page.evaluate(({id,focusableSelector})=>{
+    const items=[...document.getElementById(id).querySelectorAll(focusableSelector)].filter(el=>el.tabIndex>=0&&!el.hasAttribute('hidden')&&!el.closest('[hidden]'));
+    items.at(-1)?.focus();
+  },{id,focusableSelector});
+  await page.keyboard.press('Tab');
+  await page.waitForFunction(({id,focusableSelector})=>{
+    const items=[...document.getElementById(id).querySelectorAll(focusableSelector)].filter(el=>el.tabIndex>=0&&!el.hasAttribute('hidden')&&!el.closest('[hidden]'));
+    return document.activeElement===items[0];
+  },{id,focusableSelector});
+
+  await page.evaluate(({id,focusableSelector})=>{
+    const items=[...document.getElementById(id).querySelectorAll(focusableSelector)].filter(el=>el.tabIndex>=0&&!el.hasAttribute('hidden')&&!el.closest('[hidden]'));
+    items[0]?.focus();
+  },{id,focusableSelector});
+  await page.keyboard.press('Shift+Tab');
+  await page.waitForFunction(({id,focusableSelector})=>{
+    const items=[...document.getElementById(id).querySelectorAll(focusableSelector)].filter(el=>el.tabIndex>=0&&!el.hasAttribute('hidden')&&!el.closest('[hidden]'));
+    return document.activeElement===items.at(-1);
+  },{id,focusableSelector});
+}
+
+async function assertIsolationReleased(page,label){
+  const result=await page.evaluate(()=>({inert:document.getElementById('app')?.inert===true,ariaHidden:document.getElementById('app')?.getAttribute('aria-hidden')}));
+  if(result.inert||result.ariaHidden!==null)throw new Error(`${label}: app remained isolated after dialog closed`);
 }
 
 async function run(viewport,label){
@@ -57,34 +92,48 @@ async function run(viewport,label){
   const restoredHash=await page.evaluate(()=>location.hash);
   if(restoredHash!=='#dados')throw new Error(`${label}: saved route was not restored after reload (${restoredHash||'sem hash'})`);
 
-  // Entry dialog must focus its contents, close with Escape and return focus to its trigger.
+  // Entry dialog must isolate the background, contain Tab navigation, close with Escape and return focus.
   await clickRoute(page,nav,'bio');await waitRoute(page,'bio');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#entryModal')?.contains(document.activeElement));
+  await assertModalIsolation(page,'entryModal',label);
   await page.keyboard.press('Escape');
   await waitHidden(page,'#entryModal');
   await page.waitForFunction(()=>document.activeElement?.id==='routeAction');
+  await assertIsolationReleased(page,`${label}/entry-escape`);
   await waitRoute(page,'bio');
 
-  // Workout entry still closes through its explicit close button and restores focus.
+  // Workout entry still closes through its explicit close button, releases isolation and restores focus.
   await clickRoute(page,nav,'treinos');await waitRoute(page,'treinos');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
+  await assertModalIsolation(page,'entryModal',label);
   await page.locator('#closeEntry').click();
   await waitHidden(page,'#entryModal');
   await page.waitForFunction(()=>document.activeElement?.id==='routeAction');
+  await assertIsolationReleased(page,`${label}/entry-close`);
   await waitRoute(page,'treinos');
 
-  // More sheet must focus its contents, close with Escape and restore focus without route changes.
+  // More sheet must contain focus, close with Escape and restore focus without route changes.
   const moreSelector=`${nav} [data-route="mais"]`;
   await page.locator(moreSelector).click();
   await page.waitForSelector('#moreSheet:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#moreSheet')?.contains(document.activeElement));
+  await assertModalIsolation(page,'moreSheet',label);
   await page.keyboard.press('Escape');
   await waitHidden(page,'#moreSheet');
   await page.waitForFunction(sel=>document.activeElement===document.querySelector(sel),moreSelector);
+  await assertIsolationReleased(page,`${label}/more-escape`);
   await waitRoute(page,'treinos');
+
+  // Choosing a route from the More dialog must also release background isolation.
+  await page.locator(moreSelector).click();
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await assertModalIsolation(page,'moreSheet',label);
+  await page.locator('#moreSheet [data-route="hoje"]').click();
+  await waitHidden(page,'#moreSheet');
+  await waitRoute(page,'hoje');
+  await page.waitForFunction(()=>document.getElementById('app')?.inert===false&&document.getElementById('app')?.getAttribute('aria-hidden')===null);
+  await assertIsolationReleased(page,`${label}/more-route`);
 
   // System reduced-motion preference must disable the spinner animation in the rendered CSS.
   await page.emulateMedia({reducedMotion:'reduce'});

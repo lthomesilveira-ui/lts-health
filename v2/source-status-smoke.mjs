@@ -73,6 +73,18 @@ async function run(viewport,label){
   });
   if(foreignOnly.status!=='missing'||foreignOnly.latest!==null||foreignOnly.evidence!==null)throw new Error(`${label}: foreign candidates leaked into Apple source status ${JSON.stringify(foreignOnly)}`);
 
+  const ambiguous=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {sourceStatusFor}=await import('./src/source-status.js');
+    state.data.sourceMetrics=[
+      {source_record_id:'apple-no-status',metric_date:'2026-02-10',metric_type:'steps',value:9000,unit:'count',source_name:'Apple Watch',source_family:'apple_watch'},
+      {source_record_id:'mfp-no-status',metric_date:'2026-02-10',metric_type:'dietary_protein_g',value:155,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal'},
+      {source_record_id:'polar-canonical-history',metric_date:'2026-02-10',metric_type:'resting_heart_rate_bpm',value:59,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'canonical'}
+    ];
+    return {apple:sourceStatusFor('apple_health'),mfp:sourceStatusFor('myfitnesspal'),polar:sourceStatusFor('polar_flow')};
+  });
+  if(ambiguous.apple!=='missing'||ambiguous.mfp!=='missing'||ambiguous.polar!=='missing')throw new Error(`${label}: missing/non-candidate provenance status was silently treated as candidate ${JSON.stringify(ambiguous)}`);
+
   const promoted=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {sourceStatusFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
@@ -85,7 +97,7 @@ async function run(viewport,label){
     };
   });
   if(promoted.apple!=='ready'||promoted.polar!=='ready'||promoted.mfp!=='ready')throw new Error(`${label}: direct/canonical evidence did not outrank candidate-only status ${JSON.stringify(promoted)}`);
-  if(promoted.appleEvidence!=='2026-02-07'||promoted.polarEvidence!=='2026-02-08'||promoted.mfpEvidence!=='2026-02-09')throw new Error(`${label}: direct evidence did not extend source freshness ${JSON.stringify(promoted)}`);
+  if(promoted.appleEvidence!=='2026-02-10'||promoted.polarEvidence!=='2026-02-10'||promoted.mfpEvidence!=='2026-02-10')throw new Error(`${label}: source freshness did not preserve latest source evidence ${JSON.stringify(promoted)}`);
 
   const failed=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
