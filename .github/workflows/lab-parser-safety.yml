@@ -32,4 +32,4 @@ jobs:
         run: |
           node --check v2/lab-parser-safety-smoke.mjs
           node v2/lab-parser-safety-smoke.mjs
-          deno check --config supabase/functions/health-inspect-upload/deno.json supabase/functions/health-inspect-upload/index.ts
+          deno check supabase/functions/health-inspect-upload/index.ts
