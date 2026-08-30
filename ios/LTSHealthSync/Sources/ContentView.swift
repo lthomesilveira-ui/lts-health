@@ -70,7 +70,7 @@ struct ContentView: View {
                     Text("Energia ativa, minutos de exercício e horas em pé entram como dados principais do Apple Saúde.")
                     Text("Passos, frequência cardíaca de repouso, HRV, frequência respiratória, peso e nutrientes compatíveis ficam preservados por origem para evitar misturas indevidas.")
                     Text("Quando o MyFitnessPal compartilha alimentação com o Apple Saúde, calorias e macros compatíveis podem chegar por esse caminho. Alimentos, refeições e horários não são inventados.")
-                    Text("Sono continua fora da sincronização automática até a regra entre fontes sobrepostas estar validada.")
+                    Text("Sono compatível também fica preservado por origem. Intervalos sobrepostos da mesma origem são unidos antes do total diário, e fontes diferentes não são somadas entre si automaticamente.")
                 }
                 .font(.footnote)
                 .foregroundStyle(.secondary)
