@@ -100,8 +100,10 @@ async function run(viewport,label){
   });
   await rerenderData();
   const mfpCardLocator=page.locator('.sourceStatus:has([data-source-upload="myfitnesspal"])');
+  const mfpStatus=async()=>(await mfpCardLocator.locator('.sourceStatusTop').textContent())||'';
   let mfpCard=(await mfpCardLocator.textContent())||'';
-  if(!mfpCard.includes('em validação')||mfpCard.includes('com dados'))throw new Error(`${label}: MyFitnessPal validation state is not explicit`);
+  let mfpState=await mfpStatus();
+  if(!mfpState.includes('em validação')||mfpState.includes('com dados'))throw new Error(`${label}: MyFitnessPal validation state is not explicit`);
   if(!mfpCard.includes('aguardam validação antes de entrar na alimentação principal'))throw new Error(`${label}: MyFitnessPal validation boundary is not explicit`);
   const provenance=(await page.locator('.provenancePanel').textContent())||'';
   if(!provenance.includes('MyFitnessPal')||!provenance.includes('RingConn')||!provenance.includes('em validação')||!provenance.includes('confirmado(s)'))throw new Error(`${label}: source-preserving validation status missing`);
@@ -112,7 +114,8 @@ async function run(viewport,label){
   });
   await rerenderData();
   mfpCard=(await mfpCardLocator.textContent())||'';
-  if(!mfpCard.includes('com dados')||mfpCard.includes('em validação'))throw new Error(`${label}: confirmed MyFitnessPal nutrition did not supersede validation-only status`);
+  mfpState=await mfpStatus();
+  if(!mfpState.includes('com dados')||mfpState.includes('em validação'))throw new Error(`${label}: confirmed MyFitnessPal nutrition did not supersede validation-only status`);
 
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.uploads='error';});
   await rerenderData();
