@@ -28,6 +28,10 @@ async function run(viewport,label){
 
   await page.click('[data-nutrition-year="2024"]');
   await page.waitForFunction(()=>document.querySelector('#nutritionYear')?.value==='2024');
+  const coverageMetric=(await page.locator('.metric').filter({hasText:'Cobertura do período'}).textContent())||'';
+  if(!coverageMetric.includes('1 de 366 dias')||!coverageMetric.includes('365 dia(s) sem registro'))throw new Error(`${label}: calendar coverage does not distinguish recorded from missing days`);
+  if(coverageMetric.includes('365 dia(s) com consumo zero'))throw new Error(`${label}: missing nutrition days were mislabeled as zero consumption`);
+
   await page.waitForSelector('[data-nutrition-date="2024-06-10"]');
   await page.click('[data-nutrition-date="2024-06-10"]');
   const detail=(await page.textContent('#screenHost'))||'';

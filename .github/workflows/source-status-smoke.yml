@@ -20,6 +20,8 @@ jobs:
           node --check v2/src/source-status.js
           node --check v2/source-status-smoke.mjs
           grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" v2/src/source-status.js
+          grep -Fq "const preservedCandidateStatuses=new Set(['candidate','held']);" v2/src/source-status.js
+          grep -q "isPreservedCandidate" v2/src/source-status.js
           grep -q "candidateFromFamily(sourceMetrics,'polar_flow')" v2/src/source-status.js
           grep -q "candidateFromFamily(sourceMetrics,'myfitnesspal')" v2/src/source-status.js
           grep -q "latestSourceMetricDateFor" v2/src/source-status.js

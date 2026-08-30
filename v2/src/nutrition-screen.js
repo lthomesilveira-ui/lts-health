@@ -8,6 +8,7 @@ const failed=key=>state.domainStatus[key]==='error';
 const yearOf=v=>String(v||'').slice(0,4);
 const monthOf=v=>String(v||'').slice(0,7);
 const monthLabel=v=>{if(!v)return'—';const[y,m]=v.split('-').map(Number);return new Intl.DateTimeFormat('pt-BR',{month:'short',year:'2-digit'}).format(new Date(y,m-1,1));};
+const localDayKey=(value=new Date())=>{const d=value instanceof Date?value:new Date(value);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 
 function allNutrition(){return[...(state.data.nutrition||[])].sort((a,b)=>String(b.nutrition_date).localeCompare(String(a.nutrition_date)));}
 function availableYears(all){return unique(all.map(r=>yearOf(r.nutrition_date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));}
@@ -17,8 +18,8 @@ function historyYears(all){
 }
 function coverageByYear(all){
   const map={};
-  for(const row of all){const y=yearOf(row.nutrition_date);if(!y)continue;if(!map[y])map[y]={count:0,first:row.nutrition_date,last:row.nutrition_date};map[y].count++;if(row.nutrition_date<map[y].first)map[y].first=row.nutrition_date;if(row.nutrition_date>map[y].last)map[y].last=row.nutrition_date;}
-  return map;
+  for(const row of all){const y=yearOf(row.nutrition_date);if(!y)continue;if(!map[y])map[y]={dates:new Set(),first:row.nutrition_date,last:row.nutrition_date};map[y].dates.add(day(row.nutrition_date));if(row.nutrition_date<map[y].first)map[y].first=row.nutrition_date;if(row.nutrition_date>map[y].last)map[y].last=row.nutrition_date;}
+  return Object.fromEntries(Object.entries(map).map(([year,item])=>[year,{count:item.dates.size,first:item.first,last:item.last}]));
 }
 function periodRows(all){
   const p=state.ui.nutritionPeriod||'90';
@@ -28,11 +29,24 @@ function periodRows(all){
   }
   const cut=since(Number(p));return all.filter(r=>day(r.nutrition_date)>=cut);
 }
+function calendarCoverage(rows,period){
+  const dates=new Set(rows.map(r=>day(r.nutrition_date)).filter(Boolean));
+  let expected=0;
+  if(period==='all'){
+    const year=Number(state.ui.nutritionYear),now=new Date(),currentYear=now.getFullYear();
+    if(Number.isFinite(year)){
+      const start=new Date(year,0,1,12),end=year===currentYear?new Date(now.getFullYear(),now.getMonth(),now.getDate(),12):new Date(year,11,31,12);
+      if(year<=currentYear)expected=Math.floor((end-start)/86400000)+1;
+    }
+  }else expected=Math.max(0,Number(period)||0);
+  const recorded=expected?Math.min(dates.size,expected):dates.size,missing=Math.max(0,expected-recorded),pct=expected?Math.round(recorded/expected*100):null;
+  return{recorded,expected,missing,pct};
+}
 function mealsFor(date){return (state.data.meals||[]).filter(m=>day(m.meal_date)===date).sort((a,b)=>String(a.meal_name||'').localeCompare(String(b.meal_name||''),'pt-BR'));}
 function monthlySummary(rows){
   const map=new Map();
   for(const row of rows){const key=monthOf(row.nutrition_date);if(!key)continue;if(!map.has(key))map.set(key,{key,rows:[]});map.get(key).rows.push(row);}
-  return [...map.values()].sort((a,b)=>a.key.localeCompare(b.key)).map(group=>({key:group.key,count:group.rows.length,calories:avg(group.rows,'calories_kcal'),protein:avg(group.rows,'protein_g'),carbs:avg(group.rows,'carbs_g'),fat:avg(group.rows,'fat_g')}));
+  return [...map.values()].sort((a,b)=>a.key.localeCompare(b.key)).map(group=>({key:group.key,count:new Set(group.rows.map(r=>day(r.nutrition_date))).size,calories:avg(group.rows,'calories_kcal'),protein:avg(group.rows,'protein_g'),carbs:avg(group.rows,'carbs_g'),fat:avg(group.rows,'fat_g')}));
 }
 function mealDistribution(rows){
   if(failed('meals'))return null;
@@ -68,17 +82,17 @@ function daySummary(row){
 
 export function renderNutritionHub(){
   if(failed('nutrition'))return `${title('Nutrição','Histórico de alimentação registrado.')}<div class="errorState"><b>Os dados de alimentação não carregaram agora.</b><span>O app não substitui essa falha por dias ou valores zerados. Tente atualizar.</span></div>`;
-  const all=allNutrition(),years=availableYears(all),spanYears=historyYears(all),coverage=coverageByYear(all),p=state.ui.nutritionPeriod||'90',rows=periodRows(all);
+  const all=allNutrition(),years=availableYears(all),spanYears=historyYears(all),coverage=coverageByYear(all),p=state.ui.nutritionPeriod||'90',rows=periodRows(all),calendar=calendarCoverage(rows,p);
   if(!state.ui.nutritionDate||!rows.some(r=>r.nutrition_date===state.ui.nutritionDate))state.ui.nutritionDate=rows[0]?.nutrition_date||null;
   const selected=rows.find(r=>r.nutrition_date===state.ui.nutritionDate),range=rows.length?`${fmtDate(rows.at(-1).nutrition_date)} → ${fmtDate(rows[0].nutrition_date)}`:'sem registros';
-  const visible=rows.slice(0,370);
+  const visible=rows.slice(0,370),coverageText=calendar.expected?`${calendar.recorded} de ${calendar.expected} dias`:calendar.recorded?`${calendar.recorded} dias registrados`:'sem dias registrados',coverageSub=calendar.expected?`${calendar.pct}% coberto · ${calendar.missing} dia(s) sem registro`:'Sem período comparável';
   return `${title('Nutrição','Histórico de alimentação registrado. Médias usam somente os dias que possuem dados; dias ausentes não são tratados como zero.')}
     <div class="controls"><select id="nutritionPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Navegar por ano</option></select>${p==='all'?`<select id="nutritionYear">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select>`:''}</div>
     <div class="grid cols4 sectionGap">
-      <div class="card metric"><span>Dias registrados</span><strong>${rows.length}</strong><em>${esc(range)}</em></div>
+      <div class="card metric"><span>Dias registrados</span><strong>${new Set(rows.map(r=>day(r.nutrition_date)).filter(Boolean)).size}</strong><em>${esc(range)}</em></div>
+      <div class="card metric"><span>Cobertura do período</span><strong>${esc(coverageText)}</strong><em>${esc(coverageSub)}</em></div>
       <div class="card metric"><span>Calorias · média</span><strong>${avg(rows,'calories_kcal')==null?'—':fmtNum(avg(rows,'calories_kcal'),0)}</strong><em>kcal nos dias com valor</em></div>
       <div class="card metric"><span>Proteína · média</span><strong>${avg(rows,'protein_g')==null?'—':fmtNum(avg(rows,'protein_g'),0)}</strong><em>g nos dias com valor</em></div>
-      <div class="card metric"><span>Histórico total</span><strong>${all.length}</strong><em>${years.length?`${years.at(-1)} → ${years[0]}`:'dias estruturados disponíveis'}</em></div>
     </div>
     <div class="grid split sectionGap">
       <div class="card"><div class="cardHead"><div><b>Evolução por mês</b><small>Cobertura e médias dos registros disponíveis.</small></div></div>${monthlyPanel(rows)}</div>
