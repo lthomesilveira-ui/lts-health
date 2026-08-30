@@ -92,6 +92,7 @@ function closeEntry(){
   if(modal?.dataset.dirty==='true'&&!window.confirm('Descartar alterações não salvas?'))return false;
   modal.dataset.dirty='false';modal.classList.add('hidden');
   $('entryHost').innerHTML='';
+  document.dispatchEvent(new Event('lts-health-entry-closed'));
   return true;
 }
 
