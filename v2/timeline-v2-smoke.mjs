@@ -26,7 +26,14 @@ async function run(viewport,label){
     state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),
       {source_record_id:'sleep-watch',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
       {source_record_id:'sleep-ring',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:6.8,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'held'},
-      {source_record_id:'sleep-unclassified',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:8.2,unit:'h',source_name:'Origem sem status',source_family:'healthkit_candidate',canonical_status:null}
+      {source_record_id:'steps-watch',metric_date:'2026-02-03',metric_type:'steps',value:7100,unit:'count',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'rhr-watch',metric_date:'2026-02-03',metric_type:'resting_heart_rate_bpm',value:59,unit:'count/min',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'steps-ring',metric_date:'2026-02-03',metric_type:'steps',value:6900,unit:'count',source_name:'RingConn',source_family:'ringconn',canonical_status:'held'},
+      {source_record_id:'mfp-energy',metric_date:'2026-02-03',metric_type:'dietary_energy_kcal',value:2100,unit:'kcal',source_name:'MyFitnessPal via Apple Health',source_family:'myfitnesspal',canonical_status:'candidate'},
+      {source_record_id:'mfp-protein',metric_date:'2026-02-03',metric_type:'dietary_protein_g',value:165,unit:'g',source_name:'MyFitnessPal via Apple Health',source_family:'myfitnesspal',canonical_status:'candidate'},
+      {source_record_id:'sleep-unclassified',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:8.2,unit:'h',source_name:'Origem sem status',source_family:'healthkit_candidate',canonical_status:null},
+      {source_record_id:'hrv-unclassified',metric_date:'2026-02-03',metric_type:'hrv_sdnn_ms',value:42,unit:'ms',source_name:'Apple ambíguo',source_family:'apple_watch',canonical_status:null},
+      {source_record_id:'canonical-source-metric',metric_date:'2026-02-03',metric_type:'steps',value:9999,unit:'count',source_name:'Fonte canônica indevida',source_family:'apple_activity_summary',canonical_status:'canonical'}
     ];
     state.ui.timelinePeriod='all';state.ui.timelineYear='2026';state.ui.timelineQuery='';state.ui.timelineDomain='all';
   });
@@ -40,11 +47,13 @@ async function run(viewport,label){
   if(!text.includes('Registro disponível'))throw new Error(`${label}: missing metric value was not rendered neutrally`);
   if(text.includes('Peso — kg')||text.includes('MME — kg'))throw new Error(`${label}: missing body values leaked as pseudo-measurements`);
   if(text.includes('Confirmação registrada')||/\btaken\b/i.test(text))throw new Error(`${label}: treatment operational context reappeared after rerender`);
-  for(const expected of ['Sono por fonte','Apple Watch','RingConn','7,1 h · Em validação · Não consolidado','6,8 h · Em validação · Não consolidado']){
-    if(!text.includes(expected))throw new Error(`${label}: source-preserving sleep evidence missing ${expected}`);
+  for(const expected of ['Sono por fonte','Métricas por fonte','Alimentação por fonte','Apple Watch','RingConn','MyFitnessPal via Apple Health','7,1 h · Em validação · Não consolidado','6,8 h · Em validação · Não consolidado','Passos 7.100 count','FC de repouso 59,0 count/min','Energia alimentar 2.100 kcal','Proteína 165,0 g']){
+    if(!text.includes(expected))throw new Error(`${label}: source-preserving validation evidence missing ${expected}`);
   }
-  if(text.includes('Origem sem status')||text.includes('8,2 h'))throw new Error(`${label}: ambiguous sleep status leaked into Timeline evidence`);
+  if(text.includes('Origem sem status')||text.includes('8,2 h')||text.includes('Apple ambíguo')||text.includes('42,0 ms'))throw new Error(`${label}: ambiguous source metric status leaked into Timeline evidence`);
+  if(text.includes('Fonte canônica indevida')||text.includes('9.999 count'))throw new Error(`${label}: sourceMetrics canonical row leaked into validation evidence`);
   if(text.includes('13,9 h'))throw new Error(`${label}: overlapping sleep sources were summed`);
+  if(text.includes('14.000 count'))throw new Error(`${label}: source-specific step candidates were summed across sources`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
