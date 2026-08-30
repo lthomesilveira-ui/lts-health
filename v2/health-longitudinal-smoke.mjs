@@ -30,12 +30,13 @@ async function run(viewport,label){
   await page.fill('#labQuery','x');
   await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=6);
   await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value==='');
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=6);
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
-    const text=document.querySelector('.collectionCompareList')?.textContent||'';
-    return select?.value==='2026-01-03__Laboratório de teste'&&text.includes('Marcador A')&&text.includes('+2,0 u');
+    const list=document.querySelector('.collectionCompareList')?.textContent||'';
+    const head=document.querySelector('.collectionCompareHead')?.textContent||'';
+    return select?.value==='2026-01-03__Laboratório de teste'&&list.includes('Marcador A')&&list.includes('+2,0 u')&&head.includes('03/12/2025')&&!head.includes('Outro laboratório');
   });
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
