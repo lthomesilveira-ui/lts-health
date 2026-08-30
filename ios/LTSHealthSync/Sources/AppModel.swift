@@ -19,8 +19,12 @@ final class AppModel: ObservableObject {
     @Published var lastPrimaryCount = 0
     @Published var lastSourceCount = 0
     @Published var lastReviewCount = 0
+    @Published var lastSourceSyncCompleted = true
     @Published var healthConfigured = false
     @Published var sourceSyncConfigured = false
+    @Published var backgroundPrimaryAttemptAt: Date?
+    @Published var backgroundPrimarySuccessAt: Date?
+    @Published var backgroundPrimarySucceeded: Bool?
 
     private let api = SupabaseAPI.shared
     private let health = HealthKitSyncCoordinator.shared
@@ -38,7 +42,17 @@ final class AppModel: ObservableObject {
 
     var lastSyncSummary: String? {
         guard lastSyncAt != nil else { return nil }
-        return "\(lastPrimaryCount) dado(s) principal(is) · \(lastSourceCount) dado(s) por origem · \(lastReviewCount) preservado(s) para revisão"
+        let sourceSummary = lastSourceSyncCompleted
+            ? "\(lastSourceCount) dado(s) por origem"
+            : "leitura por origem não concluída"
+        return "\(lastPrimaryCount) dado(s) principal(is) · \(sourceSummary) · \(lastReviewCount) preservado(s) para revisão"
+    }
+
+    var backgroundPrimaryStatusText: String {
+        guard backgroundPrimaryAttemptAt != nil else { return "Nenhuma tentativa automática registrada neste aparelho." }
+        if backgroundPrimarySucceeded == true { return "Última tentativa automática concluída." }
+        if backgroundPrimarySucceeded == false { return "A última tentativa automática não concluiu; uma próxima atualização ou sincronização manual poderá tentar novamente." }
+        return "Atualização automática em andamento ou interrompida antes da confirmação." 
     }
 
     func signIn() async {
@@ -81,11 +95,11 @@ final class AppModel: ObservableObject {
                 try await candidateHealth.requestAuthorizationAndStart()
                 sourceSyncConfigured = true
                 let sources = try await candidateHealth.initialSync(days: 365)
-                recordSuccessfulSync(primary: primary.canonicalized, sources: sources.accepted, review: primary.blocked)
+                recordSuccessfulSync(primary: primary.canonicalized, sources: sources.accepted, review: primary.blocked, sourceCompleted: true)
                 setStatus("Apple Saúde conectado e sincronização inicial concluída.", kind: .success)
             } catch {
                 sourceSyncConfigured = defaults.bool(forKey: "candidateHealthSetupCompleted")
-                recordSuccessfulSync(primary: primary.canonicalized, sources: 0, review: primary.blocked)
+                recordSuccessfulSync(primary: primary.canonicalized, sources: 0, review: primary.blocked, sourceCompleted: false)
                 setStatus("Os dados principais foram sincronizados, mas a leitura complementar não terminou: \(error.localizedDescription)", kind: .warning)
             }
         } catch {
@@ -107,15 +121,22 @@ final class AppModel: ObservableObject {
             let primary = try await health.recentSync(days: 7)
             do {
                 let sources = try await candidateHealth.recentSync(days: 7)
-                recordSuccessfulSync(primary: primary.canonicalized, sources: sources.accepted, review: primary.blocked)
+                recordSuccessfulSync(primary: primary.canonicalized, sources: sources.accepted, review: primary.blocked, sourceCompleted: true)
                 setStatus("Sincronização concluída.", kind: .success)
             } catch {
-                recordSuccessfulSync(primary: primary.canonicalized, sources: 0, review: primary.blocked)
+                recordSuccessfulSync(primary: primary.canonicalized, sources: 0, review: primary.blocked, sourceCompleted: false)
                 setStatus("Os dados principais foram sincronizados, mas a leitura complementar falhou nesta tentativa: \(error.localizedDescription)", kind: .warning)
             }
         } catch {
             setStatus(error.localizedDescription, kind: .error)
         }
+    }
+
+    func refreshDiagnostics() {
+        let snapshot = SyncDiagnostics.snapshot(.primary)
+        backgroundPrimaryAttemptAt = snapshot.lastAttemptAt
+        backgroundPrimarySuccessAt = snapshot.lastSuccessAt
+        backgroundPrimarySucceeded = snapshot.lastAttemptSucceeded
     }
 
     private func restoreLocalStatus() {
@@ -126,18 +147,24 @@ final class AppModel: ObservableObject {
         lastPrimaryCount = defaults.integer(forKey: "lastPrimarySyncCount")
         lastSourceCount = defaults.integer(forKey: "lastSourceSyncCount")
         lastReviewCount = defaults.integer(forKey: "lastReviewSyncCount")
+        if defaults.object(forKey: "lastSourceSyncCompleted") != nil {
+            lastSourceSyncCompleted = defaults.bool(forKey: "lastSourceSyncCompleted")
+        }
+        refreshDiagnostics()
     }
 
-    private func recordSuccessfulSync(primary: Int, sources: Int, review: Int) {
+    private func recordSuccessfulSync(primary: Int, sources: Int, review: Int, sourceCompleted: Bool) {
         let now = Date()
         lastSyncAt = now
         lastPrimaryCount = primary
         lastSourceCount = sources
         lastReviewCount = review
+        lastSourceSyncCompleted = sourceCompleted
         defaults.set(now.timeIntervalSince1970, forKey: "lastSuccessfulSyncAt")
         defaults.set(primary, forKey: "lastPrimarySyncCount")
         defaults.set(sources, forKey: "lastSourceSyncCount")
         defaults.set(review, forKey: "lastReviewSyncCount")
+        defaults.set(sourceCompleted, forKey: "lastSourceSyncCompleted")
     }
 
     private func setStatus(_ text: String, kind: SyncStatusKind) {

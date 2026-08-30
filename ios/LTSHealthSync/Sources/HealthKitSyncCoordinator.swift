@@ -98,7 +98,11 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
         for type in triggerTypes {
             let query = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, completion, error in
                 guard let self else { completion(); return }
-                if error != nil { completion(); return }
+                if error != nil {
+                    SyncDiagnostics.recordFailure(.primary)
+                    completion()
+                    return
+                }
                 Task {
                     await self.consumeChanges(for: type)
                     completion()
@@ -115,6 +119,7 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
             guard changed else { return }
             await syncRecentIfAuthenticated()
         } catch {
+            SyncDiagnostics.recordFailure(.primary)
             // Observer completion must still run; next launch/manual sync is idempotent.
         }
     }
@@ -122,9 +127,12 @@ final class HealthKitSyncCoordinator: @unchecked Sendable {
     private func syncRecentIfAuthenticated() async {
         guard await api.hasSession else { return }
         guard await backgroundSyncGate.begin() else { return }
+        SyncDiagnostics.recordAttempt(.primary)
         do {
             _ = try await recentSync(days: 7)
+            SyncDiagnostics.recordSuccess(.primary)
         } catch {
+            SyncDiagnostics.recordFailure(.primary)
             // A later observer/manual sync retries the same idempotent daily summaries.
         }
         await backgroundSyncGate.end()

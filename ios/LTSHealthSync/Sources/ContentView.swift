@@ -66,6 +66,23 @@ struct ContentView: View {
                     }
                 }
 
+                Section("Atualização automática") {
+                    Text(model.backgroundPrimaryStatusText)
+                    if let attemptAt = model.backgroundPrimaryAttemptAt {
+                        LabeledContent("Última tentativa") {
+                            Text(attemptAt, style: .relative)
+                        }
+                    }
+                    if let successAt = model.backgroundPrimarySuccessAt {
+                        LabeledContent("Último sucesso automático") {
+                            Text(successAt, style: .relative)
+                        }
+                    }
+                    Text("Este diagnóstico registra somente se a sincronização automática tentou e concluiu; não armazena valores de saúde nem conteúdo dos registros.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("O que entra automaticamente") {
                     Text("Energia ativa, minutos de exercício e horas em pé entram como dados principais do Apple Saúde.")
                     Text("Passos, frequência cardíaca de repouso, HRV, frequência respiratória, peso e nutrientes compatíveis ficam preservados por origem para evitar misturas indevidas.")
@@ -86,6 +103,10 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("LTS Health Sync")
+            .onAppear { model.refreshDiagnostics() }
+            .onReceive(NotificationCenter.default.publisher(for: SyncDiagnostics.changedNotification)) { _ in
+                model.refreshDiagnostics()
+            }
         }
     }
 }
