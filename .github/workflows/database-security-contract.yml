@@ -1,0 +1,33 @@
+name: LTS Health database security contract
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/functions/health-apple-sync-batch/**'
+      - 'v2/src/writes.js'
+      - 'v2/database-security-contract-smoke.mjs'
+      - '.github/workflows/database-security-contract.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/functions/health-apple-sync-batch/**'
+      - 'v2/src/writes.js'
+      - 'v2/database-security-contract-smoke.mjs'
+      - '.github/workflows/database-security-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  database-security-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Database least-privilege contract
+        run: |
+          node --check v2/database-security-contract-smoke.mjs
+          node v2/database-security-contract-smoke.mjs
