@@ -5,11 +5,15 @@ const migration = fs.readFileSync('supabase/migrations/20260830112700_enforce_sl
 const appleSync = fs.readFileSync('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const dataLayer = fs.readFileSync('v2/src/data-layer.js','utf8');
 
+assert.match(migration,/create or replace function public\.health_source_daily_metrics_preserve_status\(\)/i,'migration must preserve the existing status guard through a compatible function replacement');
+assert.match(migration,/old\.canonical_status in \('held','superseded'\)[\s\S]*new\.canonical_status in \('candidate','canonical'\)[\s\S]*new\.canonical_status := old\.canonical_status/i,'held and superseded statuses must remain protected');
+assert.match(migration,/old\.canonical_status = 'canonical'[\s\S]*new\.canonical_status = 'candidate'[\s\S]*old\.metric_type not like 'sleep_%'[\s\S]*new\.canonical_status := old\.canonical_status/i,'canonical status preservation must remain for non-sleep metrics only');
 assert.match(migration,/set\s+canonical_status\s*=\s*'candidate'/i,'historical sleep rows must be preserved as candidates');
 assert.match(migration,/where\s+canonical_status\s*=\s*'canonical'[\s\S]*metric_type\s+like\s+'sleep_%'/i,'migration must target only canonical sleep metrics');
 assert.match(migration,/health_source_daily_metrics_sleep_not_canonical/,'sleep canonical constraint missing');
 assert.match(migration,/not\s*\(canonical_status\s*=\s*'canonical'\s+and\s+metric_type\s+like\s+'sleep_%'\)/i,'constraint must reject future canonical sleep rows');
 assert.doesNotMatch(migration,/delete\s+from\s+public\.health_source_daily_metrics/i,'sleep correction must never delete source rows');
+assert.doesNotMatch(migration,/drop\s+trigger\s+if\s+exists\s+health_source_daily_metrics_preserve_status_trg/i,'sleep correction must not remove the global status-preservation trigger');
 
 const canonicalSet = appleSync.match(/const canonicalActivity=new Set\(\[([^\]]+)\]\)/)?.[1] || '';
 const canonicalMetrics = [...canonicalSet.matchAll(/'([^']+)'/g)].map(m=>m[1]);
