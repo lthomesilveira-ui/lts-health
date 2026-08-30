@@ -20,44 +20,95 @@ jobs:
           set -euo pipefail
           ROOT="https://lthomesilveira-ui.github.io/lts-health/"
           V2="https://lthomesilveira-ui.github.io/lts-health/v2/"
+          CACHE_BUST="lts_sha=${GITHUB_SHA}&attempt=${GITHUB_RUN_ATTEMPT}"
           TMP="$(mktemp -d)"
           trap 'rm -rf "$TMP"' EXIT
 
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$ROOT" -o "$TMP/root.html"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2" -o "$TMP/v2.html"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/main.js" -o "$TMP/main.js"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-layer.js" -o "$TMP/data-layer.js"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/core.js" -o "$TMP/core.js"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/today-screen.js" -o "$TMP/today.js"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/intelligence-engine.js" -o "$TMP/intelligence.js"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/source-status.js" -o "$TMP/source-status.js"
-          curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "$V2/src/data-screen.js" -o "$TMP/data.js"
+          fetch() {
+            local url="$1" out="$2"
+            local sep='?'
+            [[ "$url" == *\?* ]] && sep='&'
+            curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "${url}${sep}${CACHE_BUST}" -o "$out"
+          }
+          require_fixed() {
+            local label="$1" needle="$2" file="$3"
+            if ! grep -Fq -- "$needle" "$file"; then
+              echo "::error title=V2 Pages contract mismatch::${label} missing from ${file}"
+              return 1
+            fi
+            echo "PASS ${label}"
+          }
+          require_absent_fixed() {
+            local label="$1" needle="$2" file="$3"
+            if grep -Fq -- "$needle" "$file"; then
+              echo "::error title=V2 Pages contract mismatch::${label} unexpectedly present in ${file}"
+              return 1
+            fi
+            echo "PASS ${label}"
+          }
+          require_absent_regex() {
+            local label="$1" regex="$2" file="$3"
+            if grep -Eq -- "$regex" "$file"; then
+              echo "::error title=V2 Pages contract mismatch::${label} unexpectedly matched in ${file}"
+              return 1
+            fi
+            echo "PASS ${label}"
+          }
+          require_deployed_match() {
+            local label="$1" deployed="$2" local_file="$3"
+            if ! cmp -s "$deployed" "$local_file"; then
+              echo "::error title=V2 Pages deployment mismatch::${label} differs from checked-out ${GITHUB_SHA}"
+              echo "deployed sha256: $(sha256sum "$deployed" | cut -d' ' -f1)"
+              echo "expected sha256: $(sha256sum "$local_file" | cut -d' ' -f1)"
+              return 1
+            fi
+            echo "PASS ${label} deployed bytes"
+          }
 
-          grep -q 'canonical v16' "$TMP/root.html"
-          grep -q './product.js?v=29' "$TMP/root.html"
-          ! grep -q 'type="module" src="./src/main.js"' "$TMP/root.html"
+          fetch "$ROOT" "$TMP/root.html"
+          fetch "$V2" "$TMP/v2.html"
+          fetch "$V2/src/main.js" "$TMP/main.js"
+          fetch "$V2/src/data-layer.js" "$TMP/data-layer.js"
+          fetch "$V2/src/core.js" "$TMP/core.js"
+          fetch "$V2/src/today-screen.js" "$TMP/today.js"
+          fetch "$V2/src/intelligence-engine.js" "$TMP/intelligence.js"
+          fetch "$V2/src/source-status.js" "$TMP/source-status.js"
+          fetch "$V2/src/data-screen.js" "$TMP/data.js"
 
-          grep -q 'Seu histórico de saúde em um só lugar' "$TMP/v2.html"
-          grep -q 'type="module" src="./src/main.js"' "$TMP/v2.html"
-          grep -q './evolution.css' "$TMP/v2.html"
-          grep -q './data.css' "$TMP/v2.html"
-          grep -q 'renderTrainingScreen' "$TMP/main.js"
-          grep -q 'health_ingestion_previews' "$TMP/data-layer.js"
-          grep -q "inspectFunction: 'health-inspect-upload'" "$TMP/core.js"
-          grep -q "inspectFunctionForSource = () => CONFIG.inspectFunction" "$TMP/core.js"
-          ! grep -q "health-inspect-upload-v2" "$TMP/core.js"
-          ! grep -q "health-inspect-lab" "$TMP/core.js"
-          grep -q 'buildHealthIntelligence' "$TMP/today.js"
-          grep -q 'Dados conflitantes ou ainda em revisão ficam fora das conclusões' "$TMP/today.js"
-          grep -q 'Sono permanece fora desta leitura' "$TMP/intelligence.js"
-          grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" "$TMP/source-status.js"
-          ! grep -q 'stableAppleMetricTypes.*sleep_duration_h' "$TMP/source-status.js"
-          grep -q 'isAppleActivitySummarySource' "$TMP/source-status.js"
-          grep -q 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
-          grep -q 'Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos' "$TMP/data.js"
-          grep -q 'intervalos sobrepostos da mesma origem são unidos antes do total diário' "$TMP/data.js"
-          grep -q 'fontes diferentes permanecem separadas' "$TMP/data.js"
-          grep -q 'Arquivo preservado + revisão' "$TMP/data.js"
+          require_fixed 'public root fallback marker' 'canonical v16' "$TMP/root.html"
+          require_fixed 'public root product bundle' './product.js?v=29' "$TMP/root.html"
+          require_absent_fixed 'public root excludes v2 bootstrap' 'type="module" src="./src/main.js"' "$TMP/root.html"
+
+          require_fixed 'v2 product heading' 'Seu histórico de saúde em um só lugar' "$TMP/v2.html"
+          require_fixed 'v2 module bootstrap' 'type="module" src="./src/main.js"' "$TMP/v2.html"
+          require_fixed 'v2 evolution stylesheet' './evolution.css' "$TMP/v2.html"
+          require_fixed 'v2 data stylesheet' './data.css' "$TMP/v2.html"
+          require_fixed 'training owner' 'renderTrainingScreen' "$TMP/main.js"
+          require_fixed 'ingestion preview data layer' 'health_ingestion_previews' "$TMP/data-layer.js"
+          require_fixed 'generic inspect function' "inspectFunction: 'health-inspect-upload'" "$TMP/core.js"
+          require_fixed 'single inspect router' 'inspectFunctionForSource = () => CONFIG.inspectFunction' "$TMP/core.js"
+          require_absent_fixed 'deprecated upload-v2 parser absent' 'health-inspect-upload-v2' "$TMP/core.js"
+          require_absent_fixed 'specialized lab parser absent' 'health-inspect-lab' "$TMP/core.js"
+          require_fixed 'executive intelligence owner' 'buildHealthIntelligence' "$TMP/today.js"
+          require_fixed 'review exclusion copy' 'Dados conflitantes ou ainda em revisão ficam fora das conclusões' "$TMP/today.js"
+          require_fixed 'sleep canonical boundary copy' 'Sono permanece fora desta leitura' "$TMP/intelligence.js"
+          require_fixed 'stable Apple metric boundary' "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" "$TMP/source-status.js"
+          require_absent_regex 'sleep excluded from stable Apple metric set' 'stableAppleMetricTypes.*sleep_duration_h' "$TMP/source-status.js"
+          require_fixed 'ActivitySummary source guard' 'isAppleActivitySummarySource' "$TMP/source-status.js"
+          require_fixed 'automatic canonical Apple copy' 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
+          require_fixed 'Apple candidate metrics copy' 'Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos' "$TMP/data.js"
+          require_fixed 'same-source sleep union copy' 'intervalos sobrepostos da mesma origem são unidos antes do total diário' "$TMP/data.js"
+          require_fixed 'cross-source sleep separation copy' 'fontes diferentes permanecem separadas' "$TMP/data.js"
+          require_fixed 'lab preservation capability' 'Arquivo preservado + revisão' "$TMP/data.js"
+
+          require_deployed_match 'v2 index' "$TMP/v2.html" 'v2/index.html'
+          require_deployed_match 'v2 main.js' "$TMP/main.js" 'v2/src/main.js'
+          require_deployed_match 'v2 data-layer.js' "$TMP/data-layer.js" 'v2/src/data-layer.js'
+          require_deployed_match 'v2 core.js' "$TMP/core.js" 'v2/src/core.js'
+          require_deployed_match 'v2 today-screen.js' "$TMP/today.js" 'v2/src/today-screen.js'
+          require_deployed_match 'v2 intelligence-engine.js' "$TMP/intelligence.js" 'v2/src/intelligence-engine.js'
+          require_deployed_match 'v2 source-status.js' "$TMP/source-status.js" 'v2/src/source-status.js'
+          require_deployed_match 'v2 data-screen.js' "$TMP/data.js" 'v2/src/data-screen.js'
       - name: Install deployed-browser runtime
         run: |
           npm init -y >/dev/null 2>&1
