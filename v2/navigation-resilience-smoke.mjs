@@ -1,11 +1,15 @@
 import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1';
-const routeTitles={bio:'Bio',treinos:'Treinos',evolucao:'Evolução',analise:'Análise',tratamentos:'Tratamentos',hoje:'Hoje',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
+const routeTitles={bio:'Bio',treinos:'Treinos',evolucao:'Evolução',analise:'Análise',tratamentos:'Tratamentos',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
 const focusableSelector='button:not([disabled]),a[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 async function waitRoute(page,route){
-  await page.waitForFunction(({route,title})=>location.hash===`#${route}`&&document.querySelector('#screenHost h1')?.textContent?.includes(title),{route,title:routeTitles[route]});
+  await page.waitForFunction(({route,title})=>{
+    if(location.hash!==`#${route}`)return false;
+    if(route==='hoje')return!!document.querySelector('[data-executive-dashboard]');
+    return document.querySelector('#screenHost h1')?.textContent?.includes(title);
+  },{route,title:routeTitles[route]||''});
 }
 
 async function assertViewport(page,label,route){
@@ -125,13 +129,13 @@ async function run(viewport,label){
   await assertIsolationReleased(page,`${label}/more-escape`);
   await waitRoute(page,'treinos');
 
-  // Choosing a route from the More dialog must also release background isolation.
+  // Choosing a secondary route from More must also release background isolation.
   await page.locator(moreSelector).click();
   await page.waitForSelector('#moreSheet:not(.hidden)');
   await assertModalIsolation(page,'moreSheet',label);
-  await page.locator('#moreSheet [data-route="hoje"]').click();
+  await page.locator('#moreSheet [data-route="timeline"]').click();
   await waitHidden(page,'#moreSheet');
-  await waitRoute(page,'hoje');
+  await waitRoute(page,'timeline');
   await page.waitForFunction(()=>document.getElementById('app')?.inert===false&&document.getElementById('app')?.getAttribute('aria-hidden')===null);
   await assertIsolationReleased(page,`${label}/more-route`);
 
