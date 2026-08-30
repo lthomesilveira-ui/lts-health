@@ -50,14 +50,16 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.uploads=[{id:'apple-upload',created_at:'2026-02-04T12:00:00Z',source_type:'apple_health',status:'imported'}];
     state.data.metrics=[{source_record_id:'apple-steps-only',measured_at:'2026-02-04T12:00:00Z',metric_type:'steps',value:1000,unit:'count',source:'Apple Health'}];
+    state.data.sourceMetrics=[{source_record_id:'apple-candidate',metric_date:'2026-02-04',metric_type:'steps',value:1000,unit:'count',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'}];
     location.hash='bio';
   });
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
   await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
   let sourceText=(await page.locator('.quickList').textContent())||'';
-  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Arquivo recebido; dados ainda não confirmados'))throw new Error(`${label}: Apple file/candidate-only state is not explicit in Today`);
-  if(sourceText.includes('As fontes principais têm dados estruturados confirmados.'))throw new Error(`${label}: Apple steps/file-only state was falsely marked ready`);
+  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Dados por origem recebidos; ainda não consolidados'))throw new Error(`${label}: Apple candidate-only state is not explicit in Today`);
+  if(!sourceText.includes('separados da visão principal até validação'))throw new Error(`${label}: Apple candidate separation rule is not explicit in Today`);
+  if(sourceText.includes('As fontes principais têm dados estruturados confirmados.'))throw new Error(`${label}: Apple steps/candidate-only state was falsely marked ready`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
@@ -68,11 +70,11 @@ async function run(viewport,label){
   await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
   sourceText=(await page.locator('.quickList').textContent())||'';
-  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Arquivo recebido; dados ainda não confirmados'))throw new Error(`${label}: sleep incorrectly proved automatic Apple source readiness`);
+  if(!sourceText.includes('Apple Saúde')||!sourceText.includes('Dados por origem recebidos; ainda não consolidados'))throw new Error(`${label}: sleep incorrectly proved automatic Apple source readiness`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
-    state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'}];
+    state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health ActivitySummary'}];
     location.hash='bio';
   });
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
