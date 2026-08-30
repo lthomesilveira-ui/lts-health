@@ -5,6 +5,7 @@ const sleepMigration = fs.readFileSync('supabase/migrations/20260830112700_enfor
 const canonicalMigration = fs.readFileSync('supabase/migrations/20260830114000_enforce_current_source_canonical_boundary.sql','utf8');
 const appleSync = fs.readFileSync('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const dataLayer = fs.readFileSync('v2/src/data-layer.js','utf8');
+const timeline = fs.readFileSync('v2/src/timeline-screen.js','utf8');
 
 assert.match(sleepMigration,/create or replace function public\.health_source_daily_metrics_preserve_status\(\)/i,'sleep migration must preserve the existing status guard through a compatible function replacement');
 assert.match(sleepMigration,/old\.canonical_status in \('held','superseded'\)[\s\S]*new\.canonical_status in \('candidate','canonical'\)[\s\S]*new\.canonical_status := old\.canonical_status/i,'held and superseded statuses must remain protected');
@@ -29,6 +30,15 @@ assert.deepEqual(canonicalMetrics,['active_energy_kcal','exercise_minutes','stan
 assert.match(appleSync,/canonical_status:'candidate'/,'incoming Apple/source metrics must start as candidates');
 assert.match(appleSync,/sourceFamily==='apple_activity_summary'&&canonicalActivity\.has\(metric\)/,'only Apple ActivitySummary may enter automatic promotion');
 assert.match(appleSync,/apple_export:\$\{sourceFamily\}:\$\{metric\}:\$\{d\}:\$\{md5\(sourceName\)\}/,'historical source identity must preserve source family/name separation');
-assert.match(dataLayer,/if\(key==='workouts'\)return rows\.filter\(row=>row\?\.is_canonical!==false&&row\?\.record_status!=='quarantined'\)/,'training UI must exclude explicit noncanonical complementary workouts through the centralized domain boundary');
+
+assert.match(dataLayer,/timeline:\['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'\]/,'Timeline must stage source-preserving metrics explicitly');
+assert.match(dataLayer,/if\(key==='workouts'\)return rows\.filter\(row=>row\?\.is_canonical===true&&row\?\.record_status!=='quarantined'\)/,'training UI must require explicit canonical status through the centralized domain boundary');
+assert.match(timeline,/preservedStatuses=new Set\(\['candidate','held'\]\)/,'Timeline sleep evidence must require an explicit preserved status');
+assert.match(timeline,/m\.metric_type!=='sleep_duration_h'\|\|!preservedStatuses\.has\(norm\(m\.canonical_status\)\)/,'Timeline must show only preserved sleep-duration source evidence');
+assert.match(timeline,/domain:'Sono por fonte'/,'source sleep must remain a distinct Timeline domain');
+assert.match(timeline,/Em validação/,'source sleep must be visibly marked as under validation');
+assert.match(timeline,/Não consolidado/,'source sleep must be visibly marked as non-consolidated');
+assert.match(timeline,/source_name\|\|row\.source_family/,'Timeline must preserve source identity for sleep evidence');
+assert.doesNotMatch(timeline,/sourceMetrics[\s\S]{0,400}reduce\s*\(/,'Timeline must not reduce source sleep into a combined value');
 
 console.log('sleep/provenance boundary contract: ok');
