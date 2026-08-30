@@ -23,18 +23,28 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.body=[...(state.data.body||[]),{source_record_id:'missing-body-fields',measured_at:'2026-02-03',weight_kg:null,skeletal_muscle_mass_kg:null,body_fat_pct:null,source:'Fixture de interface'}];
     state.data.metrics=[...(state.data.metrics||[]),{source_record_id:'missing-metric-value',measured_at:'2026-02-03T12:00:00Z',metric_type:'weight_kg',value:null,unit:'kg',source:'Fixture de interface'}];
+    state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),
+      {source_record_id:'sleep-watch',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'sleep-ring',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:6.8,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'held'},
+      {source_record_id:'sleep-unclassified',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:8.2,unit:'h',source_name:'Origem sem status',source_family:'healthkit_candidate',canonical_status:null}
+    ];
     state.ui.timelinePeriod='all';state.ui.timelineYear='2026';state.ui.timelineQuery='';state.ui.timelineDomain='all';
   });
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
   await page.click(`${nav} [data-route="bio"]`);
-  if(viewport.width<720){await page.click(`${nav} [data-route="mais"]`);await page.click('#moreSheet [data-route="timeline"]');}
-  else{await page.click(`${nav} [data-route="mais"]`);await page.click('#moreSheet [data-route="timeline"]');}
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.click('#moreSheet [data-route="timeline"]');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
   text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Composição corporal registrada'))throw new Error(`${label}: missing body fields were not rendered neutrally`);
   if(!text.includes('Registro disponível'))throw new Error(`${label}: missing metric value was not rendered neutrally`);
   if(text.includes('Peso — kg')||text.includes('MME — kg'))throw new Error(`${label}: missing body values leaked as pseudo-measurements`);
   if(text.includes('Confirmação registrada')||/\btaken\b/i.test(text))throw new Error(`${label}: treatment operational context reappeared after rerender`);
+  for(const expected of ['Sono por fonte','Apple Watch','RingConn','7,1 h · Em validação · Não consolidado','6,8 h · Em validação · Não consolidado']){
+    if(!text.includes(expected))throw new Error(`${label}: source-preserving sleep evidence missing ${expected}`);
+  }
+  if(text.includes('Origem sem status')||text.includes('8,2 h'))throw new Error(`${label}: ambiguous sleep status leaked into Timeline evidence`);
+  if(text.includes('13,9 h'))throw new Error(`${label}: overlapping sleep sources were summed`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);

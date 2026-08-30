@@ -40,6 +40,11 @@ async function run(viewport,label){
       rows.push({source_record_id:`timeline-load-${i}`,activity_date:d.toISOString().slice(0,10),activity_name:'Teste carga timeline',activity_type:'test',source:'Fixture de interface'});
     }
     state.data.activity=[...(state.data.activity||[]),...rows];
+    state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),
+      {source_record_id:'timeline-sleep-watch',metric_date:'2026-04-04',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'timeline-sleep-ring',metric_date:'2026-04-04',metric_type:'sleep_duration_h',value:6.8,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'held'},
+      {source_record_id:'timeline-sleep-unknown',metric_date:'2026-04-04',metric_type:'sleep_duration_h',value:8.2,unit:'h',source_name:'Origem sem status',source_family:'healthkit_candidate',canonical_status:null}
+    ];
   });
 
   await page.selectOption('#timelineDomain','Atividade');
@@ -55,6 +60,15 @@ async function run(viewport,label){
 
   await page.fill('#timelineQuery','');
   await page.waitForTimeout(80);
+  await page.selectOption('#timelineDomain','Sono por fonte');
+  await page.waitForTimeout(80);
+  const sleepText=(await page.locator('#screenHost').textContent())||'';
+  for(const expected of ['Apple Watch','RingConn','7,1 h · Em validação · Não consolidado','6,8 h · Em validação · Não consolidado']){
+    if(!sleepText.includes(expected))throw new Error(`${label}: source-preserving sleep evidence missing ${expected}`);
+  }
+  if(sleepText.includes('Origem sem status')||sleepText.includes('8,2 h'))throw new Error(`${label}: sleep evidence without explicit candidate/held status leaked into Timeline`);
+  if(sleepText.includes('13,9 h'))throw new Error(`${label}: overlapping sleep sources were summed`);
+
   await page.selectOption('#timelineDomain','Treinos');
   await page.waitForTimeout(80);
   const jump=page.locator('.timelineGroups [data-timeline-jump][data-timeline-kind="workout"]').first();

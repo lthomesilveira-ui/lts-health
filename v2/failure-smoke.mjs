@@ -16,6 +16,19 @@ async function open(kind,route,title){
   return{browser,page,text,errors};
 }
 
+async function openToday(kind,viewport){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport});
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+  await page.goto(`${base}&fixtureError=${kind}#hoje`,{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('#app:not(.hidden)');
+  await page.waitForSelector('[data-executive-dashboard]');
+  const text=(await page.textContent('#screenHost'))||'';
+  if(text.match(forbidden))throw new Error(`hoje/${kind}: implementation jargon visible`);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`hoje/${kind}: horizontal overflow ${overflow}px`);
+  return{browser,page,text,errors};
+}
+
 async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}: page errors ${ctx.errors.join(' | ')}`);await ctx.browser.close();}
 
 {
@@ -66,6 +79,20 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   if(!ctx.text.includes('histórico de tratamentos não carregou agora'))throw new Error('tratamentos: failure hidden');
   if(ctx.text.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error('tratamentos: operational guidance visible');
   await finish(ctx,'tratamentos');
+}
+{
+  const ctx=await openToday('nutrition',{width:390,height:844});
+  const card=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Alimentação mais recente'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Sem alimentação')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
+  if(!ctx.text.includes('Último treino'))throw new Error('hoje/nutrition mobile: healthy snapshot cards disappeared');
+  await finish(ctx,'hoje/nutrition mobile');
+}
+{
+  const ctx=await openToday('metrics',{width:1440,height:900});
+  const card=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Atividade consolidada'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Sem dado consolidado')||card?.match(/\b0\b/))throw new Error('hoje/metrics desktop: failed domain presented as absence or zero');
+  if(!ctx.text.includes('Em validação'))throw new Error('hoje/metrics desktop: sleep boundary copy disappeared');
+  await finish(ctx,'hoje/metrics desktop');
 }
 
 console.log('LTS Health v2 failure-state smoke passed');

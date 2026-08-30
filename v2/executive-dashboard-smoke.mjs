@@ -47,9 +47,10 @@ async function run(viewport,label){
   const visibleActive=[...new Set(activeRoutes)];
   if(visibleActive.length!==1||visibleActive[0]!=='hoje')throw new Error(`${label}: home navigation state is ambiguous (${visibleActive.join('|')})`);
   const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['LTS Health Intelligence','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico']){
+  for(const expected of ['LTS Health','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico']){
     if(!text.includes(expected))throw new Error(`${label}: missing executive dashboard section: ${expected}`);
   }
+  if(text.includes('LTS Health Intelligence')||text.includes('Insight cruzado')||text.includes('Ainda sem leitura canônica')||text.includes('domínios comparáveis'))throw new Error(`${label}: implementation-oriented copy leaked into Today`);
   const current=await page.locator('.intelCurrentCard').count();
   const insights=await page.locator('.intelInsightCard').count();
   const coverage=await page.locator('.intelCoverageCard').count();

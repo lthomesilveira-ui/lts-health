@@ -3,10 +3,11 @@ import {buildHealthIntelligence} from './intelligence-engine.js';
 
 const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
 const statusLabel={strong:'Boa cobertura',partial:'Cobertura parcial',limited:'Poucos dados',unavailable:'Indisponível'};
-const insightLabel={change:'O que mudou',cross:'Insight cruzado',coverage:'Limitação de cobertura',unavailable:'Indisponível'};
+const insightLabel={change:'O que mudou',cross:'Análise cruzada',coverage:'Limitação de cobertura',unavailable:'Indisponível'};
 
 function latest(rows,key){return[...(rows||[])].sort((a,b)=>String(b?.[key]||'').localeCompare(String(a?.[key]||'')))[0]||null;}
 function latestMetric(type){return latest((state.data.metrics||[]).filter(m=>m.metric_type===type),'measured_at');}
+function domainReady(key){return state.domainStatus?.[key]==='ready';}
 function currentCard(label,value,detail,route){return`<article class="intelCurrentCard"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small>${route?`<button data-route="${esc(route)}">Ver evidência</button>`:''}</article>`;}
 function insightCard(item,index){
   return`<article class="intelInsightCard ${esc(item.kind)}" data-intelligence-insight="${index}">
@@ -20,22 +21,42 @@ function attentionRow(item){return`<div class="intelAttentionRow"><div><span>${e
 function coverageCard(row){return`<button class="intelCoverageCard ${esc(row.state)}" data-route="${esc(row.route)}"><div><span>${esc(row.label)}</span><b>${esc(statusLabel[row.state]||row.state)}</b><small>${esc(row.detail)}</small></div><i aria-hidden="true">→</i></button>`;}
 function question(text,route){return`<button class="intelQuestion" data-route="${esc(route)}"><span>${esc(text)}</span><i>→</i></button>`;}
 function dateText(value){return value?fmtDate(value):'Sem data';}
+function unavailableValue(label){return currentCard(label,'Indisponível agora','Não foi possível carregar esta área. Os demais dados continuam disponíveis.',null);}
 
 function currentSnapshot(model){
-  const workout=latest(state.data.workouts||[],'workout_date'),body=latest(state.data.body||[],'measured_at'),nutrition=latest(state.data.nutrition||[],'nutrition_date'),labs=latest(state.data.labs||[],'collection_date');
-  const activity=latestMetric('active_energy_kcal')||latestMetric('exercise_minutes')||latestMetric('stand_hours');
-  const bodyValue=body?(num(body.weight_kg)!=null?`${fmtNum(body.weight_kg,1)} kg`:'Medição registrada'):'Sem medição';
-  const workoutValue=workout?(workout.workout_type||'Treino registrado'):'Sem treino';
-  const nutritionValue=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Dia registrado'):'Sem alimentação';
-  const activityValue=activity?`${fmtNum(activity.value,1)} ${activity.unit||''}`:'Sem dado consolidado';
-  return[
-    currentCard('Último treino',workoutValue,workout?dateText(workout.workout_date):'Nenhuma sessão estruturada','treinos'),
-    currentCard('Última composição',bodyValue,body?dateText(body.measured_at):'Nenhuma medição estruturada','evolucao'),
-    currentCard('Alimentação mais recente',nutritionValue,nutrition?dateText(nutrition.nutrition_date):'Nenhum dia estruturado','nutricao'),
-    currentCard('Atividade consolidada',activityValue,activity?dateText(activity.measured_at):'Ainda sem leitura canônica','timeline'),
-    currentCard('Sono','Em validação','Fontes ainda não consolidadas; registros permanecem preservados por origem','timeline'),
-    currentCard('Exames estruturados',labs?dateText(labs.collection_date):'Sem coleta',labs?'Última coleta disponível':'Nenhum resultado estruturado','saude')
-  ].join('');
+  const workout=domainReady('workouts')?latest(state.data.workouts||[],'workout_date'):null;
+  const body=domainReady('body')?latest(state.data.body||[],'measured_at'):null;
+  const nutrition=domainReady('nutrition')?latest(state.data.nutrition||[],'nutrition_date'):null;
+  const labs=domainReady('labs')?latest(state.data.labs||[],'collection_date'):null;
+  const activity=domainReady('metrics')?(latestMetric('active_energy_kcal')||latestMetric('exercise_minutes')||latestMetric('stand_hours')):null;
+  const cards=[];
+
+  if(domainReady('workouts')){
+    const workoutValue=workout?(workout.workout_type||'Treino registrado'):'Sem treino';
+    cards.push(currentCard('Último treino',workoutValue,workout?dateText(workout.workout_date):'Nenhuma sessão estruturada','treinos'));
+  }else cards.push(unavailableValue('Último treino'));
+
+  if(domainReady('body')){
+    const bodyValue=body?(num(body.weight_kg)!=null?`${fmtNum(body.weight_kg,1)} kg`:'Medição registrada'):'Sem medição';
+    cards.push(currentCard('Última composição',bodyValue,body?dateText(body.measured_at):'Nenhuma medição estruturada','evolucao'));
+  }else cards.push(unavailableValue('Última composição'));
+
+  if(domainReady('nutrition')){
+    const nutritionValue=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Dia registrado'):'Sem alimentação';
+    cards.push(currentCard('Alimentação mais recente',nutritionValue,nutrition?dateText(nutrition.nutrition_date):'Nenhum dia estruturado','nutricao'));
+  }else cards.push(unavailableValue('Alimentação mais recente'));
+
+  if(domainReady('metrics')){
+    const activityValue=activity?`${fmtNum(activity.value,1)} ${activity.unit||''}`:'Sem dado consolidado';
+    cards.push(currentCard('Atividade consolidada',activityValue,activity?dateText(activity.measured_at):'Ainda sem leitura confirmada','timeline'));
+  }else cards.push(unavailableValue('Atividade consolidada'));
+
+  cards.push(currentCard('Sono','Em validação','Fontes ainda não consolidadas; registros permanecem preservados por origem','timeline'));
+
+  if(domainReady('labs'))cards.push(currentCard('Exames estruturados',labs?dateText(labs.collection_date):'Sem coleta',labs?'Última coleta disponível':'Nenhum resultado estruturado','saude'));
+  else cards.push(unavailableValue('Exames estruturados'));
+
+  return cards.join('');
 }
 
 export function renderTodayHub(){
@@ -50,10 +71,10 @@ export function renderTodayHub(){
   return `<div class="intelScreen" data-executive-dashboard>
     <section class="intelHero">
       <div class="intelHeroCopy">
-        <span class="intelEyebrow">${esc(model.headline.eyebrow)}</span>
+        <span class="intelEyebrow">LTS Health</span>
         <h1>${esc(model.headline.title)}</h1>
         <p>${esc(model.headline.subtitle)}</p>
-        <div class="intelHeroMeta"><span>Leitura até ${esc(fmtDate(model.referenceDay))}</span><span>${model.comparableDomains}/5 domínios comparáveis</span><span>${model.strongDomains}/5 com boa cobertura</span></div>
+        <div class="intelHeroMeta"><span>Leitura até ${esc(fmtDate(model.referenceDay))}</span><span>${model.comparableDomains}/5 áreas comparáveis</span><span>${model.strongDomains}/5 com boa cobertura</span></div>
       </div>
       <div class="intelHeroActions">${action('analise','Abrir análise completa')}${action('dados','Adicionar dados')}</div>
     </section>
@@ -64,7 +85,7 @@ export function renderTodayHub(){
     </section>
 
     <section class="intelSection intelChanges">
-      <div class="intelSectionHead"><div><span>Intelligence</span><h2>O que merece sua atenção no histórico.</h2></div><small>Conclusões descritivas; relações temporais não são tratadas como causa.</small></div>
+      <div class="intelSectionHead"><div><span>Análise</span><h2>O que merece sua atenção no histórico.</h2></div><small>Conclusões descritivas; relações temporais não são tratadas como causa.</small></div>
       <div class="intelInsightGrid">${primaryInsights.length?primaryInsights.map(insightCard).join(''):'<div class="intelEmpty">Ainda não há mudanças com evidência suficiente para destacar.</div>'}</div>
     </section>
 
@@ -74,19 +95,19 @@ export function renderTodayHub(){
         <div class="intelAttentionList">${model.attention.length?model.attention.map(attentionRow).join(''):'<div class="intelEmpty compact">Nenhuma limitação adicional foi identificada pelos critérios atuais.</div>'}</div>
       </div>
       <div class="intelSection">
-        <div class="intelSectionHead"><div><span>Cobertura</span><h2>Quanto cada domínio sustenta comparações.</h2></div></div>
+        <div class="intelSectionHead"><div><span>Cobertura</span><h2>Quanto cada área sustenta comparações.</h2></div></div>
         <div class="intelCoverageGrid">${model.coverage.map(coverageCard).join('')}</div>
       </div>
     </section>
 
     <section class="intelSection intelAsk">
-      <div class="intelSectionHead"><div><span>Pergunte ao histórico</span><h2>Perguntas que os dados já conseguem orientar.</h2></div><small>Esta primeira versão abre a evidência correspondente; a conversa direta será a próxima camada.</small></div>
+      <div class="intelSectionHead"><div><span>Pergunte ao histórico</span><h2>Perguntas que os dados já conseguem orientar.</h2></div><small>Esta versão abre a evidência correspondente.</small></div>
       <div class="intelQuestionGrid">${questions.join('')}</div>
     </section>
 
     <section class="intelFootnote">
       <b>Como o LTS Health lê seus dados</b>
-      <p>O dashboard usa somente registros estruturados e canônicos disponíveis. Dados conflitantes ou ainda em revisão ficam fora das conclusões. Nenhum gráfico ou frase é usado para preencher lacunas por estimativa.</p>
+      <p>O dashboard usa somente registros estruturados e confirmados. Dados conflitantes ou ainda em revisão ficam fora das conclusões. Nenhum gráfico ou frase é usado para preencher lacunas por estimativa.</p>
     </section>
   </div>`;
 }
