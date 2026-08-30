@@ -77,9 +77,10 @@ function compareResult(a,b){
   return{mode:'text',detail:'comparação lado a lado'};
 }
 function collectionComparison(cols,selectedKey){
-  const index=cols.findIndex(c=>c.key===selectedKey),current=cols[index],previous=index>=0?cols[index+1]:null;
+  const index=cols.findIndex(c=>c.key===selectedKey),current=cols[index];
+  const previous=index>=0&&current?.date?cols.slice(index+1).find(c=>c.date&&String(c.date)<String(current.date)):null;
   if(!current)return empty('Selecione uma coleta para comparar.');
-  if(!previous)return empty('Não há uma coleta anterior disponível para comparação direta.');
+  if(!previous)return empty('Ainda não há outra data de coleta disponível para comparação direta.');
   const a=rowsByMarker(current),b=rowsByMarker(previous),q=norm(state.ui.labQuery),keys=[...a.keys()].filter(k=>b.has(k)&&(!q||k.includes(q))).sort((x,y)=>String(a.get(x)?.[0]?.biomarker||x).localeCompare(String(a.get(y)?.[0]?.biomarker||y),'pt-BR'));
   const rows=keys.map(key=>{
     const ar=a.get(key),br=b.get(key),label=ar?.[0]?.biomarker||br?.[0]?.biomarker||key;
@@ -87,7 +88,7 @@ function collectionComparison(cols,selectedKey){
     const left=ar[0],right=br[0],comparison=compareResult(left,right);
     return `<div class="collectionCompareRow"><div><b>${esc(label)}</b><small>${esc(resultKind(left))} / ${esc(resultKind(right))}</small></div><span>${esc(resultText(left))}</span><span>${esc(resultText(right))}</span><em class="${comparison.mode==='delta'?'delta':''}">${esc(comparison.detail)}</em></div>`;
   }).join('');
-  return `<div class="collectionCompareHead"><div><b>${fmtDate(current.date)}</b><small>${esc(current.lab)}</small></div><span>comparado com</span><div><b>${fmtDate(previous.date)}</b><small>${esc(previous.lab)}</small></div></div><div class="collectionCompareLegend"><span>Marcador</span><span>Selecionada</span><span>Anterior</span><span>Diferença</span></div><div class="collectionCompareList">${rows||empty('As duas coletas não têm marcadores em comum com a busca atual.')}</div><small class="labHistoryNote">Diferenças só são calculadas quando há um único valor numérico em cada coleta e a unidade é exatamente a mesma. Resultados textuais e unidades diferentes ficam lado a lado, sem conversão.</small>`;
+  return `<div class="collectionCompareHead"><div><b>${fmtDate(current.date)}</b><small>${esc(current.lab)}</small></div><span>comparado com</span><div><b>${fmtDate(previous.date)}</b><small>${esc(previous.lab)}</small></div></div><div class="collectionCompareLegend"><span>Marcador</span><span>Selecionada</span><span>Anterior</span><span>Diferença</span></div><div class="collectionCompareList">${rows||empty('As duas coletas não têm marcadores em comum com a busca atual.')}</div><small class="labHistoryNote">A comparação usa uma data de coleta anterior, nunca outra origem do mesmo dia. Diferenças só são calculadas quando há um único valor numérico em cada coleta e a unidade é exatamente a mesma. Resultados textuais e unidades diferentes ficam lado a lado, sem conversão.</small>`;
 }
 function documentStatus(doc){
   const status=norm(doc.extraction_status);
@@ -124,7 +125,7 @@ export function renderHealthHub(){
   return `${title('Saúde & exames','Resultados, coletas e documentos organizados para consulta longitudinal.')}
     ${labFailed?unavailable('Os exames continuam preservados; tente atualizar para carregar os resultados.') : ''}
     <div class="grid cols4">
-      <div class="card metric"><span>Coletas</span><strong>${labFailed?'—':cols.length}</strong><em>${labFailed?'não carregado':labDates.length?`${fmtDate([...labDates].sort().at(0))} → ${fmtDate([...labDates].sort().at(-1))}`:'sem datas'}</em></div>
+      <div class="card metric"><span>Datas de coleta</span><strong>${labFailed?'—':labDates.length}</strong><em>${labFailed?'não carregado':labDates.length?`${fmtDate([...labDates].sort().at(0))} → ${fmtDate([...labDates].sort().at(-1))} · ${cols.length} conjunto(s)`:'sem datas'}</em></div>
       <div class="card metric"><span>Resultados numéricos</span><strong>${labFailed?'—':numericCount}</strong><em>${labFailed?'não carregado':'comparáveis só com mesma unidade'}</em></div>
       <div class="card metric"><span>Resultados textuais</span><strong>${labFailed?'—':textCount}</strong><em>${labFailed?'não carregado':'preservados como texto'}</em></div>
       <div class="card metric"><span>Documentos aguardando leitura</span><strong>${docsFailed?'—':pendingDocs}</strong><em>${docsFailed?'não carregado':'sem criar resultados por estimativa'}</em></div>
@@ -133,7 +134,7 @@ export function renderHealthHub(){
       <div class="card">${labFailed?unavailable('Não é possível listar coletas enquanto os resultados estão indisponíveis.'):`<div class="cardHead"><div><b>Coleta</b><small>Escolha uma coleta para ver os resultados disponíveis.</small></div><select id="collectionSelect">${cols.map(c=>`<option value="${esc(c.key)}">${fmtDate(c.date)} · ${esc(c.lab)}</option>`).join('')}</select></div><input id="labQuery" class="fullInput" type="search" placeholder="Buscar marcador ou resultado" value="${esc(state.ui.labQuery)}">${collectionPanel(collection)}`}</div>
       <div class="card">${labFailed?unavailable('O histórico por marcador ficará disponível após o carregamento dos exames.'):`<div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando os valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div>`}</div>
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Comparação com a coleta anterior</b><small>Mostra apenas marcadores presentes nas duas coletas e mantém unidades diferentes separadas.</small></div></div>${labFailed?unavailable('A comparação fica disponível quando os resultados carregarem.'):collectionComparison(cols,state.ui.selectedCollection)}</div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Comparação com a coleta anterior</b><small>Usa a data anterior disponível; origens diferentes do mesmo dia não são tratadas como evolução.</small></div></div>${labFailed?unavailable('A comparação fica disponível quando os resultados carregarem.'):collectionComparison(cols,state.ui.selectedCollection)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Documentos</b><small>PDF e imagem podem ficar guardados sem gerar resultados até uma leitura especializada ser segura.</small></div>${!docsFailed?pill(`${docs.length}`):''}</div>${docsFailed?unavailable('Os documentos não carregaram agora.'):`${documentSummary(docs)}<div class="documentGrid">${docs.slice(0,100).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div>${documentStatus(d)}</article>`).join('')||empty('Nenhum documento registrado.')}</div>`}</div>
       <div class="card"><div class="cardHead"><div><b>Resultados e documentos na mesma data</b><small>Ajuda a localizar registros relacionados pela data sem assumir que um item explica o outro.</small></div></div>${labFailed||docsFailed?unavailable('Esta visão precisa dos resultados e dos documentos carregados ao mesmo tempo.'):evidenceByDate(cols,docs)}</div>
