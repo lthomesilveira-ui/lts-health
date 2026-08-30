@@ -7,7 +7,7 @@ const preservedCandidateStatuses=new Set(['candidate','held']);
 const failed=key=>state.domainStatus[key]==='error';
 const contains=(rows,fields,term)=>{term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
 const matching=(rows,fields,term)=>{term=norm(term);return(rows||[]).filter(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
-const isPreservedCandidate=row=>preservedCandidateStatuses.has(norm(row?.canonical_status||'candidate'));
+const isPreservedCandidate=row=>preservedCandidateStatuses.has(norm(row?.canonical_status));
 const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_family)===norm(family)&&isPreservedCandidate(row));
 const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&isPreservedCandidate(row);
 const anyCandidateMetric=rows=>(rows||[]).some(appleCandidate);
