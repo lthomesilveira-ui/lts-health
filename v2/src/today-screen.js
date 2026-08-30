@@ -23,17 +23,17 @@ function dateText(value){return value?fmtDate(value):'Sem data';}
 
 function currentSnapshot(model){
   const workout=latest(state.data.workouts||[],'workout_date'),body=latest(state.data.body||[],'measured_at'),nutrition=latest(state.data.nutrition||[],'nutrition_date'),labs=latest(state.data.labs||[],'collection_date');
-  const activity=latestMetric('active_energy_kcal')||latestMetric('exercise_minutes')||latestMetric('steps'),sleep=latestMetric('sleep_duration_h');
+  const activity=latestMetric('active_energy_kcal')||latestMetric('exercise_minutes')||latestMetric('stand_hours');
   const bodyValue=body?(num(body.weight_kg)!=null?`${fmtNum(body.weight_kg,1)} kg`:'Medição registrada'):'Sem medição';
   const workoutValue=workout?(workout.workout_type||'Treino registrado'):'Sem treino';
   const nutritionValue=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Dia registrado'):'Sem alimentação';
-  const activityValue=activity?`${fmtNum(activity.value,activity.metric_type==='steps'?0:1)} ${activity.metric_type==='steps'?'passos':activity.unit||''}`:'Sem dado consolidado';
+  const activityValue=activity?`${fmtNum(activity.value,1)} ${activity.unit||''}`:'Sem dado consolidado';
   return[
     currentCard('Último treino',workoutValue,workout?dateText(workout.workout_date):'Nenhuma sessão estruturada','treinos'),
     currentCard('Última composição',bodyValue,body?dateText(body.measured_at):'Nenhuma medição estruturada','evolucao'),
     currentCard('Alimentação mais recente',nutritionValue,nutrition?dateText(nutrition.nutrition_date):'Nenhum dia estruturado','nutricao'),
     currentCard('Atividade consolidada',activityValue,activity?dateText(activity.measured_at):'Ainda sem leitura canônica','timeline'),
-    currentCard('Sono consolidado',sleep?`${fmtNum(sleep.value,1)} ${sleep.unit||'h'}`:'Sem dado consolidado',sleep?dateText(sleep.measured_at):'Fontes sobrepostas não são somadas','timeline'),
+    currentCard('Sono','Em validação','Fontes ainda não consolidadas; registros permanecem preservados por origem','timeline'),
     currentCard('Exames estruturados',labs?dateText(labs.collection_date):'Sem coleta',labs?'Última coleta disponível':'Nenhum resultado estruturado','saude')
   ].join('');
 }
