@@ -13,7 +13,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
 
   const result=await page.evaluate(async()=>{
-    const {visibleRowsForDomain}=await import('./src/data-layer.js');
+    const {visibleRowsForDomain,visibleWorkoutChildren}=await import('./src/data-layer.js');
     const metrics=visibleRowsForDomain('metrics',[
       {source_record_id:'activity-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:500,unit:'kcal',source:'Apple Health ActivitySummary'},
       {source_record_id:'activity-stand',measured_at:'2026-08-29T12:00:00Z',metric_type:'stand_hours',value:10,unit:'h',source:'Apple Health ActivitySummary'},
@@ -30,14 +30,33 @@ async function run(viewport,label){
     const workouts=visibleRowsForDomain('workouts',[
       {source_record_id:'lts-polar-evidence',workout_date:'2026-08-27',source:'user-reported completed workout + Polar Flow screenshot',record_status:'validated',is_canonical:true},
       {source_record_id:'polar-only-candidate',workout_date:'2026-08-27',source:'Polar Flow via Apple Health',record_status:'validated',is_canonical:false},
+      {source_record_id:'polar-unpromoted-null',workout_date:'2026-08-27',source:'Polar Flow via Apple Health',record_status:'validated',is_canonical:null},
+      {source_record_id:'polar-unpromoted-missing',workout_date:'2026-08-27',source:'Polar Flow via Apple Health',record_status:'validated'},
       {source_record_id:'quarantined-generated',workout_date:'2026-08-27',source:'builder generated',record_status:'quarantined',is_canonical:true}
     ]);
-    return {metricIds:metrics.map(r=>r.source_record_id),nutritionIds:nutrition.map(r=>r.source_record_id),workoutIds:workouts.map(r=>r.source_record_id)};
+    const children=visibleWorkoutChildren(workouts,[
+      {source_record_id:'exercise-canonical',workout_source_record_id:'lts-polar-evidence'},
+      {source_record_id:'exercise-candidate',workout_source_record_id:'polar-only-candidate'},
+      {source_record_id:'exercise-unpromoted',workout_source_record_id:'polar-unpromoted-null'}
+    ],[
+      {source_record_id:'set-canonical',workout_source_record_id:'lts-polar-evidence'},
+      {source_record_id:'set-candidate',workout_source_record_id:'polar-only-candidate'},
+      {source_record_id:'set-unpromoted',workout_source_record_id:'polar-unpromoted-null'}
+    ]);
+    return {
+      metricIds:metrics.map(r=>r.source_record_id),
+      nutritionIds:nutrition.map(r=>r.source_record_id),
+      workoutIds:workouts.map(r=>r.source_record_id),
+      exerciseIds:children.exercises.map(r=>r.source_record_id),
+      setIds:children.sets.map(r=>r.source_record_id)
+    };
   });
 
   if(result.metricIds.join('|')!=='activity-energy|activity-stand|other-resting')throw new Error(`${label}: Apple Health candidate-only metrics crossed the canonical boundary: ${result.metricIds.join('|')}`);
   if(result.nutritionIds.join('|')!=='mfp-export')throw new Error(`${label}: MyFitnessPal via Apple Health candidate crossed the canonical nutrition boundary: ${result.nutritionIds.join('|')}`);
   if(result.workoutIds.join('|')!=='lts-polar-evidence')throw new Error(`${label}: workout provenance boundary failed: ${result.workoutIds.join('|')}`);
+  if(result.exerciseIds.join('|')!=='exercise-canonical')throw new Error(`${label}: child exercise from non-canonical workout crossed the boundary: ${result.exerciseIds.join('|')}`);
+  if(result.setIds.join('|')!=='set-canonical')throw new Error(`${label}: child set from non-canonical workout crossed the boundary: ${result.setIds.join('|')}`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
