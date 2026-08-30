@@ -1,4 +1,4 @@
-import {state,esc,num,fmtNum,fmtDate,neutralDelta,bodyRows} from './core.js';
+import {state,esc,num,fmtNum,fmtDate,neutralDelta,bodyRows,norm} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1>${description?`<p>${esc(description)}</p>`:''}</div></div>`;
 const metric=(label,value,unit='',sub='')=>`<div class="card metric"><span>${esc(label)}</span><strong>${esc(value)}${unit?` <small>${esc(unit)}</small>`:''}</strong>${sub?`<em>${esc(sub)}</em>`:''}</div>`;
@@ -7,10 +7,16 @@ const bodyFailed=()=>state.domainStatus.body==='error';
 
 const metrics={
   weight_kg:{label:'Peso',unit:'kg'},
-  skeletal_muscle_mass_kg:{label:'MME',unit:'kg'},
-  fat_mass_kg:{label:'Gordura',unit:'kg'},
-  body_fat_pct:{label:'Gordura',unit:'%'}
+  skeletal_muscle_mass_kg:{label:'Massa muscular',unit:'kg'},
+  fat_mass_kg:{label:'Massa de gordura',unit:'kg'},
+  body_fat_pct:{label:'Gordura corporal',unit:'%'}
 };
+function sourceDisplay(source=''){
+  const text=norm(source);
+  if(text.includes('inbody'))return'InBody';
+  if(text.includes('bioimpedance'))return'Bioimpedância';
+  return source||'Origem registrada';
+}
 
 function lineChart(rows,key,label){
   const pts=rows.map(r=>({date:r.measured_at,value:num(r[key])})).filter(p=>p.value!=null);
@@ -34,40 +40,40 @@ function compare(rows){
   if(!state.ui.compareB||!rows.some(r=>r.measured_at===state.ui.compareB))state.ui.compareB=rows.at(-1).measured_at;
   const a=rows.find(r=>r.measured_at===state.ui.compareA),b=rows.find(r=>r.measured_at===state.ui.compareB),interval=daysBetween(state.ui.compareA,state.ui.compareB);
   const intervalText=interval==null?'':interval===0?'Mesma data':`${Math.abs(interval)} dia${Math.abs(interval)===1?'':'s'} entre as medições${interval<0?' · ordem invertida':''}`;
-  return `<div class="compareSelectors"><label>De<select id="compareA">${compareOptions(rows,state.ui.compareA)}</select></label><label>Até<select id="compareB">${compareOptions(rows,state.ui.compareB)}</select></label></div>${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('MME',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Gordura',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
+  return `<div class="compareSelectors"><label>De<select id="compareA">${compareOptions(rows,state.ui.compareA)}</select></label><label>Até<select id="compareB">${compareOptions(rows,state.ui.compareB)}</select></label></div>${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('Massa muscular',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Gordura corporal',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('Pontuação InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
 }
 function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${value==null?'—':`${fmtNum(value,Number.isInteger(num(value))?0:1)}${unit?` ${esc(unit)}`:''}`}</b></div>`;}
 function measurementDetail(row){
   if(!row)return empty('Selecione uma medição no histórico.');
-  return `<div class="bioDetailHead"><div><span>${fmtDate(row.measured_at)}</span><b>Detalhe da medição</b><small>${esc(row.source||'origem registrada')}</small></div>${row.confidence?`<span class="pill">${esc(row.confidence)}</span>`:''}</div>
+  return `<div class="bioDetailHead"><div><span>${fmtDate(row.measured_at)}</span><b>Detalhes da medição</b><small>${esc(sourceDisplay(row.source))}</small></div></div>
     <div class="bioDetailGrid">
-      ${detailValue('Peso',row.weight_kg,'kg')}${detailValue('MME',row.skeletal_muscle_mass_kg,'kg')}${detailValue('Massa de gordura',row.fat_mass_kg,'kg')}${detailValue('Gordura',row.body_fat_pct,'%')}
-      ${detailValue('Água corporal',row.body_water_l,'L')}${detailValue('Gordura visceral',row.visceral_fat_level,'nível')}${detailValue('Relação cintura/quadril',row.waist_hip_ratio,'')}${detailValue('Metabolismo basal',row.bmr_kcal,'kcal')}${detailValue('InBody',row.score,'')}
-    </div>${row.notes?`<p class="footerNote">${esc(row.notes)}</p>`:''}${row.source_file?`<p class="footerNote">Arquivo relacionado: ${esc(row.source_file)}</p>`:''}`;
+      ${detailValue('Peso',row.weight_kg,'kg')}${detailValue('Massa muscular',row.skeletal_muscle_mass_kg,'kg')}${detailValue('Massa de gordura',row.fat_mass_kg,'kg')}${detailValue('Gordura corporal',row.body_fat_pct,'%')}
+      ${detailValue('Água corporal',row.body_water_l,'L')}${detailValue('Gordura visceral',row.visceral_fat_level,'nível')}${detailValue('Relação cintura/quadril',row.waist_hip_ratio,'')}${detailValue('Metabolismo basal',row.bmr_kcal,'kcal')}${detailValue('Pontuação InBody',row.score,'')}
+    </div>${row.notes?`<p class="footerNote">${esc(row.notes)}</p>`:''}`;
 }
 
 export function renderBioHub(){
-  if(bodyFailed())return `${title('Bio','Composição corporal e histórico de bioimpedância.')}<div class="errorState"><b>As medições corporais não carregaram agora.</b><span>O app não substitui essa falha por números zerados. Tente atualizar para carregar o histórico novamente.</span></div>`;
+  if(bodyFailed())return `${title('Composição corporal','Histórico de bioimpedância e evolução das medições.')}<div class="errorState"><b>As medições corporais não carregaram agora.</b><span>O app não substitui essa falha por números zerados. Tente atualizar para carregar o histórico novamente.</span></div>`;
   const rows=bodyRows(),last=rows.at(-1),prev=rows.at(-2),first=rows[0];
-  if(!rows.length)return `${title('Bio','Composição corporal e histórico de bioimpedância.')}${empty('Nenhuma medição corporal registrada.')}`;
+  if(!rows.length)return `${title('Composição corporal','Histórico de bioimpedância e evolução das medições.')}${empty('Nenhuma medição corporal foi encontrada no histórico carregado.')}`;
   const key=state.ui.bioMetric||'weight_kg',meta=metrics[key]||metrics.weight_kg;
   if(!state.ui.selectedBodyDate||!rows.some(r=>r.measured_at===state.ui.selectedBodyDate))state.ui.selectedBodyDate=last.measured_at;
   const selected=rows.find(r=>r.measured_at===state.ui.selectedBodyDate);
-  return `${title('Bio','Sua composição corporal, comparação entre datas e histórico completo.')}
-    <div class="note"><b>Última medição · ${fmtDate(last.measured_at)}</b><span>${rows.length} medição(ões) no histórico carregado. Os indicadores abaixo usam esta medição mais recente.</span></div>
+  return `${title('Composição corporal','Suas medições, comparação entre datas e histórico completo.')}
+    <div class="note"><b>Última medição · ${fmtDate(last.measured_at)}</b><span>${rows.length} medição(ões) no histórico carregado. Os indicadores abaixo usam a medição mais recente.</span></div>
     <div class="grid cols4 sectionGap">
       ${metric('Peso',fmtNum(last.weight_kg),'kg',prev?`desde a anterior ${neutralDelta(last.weight_kg,prev.weight_kg,1,'kg')}`:`primeiro registro ${fmtDate(first.measured_at)}`)}
-      ${metric('MME',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`:'')}
-      ${metric('Gordura',fmtNum(last.body_fat_pct),'%',prev?`desde a anterior ${neutralDelta(last.body_fat_pct,prev.body_fat_pct,1,'%')}`:'')}
-      ${metric('Visceral',num(last.visceral_fat_level)==null?'—':fmtNum(last.visceral_fat_level,0),'nível',`medição de ${fmtDate(last.measured_at)}`)}
+      ${metric('Massa muscular',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`:'')}
+      ${metric('Gordura corporal',fmtNum(last.body_fat_pct),'%',prev?`desde a anterior ${neutralDelta(last.body_fat_pct,prev.body_fat_pct,1,'%')}`:'')}
+      ${metric('Gordura visceral',num(last.visceral_fat_level)==null?'—':fmtNum(last.visceral_fat_level,0),'nível',`medição de ${fmtDate(last.measured_at)}`)}
     </div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Evolução corporal</b><small>Escolha uma medida para acompanhar ao longo do tempo.</small></div><div class="segmented">${Object.entries(metrics).map(([k,m])=>`<button type="button" data-bio-metric="${k}" class="${key===k?'active':''}">${esc(m.label)}${k==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${lineChart(rows,key,`${meta.label} (${meta.unit})`)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Comparar duas medições</b><small>Diferenças observadas entre as datas escolhidas.</small></div></div>${compare(rows)}</div>
-      <div class="card"><div class="cardHead"><div><b>Primeiro e último registro</b><small>Visão descritiva do período completo.</small></div></div><div class="summaryPair"><div><span>${fmtDate(first.measured_at)}</span><b>${fmtNum(first.weight_kg)} kg</b><small>MME ${fmtNum(first.skeletal_muscle_mass_kg)} kg</small></div><div class="arrow">→</div><div><span>${fmtDate(last.measured_at)}</span><b>${fmtNum(last.weight_kg)} kg</b><small>MME ${fmtNum(last.skeletal_muscle_mass_kg)} kg</small></div></div></div>
+      <div class="card"><div class="cardHead"><div><b>Primeiro e último registro</b><small>Visão descritiva do período completo.</small></div></div><div class="summaryPair"><div><span>${fmtDate(first.measured_at)}</span><b>${fmtNum(first.weight_kg)} kg</b><small>Massa muscular ${fmtNum(first.skeletal_muscle_mass_kg)} kg</small></div><div class="arrow">→</div><div><span>${fmtDate(last.measured_at)}</span><b>${fmtNum(last.weight_kg)} kg</b><small>Massa muscular ${fmtNum(last.skeletal_muscle_mass_kg)} kg</small></div></div></div>
     </div>
     <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Histórico</b><small>Toque em uma data para abrir todos os campos registrados.</small></div><span class="pill">${rows.length} medições</span></div><div class="list bodyHistory">${[...rows].reverse().map(r=>`<button type="button" class="historyRow ${r.measured_at===state.ui.selectedBodyDate?'active':''}" data-body-date="${esc(r.measured_at)}"><time>${fmtDate(r.measured_at)}</time><div><b>${fmtNum(r.weight_kg)} kg</b><small>MME ${fmtNum(r.skeletal_muscle_mass_kg)} kg · gordura ${fmtNum(r.body_fat_pct)}%${num(r.score)!=null?` · InBody ${fmtNum(r.score,0)}`:''}</small></div><span>${esc(r.source||'origem registrada')}</span></button>`).join('')}</div></div>
+      <div class="card"><div class="cardHead"><div><b>Histórico</b><small>Toque em uma data para abrir todos os campos registrados.</small></div><span class="pill">${rows.length} medições</span></div><div class="list bodyHistory">${[...rows].reverse().map(r=>`<button type="button" class="historyRow ${r.measured_at===state.ui.selectedBodyDate?'active':''}" data-body-date="${esc(r.measured_at)}"><time>${fmtDate(r.measured_at)}</time><div><b>${fmtNum(r.weight_kg)} kg</b><small>Massa muscular ${fmtNum(r.skeletal_muscle_mass_kg)} kg · gordura corporal ${fmtNum(r.body_fat_pct)}%${num(r.score)!=null?` · InBody ${fmtNum(r.score,0)}`:''}</small></div><span>${esc(sourceDisplay(r.source))}</span></button>`).join('')}</div></div>
       <div class="card bioDetail">${measurementDetail(selected)}<p class="footerNote">Os valores são apresentados de forma descritiva, sem classificação estética ou meta corporal.</p></div>
     </div>`;
 }
