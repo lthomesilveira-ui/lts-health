@@ -5,9 +5,16 @@ const action=(route,label)=>`<button class="todayAction" data-route="${esc(route
 const statusLabel={strong:'Boa cobertura',partial:'Cobertura parcial',limited:'Poucos dados',unavailable:'Indisponível'};
 const insightLabel={change:'O que mudou',cross:'Análise cruzada',coverage:'Limitação de cobertura',unavailable:'Indisponível'};
 const pendingStatuses=new Set(['candidate','held']);
+const activityTypes={
+  active_energy_kcal:'Energia ativa',
+  exercise_minutes:'Exercício',
+  stand_hours:'Horas em pé'
+};
 
 function latest(rows,key){return[...(rows||[])].sort((a,b)=>String(b?.[key]||'').localeCompare(String(a?.[key]||'')))[0]||null;}
-function latestMetric(type){return latest((state.data.metrics||[]).filter(m=>m.metric_type===type),'measured_at');}
+export function latestCanonicalActivityMetric(rows=[]){
+  return latest((rows||[]).filter(row=>activityTypes[row?.metric_type]&&day(row?.measured_at)),'measured_at');
+}
 function domainReady(key){return state.domainStatus?.[key]==='ready';}
 function currentCard(label,value,detail,route){return`<article class="intelCurrentCard"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small>${route?`<button data-route="${esc(route)}">Ver detalhes</button>`:''}</article>`;}
 function insightCard(item,index){
@@ -35,7 +42,7 @@ function currentSnapshot(){
   const body=domainReady('body')?latest(state.data.body||[],'measured_at'):null;
   const nutrition=domainReady('nutrition')?latest(state.data.nutrition||[],'nutrition_date'):null;
   const labs=domainReady('labs')?latest(state.data.labs||[],'collection_date'):null;
-  const activity=domainReady('metrics')?(latestMetric('active_energy_kcal')||latestMetric('exercise_minutes')||latestMetric('stand_hours')):null;
+  const activity=domainReady('metrics')?latestCanonicalActivityMetric(state.data.metrics||[]):null;
   const sleep=pendingSleepSummary(),cards=[];
 
   if(domainReady('workouts')){
@@ -54,8 +61,9 @@ function currentSnapshot(){
   }else cards.push(unavailableValue('Alimentação mais recente'));
 
   if(domainReady('metrics')){
-    const activityValue=activity?`${fmtNum(activity.value,1)} ${activity.unit||''}`:'Nenhum registro confirmado';
-    cards.push(currentCard('Atividade confirmada',activityValue,activity?dateText(activity.measured_at):'Ainda não há uma leitura confirmada disponível nesta área','timeline'));
+    const activityValue=activity?`${fmtNum(activity.value,Number.isInteger(num(activity.value))?0:1)} ${activity.unit||''}`.trim():'Nenhum registro confirmado';
+    const activityDetail=activity?`${activityTypes[activity.metric_type]} · ${dateText(activity.measured_at)}`:'Ainda não há energia ativa, minutos de exercício ou horas em pé confirmados nesta área';
+    cards.push(currentCard('Atividade confirmada',activityValue,activityDetail,'timeline'));
   }else cards.push(unavailableValue('Atividade confirmada'));
 
   if(sleep){
