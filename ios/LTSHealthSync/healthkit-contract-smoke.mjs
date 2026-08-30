@@ -57,7 +57,7 @@ for (const token of [
 if (health.includes('HKObjectQueryNoLimit')) throw new Error('HealthKit anchor query must not materialize unbounded history');
 for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g']) {
   const canonicalPayloadPattern = new RegExp(`metric_type:\\s*"${metric}"`);
-  if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the v1 canonical ActivitySummary client`);
+  if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the canonical ActivitySummary client`);
 }
 
 for (const token of [
@@ -81,19 +81,29 @@ for (const token of [
   'unit: .kilocalorie()',
   'unit: .gram()',
   'options: [.cumulativeSum, .separateBySource]',
-  'source_name: source.name',
-  'source_family: self.sourceFamily(for: source.name)',
+  'HKObjectType.categoryType(forIdentifier: .sleepAnalysis)',
+  'HKSampleQuery(',
+  'HKCategoryValueSleepAnalysis.asleepCore.rawValue',
+  'HKCategoryValueSleepAnalysis.asleepDeep.rawValue',
+  'HKCategoryValueSleepAnalysis.asleepREM.rawValue',
+  'HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue',
+  'metric_type: "sleep_duration_h"',
+  'private func mergedDuration(',
+  'interval.start <= current.end',
+  'source_name: key.sourceName',
+  'source_family: sourceFamily(for: key.sourceName)',
   'return "myfitnesspal"',
+  'return "ringconn"',
   'return "polar_flow"',
   'return "apple_watch"',
   'return "iphone"',
   'return "healthkit_candidate"',
-  'ios-healthkit-candidates-v2',
+  'ios-healthkit-candidates-v3',
   'frequency: .hourly'
 ]) if (!candidates.includes(token)) throw new Error(`Candidate HealthKit contract missing: ${token}`);
 
 if (candidates.includes('apple_activity_summary')) throw new Error('Candidate coordinator must never emit the canonical ActivitySummary family');
-if (candidates.includes('sleep_duration_h') || candidates.includes('oxygen_saturation_pct')) throw new Error('Sleep/oxygen remain outside candidate v2 until dedicated aggregation validation');
+if (candidates.includes('oxygen_saturation_pct')) throw new Error('Oxygen saturation remains outside candidate v3 until dedicated validation');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)')) throw new Error('active energy observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleExerciseTime)')) throw new Error('exercise-time observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleStandTime)')) throw new Error('stand-time observer trigger missing');
@@ -121,7 +131,8 @@ for (const token of [
   'Último sucesso',
   'Sincronizar agora',
   'MyFitnessPal compartilha alimentação com o Apple Saúde',
-  'Sono continua fora da sincronização automática'
+  'Sono compatível também fica preservado por origem',
+  'fontes diferentes não são somadas entre si automaticamente'
 ]) if (!contentView.includes(token)) throw new Error(`iOS activation UI missing: ${token}`);
 
 if (/canônic|candidat/i.test(contentView)) throw new Error('technical canonical/candidate jargon must not be shown in the iOS activation UI');
