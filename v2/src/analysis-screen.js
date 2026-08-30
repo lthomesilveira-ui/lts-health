@@ -7,7 +7,16 @@ const failed=key=>state.domainStatus[key]==='error';
 const unavailable=text=>`<div class="errorState"><b>${esc(text)}</b><span>Esta análise não usa zero como substituto para dados que não carregaram. Tente atualizar.</span></div>`;
 
 function sleepByDay(){
-  const map=new Map();if(failed('metrics'))return map;for(const m of state.data.metrics||[]){if(m.metric_type!=='sleep_duration_h')continue;const d=day(m.measured_at),v=num(m.value);if(!d||v==null)continue;if(!map.has(d))map.set(d,[]);map.get(d).push(v);}return map;
+  const map=new Map();
+  if(failed('metrics'))return map;
+  for(const m of state.data.metrics||[]){
+    if(m.metric_type!=='sleep_duration_h')continue;
+    const d=day(m.measured_at),v=num(m.value);
+    if(!d||v==null)continue;
+    if(!map.has(d))map.set(d,[]);
+    map.get(d).push({value:v,source:m.source||'',sourceFile:m.source_file||''});
+  }
+  return map;
 }
 function prevDay(date){const d=new Date(`${date}T12:00:00`);d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 function filterPeriod(rows,key,period){if(period==='all')return rows;const cut=since(Number(period));return rows.filter(r=>day(r[key])>=cut);}
@@ -22,11 +31,14 @@ export function renderAnalysisHub(){
   const wPeriod=filterPeriod(workouts,'workout_date',period),nPeriod=filterPeriod(nutrition,'nutrition_date',period),labPeriod=filterPeriod(labs,'collection_date',period),metricPeriod=filterPeriod(metrics,'measured_at',period),bodyPeriod=filterPeriod(body,'measured_at',period);
   const sleep=sleepByDay(),sleepDays=unique(metricPeriod.filter(m=>m.metric_type==='sleep_duration_h').map(m=>day(m.measured_at)));
   const nutritionDays=new Set(nPeriod.map(n=>day(n.nutrition_date))),workoutDays=new Set(wPeriod.map(w=>day(w.workout_date))),sameDay=[...workoutDays].filter(d=>nutritionDays.has(d));
-  const sleepPairs=wPeriod.map(w=>({workout:w,night:prevDay(day(w.workout_date)),values:sleep.get(prevDay(day(w.workout_date)))||[]})).filter(x=>x.values.length);
+  const sleepCandidates=wPeriod.map(w=>({workout:w,night:prevDay(day(w.workout_date)),records:sleep.get(prevDay(day(w.workout_date)))||[]}));
+  const sleepPairs=sleepCandidates.filter(x=>x.records.length===1);
+  const ambiguousSleepPairs=sleepCandidates.filter(x=>x.records.length>1);
+  const missingSleepPairs=sleepCandidates.filter(x=>x.records.length===0);
   const labDates=unique(labPeriod.map(l=>l.collection_date)),allLabDates=unique(labs.map(l=>l.collection_date)),last=body.at(-1),prev=body.at(-2);
   const between=last&&prev&&!wf?workouts.filter(w=>day(w.workout_date)>day(prev.measured_at)&&day(w.workout_date)<=day(last.measured_at)):[];
   const betweenNutrition=last&&prev&&!nf?unique(nutrition.filter(n=>day(n.nutrition_date)>day(prev.measured_at)&&day(n.nutrition_date)<=day(last.measured_at)).map(n=>day(n.nutrition_date))):[];
-  const sleepValues=sleepPairs.flatMap(x=>x.values),avgSleep=sleepValues.length?sleepValues.reduce((a,b)=>a+b,0)/sleepValues.length:null;
+  const sleepValues=sleepPairs.map(x=>x.records[0].value),avgSleep=sleepValues.length?sleepValues.reduce((a,b)=>a+b,0)/sleepValues.length:null;
   const failures=[wf?'Treinos':null,bf?'Bio':null,nf?'Alimentação':null,mf?'Sono e métricas':null,lf?'Exames':null].filter(Boolean);
   const narrative=[];
   if(!wf)narrative.push(`${wPeriod.length} sessão(ões) de treino registrada(s)`);
@@ -35,7 +47,8 @@ export function renderAnalysisHub(){
   if(!lf)narrative.push(`${labDates.length} coleta(s) laboratorial(is)`);
   const gaps=[];
   if(!lf&&allLabDates.length<2)gaps.push('Exames: há menos de duas coletas estruturadas, então a comparação longitudinal de biomarcadores ainda é limitada.');
-  if(!mf&&wPeriod.length&&sleepPairs.length<wPeriod.length)gaps.push(`Sono: ${sleepPairs.length} de ${wPeriod.length} treino(s) do período têm uma noite anterior com duração de sono registrada.`);
+  if(!mf&&ambiguousSleepPairs.length)gaps.push(`Sono: ${ambiguousSleepPairs.length} treino(s) têm mais de um registro de sono na noite anterior; esses casos ficam fora da média até existir uma regra validada de seleção entre fontes.`);
+  if(!mf&&missingSleepPairs.length)gaps.push(`Sono: ${missingSleepPairs.length} treino(s) do período não têm duração de sono registrada na noite anterior.`);
   if(!nf&&wPeriod.length&&sameDay.length<wPeriod.length)gaps.push(`Alimentação: ${sameDay.length} de ${wPeriod.length} treino(s) do período têm registro de alimentação no mesmo dia.`);
   if(!bf&&bodyPeriod.length<2)gaps.push(`Composição: há ${bodyPeriod.length} medição(ões) corporal(is) dentro de ${periodText}; comparações corporais abaixo usam as duas últimas medições disponíveis no histórico completo.`);
 
@@ -51,7 +64,7 @@ export function renderAnalysisHub(){
     </div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Treino × alimentação</b><small>Dias em que os dois registros existem dentro de ${esc(periodText)}.</small></div></div>${wf||nf?unavailable('Treinos ou alimentação não carregaram; o cruzamento não pode ser calculado agora.'):`<div class="analysisPair"><strong>${sameDay.length}</strong><div><b>dias em comum</b><small>${wPeriod.length?`${Math.round(sameDay.length/wPeriod.length*100)}% das sessões do período têm alimentação registrada no mesmo dia`:'não há sessões registradas no período'}</small></div></div><p class="footerNote">Isso mede cobertura de dados, não efeito da alimentação sobre o treino.</p>`}</div>
-      <div class="card"><div class="cardHead"><div><b>Sono antes do treino</b><small>Noite anterior com duração de sono registrada dentro do período.</small></div></div>${wf||mf?unavailable('Treinos ou sono não carregaram; o pareamento não pode ser calculado agora.'):`<div class="analysisPair"><strong>${sleepPairs.length}</strong><div><b>treinos com sono pareado</b><small>${avgSleep==null?'sem pares suficientes':`média registrada ${fmtNum(avgSleep)} h nas noites pareadas`}</small></div></div><p class="footerNote">A média é descritiva e não é uma meta ou nota de recuperação.</p>`}</div>
+      <div class="card"><div class="cardHead"><div><b>Sono antes do treino</b><small>Noite anterior com um único registro estruturado de duração de sono.</small></div></div>${wf||mf?unavailable('Treinos ou sono não carregaram; o pareamento não pode ser calculado agora.'):`<div class="analysisPair"><strong>${sleepPairs.length}</strong><div><b>treinos com sono comparável</b><small>${avgSleep==null?'sem pares suficientes':`média registrada ${fmtNum(avgSleep)} h nas noites comparáveis`}</small></div></div><p class="footerNote">Noites com mais de um registro de sono ficam fora da média para evitar combinar fontes sobrepostas por suposição.</p>`}</div>
     </div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Entre as duas últimas bios</b><small>${bf?'Medições corporais indisponíveis agora.':`Contexto registrado entre ${prev?fmtDate(prev.measured_at):'—'} e ${last?fmtDate(last.measured_at):'—'}.`}</small></div></div>${bf?unavailable('As medições corporais não carregaram; este contexto não pode ser montado agora.'):last&&prev?`<div class="grid cols4 compact">${metric('Peso',neutralDelta(last.weight_kg,prev.weight_kg,1,'kg'))}${metric('MME',neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg'))}${metric('Treinos',wf?'—':String(between.length),wf?'dados indisponíveis':'no intervalo')}${metric('Alimentação',nf?'—':String(betweenNutrition.length),nf?'dados indisponíveis':'dias registrados')}</div><p class="footerNote">As mudanças corporais e os registros do intervalo aparecem juntos para contexto; o app não atribui causalidade entre eles.</p>`:empty('São necessárias pelo menos duas medições corporais para montar este contexto.')}</div>
     <div class="grid cols2 sectionGap">

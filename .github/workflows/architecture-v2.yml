@@ -71,12 +71,11 @@ jobs:
           ! grep -q "health-inspect-upload-v2" v2/src/core.js
           ! grep -q "health-inspect-lab" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
-          grep -q "stableAppleMetricTypes" v2/src/source-status.js
-          grep -q "active_energy_kcal" v2/src/source-status.js
-          grep -q "exercise_minutes" v2/src/source-status.js
-          grep -q "stand_hours" v2/src/source-status.js
+          grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" v2/src/source-status.js
           ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
-          ! grep -q "sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal')" v2/src/source-status.js
+          grep -q "candidateFound:sourceMetrics.some" v2/src/source-status.js
+          grep -q "source_family)==='myfitnesspal'" v2/src/source-status.js
+          grep -q "if(candidateFound)return'candidate'" v2/src/source-status.js
           ! grep -q "sourceMetrics.some(m=>norm(m.source_family)==='polar_flow')" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "renderBioHub" v2/src/main.js
@@ -101,6 +100,9 @@ jobs:
           grep -q "Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos" v2/src/data-screen.js
           grep -q "intervalos sobrepostos da mesma origem são unidos antes do total diário" v2/src/data-screen.js
           grep -q "fontes diferentes permanecem separadas" v2/src/data-screen.js
+          grep -q "Export direto + candidatos via Apple Saúde" v2/src/data-screen.js
+          grep -q "candidatos recebidos" v2/src/data-screen.js
+          grep -q "export direto permanece preferencial" v2/src/data-screen.js
           grep -q "Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde" v2/src/data-screen.js
           grep -q "Arquivo preservado + revisão" v2/src/data-screen.js
           grep -q "Resultados só são estruturados quando a leitura for validada" v2/src/data-screen.js
