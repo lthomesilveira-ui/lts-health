@@ -79,7 +79,8 @@ jobs:
           require_fixed 'public root product bundle' './product.js?v=29' "$TMP/root.html"
           require_absent_fixed 'public root excludes v2 bootstrap' 'type="module" src="./src/main.js"' "$TMP/root.html"
 
-          require_fixed 'v2 product heading' 'Seu histórico de saúde em um só lugar' "$TMP/v2.html"
+          require_fixed 'v2 product identity' '<title>LTS Health</title>' "$TMP/v2.html"
+          require_fixed 'v2 screen host shell' 'id="screenHost"' "$TMP/v2.html"
           require_fixed 'v2 module bootstrap' 'type="module" src="./src/main.js"' "$TMP/v2.html"
           require_fixed 'v2 evolution stylesheet' './evolution.css' "$TMP/v2.html"
           require_fixed 'v2 data stylesheet' './data.css' "$TMP/v2.html"
