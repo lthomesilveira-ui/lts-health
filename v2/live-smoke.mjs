@@ -127,8 +127,9 @@ async function run(viewport,label){
     'Apple Saúde candidato + arquivo',
     'Arquivo preservado + revisão',
     'Automático canônico: energia ativa, minutos de exercício e horas em pé',
-    'Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos',
-    'Sono permanece fora da sincronização automática',
+    'Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos com origem preservada',
+    'intervalos sobrepostos da mesma origem são unidos antes do total diário',
+    'fontes diferentes permanecem separadas',
     'Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde',
     'Resultados só são estruturados quando a leitura for validada',
     'valor, unidade ou faixa ambíguos ficam para revisão',
@@ -136,7 +137,7 @@ async function run(viewport,label){
     'Apple Saúde · recebido',
     'Arquivo original ainda não disponível'
   ])if(!data.includes(text))throw new Error(`${label}: Data import, quality copy or backup capability missing: ${text}`);
-  for(const stale of ['Passos e FC de repouso não são importados automaticamente por este fluxo','A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono','Leitura automática de nutrição','metadata_only','DOC_TECHNICAL_NAME'])if(data.includes(stale))throw new Error(`${label}: stale or technical ingestion/quality copy visible: ${stale}`);
+  for(const stale of ['Passos e FC de repouso não são importados automaticamente por este fluxo','A leitura automática validada inclui energia ativa, minutos de exercício, horas em pé e duração do sono','Leitura automática de nutrição','Sono permanece fora da sincronização automática','metadata_only','DOC_TECHNICAL_NAME'])if(data.includes(stale))throw new Error(`${label}: stale or technical ingestion/quality copy visible: ${stale}`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise,path=await download.path();if(!path)throw new Error(`${label}: deployed backup did not create a file`);
