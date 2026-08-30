@@ -41,7 +41,7 @@ async function run(viewport,label){
   };
   await rerenderData();
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.','Há detalhes que precisam de revisão antes de concluir a leitura.','O processamento não foi concluído. O arquivo original continua guardado.','Revisão registrada sem detalhe exibido nesta tela.','Automático canônico: energia ativa, minutos de exercício e horas em pé','Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos','Sono permanece fora da sincronização automática','Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde']){
+  for(const expected of ['Apple Saúde · recebido','MyFitnessPal · importado','Fleury · revisão necessária','Outra origem · não processado','Detalhe do treino precisa de revisão','Acompanhamento dos arquivos','Em andamento','Concluídos','Para revisar','Com falha','Há ação necessária.','Filtre por situação ou origem.','Qualidade dos dados','Ação necessária','Limitações conhecidas','Resolvidos','Inventário preservado; depende do arquivo original.','Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.','Há detalhes que precisam de revisão antes de concluir a leitura.','O processamento não foi concluído. O arquivo original continua guardado.','Revisão registrada sem detalhe exibido nesta tela.','Automático canônico: energia ativa, minutos de exercício e horas em pé','Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos com origem preservada','intervalos sobrepostos da mesma origem são unidos antes do total diário','Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde']){
     if(!text.includes(expected))throw new Error(`${label}: missing plain-language status ${expected}`);
   }
   const sourceCards=await page.locator('.sourceStatus').allTextContents();
@@ -95,14 +95,14 @@ async function run(viewport,label){
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
-    state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),{source_record_id:'mfp-dietary',metric_date:'2026-02-04',metric_type:'dietary_protein_g',value:150,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'}];
+    state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),{source_record_id:'mfp-dietary',metric_date:'2026-02-04',metric_type:'dietary_protein_g',value:150,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'},{source_record_id:'ring-sleep',metric_date:'2026-02-04',metric_type:'sleep_duration_h',value:7.2,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'candidate'}];
   });
   await rerenderData();
   const mfpCardLocator=page.locator('.sourceStatus:has([data-source-upload="myfitnesspal"])');
   let mfpCard=(await mfpCardLocator.textContent())||'';
   if(!mfpCard.includes('arquivo recebido')||mfpCard.includes('com dados'))throw new Error(`${label}: MyFitnessPal candidate incorrectly proved canonical readiness`);
   const provenance=(await page.locator('.provenancePanel').textContent())||'';
-  if(!provenance.includes('MyFitnessPal')||!provenance.includes('candidato'))throw new Error(`${label}: MyFitnessPal provenance candidate missing`);
+  if(!provenance.includes('MyFitnessPal')||!provenance.includes('RingConn')||!provenance.includes('candidato'))throw new Error(`${label}: source-preserving provenance candidate missing`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.nutrition=[...(state.data.nutrition||[]),{source_record_id:'mfp-canonical-day',nutrition_date:'2026-02-04',calories_kcal:2100,protein_g:150,source:'MyFitnessPal'}];
