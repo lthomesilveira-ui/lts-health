@@ -1,11 +1,13 @@
 import {state,norm} from './core.js';
 
 export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
+const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone']);
 
 const failed=key=>state.domainStatus[key]==='error';
 const contains=(rows,fields,term)=>{term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
 const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_family)===norm(family)&&norm(row?.canonical_status||'candidate')==='candidate');
-const anyCandidateMetric=rows=>(rows||[]).some(row=>norm(row?.canonical_status||'candidate')==='candidate');
+const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&norm(row?.canonical_status||'candidate')==='candidate';
+const appleSourceMetric=row=>appleNativeFamilies.has(norm(row?.source_family));
 
 export function uploadBucket(upload){
   const status=String(upload?.status||'').toLowerCase();
@@ -23,7 +25,7 @@ function sourceEvidence(source){
   const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
   if(source==='apple_health')return{
     dataFound:metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&contains([m],['source','source_file'],'apple')),
-    candidateFound:anyCandidateMetric(sourceMetrics),
+    candidateFound:sourceMetrics.some(appleCandidate),
     domainKeys:['metrics','sourceMetrics']
   };
   if(source==='polar_flow')return{
@@ -46,7 +48,7 @@ export function latestSourceMetricDateFor(source){
   const rows=state.data.sourceMetrics||[];
   const relevant=source==='polar_flow'?rows.filter(row=>norm(row?.source_family)==='polar_flow'):
     source==='myfitnesspal'?rows.filter(row=>norm(row?.source_family)==='myfitnesspal'):
-    source==='apple_health'?rows:[];
+    source==='apple_health'?rows.filter(appleSourceMetric):[];
   return relevant.reduce((latest,row)=>{
     const date=String(row?.metric_date||'');
     return /^\d{4}-\d{2}-\d{2}$/.test(date)&&(!latest||date>latest)?date:latest;
