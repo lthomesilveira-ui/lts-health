@@ -17,6 +17,10 @@ async function run(viewport,label){
     const metrics=visibleRowsForDomain('metrics',[
       {source_record_id:'activity-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:500,unit:'kcal',source:'Apple Health ActivitySummary'},
       {source_record_id:'activity-stand',measured_at:'2026-08-29T12:00:00Z',metric_type:'stand_hours',value:10,unit:'h',source:'Apple Health ActivitySummary'},
+      {source_record_id:'bridge-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:510,unit:'kcal',source:'HealthKitBridge ActivitySummary'},
+      {source_record_id:'bridge-steps',measured_at:'2026-08-29T12:00:00Z',metric_type:'steps',value:7200,unit:'count',source:'HealthKitBridge ActivitySummary'},
+      {source_record_id:'bridge-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.2,unit:'h',source:'HealthKitBridge'},
+      {source_record_id:'iphone-weight',measured_at:'2026-08-29T12:00:00Z',metric_type:'weight_kg',value:90.1,unit:'kg',source:'iPhone HealthKit'},
       {source_record_id:'watch-resting',measured_at:'2026-08-29T12:00:00Z',metric_type:'resting_heart_rate_bpm',value:55,unit:'bpm',source:'Apple Watch via Apple Health'},
       {source_record_id:'watch-hrv',measured_at:'2026-08-29T12:00:00Z',metric_type:'hrv_sdnn_ms',value:42,unit:'ms',source:'Apple Watch via Apple Health'},
       {source_record_id:'watch-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.1,unit:'h',source:'Apple Watch via Apple Health'},
@@ -52,7 +56,7 @@ async function run(viewport,label){
     };
   });
 
-  if(result.metricIds.join('|')!=='activity-energy|activity-stand|other-resting')throw new Error(`${label}: Apple Health candidate-only metrics crossed the canonical boundary: ${result.metricIds.join('|')}`);
+  if(result.metricIds.join('|')!=='activity-energy|activity-stand|bridge-energy|other-resting')throw new Error(`${label}: Apple Health candidate-only metrics crossed the canonical boundary: ${result.metricIds.join('|')}`);
   if(result.nutritionIds.join('|')!=='mfp-export')throw new Error(`${label}: MyFitnessPal via Apple Health candidate crossed the canonical nutrition boundary: ${result.nutritionIds.join('|')}`);
   if(result.workoutIds.join('|')!=='lts-polar-evidence')throw new Error(`${label}: workout provenance boundary failed: ${result.workoutIds.join('|')}`);
   if(result.exerciseIds.join('|')!=='exercise-canonical')throw new Error(`${label}: child exercise from non-canonical workout crossed the boundary: ${result.exerciseIds.join('|')}`);
@@ -63,6 +67,10 @@ async function run(viewport,label){
     const {visibleRowsForDomain}=await import('./src/data-layer.js');
     state.data.metrics=visibleRowsForDomain('metrics',[
       {source_record_id:'activity-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:500,unit:'kcal',source:'Apple Health ActivitySummary'},
+      {source_record_id:'bridge-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:510,unit:'kcal',source:'HealthKitBridge ActivitySummary'},
+      {source_record_id:'bridge-steps',measured_at:'2026-08-29T12:00:00Z',metric_type:'steps',value:7200,unit:'count',source:'HealthKitBridge ActivitySummary'},
+      {source_record_id:'bridge-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.2,unit:'h',source:'HealthKitBridge'},
+      {source_record_id:'iphone-weight',measured_at:'2026-08-29T12:00:00Z',metric_type:'weight_kg',value:90.1,unit:'kg',source:'iPhone HealthKit'},
       {source_record_id:'watch-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.1,unit:'h',source:'Apple Watch via Apple Health'},
       {source_record_id:'polar-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.4,unit:'h',source:'Polar Flow via Apple Health'},
       {source_record_id:'other-resting',measured_at:'2026-08-29T12:00:00Z',metric_type:'resting_heart_rate_bpm',value:58,unit:'bpm',source:'Validated external source'}
@@ -80,9 +88,9 @@ async function run(viewport,label){
   const todayText=(await page.textContent('#screenHost'))||'';
   const sleepCard=(await page.locator('.todayMetricGrid .todayStatusCard').filter({hasText:'Sono'}).textContent())||'';
   if(!sleepCard.includes('Sem dado importado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as canonical Today data`);
-  if(!todayText.includes('500 kcal'))throw new Error(`${label}: stable ActivitySummary energy disappeared from Today`);
+  if(!todayText.includes('510 kcal'))throw new Error(`${label}: stable HealthKitBridge ActivitySummary energy disappeared from Today`);
   if(!todayText.includes('58 bpm'))throw new Error(`${label}: valid non-Apple resting heart rate was incorrectly hidden`);
-  if(todayText.includes('55 bpm')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into Today`);
+  if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into Today`);
 
   await page.evaluate(()=>{location.hash='nutricao';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Nutrição');
