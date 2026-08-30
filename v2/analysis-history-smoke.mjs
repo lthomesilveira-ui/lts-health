@@ -28,20 +28,40 @@ async function run(viewport,label){
 
   await page.selectOption('#analysisPeriod','all');
   await page.waitForFunction(()=>document.querySelector('.analysisNarrative')?.textContent?.includes('Resumo observado · todo o histórico'));
-  const text=(await page.textContent('#screenHost'))||'';
+  let text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Resumo observado · todo o histórico'))throw new Error(`${label}: longitudinal summary did not follow selected period`);
   if(!text.includes('2 sessão(ões) de treino registrada(s)'))throw new Error(`${label}: workout evidence missing from longitudinal summary`);
   if(!text.includes('2 dia(s) com alimentação'))throw new Error(`${label}: nutrition evidence missing from longitudinal summary`);
-  if(!text.includes('3 dia(s) com duração de sono'))throw new Error(`${label}: sleep evidence missing from longitudinal summary`);
-  if(!text.includes('1 data(s) de coleta laboratorial'))throw new Error(`${label}: same-day lab sources inflated longitudinal collection count`);
-  if(!text.includes('Datas de coleta · todo o histórico'))throw new Error(`${label}: lab metric does not explain that it counts collection dates`);
+  if(!text.includes('3 dia(s) com sono confirmado'))throw new Error(`${label}: confirmed sleep evidence missing from longitudinal summary`);
+  if(!text.includes('1 data(s) de exames'))throw new Error(`${label}: same-day lab sources inflated longitudinal collection count`);
+  if(!text.includes('Datas de exames · todo o histórico'))throw new Error(`${label}: lab metric does not explain that it counts exam dates`);
   if(!text.includes('1 data(s) de coleta'))throw new Error(`${label}: coverage did not keep same-day lab sources on one collection date`);
-  if(!text.includes('1')||!text.includes('treinos com sono comparável'))throw new Error(`${label}: single-source sleep pairing was not retained`);
-  if(!text.includes('1 treino(s) têm mais de um registro de sono'))throw new Error(`${label}: ambiguous multi-source sleep was not surfaced`);
-  if(!text.includes('Noites com mais de um registro de sono ficam fora da média'))throw new Error(`${label}: overlap guardrail is missing`);
+  if(!text.includes('1')||!text.includes('treinos com sono confirmado comparável'))throw new Error(`${label}: single-source sleep pairing was not retained`);
+  if(!text.includes('1 treino(s) têm mais de um registro confirmado'))throw new Error(`${label}: ambiguous multi-source sleep was not surfaced`);
+  if(!text.includes('Fontes sobrepostas não são somadas nem escolhidas automaticamente.'))throw new Error(`${label}: overlap guardrail is missing`);
   if(text.includes('média registrada 7,2 h'))throw new Error(`${label}: overlapping sleep sources were averaged together`);
-  if(!text.includes('Limitações desta leitura')||(!text.includes('Coincidência temporal')&&!text.includes('causalidade')))throw new Error(`${label}: evidence limitations are not explicit`);
+  if(!text.includes('O que ainda limita a análise')||(!text.includes('coincidência temporal')&&!text.includes('causalidade')))throw new Error(`${label}: evidence limitations are not explicit`);
 
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.metrics=(state.data.metrics||[]).filter(row=>row.metric_type!=='sleep_duration_h');
+    state.data.sourceMetrics=[
+      {source_record_id:'pending-sleep-1',metric_date:'2026-02-01',metric_type:'sleep_duration_h',value:7.2,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'pending-sleep-2',metric_date:'2026-01-27',metric_type:'sleep_duration_h',value:6.9,unit:'h',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'held'}
+    ];
+    state.domainStatus.sourceMetrics='ready';
+  });
+  await page.selectOption('#analysisPeriod','all');
+  await page.waitForFunction(()=>document.querySelector('.analysisNarrative')?.textContent?.includes('sono registrado'));
+  text=(await page.textContent('#screenHost'))||'';
+  if(!text.includes('2 dia(s) com sono registrado'))throw new Error(`${label}: preserved sleep was still treated as no data`);
+  if(!text.includes('registros existentes, ainda fora das médias'))throw new Error(`${label}: preserved sleep boundary is not user-visible`);
+  if(text.includes('0 dia(s) com sono')||text.includes('sem registros no período'))throw new Error(`${label}: false empty sleep state returned despite preserved evidence`);
+  if(text.includes('média registrada 7,1 h')||text.includes('média registrada 6,9 h'))throw new Error(`${label}: pending sleep entered averages`);
+
+  for(const forbidden of ['source_family','ActivitySummary','count/min',' count','canonical','canônico','candidato']){
+    if(text.includes(forbidden))throw new Error(`${label}: technical language leaked into analysis: ${forbidden}`);
+  }
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: analysis caused horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: page errors ${errors.join(' | ')}`);
