@@ -1,0 +1,35 @@
+name: LTS Health laboratory parser safety
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/functions/health-inspect-upload/**'
+      - 'supabase/functions/_shared/lab-result-contract.mjs'
+      - 'v2/lab-parser-safety-smoke.mjs'
+      - '.github/workflows/lab-parser-safety.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/functions/health-inspect-upload/**'
+      - 'supabase/functions/_shared/lab-result-contract.mjs'
+      - 'v2/lab-parser-safety-smoke.mjs'
+      - '.github/workflows/lab-parser-safety.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lab-parser-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Laboratory parser safety contract
+        run: |
+          node --check v2/lab-parser-safety-smoke.mjs
+          node v2/lab-parser-safety-smoke.mjs
+          deno check supabase/functions/health-inspect-upload/index.ts
