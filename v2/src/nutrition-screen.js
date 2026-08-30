@@ -9,6 +9,9 @@ const yearOf=v=>String(v||'').slice(0,4);
 const monthOf=v=>String(v||'').slice(0,7);
 const monthLabel=v=>{if(!v)return'—';const[y,m]=v.split('-').map(Number);return new Intl.DateTimeFormat('pt-BR',{month:'short',year:'2-digit'}).format(new Date(y,m-1,1));};
 const localDayKey=(value=new Date())=>{const d=value instanceof Date?value:new Date(value);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+const mfpMetricLabels={dietary_energy_kcal:['Calorias','kcal'],dietary_protein_g:['Proteína','g'],dietary_carbs_g:['Carboidratos','g'],dietary_fat_g:['Gorduras','g'],dietary_fiber_g:['Fibras','g']};
+const mfpMetricTypes=new Set(Object.keys(mfpMetricLabels));
+const candidateStatuses=new Set(['candidate','held']);
 
 function allNutrition(){return[...(state.data.nutrition||[])].sort((a,b)=>String(b.nutrition_date).localeCompare(String(a.nutrition_date)));}
 function availableYears(all){return unique(all.map(r=>yearOf(r.nutrition_date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));}
@@ -65,6 +68,23 @@ function distributionPanel(rows){
   const max=Math.max(1,...distribution.map(x=>x.count));
   return `<div class="mealDistribution">${distribution.map(x=>`<div class="mealDistributionRow"><div><b>${esc(x.label)}</b><small>${x.count} registro(s)${x.withCalories?` · média ${fmtNum(x.calories/x.withCalories,0)} kcal nos itens com valor`:''}</small></div><div class="mealDistributionTrack"><i style="width:${Math.max(4,Math.round(x.count/max*100))}%"></i></div></div>`).join('')}</div><p class="footerNote">A frequência mostra quantas entradas existem no histórico importado. Ela não mede qualidade da alimentação nem regularidade de refeições.</p>`;
 }
+function mfpCandidateGroups(){
+  if(failed('sourceMetrics'))return null;
+  const rows=(state.data.sourceMetrics||[]).filter(row=>String(row?.source_family||'').toLowerCase()==='myfitnesspal'&&candidateStatuses.has(String(row?.canonical_status||'').toLowerCase())&&mfpMetricTypes.has(String(row?.metric_type||''))&&num(row?.value)!=null&&/^\d{4}-\d{2}-\d{2}$/.test(String(row?.metric_date||'')));
+  const groups=new Map();
+  for(const row of rows){const date=String(row.metric_date),type=String(row.metric_type);if(!groups.has(date))groups.set(date,{date,values:{},sources:new Set()});const group=groups.get(date);if(group.values[type]==null)group.values[type]=num(row.value);if(row.source_name)group.sources.add(String(row.source_name));}
+  return [...groups.values()].sort((a,b)=>b.date.localeCompare(a.date));
+}
+function mfpCandidatePanel(){
+  const groups=mfpCandidateGroups();
+  if(groups===null)return `<div class="card sectionGap mfpCandidatePanel"><div class="cardHead"><div><b>MyFitnessPal via Apple Saúde</b><small>Totais diários separados da alimentação principal.</small></div><span class="pill">em validação</span></div><div class="errorState"><b>Não foi possível verificar estes totais agora.</b><span>A alimentação principal continua disponível e nenhum valor ausente é tratado como zero.</span></div></div>`;
+  const rows=groups.slice(0,30).map(group=>{
+    const calories=group.values.dietary_energy_kcal,macros=[['dietary_protein_g','P'],['dietary_carbs_g','C'],['dietary_fat_g','G'],['dietary_fiber_g','Fibra']].map(([type,label])=>group.values[type]!=null?`${fmtNum(group.values[type],0)}g ${label}`:null).filter(Boolean);
+    const source=[...group.sources].join(', ')||'MyFitnessPal';
+    return `<div class="mealRow mfpCandidateDay"><div><b>${fmtDate(group.date)}</b><small>${esc(source)}</small></div><span>${calories!=null?`${fmtNum(calories,0)} kcal`:'calorias não disponíveis'}</span><em>${macros.join(' · ')||'macros não disponíveis'}</em></div>`;
+  }).join('');
+  return `<div class="card sectionGap mfpCandidatePanel"><div class="cardHead"><div><b>MyFitnessPal via Apple Saúde</b><small>Totais diários preservados por origem. Não entram nas médias nem no histórico principal até validação.</small></div><span class="pill">em validação</span></div>${rows?`<div class="mealList">${rows}</div><p class="footerNote">Estes dados não criam alimentos, refeições ou horários. O export direto do MyFitnessPal continua sendo a fonte preferida para histórico detalhado.</p>`:empty('Nenhum total diário do MyFitnessPal via Apple Saúde aguardando validação.')}</div>`;
+}
 function daySummary(row){
   if(!row)return empty('Selecione um dia com registro.');
   if(failed('meals'))return `<div class="nutritionDayHead"><div><span>${fmtDate(row.nutrition_date)}</span><b>${num(row.calories_kcal)!=null?`${fmtNum(row.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${esc(row.source||'origem registrada')}</small></div></div><div class="macroGrid"><div><span>Proteína</span><b>${num(row.protein_g)!=null?`${fmtNum(row.protein_g,0)} g`:'—'}</b></div><div><span>Carboidratos</span><b>${num(row.carbs_g)!=null?`${fmtNum(row.carbs_g,0)} g`:'—'}</b></div><div><span>Gorduras</span><b>${num(row.fat_g)!=null?`${fmtNum(row.fat_g,0)} g`:'—'}</b></div><div><span>Fibras</span><b>${num(row.fiber_g)!=null?`${fmtNum(row.fiber_g,0)} g`:'—'}</b></div></div><div class="errorState"><b>Os detalhes das refeições estão indisponíveis agora.</b><span>O total diário continua visível; tente atualizar para carregar as refeições.</span></div>`;
@@ -94,6 +114,7 @@ export function renderNutritionHub(){
       <div class="card metric"><span>Calorias · média</span><strong>${avg(rows,'calories_kcal')==null?'—':fmtNum(avg(rows,'calories_kcal'),0)}</strong><em>kcal nos dias com valor</em></div>
       <div class="card metric"><span>Proteína · média</span><strong>${avg(rows,'protein_g')==null?'—':fmtNum(avg(rows,'protein_g'),0)}</strong><em>g nos dias com valor</em></div>
     </div>
+    ${mfpCandidatePanel()}
     <div class="grid split sectionGap">
       <div class="card"><div class="cardHead"><div><b>Evolução por mês</b><small>Cobertura e médias dos registros disponíveis.</small></div></div>${monthlyPanel(rows)}</div>
       <div class="card"><div class="cardHead"><div><b>Refeições mais registradas</b><small>Distribuição descritiva das entradas importadas.</small></div></div>${distributionPanel(rows)}</div>
