@@ -14,7 +14,7 @@ async function run(viewport,label){
   const boundary=await page.evaluate(async()=>{
     const {buildHealthIntelligence}=await import('./src/intelligence-engine.js');
     const {latestCanonicalActivityMetric}=await import('./src/today-screen.js');
-    const status={body:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',metrics:'ready',labs:'ready'};
+    const status={body:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',metrics:'ready',sourceMetrics:'ready',labs:'ready'};
     const model=buildHealthIntelligence({
       metrics:[
         {measured_at:'2026-08-29',metric_type:'steps',value:12000,source:'Apple Health'},
@@ -36,21 +36,16 @@ async function run(viewport,label){
       {measured_at:'2026-08-30T10:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h'}
     ]);
     return{
-      coverageLabel:coverage?.label||'',
-      coverageDetail:coverage?.detail||'',
-      timelineSummary:timelineInsight?.summary||'',
-      pendingSummary:model.pending?.summary||'',
-      referenceDay:model.referenceDay,
-      latestActivityType:latestActivity?.metric_type||'',
-      latestActivityValue:latestActivity?.value??null
+      coverageLabel:coverage?.label||'',coverageDetail:coverage?.detail||'',timelineSummary:timelineInsight?.summary||'',pendingSummary:model.pending?.summary||'',referenceDay:model.referenceDay,
+      latestActivityType:latestActivity?.metric_type||'',latestActivityValue:latestActivity?.value??null
     };
   });
-  if(boundary.coverageLabel!=='Atividade')throw new Error(`${label}: sleep must not be treated as canonical coverage`);
+  if(boundary.coverageLabel!=='Atividade')throw new Error(`${label}: sleep must not be treated as confirmed coverage`);
   if(!boundary.coverageDetail.includes('1 dia(s)'))throw new Error(`${label}: only validated activity types may count (${boundary.coverageDetail})`);
-  if(!boundary.timelineSummary.includes('Sono permanece fora desta leitura'))throw new Error(`${label}: sleep policy must remain explicit`);
-  if(!boundary.pendingSummary.includes('2 registro(s)'))throw new Error(`${label}: candidate and held source records must remain pending`);
-  if(boundary.referenceDay!=='2026-08-29')throw new Error(`${label}: candidate-only metrics must not move reference day (${boundary.referenceDay})`);
-  if(boundary.latestActivityType!=='exercise_minutes'||boundary.latestActivityValue!==47)throw new Error(`${label}: Today must pick the newest validated ActivitySummary metric and ignore newer candidate-only types (${boundary.latestActivityType}:${boundary.latestActivityValue})`);
+  if(!boundary.timelineSummary.includes('Sono permanece fora desta leitura'))throw new Error(`${label}: sleep policy must remain explicit internally`);
+  if(!boundary.pendingSummary.includes('2 registro(s)'))throw new Error(`${label}: candidate and held source records must remain pending internally`);
+  if(boundary.referenceDay!=='2026-08-29')throw new Error(`${label}: review-only metrics must not move reference day (${boundary.referenceDay})`);
+  if(boundary.latestActivityType!=='exercise_minutes'||boundary.latestActivityValue!==47)throw new Error(`${label}: Today must pick the newest validated activity metric (${boundary.latestActivityType}:${boundary.latestActivityValue})`);
 
   const hash=await page.evaluate(()=>location.hash);
   if(hash!=='#hoje')throw new Error(`${label}: executive dashboard was not the first-run home (${hash})`);
@@ -58,20 +53,17 @@ async function run(viewport,label){
   const visibleActive=[...new Set(activeRoutes)];
   if(visibleActive.length!==1||visibleActive[0]!=='hoje')throw new Error(`${label}: home navigation state is ambiguous (${visibleActive.join('|')})`);
   const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['LTS Health','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico']){
-    if(!text.includes(expected))throw new Error(`${label}: missing executive dashboard section: ${expected}`);
-  }
+  for(const expected of ['LTS Health','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico'])if(!text.includes(expected))throw new Error(`${label}: missing executive dashboard section: ${expected}`);
   if(text.includes('LTS Health Intelligence')||text.includes('Insight cruzado')||text.includes('Ainda sem leitura canônica')||text.includes('domínios comparáveis'))throw new Error(`${label}: implementation-oriented copy leaked into Today`);
-  const current=await page.locator('.intelCurrentCard').count();
-  const insights=await page.locator('.intelInsightCard').count();
-  const coverage=await page.locator('.intelCoverageCard').count();
+  const current=await page.locator('.intelCurrentCard').count(),insights=await page.locator('.intelInsightCard').count(),coverage=await page.locator('.intelCoverageCard').count();
   if(current!==6)throw new Error(`${label}: expected 6 current-state cards, got ${current}`);
   if(insights<3)throw new Error(`${label}: expected at least 3 evidence-backed insights, got ${insights}`);
   if(coverage!==5)throw new Error(`${label}: expected 5 coverage domains, got ${coverage}`);
   const sleepText=(await page.locator('.intelCurrentCard').filter({hasText:'Sono'}).textContent())||'';
-  if(!sleepText.includes('Em validação'))throw new Error(`${label}: sleep is not clearly held outside canonical readiness`);
-  if(!sleepText.includes('Fontes ainda não consolidadas'))throw new Error(`${label}: sleep overlap/source limitation is not explicit`);
-  if(/7[,.]4\s*h/i.test(sleepText)||sleepText.includes('Sono consolidado'))throw new Error(`${label}: fixture sleep leaked as a canonical numeric snapshot (${sleepText})`);
+  if(!sleepText.includes('dia(s) registrado(s)'))throw new Error(`${label}: preserved sleep is still being presented as absent (${sleepText})`);
+  if(!sleepText.includes('aguardando conferência antes de entrar em médias'))throw new Error(`${label}: sleep review boundary is not understandable (${sleepText})`);
+  if(/7[,.]4\s*h/i.test(sleepText)||sleepText.includes('Sono consolidado'))throw new Error(`${label}: fixture sleep leaked as a confirmed numeric snapshot (${sleepText})`);
+  for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','candidate','canonical','ActivitySummary','source_family','count/min','MME'])if(text.includes(forbidden))throw new Error(`${label}: technical language leaked into Today: ${forbidden}`);
   if(/\b(causou|provou|garante|melhorou|piorou)\b/i.test(text))throw new Error(`${label}: dashboard used causal or value-judgment language`);
   const firstEvidence=page.locator('.intelInsightCard button').first();
   await firstEvidence.click();
