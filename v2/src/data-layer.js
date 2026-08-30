@@ -1,5 +1,5 @@
-import {sb,state,fixtureMode,fixtureError,fixtureData,norm} from './core.js';
-import {stableAppleMetricTypes} from './source-status.js';
+import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
+import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFitnessPalViaApple} from './source-status.js';
 
 const initialKeys=['body','segmental','workouts','exercises','sets'];
 const routeDomains={
@@ -57,14 +57,10 @@ const fixtureSourceMetrics=[{
 
 export function visibleRowsForDomain(key,rows=[]){
   if(key==='metrics')return rows.filter(row=>{
-    const source=norm(row?.source);
-    if(!source.includes('apple health'))return true;
-    return source.includes('activitysummary')&&stableAppleMetricTypes.has(row?.metric_type);
+    if(!isAppleSource(row))return true;
+    return isAppleActivitySummarySource(row)&&stableAppleMetricTypes.has(row?.metric_type);
   });
-  if(key==='nutrition')return rows.filter(row=>{
-    const source=norm(row?.source);
-    return !(source.includes('myfitnesspal')&&source.includes('apple health'));
-  });
+  if(key==='nutrition')return rows.filter(row=>!isMyFitnessPalViaApple(row));
   if(key==='workouts')return rows.filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined');
   return rows;
 }

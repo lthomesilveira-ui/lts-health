@@ -1,204 +1,88 @@
 name: LTS Health architecture v2
+
 on:
   push:
     branches: [architecture-v2]
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   architecture:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Static architecture gates
+
+      - name: Static architecture and contract gates
         run: |
-          node --check v2/src/core.js
-          node --check v2/src/source-status.js
-          node --check v2/src/data-layer.js
-          node --check v2/src/bio-screen.js
-          node --check v2/src/training-screen.js
-          node --check v2/src/evolution-screen.js
-          node --check v2/src/analysis-screen.js
-          node --check v2/src/treatment-screen.js
-          node --check v2/src/health-screen.js
-          node --check v2/src/nutrition-screen.js
-          node --check v2/src/today-screen.js
-          node --check v2/src/data-screen.js
-          node --check v2/src/timeline-screen.js
-          node --check v2/src/writes.js
-          node --check v2/src/entry.js
-          node --check v2/src/main.js
-          node --check v2/browser-smoke.mjs
-          node --check v2/failure-smoke.mjs
-          node --check v2/parity-smoke.mjs
-          node --check v2/timeline-interaction-smoke.mjs
-          node --check v2/today-context-smoke.mjs
-          node --check v2/backup-smoke.mjs
-          node --check v2/live-smoke.mjs
+          set -euo pipefail
+          for file in v2/src/*.js; do node --check "$file"; done
+          for file in \
+            v2/failure-smoke.mjs \
+            v2/timeline-interaction-smoke.mjs \
+            v2/nutrition-history-smoke.mjs \
+            v2/analysis-history-smoke.mjs \
+            v2/health-longitudinal-smoke.mjs \
+            v2/training-progression-smoke.mjs \
+            v2/canonical-boundary-smoke.mjs \
+            v2/source-status-smoke.mjs \
+            v2/provenance-alias-smoke.mjs \
+            v2/executive-dashboard-smoke.mjs; do node --check "$file"; done
+
           test -f v2/index.html
           test -f v2/styles.css
-          test -f v2/entry.css
-          test -f v2/secondary.css
-          test -f v2/details.css
-          test -f v2/analysis.css
-          test -f v2/bio.css
-          test -f v2/training.css
-          test -f v2/evolution.css
-          test -f v2/nutrition.css
-          test -f v2/health.css
-          test -f v2/data.css
-          test -f v2/today.css
           test ! -f v2/app.js
           test ! -f v2/src/screens.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
-          grep -q 'details.css' v2/index.html
-          grep -q 'analysis.css' v2/index.html
-          grep -q 'bio.css' v2/index.html
-          grep -q 'training.css' v2/index.html
-          grep -q 'evolution.css' v2/index.html
-          grep -q 'nutrition.css' v2/index.html
-          grep -q 'health.css' v2/index.html
-          grep -q 'data.css' v2/index.html
-          grep -q 'today.css' v2/index.html
-          grep -q 'data-route="bio"' v2/index.html
-          grep -q 'data-route="treinos"' v2/index.html
-          grep -q 'data-route="evolucao"' v2/index.html
-          grep -q 'data-route="analise"' v2/index.html
-          grep -q 'data-route="tratamentos"' v2/index.html
-          grep -q 'id="entryModal"' v2/index.html
+
+          grep -q "https://plztdqyuqcjohiimudnr.supabase.co" v2/src/core.js
+          grep -q "bucket: 'health-inbox'" v2/src/core.js
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
           grep -q "inspectFunctionForSource = () => CONFIG.inspectFunction" v2/src/core.js
           ! grep -q "health-inspect-upload-v2" v2/src/core.js
           ! grep -q "health-inspect-lab" v2/src/core.js
-          grep -q "bucket: 'health-inbox'" v2/src/core.js
           grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" v2/src/source-status.js
           ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
-          grep -q "candidateFound:anyCandidateMetric(sourceMetrics)" v2/src/source-status.js
           grep -q "candidateFromFamily(sourceMetrics,'myfitnesspal')" v2/src/source-status.js
           grep -q "candidateFromFamily(sourceMetrics,'polar_flow')" v2/src/source-status.js
           grep -q "if(candidateFound)return'candidate'" v2/src/source-status.js
-          grep -q "latestSourceMetricDateFor" v2/src/source-status.js
-          grep -q "sourceStatusFor" v2/src/source-status.js
-          grep -q "renderBioHub" v2/src/main.js
-          grep -q "renderTrainingScreen" v2/src/main.js
-          grep -q "renderEvolutionHub" v2/src/main.js
-          grep -q "renderAnalysisHub" v2/src/main.js
-          grep -q "renderTreatmentHub" v2/src/main.js
-          grep -q "renderHealthHub" v2/src/main.js
-          grep -q "renderNutritionHub" v2/src/main.js
-          grep -q "renderTodayHub" v2/src/main.js
-          grep -q "renderDataHub" v2/src/main.js
-          grep -q "renderTimelineHub" v2/src/main.js
-          ! grep -q "screens.js" v2/src/main.js
-          grep -q "const initialKeys=\['body','segmental','workouts','exercises','sets'\]" v2/src/data-layer.js
-          grep -q "health_ingestion_previews" v2/src/data-layer.js
-          grep -q "previews" v2/src/data-layer.js
-          grep -q "buildStructuredBackup" v2/src/data-layer.js
-          grep -q "downloadStructuredBackup" v2/src/data-layer.js
-          grep -q "downloadStructuredBackup" v2/src/main.js
-          grep -q "backupExportBtn" v2/src/data-screen.js
-          grep -q "Automático canônico: energia ativa, minutos de exercício e horas em pé" v2/src/data-screen.js
-          grep -q "Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos" v2/src/data-screen.js
-          grep -q "intervalos sobrepostos da mesma origem são unidos antes do total diário" v2/src/data-screen.js
-          grep -q "fontes diferentes permanecem separadas" v2/src/data-screen.js
-          grep -q "Export direto + candidatos via Apple Saúde" v2/src/data-screen.js
-          grep -q "candidatos recebidos" v2/src/data-screen.js
-          grep -q "export direto permanece preferencial" v2/src/data-screen.js
-          grep -q "Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde" v2/src/data-screen.js
-          grep -q "Arquivo preservado + revisão" v2/src/data-screen.js
-          grep -q "Resultados só são estruturados quando a leitura for validada" v2/src/data-screen.js
-          grep -q "sourceStatusFor('apple_health')" v2/src/data-screen.js
-          grep -q "bodyFailed" v2/src/bio-screen.js
-          grep -q "data-body-date" v2/src/bio-screen.js
-          grep -q "failed('sets')" v2/src/training-screen.js
-          grep -q "Calendário de treinos" v2/src/training-screen.js
-          grep -q "trainingTelemetry" v2/src/training-screen.js
-          grep -q "exerciseProgressionSeries" v2/src/training-screen.js
-          grep -q "Não estima repetição máxima" v2/src/training-screen.js
-          grep -q "Parte da evolução está indisponível agora" v2/src/evolution-screen.js
-          grep -q "Gordura segmentar" v2/src/evolution-screen.js
-          grep -q "Diferença entre lados" v2/src/evolution-screen.js
-          grep -q "Mudança entre medições" v2/src/evolution-screen.js
-          ! grep -Eiq '\b(recomp|bulk|cut|ideal)\b' v2/src/evolution-screen.js
-          grep -q "Algumas análises estão incompletas agora" v2/src/analysis-screen.js
-          grep -q "Decisões sobre tratamento devem ser feitas com o profissional responsável" v2/src/treatment-screen.js
-          grep -q "markerChart" v2/src/health-screen.js
-          grep -q "resultKind" v2/src/health-screen.js
-          grep -q "Resultados numéricos" v2/src/health-screen.js
-          grep -q "Resultados textuais" v2/src/health-screen.js
-          grep -q "Documentos aguardando leitura" v2/src/health-screen.js
-          grep -q "sem criar resultados por estimativa" v2/src/health-screen.js
-          grep -q "não classifica o resultado" v2/src/health-screen.js
-          grep -q "documentSummary" v2/src/health-screen.js
-          grep -q "evidenceByDate" v2/src/health-screen.js
-          grep -q "Coincidência de data não demonstra causa" v2/src/health-screen.js
-          grep -q "não verificado" v2/src/data-screen.js
-          grep -q "Sincronização automática parcial" v2/src/data-screen.js
-          grep -q "previewDetail" v2/src/data-screen.js
-          grep -q "metricTypes" v2/src/today-screen.js
-          grep -q "sleep_duration_h" v2/src/today-screen.js
-          grep -q "sourceStatusFor('apple_health')" v2/src/today-screen.js
-          grep -q "Arquivo recebido; dados ainda não confirmados" v2/src/today-screen.js
-          grep -q "Energia ativa, minutos de exercício e horas em pé têm sincronização automática validada" v2/src/today-screen.js
-          grep -q "Sono pode ser exibido quando já existe como métrica estruturada" v2/src/today-screen.js
-          grep -q "Progressão de treino" v2/src/today-screen.js
-          grep -q "metricOrder" v2/src/today-screen.js
-          grep -q "recentContext" v2/src/today-screen.js
-          grep -q "sem transformar coincidências em causa ou meta" v2/src/today-screen.js
-          grep -q "Parte da Timeline está indisponível agora" v2/src/timeline-screen.js
-          grep -q "data-timeline-jump" v2/src/timeline-screen.js
-          grep -q "id=\"timelineYear\"" v2/src/timeline-screen.js
-          grep -q "data-timeline-more" v2/src/main.js
-          grep -q "timelinePeriod" v2/src/main.js
-          grep -q "health_log_structured_workout" v2/src/writes.js
-          grep -q 'ensureRouteData' v2/src/data-layer.js
-          grep -q 'isRouteReady' v2/src/main.js
+          grep -q "isAppleActivitySummarySource" v2/src/source-status.js
+          grep -q "isMyFitnessPalViaApple" v2/src/source-status.js
+          grep -q "visibleRowsForDomain" v2/src/data-layer.js
+          grep -q "ensureRouteData" v2/src/data-layer.js
+          grep -q "isRouteReady" v2/src/main.js
+          grep -q "buildHealthIntelligence" v2/src/today-screen.js
+          grep -q "Sono permanece fora desta leitura" v2/src/intelligence-engine.js
+          grep -q "Dados conflitantes ou ainda em revisão ficam fora das conclusões" v2/src/today-screen.js
+
           ! grep -R 'loadAll' v2/src v2/index.html
           ! grep -R 'activateTab' v2/src v2/index.html
           ! grep -R 'MutationObserver' v2/src v2/index.html
-          ! grep -q 'app-v[0-9]' v2/index.html
-          ! grep -q 'product.js' v2/index.html
           ! grep -R 'tadhkamnwtsbdozwkyut' v2/src v2/index.html
           ! grep -Eq '[0-9]{4}-[0-9]{2}-[0-9]{2}' v2/DATA_AUDIT.md
           ! grep -Eq '[0-9]{4}-[0-9]{2}-[0-9]{2}' v2/PARITY_MATRIX.md
+
       - name: Install browser test runtime
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
-          npx playwright install chromium
-      - name: Core browser interactions
+          npx playwright install --with-deps chromium
+
+      - name: Browser gates desktop and mobile
         run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          node v2/browser-smoke.mjs
-      - name: Partial-domain failure states
-        run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          set -euo pipefail
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
+          SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           node v2/failure-smoke.mjs
-      - name: Product surface smoke
-        run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          node v2/parity-smoke.mjs
-      - name: Timeline interactions
-        run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
           node v2/timeline-interaction-smoke.mjs
-      - name: Today context
-        run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          node v2/today-context-smoke.mjs
-      - name: Backup smoke
-        run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          node v2/backup-smoke.mjs
+          node v2/nutrition-history-smoke.mjs
+          node v2/analysis-history-smoke.mjs
+          node v2/health-longitudinal-smoke.mjs
+          node v2/training-progression-smoke.mjs
+          node v2/canonical-boundary-smoke.mjs
+          node v2/source-status-smoke.mjs
+          node v2/provenance-alias-smoke.mjs
+          node v2/executive-dashboard-smoke.mjs

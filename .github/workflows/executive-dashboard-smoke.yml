@@ -1,0 +1,44 @@
+name: LTS Health Executive Dashboard Smoke
+on:
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/intelligence-engine.js'
+      - 'v2/src/today-screen.js'
+      - 'v2/src/main.js'
+      - 'v2/today.css'
+      - 'v2/index.html'
+      - 'v2/executive-dashboard-smoke.mjs'
+      - '.github/workflows/executive-dashboard-smoke.yml'
+  push:
+    branches: [architecture-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  executive-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/intelligence-engine.js
+          node --check v2/src/today-screen.js
+          node --check v2/src/main.js
+          node --check v2/executive-dashboard-smoke.mjs
+          grep -q "buildHealthIntelligence" v2/src/intelligence-engine.js
+          grep -q "LTS Health Intelligence" v2/src/intelligence-engine.js
+          grep -q "data-executive-dashboard" v2/src/today-screen.js
+          grep -q "Ausência de dado nunca vira zero" v2/src/today-screen.js
+          grep -Fq "const secondaryRoutes=new Set(['timeline','saude','nutricao','dados']);" v2/src/main.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Executive dashboard desktop and mobile
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/executive-dashboard-smoke.mjs

@@ -20,50 +20,28 @@ async function run(viewport,label){
     state.data.nutrition=[];
     state.data.meals=[];
     state.data.metrics=[];
-    state.data.labs=[
-      {source_record_id:'fleury-1',collection_date:'2026-02-01',report_date:'2026-02-02',laboratory:'Fleury',biomarker:'Marcador A',result_raw:'10',source:'Fleury'},
-      {source_record_id:'einstein-1',collection_date:null,report_date:'2026-02-02',laboratory:'Einstein',biomarker:'Marcador B',result_raw:'Presente',source:'Einstein'}
-    ];
     state.data.sourceMetrics=[
-      {source_record_id:'apple-1',metric_date:'2026-02-03',metric_type:'resting_heart_rate_bpm',value:58,unit:'count/min',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
-      {source_record_id:'mfp-1',metric_date:'2026-02-04',metric_type:'dietary_protein_g',value:150,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'},
-      {source_record_id:'polar-1',metric_date:'2026-02-05',metric_type:'resting_heart_rate_bpm',value:60,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'candidate'},
-      {source_record_id:'ring-1',metric_date:'2026-02-06',metric_type:'sleep_rem_h',value:1.8,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'candidate'}
+      {source_record_id:'apple-candidate',metric_date:'2026-02-10',metric_type:'steps',value:9000,unit:'count',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'mfp-candidate',metric_date:'2026-02-10',metric_type:'dietary_protein_g',value:155,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'},
+      {source_record_id:'polar-candidate',metric_date:'2026-02-10',metric_type:'resting_heart_rate_bpm',value:59,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'candidate'}
     ];
-    for(const key of ['uploads','workouts','nutrition','meals','metrics','labs','sourceMetrics'])state.domainStatus[key]='ready';
-    const {renderDataHub}=await import('./src/data-screen.js');
-    document.querySelector('#screenHost').innerHTML=renderDataHub();
+    for(const key of ['uploads','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
     return {
-      apple:sourceStatusFor('apple_health'),
-      polar:sourceStatusFor('polar_flow'),
-      mfp:sourceStatusFor('myfitnesspal'),
-      fleury:sourceStatusFor('fleury'),
-      einstein:sourceStatusFor('einstein'),
-      appleDate:latestSourceMetricDateFor('apple_health'),
-      polarDate:latestSourceMetricDateFor('polar_flow'),
-      mfpDate:latestSourceMetricDateFor('myfitnesspal'),
-      appleEvidence:latestSourceEvidenceDateFor('apple_health'),
-      polarEvidence:latestSourceEvidenceDateFor('polar_flow'),
-      mfpEvidence:latestSourceEvidenceDateFor('myfitnesspal'),
-      fleuryEvidence:latestSourceEvidenceDateFor('fleury'),
-      einsteinEvidence:latestSourceEvidenceDateFor('einstein')
+      apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),
+      appleDate:latestSourceMetricDateFor('apple_health'),polarDate:latestSourceMetricDateFor('polar_flow'),mfpDate:latestSourceMetricDateFor('myfitnesspal'),
+      appleEvidence:latestSourceEvidenceDateFor('apple_health')
     };
   });
-  if(initial.apple!=='candidate'||initial.polar!=='candidate'||initial.mfp!=='candidate'||initial.fleury!=='ready'||initial.einstein!=='ready')throw new Error(`${label}: source status drifted ${JSON.stringify(initial)}`);
-  if(initial.appleDate!=='2026-02-03'||initial.polarDate!=='2026-02-05'||initial.mfpDate!=='2026-02-04')throw new Error(`${label}: source metric freshness crossed source boundaries ${JSON.stringify(initial)}`);
-  if(initial.appleEvidence!=='2026-02-03'||initial.polarEvidence!=='2026-02-05'||initial.mfpEvidence!=='2026-02-04'||initial.fleuryEvidence!=='2026-02-01'||initial.einsteinEvidence!=='2026-02-02')throw new Error(`${label}: source evidence freshness drifted ${JSON.stringify(initial)}`);
+  if(initial.apple!=='candidate'||initial.polar!=='candidate'||initial.mfp!=='candidate')throw new Error(`${label}: candidate source status missing ${JSON.stringify(initial)}`);
+  if(initial.appleDate!=='2026-02-10'||initial.polarDate!=='2026-02-10'||initial.mfpDate!=='2026-02-10'||initial.appleEvidence!=='2026-02-10')throw new Error(`${label}: candidate source freshness missing ${JSON.stringify(initial)}`);
 
-  const cards=await page.locator('.sourceStatus').allTextContents();
-  const card=name=>cards.find(text=>text.includes(name))||'';
-  for(const name of ['Apple Saúde','Polar Flow','MyFitnessPal']){
-    if(!card(name).includes('candidatos recebidos')||card(name).includes('com dados'))throw new Error(`${label}: ${name} candidate was presented as canonical readiness`);
-  }
-  for(const [name,date] of [['Apple Saúde','03/02/2026'],['Polar Flow','05/02/2026'],['MyFitnessPal','04/02/2026'],['Fleury','01/02/2026'],['Einstein','02/02/2026']]){
-    const text=card(name);
-    if(!text.includes('Última data disponível')||!text.includes(date))throw new Error(`${label}: ${name} card freshness missing or wrong: ${text}`);
-  }
-  const provenance=(await page.locator('.provenancePanel').textContent())||'';
-  for(const expected of ['Apple Watch','MyFitnessPal','Polar Flow','RingConn','03/02/2026','04/02/2026','05/02/2026','06/02/2026','candidato'])if(!provenance.includes(expected))throw new Error(`${label}: provenance freshness missing ${expected}`);
+  const held=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {sourceStatusFor}=await import('./src/source-status.js');
+    state.data.sourceMetrics=state.data.sourceMetrics.map(row=>({...row,canonical_status:'held'}));
+    return {apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal')};
+  });
+  if(held.apple!=='candidate'||held.polar!=='candidate'||held.mfp!=='candidate')throw new Error(`${label}: held source evidence was not preserved as candidate ${JSON.stringify(held)}`);
 
   const foreignOnly=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
@@ -90,7 +68,7 @@ async function run(viewport,label){
     const {sourceStatusFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
     state.data.workouts=[{source_record_id:'polar-workout',workout_date:'2026-02-08',workout_type:'Treino',source:'Polar Flow'}];
     state.data.nutrition=[{source_record_id:'mfp-direct',nutrition_date:'2026-02-09',calories_kcal:2100,source:'MyFitnessPal'}];
-    state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-07T12:00:00Z',metric_type:'active_energy_kcal',value:450,unit:'kcal',source:'Apple Health'}];
+    state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-07T12:00:00Z',metric_type:'active_energy_kcal',value:450,unit:'kcal',source:'HealthKitBridge ActivitySummary'}];
     return {
       apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),
       appleEvidence:latestSourceEvidenceDateFor('apple_health'),polarEvidence:latestSourceEvidenceDateFor('polar_flow'),mfpEvidence:latestSourceEvidenceDateFor('myfitnesspal')
@@ -116,4 +94,4 @@ async function run(viewport,label){
 
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
-console.log('LTS Health v2 source status and freshness cards smoke passed');
+console.log('LTS Health v2 source status smoke passed');

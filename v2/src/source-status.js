@@ -3,6 +3,7 @@ import {state,norm} from './core.js';
 export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
 const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone']);
 const preservedCandidateStatuses=new Set(['candidate','held']);
+const appleSourceTerms=['apple health','healthkit','activitysummary','activity summary','apple watch','apple_watch','iphone'];
 
 const failed=key=>state.domainStatus[key]==='error';
 const contains=(rows,fields,term)=>{term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
@@ -14,6 +15,30 @@ const anyCandidateMetric=rows=>(rows||[]).some(appleCandidate);
 const appleSourceMetric=row=>appleNativeFamilies.has(norm(row?.source_family));
 const dateOnly=value=>{const date=String(value??'').slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(date)?date:null;};
 const latestDate=values=>(values||[]).map(dateOnly).filter(Boolean).reduce((latest,date)=>!latest||date>latest?date:latest,null);
+
+export function provenanceText(row){
+  return norm([row?.source,row?.source_file,row?.source_name,row?.source_family].filter(Boolean).join(' '));
+}
+
+export function isAppleSource(row){
+  const family=norm(row?.source_family),text=provenanceText(row);
+  return appleNativeFamilies.has(family)||appleSourceTerms.some(term=>text.includes(term));
+}
+
+export function isAppleActivitySummarySource(row){
+  const family=norm(row?.source_family),text=provenanceText(row);
+  return family==='apple_activity_summary'||text.includes('activitysummary')||text.includes('activity summary');
+}
+
+export function isMyFitnessPalSource(row){
+  return norm(row?.source_family)==='myfitnesspal'||provenanceText(row).includes('myfitnesspal');
+}
+
+export function isMyFitnessPalViaApple(row){
+  if(!isMyFitnessPalSource(row))return false;
+  const text=provenanceText(row);
+  return appleSourceTerms.some(term=>text.includes(term));
+}
 
 export function uploadBucket(upload){
   const status=String(upload?.status||'').toLowerCase();
@@ -30,7 +55,7 @@ function latestUploadFor(source){
 function sourceEvidence(source){
   const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
   if(source==='apple_health')return{
-    dataFound:metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&contains([m],['source','source_file'],'apple')),
+    dataFound:metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&isAppleSource(m)&&isAppleActivitySummarySource(m)),
     candidateFound:anyCandidateMetric(sourceMetrics),
     domainKeys:['metrics','sourceMetrics']
   };
@@ -61,7 +86,7 @@ export function latestSourceMetricDateFor(source){
 export function latestSourceEvidenceDateFor(source){
   const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[];
   const candidateDate=latestSourceMetricDateFor(source),directDates=[];
-  if(source==='apple_health')directDates.push(...metrics.filter(row=>stableAppleMetricTypes.has(row?.metric_type)&&contains([row],['source','source_file'],'apple')).map(row=>row?.measured_at));
+  if(source==='apple_health')directDates.push(...metrics.filter(row=>stableAppleMetricTypes.has(row?.metric_type)&&isAppleSource(row)&&isAppleActivitySummarySource(row)).map(row=>row?.measured_at));
   else if(source==='polar_flow')directDates.push(...matching(workouts,['source','source_file'],'polar').map(row=>row?.workout_date));
   else if(source==='myfitnesspal'){
     directDates.push(...matching(nutrition,['source','source_file'],'myfitnesspal').map(row=>row?.nutrition_date));
