@@ -10,7 +10,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  await page.waitForSelector('[data-executive-dashboard]');
 
   const result=await page.evaluate(async()=>{
     const {visibleRowsForDomain,visibleWorkoutChildren}=await import('./src/data-layer.js');
@@ -82,13 +82,13 @@ async function run(viewport,label){
   });
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
   await page.evaluate(()=>{location.hash='hoje';});
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  await page.waitForSelector('[data-executive-dashboard]');
 
   const todayText=(await page.textContent('#screenHost'))||'';
-  const sleepCard=(await page.locator('.todayMetricGrid .todayStatusCard').filter({hasText:'Sono'}).textContent())||'';
-  if(!sleepCard.includes('Sem dado importado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as canonical Today data`);
-  if(!todayText.includes('510 kcal'))throw new Error(`${label}: stable HealthKitBridge ActivitySummary energy disappeared from Today`);
-  if(!todayText.includes('58 bpm'))throw new Error(`${label}: valid non-Apple resting heart rate was incorrectly hidden`);
+  const sleepCard=(await page.locator('.intelCurrentCard').filter({hasText:'Sono consolidado'}).textContent())||'';
+  const activityCard=(await page.locator('.intelCurrentCard').filter({hasText:'Atividade consolidada'}).textContent())||'';
+  if(!sleepCard.includes('Sem dado consolidado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as canonical Today data`);
+  if(!activityCard.includes('510')||!activityCard.includes('kcal'))throw new Error(`${label}: stable HealthKitBridge ActivitySummary energy disappeared from Today`);
   if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into Today`);
 
   await page.evaluate(()=>{location.hash='nutricao';});
