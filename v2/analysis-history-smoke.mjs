@@ -19,6 +19,11 @@ async function run(viewport,label){
       {source_record_id:'sleep-ring',measured_at:'2026-02-01T08:10:00Z',metric_type:'sleep_duration_h',value:7.4,unit:'h',source:'RingConn'},
       {source_record_id:'sleep-single',measured_at:'2026-01-27T08:00:00Z',metric_type:'sleep_duration_h',value:6.8,unit:'h',source:'Polar'}
     );
+    const firstLab=state.data.labs[0];
+    if(firstLab){
+      const collectionDay=String(firstLab.collection_date||'').slice(0,10);
+      state.data.labs.push({...firstLab,id:'same-day-second-source',source_record_id:'same-day-second-source',source:'Outro laboratório',collection_date:`${collectionDay}T23:45:00Z`});
+    }
   });
 
   await page.selectOption('#analysisPeriod','all');
@@ -28,7 +33,9 @@ async function run(viewport,label){
   if(!text.includes('2 sessão(ões) de treino registrada(s)'))throw new Error(`${label}: workout evidence missing from longitudinal summary`);
   if(!text.includes('2 dia(s) com alimentação'))throw new Error(`${label}: nutrition evidence missing from longitudinal summary`);
   if(!text.includes('3 dia(s) com duração de sono'))throw new Error(`${label}: sleep evidence missing from longitudinal summary`);
-  if(!text.includes('1 coleta(s) laboratorial(is)'))throw new Error(`${label}: lab evidence missing from longitudinal summary`);
+  if(!text.includes('1 data(s) de coleta laboratorial'))throw new Error(`${label}: same-day lab sources inflated longitudinal collection count`);
+  if(!text.includes('Datas de coleta · todo o histórico'))throw new Error(`${label}: lab metric does not explain that it counts collection dates`);
+  if(!text.includes('1 data(s) de coleta'))throw new Error(`${label}: coverage did not keep same-day lab sources on one collection date`);
   if(!text.includes('1')||!text.includes('treinos com sono comparável'))throw new Error(`${label}: single-source sleep pairing was not retained`);
   if(!text.includes('1 treino(s) têm mais de um registro de sono'))throw new Error(`${label}: ambiguous multi-source sleep was not surfaced`);
   if(!text.includes('Noites com mais de um registro de sono ficam fora da média'))throw new Error(`${label}: overlap guardrail is missing`);
