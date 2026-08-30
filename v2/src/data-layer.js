@@ -65,6 +65,7 @@ export function visibleRowsForDomain(key,rows=[]){
     const source=norm(row?.source);
     return !(source.includes('myfitnesspal')&&source.includes('apple health'));
   });
+  if(key==='workouts')return rows.filter(row=>row?.is_canonical!==false&&row?.record_status!=='quarantined');
   return rows;
 }
 
@@ -92,7 +93,7 @@ async function loadKey(key,force=false){
   state.domainStatus[key]='loading';
   try{
     const rows=await loaders[key](),visibleRows=visibleRowsForDomain(key,rows);
-    state.data[key]=key==='workouts'?visibleRows.filter(w=>w.is_canonical!==false&&w.record_status!=='quarantined'):visibleRows;
+    state.data[key]=visibleRows;
     delete state.errors[key];state.domainStatus[key]='ready';
   }catch(error){
     if(!hadPrevious)state.data[key]=[];
