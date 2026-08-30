@@ -126,7 +126,7 @@ export function renderTodayHub(){
 
     <section class="intelFootnote">
       <b>Como o LTS Health lê seus dados</b>
-      <p>O dashboard usa somente registros confirmados nas conclusões. Dados conflitantes ou ainda em conferência continuam preservados e aparecem como existentes, mas ficam fora de médias e comparações. Nenhum valor é inventado para preencher lacunas.</p>
+      <p>O dashboard usa somente registros confirmados nas conclusões. Dados conflitantes ou ainda em revisão ficam fora das conclusões, mas continuam preservados no histórico. Nenhum valor é inventado para preencher lacunas.</p>
     </section>
   </div>`;
 }
