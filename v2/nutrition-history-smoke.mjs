@@ -28,6 +28,7 @@ async function run(viewport,label){
 
   await page.selectOption('#nutritionPeriod','all');
   await page.waitForSelector('#nutritionYear');
+  await page.waitForFunction(()=>document.querySelector('.mfpCandidatePanel')?.textContent?.includes('1.999 kcal'));
 
   const candidate=(await page.locator('.mfpCandidatePanel').textContent())||'';
   if(!candidate.includes('MyFitnessPal via Apple Saúde')||!candidate.includes('em validação'))throw new Error(`${label}: MyFitnessPal Apple daily totals are not visibly held for validation`);
@@ -55,8 +56,8 @@ async function run(viewport,label){
 
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';});
   await page.selectOption('#nutritionPeriod','365');
+  await page.waitForFunction(()=>document.querySelector('.mfpCandidatePanel')?.textContent?.includes('Não foi possível verificar estes totais agora'));
   const candidateFailure=(await page.locator('.mfpCandidatePanel').textContent())||'';
-  if(!candidateFailure.includes('Não foi possível verificar estes totais agora'))throw new Error(`${label}: candidate-source failure state is not explicit`);
   if(!candidateFailure.includes('nenhum valor ausente é tratado como zero'))throw new Error(`${label}: candidate-source failure can be mistaken for a numeric zero`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
