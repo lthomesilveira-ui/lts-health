@@ -8,7 +8,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
     private let api = SupabaseAPI.shared
     private let defaults = UserDefaults.standard
     private let calendar = Calendar.autoupdatingCurrent
-    private let bridgeVersion = "ios-healthkit-candidates-v2"
+    private let bridgeVersion = "ios-healthkit-candidates-v3"
     private let syncGate = CandidateSyncGate()
     private var observers: [HKObserverQuery] = []
 
@@ -24,6 +24,11 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
         var quantityType: HKQuantityType? {
             HKObjectType.quantityType(forIdentifier: identifier)
         }
+    }
+
+    private struct SleepBucketKey: Hashable {
+        let date: String
+        let sourceName: String
     }
 
     private var specs: [MetricSpec] {
@@ -105,8 +110,18 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
         specs.compactMap(\.quantityType)
     }
 
+    private var sleepType: HKCategoryType? {
+        HKObjectType.categoryType(forIdentifier: .sleepAnalysis)
+    }
+
+    private var observedTypes: [HKSampleType] {
+        var types: [HKSampleType] = quantityTypes
+        if let sleepType { types.append(sleepType) }
+        return types
+    }
+
     private var readTypes: Set<HKObjectType> {
-        Set(quantityTypes.map { $0 as HKObjectType })
+        Set(observedTypes.map { $0 as HKObjectType })
     }
 
     func requestAuthorizationAndStart() async throws {
@@ -142,7 +157,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
     }
 
     private func enableBackgroundDelivery() async throws {
-        for type in quantityTypes {
+        for type in observedTypes {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 healthStore.enableBackgroundDelivery(for: type, frequency: .hourly) { success, error in
                     if let error { continuation.resume(throwing: error) }
@@ -155,7 +170,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
 
     private func startObservers() {
         guard observers.isEmpty else { return }
-        for type in quantityTypes {
+        for type in observedTypes {
             let query = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, completion, error in
                 guard let self else { completion(); return }
                 if error != nil { completion(); return }
@@ -185,6 +200,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
         for spec in specs {
             metrics.append(contentsOf: try await dailyMetrics(for: spec, from: start, to: endExclusive))
         }
+        metrics.append(contentsOf: try await dailySleepMetrics(from: start, to: endExclusive))
 
         guard !metrics.isEmpty else { return CandidateSyncReport(accepted: 0, rejected: 0) }
         var report = CandidateSyncReport(accepted: 0, rejected: 0)
@@ -252,12 +268,89 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
         }
     }
 
+    private func dailySleepMetrics(from start: Date, to end: Date) async throws -> [AppleMetric] {
+        guard let sleepType else { return [] }
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
+        let asleepValues: Set<Int> = [
+            HKCategoryValueSleepAnalysis.asleep.rawValue,
+            HKCategoryValueSleepAnalysis.asleepCore.rawValue,
+            HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
+            HKCategoryValueSleepAnalysis.asleepREM.rawValue,
+            HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue
+        ]
+
+        let samples: [HKCategorySample] = try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: sleepType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]
+            ) { _, samples, error in
+                if let error { continuation.resume(throwing: error); return }
+                continuation.resume(returning: (samples as? [HKCategorySample]) ?? [])
+            }
+            healthStore.execute(query)
+        }
+
+        var buckets: [SleepBucketKey: [DateInterval]] = [:]
+        for sample in samples where asleepValues.contains(sample.value) && sample.endDate > sample.startDate {
+            var cursor = sample.startDate
+            while cursor < sample.endDate {
+                let dayStart = calendar.startOfDay(for: cursor)
+                guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { break }
+                let segmentStart = max(sample.startDate, dayStart)
+                let segmentEnd = min(sample.endDate, dayEnd)
+                if segmentEnd > segmentStart {
+                    let components = calendar.dateComponents([.year, .month, .day], from: dayStart)
+                    if let year = components.year, let month = components.month, let day = components.day {
+                        let date = String(format: "%04d-%02d-%02d", year, month, day)
+                        let key = SleepBucketKey(date: date, sourceName: sample.sourceRevision.source.name)
+                        buckets[key, default: []].append(DateInterval(start: segmentStart, end: segmentEnd))
+                    }
+                }
+                cursor = dayEnd
+            }
+        }
+
+        return buckets.compactMap { key, intervals in
+            let hours = mergedDuration(intervals) / 3600
+            guard hours.isFinite, hours > 0 else { return nil }
+            return AppleMetric(
+                date: key.date,
+                metric_type: "sleep_duration_h",
+                value: hours,
+                unit: "h",
+                source_name: key.sourceName,
+                source_family: sourceFamily(for: key.sourceName)
+            )
+        }
+    }
+
+    private func mergedDuration(_ intervals: [DateInterval]) -> TimeInterval {
+        let sorted = intervals.sorted { lhs, rhs in
+            if lhs.start == rhs.start { return lhs.end < rhs.end }
+            return lhs.start < rhs.start
+        }
+        guard var current = sorted.first else { return 0 }
+        var total: TimeInterval = 0
+        for interval in sorted.dropFirst() {
+            if interval.start <= current.end {
+                current = DateInterval(start: current.start, end: max(current.end, interval.end))
+            } else {
+                total += current.duration
+                current = interval
+            }
+        }
+        return total + current.duration
+    }
+
     private func sourceFamily(for sourceName: String) -> String {
         let normalized = sourceName
             .replacingOccurrences(of: "\u{00A0}", with: " ")
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .lowercased()
         if normalized.contains("myfitnesspal") { return "myfitnesspal" }
+        if normalized.contains("ringconn") { return "ringconn" }
         if normalized.contains("polar") { return "polar_flow" }
         if normalized.contains("watch") { return "apple_watch" }
         if normalized.contains("iphone") { return "iphone" }
