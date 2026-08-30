@@ -1,15 +1,14 @@
 import {day,num,norm,unique} from './core.js';
 
-const MS_DAY=86400000;
 const loaded=(status,key)=>status?.[key]!=='error';
-const sortAsc=(rows,key)=>[...(rows||[])].sort((a,b)=>String(a?.[key]||'').localeCompare(String(b?.[key]||''));
-const sortDesc=(rows,key)=>sortAsc(rows,key).reverse();
+const sortAsc=(rows,key)=>[...(rows||[])].sort((a,b)=>String(a?.[key]||'').localeCompare(String(b?.[key]||'')));
 const uniqueDays=(rows,key)=>unique((rows||[]).map(r=>day(r?.[key])).filter(Boolean));
 const addDays=(date,delta)=>{const d=new Date(`${date}T12:00:00`);d.setDate(d.getDate()+delta);return d.toISOString().slice(0,10);};
 const inRange=(value,start,end)=>{const d=day(value);return d&&d>=start&&d<=end;};
 const pct=(a,b)=>b>0?Math.round(a/b*100):0;
 const signed=(value,digits=1,unit='')=>{const n=num(value);if(n==null)return null;const text=n.toLocaleString('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits});return`${n>0?'+':''}${text}${unit?` ${unit}`:''}`;};
 const maxDate=(values)=>values.filter(Boolean).sort().at(-1)||null;
+const prettyDate=value=>{const s=day(value);if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
 
 function referenceDay(data){
   return maxDate([
@@ -31,7 +30,7 @@ function bodyChange(data,status){
   return{
     kind:'change',
     title:'Nova comparação de composição disponível',
-    summary:parts.length?`Entre ${day(previous.measured_at)} e ${day(latest.measured_at)}: ${parts.join(' · ')}.`:`Existem duas medições comparáveis entre ${day(previous.measured_at)} e ${day(latest.measured_at)}.`,
+    summary:parts.length?`Entre ${prettyDate(previous.measured_at)} e ${prettyDate(latest.measured_at)}: ${parts.join(' · ')}.`:`Existem duas medições comparáveis entre ${prettyDate(previous.measured_at)} e ${prettyDate(latest.measured_at)}.`,
     route:'evolucao',priority:86,evidence:[day(previous.measured_at),day(latest.measured_at)]
   };
 }
@@ -93,7 +92,7 @@ function bodyIntervalContext(data,status){
   const nutritionDays=uniqueDays((data.nutrition||[]).filter(n=>day(n.nutrition_date)>start&&day(n.nutrition_date)<=end),'nutrition_date');
   return{
     kind:'cross',title:'Contexto entre as duas últimas medições',
-    summary:`No intervalo de ${start} a ${end}, há ${workouts.length} treino(s) e ${nutritionDays.length} dia(s) com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,
+    summary:`No intervalo de ${prettyDate(start)} a ${prettyDate(end)}, há ${workouts.length} treino(s) e ${nutritionDays.length} dia(s) com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,
     route:'analise',priority:91
   };
 }
@@ -116,10 +115,10 @@ function labContext(data,status){
   if(!loaded(status,'labs'))return{kind:'unavailable',title:'Exames indisponíveis',summary:'Os resultados laboratoriais não carregaram nesta atualização.',route:'saude',priority:93};
   const rows=data.labs||[],dates=uniqueDays(rows,'collection_date').sort();
   if(!dates.length)return{kind:'coverage',title:'Sem exames estruturados',summary:'Ainda não há coleta laboratorial estruturada para leitura longitudinal.',route:'saude',priority:56};
-  if(dates.length<2)return{kind:'coverage',title:'Exames ainda não formam uma série longitudinal',summary:`Há resultados estruturados em ${dates[0]}, mas é necessária outra coleta comparável para identificar mudanças ao longo do tempo.`,route:'saude',priority:89};
+  if(dates.length<2)return{kind:'coverage',title:'Exames ainda não formam uma série longitudinal',summary:`Há resultados estruturados em ${prettyDate(dates[0])}, mas é necessária outra coleta comparável para identificar mudanças ao longo do tempo.`,route:'saude',priority:89};
   const latest=dates.at(-1),previous=dates.at(-2),a=rows.filter(r=>day(r.collection_date)===previous),b=rows.filter(r=>day(r.collection_date)===latest),old=new Map(a.map(r=>[norm(r.biomarker),r]));
   const comparable=b.filter(r=>{const p=old.get(norm(r.biomarker));return p&&num(p.result_numeric)!=null&&num(r.result_numeric)!=null&&norm(p.unit)===norm(r.unit);});
-  return{kind:'change',title:'Exames têm nova comparação disponível',summary:`As coletas de ${previous} e ${latest} têm ${comparable.length} biomarcador(es) comparável(is) com a mesma unidade.`,route:'saude',priority:88};
+  return{kind:'change',title:'Exames têm nova comparação disponível',summary:`As coletas de ${prettyDate(previous)} e ${prettyDate(latest)} têm ${comparable.length} biomarcador(es) comparável(is) com a mesma unidade.`,route:'saude',priority:88};
 }
 
 function metricCoverage(data,status,ref){
