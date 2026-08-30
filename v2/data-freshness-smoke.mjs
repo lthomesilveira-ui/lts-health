@@ -13,17 +13,21 @@ async function run(viewport,label,fixtureError=''){
 
   const body=(await page.locator('#screenHost').textContent())||'';
   if(fixtureError==='sourceMetrics'){
-    if(!body.includes('Proveniência indisponível agora.'))throw new Error(`${label}: sourceMetrics failure must remain unavailable`);
+    if(!body.includes('Não foi possível carregar as origens das métricas agora.'))throw new Error(`${label}: sourceMetrics failure must remain unavailable`);
     if(body.includes('dados até 02/02/2026'))throw new Error(`${label}: failed sourceMetrics must not display stale fixture freshness`);
   }else{
     const panel=(await page.locator('.provenancePanel').textContent())||'';
     if(!panel.includes('dados até 02/02/2026'))throw new Error(`${label}: real metric_date freshness missing`);
-    if(!panel.includes('A data exibida é a maior data realmente carregada'))throw new Error(`${label}: freshness provenance note missing`);
-    if(!body.includes('peso e sono podem chegar como candidatos com origem preservada'))throw new Error(`${label}: Apple source-preserving sleep scope drifted`);
-    if(!body.includes('intervalos sobrepostos da mesma origem são unidos antes do total diário'))throw new Error(`${label}: sleep overlap guardrail missing`);
-    if(!body.includes('Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde'))throw new Error(`${label}: MyFitnessPal candidate nutrition copy drifted`);
+    if(!panel.includes('Registros aguardando conferência permanecem separados dos dados confirmados.'))throw new Error(`${label}: source separation note missing`);
+    if(!body.includes('Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso e sono ficam separados até conferência'))throw new Error(`${label}: Apple plain-language validation scope drifted`);
+    if(!body.includes('Fontes diferentes de sono continuam separadas'))throw new Error(`${label}: sleep source separation guardrail missing`);
+    if(!body.includes('O arquivo direto do MyFitnessPal é a fonte preferida'))throw new Error(`${label}: direct MyFitnessPal preference drifted`);
+    if(!body.includes('Totais recebidos pelo Apple Saúde ficam separados até conferência'))throw new Error(`${label}: MyFitnessPal-via-Apple review boundary drifted`);
   }
 
+  for(const forbidden of ['ActivitySummary','candidate','canonical','canônico','candidato','source_family','count/min']){
+    if(body.includes(forbidden))throw new Error(`${label}: technical source language visible: ${forbidden}`);
+  }
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
