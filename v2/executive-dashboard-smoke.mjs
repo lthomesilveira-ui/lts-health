@@ -56,6 +56,10 @@ async function run(viewport,label){
   if(current!==6)throw new Error(`${label}: expected 6 current-state cards, got ${current}`);
   if(insights<3)throw new Error(`${label}: expected at least 3 evidence-backed insights, got ${insights}`);
   if(coverage!==5)throw new Error(`${label}: expected 5 coverage domains, got ${coverage}`);
+  const sleepText=(await page.locator('.intelCurrentCard').filter({hasText:'Sono'}).textContent())||'';
+  if(!sleepText.includes('Em validação'))throw new Error(`${label}: sleep is not clearly held outside canonical readiness`);
+  if(!sleepText.includes('Fontes ainda não consolidadas'))throw new Error(`${label}: sleep overlap/source limitation is not explicit`);
+  if(/7[,.]4\s*h/i.test(sleepText)||sleepText.includes('Sono consolidado'))throw new Error(`${label}: fixture sleep leaked as a canonical numeric snapshot (${sleepText})`);
   if(/\b(causou|provou|garante|melhorou|piorou)\b/i.test(text))throw new Error(`${label}: dashboard used causal or value-judgment language`);
   const firstEvidence=page.locator('.intelInsightCard button').first();
   await firstEvidence.click();

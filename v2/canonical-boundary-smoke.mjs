@@ -85,9 +85,10 @@ async function run(viewport,label){
   await page.waitForSelector('[data-executive-dashboard]');
 
   const todayText=(await page.textContent('#screenHost'))||'';
-  const sleepCard=(await page.locator('.intelCurrentCard').filter({hasText:'Sono consolidado'}).textContent())||'';
+  const sleepCard=(await page.locator('.intelCurrentCard').filter({hasText:'Sono'}).textContent())||'';
   const activityCard=(await page.locator('.intelCurrentCard').filter({hasText:'Atividade consolidada'}).textContent())||'';
-  if(!sleepCard.includes('Sem dado consolidado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as canonical Today data`);
+  if(!sleepCard.includes('Em validação')||!sleepCard.includes('Fontes ainda não consolidadas'))throw new Error(`${label}: unresolved overlapping sleep was not held outside canonical readiness`);
+  if(/7[,.][124]\s*h/i.test(sleepCard)||sleepCard.includes('Sono consolidado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as canonical Today data`);
   if(!activityCard.includes('510')||!activityCard.includes('kcal'))throw new Error(`${label}: stable HealthKitBridge ActivitySummary energy disappeared from Today`);
   if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into Today`);
 
