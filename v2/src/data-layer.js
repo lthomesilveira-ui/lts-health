@@ -65,8 +65,23 @@ export function visibleRowsForDomain(key,rows=[]){
     const source=norm(row?.source);
     return !(source.includes('myfitnesspal')&&source.includes('apple health'));
   });
-  if(key==='workouts')return rows.filter(row=>row?.is_canonical!==false&&row?.record_status!=='quarantined');
+  if(key==='workouts')return rows.filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined');
   return rows;
+}
+
+export function visibleWorkoutChildren(workouts=[],exercises=[],sets=[]){
+  const workoutIds=new Set((workouts||[]).map(row=>row?.source_record_id).filter(Boolean));
+  return {
+    exercises:(exercises||[]).filter(row=>workoutIds.has(row?.workout_source_record_id)),
+    sets:(sets||[]).filter(row=>workoutIds.has(row?.workout_source_record_id))
+  };
+}
+
+function enforceStructuredWorkoutBoundary(){
+  if(state.domainStatus.workouts!=='ready')return;
+  const {exercises,sets}=visibleWorkoutChildren(state.data.workouts||[],state.data.exercises||[],state.data.sets||[]);
+  if(state.domainStatus.exercises==='ready')state.data.exercises=exercises;
+  if(state.domainStatus.sets==='ready')state.data.sets=sets;
 }
 
 function setFixture(){
@@ -106,6 +121,7 @@ export async function loadInitialData(onProgress=()=>{}){
   state.loading=true;state.errors={};onProgress('Atualizando…');
   if(fixtureMode){setFixture();onProgress(fixtureError?'Alguns dados não carregaram':'Atualizado');return;}
   await Promise.all(initialKeys.map(k=>loadKey(k,true)));
+  enforceStructuredWorkoutBoundary();
   state.loaded=true;state.loading=false;
   onProgress(initialKeys.some(k=>state.domainStatus[k]==='error')?'Alguns dados não carregaram':'Atualizado');
 }

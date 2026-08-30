@@ -6,7 +6,7 @@ const failed=()=>state.domainStatus.treatments==='error';
 
 function rows(){
   const q=norm(state.ui.treatmentQuery||'');
-  return [...(state.data.treatments||[])].filter(r=>!q||norm(`${r.medication} ${r.event_type} ${r.source}`).includes(q)).sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)));
+  return [...(state.data.treatments||[])].filter(r=>!q||norm(`${r.medication} ${r.source}`).includes(q)).sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)));
 }
 
 function monthKey(date){return String(date||'').slice(0,7);}
@@ -22,6 +22,6 @@ export function renderTreatmentHub(){
       <div class="card metric"><span>Tratamentos</span><strong>${names.length}</strong><em>nomes distintos registrados</em></div>
       <div class="card metric"><span>Origens</span><strong>${sources.length}</strong><em>fontes distintas do histórico</em></div>
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Histórico</b><small>Busque por nome ou origem. A tela mostra somente informações temporais e de registro.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar tratamento ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="timelineGroups">${[...groups.entries()].map(([month,items])=>`<section class="timelineDay"><div class="timelineDate"><b>${esc(monthLabel(month))}</b><span>${items.length} registro(s)</span></div><div class="card timelineDayCard">${items.map(r=>`<div class="timelineItem rich"><span>${fmtDate(r.event_date)}</span><div><b>${esc(r.medication||'Tratamento registrado')}</b><small>${esc(r.event_type||'evento registrado')}</small>${r.source?`<em>${esc(r.source)}</em>`:''}</div></div>`).join('')}</div></section>`).join('')||empty('Nenhum registro corresponde à busca.')}</div></div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Histórico</b><small>Busque por nome ou origem. A tela mostra somente data, nome e origem.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar tratamento ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="timelineGroups">${[...groups.entries()].map(([month,items])=>`<section class="timelineDay"><div class="timelineDate"><b>${esc(monthLabel(month))}</b><span>${items.length} registro(s)</span></div><div class="card timelineDayCard">${items.map(r=>`<div class="timelineItem rich"><span>${fmtDate(r.event_date)}</span><div><b>${esc(r.medication||'Tratamento registrado')}</b>${r.source?`<em>${esc(r.source)}</em>`:''}</div></div>`).join('')}</div></section>`).join('')||empty('Nenhum registro corresponde à busca.')}</div></div>
     <p class="footerNote">O LTS Health usa esse histórico apenas como contexto temporal para organizar informações de saúde. Decisões sobre tratamento devem ser feitas com o profissional responsável.</p>`;
 }
