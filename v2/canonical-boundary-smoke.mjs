@@ -27,11 +27,17 @@ async function run(viewport,label){
       {source_record_id:'mfp-export',nutrition_date:'2026-08-28',calories_kcal:2100,protein_g:150,source:'MyFitnessPal export'},
       {source_record_id:'mfp-healthkit',nutrition_date:'2026-08-29',calories_kcal:2200,protein_g:160,source:'MyFitnessPal via Apple Health'}
     ]);
-    return {metricIds:metrics.map(r=>r.source_record_id),nutritionIds:nutrition.map(r=>r.source_record_id)};
+    const workouts=visibleRowsForDomain('workouts',[
+      {source_record_id:'lts-polar-evidence',workout_date:'2026-08-27',source:'user-reported completed workout + Polar Flow screenshot',record_status:'validated',is_canonical:true},
+      {source_record_id:'polar-only-candidate',workout_date:'2026-08-27',source:'Polar Flow via Apple Health',record_status:'validated',is_canonical:false},
+      {source_record_id:'quarantined-generated',workout_date:'2026-08-27',source:'builder generated',record_status:'quarantined',is_canonical:true}
+    ]);
+    return {metricIds:metrics.map(r=>r.source_record_id),nutritionIds:nutrition.map(r=>r.source_record_id),workoutIds:workouts.map(r=>r.source_record_id)};
   });
 
   if(result.metricIds.join('|')!=='activity-energy|activity-stand|other-resting')throw new Error(`${label}: Apple Health candidate-only metrics crossed the canonical boundary: ${result.metricIds.join('|')}`);
   if(result.nutritionIds.join('|')!=='mfp-export')throw new Error(`${label}: MyFitnessPal via Apple Health candidate crossed the canonical nutrition boundary: ${result.nutritionIds.join('|')}`);
+  if(result.workoutIds.join('|')!=='lts-polar-evidence')throw new Error(`${label}: workout provenance boundary failed: ${result.workoutIds.join('|')}`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
