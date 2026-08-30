@@ -1,0 +1,27 @@
+name: Provenance alias smoke
+
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/source-status.js'
+      - 'v2/src/data-layer.js'
+      - 'v2/provenance-alias-smoke.mjs'
+      - '.github/workflows/provenance-alias-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2.log 2>&1 &
+      - run: node v2/provenance-alias-smoke.mjs
