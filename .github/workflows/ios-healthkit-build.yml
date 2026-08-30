@@ -6,6 +6,12 @@ on:
       - 'ios/LTSHealthSync/**'
       - '.github/workflows/ios-healthkit-build.yml'
       - '.github/workflows/ios-healthkit-sign.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'ios/LTSHealthSync/**'
+      - '.github/workflows/ios-healthkit-build.yml'
+      - '.github/workflows/ios-healthkit-sign.yml'
   workflow_dispatch:
 permissions:
   contents: read

@@ -57,7 +57,7 @@ jobs:
           set -euo pipefail
           KEYCHAIN="$RUNNER_TEMP/lts-health-signing.keychain-db"
           P12="$RUNNER_TEMP/distribution.p12"
-          echo "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > "$P12"
+          printf '%s' "$APPLE_CERTIFICATE_P12_BASE64" | base64 --decode > "$P12"
           security create-keychain -p "runner" "$KEYCHAIN"
           security set-keychain-settings -lut 21600 "$KEYCHAIN"
           security unlock-keychain -p "runner" "$KEYCHAIN"
@@ -66,25 +66,57 @@ jobs:
           security list-keychain -d user -s "$KEYCHAIN"
           security find-identity -v -p codesigning "$KEYCHAIN" | grep -q 'Apple Distribution'
 
-      - name: Install and validate provisioning profile
+      - name: Install and validate App Store provisioning profile
         id: profile
         shell: bash
         run: |
           set -euo pipefail
           PROFILE="$RUNNER_TEMP/profile.mobileprovision"
           PLIST="$RUNNER_TEMP/profile.plist"
-          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE"
+          printf '%s' "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE"
           security cms -D -i "$PROFILE" > "$PLIST"
+          python3 - "$PLIST" "$LTS_BUNDLE_ID" "$APPLE_TEAM_ID" <<'PY'
+          import plistlib
+          import sys
+          from datetime import datetime, timezone
+
+          path, bundle_id, team_id = sys.argv[1:]
+          with open(path, 'rb') as handle:
+              profile = plistlib.load(handle)
+
+          entitlements = profile.get('Entitlements') or {}
+          app_identifier = entitlements.get('application-identifier') or ''
+          profile_team = entitlements.get('com.apple.developer.team-identifier') or ''
+          expiration = profile.get('ExpirationDate')
+
+          def fail(message):
+              raise SystemExit(message)
+
+          if not app_identifier.endswith('.' + bundle_id) or '*' in app_identifier:
+              fail('Provisioning profile must use the explicit LTS Health App ID')
+          if profile_team != team_id:
+              fail('Provisioning profile team mismatch')
+          if entitlements.get('com.apple.developer.healthkit') is not True:
+              fail('Provisioning profile is missing HealthKit')
+          if entitlements.get('com.apple.developer.healthkit.background-delivery') is not True:
+              fail('Provisioning profile is missing HealthKit background delivery')
+          if entitlements.get('get-task-allow', False) is not False:
+              fail('Provisioning profile permits debugging and is not valid for App Store distribution')
+          if profile.get('ProvisionedDevices'):
+              fail('Provisioning profile contains registered devices and is not an App Store distribution profile')
+          if profile.get('ProvisionsAllDevices') is True:
+              fail('Provisioning profile is enterprise-wide and is not an App Store distribution profile')
+          if not isinstance(expiration, datetime):
+              fail('Provisioning profile expiration date missing')
+          if expiration.tzinfo is None:
+              expiration = expiration.replace(tzinfo=timezone.utc)
+          if expiration <= datetime.now(timezone.utc):
+              fail('Provisioning profile is expired')
+          if not profile.get('UUID') or not profile.get('Name'):
+              fail('Provisioning profile identity metadata missing')
+          PY
           UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PLIST")
           NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PLIST")
-          APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$PLIST")
-          TEAM_IDENTIFIER=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' "$PLIST")
-          HEALTHKIT=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.healthkit' "$PLIST")
-          BACKGROUND=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.healthkit.background-delivery' "$PLIST")
-          [[ "$APP_IDENTIFIER" == *."$LTS_BUNDLE_ID" ]] || { echo "Provisioning profile bundle id mismatch" >&2; exit 1; }
-          [[ "$TEAM_IDENTIFIER" == "$APPLE_TEAM_ID" ]] || { echo "Provisioning profile team mismatch" >&2; exit 1; }
-          [[ "$HEALTHKIT" == "true" ]] || { echo "Provisioning profile is missing HealthKit" >&2; exit 1; }
-          [[ "$BACKGROUND" == "true" ]] || { echo "Provisioning profile is missing HealthKit background delivery" >&2; exit 1; }
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PROFILE" "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
           echo "uuid=$UUID" >> "$GITHUB_OUTPUT"
@@ -176,7 +208,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$HOME/.appstoreconnect/private_keys"
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY_BASE64" | base64 --decode > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          printf '%s' "$APP_STORE_CONNECT_PRIVATE_KEY_BASE64" | base64 --decode > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
           chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
 
       - name: Validate TestFlight package
@@ -202,3 +234,12 @@ jobs:
             --file "$IPA" \
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+
+      - name: Cleanup signing material
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set +e
+          rm -f "$RUNNER_TEMP/distribution.p12" "$RUNNER_TEMP/profile.mobileprovision" "$RUNNER_TEMP/profile.plist"
+          rm -f "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          security delete-keychain "$RUNNER_TEMP/lts-health-signing.keychain-db" >/dev/null 2>&1

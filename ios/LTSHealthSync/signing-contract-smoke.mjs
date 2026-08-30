@@ -17,11 +17,20 @@ for (const token of [
   'LTS_BUNDLE_ID: com.ltshealth.sync',
   'Verify required signing material',
   'security find-identity -v -p codesigning',
-  'Install and validate provisioning profile',
-  'Provisioning profile bundle id mismatch',
+  'Install and validate App Store provisioning profile',
+  "app_identifier.endswith('.' + bundle_id)",
+  "'*' in app_identifier",
+  "entitlements.get('get-task-allow', False) is not False",
+  "profile.get('ProvisionedDevices')",
+  "profile.get('ProvisionsAllDevices') is True",
+  "profile.get('ExpirationDate')",
+  'Provisioning profile must use the explicit LTS Health App ID',
   'Provisioning profile team mismatch',
   'Provisioning profile is missing HealthKit',
   'Provisioning profile is missing HealthKit background delivery',
+  'Provisioning profile contains registered devices and is not an App Store distribution profile',
+  'Provisioning profile is enterprise-wide and is not an App Store distribution profile',
+  'Provisioning profile is expired',
   'BUILD_NUMBER="${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}"',
   'CURRENT_PROJECT_VERSION="$BUILD_NUMBER"',
   'CODE_SIGN_STYLE=Manual',
@@ -43,7 +52,9 @@ for (const token of [
   'Validate TestFlight package',
   'xcrun altool --validate-app',
   'Upload to TestFlight',
-  'xcrun altool --upload-app'
+  'xcrun altool --upload-app',
+  'Cleanup signing material',
+  'security delete-keychain'
 ]) {
   if (!workflow.includes(token)) throw new Error(`Signing contract missing: ${token}`);
 }
@@ -53,8 +64,11 @@ if (/BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY/.test(workflow)) throw new Error('Pri
 if (/MII[A-Za-z0-9+/=]{80,}/.test(workflow)) throw new Error('Certificate material must never be committed');
 if (/APPLE_CERTIFICATE_PASSWORD:\s*(?!\$\{\{\s*secrets\.)\S+/.test(workflow)) throw new Error('Certificate password must come from GitHub secrets');
 if (workflow.indexOf('Validate TestFlight package') > workflow.indexOf('Upload to TestFlight')) throw new Error('TestFlight package must be validated before upload');
+if (workflow.indexOf('Verify signed IPA contract') > workflow.indexOf('Upload signed IPA artifact')) throw new Error('Signed IPA must be verified before artifact upload');
 
 for (const token of [
+  'pull_request:',
+  'branches: [architecture-v2]',
   "- '.github/workflows/ios-healthkit-sign.yml'",
   'node ios/LTSHealthSync/signing-contract-smoke.mjs'
 ]) if (!buildWorkflow.includes(token)) throw new Error(`Unsigned CI does not gate signing readiness: ${token}`);
@@ -65,9 +79,13 @@ for (const token of ['com.apple.developer.healthkit','com.apple.developer.health
 
 for (const token of [
   'App ID explícito `com.ltshealth.sync`',
+  'provisioning profile App Store Connect',
+  'sem lista de aparelhos registrados',
+  'não expirado',
   'registro do app no App Store Connect',
   'build number único por execução/tentativa',
   'valida o IPA assinado antes de publicá-lo como artefato',
+  'TestFlight é o caminho de instalação previsto',
   'Nenhum segredo deve ser salvo no repositório'
 ]) if (!signingDoc.includes(token)) throw new Error(`Signing readiness documentation missing: ${token}`);
 
