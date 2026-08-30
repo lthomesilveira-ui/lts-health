@@ -27,7 +27,7 @@ async function run(viewport,label){
   const firstEvidence=page.locator('.intelInsightCard button').first();
   await firstEvidence.click();
   await page.waitForFunction(()=>location.hash!=='#hoje');
-  await page.locator('[data-route="hoje"]').first().click();
+  await page.locator('[data-route="hoje"]:visible').first().click();
   await page.waitForSelector('[data-executive-dashboard]');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: executive dashboard horizontal overflow ${overflow}px`);
