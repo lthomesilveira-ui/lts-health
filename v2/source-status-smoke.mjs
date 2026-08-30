@@ -21,6 +21,7 @@ async function run(viewport,label){
     state.data.meals=[];
     state.data.metrics=[];
     state.data.sourceMetrics=[
+      {source_record_id:'apple-1',metric_date:'2026-02-03',metric_type:'resting_heart_rate_bpm',value:58,unit:'count/min',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
       {source_record_id:'mfp-1',metric_date:'2026-02-04',metric_type:'dietary_protein_g',value:150,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'},
       {source_record_id:'polar-1',metric_date:'2026-02-05',metric_type:'resting_heart_rate_bpm',value:60,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'candidate'},
       {source_record_id:'ring-1',metric_date:'2026-02-06',metric_type:'sleep_rem_h',value:1.8,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'candidate'}
@@ -38,7 +39,7 @@ async function run(viewport,label){
     };
   });
   if(initial.apple!=='candidate'||initial.polar!=='candidate'||initial.mfp!=='candidate')throw new Error(`${label}: candidate source status drifted ${JSON.stringify(initial)}`);
-  if(initial.appleDate!=='2026-02-06'||initial.polarDate!=='2026-02-05'||initial.mfpDate!=='2026-02-04')throw new Error(`${label}: source metric freshness drifted ${JSON.stringify(initial)}`);
+  if(initial.appleDate!=='2026-02-03'||initial.polarDate!=='2026-02-05'||initial.mfpDate!=='2026-02-04')throw new Error(`${label}: source metric freshness crossed source boundaries ${JSON.stringify(initial)}`);
 
   const cards=await page.locator('.sourceStatus').allTextContents();
   const card=name=>cards.find(text=>text.includes(name))||'';
@@ -46,7 +47,15 @@ async function run(viewport,label){
     if(!card(name).includes('candidatos recebidos')||card(name).includes('com dados'))throw new Error(`${label}: ${name} candidate was presented as canonical readiness`);
   }
   const provenance=(await page.locator('.provenancePanel').textContent())||'';
-  for(const expected of ['MyFitnessPal','Polar Flow','RingConn','04/02/2026','05/02/2026','06/02/2026','candidato'])if(!provenance.includes(expected))throw new Error(`${label}: provenance freshness missing ${expected}`);
+  for(const expected of ['Apple Watch','MyFitnessPal','Polar Flow','RingConn','03/02/2026','04/02/2026','05/02/2026','06/02/2026','candidato'])if(!provenance.includes(expected))throw new Error(`${label}: provenance freshness missing ${expected}`);
+
+  const foreignOnly=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {sourceStatusFor,latestSourceMetricDateFor}=await import('./src/source-status.js');
+    state.data.sourceMetrics=state.data.sourceMetrics.filter(row=>row.source_family!=='apple_watch'&&row.source_family!=='iphone'&&row.source_family!=='apple_activity_summary');
+    return {status:sourceStatusFor('apple_health'),latest:latestSourceMetricDateFor('apple_health')};
+  });
+  if(foreignOnly.status!=='missing'||foreignOnly.latest!==null)throw new Error(`${label}: foreign candidates leaked into Apple source status ${JSON.stringify(foreignOnly)}`);
 
   const promoted=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
