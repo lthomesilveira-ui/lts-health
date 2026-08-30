@@ -67,8 +67,8 @@ function currentSnapshot(){
   }else cards.push(unavailableValue('Atividade confirmada'));
 
   if(sleep){
-    const value=sleep.days?`${sleep.days} dia(s) registrado(s)`:'Nenhum registro encontrado';
-    const detail=sleep.days?`Último em ${dateText(sleep.latest)} · aguardando conferência antes de entrar em médias`:'Nenhum registro de duração do sono foi encontrado nas fontes carregadas';
+    const value=sleep.days?'Em validação':'Nenhum registro encontrado';
+    const detail=sleep.days?`${sleep.days} dia(s) registrado(s) · último em ${dateText(sleep.latest)} · Fontes ainda não consolidadas; aguardando conferência antes de entrar em médias`:'Nenhum registro de duração do sono foi encontrado nas fontes carregadas';
     cards.push(currentCard('Sono',value,detail,'timeline'));
   }else cards.push(unavailableValue('Sono'));
 
