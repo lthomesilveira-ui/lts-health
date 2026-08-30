@@ -10,6 +10,9 @@ async function run(viewport,label){
   await page.waitForSelector('[data-executive-dashboard]');
   const hash=await page.evaluate(()=>location.hash);
   if(hash!=='#hoje')throw new Error(`${label}: executive dashboard was not the first-run home (${hash})`);
+  const activeRoutes=await page.locator('[data-route].active').evaluateAll(nodes=>nodes.map(node=>node.dataset.route));
+  const visibleActive=[...new Set(activeRoutes)];
+  if(visibleActive.length!==1||visibleActive[0]!=='hoje')throw new Error(`${label}: home navigation state is ambiguous (${visibleActive.join('|')})`);
   const text=(await page.textContent('#screenHost'))||'';
   for(const expected of ['LTS Health Intelligence','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico']){
     if(!text.includes(expected))throw new Error(`${label}: missing executive dashboard section: ${expected}`);
