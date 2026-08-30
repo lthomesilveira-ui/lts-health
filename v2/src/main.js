@@ -17,7 +17,7 @@ const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
-const secondaryRoutes=new Set(['hoje','timeline','saude','nutricao','dados']);
+const secondaryRoutes=new Set(['timeline','saude','nutricao','dados']);
 
 function setSync(text){const el=$('syncText');if(el)el.textContent=text;}
 function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}

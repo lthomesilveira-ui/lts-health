@@ -37,25 +37,25 @@
 
   <div id="app" class="app hidden">
     <header class="topbar">
-      <div class="brand"><div class="brandMark small">L</div><div><b>LTS Health</b><span>Seu histórico de saúde em um só lugar</span></div></div>
+      <div class="brand"><div class="brandMark small">L</div><div><b>LTS Health</b><span>Assistente longitudinal de saúde</span></div></div>
       <div class="topActions"><span id="syncText">carregando…</span><button id="routeAction" class="primary hidden"></button><button id="refreshBtn">Atualizar</button><button id="logoutBtn">Sair</button></div>
     </header>
 
     <nav id="primaryNav" class="primaryNav" aria-label="Navegação principal">
+      <button data-route="hoje">Início</button>
       <button data-route="bio">Bio</button>
       <button data-route="treinos">Treinos</button>
       <button data-route="evolucao">Evolução</button>
       <button data-route="analise">Análise</button>
-      <button data-route="tratamentos">Tratamentos</button>
       <button data-route="mais" class="moreButton">Mais</button>
     </nav>
 
     <main id="screenHost" class="screenHost" aria-live="polite"></main>
 
     <nav id="mobileNav" class="mobileNav" aria-label="Navegação no celular">
+      <button data-route="hoje">Início</button>
       <button data-route="bio">Bio</button>
       <button data-route="treinos">Treinos</button>
-      <button data-route="evolucao">Evolução</button>
       <button data-route="analise">Análise</button>
       <button data-route="mais">Mais</button>
     </nav>
@@ -65,7 +65,7 @@
     <div class="sheetPanel">
       <div class="sheetHead"><b>Mais</b><button id="closeMore" aria-label="Fechar">×</button></div>
       <div class="sheetGrid">
-        <button data-route="hoje">Hoje</button>
+        <button data-route="evolucao">Evolução</button>
         <button data-route="timeline">Timeline</button>
         <button data-route="saude">Saúde & exames</button>
         <button data-route="nutricao">Nutrição</button>
@@ -82,6 +82,15 @@
     </div>
   </div>
 
+  <script>
+    try{
+      if(!localStorage.getItem('lts-health-v2-intelligence-home-v1')){
+        localStorage.setItem('lts-health-v2-route','hoje');
+        localStorage.setItem('lts-health-v2-intelligence-home-v1','1');
+        if(!location.hash)history.replaceState(null,'','#hoje');
+      }
+    }catch{}
+  </script>
   <script type="module" src="./src/shell-accessibility.js"></script>
   <script type="module" src="./src/main.js"></script>
 </body>

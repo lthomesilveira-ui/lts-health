@@ -1,0 +1,41 @@
+import {chromium} from 'playwright';
+
+async function run(viewport,label){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport});
+  const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  await page.goto('http://127.0.0.1:4173/?fixture=1',{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('[data-executive-dashboard]');
+  const hash=await page.evaluate(()=>location.hash);
+  if(hash!=='#hoje')throw new Error(`${label}: executive dashboard was not the first-run home (${hash})`);
+  const activeRoutes=await page.locator('[data-route].active').evaluateAll(nodes=>nodes.map(node=>node.dataset.route));
+  const visibleActive=[...new Set(activeRoutes)];
+  if(visibleActive.length!==1||visibleActive[0]!=='hoje')throw new Error(`${label}: home navigation state is ambiguous (${visibleActive.join('|')})`);
+  const text=(await page.textContent('#screenHost'))||'';
+  for(const expected of ['LTS Health Intelligence','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico']){
+    if(!text.includes(expected))throw new Error(`${label}: missing executive dashboard section: ${expected}`);
+  }
+  const current=await page.locator('.intelCurrentCard').count();
+  const insights=await page.locator('.intelInsightCard').count();
+  const coverage=await page.locator('.intelCoverageCard').count();
+  if(current!==6)throw new Error(`${label}: expected 6 current-state cards, got ${current}`);
+  if(insights<3)throw new Error(`${label}: expected at least 3 evidence-backed insights, got ${insights}`);
+  if(coverage!==5)throw new Error(`${label}: expected 5 coverage domains, got ${coverage}`);
+  if(/\b(causou|provou|garante|melhorou|piorou)\b/i.test(text))throw new Error(`${label}: dashboard used causal or value-judgment language`);
+  const firstEvidence=page.locator('.intelInsightCard button').first();
+  await firstEvidence.click();
+  await page.waitForFunction(()=>location.hash!=='#hoje');
+  await page.locator('[data-route="hoje"]:visible').first().click();
+  await page.waitForSelector('[data-executive-dashboard]');
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  if(overflow>3)throw new Error(`${label}: executive dashboard horizontal overflow ${overflow}px`);
+  if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+  await browser.close();
+}
+
+await run({width:1280,height:900},'desktop');
+await run({width:390,height:844},'mobile');
+await run({width:320,height:700},'compact');
+console.log('LTS Health executive dashboard smoke passed');
