@@ -1,4 +1,25 @@
 import {chromium} from 'playwright';
+import {buildHealthIntelligence} from './src/intelligence-engine.js';
+
+const status={body:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',metrics:'ready',labs:'ready'};
+const boundaryModel=buildHealthIntelligence({
+  metrics:[
+    {measured_at:'2026-08-29',metric_type:'steps',value:12000,source:'Apple Health'},
+    {measured_at:'2026-08-29',metric_type:'sleep_duration_h',value:8,source:'RingConn'},
+    {measured_at:'2026-08-29',metric_type:'active_energy_kcal',value:650,source:'Apple Health ActivitySummary'}
+  ],
+  sourceMetrics:[
+    {metric_date:'2026-08-29',metric_type:'sleep_duration_h',canonical_status:'held'},
+    {metric_date:'2026-08-29',metric_type:'steps',canonical_status:'candidate'}
+  ]
+},status,new Date('2026-08-30T12:00:00Z'));
+const activityCoverage=boundaryModel.coverage.find(row=>row.key==='metrics');
+if(activityCoverage?.label!=='Atividade')throw new Error('executive boundary: sleep must not be treated as canonical coverage');
+if(!activityCoverage?.detail.includes('1 dia(s)'))throw new Error(`executive boundary: only validated activity types may count (${activityCoverage?.detail})`);
+const metricInsight=boundaryModel.cross.find(item=>item.route==='timeline');
+if(!metricInsight?.summary.includes('Sono permanece fora desta leitura'))throw new Error('executive boundary: sleep policy must remain explicit');
+if(!boundaryModel.pending?.summary.includes('2 registro(s)'))throw new Error('executive boundary: candidate and held source records must remain pending');
+if(boundaryModel.referenceDay!=='2026-08-29')throw new Error(`executive boundary: candidate-only metrics must not move reference day (${boundaryModel.referenceDay})`);
 
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
