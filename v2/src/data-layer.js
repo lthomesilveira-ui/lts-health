@@ -55,11 +55,20 @@ const fixtureSourceMetrics=[{
   source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
 }];
 
+function appleMetricSource(row){return norm([row?.source,row?.source_file].filter(Boolean).join(' '));}
+function isAppleMetric(row){
+  const source=appleMetricSource(row);
+  return ['apple health','healthkit','activitysummary','activity summary','apple watch','apple_watch','iphone'].some(term=>source.includes(term));
+}
+function isAppleActivitySummary(row){
+  const source=appleMetricSource(row);
+  return source.includes('activitysummary')||source.includes('activity summary');
+}
+
 export function visibleRowsForDomain(key,rows=[]){
   if(key==='metrics')return rows.filter(row=>{
-    const source=norm(row?.source);
-    if(!source.includes('apple health'))return true;
-    return source.includes('activitysummary')&&stableAppleMetricTypes.has(row?.metric_type);
+    if(!isAppleMetric(row))return true;
+    return isAppleActivitySummary(row)&&stableAppleMetricTypes.has(row?.metric_type);
   });
   if(key==='nutrition')return rows.filter(row=>{
     const source=norm(row?.source);
