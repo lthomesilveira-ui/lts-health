@@ -137,7 +137,12 @@ for (const token of [
 
 if (/canônic|candidat/i.test(contentView)) throw new Error('technical canonical/candidate jargon must not be shown in the iOS activation UI');
 if (!project.includes('platform: iOS') || !project.includes('iOS: "17.0"')) throw new Error('iOS project target contract drifted');
-if (!readme.includes('teste precisa ser feito em iPhone físico')) throw new Error('device-only background-delivery limitation is not documented');
+for (const token of [
+  'A etapa final de conectividade precisa de um iPhone físico',
+  'autorização HealthKit',
+  'background delivery',
+  'TestFlight exige uma conta Apple Developer/App Store Connect configurada'
+]) if (!readme.includes(token)) throw new Error(`physical-device activation documentation missing: ${token}`);
 for (const token of [
   '-sdk iphonesimulator',
   '-sdk iphoneos',
