@@ -3,9 +3,10 @@ import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num} from './core.js';
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
-const metricLabels={sleep_duration_h:'Sono',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'FC de repouso',weight_kg:'Peso'};
-const domainMap={workouts:'Treinos',body:'Composição',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Sono e métricas',sourceMetrics:'Sono por fonte',treatments:'Tratamentos'};
+const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Na cama',sleep_awake_h:'Acordado',sleep_core_h:'Sono Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'FC de repouso',hrv_sdnn_ms:'HRV (SDNN)',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibra'};
+const domainMap={workouts:'Treinos',body:'Composição',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Sono e métricas',sourceMetrics:'Métricas por origem',treatments:'Tratamentos'};
 const preservedStatuses=new Set(['candidate','held']);
+const sourceMetricOrder=['sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','steps','resting_heart_rate_bpm','hrv_sdnn_ms','respiratory_rate_bpm','weight_kg','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g'];
 const yearOf=value=>String(value||'').slice(0,4);
 function unavailable(){return Object.entries(domainMap).filter(([key])=>failed(key)).map(([,label])=>label);}
 function bodyEventTitle(row){
@@ -20,9 +21,38 @@ function metricEventSub(row){
   if(value==null)return 'Registro disponível';
   return `${fmtNum(value,row.metric_type==='steps'?0:1)} ${row.unit||''}`.trim();
 }
-function sourceSleepEvent(row){
-  const value=num(row.value),detail=value==null?'Em validação':`${fmtNum(value,1)} ${row.unit||'h'} · Em validação`;
-  return {date:row.metric_date,domain:'Sono por fonte',title:'Registro de sono',sub:`${detail} · Não consolidado`,source:row.source_name||row.source_family||'Origem preservada'};
+function sourceMetricDomain(type){
+  type=String(type||'');
+  if(type.startsWith('sleep_'))return'Sono por fonte';
+  if(type.startsWith('dietary_'))return'Alimentação por fonte';
+  return'Métricas por fonte';
+}
+function sourceMetricTitle(domain){
+  if(domain==='Sono por fonte')return'Sono registrado por origem';
+  if(domain==='Alimentação por fonte')return'Alimentação registrada por origem';
+  return'Métricas registradas por origem';
+}
+function sourceMetricDetail(row){
+  const label=metricLabels[row.metric_type]||row.metric_type||'Métrica',value=num(row.value),decimals=row.metric_type==='steps'||row.metric_type==='dietary_energy_kcal'?0:1;
+  if(value==null)return`${label} disponível`;
+  return`${label} ${fmtNum(value,decimals)} ${row.unit||''}`.trim();
+}
+function sourceMetricEvents(rows=[]){
+  const groups=new Map();
+  for(const row of rows){
+    if(!preservedStatuses.has(norm(row.canonical_status))||!row.metric_date)continue;
+    const domain=sourceMetricDomain(row.metric_type),source=row.source_name||row.source_family||'Origem preservada',key=`${row.metric_date}__${source}__${domain}`;
+    if(!groups.has(key))groups.set(key,{date:row.metric_date,domain,title:sourceMetricTitle(domain),source,rows:[]});
+    groups.get(key).rows.push(row);
+  }
+  return[...groups.values()].map(group=>{
+    const ordered=[...group.rows].sort((a,b)=>{
+      const ai=sourceMetricOrder.indexOf(a.metric_type),bi=sourceMetricOrder.indexOf(b.metric_type),ar=ai<0?999:ai,br=bi<0?999:bi;
+      return ar-br||String(a.metric_type).localeCompare(String(b.metric_type));
+    });
+    const preview=ordered.slice(0,4).map(sourceMetricDetail),more=ordered.length>preview.length?` · + ${ordered.length-preview.length} métrica(s) preservada(s)`:'';
+    return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more} · Em validação · Não consolidado`,source:group.source};
+  });
 }
 
 function events(){
@@ -38,7 +68,7 @@ function events(){
   if(!failed('nutrition'))for(const n of state.data.nutrition||[])out.push({date:n.nutrition_date,domain:'Alimentação',title:n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:n.protein_g!=null?`${fmtNum(n.protein_g,0)} g proteína`:'' ,source:n.source||'',route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
   if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:a.source||''});}
   if(!failed('metrics'))for(const m of state.data.metrics||[]){const label=metricLabels[m.metric_type];if(!label)continue;const domain=m.metric_type==='sleep_duration_h'?'Sono':'Métricas';out.push({date:day(m.measured_at),domain,title:label,sub:metricEventSub(m),source:m.source||''});}
-  if(!failed('sourceMetrics'))for(const m of state.data.sourceMetrics||[]){if(m.metric_type!=='sleep_duration_h'||!preservedStatuses.has(norm(m.canonical_status)))continue;out.push(sourceSleepEvent(m));}
+  if(!failed('sourceMetrics'))out.push(...sourceMetricEvents(state.data.sourceMetrics||[]));
   if(!failed('treatments'))for(const t of state.data.treatments||[])out.push({date:t.event_date,domain:'Tratamentos',title:t.medication||'Tratamento registrado',source:t.source||'',route:'tratamentos',kind:'treatment',ref:t.source_record_id||''});
   return out.filter(e=>e.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(a.domain).localeCompare(String(b.domain),'pt-BR'));
 }
