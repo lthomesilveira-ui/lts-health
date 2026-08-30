@@ -5,8 +5,16 @@ on:
     branches: [architecture-v2]
     paths:
       - '.github/workflows/ios-healthkit-sign.yml'
+      - '.github/workflows/ios-healthkit-build.yml'
       - '.github/workflows/ios-signing-contract.yml'
-      - 'ios/LTSHealthSync/signing-contract-smoke.mjs'
+      - 'ios/LTSHealthSync/**'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - '.github/workflows/ios-healthkit-sign.yml'
+      - '.github/workflows/ios-healthkit-build.yml'
+      - '.github/workflows/ios-signing-contract.yml'
+      - 'ios/LTSHealthSync/**'
   workflow_dispatch:
 
 permissions:
@@ -20,5 +28,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate manual signing pipeline
-        run: node ios/LTSHealthSync/signing-contract-smoke.mjs
+      - name: Validate HealthKit and manual signing pipeline
+        run: |
+          node --check ios/LTSHealthSync/healthkit-contract-smoke.mjs
+          node --check ios/LTSHealthSync/signing-contract-smoke.mjs
+          node ios/LTSHealthSync/healthkit-contract-smoke.mjs
+          node ios/LTSHealthSync/signing-contract-smoke.mjs
