@@ -3,45 +3,67 @@ import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num} from './core.js';
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
-const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Na cama',sleep_awake_h:'Acordado',sleep_core_h:'Sono Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'FC de repouso',hrv_sdnn_ms:'HRV (SDNN)',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibra'};
-const domainMap={workouts:'Treinos',body:'Composição',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Sono e métricas',sourceMetrics:'Métricas por origem',treatments:'Tratamentos'};
+const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Tempo na cama',sleep_awake_h:'Tempo acordado',sleep_core_h:'Sono leve/Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio informado',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Calorias',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibras'};
+const domainMap={workouts:'Treinos',body:'Composição corporal',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Métricas confirmadas',sourceMetrics:'Registros aguardando conferência',treatments:'Tratamentos'};
 const preservedStatuses=new Set(['candidate','held']);
 const sourceMetricOrder=['sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','steps','resting_heart_rate_bpm','hrv_sdnn_ms','respiratory_rate_bpm','weight_kg','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g'];
 const yearOf=value=>String(value||'').slice(0,4);
 function unavailable(){return Object.entries(domainMap).filter(([key])=>failed(key)).map(([,label])=>label);}
+function sourceDisplay(source='',family=''){
+  const text=norm(`${source} ${family}`);
+  if(text.includes('myfitnesspal'))return text.includes('apple')?'MyFitnessPal (via Apple Saúde)':'MyFitnessPal';
+  if(text.includes('polar'))return'Polar Flow';
+  if(text.includes('apple watch')||text.includes('apple_watch'))return'Apple Watch';
+  if(text.includes('iphone'))return'iPhone';
+  if(text.includes('activitysummary')||text.includes('apple_activity_summary'))return'Apple Saúde';
+  if(text.includes('inbody'))return'InBody';
+  if(text.includes('workout log')||text.includes('user-reported'))return'Registro de treino';
+  if(text.includes('claude migration')||text.includes('lab report'))return'Exame importado';
+  if(text==='projeto'||text==='conversa'||text.includes('chatgpt'))return'Histórico LTS Health';
+  return String(source||family||'Origem registrada');
+}
 function bodyEventTitle(row){
   const parts=[];
   if(num(row.weight_kg)!=null)parts.push(`Peso ${fmtNum(row.weight_kg)} kg`);
-  if(num(row.skeletal_muscle_mass_kg)!=null)parts.push(`MME ${fmtNum(row.skeletal_muscle_mass_kg)} kg`);
+  if(num(row.skeletal_muscle_mass_kg)!=null)parts.push(`Massa muscular ${fmtNum(row.skeletal_muscle_mass_kg)} kg`);
   return parts.join(' · ')||'Composição corporal registrada';
 }
-function bodyEventSub(row){return num(row.body_fat_pct)!=null?`Gordura registrada ${fmtNum(row.body_fat_pct)}%`:'';}
-function metricEventSub(row){
-  const value=num(row.value);
-  if(value==null)return 'Registro disponível';
-  return `${fmtNum(value,row.metric_type==='steps'?0:1)} ${row.unit||''}`.trim();
+function bodyEventSub(row){return num(row.body_fat_pct)!=null?`Gordura corporal ${fmtNum(row.body_fat_pct)}%`:'';}
+function metricValueText(row){
+  const value=num(row.value),type=String(row.metric_type||'');
+  if(value==null)return'Registro disponível';
+  if(type==='steps')return`${fmtNum(value,0)} passos`;
+  if(type==='resting_heart_rate_bpm')return`${fmtNum(value,0)} bpm`;
+  if(type==='hrv_sdnn_ms')return`${fmtNum(value,0)} ms`;
+  if(type==='respiratory_rate_bpm')return`${fmtNum(value,1)} resp./min`;
+  if(type.startsWith('sleep_'))return`${fmtNum(value,1)} h`;
+  if(type==='weight_kg')return`${fmtNum(value,1)} kg`;
+  if(type==='dietary_energy_kcal'||type==='active_energy_kcal')return`${fmtNum(value,0)} kcal`;
+  if(type==='exercise_minutes')return`${fmtNum(value,0)} min`;
+  if(type==='stand_hours')return`${fmtNum(value,1)} h`;
+  if(type.startsWith('dietary_'))return`${fmtNum(value,1)} g`;
+  return row.unit?`${fmtNum(value,1)} ${row.unit}`:fmtNum(value,1);
 }
 function sourceMetricDomain(type){
   type=String(type||'');
-  if(type.startsWith('sleep_'))return'Sono por fonte';
-  if(type.startsWith('dietary_'))return'Alimentação por fonte';
-  return'Métricas por fonte';
+  if(type.startsWith('sleep_'))return'Sono em conferência';
+  if(type.startsWith('dietary_'))return'Alimentação em conferência';
+  return'Métricas em conferência';
 }
 function sourceMetricTitle(domain){
-  if(domain==='Sono por fonte')return'Sono registrado por origem';
-  if(domain==='Alimentação por fonte')return'Alimentação registrada por origem';
-  return'Métricas registradas por origem';
+  if(domain==='Sono em conferência')return'Sono registrado';
+  if(domain==='Alimentação em conferência')return'Alimentação registrada';
+  return'Métrica registrada';
 }
 function sourceMetricDetail(row){
-  const label=metricLabels[row.metric_type]||row.metric_type||'Métrica',value=num(row.value),decimals=row.metric_type==='steps'||row.metric_type==='dietary_energy_kcal'?0:1;
-  if(value==null)return`${label} disponível`;
-  return`${label} ${fmtNum(value,decimals)} ${row.unit||''}`.trim();
+  const label=metricLabels[row.metric_type]||'Métrica registrada';
+  return`${label} ${metricValueText(row)}`;
 }
 function sourceMetricEvents(rows=[]){
   const groups=new Map();
   for(const row of rows){
     if(!preservedStatuses.has(norm(row.canonical_status))||!row.metric_date)continue;
-    const domain=sourceMetricDomain(row.metric_type),source=row.source_name||row.source_family||'Origem preservada',key=`${row.metric_date}__${source}__${domain}`;
+    const domain=sourceMetricDomain(row.metric_type),rawSource=row.source_name||row.source_family||'Origem registrada',source=sourceDisplay(row.source_name,row.source_family),key=`${row.metric_date}__${rawSource}__${domain}`;
     if(!groups.has(key))groups.set(key,{date:row.metric_date,domain,title:sourceMetricTitle(domain),source,rows:[]});
     groups.get(key).rows.push(row);
   }
@@ -50,26 +72,26 @@ function sourceMetricEvents(rows=[]){
       const ai=sourceMetricOrder.indexOf(a.metric_type),bi=sourceMetricOrder.indexOf(b.metric_type),ar=ai<0?999:ai,br=bi<0?999:bi;
       return ar-br||String(a.metric_type).localeCompare(String(b.metric_type));
     });
-    const preview=ordered.slice(0,4).map(sourceMetricDetail),more=ordered.length>preview.length?` · + ${ordered.length-preview.length} métrica(s) preservada(s)`:'';
-    return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more} · Em validação · Não consolidado`,source:group.source};
+    const preview=ordered.slice(0,4).map(sourceMetricDetail),more=ordered.length>preview.length?` · + ${ordered.length-preview.length} outro(s) registro(s)`:'';
+    return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more} · aguardando conferência; mantido separado dos dados confirmados`,source:group.source};
   });
 }
 
 function events(){
   const out=[];
-  if(!failed('workouts'))for(const w of state.data.workouts||[])out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:w.source||'',route:'treinos',kind:'workout',ref:w.source_record_id});
-  if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição',title:bodyEventTitle(b),sub:bodyEventSub(b),source:b.source||'',route:'bio',kind:'body',ref:b.measured_at});
+  if(!failed('workouts'))for(const w of state.data.workouts||[])out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:sourceDisplay(w.source),route:'treinos',kind:'workout',ref:w.source_record_id});
+  if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição corporal',title:bodyEventTitle(b),sub:bodyEventSub(b),source:sourceDisplay(b.source),route:'bio',kind:'body',ref:b.measured_at});
   if(!failed('labs')){
     const collections=new Map();
     for(const row of state.data.labs||[]){const lab=row.laboratory||'',key=`${row.collection_date||''}__${lab}`;if(!collections.has(key))collections.set(key,{date:row.collection_date,lab,rows:[]});collections.get(key).rows.push(row);}
-    for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta laboratorial',sub:`${c.rows.length} resultado(s)`,source:c.lab||unique(c.rows.map(r=>r.source)).join(', '),route:'saude',kind:'labs',ref:key});
+    for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:`${c.rows.length} resultado(s)`,source:c.lab||sourceDisplay(unique(c.rows.map(r=>r.source)).join(', ')),route:'saude',kind:'labs',ref:key});
   }
-  if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:d.source||'',route:'saude',kind:'document',ref:d.source_record_id||''});
-  if(!failed('nutrition'))for(const n of state.data.nutrition||[])out.push({date:n.nutrition_date,domain:'Alimentação',title:n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:n.protein_g!=null?`${fmtNum(n.protein_g,0)} g proteína`:'' ,source:n.source||'',route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
-  if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:a.source||''});}
-  if(!failed('metrics'))for(const m of state.data.metrics||[]){const label=metricLabels[m.metric_type];if(!label)continue;const domain=m.metric_type==='sleep_duration_h'?'Sono':'Métricas';out.push({date:day(m.measured_at),domain,title:label,sub:metricEventSub(m),source:m.source||''});}
+  if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
+  if(!failed('nutrition'))for(const n of state.data.nutrition||[])out.push({date:n.nutrition_date,domain:'Alimentação',title:n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'' ,source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
+  if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:sourceDisplay(a.source)});}
+  if(!failed('metrics'))for(const m of state.data.metrics||[]){const label=metricLabels[m.metric_type];if(!label)continue;const domain=m.metric_type==='sleep_duration_h'?'Sono':'Métricas confirmadas';out.push({date:day(m.measured_at),domain,title:label,sub:metricValueText(m),source:sourceDisplay(m.source)});}
   if(!failed('sourceMetrics'))out.push(...sourceMetricEvents(state.data.sourceMetrics||[]));
-  if(!failed('treatments'))for(const t of state.data.treatments||[])out.push({date:t.event_date,domain:'Tratamentos',title:t.medication||'Tratamento registrado',source:t.source||'',route:'tratamentos',kind:'treatment',ref:t.source_record_id||''});
+  if(!failed('treatments'))for(const t of state.data.treatments||[])out.push({date:t.event_date,domain:'Tratamentos',title:t.medication||'Tratamento registrado',source:sourceDisplay(t.source),route:'tratamentos',kind:'treatment',ref:t.source_record_id||''});
   return out.filter(e=>e.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(a.domain).localeCompare(String(b.domain),'pt-BR'));
 }
 
@@ -96,7 +118,7 @@ function crossDomainCard(entry){
 function domainSummary(rows,missing){
   const counts=new Map();for(const row of rows)counts.set(row.domain,(counts.get(row.domain)||0)+1);
   const cards=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'pt-BR')).map(([domain,count])=>`<div class="timelineStat"><b>${count}</b><span>${esc(domain)}</span></div>`).join('');
-  return `<div class="timelineStats">${cards||'<div class="timelineStat muted"><b>—</b><span>Sem registros carregados</span></div>'}${missing.length?'<div class="timelineStat muted"><b>—</b><span>Resumo parcial</span></div>':''}</div>`;
+  return `<div class="timelineStats">${cards||'<div class="timelineStat muted"><b>—</b><span>Nenhum registro carregado neste período</span></div>'}${missing.length?'<div class="timelineStat muted"><b>—</b><span>Resumo parcial</span></div>':''}</div>`;
 }
 
 export function renderTimelineHub(){
@@ -107,7 +129,7 @@ export function renderTimelineHub(){
   const matching=periodRows.filter(e=>(domain==='all'||e.domain===domain)&&(!q||norm(`${e.domain} ${e.title} ${e.sub} ${e.source}`).includes(q)));
   const filtered=matching.slice(0,limit),grouped=new Map();for(const e of filtered){if(!grouped.has(e.date))grouped.set(e.date,[]);grouped.get(e.date).push(e);}
   const contextDays=crossDomainDays(periodRows).slice(0,6);
-  return `${title('Timeline','Seu histórico em ordem de data. Atividade geral e treinos continuam separados para evitar dupla contagem.')}
+  return `${title('Timeline','Seu histórico em ordem de data. Registros que ainda precisam de conferência aparecem como existentes, mas ficam separados dos dados já confirmados.')}
     ${missing.length?`<div class="errorState"><b>Parte da Timeline está indisponível agora.</b><span>Não foi possível carregar: ${esc(missing.join(', '))}. Os registros das outras áreas continuam visíveis; atualize para tentar completar a Timeline.</span></div>`:''}
     ${domainSummary(periodRows,missing)}
     <section class="timelineContext sectionGap"><div class="sectionHeading"><div><h2>Visão cruzada por dia</h2><p>Dias em que existem registros de duas ou mais áreas. Toque em um registro para abrir o detalhe. A proximidade na data ajuda a consultar o contexto, mas não demonstra causa entre os registros.</p></div></div>${contextDays.length?`<div class="timelineContextGrid">${contextDays.map(crossDomainCard).join('')}</div>`:empty(missing.length?'Não há dias cruzados entre as áreas que foram carregadas.':'Ainda não há dias com registros em mais de uma área neste período.')}</section>
