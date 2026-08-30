@@ -35,7 +35,7 @@ function bodyChange(data,status){
 function workoutRhythm(data,status,ref){
   if(!loaded(status,'workouts'))return{kind:'unavailable',title:'Treinos indisponíveis',summary:'O histórico de treinos não carregou nesta atualização.',route:'treinos',priority:94};
   const rows=data.workouts||[];
-  if(!rows.length)return{kind:'coverage',title:'Sem treino estruturado',summary:'Ainda não há sessões canônicas suficientes para analisar ritmo de treino.',route:'treinos',priority:50};
+  if(!rows.length)return{kind:'coverage',title:'Sem treino estruturado',summary:'Ainda não há sessões confirmadas suficientes para analisar ritmo de treino.',route:'treinos',priority:50};
   const recentStart=addDays(ref,-27),previousEnd=addDays(recentStart,-1),previousStart=addDays(previousEnd,-27);
   const recent=rows.filter(r=>inRange(r.workout_date,recentStart,ref)).length;
   const previous=rows.filter(r=>inRange(r.workout_date,previousStart,previousEnd)).length;
@@ -94,7 +94,7 @@ function metricCoverage(data,status,ref){
   if(!loaded(status,'metrics'))return{kind:'unavailable',title:'Atividade indisponível',summary:'As métricas de atividade não carregaram nesta atualização.',route:'timeline',priority:92};
   const start=addDays(ref,-13),rows=canonicalActivityRows(data.metrics).filter(m=>inRange(m.measured_at,start,ref));
   const activity=uniqueDays(rows,'measured_at').length;
-  return{kind:activity>=7?'cross':'coverage',title:'Cobertura recente de atividade',summary:`Nos 14 dias mais recentes com dados, há atividade canônica em ${activity} dia(s). Sono permanece fora desta leitura até a política de sobreposição entre fontes ser validada.`,route:'timeline',priority:74};
+  return{kind:activity>=7?'cross':'coverage',title:'Cobertura recente de atividade',summary:`Nos 14 dias mais recentes com dados, há atividade confirmada em ${activity} dia(s). Sono permanece fora desta leitura até a política de sobreposição entre fontes ser validada.`,route:'timeline',priority:74};
 }
 
 function pendingData(data){
@@ -102,7 +102,7 @@ function pendingData(data){
   const candidates=(data.sourceMetrics||[]).filter(r=>['candidate','held'].includes(String(r.canonical_status||'').toLowerCase()));
   if(!uploads.length&&!candidates.length)return null;
   const parts=[];if(uploads.length)parts.push(`${uploads.length} arquivo(s) ainda em processamento ou revisão`);if(candidates.length)parts.push(`${candidates.length} registro(s) por origem ainda não consolidados`);
-  return{kind:'coverage',title:'Há dados recebidos ainda fora da visão principal',summary:`${parts.join(' · ')}. Eles não entram nos insights até serem confirmados.`,route:'dados',priority:90};
+  return{kind:'coverage',title:'Há dados recebidos ainda fora da visão principal',summary:`${parts.join(' · ')}. Eles não entram nas análises até serem confirmados.`,route:'dados',priority:90};
 }
 
 function coverageRows(data,status,ref){
@@ -112,7 +112,7 @@ function coverageRows(data,status,ref){
     {key:'body',label:'Composição',route:'evolucao',state:body==null?'unavailable':body.length>=2?'strong':body.length?'partial':'limited',detail:body==null?'indisponível':`${body.length} medição(ões) no histórico`},
     {key:'workouts',label:'Treinos',route:'treinos',state:workouts==null?'unavailable':workouts.filter(w=>inRange(w.workout_date,start56,ref)).length>=4?'strong':workouts.length?'partial':'limited',detail:workouts==null?'indisponível':`${workouts.filter(w=>inRange(w.workout_date,start56,ref)).length} sessão(ões) nas últimas 8 semanas`},
     {key:'nutrition',label:'Alimentação',route:'nutricao',state:nutrition==null?'unavailable':uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length>=14?'strong':nutrition.length?'partial':'limited',detail:nutrition==null?'indisponível':`${uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length} dia(s) nos últimos 28 dias`},
-    {key:'metrics',label:'Atividade',route:'timeline',state:metrics==null?'unavailable':uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length>=14?'strong':metrics.length?'partial':'limited',detail:metrics==null?'indisponível':`${uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length} dia(s) com atividade canônica nos últimos 28 dias`},
+    {key:'metrics',label:'Atividade',route:'timeline',state:metrics==null?'unavailable':uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length>=14?'strong':metrics.length?'partial':'limited',detail:metrics==null?'indisponível':`${uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length} dia(s) com atividade confirmada nos últimos 28 dias`},
     {key:'labs',label:'Exames',route:'saude',state:labs==null?'unavailable':uniqueDays(labs,'collection_date').length>=2?'strong':labs.length?'partial':'limited',detail:labs==null?'indisponíveis':`${uniqueDays(labs,'collection_date').length} data(s) de coleta estruturada(s)`}
   ];
 }
@@ -120,9 +120,9 @@ function coverageRows(data,status,ref){
 function headline(model){
   const strong=model.coverage.filter(c=>c.state==='strong').length,limited=model.coverage.filter(c=>c.state==='limited'||c.state==='unavailable').length;
   const changeCount=model.changes.filter(i=>i.kind==='change').length;
-  if(changeCount>=2&&strong>=3)return{eyebrow:'LTS Health Intelligence',title:'Seu histórico já mostra mudanças que merecem contexto, não apenas gráficos.',subtitle:`Há ${changeCount} mudanças recentes com evidência estruturada e ${strong} domínios com cobertura forte.`};
-  if(strong>=3)return{eyebrow:'LTS Health Intelligence',title:'Há base suficiente para uma leitura integrada do seu histórico.',subtitle:`${strong} domínios têm cobertura forte; ${limited?`${limited} ainda limitam algumas conclusões.`:'as principais fontes estão comparáveis.'}`};
-  return{eyebrow:'LTS Health Intelligence',title:'O histórico está sendo consolidado, mas algumas conclusões ainda seriam prematuras.',subtitle:'O dashboard mostra o que já é comparável e deixa explícito onde faltam dados.'};
+  if(changeCount>=2&&strong>=3)return{eyebrow:'LTS Health',title:'Seu histórico já mostra mudanças que merecem contexto, não apenas gráficos.',subtitle:`Há ${changeCount} mudanças recentes com evidência estruturada e ${strong} áreas com cobertura forte.`};
+  if(strong>=3)return{eyebrow:'LTS Health',title:'Há base suficiente para uma leitura integrada do seu histórico.',subtitle:`${strong} áreas têm cobertura forte; ${limited?`${limited} ainda limitam algumas conclusões.`:'as principais fontes estão comparáveis.'}`};
+  return{eyebrow:'LTS Health',title:'O histórico está sendo consolidado, mas algumas conclusões ainda seriam prematuras.',subtitle:'A tela mostra o que já é comparável e deixa explícito onde faltam dados.'};
 }
 
 export function buildHealthIntelligence(data={},domainStatus={},now=new Date()){
