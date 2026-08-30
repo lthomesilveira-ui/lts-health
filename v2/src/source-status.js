@@ -18,10 +18,10 @@ function latestUploadFor(source){
 }
 
 function sourceEvidence(source){
-  const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
+  const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[];
   if(source==='apple_health')return{dataFound:metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&contains([m],['source','source_file'],'apple')),domainKeys:['metrics']};
-  if(source==='polar_flow')return{dataFound:contains(workouts,['source','source_file'],'polar')||sourceMetrics.some(m=>norm(m.source_family)==='polar_flow'),domainKeys:['workouts','sourceMetrics']};
-  if(source==='myfitnesspal')return{dataFound:contains(nutrition,['source','source_file'],'myfitnesspal')||contains(meals,['source','source_file'],'myfitnesspal')||sourceMetrics.some(m=>norm(m.source_family)==='myfitnesspal'),domainKeys:['nutrition','meals','sourceMetrics']};
+  if(source==='polar_flow')return{dataFound:contains(workouts,['source','source_file'],'polar'),domainKeys:['workouts']};
+  if(source==='myfitnesspal')return{dataFound:contains(nutrition,['source','source_file'],'myfitnesspal')||contains(meals,['source','source_file'],'myfitnesspal'),domainKeys:['nutrition','meals']};
   if(source==='fleury')return{dataFound:contains(labs,['laboratory','source','source_file'],'fleury'),domainKeys:['labs']};
   if(source==='einstein')return{dataFound:contains(labs,['laboratory','source','source_file'],'einstein'),domainKeys:['labs']};
   return{dataFound:false,domainKeys:[]};
