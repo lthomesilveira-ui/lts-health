@@ -12,10 +12,12 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Sono','Passos','FC de repouso','61,0 bpm','Visão cruzada por dia']){
+  for(const expected of ['Sono','Passos','FC de repouso','61,0 bpm','Visão cruzada por dia','Tratamento registrado']){
     if(!text.includes(expected))throw new Error(`${label}: Timeline missing ${expected}`);
   }
   if(!text.includes('não demonstra causa'))throw new Error(`${label}: causal guardrail missing`);
+  if(text.includes('Confirmação registrada'))throw new Error(`${label}: treatment operational state leaked into Timeline`);
+  if(/\btaken\b/i.test(text))throw new Error(`${label}: treatment event_type leaked into Timeline`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
@@ -32,6 +34,7 @@ async function run(viewport,label){
   if(!text.includes('Composição corporal registrada'))throw new Error(`${label}: missing body fields were not rendered neutrally`);
   if(!text.includes('Registro disponível'))throw new Error(`${label}: missing metric value was not rendered neutrally`);
   if(text.includes('Peso — kg')||text.includes('MME — kg'))throw new Error(`${label}: missing body values leaked as pseudo-measurements`);
+  if(text.includes('Confirmação registrada')||/\btaken\b/i.test(text))throw new Error(`${label}: treatment operational context reappeared after rerender`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
