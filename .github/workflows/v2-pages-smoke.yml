@@ -47,8 +47,9 @@ jobs:
           ! grep -q "health-inspect-lab" "$TMP/core.js"
           grep -q 'resting_heart_rate_bpm' "$TMP/today.js"
           grep -q 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
-          grep -q 'Passos, FC de repouso, HRV, frequência respiratória e peso podem chegar como candidatos' "$TMP/data.js"
-          grep -q 'Sono permanece fora da sincronização automática' "$TMP/data.js"
+          grep -q 'Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos' "$TMP/data.js"
+          grep -q 'intervalos sobrepostos da mesma origem são unidos antes do total diário' "$TMP/data.js"
+          grep -q 'fontes diferentes permanecem separadas' "$TMP/data.js"
           grep -q 'Arquivo preservado + revisão' "$TMP/data.js"
       - name: Install deployed-browser runtime
         run: |
