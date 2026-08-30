@@ -55,7 +55,7 @@ for (const token of [
 ]) if (!health.includes(token)) throw new Error(`HealthKit sync contract missing: ${token}`);
 
 if (health.includes('HKObjectQueryNoLimit')) throw new Error('HealthKit anchor query must not materialize unbounded history');
-for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g']) {
+for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g']) {
   const canonicalPayloadPattern = new RegExp(`metric_type:\\s*"${metric}"`);
   if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the canonical ActivitySummary client`);
 }
@@ -83,11 +83,25 @@ for (const token of [
   'options: [.cumulativeSum, .separateBySource]',
   'HKObjectType.categoryType(forIdentifier: .sleepAnalysis)',
   'HKSampleQuery(',
+  'private struct SleepStageBucketKey',
+  'HKCategoryValueSleepAnalysis.inBed.rawValue',
+  'HKCategoryValueSleepAnalysis.awake.rawValue',
   'HKCategoryValueSleepAnalysis.asleepCore.rawValue',
   'HKCategoryValueSleepAnalysis.asleepDeep.rawValue',
   'HKCategoryValueSleepAnalysis.asleepREM.rawValue',
   'HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue',
   'metric_type: "sleep_duration_h"',
+  'return "sleep_in_bed_h"',
+  'return "sleep_awake_h"',
+  'return "sleep_core_h"',
+  'return "sleep_deep_h"',
+  'return "sleep_rem_h"',
+  'return "sleep_asleep_unspecified_h"',
+  'private func sleepMetricType(for value: Int) -> String?',
+  'var totalBuckets: [SleepBucketKey: [DateInterval]] = [:]',
+  'var stageBuckets: [SleepStageBucketKey: [DateInterval]] = [:]',
+  'let includeInTotalAsleep = asleepValues.contains(sample.value)',
+  'metric_type: key.metricType',
   'private func mergedDuration(',
   'interval.start <= current.end',
   'source_name: key.sourceName',
@@ -98,12 +112,12 @@ for (const token of [
   'return "apple_watch"',
   'return "iphone"',
   'return "healthkit_candidate"',
-  'ios-healthkit-candidates-v3',
+  'ios-healthkit-candidates-v4',
   'frequency: .hourly'
 ]) if (!candidates.includes(token)) throw new Error(`Candidate HealthKit contract missing: ${token}`);
 
 if (candidates.includes('apple_activity_summary')) throw new Error('Candidate coordinator must never emit the canonical ActivitySummary family');
-if (candidates.includes('oxygen_saturation_pct')) throw new Error('Oxygen saturation remains outside candidate v3 until dedicated validation');
+if (candidates.includes('oxygen_saturation_pct')) throw new Error('Oxygen saturation remains outside candidate v4 until dedicated validation');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)')) throw new Error('active energy observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleExerciseTime)')) throw new Error('exercise-time observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleStandTime)')) throw new Error('stand-time observer trigger missing');
@@ -132,6 +146,7 @@ for (const token of [
   'Sincronizar agora',
   'MyFitnessPal compartilha alimentação com o Apple Saúde',
   'Sono compatível também fica preservado por origem',
+  'por estágio quando o Apple Saúde fornece essa informação',
   'fontes diferentes não são somadas entre si automaticamente'
 ]) if (!contentView.includes(token)) throw new Error(`iOS activation UI missing: ${token}`);
 
