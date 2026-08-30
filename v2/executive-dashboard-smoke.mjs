@@ -1,12 +1,14 @@
 import {chromium} from 'playwright';
 
+const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/?fixture=1';
+
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
-  await page.goto('http://127.0.0.1:4173/?fixture=1',{waitUntil:'domcontentloaded'});
+  await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('[data-executive-dashboard]');
 
   const boundary=await page.evaluate(async()=>{
