@@ -17,10 +17,26 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.nutrition.push({source_record_id:'nut-2024',nutrition_date:'2024-06-10',calories_kcal:2050,protein_g:140,source:'Teste'});
     state.data.meals.push({source_record_id:'meal-2024',meal_date:'2024-06-10',meal_name:'Almoço 2024',calories_kcal:600,protein_g:40,source:'Teste'});
+    state.data.sourceMetrics.push(
+      {source_record_id:'mfp-energy',metric_date:'2026-02-02',metric_type:'dietary_energy_kcal',value:1999,unit:'kcal',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-protein',metric_date:'2026-02-02',metric_type:'dietary_protein_g',value:151.5,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-carbs',metric_date:'2026-02-02',metric_type:'dietary_carbs_g',value:201,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-fat',metric_date:'2026-02-02',metric_type:'dietary_fat_g',value:66,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-fiber',metric_date:'2026-02-02',metric_type:'dietary_fiber_g',value:29,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'}
+    );
   });
 
   await page.selectOption('#nutritionPeriod','all');
   await page.waitForSelector('#nutritionYear');
+
+  const candidate=(await page.locator('.mfpCandidatePanel').textContent())||'';
+  if(!candidate.includes('MyFitnessPal via Apple Saúde')||!candidate.includes('em validação'))throw new Error(`${label}: MyFitnessPal Apple daily totals are not visibly held for validation`);
+  if(!candidate.includes('1.999 kcal')||!candidate.includes('152g P')||!candidate.includes('201g C')||!candidate.includes('66g G')||!candidate.includes('29g Fibra'))throw new Error(`${label}: preserved MyFitnessPal daily candidate values are not rendered as received`);
+  if(!candidate.includes('não criam alimentos, refeições ou horários'))throw new Error(`${label}: MyFitnessPal candidate granularity boundary is not explicit`);
+  const calorieAverage=(await page.locator('.metric').filter({hasText:'Calorias · média'}).textContent())||'';
+  if(!calorieAverage.includes('2.150'))throw new Error(`${label}: candidate MyFitnessPal energy contaminated canonical nutrition averages (${calorieAverage})`);
+  if(calorieAverage.includes('2.100')||calorieAverage.includes('1.999'))throw new Error(`${label}: candidate or single-day value replaced the canonical nutrition average`);
+
   const coverage=(await page.textContent('.yearGrid'))||'';
   if(!coverage.includes('2026')||!coverage.includes('2025')||!coverage.includes('2024'))throw new Error(`${label}: contiguous nutrition year coverage is incomplete`);
   const gap=(await page.locator('.yearGap').filter({hasText:'2025'}).textContent())||'';
@@ -36,6 +52,12 @@ async function run(viewport,label){
   await page.click('[data-nutrition-date="2024-06-10"]');
   const detail=(await page.textContent('#screenHost'))||'';
   if(!detail.includes('10/06/2024')||!detail.includes('Almoço 2024'))throw new Error(`${label}: historical nutrition day drilldown failed`);
+
+  await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';});
+  await page.selectOption('#nutritionPeriod','365');
+  const candidateFailure=(await page.locator('.mfpCandidatePanel').textContent())||'';
+  if(!candidateFailure.includes('Não foi possível verificar estes totais agora'))throw new Error(`${label}: candidate-source failure state is not explicit`);
+  if(!candidateFailure.includes('nenhum valor ausente é tratado como zero'))throw new Error(`${label}: candidate-source failure can be mistaken for a numeric zero`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: nutrition history caused horizontal overflow ${overflow}px`);
