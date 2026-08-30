@@ -4,6 +4,7 @@ on:
     branches: [architecture-v2]
     paths:
       - 'supabase/functions/health-inspect-upload/**'
+      - 'supabase/functions/health-inspect-lab/**'
       - 'supabase/functions/_shared/lab-result-contract.mjs'
       - 'v2/lab-parser-safety-smoke.mjs'
       - '.github/workflows/lab-parser-safety.yml'
@@ -11,6 +12,7 @@ on:
     branches: [architecture-v2]
     paths:
       - 'supabase/functions/health-inspect-upload/**'
+      - 'supabase/functions/health-inspect-lab/**'
       - 'supabase/functions/_shared/lab-result-contract.mjs'
       - 'v2/lab-parser-safety-smoke.mjs'
       - '.github/workflows/lab-parser-safety.yml'
@@ -33,3 +35,4 @@ jobs:
           node --check v2/lab-parser-safety-smoke.mjs
           node v2/lab-parser-safety-smoke.mjs
           deno check supabase/functions/health-inspect-upload/index.ts
+          deno check supabase/functions/health-inspect-lab/index.ts

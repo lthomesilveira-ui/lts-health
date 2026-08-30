@@ -34,10 +34,18 @@ if(!separatorGuard)throw new Error('future parser can normalize without declarin
 
 const entries=await readdir('supabase/functions',{withFileTypes:true});
 const specialized=entries.filter(entry=>entry.isDirectory()&&/^health-inspect-(lab|fleury|einstein)$/i.test(entry.name));
+const labQuarantine=specialized.find(entry=>entry.name==='health-inspect-lab');
+if(!labQuarantine)throw new Error('health-inspect-lab quarantine endpoint must be source-controlled');
 for(const entry of specialized){
   const source=await readFile(join('supabase/functions',entry.name,'index.ts'),'utf8');
-  if(!source.includes('_shared/lab-result-contract.mjs')||!source.includes('strictLabNumeric'))throw new Error(`${entry.name} must use the shared strict laboratory normalization contract`);
-  if(/replace\s*\(\s*\/\[\^0-9/i.test(source))throw new Error(`${entry.name} contains permissive numeric stripping`);
+  if(entry.name!=='health-inspect-lab')throw new Error(`${entry.name} specialized parser enabled before validated raw sample`);
+  for(const token of ['/functions/v1/health-inspect-upload','X-LTS-Lab-Parser-Mode','quarantine','missing_authorization','upload_id_required']){
+    if(!source.includes(token))throw new Error(`health-inspect-lab quarantine contract missing: ${token}`);
+  }
+  for(const forbidden of ['health_lab_results','strictLabNumeric','strictNum(','.upsert(',"storage.from('"]){
+    if(source.includes(forbidden))throw new Error(`health-inspect-lab quarantine can parse or write laboratory data: ${forbidden}`);
+  }
+  if(/replace\s*\(\s*\/\[\^0-9/i.test(source))throw new Error('health-inspect-lab quarantine contains permissive numeric stripping');
 }
 
-console.log(`LTS Health laboratory parser safety contract passed (${specialized.length} specialized parser(s) present)`);
+console.log(`LTS Health laboratory parser safety contract passed (${specialized.length} quarantined specialized endpoint(s))`);
