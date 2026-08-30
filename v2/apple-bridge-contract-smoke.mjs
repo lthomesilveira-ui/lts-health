@@ -6,6 +6,8 @@ const statusMigration=await readFile('supabase/migrations/20260829202400_preserv
 const reviewedMigration=await readFile('supabase/migrations/20260829202600_preserve_reviewed_source_metric_status.sql','utf8');
 const atomicMigration=await readFile('supabase/migrations/20260829203200_atomic_apple_activity_promotion.sql','utf8');
 const backup=await readFile('v2/src/data-layer.js','utf8');
+const audit=await readFile('v2/DATA_AUDIT.md','utf8');
+const parity=await readFile('v2/PARITY_MATRIX.md','utf8');
 
 for(const token of [
   "const canonicalActivity=new Set(['active_energy_kcal','exercise_minutes','stand_hours'])",
@@ -89,4 +91,13 @@ for(const token of [
 ])if(!atomicMigration.toLowerCase().includes(token.toLowerCase()))throw new Error(`atomic Apple promotion contract missing: ${token}`);
 if(backup.includes("source_file,source_payload','metric_date'"))throw new Error('raw source payload must not be exported in structured backup');
 if(!backup.includes("source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file','metric_date'"))throw new Error('structured source metric backup projection drifted');
+
+for(const [name,doc] of [['DATA_AUDIT',audit],['PARITY_MATRIX',parity]]){
+  if(!doc.includes('energia ativa')||!doc.includes('minutos de exercício')||!doc.includes('horas em pé'))throw new Error(`${name} no longer names the three automatic ActivitySummary metrics`);
+  if(!/sono[\s\S]{0,180}fora[\s\S]{0,180}(sincroniza|prontid|canôn)/i.test(doc)&&!/sono[\s\S]{0,180}não[^\n]{0,120}promov/i.test(doc))throw new Error(`${name} must state that sleep is outside automatic canonical readiness`);
+  if(/energia ativa[^\n]{0,120}minutos de exercício[^\n]{0,120}horas em pé[^\n]{0,120}(e|,) duração do sono/i.test(doc))throw new Error(`${name} still claims sleep in the automatic metric set`);
+}
+if(!audit.includes('MyFitnessPal recebidos via Apple Saúde permanecem candidatos'))throw new Error('DATA_AUDIT must preserve MyFitnessPal-via-Apple as candidates');
+if(!audit.includes('Intervalos de fontes diferentes nunca são somados por suposição'))throw new Error('DATA_AUDIT must prohibit summing overlapping sleep sources');
+
 console.log('LTS Health Apple bridge contract smoke passed');
