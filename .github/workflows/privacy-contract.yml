@@ -3,10 +3,7 @@ on:
   push:
     branches: [architecture-v2]
     paths:
-      - 'v2/src/data-layer.js'
-      - 'v2/src/data-screen.js'
-      - 'v2/src/treatment-screen.js'
-      - 'v2/src/timeline-screen.js'
+      - 'v2/src/**'
       - 'v2/privacy-contract-smoke.mjs'
       - '.github/workflows/privacy-contract.yml'
   workflow_dispatch:
@@ -17,7 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Privacy contract checks
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Cross-screen privacy contract
         run: |
           node --check v2/privacy-contract-smoke.mjs
           node v2/privacy-contract-smoke.mjs
