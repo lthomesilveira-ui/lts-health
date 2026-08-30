@@ -16,7 +16,7 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 
 | Área | Capacidade | Estado |
 | --- | --- | --- |
-| Hoje | último treino, última bio, alimentação, atividade, sono, métricas disponíveis, exames e fontes | implementado e tolerante a falhas parciais; só mostra uma métrica quando existe registro |
+| Hoje | último treino, última bio, alimentação, atividade, sono, métricas disponíveis, exames e fontes | implementado e tolerante a falhas parciais; só mostra uma métrica quando existe registro canônico compatível |
 | Timeline | treino, composição, exames, documentos, alimentação, atividade, métricas e tratamentos em ordem temporal | implementado com período, navegação anual, busca, filtros, carregar mais e salto para o registro correspondente |
 | Saúde & exames | coleta, biomarcadores, referência, método, tendência somente com unidade compatível e documentos | implementado; longitudinal depende da cobertura existente no backend privado |
 | Nutrição | histórico por período, dia, refeições, anos, meses e cobertura | implementado com navegação histórica, resumo mensal, distribuição descritiva e lacunas explícitas |
@@ -39,9 +39,9 @@ Este arquivo é de engenharia/produto e não aparece na interface do usuário. P
 
 ## Fontes externas — critério de implementação
 
-- **Apple Saúde:** preservar o ZIP original e normalizar automaticamente somente energia ativa, minutos de exercício, horas em pé e duração do sono no fluxo estável atual. Passos e frequência cardíaca de repouso não são anunciados nem importados automaticamente por esse fluxo; só podem aparecer quando já existirem como registros válidos de outra origem.
-- **Polar Flow:** não criar segunda sessão para o mesmo treino. Usar detalhe complementar apenas quando o arquivo real permitir validar o mapeamento.
-- **MyFitnessPal:** alimentação e atividade importadas permanecem separadas da sessão de treino estruturada. Ausência de período importado continua sendo lacuna, nunca zero.
+- **Apple Saúde:** promoção canônica automática fica limitada a ActivitySummary de energia ativa, minutos de exercício e horas em pé. Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem ser preservados como candidatos por origem, mas não são promovidos automaticamente. Sono permanece fora da prontidão canônica até existir política validada de seleção de fonte e sobreposição; fontes diferentes nunca são somadas por suposição.
+- **Polar Flow:** dados via Apple Saúde permanecem candidatos/complementares por origem. Não criar segunda sessão para o mesmo treino; usar detalhe complementar apenas quando a evidência real permitir validar o mapeamento.
+- **MyFitnessPal:** via Apple Saúde, somente totais diários de energia, proteína, carboidratos, gordura e fibra são preservados como candidatos da própria fonte. Esses candidatos não viram nutrição canônica automaticamente e não geram alimentos, refeições ou horários inventados. Exports diretos continuam suportados para histórico e granularidade.
 - **Fleury / Einstein:** arquivos ficam preservados no Inbox. Extração especializada só é promovida após validação em amostras reais, sem inferir biomarcadores ou unidades ausentes.
 
 ## Próxima ordem de execução

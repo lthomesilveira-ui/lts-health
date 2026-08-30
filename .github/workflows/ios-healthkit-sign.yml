@@ -23,6 +23,7 @@ jobs:
       APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
       APP_STORE_CONNECT_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY_BASE64 }}
+      LTS_BUNDLE_ID: com.ltshealth.sync
     steps:
       - uses: actions/checkout@v4
 
@@ -63,17 +64,27 @@ jobs:
           security import "$P12" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
           security set-key-partition-list -S apple-tool:,apple: -k "runner" "$KEYCHAIN"
           security list-keychain -d user -s "$KEYCHAIN"
+          security find-identity -v -p codesigning "$KEYCHAIN" | grep -q 'Apple Distribution'
 
-      - name: Install provisioning profile
+      - name: Install and validate provisioning profile
         id: profile
         shell: bash
         run: |
           set -euo pipefail
           PROFILE="$RUNNER_TEMP/profile.mobileprovision"
+          PLIST="$RUNNER_TEMP/profile.plist"
           echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE"
-          security cms -D -i "$PROFILE" > "$RUNNER_TEMP/profile.plist"
-          UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")
-          NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")
+          security cms -D -i "$PROFILE" > "$PLIST"
+          UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$PLIST")
+          NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' "$PLIST")
+          APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$PLIST")
+          TEAM_IDENTIFIER=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' "$PLIST")
+          HEALTHKIT=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.healthkit' "$PLIST")
+          BACKGROUND=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.healthkit.background-delivery' "$PLIST")
+          [[ "$APP_IDENTIFIER" == *."$LTS_BUNDLE_ID" ]] || { echo "Provisioning profile bundle id mismatch" >&2; exit 1; }
+          [[ "$TEAM_IDENTIFIER" == "$APPLE_TEAM_ID" ]] || { echo "Provisioning profile team mismatch" >&2; exit 1; }
+          [[ "$HEALTHKIT" == "true" ]] || { echo "Provisioning profile is missing HealthKit" >&2; exit 1; }
+          [[ "$BACKGROUND" == "true" ]] || { echo "Provisioning profile is missing HealthKit background delivery" >&2; exit 1; }
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$PROFILE" "$HOME/Library/MobileDevice/Provisioning Profiles/$UUID.mobileprovision"
           echo "uuid=$UUID" >> "$GITHUB_OUTPUT"
@@ -84,6 +95,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          BUILD_NUMBER="${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}"
           xcodebuild \
             -project LTSHealthSync.xcodeproj \
             -scheme LTSHealthSync \
@@ -93,6 +105,8 @@ jobs:
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
             PROVISIONING_PROFILE_SPECIFIER="${{ steps.profile.outputs.name }}" \
             CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             archive
 
       - name: Create export options
@@ -105,16 +119,48 @@ jobs:
             <key>method</key><string>app-store-connect</string>
             <key>teamID</key><string>${APPLE_TEAM_ID}</string>
             <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key><dict>
+              <key>${LTS_BUNDLE_ID}</key><string>${{ steps.profile.outputs.name }}</string>
+            </dict>
             <key>stripSwiftSymbols</key><true/>
+            <key>uploadSymbols</key><true/>
           </dict></plist>
           EOF
 
       - name: Export signed IPA
+        shell: bash
         run: |
+          set -euo pipefail
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/LTSHealthSync.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Verify signed IPA contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          IPA=$(find "$RUNNER_TEMP/export" -maxdepth 1 -name '*.ipa' -print -quit)
+          test -n "$IPA"
+          CHECK_DIR="$RUNNER_TEMP/ipa-check"
+          rm -rf "$CHECK_DIR"
+          mkdir -p "$CHECK_DIR"
+          unzip -q "$IPA" -d "$CHECK_DIR"
+          APP=$(find "$CHECK_DIR/Payload" -maxdepth 1 -name '*.app' -print -quit)
+          test -n "$APP"
+          BUNDLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Info.plist")
+          BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist")
+          [[ "$BUNDLE" == "$LTS_BUNDLE_ID" ]] || { echo "Signed IPA bundle id mismatch" >&2; exit 1; }
+          [[ "$BUILD" == "${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}" ]] || { echo "Signed IPA build number mismatch" >&2; exit 1; }
+          codesign --verify --deep --strict "$APP"
+          codesign -d --entitlements :- "$APP" > "$RUNNER_TEMP/signed-entitlements.plist" 2>/dev/null
+          [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.developer.healthkit' "$RUNNER_TEMP/signed-entitlements.plist")" == "true" ]] || { echo "Signed IPA missing HealthKit entitlement" >&2; exit 1; }
+          [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.developer.healthkit.background-delivery' "$RUNNER_TEMP/signed-entitlements.plist")" == "true" ]] || { echo "Signed IPA missing HealthKit background delivery entitlement" >&2; exit 1; }
+          test -f "$APP/embedded.mobileprovision"
+          security cms -D -i "$APP/embedded.mobileprovision" > "$RUNNER_TEMP/embedded-profile.plist"
+          EMBEDDED_APP_ID=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$RUNNER_TEMP/embedded-profile.plist")
+          [[ "$EMBEDDED_APP_ID" == *."$LTS_BUNDLE_ID" ]] || { echo "Embedded profile bundle id mismatch" >&2; exit 1; }
 
       - name: Upload signed IPA artifact
         uses: actions/upload-artifact@v4
@@ -131,6 +177,19 @@ jobs:
           set -euo pipefail
           mkdir -p "$HOME/.appstoreconnect/private_keys"
           echo "$APP_STORE_CONNECT_PRIVATE_KEY_BASE64" | base64 --decode > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+          chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
+
+      - name: Validate TestFlight package
+        if: ${{ inputs.upload_testflight }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          IPA=$(find "$RUNNER_TEMP/export" -maxdepth 1 -name '*.ipa' -print -quit)
+          xcrun altool --validate-app \
+            --type ios \
+            --file "$IPA" \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
 
       - name: Upload to TestFlight
         if: ${{ inputs.upload_testflight }}

@@ -8,7 +8,7 @@ const routeDomains={
   evolucao:[],
   analise:['nutrition','metrics','labs'],
   tratamentos:['treatments'],
-  hoje:['nutrition','metrics','labs','uploads'],
+  hoje:['nutrition','metrics','sourceMetrics','labs','uploads'],
   timeline:['nutrition','activity','metrics','labs','docs','treatments'],
   saude:['labs','docs'],
   nutricao:['nutrition','meals'],

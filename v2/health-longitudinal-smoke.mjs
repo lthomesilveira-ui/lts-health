@@ -17,6 +17,7 @@ async function run(viewport,label){
       ...(state.data.labs||[]),
       {source_record_id:'lab-history-a',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'},
       {source_record_id:'lab-history-b',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador B',result_raw:'18',result_numeric:18,unit:'mg/dL',reference_range:'10–30',source:'Fixture de interface'},
+      {source_record_id:'lab-same-date-other',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Outro laboratório',biomarker:'Marcador A',result_raw:'99',result_numeric:99,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-history-a-prev',collection_date:'2025-12-03',report_date:'2025-12-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'6',result_numeric:6,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-other-unit-1',collection_date:'2025-11-03',report_date:'2025-11-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'100',result_numeric:100,unit:'outra',source:'Fixture de interface'},
       {source_record_id:'lab-other-unit-2',collection_date:'2025-10-03',report_date:'2025-10-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'90',result_numeric:90,unit:'outra',source:'Fixture de interface'},
@@ -27,17 +28,23 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   });
   await page.fill('#labQuery','x');
-  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=5);
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=6);
   await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value==='');
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=6);
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
-    const text=document.querySelector('.collectionCompareList')?.textContent||'';
-    return select?.value==='2026-01-03__Laboratório de teste'&&text.includes('Marcador A')&&text.includes('+2,0 u');
+    const list=document.querySelector('.collectionCompareList')?.textContent||'';
+    const head=document.querySelector('.collectionCompareHead')?.textContent||'';
+    return select?.value==='2026-01-03__Laboratório de teste'&&list.includes('Marcador A')&&list.includes('+2,0 u')&&head.includes('03/12/2025')&&!head.includes('Outro laboratório');
   });
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
+  const compareHead=(await page.locator('.collectionCompareHead').textContent())||'';
+  if(!compareHead.includes('03/12/2025'))throw new Error(`${label}: comparison did not use the prior distinct collection date`);
+  if(compareHead.includes('Outro laboratório'))throw new Error(`${label}: same-day source was treated as prior longitudinal collection`);
+  const firstMetric=(await page.locator('.metric').first().textContent())||'';
+  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('5'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
   await page.click('[data-marker="marcador textual"]');
   await page.waitForFunction(()=>{const t=document.querySelector('.exerciseDetail')?.textContent||'';return t.includes('Presente')&&t.includes('Ausente')&&t.includes('textual');});
   const textual=(await page.locator('.exerciseDetail').textContent())||'';

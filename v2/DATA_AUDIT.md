@@ -39,16 +39,18 @@ As telas calculam contagens e intervalos a partir dos registros carregados na se
 - Dias, meses ou anos sem dados permanecem lacunas; ausência não significa consumo zero, jejum ou aderência.
 - Refeições e totais diários podem ter granularidades diferentes e não são forçados a coincidir.
 - MyFitnessPal descreve nutrição e atividade exportada, mas atividade importada não substitui uma sessão de treino estruturada.
+- Totais diários de MyFitnessPal recebidos via Apple Saúde permanecem candidatos da própria origem para energia, proteína, carboidrato, gordura e fibra; não geram alimentos, refeições ou horários e não são promovidos automaticamente para nutrição canônica.
 
 ## Apple Saúde, Polar e sobreposição de fontes
 
 1. Treino estruturado do LTS Health é a sessão principal quando representa o mesmo evento observado por outras fontes.
 2. Apple Saúde pode atuar como hub passivo para métricas com regra de consolidação explicitamente validada.
-3. Energia ativa, minutos de exercício, horas em pé e duração do sono possuem caminhos automáticos validados no parser estável atual.
-4. Passos e frequência cardíaca de repouso não fazem parte da ingestão automática validada atual e não devem ser apresentados como importação automática suportada.
-5. Polar pode complementar uma sessão com detalhe adicional quando o arquivo real permitir validação, sem criar uma segunda sessão nem somar valores duplicados.
-6. Nenhum valor de múltiplas fontes é agregado automaticamente sem regra determinística específica.
-7. Unidades incompatíveis nunca são convertidas por suposição.
+3. Promoção canônica automática do Apple HealthKit fica limitada a ActivitySummary de energia ativa, minutos de exercício e horas em pé.
+4. Passos, frequência cardíaca de repouso, HRV, frequência respiratória e peso podem ser preservados por origem como candidatos, mas não são promovidos automaticamente.
+5. Sono permanece fora da sincronização automática e da prontidão canônica até existir política validada de seleção de fonte e sobreposição com amostras reais de Apple Watch, RingConn, iPhone e Polar. Intervalos de fontes diferentes nunca são somados por suposição.
+6. Polar pode permanecer como candidato/complemento por origem e só complementar uma sessão estruturada quando a evidência real permitir validar o mapeamento, sem criar uma segunda sessão.
+7. Nenhum valor de múltiplas fontes é agregado automaticamente sem regra determinística específica.
+8. Unidades incompatíveis nunca são convertidas por suposição.
 
 ## Laboratórios e documentos
 
@@ -65,7 +67,7 @@ As telas calculam contagens e intervalos a partir dos registros carregados na se
 
 - O frontend v2 usa `health-inspect-upload` como inspetor estável para todas as origens enquanto os parsers especializados não completarem seu gate de validação.
 - Lógicas experimentais ou mais amplas podem existir separadamente, mas não são selecionadas silenciosamente pelo frontend.
-- Apple Saúde só anuncia como ingestão automática as métricas já validadas no inspetor estável.
+- Apple Saúde só anuncia como ingestão automática ActivitySummary de energia ativa, minutos de exercício e horas em pé.
 - Fleury e Einstein preservam o arquivo e a revisão; um parser especializado só entra no fluxo normal depois de validado em amostras reais.
 - O arquivo original permanece no armazenamento privado independentemente do caminho de processamento.
 

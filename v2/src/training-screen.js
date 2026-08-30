@@ -103,10 +103,10 @@ function trainingRhythm(rows){
   }).join('')}</div><p class="footerNote">Mostra somente sessões estruturadas registradas. Semanas sem registro não são interpretadas como ausência de atividade física.</p>`;
 }
 
-function exerciseGroups(){
+function exerciseGroups(sourceRows=state.data.exercises||[]){
   if(failed('exercises')) return [];
   const map=new Map();
-  for(const e of state.data.exercises||[]){
+  for(const e of sourceRows){
     const exerciseKey=norm(e.exercise);if(!exerciseKey)continue;
     const machineKey=norm(e.machine)||'sem-maquina-informada';
     const key=`${exerciseKey}__${machineKey}`;
@@ -236,7 +236,7 @@ export function renderTrainingScreen(){
   if(!exercisesFailed&&!setsFailed){
     for(const e of exercises){const n=setsFor(e).length;if(e.muscle_group&&n)volume[e.muscle_group]=(volume[e.muscle_group]||0)+n;}
   }
-  const groups=exerciseGroups().filter(g=>!state.ui.exerciseQuery||norm(`${g.label} ${g.machine}`).includes(norm(state.ui.exerciseQuery)));
+  const groups=exerciseGroups(exercises).filter(g=>!state.ui.exerciseQuery||norm(`${g.label} ${g.machine}`).includes(norm(state.ui.exerciseQuery)));
   if(!state.ui.selectedExercise||!groups.some(g=>g.key===state.ui.selectedExercise))state.ui.selectedExercise=groups[0]?.key||null;
   const selected=groups.find(g=>g.key===state.ui.selectedExercise);
   const exerciseMetric=exercisesFailed?'—':String(exercises.length);
@@ -260,7 +260,7 @@ export function renderTrainingScreen(){
       <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map((workout,index)=>sessionCard(workout,index===0)).join('')||empty('Nenhum treino encontrado.')}</div></div>
       <div class="stack">
         <div class="card"><div class="cardHead"><div><b>Séries por grupo</b><small>Contagem no período selecionado.</small></div></div><div class="barList">${volumeHtml}</div></div>
-        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico, sessões recentes, comparação e maior carga registrada, mantendo máquina e unidade separadas.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício ou máquina" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${g.machine?`${esc(g.machine)} · `:''}${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
+        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico do período selecionado, mantendo máquina e unidade separadas.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício ou máquina" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${g.machine?`${esc(g.machine)} · `:''}${unique(g.rows.map(r=>r.workout_date)).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado no período.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
       </div>
     </div>`;
 }

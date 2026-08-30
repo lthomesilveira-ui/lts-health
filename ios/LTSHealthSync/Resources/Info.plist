@@ -15,6 +15,6 @@
   <key>UILaunchScreen</key>
   <dict/>
   <key>NSHealthShareUsageDescription</key>
-  <string>O LTS Health Sync lê seus resumos de atividade para atualizar automaticamente o seu histórico no LTS Health.</string>
+  <string>O LTS Health Sync lê os dados de saúde e atividade que você autorizar para sincronizar seu histórico no LTS Health.</string>
 </dict>
 </plist>

@@ -2,28 +2,56 @@
 
 Este documento descreve apenas o que falta entre o archive unsigned já validado em CI e um build instalável/TestFlight. Nenhum segredo deve ser salvo no repositório.
 
-## O que já é validado automaticamente
+## O que o CI sem credenciais valida
 
 - geração do projeto por XcodeGen;
 - compilação para iOS Simulator;
 - compilação contra o SDK `iphoneos`;
 - archive Release unsigned;
 - contrato de HealthKit e de segurança do cliente;
+- contrato estático de prontidão da distribuição assinada, sem acessar identidades Apple reais;
 - backend autenticado com JWT;
-- observers, background delivery, anchors persistidos e batches idempotentes.
+- observers, background delivery, anchors persistidos e batches idempotentes;
+- purpose string compatível com o escopo de leitura do HealthKit;
+- presença dos entitlements de HealthKit e background delivery;
+- uso de build number único por execução/tentativa no workflow assinado;
+- ausência de material de certificado, private key ou senha no repositório.
 
-## O que exige identidade Apple real
+O CI normal **não** prova que existe certificado Apple válido, provisioning profile real, App Store Connect configurado ou IPA assinado. Esses itens só podem ser verificados quando o workflow manual recebe credenciais Apple reais.
 
-A assinatura do app e a instalação em um iPhone físico exigem uma identidade válida do Apple Developer Program e um provisioning profile compatível com o bundle id `com.ltshealth.sync` e com a capability HealthKit.
+## O que o workflow assinado valida quando executado
 
-O workflow manual `.github/workflows/ios-healthkit-sign.yml` espera os seguintes GitHub Actions secrets:
+O workflow manual `.github/workflows/ios-healthkit-sign.yml`:
+
+1. exige os secrets de assinatura antes de qualquer archive;
+2. importa o certificado e confirma uma identidade `Apple Distribution` utilizável;
+3. decodifica o provisioning profile e confere bundle id, Team ID, HealthKit e background delivery;
+4. gera um build number único por execução/tentativa usando `GITHUB_RUN_NUMBER.GITHUB_RUN_ATTEMPT`;
+5. faz archive e export com assinatura manual explícita;
+6. valida o IPA assinado antes de publicá-lo como artefato, conferindo bundle id, build number, assinatura, entitlements e profile embarcado;
+7. quando TestFlight for solicitado, valida o pacote no App Store Connect antes do upload.
+
+O workflow continua `workflow_dispatch` only: assinatura e TestFlight nunca são disparados automaticamente por push.
+
+## Pré-requisitos externos para assinatura
+
+Antes da primeira execução assinada são necessários:
+
+- associação ativa ao Apple Developer Program;
+- App ID explícito `com.ltshealth.sync` com as capabilities HealthKit e background delivery habilitadas;
+- certificado Apple Distribution válido;
+- provisioning profile App Store Connect compatível com esse App ID e certificado;
+- registro do app no App Store Connect para uso de TestFlight;
+- material abaixo armazenado apenas em GitHub Actions secrets.
+
+### Secrets para gerar IPA assinado
 
 - `APPLE_TEAM_ID`
 - `APPLE_CERTIFICATE_P12_BASE64`
 - `APPLE_CERTIFICATE_PASSWORD`
 - `APPLE_PROVISIONING_PROFILE_BASE64`
 
-Para envio opcional ao TestFlight, também:
+### Secrets adicionais para TestFlight
 
 - `APP_STORE_CONNECT_KEY_ID`
 - `APP_STORE_CONNECT_ISSUER_ID`
@@ -33,7 +61,7 @@ Esses valores não devem aparecer em commits, issues, logs ou mensagens pública
 
 ## Gate em aparelho físico
 
-Depois de um IPA assinado:
+Depois de um IPA assinado e instalável:
 
 1. instalar a build no iPhone;
 2. entrar com a mesma conta LTS Health;
