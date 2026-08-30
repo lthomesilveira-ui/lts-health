@@ -27,7 +27,8 @@ jobs:
           node --check v2/src/main.js
           node --check v2/executive-dashboard-smoke.mjs
           grep -q "buildHealthIntelligence" v2/src/intelligence-engine.js
-          grep -q "LTS Health Intelligence" v2/src/intelligence-engine.js
+          grep -q "eyebrow:'LTS Health'" v2/src/intelligence-engine.js
+          ! grep -q "LTS Health Intelligence" v2/src/intelligence-engine.js
           grep -q "data-executive-dashboard" v2/src/today-screen.js
           grep -q "Ausência de dado nunca vira zero" v2/src/today-screen.js
           grep -Fq "const secondaryRoutes=new Set(['timeline','saude','nutricao','dados']);" v2/src/main.js
