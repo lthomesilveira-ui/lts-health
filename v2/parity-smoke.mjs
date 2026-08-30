@@ -32,7 +32,13 @@ for(const [viewport,label] of [[{width:1280,height:900},'desktop'],[{width:390,h
   const analysis=await page.textContent('#screenHost');if(!analysis.includes('Treino × alimentação')||!analysis.includes('Sono antes do treino')||!analysis.includes('Entre as duas últimas bios'))throw new Error(`${label}: analysis evidence surfaces missing`);
 
   await page.click(`${nav} [data-route="mais"]`);await page.click('#moreSheet [data-route="tratamentos"]');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Tratamentos');
-  const treatment=await page.textContent('#screenHost');if(!treatment.includes('Histórico')||treatment.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error(`${label}: treatment history is not neutral`);
+  const treatment=await page.textContent('#screenHost');
+  if(!treatment.includes('Histórico')||!treatment.includes('somente data, nome e origem'))throw new Error(`${label}: treatment history contract copy missing`);
+  if(treatment.match(/\b(taken|dose|dosagem|ciclo|aplica[cç][aã]o|inje[cç][aã]o|administra[cç][aã]o)\b/i))throw new Error(`${label}: treatment history exposes operational treatment detail`);
+  await page.fill('#treatmentQuery','taken');
+  await page.waitForFunction(()=>document.querySelector('#screenHost')?.textContent.includes('Nenhum registro corresponde à busca.'));
+  await page.fill('#treatmentQuery','Teste');
+  await page.waitForFunction(()=>!document.querySelector('#screenHost')?.textContent.includes('Nenhum registro corresponde à busca.'));
 
   const all=(await page.textContent('body'))||'';if(all.match(forbidden))throw new Error(`${label}: implementation jargon visible`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
