@@ -66,7 +66,6 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     const {visibleRowsForDomain}=await import('./src/data-layer.js');
     state.data.metrics=visibleRowsForDomain('metrics',[
-      {source_record_id:'activity-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:500,unit:'kcal',source:'Apple Health ActivitySummary'},
       {source_record_id:'bridge-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:510,unit:'kcal',source:'HealthKitBridge ActivitySummary'},
       {source_record_id:'bridge-steps',measured_at:'2026-08-29T12:00:00Z',metric_type:'steps',value:7200,unit:'count',source:'HealthKitBridge ActivitySummary'},
       {source_record_id:'bridge-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.2,unit:'h',source:'HealthKitBridge'},
