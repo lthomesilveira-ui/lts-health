@@ -17,8 +17,10 @@ jobs:
           node --check v2/analysis-history-smoke.mjs
           grep -q 'id="analysisPeriod"' v2/src/analysis-screen.js
           grep -q "analysisPeriod" v2/src/main.js
-          grep -q 'Limitações desta leitura' v2/src/analysis-screen.js
+          grep -q 'O que ainda limita a análise' v2/src/analysis-screen.js
+          grep -q 'aguardando conferência' v2/src/analysis-screen.js
           ! grep -Eiq '\b(readiness score|recovery score|score de recupera[cç][aã]o)\b' v2/src/analysis-screen.js
+          ! grep -Eiq '\b(candidate|canonical|can[oô]nic[oa]s?|candidat[oa]s?|source_family|ActivitySummary)\b' v2/src/analysis-screen.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
