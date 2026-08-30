@@ -96,10 +96,12 @@ jobs:
           require_fixed 'stable Apple metric boundary' "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" "$TMP/source-status.js"
           require_absent_regex 'sleep excluded from stable Apple metric set' 'stableAppleMetricTypes.*sleep_duration_h' "$TMP/source-status.js"
           require_fixed 'ActivitySummary source guard' 'isAppleActivitySummarySource' "$TMP/source-status.js"
-          require_fixed 'automatic canonical Apple copy' 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
-          require_fixed 'Apple candidate metrics copy' 'Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar como candidatos' "$TMP/data.js"
-          require_fixed 'same-source sleep union copy' 'intervalos sobrepostos da mesma origem são unidos antes do total diário' "$TMP/data.js"
-          require_fixed 'cross-source sleep separation copy' 'fontes diferentes permanecem separadas' "$TMP/data.js"
+          require_fixed 'automatic Apple copy' 'Uso automático: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
+          require_fixed 'Apple validation metrics copy' 'Passos, FC de repouso, HRV, frequência respiratória, peso e sono podem chegar para validação com origem preservada' "$TMP/data.js"
+          require_fixed 'sleep overlap validation copy' 'regra validada de escolha entre fontes sobrepostas' "$TMP/data.js"
+          require_fixed 'cross-source sleep separation copy' 'Fontes diferentes de sono permanecem separadas' "$TMP/data.js"
+          require_absent_fixed 'legacy canonical Apple copy absent' 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
+          require_absent_fixed 'legacy Apple candidate copy absent' 'podem chegar como candidatos' "$TMP/data.js"
           require_fixed 'lab preservation capability' 'Arquivo preservado + revisão' "$TMP/data.js"
 
           require_deployed_match 'v2 index' "$TMP/v2.html" 'v2/index.html'
