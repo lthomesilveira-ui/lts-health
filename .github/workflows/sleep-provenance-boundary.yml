@@ -4,6 +4,7 @@ on:
     branches: [architecture-v2]
     paths:
       - 'supabase/migrations/20260830112700_enforce_sleep_candidate_status.sql'
+      - 'supabase/migrations/20260830114000_enforce_current_source_canonical_boundary.sql'
       - 'supabase/functions/health-apple-sync-batch/index.ts'
       - 'v2/src/data-layer.js'
       - 'v2/sleep-provenance-boundary-smoke.mjs'
@@ -12,6 +13,7 @@ on:
     branches: [architecture-v2]
     paths:
       - 'supabase/migrations/20260830112700_enforce_sleep_candidate_status.sql'
+      - 'supabase/migrations/20260830114000_enforce_current_source_canonical_boundary.sql'
       - 'supabase/functions/health-apple-sync-batch/index.ts'
       - 'v2/src/data-layer.js'
       - 'v2/sleep-provenance-boundary-smoke.mjs'
