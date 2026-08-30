@@ -8,6 +8,9 @@ on:
       - 'supabase/functions/health-apple-sync-batch/index.ts'
       - 'v2/src/data-layer.js'
       - 'v2/sleep-provenance-boundary-smoke.mjs'
+      - 'ios/LTSHealthSync/**'
+      - '.github/workflows/ios-healthkit-build.yml'
+      - '.github/workflows/ios-healthkit-sign.yml'
       - '.github/workflows/sleep-provenance-boundary.yml'
   pull_request:
     branches: [architecture-v2]
@@ -17,6 +20,9 @@ on:
       - 'supabase/functions/health-apple-sync-batch/index.ts'
       - 'v2/src/data-layer.js'
       - 'v2/sleep-provenance-boundary-smoke.mjs'
+      - 'ios/LTSHealthSync/**'
+      - '.github/workflows/ios-healthkit-build.yml'
+      - '.github/workflows/ios-healthkit-sign.yml'
       - '.github/workflows/sleep-provenance-boundary.yml'
   workflow_dispatch:
 permissions:
@@ -33,3 +39,9 @@ jobs:
         run: |
           node --check v2/sleep-provenance-boundary-smoke.mjs
           node v2/sleep-provenance-boundary-smoke.mjs
+      - name: iOS signing readiness contract
+        run: |
+          node --check ios/LTSHealthSync/healthkit-contract-smoke.mjs
+          node --check ios/LTSHealthSync/signing-contract-smoke.mjs
+          node ios/LTSHealthSync/healthkit-contract-smoke.mjs
+          node ios/LTSHealthSync/signing-contract-smoke.mjs
