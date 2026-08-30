@@ -67,6 +67,8 @@ if (workflow.indexOf('Validate TestFlight package') > workflow.indexOf('Upload t
 if (workflow.indexOf('Verify signed IPA contract') > workflow.indexOf('Upload signed IPA artifact')) throw new Error('Signed IPA must be verified before artifact upload');
 
 for (const token of [
+  'pull_request:',
+  'branches: [architecture-v2]',
   "- '.github/workflows/ios-healthkit-sign.yml'",
   'node ios/LTSHealthSync/signing-contract-smoke.mjs'
 ]) if (!buildWorkflow.includes(token)) throw new Error(`Unsigned CI does not gate signing readiness: ${token}`);
