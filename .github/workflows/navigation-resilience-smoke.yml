@@ -44,6 +44,8 @@ jobs:
           grep -q "routeFromLocation" v2/src/main.js
           grep -q "event.key==='Tab'" v2/src/shell-accessibility.js
           grep -q "app.inert" v2/src/shell-accessibility.js
+          grep -q "lts-health-entry-closed" v2/src/entry.js
+          grep -q "lts-health-entry-closed" v2/src/shell-accessibility.js
           grep -q 'focus-visible' v2/accessibility.css
           grep -q 'prefers-reduced-motion:reduce' v2/accessibility.css
           grep -q './accessibility.css' v2/index.html
