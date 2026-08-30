@@ -2,6 +2,13 @@ name: LTS Health v2 Canonical Boundary Smoke
 on:
   push:
     branches: [architecture-v2]
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-layer.js'
+      - 'v2/src/source-status.js'
+      - 'v2/canonical-boundary-smoke.mjs'
+      - '.github/workflows/canonical-boundary-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,6 +24,7 @@ jobs:
           grep -q "visibleRowsForDomain" v2/src/data-layer.js
           grep -q "source.includes('activitysummary')" v2/src/data-layer.js
           grep -q "source.includes('myfitnesspal')&&source.includes('apple health')" v2/src/data-layer.js
+          grep -q "key==='workouts'" v2/src/data-layer.js
           grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" v2/src/source-status.js
           ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
       - name: Install browser runtime

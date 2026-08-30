@@ -29,6 +29,6 @@ assert.deepEqual(canonicalMetrics,['active_energy_kcal','exercise_minutes','stan
 assert.match(appleSync,/canonical_status:'candidate'/,'incoming Apple/source metrics must start as candidates');
 assert.match(appleSync,/sourceFamily==='apple_activity_summary'&&canonicalActivity\.has\(metric\)/,'only Apple ActivitySummary may enter automatic promotion');
 assert.match(appleSync,/apple_export:\$\{sourceFamily\}:\$\{metric\}:\$\{d\}:\$\{md5\(sourceName\)\}/,'historical source identity must preserve source family/name separation');
-assert.match(dataLayer,/visibleRows\.filter\(w=>w\.is_canonical!==false&&w\.record_status!=='quarantined'\)/,'training UI must exclude explicit noncanonical complementary workouts');
+assert.match(dataLayer,/if\(key==='workouts'\)return rows\.filter\(row=>row\?\.is_canonical!==false&&row\?\.record_status!=='quarantined'\)/,'training UI must exclude explicit noncanonical complementary workouts through the centralized domain boundary');
 
 console.log('sleep/provenance boundary contract: ok');
