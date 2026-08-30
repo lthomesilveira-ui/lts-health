@@ -40,6 +40,8 @@ function trapFocus(event,dialog){
 }
 
 document.addEventListener('click',event=>{
+  if(event.target.closest('#loginBtn'))setAppIsolated(false);
+
   const moreTrigger=event.target.closest('[data-route="mais"]');
   if(moreTrigger){moreReturnFocus=moreTrigger;focusDialog('moreSheet');return;}
 
@@ -53,6 +55,10 @@ document.addEventListener('click',event=>{
   if(event.target===$('entryModal')){restoreEntryFocusIfClosed();return;}
   if(event.target.closest('#moreSheet [data-route]')){moreReturnFocus=null;syncModalIsolation();}
 },true);
+
+document.addEventListener('lts-health-entry-closed',restoreEntryFocusIfClosed);
+window.addEventListener('popstate',syncModalIsolation);
+window.addEventListener('hashchange',syncModalIsolation);
 
 document.addEventListener('keydown',event=>{
   const dialog=activeDialog();
