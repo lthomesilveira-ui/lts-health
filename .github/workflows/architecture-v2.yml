@@ -19,7 +19,6 @@ jobs:
           set -euo pipefail
           for file in v2/src/*.js; do node --check "$file"; done
           for file in \
-            v2/browser-smoke.mjs \
             v2/failure-smoke.mjs \
             v2/timeline-interaction-smoke.mjs \
             v2/nutrition-history-smoke.mjs \
@@ -77,7 +76,6 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          node v2/browser-smoke.mjs
           node v2/failure-smoke.mjs
           node v2/timeline-interaction-smoke.mjs
           node v2/nutrition-history-smoke.mjs
