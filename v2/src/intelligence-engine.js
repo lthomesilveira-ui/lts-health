@@ -1,4 +1,5 @@
 import {day,num,norm,unique} from './core.js';
+import {stableAppleMetricTypes} from './source-status.js';
 
 const loaded=(status,key)=>status?.[key]!=='error';
 const sortAsc=(rows,key)=>[...(rows||[])].sort((a,b)=>String(a?.[key]||'').localeCompare(String(b?.[key]||'')));
@@ -9,13 +10,14 @@ const pct=(a,b)=>b>0?Math.round(a/b*100):0;
 const signed=(value,digits=1,unit='')=>{const n=num(value);if(n==null)return null;const text=n.toLocaleString('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits});return`${n>0?'+':''}${text}${unit?` ${unit}`:''}`;};
 const maxDate=(values)=>values.filter(Boolean).sort().at(-1)||null;
 const prettyDate=value=>{const s=day(value);if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
+const canonicalActivityRows=rows=>(rows||[]).filter(row=>stableAppleMetricTypes.has(row?.metric_type));
 
 function referenceDay(data){
   return maxDate([
     maxDate((data.body||[]).map(r=>day(r.measured_at))),
     maxDate((data.workouts||[]).map(r=>day(r.workout_date))),
     maxDate((data.nutrition||[]).map(r=>day(r.nutrition_date))),
-    maxDate((data.metrics||[]).map(r=>day(r.measured_at))),
+    maxDate(canonicalActivityRows(data.metrics).map(r=>day(r.measured_at))),
     maxDate((data.labs||[]).map(r=>day(r.collection_date)))
   ]);
 }
@@ -27,12 +29,7 @@ function bodyChange(data,status){
   const previous=rows.at(-2),latest=rows.at(-1),parts=[];
   const fields=[['weight_kg','peso',1,'kg'],['skeletal_muscle_mass_kg','massa muscular esquelética',1,'kg'],['body_fat_pct','gordura corporal',1,'p.p.']];
   for(const[key,label,digits,unit]of fields){const a=num(previous[key]),b=num(latest[key]);if(a==null||b==null)continue;parts.push(`${label} ${signed(b-a,digits,unit)}`);}
-  return{
-    kind:'change',
-    title:'Nova comparação de composição disponível',
-    summary:parts.length?`Entre ${prettyDate(previous.measured_at)} e ${prettyDate(latest.measured_at)}: ${parts.join(' · ')}.`:`Existem duas medições comparáveis entre ${prettyDate(previous.measured_at)} e ${prettyDate(latest.measured_at)}.`,
-    route:'evolucao',priority:86,evidence:[day(previous.measured_at),day(latest.measured_at)]
-  };
+  return{kind:'change',title:'Nova comparação de composição disponível',summary:parts.length?`Entre ${prettyDate(previous.measured_at)} e ${prettyDate(latest.measured_at)}: ${parts.join(' · ')}.`:`Existem duas medições comparáveis entre ${prettyDate(previous.measured_at)} e ${prettyDate(latest.measured_at)}.`,route:'evolucao',priority:86,evidence:[day(previous.measured_at),day(latest.measured_at)]};
 }
 
 function workoutRhythm(data,status,ref){
@@ -44,11 +41,7 @@ function workoutRhythm(data,status,ref){
   const previous=rows.filter(r=>inRange(r.workout_date,previousStart,previousEnd)).length;
   const delta=recent-previous;
   const direction=delta===0?'permaneceu igual':delta>0?'aumentou':'diminuiu';
-  return{
-    kind:'change',title:'Ritmo de treino em períodos equivalentes',
-    summary:`A frequência registrada ${direction}: ${previous} sessão(ões) nos 28 dias anteriores e ${recent} nos 28 dias mais recentes.`,
-    route:'treinos',priority:delta===0?68:82,meta:{recent,previous,delta}
-  };
+  return{kind:'change',title:'Ritmo de treino em períodos equivalentes',summary:`A frequência registrada ${direction}: ${previous} sessão(ões) nos 28 dias anteriores e ${recent} nos 28 dias mais recentes.`,route:'treinos',priority:delta===0?68:82,meta:{recent,previous,delta}};
 }
 
 function bestComparablePerformance(data,status){
@@ -56,32 +49,18 @@ function bestComparablePerformance(data,status){
   const workouts=new Map((data.workouts||[]).map(w=>[w.source_record_id,w]));
   const exerciseRows=(data.exercises||[]).filter(e=>workouts.has(e.workout_source_record_id));
   const groups=new Map();
-  for(const e of exerciseRows){
-    const key=`${norm(e.exercise)}|${norm(e.machine)}`;if(!norm(e.exercise))continue;
-    if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);
-  }
+  for(const e of exerciseRows){const key=`${norm(e.exercise)}|${norm(e.machine)}`;if(!norm(e.exercise))continue;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);}
   const candidates=[];
   for(const exercises of groups.values()){
-    const ordered=[...exercises].sort((a,b)=>String(b.workout_date||'').localeCompare(String(a.workout_date||'')));
-    if(ordered.length<2)continue;
+    const ordered=[...exercises].sort((a,b)=>String(b.workout_date||'').localeCompare(String(a.workout_date||'')));if(ordered.length<2)continue;
     const pair=[];
-    for(const ex of ordered){
-      const sets=(data.sets||[]).filter(s=>s.exercise_source_record_id===ex.source_record_id&&num(s.weight)!=null&&s.weight_unit);
-      const units=unique(sets.map(s=>norm(s.weight_unit)));if(units.length!==1||!sets.length)continue;
-      pair.push({exercise:ex,value:Math.max(...sets.map(s=>num(s.weight))),unit:sets[0].weight_unit,date:day(ex.workout_date)});
-      if(pair.length===2)break;
-    }
-    if(pair.length<2||norm(pair[0].unit)!==norm(pair[1].unit))continue;
-    candidates.push({latest:pair[0],previous:pair[1],delta:pair[0].value-pair[1].value});
+    for(const ex of ordered){const sets=(data.sets||[]).filter(s=>s.exercise_source_record_id===ex.source_record_id&&num(s.weight)!=null&&s.weight_unit);const units=unique(sets.map(s=>norm(s.weight_unit)));if(units.length!==1||!sets.length)continue;pair.push({exercise:ex,value:Math.max(...sets.map(s=>num(s.weight))),unit:sets[0].weight_unit,date:day(ex.workout_date)});if(pair.length===2)break;}
+    if(pair.length<2||norm(pair[0].unit)!==norm(pair[1].unit))continue;candidates.push({latest:pair[0],previous:pair[1],delta:pair[0].value-pair[1].value});
   }
   if(!candidates.length)return null;
   candidates.sort((a,b)=>String(b.latest.date).localeCompare(String(a.latest.date))||Math.abs(b.delta)-Math.abs(a.delta));
   const c=candidates[0],name=c.latest.exercise.exercise;
-  return{
-    kind:'change',title:'Performance comparável registrada',
-    summary:`${name}: ${c.previous.value.toLocaleString('pt-BR')} → ${c.latest.value.toLocaleString('pt-BR')} ${c.latest.unit}, comparando o mesmo exercício, máquina e unidade.`,
-    route:'treinos',priority:78
-  };
+  return{kind:'change',title:'Performance comparável registrada',summary:`${name}: ${c.previous.value.toLocaleString('pt-BR')} → ${c.latest.value.toLocaleString('pt-BR')} ${c.latest.unit}, comparando o mesmo exercício, máquina e unidade.`,route:'treinos',priority:78};
 }
 
 function bodyIntervalContext(data,status){
@@ -90,25 +69,15 @@ function bodyIntervalContext(data,status){
   const previous=body.at(-2),latest=body.at(-1),start=day(previous.measured_at),end=day(latest.measured_at);
   const workouts=(data.workouts||[]).filter(w=>day(w.workout_date)>start&&day(w.workout_date)<=end);
   const nutritionDays=uniqueDays((data.nutrition||[]).filter(n=>day(n.nutrition_date)>start&&day(n.nutrition_date)<=end),'nutrition_date');
-  return{
-    kind:'cross',title:'Contexto entre as duas últimas medições',
-    summary:`No intervalo de ${prettyDate(start)} a ${prettyDate(end)}, há ${workouts.length} treino(s) e ${nutritionDays.length} dia(s) com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,
-    route:'analise',priority:91
-  };
+  return{kind:'cross',title:'Contexto entre as duas últimas medições',summary:`No intervalo de ${prettyDate(start)} a ${prettyDate(end)}, há ${workouts.length} treino(s) e ${nutritionDays.length} dia(s) com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,route:'analise',priority:91};
 }
 
 function workoutNutritionContext(data,status,ref){
   if(!loaded(status,'workouts')||!loaded(status,'nutrition'))return null;
-  const start=addDays(ref,-55),workouts=(data.workouts||[]).filter(w=>inRange(w.workout_date,start,ref));
-  if(!workouts.length)return null;
+  const start=addDays(ref,-55),workouts=(data.workouts||[]).filter(w=>inRange(w.workout_date,start,ref));if(!workouts.length)return null;
   const nutritionDays=new Set(uniqueDays((data.nutrition||[]).filter(n=>inRange(n.nutrition_date,start,ref)),'nutrition_date'));
   const paired=workouts.filter(w=>nutritionDays.has(day(w.workout_date))).length,coverage=pct(paired,workouts.length);
-  return{
-    kind:coverage>=70?'cross':'coverage',
-    title:coverage>=70?'Treino × alimentação tem boa cobertura':'Alimentação limita o cruzamento com treinos',
-    summary:`${paired} de ${workouts.length} sessão(ões) nas últimas 8 semanas têm alimentação registrada no mesmo dia (${coverage}%). Isso mede cobertura de dados, não efeito sobre performance.`,
-    route:'analise',priority:coverage>=70?84:88
-  };
+  return{kind:coverage>=70?'cross':'coverage',title:coverage>=70?'Treino × alimentação tem boa cobertura':'Alimentação limita o cruzamento com treinos',summary:`${paired} de ${workouts.length} sessão(ões) nas últimas 8 semanas têm alimentação registrada no mesmo dia (${coverage}%). Isso mede cobertura de dados, não efeito sobre performance.`,route:'analise',priority:coverage>=70?84:88};
 }
 
 function labContext(data,status){
@@ -122,33 +91,28 @@ function labContext(data,status){
 }
 
 function metricCoverage(data,status,ref){
-  if(!loaded(status,'metrics'))return{kind:'unavailable',title:'Atividade e sono indisponíveis',summary:'As métricas não carregaram nesta atualização.',route:'timeline',priority:92};
-  const start=addDays(ref,-13),rows=(data.metrics||[]).filter(m=>inRange(m.measured_at,start,ref));
-  const byType=type=>uniqueDays(rows.filter(m=>m.metric_type===type),'measured_at').length;
-  const activity=Math.max(byType('active_energy_kcal'),byType('exercise_minutes'),byType('steps'));
-  const sleep=byType('sleep_duration_h');
-  return{
-    kind:activity>=7||sleep>=7?'cross':'coverage',title:'Cobertura recente de atividade e sono',
-    summary:`Nos 14 dias mais recentes com dados: atividade aparece em ${activity} dia(s) e sono consolidado em ${sleep} dia(s).`,route:'timeline',priority:74
-  };
+  if(!loaded(status,'metrics'))return{kind:'unavailable',title:'Atividade indisponível',summary:'As métricas de atividade não carregaram nesta atualização.',route:'timeline',priority:92};
+  const start=addDays(ref,-13),rows=canonicalActivityRows(data.metrics).filter(m=>inRange(m.measured_at,start,ref));
+  const activity=uniqueDays(rows,'measured_at').length;
+  return{kind:activity>=7?'cross':'coverage',title:'Cobertura recente de atividade',summary:`Nos 14 dias mais recentes com dados, há atividade canônica em ${activity} dia(s). Sono permanece fora desta leitura até a política de sobreposição entre fontes ser validada.`,route:'timeline',priority:74};
 }
 
 function pendingData(data){
   const uploads=(data.uploads||[]).filter(u=>['review_required','failed','uploaded','processing'].includes(String(u.status||'')));
-  const candidates=(data.sourceMetrics||[]).filter(r=>String(r.canonical_status||'')==='candidate');
+  const candidates=(data.sourceMetrics||[]).filter(r=>['candidate','held'].includes(String(r.canonical_status||'').toLowerCase()));
   if(!uploads.length&&!candidates.length)return null;
   const parts=[];if(uploads.length)parts.push(`${uploads.length} arquivo(s) ainda em processamento ou revisão`);if(candidates.length)parts.push(`${candidates.length} registro(s) por origem ainda não consolidados`);
   return{kind:'coverage',title:'Há dados recebidos ainda fora da visão principal',summary:`${parts.join(' · ')}. Eles não entram nos insights até serem confirmados.`,route:'dados',priority:90};
 }
 
 function coverageRows(data,status,ref){
-  const body=loaded(status,'body')?(data.body||[]):null,workouts=loaded(status,'workouts')?(data.workouts||[]):null,nutrition=loaded(status,'nutrition')?(data.nutrition||[]):null,metrics=loaded(status,'metrics')?(data.metrics||[]):null,labs=loaded(status,'labs')?(data.labs||[]):null;
+  const body=loaded(status,'body')?(data.body||[]):null,workouts=loaded(status,'workouts')?(data.workouts||[]):null,nutrition=loaded(status,'nutrition')?(data.nutrition||[]):null,metrics=loaded(status,'metrics')?canonicalActivityRows(data.metrics):null,labs=loaded(status,'labs')?(data.labs||[]):null;
   const start56=addDays(ref,-55),start28=addDays(ref,-27);
   return[
     {key:'body',label:'Composição',route:'evolucao',state:body==null?'unavailable':body.length>=2?'strong':body.length?'partial':'limited',detail:body==null?'indisponível':`${body.length} medição(ões) no histórico`},
     {key:'workouts',label:'Treinos',route:'treinos',state:workouts==null?'unavailable':workouts.filter(w=>inRange(w.workout_date,start56,ref)).length>=4?'strong':workouts.length?'partial':'limited',detail:workouts==null?'indisponível':`${workouts.filter(w=>inRange(w.workout_date,start56,ref)).length} sessão(ões) nas últimas 8 semanas`},
     {key:'nutrition',label:'Alimentação',route:'nutricao',state:nutrition==null?'unavailable':uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length>=14?'strong':nutrition.length?'partial':'limited',detail:nutrition==null?'indisponível':`${uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length} dia(s) nos últimos 28 dias`},
-    {key:'metrics',label:'Atividade e sono',route:'timeline',state:metrics==null?'unavailable':uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length>=14?'strong':metrics.length?'partial':'limited',detail:metrics==null?'indisponível':`${uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length} dia(s) com métricas nos últimos 28 dias`},
+    {key:'metrics',label:'Atividade',route:'timeline',state:metrics==null?'unavailable':uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length>=14?'strong':metrics.length?'partial':'limited',detail:metrics==null?'indisponível':`${uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length} dia(s) com atividade canônica nos últimos 28 dias`},
     {key:'labs',label:'Exames',route:'saude',state:labs==null?'unavailable':uniqueDays(labs,'collection_date').length>=2?'strong':labs.length?'partial':'limited',detail:labs==null?'indisponíveis':`${uniqueDays(labs,'collection_date').length} data(s) de coleta estruturada(s)`}
   ];
 }
