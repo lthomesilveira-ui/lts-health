@@ -36,10 +36,14 @@ if(new RegExp(`\\bt\\.(?:dose|dosage|frequency|frequencia|route|via|injection|in
 
 for(const token of [
   "title('Tratamentos','Contexto histórico por data e origem. Esta área não substitui orientação médica.')",
-  "sub:'Confirmação registrada'",
   "missing_event_dose:'Contexto histórico de tratamento'",
   "Registro histórico preservado sem detalhe operacional nesta tela."
 ])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
+
+for(const forbidden of ["Confirmação registrada","sub:'Confirmação registrada'"]){
+  if((treatment+timeline).includes(forbidden))throw new Error(`operational treatment confirmation re-entered presentation code: ${forbidden}`);
+}
+if(/\b(?:r|t)\.event_type\b/.test(treatment+timeline))throw new Error('treatment event_type re-entered the user-facing treatment context');
 
 if(!dataScreen.includes('sensitiveQualityPattern'))throw new Error('sensitive quality sanitization guard missing');
 if(!dataScreen.includes('sensitiveQuality(issue)'))throw new Error('sensitive quality sanitization is not applied');
