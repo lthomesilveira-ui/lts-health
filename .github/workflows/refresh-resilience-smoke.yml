@@ -4,6 +4,7 @@ on:
     branches: [architecture-v2]
     paths:
       - 'v2/src/data-layer.js'
+      - 'v2/src/core.js'
       - 'v2/refresh-resilience-smoke.mjs'
       - '.github/workflows/refresh-resilience-smoke.yml'
   workflow_dispatch:
@@ -14,14 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install browser test runtime
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static resilience contract
         run: |
-          npm init -y >/dev/null 2>&1
-          npm install --no-save playwright@1.55.0
-          npx playwright install chromium
-      - name: Refresh resilience smoke
-        run: |
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          node v2/refresh-resilience-smoke.mjs
+          node --check v2/src/data-layer.js
+          node --check v2/refresh-resilience-smoke.mjs
+          grep -q "Dados anteriores mantidos" v2/src/data-layer.js
+          grep -q "Backup não criado" v2/src/data-layer.js
+          ! grep -q "source_payload" <(grep "health_source_daily_metrics" v2/src/data-layer.js)
+      - name: Refresh and backup resilience
+        run: node v2/refresh-resilience-smoke.mjs
