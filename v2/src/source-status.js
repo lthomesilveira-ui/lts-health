@@ -2,12 +2,14 @@ import {state,norm} from './core.js';
 
 export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
 const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone']);
+const preservedCandidateStatuses=new Set(['candidate','held']);
 
 const failed=key=>state.domainStatus[key]==='error';
 const contains=(rows,fields,term)=>{term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
 const matching=(rows,fields,term)=>{term=norm(term);return(rows||[]).filter(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
-const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_family)===norm(family)&&norm(row?.canonical_status||'candidate')==='candidate');
-const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&norm(row?.canonical_status||'candidate')==='candidate';
+const isPreservedCandidate=row=>preservedCandidateStatuses.has(norm(row?.canonical_status||'candidate'));
+const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_family)===norm(family)&&isPreservedCandidate(row));
+const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&isPreservedCandidate(row);
 const anyCandidateMetric=rows=>(rows||[]).some(appleCandidate);
 const appleSourceMetric=row=>appleNativeFamilies.has(norm(row?.source_family));
 const dateOnly=value=>{const date=String(value??'').slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(date)?date:null;};
