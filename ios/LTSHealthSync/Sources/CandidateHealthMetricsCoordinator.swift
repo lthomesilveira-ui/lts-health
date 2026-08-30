@@ -8,7 +8,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
     private let api = SupabaseAPI.shared
     private let defaults = UserDefaults.standard
     private let calendar = Calendar.autoupdatingCurrent
-    private let bridgeVersion = "ios-healthkit-candidates-v3"
+    private let bridgeVersion = "ios-healthkit-candidates-v4"
     private let syncGate = CandidateSyncGate()
     private var observers: [HKObserverQuery] = []
 
@@ -29,6 +29,12 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
     private struct SleepBucketKey: Hashable {
         let date: String
         let sourceName: String
+    }
+
+    private struct SleepStageBucketKey: Hashable {
+        let date: String
+        let sourceName: String
+        let metricType: String
     }
 
     private var specs: [MetricSpec] {
@@ -292,8 +298,11 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
             healthStore.execute(query)
         }
 
-        var buckets: [SleepBucketKey: [DateInterval]] = [:]
-        for sample in samples where asleepValues.contains(sample.value) && sample.endDate > sample.startDate {
+        var totalBuckets: [SleepBucketKey: [DateInterval]] = [:]
+        var stageBuckets: [SleepStageBucketKey: [DateInterval]] = [:]
+        for sample in samples where sample.endDate > sample.startDate {
+            guard let stageMetricType = sleepMetricType(for: sample.value) else { continue }
+            let includeInTotalAsleep = asleepValues.contains(sample.value)
             var cursor = sample.startDate
             while cursor < sample.endDate {
                 let dayStart = calendar.startOfDay(for: cursor)
@@ -304,15 +313,20 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
                     let components = calendar.dateComponents([.year, .month, .day], from: dayStart)
                     if let year = components.year, let month = components.month, let day = components.day {
                         let date = String(format: "%04d-%02d-%02d", year, month, day)
-                        let key = SleepBucketKey(date: date, sourceName: sample.sourceRevision.source.name)
-                        buckets[key, default: []].append(DateInterval(start: segmentStart, end: segmentEnd))
+                        let sourceName = sample.sourceRevision.source.name
+                        let stageKey = SleepStageBucketKey(date: date, sourceName: sourceName, metricType: stageMetricType)
+                        stageBuckets[stageKey, default: []].append(DateInterval(start: segmentStart, end: segmentEnd))
+                        if includeInTotalAsleep {
+                            let totalKey = SleepBucketKey(date: date, sourceName: sourceName)
+                            totalBuckets[totalKey, default: []].append(DateInterval(start: segmentStart, end: segmentEnd))
+                        }
                     }
                 }
                 cursor = dayEnd
             }
         }
 
-        return buckets.compactMap { key, intervals in
+        let totalMetrics = totalBuckets.compactMap { key, intervals -> AppleMetric? in
             let hours = mergedDuration(intervals) / 3600
             guard hours.isFinite, hours > 0 else { return nil }
             return AppleMetric(
@@ -324,6 +338,31 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
                 source_family: sourceFamily(for: key.sourceName)
             )
         }
+        let stageMetrics = stageBuckets.compactMap { key, intervals -> AppleMetric? in
+            let hours = mergedDuration(intervals) / 3600
+            guard hours.isFinite, hours > 0 else { return nil }
+            return AppleMetric(
+                date: key.date,
+                metric_type: key.metricType,
+                value: hours,
+                unit: "h",
+                source_name: key.sourceName,
+                source_family: sourceFamily(for: key.sourceName)
+            )
+        }
+        return totalMetrics + stageMetrics
+    }
+
+    private func sleepMetricType(for value: Int) -> String? {
+        if value == HKCategoryValueSleepAnalysis.inBed.rawValue { return "sleep_in_bed_h" }
+        if value == HKCategoryValueSleepAnalysis.awake.rawValue { return "sleep_awake_h" }
+        if value == HKCategoryValueSleepAnalysis.asleepCore.rawValue { return "sleep_core_h" }
+        if value == HKCategoryValueSleepAnalysis.asleepDeep.rawValue { return "sleep_deep_h" }
+        if value == HKCategoryValueSleepAnalysis.asleepREM.rawValue { return "sleep_rem_h" }
+        if value == HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue || value == HKCategoryValueSleepAnalysis.asleep.rawValue {
+            return "sleep_asleep_unspecified_h"
+        }
+        return nil
     }
 
     private func mergedDuration(_ intervals: [DateInterval]) -> TimeInterval {
