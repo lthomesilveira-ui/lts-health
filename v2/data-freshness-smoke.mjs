@@ -19,8 +19,9 @@ async function run(viewport,label,fixtureError=''){
     const panel=(await page.locator('.provenancePanel').textContent())||'';
     if(!panel.includes('dados até 02/02/2026'))throw new Error(`${label}: real metric_date freshness missing`);
     if(!panel.includes('A data exibida é a maior data realmente carregada'))throw new Error(`${label}: freshness provenance note missing`);
-    if(!body.includes('Sono permanece fora da sincronização automática'))throw new Error(`${label}: Apple automatic scope copy drifted`);
-    if(!body.includes('ainda não são sincronizados automaticamente por este companion'))throw new Error(`${label}: MyFitnessPal automation copy drifted`);
+    if(!body.includes('peso e sono podem chegar como candidatos com origem preservada'))throw new Error(`${label}: Apple source-preserving sleep scope drifted`);
+    if(!body.includes('intervalos sobrepostos da mesma origem são unidos antes do total diário'))throw new Error(`${label}: sleep overlap guardrail missing`);
+    if(!body.includes('Calorias, proteína, carboidratos, gordura e fibra podem chegar pelo Apple Saúde'))throw new Error(`${label}: MyFitnessPal candidate nutrition copy drifted`);
   }
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
