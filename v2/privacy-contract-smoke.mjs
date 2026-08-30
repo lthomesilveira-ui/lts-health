@@ -67,7 +67,8 @@ if(sourceMetricProjection.includes('source_payload'))throw new Error('structured
 const provenance=dataScreen.match(/function provenanceOverview\(rows\)\{[\s\S]*?\n\}/)?.[0]||'';
 if(!provenance)throw new Error('safe provenance summary missing');
 if(/row\.value\b|source_payload|source_record_id|storage_path/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
-for(const token of ['Proveniência das métricas','Só registros marcados explicitamente como candidatos entram na contagem de candidatos','separadas das métricas canônicas'])if(!dataScreen.includes(token))throw new Error(`provenance privacy guardrail missing: ${token}`);
+for(const token of ['Origem das métricas indisponível agora.','Só registros marcados explicitamente para validação entram nessa contagem','outras evidências ficam preservadas e separadas dos dados confirmados'])if(!dataScreen.includes(token))throw new Error(`provenance privacy guardrail missing: ${token}`);
+for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
 
 const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\n\nfunction events/)?.[0]||'';
 if(!timelineSourceEvidence)throw new Error('safe Timeline source-metric evidence block missing');
