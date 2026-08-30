@@ -34,6 +34,7 @@ export function renderAnalysisHub(){
   const sleepCandidates=wPeriod.map(w=>({workout:w,night:prevDay(day(w.workout_date)),records:sleep.get(prevDay(day(w.workout_date)))||[]}));
   const sleepPairs=sleepCandidates.filter(x=>x.records.length===1);
   const ambiguousSleepPairs=sleepCandidates.filter(x=>x.records.length>1);
+  const missingSleepPairs=sleepCandidates.filter(x=>x.records.length===0);
   const labDates=unique(labPeriod.map(l=>l.collection_date)),allLabDates=unique(labs.map(l=>l.collection_date)),last=body.at(-1),prev=body.at(-2);
   const between=last&&prev&&!wf?workouts.filter(w=>day(w.workout_date)>day(prev.measured_at)&&day(w.workout_date)<=day(last.measured_at)):[];
   const betweenNutrition=last&&prev&&!nf?unique(nutrition.filter(n=>day(n.nutrition_date)>day(prev.measured_at)&&day(n.nutrition_date)<=day(last.measured_at)).map(n=>day(n.nutrition_date))):[];
@@ -47,7 +48,7 @@ export function renderAnalysisHub(){
   const gaps=[];
   if(!lf&&allLabDates.length<2)gaps.push('Exames: há menos de duas coletas estruturadas, então a comparação longitudinal de biomarcadores ainda é limitada.');
   if(!mf&&ambiguousSleepPairs.length)gaps.push(`Sono: ${ambiguousSleepPairs.length} treino(s) têm mais de um registro de sono na noite anterior; esses casos ficam fora da média até existir uma regra validada de seleção entre fontes.`);
-  if(!mf&&wPeriod.length&&sleepPairs.length<wPeriod.length)gaps.push(`Sono: ${sleepPairs.length} de ${wPeriod.length} treino(s) do período têm uma única noite anterior de sono utilizável para comparação.`);
+  if(!mf&&missingSleepPairs.length)gaps.push(`Sono: ${missingSleepPairs.length} treino(s) do período não têm duração de sono registrada na noite anterior.`);
   if(!nf&&wPeriod.length&&sameDay.length<wPeriod.length)gaps.push(`Alimentação: ${sameDay.length} de ${wPeriod.length} treino(s) do período têm registro de alimentação no mesmo dia.`);
   if(!bf&&bodyPeriod.length<2)gaps.push(`Composição: há ${bodyPeriod.length} medição(ões) corporal(is) dentro de ${periodText}; comparações corporais abaixo usam as duas últimas medições disponíveis no histórico completo.`);
 
