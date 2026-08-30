@@ -20,7 +20,7 @@ async function run(viewport,label){
   if(!text.includes('1 candidato'))throw new Error(`${label}: candidate count missing`);
   if(text.includes('7100'))throw new Error(`${label}: raw metric value leaked into provenance summary`);
   if(text.includes('source_payload')||text.includes('source-metric-candidate-1'))throw new Error(`${label}: technical/raw provenance leaked into summary`);
-  if(!text.includes('Candidatos permanecem separados das métricas canônicas')||!text.includes('não são somados à Timeline'))throw new Error(`${label}: non-counting guardrail missing`);
+  if(!text.includes('Só registros marcados explicitamente como candidatos entram na contagem de candidatos')||!text.includes('separadas das métricas canônicas'))throw new Error(`${label}: explicit candidate separation guardrail missing`);
 
   await page.goto('http://127.0.0.1:4173/?fixture=1&fixtureError=sourceMetrics#dados',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
