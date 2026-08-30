@@ -3,7 +3,7 @@ import {buildHealthIntelligence} from './intelligence-engine.js';
 
 const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
 const statusLabel={strong:'Boa cobertura',partial:'Cobertura parcial',limited:'Poucos dados',unavailable:'Indisponível'};
-const insightLabel={change:'O que mudou',cross:'Insight cruzado',coverage:'Limitação de cobertura',unavailable:'Indisponível'};
+const insightLabel={change:'O que mudou',cross:'Análise cruzada',coverage:'Limitação de cobertura',unavailable:'Indisponível'};
 
 function latest(rows,key){return[...(rows||[])].sort((a,b)=>String(b?.[key]||'').localeCompare(String(a?.[key]||'')))[0]||null;}
 function latestMetric(type){return latest((state.data.metrics||[]).filter(m=>m.metric_type===type),'measured_at');}
@@ -32,7 +32,7 @@ function currentSnapshot(model){
     currentCard('Último treino',workoutValue,workout?dateText(workout.workout_date):'Nenhuma sessão estruturada','treinos'),
     currentCard('Última composição',bodyValue,body?dateText(body.measured_at):'Nenhuma medição estruturada','evolucao'),
     currentCard('Alimentação mais recente',nutritionValue,nutrition?dateText(nutrition.nutrition_date):'Nenhum dia estruturado','nutricao'),
-    currentCard('Atividade consolidada',activityValue,activity?dateText(activity.measured_at):'Ainda sem leitura canônica','timeline'),
+    currentCard('Atividade consolidada',activityValue,activity?dateText(activity.measured_at):'Ainda sem leitura confirmada','timeline'),
     currentCard('Sono','Em validação','Fontes ainda não consolidadas; registros permanecem preservados por origem','timeline'),
     currentCard('Exames estruturados',labs?dateText(labs.collection_date):'Sem coleta',labs?'Última coleta disponível':'Nenhum resultado estruturado','saude')
   ].join('');
@@ -50,10 +50,10 @@ export function renderTodayHub(){
   return `<div class="intelScreen" data-executive-dashboard>
     <section class="intelHero">
       <div class="intelHeroCopy">
-        <span class="intelEyebrow">${esc(model.headline.eyebrow)}</span>
+        <span class="intelEyebrow">LTS Health</span>
         <h1>${esc(model.headline.title)}</h1>
         <p>${esc(model.headline.subtitle)}</p>
-        <div class="intelHeroMeta"><span>Leitura até ${esc(fmtDate(model.referenceDay))}</span><span>${model.comparableDomains}/5 domínios comparáveis</span><span>${model.strongDomains}/5 com boa cobertura</span></div>
+        <div class="intelHeroMeta"><span>Leitura até ${esc(fmtDate(model.referenceDay))}</span><span>${model.comparableDomains}/5 áreas comparáveis</span><span>${model.strongDomains}/5 com boa cobertura</span></div>
       </div>
       <div class="intelHeroActions">${action('analise','Abrir análise completa')}${action('dados','Adicionar dados')}</div>
     </section>
@@ -64,7 +64,7 @@ export function renderTodayHub(){
     </section>
 
     <section class="intelSection intelChanges">
-      <div class="intelSectionHead"><div><span>Intelligence</span><h2>O que merece sua atenção no histórico.</h2></div><small>Conclusões descritivas; relações temporais não são tratadas como causa.</small></div>
+      <div class="intelSectionHead"><div><span>Análise</span><h2>O que merece sua atenção no histórico.</h2></div><small>Conclusões descritivas; relações temporais não são tratadas como causa.</small></div>
       <div class="intelInsightGrid">${primaryInsights.length?primaryInsights.map(insightCard).join(''):'<div class="intelEmpty">Ainda não há mudanças com evidência suficiente para destacar.</div>'}</div>
     </section>
 
@@ -74,19 +74,19 @@ export function renderTodayHub(){
         <div class="intelAttentionList">${model.attention.length?model.attention.map(attentionRow).join(''):'<div class="intelEmpty compact">Nenhuma limitação adicional foi identificada pelos critérios atuais.</div>'}</div>
       </div>
       <div class="intelSection">
-        <div class="intelSectionHead"><div><span>Cobertura</span><h2>Quanto cada domínio sustenta comparações.</h2></div></div>
+        <div class="intelSectionHead"><div><span>Cobertura</span><h2>Quanto cada área sustenta comparações.</h2></div></div>
         <div class="intelCoverageGrid">${model.coverage.map(coverageCard).join('')}</div>
       </div>
     </section>
 
     <section class="intelSection intelAsk">
-      <div class="intelSectionHead"><div><span>Pergunte ao histórico</span><h2>Perguntas que os dados já conseguem orientar.</h2></div><small>Esta primeira versão abre a evidência correspondente; a conversa direta será a próxima camada.</small></div>
+      <div class="intelSectionHead"><div><span>Pergunte ao histórico</span><h2>Perguntas que os dados já conseguem orientar.</h2></div><small>Esta versão abre a evidência correspondente.</small></div>
       <div class="intelQuestionGrid">${questions.join('')}</div>
     </section>
 
     <section class="intelFootnote">
       <b>Como o LTS Health lê seus dados</b>
-      <p>O dashboard usa somente registros estruturados e canônicos disponíveis. Dados conflitantes ou ainda em revisão ficam fora das conclusões. Nenhum gráfico ou frase é usado para preencher lacunas por estimativa.</p>
+      <p>O dashboard usa somente registros estruturados e confirmados. Dados conflitantes ou ainda em revisão ficam fora das conclusões. Nenhum gráfico ou frase é usado para preencher lacunas por estimativa.</p>
     </section>
   </div>`;
 }
