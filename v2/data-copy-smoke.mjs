@@ -72,7 +72,7 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.ui.dataUploadStatus='all';state.ui.dataUploadSource='all';
     state.data.uploads=state.data.uploads.map(u=>u.source_type==='apple_health'?{...u,status:'imported'}:u);
-    state.data.metrics=[{source_record_id:'apple-steps-only',measured_at:'2026-02-04T12:00:00Z',metric_type:'steps',value:1000,unit:'count',source:'Apple Health'}];
+    state.data.metrics=[{source_record_id:'apple-steps-only',measured_at:'2026-02-04T12:00:00Z',metric_type:'steps',value:1000,unit:'count',source:'Apple Health',source_family:'apple_watch'}];
   });
   await rerenderData();
   const appleCardLocator=page.locator('.sourceStatus:has([data-source-upload="apple_health"])');
@@ -80,18 +80,18 @@ async function run(viewport,label){
   if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: Apple steps incorrectly proved stable Apple readiness`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
-    state.data.metrics.push({source_record_id:'apple-sleep',measured_at:'2026-02-04T12:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h',source:'Apple Health'});
+    state.data.metrics.push({source_record_id:'apple-sleep',measured_at:'2026-02-04T12:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h',source:'Apple Health',source_family:'apple_watch'});
   });
   await rerenderData();
   appleCard=(await appleCardLocator.textContent())||'';
   if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: Apple sleep incorrectly proved canonical Apple readiness`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
-    state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health'});
+    state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health ActivitySummary',source_family:'apple_activity_summary'});
   });
   await rerenderData();
   appleCard=(await appleCardLocator.textContent())||'';
-  if(!appleCard.includes('com dados'))throw new Error(`${label}: canonical Apple energy did not prove Apple readiness`);
+  if(!appleCard.includes('com dados'))throw new Error(`${label}: ActivitySummary canonical Apple energy did not prove Apple readiness`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
