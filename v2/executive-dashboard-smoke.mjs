@@ -1,25 +1,4 @@
 import {chromium} from 'playwright';
-import {buildHealthIntelligence} from './src/intelligence-engine.js';
-
-const status={body:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',metrics:'ready',labs:'ready'};
-const boundaryModel=buildHealthIntelligence({
-  metrics:[
-    {measured_at:'2026-08-29',metric_type:'steps',value:12000,source:'Apple Health'},
-    {measured_at:'2026-08-29',metric_type:'sleep_duration_h',value:8,source:'RingConn'},
-    {measured_at:'2026-08-29',metric_type:'active_energy_kcal',value:650,source:'Apple Health ActivitySummary'}
-  ],
-  sourceMetrics:[
-    {metric_date:'2026-08-29',metric_type:'sleep_duration_h',canonical_status:'held'},
-    {metric_date:'2026-08-29',metric_type:'steps',canonical_status:'candidate'}
-  ]
-},status,new Date('2026-08-30T12:00:00Z'));
-const activityCoverage=boundaryModel.coverage.find(row=>row.key==='metrics');
-if(activityCoverage?.label!=='Atividade')throw new Error('executive boundary: sleep must not be treated as canonical coverage');
-if(!activityCoverage?.detail.includes('1 dia(s)'))throw new Error(`executive boundary: only validated activity types may count (${activityCoverage?.detail})`);
-const metricInsight=boundaryModel.cross.find(item=>item.route==='timeline');
-if(!metricInsight?.summary.includes('Sono permanece fora desta leitura'))throw new Error('executive boundary: sleep policy must remain explicit');
-if(!boundaryModel.pending?.summary.includes('2 registro(s)'))throw new Error('executive boundary: candidate and held source records must remain pending');
-if(boundaryModel.referenceDay!=='2026-08-29')throw new Error(`executive boundary: candidate-only metrics must not move reference day (${boundaryModel.referenceDay})`);
 
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
@@ -29,6 +8,37 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto('http://127.0.0.1:4173/?fixture=1',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('[data-executive-dashboard]');
+
+  const boundary=await page.evaluate(async()=>{
+    const {buildHealthIntelligence}=await import('./src/intelligence-engine.js');
+    const status={body:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',metrics:'ready',labs:'ready'};
+    const model=buildHealthIntelligence({
+      metrics:[
+        {measured_at:'2026-08-29',metric_type:'steps',value:12000,source:'Apple Health'},
+        {measured_at:'2026-08-29',metric_type:'sleep_duration_h',value:8,source:'RingConn'},
+        {measured_at:'2026-08-29',metric_type:'active_energy_kcal',value:650,source:'Apple Health ActivitySummary'}
+      ],
+      sourceMetrics:[
+        {metric_date:'2026-08-29',metric_type:'sleep_duration_h',canonical_status:'held'},
+        {metric_date:'2026-08-29',metric_type:'steps',canonical_status:'candidate'}
+      ]
+    },status,new Date('2026-08-30T12:00:00Z'));
+    const coverage=model.coverage.find(row=>row.key==='metrics');
+    const timelineInsight=model.cross.find(item=>item.route==='timeline');
+    return{
+      coverageLabel:coverage?.label||'',
+      coverageDetail:coverage?.detail||'',
+      timelineSummary:timelineInsight?.summary||'',
+      pendingSummary:model.pending?.summary||'',
+      referenceDay:model.referenceDay
+    };
+  });
+  if(boundary.coverageLabel!=='Atividade')throw new Error(`${label}: sleep must not be treated as canonical coverage`);
+  if(!boundary.coverageDetail.includes('1 dia(s)'))throw new Error(`${label}: only validated activity types may count (${boundary.coverageDetail})`);
+  if(!boundary.timelineSummary.includes('Sono permanece fora desta leitura'))throw new Error(`${label}: sleep policy must remain explicit`);
+  if(!boundary.pendingSummary.includes('2 registro(s)'))throw new Error(`${label}: candidate and held source records must remain pending`);
+  if(boundary.referenceDay!=='2026-08-29')throw new Error(`${label}: candidate-only metrics must not move reference day (${boundary.referenceDay})`);
+
   const hash=await page.evaluate(()=>location.hash);
   if(hash!=='#hoje')throw new Error(`${label}: executive dashboard was not the first-run home (${hash})`);
   const activeRoutes=await page.locator('[data-route].active').evaluateAll(nodes=>nodes.map(node=>node.dataset.route));
