@@ -1,0 +1,33 @@
+name: LTS Health sleep provenance boundary
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/migrations/20260830112700_enforce_sleep_candidate_status.sql'
+      - 'supabase/functions/health-apple-sync-batch/index.ts'
+      - 'v2/src/data-layer.js'
+      - 'v2/sleep-provenance-boundary-smoke.mjs'
+      - '.github/workflows/sleep-provenance-boundary.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/migrations/20260830112700_enforce_sleep_candidate_status.sql'
+      - 'supabase/functions/health-apple-sync-batch/index.ts'
+      - 'v2/src/data-layer.js'
+      - 'v2/sleep-provenance-boundary-smoke.mjs'
+      - '.github/workflows/sleep-provenance-boundary.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sleep-provenance-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Sleep and provenance boundary contract
+        run: |
+          node --check v2/sleep-provenance-boundary-smoke.mjs
+          node v2/sleep-provenance-boundary-smoke.mjs
