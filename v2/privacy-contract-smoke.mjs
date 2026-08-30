@@ -54,9 +54,10 @@ if(sourceMetricProjection.includes('source_payload'))throw new Error('raw source
 if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source metrics use wildcard projection');
 if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality']"))throw new Error('source metrics provenance is not owned by the Data route');
 
-const backupBlock=dataLayer.match(/return\{format:'lts-health-structured-backup'[\s\S]*?data:payload\};/)?.[0]||'';
-if(!backupBlock)throw new Error('structured backup metadata contract missing');
+const backupBlock=dataLayer.match(/export async function buildStructuredBackup[\s\S]*?export async function downloadStructuredBackup/)?.[0]||'';
+if(!backupBlock)throw new Error('structured backup function contract missing');
 for(const token of ['complete:true','structured_complete:true','includes_private_files:false','includes_credentials:false'])if(!backupBlock.includes(token))throw new Error(`structured backup privacy marker missing: ${token}`);
+if(!backupBlock.includes('Backup não criado'))throw new Error('incomplete structured backup is no longer fail-closed');
 if(sourceMetricProjection.includes('source_payload'))throw new Error('structured backup can include raw source metric payload');
 
 const provenance=dataScreen.match(/function provenanceOverview\(rows\)\{[\s\S]*?\n\}/)?.[0]||'';
