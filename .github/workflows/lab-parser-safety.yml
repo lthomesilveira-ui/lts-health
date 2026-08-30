@@ -7,6 +7,13 @@ on:
       - 'supabase/functions/_shared/lab-result-contract.mjs'
       - 'v2/lab-parser-safety-smoke.mjs'
       - '.github/workflows/lab-parser-safety.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/functions/health-inspect-upload/**'
+      - 'supabase/functions/_shared/lab-result-contract.mjs'
+      - 'v2/lab-parser-safety-smoke.mjs'
+      - '.github/workflows/lab-parser-safety.yml'
   workflow_dispatch:
 permissions:
   contents: read
