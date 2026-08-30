@@ -16,6 +16,7 @@ function latestLab(){
 }
 function sourceRow(label,stateValue,missingText){
   if(stateValue==='ready')return'';
+  if(stateValue==='candidate')return`<div><span>${esc(label)}</span><b>Dados por origem recebidos; ainda não consolidados</b><small>Esses registros ficam separados da visão principal até validação.</small></div>`;
   if(stateValue==='processing')return`<div><span>${esc(label)}</span><b>Arquivo em processamento</b><small>Os dados só serão considerados quando a leitura estiver concluída.</small></div>`;
   if(stateValue==='attention')return`<div><span>${esc(label)}</span><b>Arquivo precisa de revisão</b><small>O original está preservado. Confira a área Dados.</small></div>`;
   if(stateValue==='received')return`<div><span>${esc(label)}</span><b>Arquivo recebido; dados ainda não confirmados</b><small>Ter o arquivo não significa que os dados foram estruturados.</small></div>`;

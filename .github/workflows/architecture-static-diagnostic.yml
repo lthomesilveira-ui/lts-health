@@ -20,10 +20,11 @@ jobs:
           node --check v2/today-context-smoke.mjs
           grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" v2/src/source-status.js
           ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
-          grep -q "candidateFound:sourceMetrics.some" v2/src/source-status.js
-          grep -q "source_family)==='myfitnesspal'" v2/src/source-status.js
+          grep -q "candidateFound:anyCandidateMetric(sourceMetrics)" v2/src/source-status.js
+          grep -q "candidateFromFamily(sourceMetrics,'myfitnesspal')" v2/src/source-status.js
+          grep -q "candidateFromFamily(sourceMetrics,'polar_flow')" v2/src/source-status.js
           grep -q "if(candidateFound)return'candidate'" v2/src/source-status.js
-          ! grep -q "sourceMetrics.some(m=>norm(m.source_family)==='polar_flow')" v2/src/source-status.js
+          grep -q "latestSourceMetricDateFor" v2/src/source-status.js
           grep -q "sourceStatusFor" v2/src/source-status.js
           grep -q "backupExportBtn" v2/src/data-screen.js
           grep -q "Automático canônico: energia ativa, minutos de exercício e horas em pé" v2/src/data-screen.js
