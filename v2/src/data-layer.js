@@ -1,4 +1,5 @@
-import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
+import {sb,state,fixtureMode,fixtureError,fixtureData,norm} from './core.js';
+import {stableAppleMetricTypes} from './source-status.js';
 
 const initialKeys=['body','segmental','workouts','exercises','sets'];
 const routeDomains={
@@ -54,6 +55,19 @@ const fixtureSourceMetrics=[{
   source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
 }];
 
+export function visibleRowsForDomain(key,rows=[]){
+  if(key==='metrics')return rows.filter(row=>{
+    const source=norm(row?.source);
+    if(!source.includes('apple health'))return true;
+    return source.includes('activitysummary')&&stableAppleMetricTypes.has(row?.metric_type);
+  });
+  if(key==='nutrition')return rows.filter(row=>{
+    const source=norm(row?.source);
+    return !(source.includes('myfitnesspal')&&source.includes('apple health'));
+  });
+  return rows;
+}
+
 function setFixture(){
   state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
@@ -77,8 +91,8 @@ async function loadKey(key,force=false){
   const hadPrevious=Object.hasOwn(state.data,key);
   state.domainStatus[key]='loading';
   try{
-    const rows=await loaders[key]();
-    state.data[key]=key==='workouts'?rows.filter(w=>w.is_canonical!==false&&w.record_status!=='quarantined'):rows;
+    const rows=await loaders[key](),visibleRows=visibleRowsForDomain(key,rows);
+    state.data[key]=key==='workouts'?visibleRows.filter(w=>w.is_canonical!==false&&w.record_status!=='quarantined'):visibleRows;
     delete state.errors[key];state.domainStatus[key]='ready';
   }catch(error){
     if(!hadPrevious)state.data[key]=[];
