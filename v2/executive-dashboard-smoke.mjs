@@ -13,6 +13,7 @@ async function run(viewport,label){
 
   const boundary=await page.evaluate(async()=>{
     const {buildHealthIntelligence}=await import('./src/intelligence-engine.js');
+    const {latestCanonicalActivityMetric}=await import('./src/today-screen.js');
     const status={body:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',metrics:'ready',labs:'ready'};
     const model=buildHealthIntelligence({
       metrics:[
@@ -27,12 +28,21 @@ async function run(viewport,label){
     },status,new Date('2026-08-30T12:00:00Z'));
     const coverage=model.coverage.find(row=>row.key==='metrics');
     const timelineInsight=model.cross.find(item=>item.route==='timeline');
+    const latestActivity=latestCanonicalActivityMetric([
+      {measured_at:'2026-08-30T11:00:00Z',metric_type:'steps',value:14000,unit:'count'},
+      {measured_at:'2026-08-28T20:00:00Z',metric_type:'active_energy_kcal',value:610,unit:'kcal'},
+      {measured_at:'2026-08-30T09:00:00Z',metric_type:'exercise_minutes',value:47,unit:'min'},
+      {measured_at:'2026-08-29T18:00:00Z',metric_type:'stand_hours',value:11,unit:'h'},
+      {measured_at:'2026-08-30T10:00:00Z',metric_type:'sleep_duration_h',value:7.5,unit:'h'}
+    ]);
     return{
       coverageLabel:coverage?.label||'',
       coverageDetail:coverage?.detail||'',
       timelineSummary:timelineInsight?.summary||'',
       pendingSummary:model.pending?.summary||'',
-      referenceDay:model.referenceDay
+      referenceDay:model.referenceDay,
+      latestActivityType:latestActivity?.metric_type||'',
+      latestActivityValue:latestActivity?.value??null
     };
   });
   if(boundary.coverageLabel!=='Atividade')throw new Error(`${label}: sleep must not be treated as canonical coverage`);
@@ -40,6 +50,7 @@ async function run(viewport,label){
   if(!boundary.timelineSummary.includes('Sono permanece fora desta leitura'))throw new Error(`${label}: sleep policy must remain explicit`);
   if(!boundary.pendingSummary.includes('2 registro(s)'))throw new Error(`${label}: candidate and held source records must remain pending`);
   if(boundary.referenceDay!=='2026-08-29')throw new Error(`${label}: candidate-only metrics must not move reference day (${boundary.referenceDay})`);
+  if(boundary.latestActivityType!=='exercise_minutes'||boundary.latestActivityValue!==47)throw new Error(`${label}: Today must pick the newest validated ActivitySummary metric and ignore newer candidate-only types (${boundary.latestActivityType}:${boundary.latestActivityValue})`);
 
   const hash=await page.evaluate(()=>location.hash);
   if(hash!=='#hoje')throw new Error(`${label}: executive dashboard was not the first-run home (${hash})`);
