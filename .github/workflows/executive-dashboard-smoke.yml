@@ -5,6 +5,7 @@ on:
     paths:
       - 'v2/src/intelligence-engine.js'
       - 'v2/src/today-screen.js'
+      - 'v2/src/main.js'
       - 'v2/today.css'
       - 'v2/index.html'
       - 'v2/executive-dashboard-smoke.mjs'
@@ -23,11 +24,13 @@ jobs:
         run: |
           node --check v2/src/intelligence-engine.js
           node --check v2/src/today-screen.js
+          node --check v2/src/main.js
           node --check v2/executive-dashboard-smoke.mjs
           grep -q "buildHealthIntelligence" v2/src/intelligence-engine.js
+          grep -q "LTS Health Intelligence" v2/src/intelligence-engine.js
           grep -q "data-executive-dashboard" v2/src/today-screen.js
-          grep -q "LTS Health Intelligence" v2/src/today-screen.js
           grep -q "Ausência de dado nunca vira zero" v2/src/today-screen.js
+          grep -Fq "const secondaryRoutes=new Set(['timeline','saude','nutricao','dados']);" v2/src/main.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
