@@ -51,6 +51,7 @@ export function uploadBucket(upload){
 }
 
 function latestUploadFor(source){
+  if(failed('uploads'))return null;
   return [...(state.data.uploads||[])].filter(u=>norm(u.source_type)===norm(source)).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0]||null;
 }
 

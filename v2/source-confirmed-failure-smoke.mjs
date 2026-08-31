@@ -41,15 +41,26 @@ async function run(viewport,label){
       fleury:{status:sourceStatusFor('fleury'),coverage:sourceCoverageFor('fleury')},
       html:renderDataHub()
     };
-    return snapshot;
+
+    state.data.uploads=[{id:'stale-upload',source_type:'apple_health',status:'processing',created_at:'2026-08-30T12:00:00Z'}];
+    state.data.metrics=[];
+    state.domainStatus.metrics='ready';
+    state.domainStatus.uploads='error';
+    const staleUpload={status:sourceStatusFor('apple_health'),html:renderDataHub()};
+    return {snapshot,staleUpload};
   });
 
-  for(const [source,entry] of Object.entries(result).filter(([key])=>key!=='html')){
+  for(const [source,entry] of Object.entries(result.snapshot).filter(([key])=>key!=='html')){
     if(entry.status!=='unknown')throw new Error(`${label}: ${source} stale confirmed data still reports ${entry.status}`);
     if(entry.coverage.confirmedDate!==null||entry.coverage.latestDate!==null)throw new Error(`${label}: ${source} stale confirmed date survived failed domain ${JSON.stringify(entry.coverage)}`);
   }
-  if(!result.html.includes('não foi possível verificar'))throw new Error(`${label}: failed source is not visibly unavailable`);
-  for(const date of ['07/02/2026','08/02/2026','09/02/2026','06/02/2026'])if(result.html.includes(`Confirmado até: ${date}`))throw new Error(`${label}: stale confirmed freshness leaked into source card ${date}`);
+  if(!result.snapshot.html.includes('não foi possível verificar'))throw new Error(`${label}: failed source is not visibly unavailable`);
+  for(const date of ['07/02/2026','08/02/2026','09/02/2026','06/02/2026'])if(result.snapshot.html.includes(`Confirmado até: ${date}`))throw new Error(`${label}: stale confirmed freshness leaked into source card ${date}`);
+
+  if(result.staleUpload.status!=='unknown')throw new Error(`${label}: stale upload state survived failed uploads domain as ${result.staleUpload.status}`);
+  if(result.staleUpload.html.includes('processando'))throw new Error(`${label}: stale processing upload leaked into source card after uploads failure`);
+  if(!result.staleUpload.html.includes('não foi possível verificar'))throw new Error(`${label}: failed uploads domain is not visibly unavailable`);
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
