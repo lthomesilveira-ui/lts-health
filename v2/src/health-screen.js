@@ -40,20 +40,28 @@ function unitCohorts(numericRows){
   for(const row of numericRows){const unit=cleanUnit(row);if(!unit)continue;const key=unit;if(!map.has(key))map.set(key,{unit,rows:[]});map.get(key).rows.push(row);}
   return [...map.values()].sort((a,b)=>b.rows.length-a.rows.length||a.unit.localeCompare(b.unit,'pt-BR'));
 }
+function trendRows(cohort){
+  const byDate=new Map();
+  for(const row of cohort.rows){const date=String(row.collection_date||'');if(!date)continue;if(!byDate.has(date))byDate.set(date,[]);byDate.get(date).push(row);}
+  const ambiguousDates=[...byDate.entries()].filter(([,rows])=>rows.length>1).map(([date])=>date);
+  const rows=[...byDate.entries()].filter(([,items])=>items.length===1).map(([,items])=>items[0]).sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date)));
+  return{rows,ambiguousDates};
+}
 function cohortTrend(cohort){
-  const ordered=[...cohort.rows].sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date)));
+  const {rows:ordered}=trendRows(cohort);
   if(ordered.length<2)return'';
   const first=ordered[0],last=ordered.at(-1),delta=num(last.result_numeric)-num(first.result_numeric),unit=cohort.unit;
   return `<section class="labUnitCohort"><div class="labTrend"><span>${fmtDate(first.collection_date)} · ${fmtNum(first.result_numeric)} ${esc(unit)}</span><b>Diferença ${delta>0?'+':''}${fmtNum(delta)}${unit?` ${esc(unit)}`:''}</b><span>${fmtDate(last.collection_date)} · ${fmtNum(last.result_numeric)} ${esc(unit)}</span></div>${markerChart(ordered,unit)}</section>`;
 }
 function markerHistory(group){
   if(!group)return empty('Selecione um marcador para ver o histórico.');
-  const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),unitless=numeric.filter(r=>!cleanUnit(r)).length,cohorts=unitCohorts(numeric),comparable=cohorts.filter(c=>c.rows.length>=2);
+  const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),unitless=numeric.filter(r=>!cleanUnit(r)).length,cohorts=unitCohorts(numeric),ambiguousDates=unique(cohorts.flatMap(c=>trendRows(c).ambiguousDates)),comparable=cohorts.filter(c=>trendRows(c).rows.length>=2);
   const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||'Laboratório não informado')} · ${esc(resultKind(r))}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
   const unitlessNote=unitless?'<div class="note">Resultados numéricos sem unidade ficam preservados no histórico, mas não entram em diferenças ou gráficos de tendência.</div>':'';
+  const ambiguityNote=ambiguousDates.length?`<div class="note">Há mais de um resultado deste marcador na mesma data (${ambiguousDates.map(fmtDate).join(', ')}). Esses registros ficam preservados no histórico e fora da tendência até revisão.</div>`:'';
   let trend='';
-  if(comparable.length){trend=`${cohorts.length>1?'<div class="note">Resultados com unidades diferentes permanecem em séries separadas; nenhuma conversão é feita automaticamente.</div>':''}${unitlessNote}${comparable.map(cohortTrend).join('')}`;}
-  else if(rows.length>1)trend=`${unitlessNote}<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos, unidades ou dois pontos com a mesma unidade.</div>`;
+  if(comparable.length){trend=`${cohorts.length>1?'<div class="note">Resultados com unidades diferentes permanecem em séries separadas; nenhuma conversão é feita automaticamente.</div>':''}${ambiguityNote}${unitlessNote}${comparable.map(cohortTrend).join('')}`;}
+  else if(rows.length>1)trend=`${ambiguityNote}${unitlessNote}<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos, unidades ou dois pontos inequívocos com a mesma unidade em datas diferentes.</div>`;
   else trend=`${unitlessNote}<div class="note">Há um único ponto para este marcador. Novas coletas compatíveis permitirão comparação longitudinal.</div>`;
   return `<div class="markerHead"><b>${esc(group.label)}</b><small>${numeric.length} numérico(s) · ${textual.length} textual(is)</small></div>${trend}<div class="list labHistory">${history}</div>`;
 }
