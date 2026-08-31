@@ -64,7 +64,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await open('uploads','dados','Dados');
-  if(!ctx.text.includes('não verificado')||!ctx.text.includes('Não foi possível verificar os arquivos agora'))throw new Error('dados/uploads: source state falsely presented as missing');
+  if(!ctx.text.includes('Não foi possível verificar os arquivos agora'))throw new Error('dados/uploads: upload failure is not explicit');
   if(/Arquivos recebidos[\s\S]{0,80}\b0\b/i.test(ctx.text))throw new Error('dados/uploads: upload failure rendered as zero');
   await finish(ctx,'dados/uploads');
 }

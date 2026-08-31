@@ -54,12 +54,22 @@ const bottom=await page.evaluate(()=>{
 if(bottom.hostBottom>bottom.navTop+1)throw new Error('scroll viewport overlaps mobile nav');
 if(bottom.lastBottom>bottom.hostBottom+1)throw new Error('last content cannot scroll fully above the navigation');
 
-for(const route of ['treinos','evolucao','analise']){
-  await page.click(`#mobileNav [data-route="${route}"]`);
+async function openMobileRoute(route){
+  const direct=page.locator(`#mobileNav [data-route="${route}"]`);
+  if(await direct.count()){
+    await direct.click();
+  }else{
+    await page.locator('#mobileNav [data-route="mais"]').click();
+    await page.waitForSelector('#moreSheet:not(.hidden)');
+    await page.locator(`#moreSheet [data-route="${route}"]`).click();
+    await page.waitForFunction(()=>document.querySelector('#moreSheet')?.classList.contains('hidden')===true);
+  }
   await page.waitForFunction(r=>location.hash===`#${r}`,route);
   const overlap=await page.evaluate(()=>document.querySelector('#screenHost').getBoundingClientRect().bottom-document.querySelector('#mobileNav').getBoundingClientRect().top);
   if(overlap>1)throw new Error(`${route}: navigation overlaps content by ${Math.round(overlap)}px`);
 }
+
+for(const route of ['treinos','evolucao','analise'])await openMobileRoute(route);
 
 if(errors.length)throw new Error(`page errors: ${errors.join(' | ')}`);
 await browser.close();
