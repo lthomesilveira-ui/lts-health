@@ -50,7 +50,7 @@ async function run(viewport,label){
   let text=(await page.textContent('#screenHost'))||'';
   for(const expected of [
     'Conferências','3 itens realmente precisam de você','O que precisa de você','O que está guardado aguardando uma regra segura',
-    'Sono','Passos','Apple Saúde + Polar Flow','você não precisa revisar um por um','O que já está no seu histórico',
+    'Sono','Passos','Apple Saúde + Polar Flow','Fontes sobrepostas continuam separadas e não são somadas.','O que já está no seu histórico',
     'Bioimpedâncias','Treinos','Alimentação por dia','Refeições','Atividade','Exames','Documentos','Tratamentos',
     'Histórico de arquivos','Qualidade e limitações','Inventário preservado; depende do arquivo original.',
     'Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.',
@@ -100,6 +100,8 @@ async function run(viewport,label){
   await rerenderData();
   appleCard=(await appleCardLocator.textContent())||'';
   if(!appleCard.includes('com dados'))throw new Error(`${label}: confirmed Apple activity did not prove Apple readiness`);
+  if(!appleCard.includes('Confirmado até: 04/02/2026'))throw new Error(`${label}: confirmed Apple coverage date missing from source card`);
+  if(appleCard.includes('Registros adicionais guardados até: 04/02/2026'))throw new Error(`${label}: same-day preserved evidence was incorrectly presented as newer than confirmed coverage`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
