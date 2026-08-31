@@ -1,0 +1,1 @@
+revoke all on function health_private.route_review_metric_to_source_evidence() from public;
