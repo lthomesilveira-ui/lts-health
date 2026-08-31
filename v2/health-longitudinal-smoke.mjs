@@ -24,6 +24,7 @@ async function run(viewport,label){
       {source_record_id:'lab-unitless-prev',collection_date:'2025-12-03',report_date:'2025-12-03',laboratory:'Laboratório de teste',biomarker:'Marcador sem unidade',result_raw:'5',result_numeric:5,unit:null,source:'Fixture de interface'},
       {source_record_id:'lab-other-unit-1',collection_date:'2025-11-03',report_date:'2025-11-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'100',result_numeric:100,unit:'outra',source:'Fixture de interface'},
       {source_record_id:'lab-other-unit-2',collection_date:'2025-10-03',report_date:'2025-10-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'90',result_numeric:90,unit:'outra',source:'Fixture de interface'},
+      {source_record_id:'lab-history-a-older',collection_date:'2025-09-03',report_date:'2025-09-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'4',result_numeric:4,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-text-1',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador textual',result_raw:'Presente',result_numeric:null,unit:null,source:'Fixture de interface'},
       {source_record_id:'lab-text-2',collection_date:'2025-12-03',report_date:'2025-12-03',laboratory:'Laboratório de teste',biomarker:'Marcador textual',result_raw:'Ausente',result_numeric:null,unit:null,source:'Fixture de interface'}
     ];
@@ -31,9 +32,9 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   });
   await page.fill('#labQuery','x');
-  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=7);
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=8);
   await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=7);
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=8);
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
@@ -50,7 +51,7 @@ async function run(viewport,label){
   if(!compareHead.includes('Laboratório de teste')||compareHead.includes('A laboratório sem sobreposição'))throw new Error(`${label}: prior-date comparison did not prefer the collection with stronger marker overlap`);
   if(compareHead.includes('Outro laboratório'))throw new Error(`${label}: same-day source was treated as prior longitudinal collection`);
   const firstMetric=(await page.locator('.metric').first().textContent())||'';
-  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('5'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
+  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('6'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
   await page.click('[data-marker="marcador textual"]');
   await page.waitForFunction(()=>{const t=document.querySelector('.exerciseDetail')?.textContent||'';return t.includes('Presente')&&t.includes('Ausente')&&t.includes('textual');});
   const textual=(await page.locator('.exerciseDetail').textContent())||'';
@@ -62,6 +63,10 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelectorAll('.labUnitCohort').length===2);
   const marker=(await page.locator('.exerciseDetail').textContent())||'';
   if(!marker.includes('unidades diferentes permanecem em séries separadas'))throw new Error(`${label}: mixed-unit separation guardrail missing`);
+  if(!marker.includes('mais de um resultado deste marcador na mesma data')||!marker.includes('03/01/2026'))throw new Error(`${label}: same-date ambiguity is not explained to the user`);
+  const trends=await page.locator('.exerciseDetail .labUnitCohort').allTextContents();
+  if(trends.some(text=>text.includes('03/01/2026')||text.includes('99,0')))throw new Error(`${label}: ambiguous same-date results leaked into longitudinal trend`);
+  if(!marker.includes('99')||!marker.includes('8'))throw new Error(`${label}: ambiguous same-date evidence was not preserved in history`);
   if(marker.match(/converter|convertid/i))throw new Error(`${label}: interface implies unsupported unit conversion`);
   const full=(await page.textContent('#screenHost'))||'';
   if(full.match(/\b(canonical|parity|backend|provenance[- ]first|readiness|PWA)\b/i))throw new Error(`${label}: implementation jargon visible`);
