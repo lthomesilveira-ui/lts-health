@@ -47,7 +47,7 @@ export const state = {
 };
 
 export const routes = new Set(['bio','treinos','evolucao','analise','tratamentos','hoje','timeline','saude','nutricao','dados']);
-export const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 export const day = value => String(value ?? '').slice(0,10);
 export const num = value => {
   if(value==null)return null;
@@ -132,7 +132,12 @@ export async function uploadFile(file,sourceType){
   const{error:storageError}=await sb.storage.from(CONFIG.bucket).upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});if(storageError)throw storageError;
   const payload={user_id:session.user.id,source_type:sourceType||'other',original_filename:file.name,storage_path:path,mime_type:file.type||null,size_bytes:file.size,status:'uploaded'};
   const{data:row,error:dbError}=await sb.from('health_uploads').insert(payload).select('id').single();
-  if(dbError){try{await sb.storage.from(CONFIG.bucket).remove([path]);}catch{}throw dbError;}
+  if(dbError){
+    const preservedError=new Error('Arquivo recebido e preservado, mas não foi possível concluir o registro para processamento.');
+    preservedError.cause=dbError;
+    preservedError.storagePath=path;
+    throw preservedError;
+  }
   const functionName=inspectFunctionForSource(sourceType);
   const{error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});
   if(fnError){
