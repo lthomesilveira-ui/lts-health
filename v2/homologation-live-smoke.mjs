@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const base='https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1';
+const base=process.env.LTS_HEALTH_BASE_URL||'https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1';
 
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
@@ -11,9 +11,11 @@ async function run(viewport,label){
 
   await page.goto(`${base}#bio`,{waitUntil:'networkidle'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Última medição · 01/02/2026'))throw new Error(`${label}: deployed latest body date missing`);
+  if(!text.includes('Massa muscular'))throw new Error(`${label}: readable muscle-mass label missing`);
+  if(text.includes('MME')||text.includes('source_file')||text.includes('confidence'))throw new Error(`${label}: technical body-composition language leaked into deployed UI`);
 
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.ui.trainingPeriod='all';});
