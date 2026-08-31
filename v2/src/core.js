@@ -47,7 +47,7 @@ export const state = {
 };
 
 export const routes = new Set(['bio','treinos','evolucao','analise','tratamentos','hoje','timeline','saude','nutricao','dados']);
-export const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 export const day = value => String(value ?? '').slice(0,10);
 export const num = value => {
   if(value==null)return null;
@@ -63,7 +63,7 @@ export const since = days => { const d=new Date();d.setHours(12,0,0,0);d.setDate
 export const within = (value,days) => day(value)>=since(days);
 export const neutralDelta = (a,b,digits=1,unit='') => { a=num(a);b=num(b);if(a==null||b==null)return'—';const x=a-b;return`${x>0?'+':''}${fmtNum(x,digits)}${unit?` ${unit}`:''}`; };
 export const bodyRows = () => [...(state.data.body||[])].sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
-export const workoutRows = () => [...(state.data.workouts||[])].sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
+export const workoutRows = () => [...(state.data.workouts||[])].filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined').sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
 export const exercisesFor = workout => (state.data.exercises||[]).filter(e=>e.workout_source_record_id===workout.source_record_id).sort((a,b)=>(a.order_index??999)-(b.order_index??999));
 export const setsFor = exercise => (state.data.sets||[]).filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(a.set_index??999)-(b.set_index??999));
 export const inspectFunctionForSource = () => CONFIG.inspectFunction;
