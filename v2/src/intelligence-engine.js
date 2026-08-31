@@ -11,11 +11,13 @@ const signed=(value,digits=1,unit='')=>{const n=num(value);if(n==null)return nul
 const maxDate=(values)=>values.filter(Boolean).sort().at(-1)||null;
 const prettyDate=value=>{const s=day(value);if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
 const canonicalActivityRows=rows=>(rows||[]).filter(row=>stableAppleMetricTypes.has(row?.metric_type));
+const structuredWorkouts=rows=>(rows||[]).filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined');
+const comparableLoadUnit=unit=>Boolean(norm(unit)&&norm(unit)!=='unitless');
 
 function referenceDay(data){
   return maxDate([
     maxDate((data.body||[]).map(r=>day(r.measured_at))),
-    maxDate((data.workouts||[]).map(r=>day(r.workout_date))),
+    maxDate(structuredWorkouts(data.workouts).map(r=>day(r.workout_date))),
     maxDate((data.nutrition||[]).map(r=>day(r.nutrition_date))),
     maxDate(canonicalActivityRows(data.metrics).map(r=>day(r.measured_at))),
     maxDate((data.labs||[]).map(r=>day(r.collection_date)))
@@ -34,7 +36,7 @@ function bodyChange(data,status){
 
 function workoutRhythm(data,status,ref){
   if(!loaded(status,'workouts'))return{kind:'unavailable',title:'Treinos indisponíveis',summary:'O histórico de treinos não carregou nesta atualização.',route:'treinos',priority:94};
-  const rows=data.workouts||[];
+  const rows=structuredWorkouts(data.workouts);
   if(!rows.length)return{kind:'coverage',title:'Sem treino estruturado',summary:'Ainda não há sessões confirmadas suficientes para analisar ritmo de treino.',route:'treinos',priority:50};
   const recentStart=addDays(ref,-27),previousEnd=addDays(recentStart,-1),previousStart=addDays(previousEnd,-27);
   const recent=rows.filter(r=>inRange(r.workout_date,recentStart,ref)).length;
@@ -46,7 +48,7 @@ function workoutRhythm(data,status,ref){
 
 function bestComparablePerformance(data,status){
   if(!loaded(status,'workouts')||!loaded(status,'exercises')||!loaded(status,'sets'))return null;
-  const workouts=new Map((data.workouts||[]).map(w=>[w.source_record_id,w]));
+  const workouts=new Map(structuredWorkouts(data.workouts).map(w=>[w.source_record_id,w]));
   const exerciseRows=(data.exercises||[]).filter(e=>workouts.has(e.workout_source_record_id));
   const groups=new Map();
   for(const e of exerciseRows){const key=`${norm(e.exercise)}|${norm(e.machine)}`;if(!norm(e.exercise))continue;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);}
@@ -54,7 +56,7 @@ function bestComparablePerformance(data,status){
   for(const exercises of groups.values()){
     const ordered=[...exercises].sort((a,b)=>String(b.workout_date||'').localeCompare(String(a.workout_date||'')));if(ordered.length<2)continue;
     const pair=[];
-    for(const ex of ordered){const sets=(data.sets||[]).filter(s=>s.exercise_source_record_id===ex.source_record_id&&num(s.weight)!=null&&s.weight_unit);const units=unique(sets.map(s=>norm(s.weight_unit)));if(units.length!==1||!sets.length)continue;pair.push({exercise:ex,value:Math.max(...sets.map(s=>num(s.weight))),unit:sets[0].weight_unit,date:day(ex.workout_date)});if(pair.length===2)break;}
+    for(const ex of ordered){const sets=(data.sets||[]).filter(s=>s.exercise_source_record_id===ex.source_record_id&&num(s.weight)!=null&&comparableLoadUnit(s.weight_unit));const units=unique(sets.map(s=>norm(s.weight_unit)));if(units.length!==1||!sets.length)continue;pair.push({exercise:ex,value:Math.max(...sets.map(s=>num(s.weight))),unit:sets[0].weight_unit,date:day(ex.workout_date)});if(pair.length===2)break;}
     if(pair.length<2||norm(pair[0].unit)!==norm(pair[1].unit))continue;candidates.push({latest:pair[0],previous:pair[1],delta:pair[0].value-pair[1].value});
   }
   if(!candidates.length)return null;
@@ -67,14 +69,14 @@ function bodyIntervalContext(data,status){
   if(!loaded(status,'body')||!loaded(status,'workouts')||!loaded(status,'nutrition'))return null;
   const body=sortAsc(data.body,'measured_at');if(body.length<2)return null;
   const previous=body.at(-2),latest=body.at(-1),start=day(previous.measured_at),end=day(latest.measured_at);
-  const workouts=(data.workouts||[]).filter(w=>day(w.workout_date)>start&&day(w.workout_date)<=end);
+  const workouts=structuredWorkouts(data.workouts).filter(w=>day(w.workout_date)>start&&day(w.workout_date)<=end);
   const nutritionDays=uniqueDays((data.nutrition||[]).filter(n=>day(n.nutrition_date)>start&&day(n.nutrition_date)<=end),'nutrition_date');
   return{kind:'cross',title:'Contexto entre as duas últimas medições',summary:`No intervalo de ${prettyDate(start)} a ${prettyDate(end)}, há ${workouts.length} treino(s) e ${nutritionDays.length} dia(s) com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,route:'analise',priority:91};
 }
 
 function workoutNutritionContext(data,status,ref){
   if(!loaded(status,'workouts')||!loaded(status,'nutrition'))return null;
-  const start=addDays(ref,-55),workouts=(data.workouts||[]).filter(w=>inRange(w.workout_date,start,ref));if(!workouts.length)return null;
+  const start=addDays(ref,-55),workouts=structuredWorkouts(data.workouts).filter(w=>inRange(w.workout_date,start,ref));if(!workouts.length)return null;
   const nutritionDays=new Set(uniqueDays((data.nutrition||[]).filter(n=>inRange(n.nutrition_date,start,ref)),'nutrition_date'));
   const paired=workouts.filter(w=>nutritionDays.has(day(w.workout_date))).length,coverage=pct(paired,workouts.length);
   return{kind:coverage>=70?'cross':'coverage',title:coverage>=70?'Treino × alimentação tem boa cobertura':'Alimentação limita o cruzamento com treinos',summary:`${paired} de ${workouts.length} sessão(ões) nas últimas 8 semanas têm alimentação registrada no mesmo dia (${coverage}%). Isso mede cobertura de dados, não efeito sobre performance.`,route:'analise',priority:coverage>=70?84:88};
@@ -106,7 +108,7 @@ function pendingData(data){
 }
 
 function coverageRows(data,status,ref){
-  const body=loaded(status,'body')?(data.body||[]):null,workouts=loaded(status,'workouts')?(data.workouts||[]):null,nutrition=loaded(status,'nutrition')?(data.nutrition||[]):null,metrics=loaded(status,'metrics')?canonicalActivityRows(data.metrics):null,labs=loaded(status,'labs')?(data.labs||[]):null;
+  const body=loaded(status,'body')?(data.body||[]):null,workouts=loaded(status,'workouts')?structuredWorkouts(data.workouts):null,nutrition=loaded(status,'nutrition')?(data.nutrition||[]):null,metrics=loaded(status,'metrics')?canonicalActivityRows(data.metrics):null,labs=loaded(status,'labs')?(data.labs||[]):null;
   const start56=addDays(ref,-55),start28=addDays(ref,-27);
   return[
     {key:'body',label:'Composição',route:'evolucao',state:body==null?'unavailable':body.length>=2?'strong':body.length?'partial':'limited',detail:body==null?'indisponível':`${body.length} medição(ões) no histórico`},
