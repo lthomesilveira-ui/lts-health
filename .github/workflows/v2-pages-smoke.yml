@@ -67,6 +67,7 @@ jobs:
 
           fetch "$ROOT" "$TMP/root.html"
           fetch "$V2" "$TMP/v2.html"
+          fetch "$V2/product-finish.css" "$TMP/product-finish.css"
           fetch "$V2/src/main.js" "$TMP/main.js"
           fetch "$V2/src/data-layer.js" "$TMP/data-layer.js"
           fetch "$V2/src/core.js" "$TMP/core.js"
@@ -84,6 +85,8 @@ jobs:
           require_fixed 'v2 module bootstrap' 'type="module" src="./src/main.js"' "$TMP/v2.html"
           require_fixed 'v2 evolution stylesheet' './evolution.css' "$TMP/v2.html"
           require_fixed 'v2 data stylesheet' './data.css' "$TMP/v2.html"
+          require_fixed 'v2 finished product stylesheet' './product-finish.css' "$TMP/v2.html"
+          require_fixed 'v2 finished product subtitle' 'Seu histórico de saúde' "$TMP/v2.html"
           require_fixed 'training owner' 'renderTrainingScreen' "$TMP/main.js"
           require_fixed 'ingestion preview data layer' 'health_ingestion_previews' "$TMP/data-layer.js"
           require_fixed 'analysis owns preserved source evidence' "analise:['nutrition','metrics','sourceMetrics','labs']" "$TMP/data-layer.js"
@@ -94,6 +97,8 @@ jobs:
           require_fixed 'executive intelligence owner' 'buildHealthIntelligence' "$TMP/today.js"
           require_fixed 'review exclusion copy' 'Dados conflitantes ou ainda em revisão ficam fora das conclusões' "$TMP/today.js"
           require_fixed 'sleep user-facing review copy' 'aguardando conferência antes de entrar em médias' "$TMP/today.js"
+          require_fixed 'pending source evidence copy' 'registro(s) por origem aguardando conferência' "$TMP/intelligence.js"
+          require_absent_fixed 'legacy non-consolidated evidence copy absent' 'não consolidados' "$TMP/intelligence.js"
           require_fixed 'sleep canonical boundary contract' 'Sono permanece fora desta leitura' "$TMP/intelligence.js"
           require_fixed 'stable Apple metric boundary' "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" "$TMP/source-status.js"
           require_absent_regex 'sleep excluded from stable Apple metric set' 'stableAppleMetricTypes.*sleep_duration_h' "$TMP/source-status.js"
@@ -111,6 +116,7 @@ jobs:
           require_absent_fixed 'legacy validation Today copy absent' 'Em validação' "$TMP/today.js"
 
           require_deployed_match 'v2 index' "$TMP/v2.html" 'v2/index.html'
+          require_deployed_match 'v2 product-finish.css' "$TMP/product-finish.css" 'v2/product-finish.css'
           require_deployed_match 'v2 main.js' "$TMP/main.js" 'v2/src/main.js'
           require_deployed_match 'v2 data-layer.js' "$TMP/data-layer.js" 'v2/src/data-layer.js'
           require_deployed_match 'v2 core.js' "$TMP/core.js" 'v2/src/core.js'
@@ -129,3 +135,4 @@ jobs:
         run: |
           node v2/homologation-live-smoke.mjs
           node v2/executive-dashboard-smoke.mjs
+          node v2/product-finish-smoke.mjs
