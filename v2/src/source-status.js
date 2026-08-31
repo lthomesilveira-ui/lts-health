@@ -57,22 +57,22 @@ function latestUploadFor(source){
 function sourceEvidence(source){
   const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
   if(source==='apple_health')return{
-    dataFound:metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&isAppleSource(m)&&isAppleActivitySummarySource(m)),
-    candidateFound:anyCandidateMetric(sourceMetrics),
+    dataFound:!failed('metrics')&&metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&isAppleSource(m)&&isAppleActivitySummarySource(m)),
+    candidateFound:!failed('sourceMetrics')&&anyCandidateMetric(sourceMetrics),
     domainKeys:['metrics','sourceMetrics']
   };
   if(source==='polar_flow')return{
-    dataFound:contains(workouts,['source','source_file'],'polar'),
-    candidateFound:candidateFromFamily(sourceMetrics,'polar_flow'),
+    dataFound:!failed('workouts')&&contains(workouts,['source','source_file'],'polar'),
+    candidateFound:!failed('sourceMetrics')&&candidateFromFamily(sourceMetrics,'polar_flow'),
     domainKeys:['workouts','sourceMetrics']
   };
   if(source==='myfitnesspal')return{
-    dataFound:nutrition.some(directMyFitnessPal)||meals.some(directMyFitnessPal),
-    candidateFound:candidateFromFamily(sourceMetrics,'myfitnesspal'),
+    dataFound:(!failed('nutrition')&&nutrition.some(directMyFitnessPal))||(!failed('meals')&&meals.some(directMyFitnessPal)),
+    candidateFound:!failed('sourceMetrics')&&candidateFromFamily(sourceMetrics,'myfitnesspal'),
     domainKeys:['nutrition','meals','sourceMetrics']
   };
-  if(source==='fleury')return{dataFound:contains(labs,['laboratory','source','source_file'],'fleury'),candidateFound:false,domainKeys:['labs']};
-  if(source==='einstein')return{dataFound:contains(labs,['laboratory','source','source_file'],'einstein'),candidateFound:false,domainKeys:['labs']};
+  if(source==='fleury')return{dataFound:!failed('labs')&&contains(labs,['laboratory','source','source_file'],'fleury'),candidateFound:false,domainKeys:['labs']};
+  if(source==='einstein')return{dataFound:!failed('labs')&&contains(labs,['laboratory','source','source_file'],'einstein'),candidateFound:false,domainKeys:['labs']};
   return{dataFound:false,candidateFound:false,domainKeys:[]};
 }
 
@@ -87,14 +87,18 @@ export function latestSourceMetricDateFor(source){
 
 export function latestConfirmedSourceDateFor(source){
   const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],directDates=[];
-  if(source==='apple_health')directDates.push(...metrics.filter(row=>stableAppleMetricTypes.has(row?.metric_type)&&isAppleSource(row)&&isAppleActivitySummarySource(row)).map(row=>row?.measured_at));
-  else if(source==='polar_flow')directDates.push(...matching(workouts,['source','source_file'],'polar').map(row=>row?.workout_date));
-  else if(source==='myfitnesspal'){
-    directDates.push(...nutrition.filter(directMyFitnessPal).map(row=>row?.nutrition_date));
-    directDates.push(...meals.filter(directMyFitnessPal).map(row=>row?.meal_date));
+  if(source==='apple_health'){
+    if(!failed('metrics'))directDates.push(...metrics.filter(row=>stableAppleMetricTypes.has(row?.metric_type)&&isAppleSource(row)&&isAppleActivitySummarySource(row)).map(row=>row?.measured_at));
+  }else if(source==='polar_flow'){
+    if(!failed('workouts'))directDates.push(...matching(workouts,['source','source_file'],'polar').map(row=>row?.workout_date));
+  }else if(source==='myfitnesspal'){
+    if(!failed('nutrition'))directDates.push(...nutrition.filter(directMyFitnessPal).map(row=>row?.nutrition_date));
+    if(!failed('meals'))directDates.push(...meals.filter(directMyFitnessPal).map(row=>row?.meal_date));
   }else if(source==='fleury'||source==='einstein'){
-    const term=source==='fleury'?'fleury':'einstein';
-    directDates.push(...matching(labs,['laboratory','source','source_file'],term).map(row=>dateOnly(row?.collection_date)||dateOnly(row?.report_date)));
+    if(!failed('labs')){
+      const term=source==='fleury'?'fleury':'einstein';
+      directDates.push(...matching(labs,['laboratory','source','source_file'],term).map(row=>dateOnly(row?.collection_date)||dateOnly(row?.report_date)));
+    }
   }
   return latestDate(directDates);
 }
