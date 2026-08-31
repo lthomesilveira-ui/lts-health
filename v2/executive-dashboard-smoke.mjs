@@ -52,6 +52,20 @@ async function run(viewport,label){
   const activeRoutes=await page.locator('[data-route].active').evaluateAll(nodes=>nodes.map(node=>node.dataset.route));
   const visibleActive=[...new Set(activeRoutes)];
   if(visibleActive.length!==1||visibleActive[0]!=='hoje')throw new Error(`${label}: home navigation state is ambiguous (${visibleActive.join('|')})`);
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),
+      {source_record_id:'sleep-review-watch',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'sleep-review-ring',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:6.9,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'held'}
+    ];
+    state.domainStatus.sourceMetrics='ready';
+    location.hash='bio';
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
+  await page.evaluate(()=>{location.hash='hoje';});
+  await page.waitForSelector('[data-executive-dashboard]');
+
   const text=(await page.textContent('#screenHost'))||'';
   for(const expected of ['LTS Health','Estado atual','O que merece sua atenção no histórico','Pontos de atenção','Cobertura','Pergunte ao histórico'])if(!text.includes(expected))throw new Error(`${label}: missing executive dashboard section: ${expected}`);
   if(text.includes('LTS Health Intelligence')||text.includes('Insight cruzado')||text.includes('Ainda sem leitura canônica')||text.includes('domínios comparáveis'))throw new Error(`${label}: implementation-oriented copy leaked into Today`);
@@ -60,9 +74,9 @@ async function run(viewport,label){
   if(insights<3)throw new Error(`${label}: expected at least 3 evidence-backed insights, got ${insights}`);
   if(coverage!==5)throw new Error(`${label}: expected 5 coverage domains, got ${coverage}`);
   const sleepText=(await page.locator('.intelCurrentCard').filter({hasText:'Sono'}).textContent())||'';
-  if(!sleepText.includes('dia(s) registrado(s)'))throw new Error(`${label}: preserved sleep is still being presented as absent (${sleepText})`);
+  if(!sleepText.includes('1 dia(s) registrado(s)'))throw new Error(`${label}: preserved sleep is still being presented as absent (${sleepText})`);
   if(!sleepText.includes('aguardando conferência antes de entrar em médias'))throw new Error(`${label}: sleep review boundary is not understandable (${sleepText})`);
-  if(/7[,.]4\s*h/i.test(sleepText)||sleepText.includes('Sono consolidado'))throw new Error(`${label}: fixture sleep leaked as a confirmed numeric snapshot (${sleepText})`);
+  if(/7[,.][19]\s*h/i.test(sleepText)||sleepText.includes('Sono consolidado'))throw new Error(`${label}: review-only sleep leaked as a confirmed numeric snapshot (${sleepText})`);
   for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','candidate','canonical','ActivitySummary','source_family','count/min','MME'])if(text.includes(forbidden))throw new Error(`${label}: technical language leaked into Today: ${forbidden}`);
   if(/\b(causou|provou|garante|melhorou|piorou)\b/i.test(text))throw new Error(`${label}: dashboard used causal or value-judgment language`);
   const firstEvidence=page.locator('.intelInsightCard button').first();
