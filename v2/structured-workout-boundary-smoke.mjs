@@ -26,11 +26,10 @@ async function run(viewport,label){
       {source_record_id:'shadow-set-1',exercise_source_record_id:'shadow-ex-1',weight:300,weight_unit:'kg',reps_numeric:2},
       {source_record_id:'shadow-set-2',exercise_source_record_id:'shadow-ex-2',weight:250,weight_unit:'kg',reps_numeric:3}
     );
-    const {render}=await import('./src/main.js');
-    render();
   });
-
+  await page.locator('[data-route="hoje"]').first().click();
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.textContent?.includes('Último treino'));
+
   const text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Peito + ombros'))throw new Error(`${label}: canonical latest workout disappeared`);
   if(text.includes('Atividade complementar 1')||text.includes('Atividade complementar 2'))throw new Error(`${label}: non-canonical activity leaked into structured workout intelligence`);
