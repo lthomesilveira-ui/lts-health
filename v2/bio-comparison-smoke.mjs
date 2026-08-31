@@ -28,6 +28,10 @@ async function run(viewport,label){
   await page.selectOption('#compareB','2026-02-01');
   await page.waitForFunction(()=>document.querySelector('.compareContext')?.textContent?.includes('Mesma data'));
   if(await page.inputValue('#compareA')!=='2026-02-01'||await page.inputValue('#compareB')!=='2026-02-01')throw new Error(`${label}: same-date comparison selectors lost their state`);
+  const compareCard=page.locator('.card').filter({hasText:'Comparar duas medições'}).first();
+  const sameDateText=(await compareCard.textContent())||'';
+  if(!sameDateText.includes('Escolha duas datas diferentes para comparar.'))throw new Error(`${label}: same-date comparison does not explain that no delta will be calculated`);
+  for(const forbidden of ['0,0 kg','0,0 %','+0,0','-0,0'])if(sameDateText.includes(forbidden))throw new Error(`${label}: same-date comparison rendered a false numeric zero: ${forbidden}`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: body composition comparison caused horizontal overflow ${overflow}px`);
