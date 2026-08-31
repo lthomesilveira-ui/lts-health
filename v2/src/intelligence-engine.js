@@ -82,14 +82,32 @@ function workoutNutritionContext(data,status,ref){
   return{kind:coverage>=70?'cross':'coverage',title:coverage>=70?'Treino × alimentação tem boa cobertura':'Alimentação limita o cruzamento com treinos',summary:`${paired} de ${workouts.length} sessão(ões) nas últimas 8 semanas têm alimentação registrada no mesmo dia (${coverage}%). Isso mede cobertura de dados, não efeito sobre performance.`,route:'analise',priority:coverage>=70?84:88};
 }
 
+function labCollections(rows){
+  const map=new Map();
+  for(const row of rows||[]){const date=day(row.collection_date),lab=String(row.laboratory||'').trim(),key=`${date||''}__${norm(lab)}`;if(!date)continue;if(!map.has(key))map.set(key,{date,lab,rows:[]});map.get(key).rows.push(row);}
+  return[...map.values()];
+}
+function labMarkers(collection){
+  const map=new Map();
+  for(const row of collection?.rows||[]){const key=norm(row.biomarker);if(!key)continue;if(!map.has(key))map.set(key,[]);map.get(key).push(row);}
+  return map;
+}
+function comparableLabCount(current,previous){
+  const a=labMarkers(current),b=labMarkers(previous);let count=0,overlap=0;
+  for(const[key,ar]of a){const br=b.get(key);if(!br)continue;overlap++;if(ar.length!==1||br.length!==1)continue;const left=ar[0],right=br[0],ua=norm(left.unit),ub=norm(right.unit);if(num(left.result_numeric)==null||num(right.result_numeric)==null||!ua||!ub||ua!==ub)continue;count++;}
+  return{count,overlap};
+}
 function labContext(data,status){
   if(!loaded(status,'labs'))return{kind:'unavailable',title:'Exames indisponíveis',summary:'Os resultados laboratoriais não carregaram nesta atualização.',route:'saude',priority:93};
   const rows=data.labs||[],dates=uniqueDays(rows,'collection_date').sort();
   if(!dates.length)return{kind:'coverage',title:'Sem exames estruturados',summary:'Ainda não há coleta laboratorial estruturada para leitura longitudinal.',route:'saude',priority:56};
   if(dates.length<2)return{kind:'coverage',title:'Exames ainda não formam uma série longitudinal',summary:`Há resultados estruturados em ${prettyDate(dates[0])}, mas é necessária outra coleta comparável para identificar mudanças ao longo do tempo.`,route:'saude',priority:89};
-  const latest=dates.at(-1),previous=dates.at(-2),a=rows.filter(r=>day(r.collection_date)===previous),b=rows.filter(r=>day(r.collection_date)===latest),old=new Map(a.map(r=>[norm(r.biomarker),r]));
-  const comparable=b.filter(r=>{const p=old.get(norm(r.biomarker));return p&&num(p.result_numeric)!=null&&num(r.result_numeric)!=null&&norm(p.unit)===norm(r.unit);});
-  return{kind:'change',title:'Exames têm nova comparação disponível',summary:`As coletas de ${prettyDate(previous)} e ${prettyDate(latest)} têm ${comparable.length} biomarcador(es) comparável(is) com a mesma unidade.`,route:'saude',priority:88};
+  const latest=dates.at(-1),previous=dates.at(-2),collections=labCollections(rows),currentCollections=collections.filter(c=>c.date===latest),previousCollections=collections.filter(c=>c.date===previous),pairs=[];
+  for(const current of currentCollections)for(const prior of previousCollections){const score=comparableLabCount(current,prior);pairs.push({current,prior,...score,sameLab:norm(current.lab)&&norm(current.lab)===norm(prior.lab)?1:0});}
+  pairs.sort((a,b)=>b.count-a.count||b.overlap-a.overlap||b.sameLab-a.sameLab||String(a.current.lab).localeCompare(String(b.current.lab),'pt-BR')||String(a.prior.lab).localeCompare(String(b.prior.lab),'pt-BR'));
+  const best=pairs[0];
+  if(!best?.count)return{kind:'coverage',title:'Exames ainda sem comparação direta segura',summary:`Há coletas em ${prettyDate(previous)} e ${prettyDate(latest)}, mas ainda não há biomarcadores com valor numérico, unidade presente e exatamente igual em duas coletas comparáveis.`,route:'saude',priority:89};
+  return{kind:'change',title:'Exames têm nova comparação disponível',summary:`As coletas de ${prettyDate(previous)} e ${prettyDate(latest)} têm ${best.count} biomarcador(es) comparável(is) com unidade registrada e igual.`,route:'saude',priority:88};
 }
 
 function metricCoverage(data,status,ref){
