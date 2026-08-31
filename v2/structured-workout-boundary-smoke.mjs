@@ -12,30 +12,41 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]'));
 
-  await page.evaluate(async()=>{
+  const boundary=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
+    const {buildIntegratedAnalysis}=await import('./src/integrated-analysis.js');
     state.data.workouts.push(
       {source_record_id:'shadow-workout-1',workout_date:'2026-02-03',workout_type:'Atividade complementar 1',record_status:'validated',is_canonical:false,source:'Apple Saúde'},
       {source_record_id:'shadow-workout-2',workout_date:'2026-01-29',workout_type:'Atividade complementar 2',record_status:'validated',is_canonical:false,source:'MyFitnessPal'}
     );
     state.data.exercises.push(
-      {source_record_id:'shadow-ex-1',workout_source_record_id:'shadow-workout-1',workout_date:'2026-02-03',exercise:'Supino máquina',machine:'Máquina de teste'},
-      {source_record_id:'shadow-ex-2',workout_source_record_id:'shadow-workout-2',workout_date:'2026-01-29',exercise:'Supino máquina',machine:'Máquina de teste'}
+      {source_record_id:'shadow-ex-1',workout_source_record_id:'shadow-workout-1',workout_date:'2026-02-03',exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito'},
+      {source_record_id:'shadow-ex-2',workout_source_record_id:'shadow-workout-2',workout_date:'2026-01-29',exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito'}
     );
     state.data.sets.push(
       {source_record_id:'shadow-set-1',exercise_source_record_id:'shadow-ex-1',weight:300,weight_unit:'kg',reps_numeric:2},
       {source_record_id:'shadow-set-2',exercise_source_record_id:'shadow-ex-2',weight:250,weight_unit:'kg',reps_numeric:3}
     );
+    const model=buildIntegratedAnalysis(state.data,state.domainStatus);
+    return {
+      totalSessions:model.training.distribution.totalSessions,
+      groups:model.training.distribution.rows.map(row=>row.label),
+      lastWorkout:model.training.lastWorkout?.workout_type||'',
+      shadowPerformance:(model.training.performance||[]).some(row=>row.weight===300||row.weight===250)
+    };
   });
+
+  if(boundary.totalSessions!==2)throw new Error(`${label}: integrated distribution counted non-canonical activity (${boundary.totalSessions})`);
+  if(boundary.groups.includes('Peito'))throw new Error(`${label}: non-canonical muscle group leaked into integrated distribution`);
+  if(boundary.lastWorkout!=='Peito + ombros')throw new Error(`${label}: canonical latest workout changed (${boundary.lastWorkout})`);
+  if(boundary.shadowPerformance)throw new Error(`${label}: non-canonical activity created a performance comparison`);
+
   await page.locator('[data-route="hoje"]:visible').first().click();
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.textContent?.includes('Último treino'));
-
   const text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Peito + ombros'))throw new Error(`${label}: canonical latest workout disappeared`);
-  if(text.includes('Atividade complementar 1')||text.includes('Atividade complementar 2'))throw new Error(`${label}: non-canonical activity leaked into structured workout intelligence`);
-  if(!text.includes('2 sessão(ões) nas últimas 8 semanas'))throw new Error(`${label}: workout coverage counted non-canonical activity`);
-  if(text.includes('4 sessão(ões) nas últimas 8 semanas'))throw new Error(`${label}: workout coverage still includes complementary activity`);
-  if(text.includes('250 → 300 kg')||text.includes('300 kg'))throw new Error(`${label}: non-canonical activity created a performance conclusion`);
+  if(text.includes('Atividade complementar 1')||text.includes('Atividade complementar 2'))throw new Error(`${label}: non-canonical activity leaked into dashboard`);
+  if(text.includes('250 → 300 kg')||text.includes('300 kg'))throw new Error(`${label}: non-canonical activity leaked into a performance card`);
 
   await page.locator('[data-route="timeline"]:visible').first().click();
   await page.waitForFunction(()=>document.querySelector('.screenTitle h1')?.textContent?.trim()==='Timeline');

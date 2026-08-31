@@ -35,7 +35,7 @@ function nutritionPanel(model){
     ${metric('Dias registrados',String(n.days),n.coveragePct==null?'':`${n.coveragePct}% dos dias do intervalo`)}
     ${metric('Proteína média',n.proteinAvg==null?'—':`${fmtNum(n.proteinAvg,0)} g/dia`,n.proteinDelta==null?'sem período anterior equivalente':`${deltaText(n.proteinDelta,0,'g/dia')} vs período anterior equivalente`)}
     ${metric('Energia média',n.calorieAvg==null?'—':`${fmtNum(n.calorieAvg,0)} kcal/dia`,'valor registrado, sem meta inferida')}
-  </div><p class="footerNote">O app pode comparar alimentação e composição no mesmo intervalo, mas não conclui que uma mudança alimentar causou uma mudança corporal.</p>`;
+  </div><p class="footerNote">O app pode comparar alimentação e composição no mesmo intervalo, mas não atribui causalidade entre as mudanças observadas.</p>`;
 }
 
 function sleepPanel(model){
