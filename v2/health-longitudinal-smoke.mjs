@@ -19,6 +19,7 @@ async function run(viewport,label){
       {source_record_id:'lab-history-b',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador B',result_raw:'18',result_numeric:18,unit:'mg/dL',reference_range:'10–30',source:'Fixture de interface'},
       {source_record_id:'lab-unitless-current',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador sem unidade',result_raw:'7',result_numeric:7,unit:null,source:'Fixture de interface'},
       {source_record_id:'lab-same-date-other',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Outro laboratório',biomarker:'Marcador A',result_raw:'99',result_numeric:99,unit:'u',source:'Fixture de interface'},
+      {source_record_id:'lab-prior-decoy',collection_date:'2025-12-03',report_date:'2025-12-03',laboratory:'A laboratório sem sobreposição',biomarker:'Marcador X',result_raw:'77',result_numeric:77,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-history-a-prev',collection_date:'2025-12-03',report_date:'2025-12-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'6',result_numeric:6,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-unitless-prev',collection_date:'2025-12-03',report_date:'2025-12-03',laboratory:'Laboratório de teste',biomarker:'Marcador sem unidade',result_raw:'5',result_numeric:5,unit:null,source:'Fixture de interface'},
       {source_record_id:'lab-other-unit-1',collection_date:'2025-11-03',report_date:'2025-11-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'100',result_numeric:100,unit:'outra',source:'Fixture de interface'},
@@ -30,15 +31,15 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   });
   await page.fill('#labQuery','x');
-  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=6);
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=7);
   await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=6);
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=7);
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
     const list=document.querySelector('.collectionCompareList')?.textContent||'';
     const head=document.querySelector('.collectionCompareHead')?.textContent||'';
-    return select?.value==='2026-01-03__Laboratório de teste'&&list.includes('Marcador A')&&list.includes('+2,0 u')&&list.includes('Marcador sem unidade')&&list.includes('unidade ausente')&&head.includes('03/12/2025')&&!head.includes('Outro laboratório');
+    return select?.value==='2026-01-03__Laboratório de teste'&&list.includes('Marcador A')&&list.includes('+2,0 u')&&list.includes('Marcador sem unidade')&&list.includes('unidade ausente')&&head.includes('03/12/2025')&&head.includes('Laboratório de teste')&&!head.includes('A laboratório sem sobreposição')&&!head.includes('Outro laboratório');
   });
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit collection difference missing`);
@@ -46,6 +47,7 @@ async function run(viewport,label){
   if(compare.includes('+2,0Marcador sem unidade')||compare.match(/Marcador sem unidade[\s\S]{0,80}\+2,0(?!\s*u)/))throw new Error(`${label}: unitless numeric delta was rendered`);
   const compareHead=(await page.locator('.collectionCompareHead').textContent())||'';
   if(!compareHead.includes('03/12/2025'))throw new Error(`${label}: comparison did not use the prior distinct collection date`);
+  if(!compareHead.includes('Laboratório de teste')||compareHead.includes('A laboratório sem sobreposição'))throw new Error(`${label}: prior-date comparison did not prefer the collection with stronger marker overlap`);
   if(compareHead.includes('Outro laboratório'))throw new Error(`${label}: same-day source was treated as prior longitudinal collection`);
   const firstMetric=(await page.locator('.metric').first().textContent())||'';
   if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('5'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
