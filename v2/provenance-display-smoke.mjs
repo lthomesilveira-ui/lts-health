@@ -32,8 +32,8 @@ async function run(viewport,label){
   });
 
   if(!text.includes('0 confirmado(s)'))throw new Error(`${label}: confirmed count changed unexpectedly: ${text}`);
-  if(!text.includes('1 aguardando conferência'))throw new Error(`${label}: explicit review record was lost or ambiguous record was miscounted: ${text}`);
-  if(!text.includes('2 preservado(s) sem uso automático'))throw new Error(`${label}: ambiguous/held provenance was not preserved separately: ${text}`);
+  if(!text.includes('2 aguardando conferência'))throw new Error(`${label}: candidate/held review records were lost or miscounted: ${text}`);
+  if(!text.includes('1 preservado(s) sem uso automático'))throw new Error(`${label}: ambiguous provenance without an explicit review status was not preserved separately: ${text}`);
   if(/can[oô]nic|candidat/i.test(text))throw new Error(`${label}: internal canonical/candidate language is visible: ${text}`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);

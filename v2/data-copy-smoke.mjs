@@ -50,7 +50,7 @@ async function run(viewport,label){
   let text=(await page.textContent('#screenHost'))||'';
   for(const expected of [
     'Conferências','3 itens realmente precisam de você','O que precisa de você','O que está guardado aguardando uma regra segura',
-    'Sono','Passos','Apple Saúde + Polar Flow','você não precisa revisar um por um','O que já está no seu histórico',
+    'Sono','Passos','Apple Saúde + Polar Flow','Fontes sobrepostas continuam separadas e não são somadas.','O que já está no seu histórico',
     'Bioimpedâncias','Treinos','Alimentação por dia','Refeições','Atividade','Exames','Documentos','Tratamentos',
     'Histórico de arquivos','Qualidade e limitações','Inventário preservado; depende do arquivo original.',
     'Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.',
@@ -92,7 +92,8 @@ async function run(viewport,label){
   await rerenderData();
   const appleCardLocator=page.locator('.sourceStatus:has([data-source-upload="apple_health"])');
   let appleCard=(await appleCardLocator.textContent())||'';
-  if(!appleCard.includes('arquivo recebido')||appleCard.includes('com dados'))throw new Error(`${label}: Apple steps incorrectly proved confirmed Apple readiness`);
+  if(!appleCard.includes('aguardando conferência')||appleCard.includes('com dados'))throw new Error(`${label}: Apple preserved evidence incorrectly proved confirmed Apple readiness`);
+  if(!appleCard.includes('Registros guardados até: 04/02/2026'))throw new Error(`${label}: preserved Apple coverage date missing from source card`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.metrics.push({source_record_id:'apple-energy',measured_at:'2026-02-04T12:00:00Z',metric_type:'active_energy_kcal',value:100,unit:'kcal',source:'Apple Health ActivitySummary',source_family:'apple_activity_summary'});
@@ -100,6 +101,8 @@ async function run(viewport,label){
   await rerenderData();
   appleCard=(await appleCardLocator.textContent())||'';
   if(!appleCard.includes('com dados'))throw new Error(`${label}: confirmed Apple activity did not prove Apple readiness`);
+  if(!appleCard.includes('Confirmado até: 04/02/2026'))throw new Error(`${label}: confirmed Apple coverage date missing from source card`);
+  if(appleCard.includes('Registros adicionais guardados até: 04/02/2026'))throw new Error(`${label}: same-day preserved evidence was incorrectly presented as newer than confirmed coverage`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');

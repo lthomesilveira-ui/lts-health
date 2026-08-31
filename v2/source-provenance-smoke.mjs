@@ -11,7 +11,7 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   const screen=(await page.locator('#screenHost').textContent())||'';
-  if(!screen.includes('Registros preservados por origem'))throw new Error(`${label}: readable provenance section missing`);
+  if(!screen.includes('Detalhes por origem'))throw new Error(`${label}: readable provenance section missing`);
   if(!screen.includes('Métricas de saúde'))throw new Error(`${label}: health metrics availability missing from Data screen`);
   const panel=page.locator('.provenancePanel');
   await panel.waitFor();
@@ -30,7 +30,7 @@ async function run(viewport,label){
   if(!failed.includes('Não foi possível carregar as origens das métricas agora.'))throw new Error(`${label}: provenance failure state missing`);
   if(/\b0\s+(confirmado|aguardando)/i.test(failed))throw new Error(`${label}: failed provenance domain was presented as numeric zero`);
   const availability=(await page.locator('#screenHost').textContent())||'';
-  if(!availability.includes('Registros preservados por origem')||!availability.includes('Não foi possível carregar as origens das métricas agora.'))throw new Error(`${label}: failed source-domain availability is not explicit`);
+  if(!availability.includes('Detalhes por origem')||!availability.includes('Não foi possível carregar as origens das métricas agora.'))throw new Error(`${label}: failed source-domain availability is not explicit`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: provenance caused horizontal overflow ${overflow}px`);

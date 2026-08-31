@@ -1,5 +1,5 @@
 import {state,esc,fmtDate,norm} from './core.js';
-import {sourceStatusFor,latestSourceEvidenceDateFor,uploadBucket} from './source-status.js';
+import {sourceStatusFor,sourceCoverageFor,uploadBucket} from './source-status.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
@@ -9,11 +9,11 @@ const dateValue=value=>/^\d{4}-\d{2}-\d{2}$/.test(String(value||'').slice(0,10))
 
 function sourceState(){
   return [
-    {key:'apple_health',name:'Apple Saúde',status:sourceStatusFor('apple_health'),latestDate:latestSourceEvidenceDateFor('apple_health'),readyDetail:'Há dados confirmados do Apple Saúde no histórico.',candidateDetail:'Há registros do Apple Saúde guardados por origem e aguardando uma regra segura antes de entrar nas leituras principais.',missingDetail:'Conecte o app complementar ou envie um export do app Saúde.',action:'Enviar Apple Saúde',scope:'Entram automaticamente em Atividade: energia ativa, minutos de exercício e horas em pé. Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso e sono ficam separados até conferência. Fontes diferentes de sono continuam separadas.'},
-    {key:'polar_flow',name:'Polar Flow',status:sourceStatusFor('polar_flow'),latestDate:latestSourceEvidenceDateFor('polar_flow'),readyDetail:'Há dados do Polar Flow no histórico.',candidateDetail:'Há registros do Polar Flow guardados por origem e aguardando uma regra segura.',missingDetail:'Envie um export do Polar Flow ou permita a origem pelo Apple Saúde.',action:'Enviar Polar',scope:'O Polar complementa atividade e detalhes de treino. Quando um treino já está registrado por outra fonte, ele não é contado novamente só por aparecer no Polar.'},
-    {key:'myfitnesspal',name:'MyFitnessPal',status:sourceStatusFor('myfitnesspal'),latestDate:latestSourceEvidenceDateFor('myfitnesspal'),readyDetail:'Há alimentação do MyFitnessPal no histórico principal.',candidateDetail:'Há totais do MyFitnessPal recebidos por outra origem e aguardando conferência.',missingDetail:'Envie o export do MyFitnessPal ou conecte-o ao Apple Saúde.',action:'Enviar MyFitnessPal',scope:'O arquivo direto do MyFitnessPal é a fonte preferida. Totais recebidos pelo Apple Saúde ficam separados até conferência; alimentos, refeições e horários não são inventados.'},
-    {key:'fleury',name:'Fleury',status:sourceStatusFor('fleury'),latestDate:latestSourceEvidenceDateFor('fleury'),readyDetail:'Há resultados do Fleury no histórico.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Fleury',scope:'O arquivo original é preservado. Um resultado só entra como valor estruturado quando a leitura é segura; valor, unidade ou referência ambíguos ficam para revisão.'},
-    {key:'einstein',name:'Einstein',status:sourceStatusFor('einstein'),latestDate:latestSourceEvidenceDateFor('einstein'),readyDetail:'Há resultados do Einstein no histórico.',missingDetail:'Ainda não há resultado identificado como Einstein. Envie CSV, PDF ou imagem quando quiser incluir essa origem.',action:'Enviar Einstein',scope:'O arquivo original é preservado. Um resultado só entra como valor estruturado quando a leitura é segura; valor, unidade ou referência ambíguos ficam para revisão.'}
+    {key:'apple_health',name:'Apple Saúde',status:sourceStatusFor('apple_health'),...sourceCoverageFor('apple_health'),readyDetail:'Há dados confirmados do Apple Saúde no histórico.',candidateDetail:'Há registros do Apple Saúde guardados por origem e aguardando uma regra segura antes de entrar nas leituras principais.',missingDetail:'Conecte o app complementar ou envie um export do app Saúde.',action:'Enviar Apple Saúde',scope:'Entram automaticamente em Atividade: energia ativa, minutos de exercício e horas em pé. Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso e sono ficam separados até conferência. Fontes diferentes de sono continuam separadas.'},
+    {key:'polar_flow',name:'Polar Flow',status:sourceStatusFor('polar_flow'),...sourceCoverageFor('polar_flow'),readyDetail:'Há dados do Polar Flow no histórico.',candidateDetail:'Há registros do Polar Flow guardados por origem e aguardando uma regra segura.',missingDetail:'Envie um export do Polar Flow ou permita a origem pelo Apple Saúde.',action:'Enviar Polar',scope:'O Polar complementa atividade e detalhes de treino. Quando um treino já está registrado por outra fonte, ele não é contado novamente só por aparecer no Polar.'},
+    {key:'myfitnesspal',name:'MyFitnessPal',status:sourceStatusFor('myfitnesspal'),...sourceCoverageFor('myfitnesspal'),readyDetail:'Há alimentação do MyFitnessPal no histórico principal.',candidateDetail:'Há totais do MyFitnessPal recebidos por outra origem e aguardando conferência.',missingDetail:'Envie o export do MyFitnessPal ou conecte-o ao Apple Saúde.',action:'Enviar MyFitnessPal',scope:'O arquivo direto do MyFitnessPal é a fonte preferida. Totais recebidos pelo Apple Saúde ficam separados até conferência; alimentos, refeições e horários não são inventados.'},
+    {key:'fleury',name:'Fleury',status:sourceStatusFor('fleury'),...sourceCoverageFor('fleury'),readyDetail:'Há resultados do Fleury no histórico.',missingDetail:'Envie CSV, PDF ou imagem do exame.',action:'Enviar Fleury',scope:'O arquivo original é preservado. Um resultado só entra como valor estruturado quando a leitura é segura; valor, unidade ou referência ambíguos ficam para revisão.'},
+    {key:'einstein',name:'Einstein',status:sourceStatusFor('einstein'),...sourceCoverageFor('einstein'),readyDetail:'Há resultados do Einstein no histórico.',missingDetail:'Ainda não há resultado identificado como Einstein. Envie CSV, PDF ou imagem quando quiser incluir essa origem.',action:'Enviar Einstein',scope:'O arquivo original é preservado. Um resultado só entra como valor estruturado quando a leitura é segura; valor, unidade ou referência ambíguos ficam para revisão.'}
   ];
 }
 
@@ -21,7 +21,10 @@ function statusCard(source){
   const labels={ready:'com dados',candidate:'aguardando conferência',processing:'processando',attention:'aguardando leitura',received:'arquivo recebido',unknown:'não foi possível verificar',missing:'ainda não conectado'};
   const detail=source.status==='ready'?source.readyDetail:source.status==='candidate'?(source.candidateDetail||'Há registros desta origem aguardando conferência.'):source.status==='processing'?'O arquivo foi recebido e ainda está sendo processado.':source.status==='attention'?'O arquivo está guardado e ainda não entrou nas análises.':source.status==='received'?'O arquivo foi recebido; ainda não há dados confirmados derivados dele.':source.status==='unknown'?'Não foi possível verificar essa origem agora.':source.missingDetail;
   const kind=source.status==='ready'?'ok':source.status==='attention'||source.status==='unknown'?'warn':'';
-  const freshness=source.latestDate&&(source.status==='ready'||source.status==='candidate')?`<small class="sourceFreshness">Última data disponível: ${esc(fmtDate(source.latestDate))}</small>`:'';
+  const coverage=[];
+  if(source.status==='ready'&&source.confirmedDate)coverage.push(`Confirmado até: ${fmtDate(source.confirmedDate)}`);
+  if((source.status==='ready'||source.status==='candidate')&&source.preservedDate&&(!source.confirmedDate||source.preservedDate>source.confirmedDate))coverage.push(`${source.confirmedDate?'Registros adicionais guardados até':'Registros guardados até'}: ${fmtDate(source.preservedDate)}`);
+  const freshness=coverage.length?`<small class="sourceFreshness">${coverage.map(esc).join('<br>')}</small>`:'';
   return `<article class="sourceStatus ${source.status==='ready'?'ready':''}"><div class="sourceStatusTop"><b>${esc(source.name)}</b>${pill(labels[source.status]||'não verificado',kind)}</div><p>${esc(detail)}</p>${freshness}<button type="button" data-source-upload="${esc(source.key)}">${esc(source.action)}</button><details class="sourceMore"><summary>O que entra dessa fonte</summary><small class="sourceScope">${esc(source.scope)}</small></details></article>`;
 }
 
@@ -40,13 +43,14 @@ const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed
 const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
 const metricTopicLabels={sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',oxygen_saturation_pct:'Saturação de oxigênio',weight_kg:'Peso',dietary_energy_kcal:'Alimentação',dietary_protein_g:'Alimentação',dietary_carbs_g:'Alimentação',dietary_fat_g:'Alimentação'};
 const sensitiveQualityPattern=/(^|_)(dose|dosage|frequency|injection|application|aplicacao|medication|medicacao|treatment|tratamento)(_|$)/i;
-const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|backend_|source_payload|storage_path|secret|private_field)/i;
+const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|source_payload|storage_path|secret|private_field)/i;
 function sourceLabel(value){return sourceLabels[value]||'Outra origem';}
 function sourceFamilyLabel(value){return sourceFamilyLabels[value]||'Outra origem';}
 function uploadStatus(value){return uploadStatusLabels[value]||'situação não informada';}
 function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name].some(value=>sensitiveQualityPattern.test(norm(value).replaceAll(' ','_')));}
 function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||'Revisão de qualidade';}
 function safeIssueText(value,fallback){const text=String(value||'').trim();return text&&!internalTextPattern.test(text)?text:fallback;}
+function safeQualityDescription(issue,fallback){return sensitiveQuality(issue)?fallback:safeIssueText(issue?.description,fallback);}
 
 function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguardando leitura segura',review_required:'aguardando leitura segura',failed:'falha no processamento'})[status]||'situação não detalhada';}
 function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
@@ -103,7 +107,7 @@ function reviewInbox(uploads,previews,issues,sourceMetrics){
   const heldRows=failed('sourceMetrics')?null:reviewRows(sourceMetrics),safeCount=(heldRows?.length||0)+uploadCounts.safeReview;
   const headline=manualCount?`${manualCount} ${manualCount===1?'item realmente precisa':'itens realmente precisam'} de você`:'Nada exige sua ação agora';
   const explanation=manualCount?'Só os itens abaixo pedem uma decisão ou um novo arquivo. O restante fica guardado sem entrar nas análises até existir uma regra segura.':`O LTS Health está guardando ${safeCount} ${safeCount===1?'registro':'registros'} com cautela. Eles não entram em médias nem são somados entre fontes e você não precisa revisar um por um.`;
-  const manualRows=[...uploadActions.map(upload=>`<div class="reviewActionRow"><div><b>${esc(upload.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(upload.source_type))} · envie novamente se quiser tentar outra leitura.</small></div>${pill('sua atenção','warn')}</div>`),...issueActions.slice(0,8).map(issue=>`<div class="reviewActionRow"><div><b>${esc(issueTitle(issue))}</b><small>${esc(safeIssueText(issue.description,'Há um ponto que precisa de conferência.'))}</small></div>${pill('sua atenção','warn')}</div>`)];
+  const manualRows=[...uploadActions.map(upload=>`<div class="reviewActionRow"><div><b>${esc(upload.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(upload.source_type))} · envie novamente se quiser tentar outra leitura.</small></div>${pill('sua atenção','warn')}</div>`),...issueActions.slice(0,8).map(issue=>`<div class="reviewActionRow"><div><b>${esc(issueTitle(issue))}</b><small>${esc(safeQualityDescription(issue,'Há um ponto que precisa de conferência.'))}</small></div>${pill('sua atenção','warn')}</div>`)];
   return `<section class="card reviewInbox" data-review-inbox>
     <div class="reviewInboxHero"><div><span class="reviewEyebrow">Conferências</span><h2>${esc(headline)}</h2><p>${esc(explanation)}</p></div>${pill(manualCount?'ação necessária':'tudo sob controle',manualCount?'warn':'ok')}</div>
     <div class="reviewInboxStats">
@@ -135,7 +139,7 @@ function provenanceOverview(rows){
 function qualityRow(issue,mode){
   const known=!!issueCategoryLabels[issue?.category],sensitive=sensitiveQuality(issue);
   const fallback=sensitive?'Registro histórico preservado sem detalhe operacional nesta tela.':!known?'Revisão registrada sem detalhe exibido nesta tela.':'Detalhe disponível para revisão.';
-  const detail=safeIssueText(issue?.description,fallback),resolution=safeIssueText(issue?.resolution_notes,'');
+  const detail=sensitive?fallback:safeIssueText(issue?.description,fallback),resolution=sensitive?'':safeIssueText(issue?.resolution_notes,'');
   return `<div class="qualityRow"><div><b>${esc(issueTitle(issue))}</b><small>${esc(detail)}</small>${resolution?`<em>${esc(resolution)}</em>`:''}</div>${pill(mode==='resolved'?'resolvido':mode==='known'?'limitação conhecida':'revisar',mode==='resolved'?'ok':mode==='action'?'warn':'')}</div>`;
 }
 function qualitySections(issues){
