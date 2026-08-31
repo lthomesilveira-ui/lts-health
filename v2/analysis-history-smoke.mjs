@@ -44,6 +44,21 @@ async function run(viewport,label){
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
+    const sameDay=state.data.workouts[0];
+    state.data.workouts.push({...sameDay,source_record_id:'workout-same-day-second',workout_type:'Segunda sessão no mesmo dia'});
+  });
+  await page.selectOption('#analysisPeriod','all');
+  await page.waitForFunction(()=>document.querySelector('.analysisNarrative')?.textContent?.includes('3 sessão(ões) de treino registrada(s)'));
+  text=(await page.textContent('#screenHost'))||'';
+  if(!text.includes('100% das sessões do período têm alimentação registrada no mesmo dia'))throw new Error(`${label}: same-day multiple workout sessions were undercounted in nutrition coverage`);
+  if(text.includes('2 de 3 treino(s) do período têm registro de alimentação no mesmo dia'))throw new Error(`${label}: nutrition limitation mixed unique days with workout sessions`);
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    state.data.workouts=(state.data.workouts||[]).filter(row=>row.source_record_id!=='workout-same-day-second');
+  });
+
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
     state.data.metrics=(state.data.metrics||[]).filter(row=>row.metric_type!=='sleep_duration_h');
     state.data.sourceMetrics=[
       {source_record_id:'pending-sleep-1',metric_date:'2026-02-01',metric_type:'sleep_duration_h',value:7.2,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
