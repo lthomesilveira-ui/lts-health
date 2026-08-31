@@ -9,6 +9,7 @@ const domainError=text=>`<div class="errorState"><b>${esc(text)}</b><span>Os dem
 const monthKey=value=>day(value).slice(0,7);
 const monthLabel=value=>{const[y,m]=String(value||'').split('-');if(!y||!m)return'—';return new Date(Number(y),Number(m)-1,1).toLocaleDateString('pt-BR',{month:'short',year:'numeric'}).replace('.','');};
 const displayUnit=unit=>unit==='plate_index'?'placa':unit==='unitless'?'sem unidade':unit||'sem unidade';
+const comparableLoadUnit=unit=>Boolean(unit&&unit!=='unitless');
 
 function setSummary(exercise){
   if(failed('sets')) return '<span class="set muted">Detalhes das séries indisponíveis agora.</span>';
@@ -122,8 +123,8 @@ function exerciseProgressionSeries(group){
   for(const exercise of group.rows){
     const date=day(exercise.workout_date);if(!date)continue;
     for(const set of setsFor(exercise)){
-      const weight=num(set.weight);if(weight==null)continue;
-      const unit=set.weight_unit||'sem unidade';
+      const weight=num(set.weight),unit=set.weight_unit;
+      if(weight==null||!comparableLoadUnit(unit))continue;
       if(!byUnit.has(unit))byUnit.set(unit,new Map());
       const byDate=byUnit.get(unit),current=byDate.get(date);
       if(current==null||weight>current)byDate.set(date,weight);
@@ -146,11 +147,11 @@ function exerciseProgression(group){
   if(failed('sets'))return domainError('As séries necessárias para comparar cargas não puderam ser carregadas.');
   if(!group)return empty('Selecione um exercício.');
   const series=exerciseProgressionSeries(group);
-  if(!series.length)return empty('Não há cargas estruturadas para este exercício.');
+  if(!series.length)return empty('Não há cargas com unidade registrada para comparar neste exercício.');
   return `<div class="exerciseProgression">${series.map(s=>{
     const points=s.points.slice(-24),first=points[0],last=points.at(-1),delta=last.value-first.value,unit=displayUnit(s.unit),digits=points.some(p=>!Number.isInteger(p.value))?1:0;
     return `<section class="exerciseProgressUnit"><div class="exerciseProgressHead"><div><b>${esc(unit)}</b><small>${points.length} sessão(ões) com carga estruturada${s.points.length>points.length?' · últimas 24':''}</small></div><div><span>${fmtNum(first.value,digits)} → ${fmtNum(last.value,digits)} ${esc(unit)}</span><small>diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${esc(unit)}</small></div></div>${progressionSvg(points)}<div class="exerciseProgressAxis"><span>${fmtDate(first.date)}</span><span>${fmtDate(last.date)}</span></div></section>`;
-  }).join('')}<p class="footerNote">O gráfico usa somente a maior carga explicitamente registrada em cada sessão e mantém cada unidade separada. Não estima repetição máxima nem converte placas ou unidades ausentes.</p></div>`;
+  }).join('')}<p class="footerNote">O gráfico usa somente a maior carga explicitamente registrada em cada sessão e mantém cada unidade separada. Cargas sem unidade ficam preservadas no histórico, mas não geram evolução. Não estima repetição máxima nem converte placas.</p></div>`;
 }
 
 function comparisonSnapshot(group,date){
@@ -158,8 +159,9 @@ function comparisonSnapshot(group,date){
   const sets=exercises.flatMap(setsFor);
   const byUnit=new Map();
   for(const set of sets){
-    const weight=num(set.weight);if(weight==null)continue;
-    const reps=num(set.reps_numeric),unit=set.weight_unit||'sem unidade';
+    const weight=num(set.weight),unit=set.weight_unit;
+    if(weight==null||!comparableLoadUnit(unit))continue;
+    const reps=num(set.reps_numeric);
     const current=byUnit.get(unit);
     if(!current||weight>current.weight){byUnit.set(unit,{weight,reps});continue;}
     if(weight===current.weight&&reps!=null&&(current.reps==null||reps>current.reps))current.reps=reps;
@@ -194,7 +196,7 @@ function sessionComparison(group){
     const change=comparisonChange(a,b,unit,digits);
     return `<div class="trainingComparisonRow"><b>${esc(displayUnit(unit))}</b><span>${esc(av)}</span><span>${esc(bv)}</span><small>${esc(change)}</small></div>`;
   }).join('');
-  return `<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div></section>`;
+  return `<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade registrada, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas com unidade registrada comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div></section>`;
 }
 
 function exerciseSessionTrend(group){
@@ -205,17 +207,17 @@ function exerciseSessionTrend(group){
   if(!dates.length)return empty('Sem sessões estruturadas para este exercício.');
   const snapshots=dates.map(date=>comparisonSnapshot(group,date));
   const units=unique(snapshots.flatMap(s=>[...s.byUnit.keys()]));
-  if(!units.length)return empty('Não há cargas estruturadas nas sessões recentes deste exercício.');
+  if(!units.length)return empty('Não há cargas com unidade registrada nas sessões recentes deste exercício.');
   return `<section class="trainingRecent"><div class="trainingRecentHead"><div><b>Sessões recentes</b><small>Carga máxima registrada, repetições nessa carga e séries detalhadas.</small></div><span>${dates.length} sessão(ões)</span></div>${units.map(unit=>{
     const rows=snapshots.map(snapshot=>{
       const peak=snapshot.byUnit.get(unit);if(!peak)return'';
       const digits=Number.isInteger(peak.weight)?0:1;
       const reps=peak.reps==null?'reps não informadas':`${fmtNum(peak.reps,0)} reps`;
-      const unitSets=snapshot.sets.filter(s=>(s.weight_unit||'sem unidade')===unit);
+      const unitSets=snapshot.sets.filter(s=>s.weight_unit===unit);
       return `<div class="trainingRecentRow"><time>${fmtDate(snapshot.date)}</time><b>${fmtNum(peak.weight,digits)} ${esc(displayUnit(unit))}</b><span>${esc(reps)}</span><small>${unitSets.length} série(s) nesta unidade</small></div>`;
     }).filter(Boolean).join('');
     return `<div class="trainingRecentUnit"><div class="trainingRecentUnitTitle">${esc(displayUnit(unit))}</div>${rows}</div>`;
-  }).join('')}<p class="footerNote">Repetições são mostradas apenas quando registradas na série de maior carga daquela sessão. Unidades diferentes permanecem separadas.</p></section>`;
+  }).join('')}<p class="footerNote">Repetições são mostradas apenas quando registradas na série de maior carga daquela sessão. Unidades diferentes permanecem separadas; cargas sem unidade não entram na comparação.</p></section>`;
 }
 
 function exerciseHistory(group){
