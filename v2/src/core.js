@@ -28,7 +28,7 @@ export const state = {
     openWorkout: null,
     exerciseQuery: '',
     selectedExercise: null,
-    analysisPeriod: '90',
+    analysisPeriod: '365',
     timelinePeriod: '365',
     timelineYear: null,
     timelineLimit: 250,

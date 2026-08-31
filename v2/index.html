@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="./health.css">
   <link rel="stylesheet" href="./data.css">
   <link rel="stylesheet" href="./today.css">
+  <link rel="stylesheet" href="./product-finish.css">
   <link rel="stylesheet" href="./accessibility.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -37,13 +38,13 @@
 
   <div id="app" class="app hidden">
     <header class="topbar">
-      <div class="brand"><div class="brandMark small">L</div><div><b>LTS Health</b><span>Assistente longitudinal de saúde</span></div></div>
-      <div class="topActions"><span id="syncText">carregando…</span><button id="routeAction" class="primary hidden"></button><button id="refreshBtn">Atualizar</button><button id="logoutBtn">Sair</button></div>
+      <div class="brand"><div class="brandMark small">L</div><div><b>LTS Health</b><span>Seu histórico de saúde</span></div></div>
+      <div class="topActions"><span id="syncText" aria-live="polite">carregando…</span><button id="routeAction" class="primary hidden"></button><button id="refreshBtn">Atualizar</button><button id="logoutBtn">Sair</button></div>
     </header>
 
     <nav id="primaryNav" class="primaryNav" aria-label="Navegação principal">
       <button data-route="hoje">Início</button>
-      <button data-route="bio">Bio</button>
+      <button data-route="bio">Composição</button>
       <button data-route="treinos">Treinos</button>
       <button data-route="evolucao">Evolução</button>
       <button data-route="analise">Análise</button>
@@ -54,7 +55,7 @@
 
     <nav id="mobileNav" class="mobileNav" aria-label="Navegação no celular">
       <button data-route="hoje">Início</button>
-      <button data-route="bio">Bio</button>
+      <button data-route="bio">Composição</button>
       <button data-route="treinos">Treinos</button>
       <button data-route="analise">Análise</button>
       <button data-route="mais">Mais</button>
@@ -63,13 +64,13 @@
 
   <div id="moreSheet" class="sheet hidden" role="dialog" aria-modal="true" aria-label="Mais áreas">
     <div class="sheetPanel">
-      <div class="sheetHead"><b>Mais</b><button id="closeMore" aria-label="Fechar">×</button></div>
+      <div class="sheetHead"><b>Mais áreas</b><button id="closeMore" aria-label="Fechar">×</button></div>
       <div class="sheetGrid">
         <button data-route="evolucao">Evolução</button>
-        <button data-route="timeline">Timeline</button>
+        <button data-route="timeline">Histórico</button>
         <button data-route="saude">Saúde & exames</button>
         <button data-route="nutricao">Nutrição</button>
-        <button data-route="dados">Dados</button>
+        <button data-route="dados">Arquivos & fontes</button>
         <button data-route="tratamentos">Tratamentos</button>
       </div>
     </div>

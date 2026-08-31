@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1';
-const routeTitles={bio:'Bio',treinos:'Treinos',evolucao:'Evolução',analise:'Análise',tratamentos:'Tratamentos',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
+const routeTitles={bio:'Composição corporal',treinos:'Treinos',evolucao:'Evolução',analise:'Análise',tratamentos:'Tratamentos',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
 const focusableSelector='button:not([disabled]),a[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 async function waitRoute(page,route){
@@ -81,13 +81,11 @@ async function run(viewport,label){
     await assertViewport(page,label,route);
   }
 
-  // Browser history must restore actual routes rather than only visual state.
   await clickRoute(page,nav,'treinos');await waitRoute(page,'treinos');
   await clickRoute(page,nav,'evolucao');await waitRoute(page,'evolucao');
   await page.goBack();await waitRoute(page,'treinos');
   await page.goForward();await waitRoute(page,'evolucao');
 
-  // Route persistence must survive a reload even when the hash is removed.
   await clickRoute(page,nav,'dados');await waitRoute(page,'dados');
   await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));
   await page.reload({waitUntil:'domcontentloaded'});
@@ -96,7 +94,6 @@ async function run(viewport,label){
   const restoredHash=await page.evaluate(()=>location.hash);
   if(restoredHash!=='#dados')throw new Error(`${label}: saved route was not restored after reload (${restoredHash||'sem hash'})`);
 
-  // Entry dialog must isolate the background, contain Tab navigation, close with Escape and return focus.
   await clickRoute(page,nav,'bio');await waitRoute(page,'bio');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
@@ -107,7 +104,6 @@ async function run(viewport,label){
   await assertIsolationReleased(page,`${label}/entry-escape`);
   await waitRoute(page,'bio');
 
-  // Workout entry still closes through its explicit close button, releases isolation and restores focus.
   await clickRoute(page,nav,'treinos');await waitRoute(page,'treinos');
   await page.locator('#routeAction').click();
   await page.waitForSelector('#entryModal:not(.hidden)');
@@ -118,7 +114,6 @@ async function run(viewport,label){
   await assertIsolationReleased(page,`${label}/entry-close`);
   await waitRoute(page,'treinos');
 
-  // More sheet must contain focus, close with Escape and restore focus without route changes.
   const moreSelector=`${nav} [data-route="mais"]`;
   await page.locator(moreSelector).click();
   await page.waitForSelector('#moreSheet:not(.hidden)');
@@ -129,7 +124,6 @@ async function run(viewport,label){
   await assertIsolationReleased(page,`${label}/more-escape`);
   await waitRoute(page,'treinos');
 
-  // Choosing a secondary route from More must also release background isolation.
   await page.locator(moreSelector).click();
   await page.waitForSelector('#moreSheet:not(.hidden)');
   await assertModalIsolation(page,'moreSheet',label);
@@ -139,7 +133,6 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.getElementById('app')?.inert===false&&document.getElementById('app')?.getAttribute('aria-hidden')===null);
   await assertIsolationReleased(page,`${label}/more-route`);
 
-  // System reduced-motion preference must disable the spinner animation in the rendered CSS.
   await page.emulateMedia({reducedMotion:'reduce'});
   const reduced=await page.evaluate(()=>{
     const probe=document.createElement('div');probe.className='spinner';document.body.appendChild(probe);

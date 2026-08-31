@@ -60,13 +60,15 @@ async function run(viewport,label){
 
   await page.fill('#timelineQuery','');
   await page.waitForTimeout(80);
-  await page.selectOption('#timelineDomain','Sono por fonte');
+  await page.selectOption('#timelineDomain','Sono em conferência');
   await page.waitForTimeout(80);
   const sleepText=(await page.locator('#screenHost').textContent())||'';
-  for(const expected of ['Apple Watch','RingConn','7,1 h · Em validação · Não consolidado','6,8 h · Em validação · Não consolidado']){
+  for(const expected of ['Apple Watch','RingConn','Sono 7,1 h','Sono 6,8 h','aguardando conferência; mantido separado dos dados confirmados']){
     if(!sleepText.includes(expected))throw new Error(`${label}: source-preserving sleep evidence missing ${expected}`);
   }
-  if(sleepText.includes('Origem sem status')||sleepText.includes('8,2 h'))throw new Error(`${label}: sleep evidence without explicit candidate/held status leaked into Timeline`);
+  for(const forbidden of ['Origem sem status','8,2 h','Em validação','Não consolidado','candidate','canonical','source_family','ActivitySummary','count/min','MME']){
+    if(sleepText.includes(forbidden))throw new Error(`${label}: technical or ambiguous source evidence leaked: ${forbidden}`);
+  }
   if(sleepText.includes('13,9 h'))throw new Error(`${label}: overlapping sleep sources were summed`);
 
   await page.selectOption('#timelineDomain','Treinos');

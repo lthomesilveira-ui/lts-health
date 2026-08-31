@@ -31,9 +31,10 @@ async function run(viewport,label){
     return card?.textContent||'';
   });
 
-  if(!text.includes('0 canônico(s)'))throw new Error(`${label}: canonical count changed unexpectedly: ${text}`);
-  if(!text.includes('1 candidato(s)'))throw new Error(`${label}: missing status was counted as candidate or explicit candidate was lost: ${text}`);
-  if(!text.includes('2 preservado(s)'))throw new Error(`${label}: ambiguous/held provenance was not preserved separately: ${text}`);
+  if(!text.includes('0 confirmado(s)'))throw new Error(`${label}: confirmed count changed unexpectedly: ${text}`);
+  if(!text.includes('1 aguardando conferência'))throw new Error(`${label}: explicit review record was lost or ambiguous record was miscounted: ${text}`);
+  if(!text.includes('2 preservado(s) sem uso automático'))throw new Error(`${label}: ambiguous/held provenance was not preserved separately: ${text}`);
+  if(/can[oô]nic|candidat/i.test(text))throw new Error(`${label}: internal canonical/candidate language is visible: ${text}`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);

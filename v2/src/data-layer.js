@@ -6,7 +6,7 @@ const routeDomains={
   bio:[],
   treinos:[],
   evolucao:[],
-  analise:['nutrition','metrics','labs'],
+  analise:['nutrition','metrics','sourceMetrics','labs'],
   tratamentos:['treatments'],
   hoje:['nutrition','metrics','sourceMetrics','labs','uploads'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],

@@ -12,7 +12,7 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
   let text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Sono','Passos','FC de repouso','61,0 bpm','Visão cruzada por dia','Tratamento registrado']){
+  for(const expected of ['Sono','Passos','Frequência cardíaca em repouso','61 bpm','Visão cruzada por dia','Tratamento registrado']){
     if(!text.includes(expected))throw new Error(`${label}: Timeline missing ${expected}`);
   }
   if(!text.includes('não demonstra causa'))throw new Error(`${label}: causal guardrail missing`);
@@ -33,7 +33,7 @@ async function run(viewport,label){
       {source_record_id:'mfp-protein',metric_date:'2026-02-03',metric_type:'dietary_protein_g',value:165,unit:'g',source_name:'MyFitnessPal via Apple Health',source_family:'myfitnesspal',canonical_status:'candidate'},
       {source_record_id:'sleep-unclassified',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:8.2,unit:'h',source_name:'Origem sem status',source_family:'healthkit_candidate',canonical_status:null},
       {source_record_id:'hrv-unclassified',metric_date:'2026-02-03',metric_type:'hrv_sdnn_ms',value:42,unit:'ms',source_name:'Apple ambíguo',source_family:'apple_watch',canonical_status:null},
-      {source_record_id:'canonical-source-metric',metric_date:'2026-02-03',metric_type:'steps',value:9999,unit:'count',source_name:'Fonte canônica indevida',source_family:'apple_activity_summary',canonical_status:'canonical'}
+      {source_record_id:'canonical-source-metric',metric_date:'2026-02-03',metric_type:'steps',value:9999,unit:'count',source_name:'Fonte técnica indevida',source_family:'apple_activity_summary',canonical_status:'canonical'}
     ];
     state.ui.timelinePeriod='all';state.ui.timelineYear='2026';state.ui.timelineQuery='';state.ui.timelineDomain='all';
   });
@@ -45,15 +45,18 @@ async function run(viewport,label){
   text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Composição corporal registrada'))throw new Error(`${label}: missing body fields were not rendered neutrally`);
   if(!text.includes('Registro disponível'))throw new Error(`${label}: missing metric value was not rendered neutrally`);
-  if(text.includes('Peso — kg')||text.includes('MME — kg'))throw new Error(`${label}: missing body values leaked as pseudo-measurements`);
+  if(text.includes('Peso — kg')||text.includes('MME'))throw new Error(`${label}: missing body values leaked as pseudo-measurements or acronym`);
   if(text.includes('Confirmação registrada')||/\btaken\b/i.test(text))throw new Error(`${label}: treatment operational context reappeared after rerender`);
-  for(const expected of ['Sono por fonte','Métricas por fonte','Alimentação por fonte','Apple Watch','RingConn','MyFitnessPal via Apple Health','7,1 h · Em validação · Não consolidado','6,8 h · Em validação · Não consolidado','Passos 7.100 count','FC de repouso 59,0 count/min','Energia alimentar 2.100 kcal','Proteína 165,0 g']){
-    if(!text.includes(expected))throw new Error(`${label}: source-preserving validation evidence missing ${expected}`);
+  for(const expected of ['Sono em conferência','Métricas em conferência','Alimentação em conferência','Apple Watch','RingConn','MyFitnessPal (via Apple Saúde)','Sono 7,1 h','Sono 6,8 h','Passos 7.100 passos','Frequência cardíaca em repouso 59 bpm','Calorias 2.100 kcal','Proteína 165,0 g','aguardando conferência; mantido separado dos dados confirmados']){
+    if(!text.includes(expected))throw new Error(`${label}: readable source-preserving evidence missing ${expected}`);
   }
-  if(text.includes('Origem sem status')||text.includes('8,2 h')||text.includes('Apple ambíguo')||text.includes('42,0 ms'))throw new Error(`${label}: ambiguous source metric status leaked into Timeline evidence`);
-  if(text.includes('Fonte canônica indevida')||text.includes('9.999 count'))throw new Error(`${label}: sourceMetrics canonical row leaked into validation evidence`);
+  if(text.includes('Origem sem status')||text.includes('8,2 h')||text.includes('Apple ambíguo')||text.includes('42 ms'))throw new Error(`${label}: ambiguous source metric status leaked into Timeline evidence`);
+  if(text.includes('Fonte técnica indevida')||text.includes('9.999'))throw new Error(`${label}: confirmed sourceMetrics row leaked into review evidence`);
   if(text.includes('13,9 h'))throw new Error(`${label}: overlapping sleep sources were summed`);
-  if(text.includes('14.000 count'))throw new Error(`${label}: source-specific step candidates were summed across sources`);
+  if(text.includes('14.000 passos'))throw new Error(`${label}: source-specific step records were summed across sources`);
+  for(const forbidden of [' count','count/min','ActivitySummary','source_family','Em validação · Não consolidado','canônico','candidato','FC de repouso','MME']){
+    if(text.includes(forbidden))throw new Error(`${label}: technical language leaked into Timeline: ${forbidden}`);
+  }
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);

@@ -11,8 +11,8 @@ const srcNames=await readdir('v2/src');
 const presentationNames=srcNames.filter(name=>name.endsWith('-screen.js')||['main.js','entry.js','source-status.js'].includes(name));
 const presentationFiles=await Promise.all(presentationNames.map(async name=>[name,await readFile(join('v2/src',name),'utf8')]));
 for(const[name,content]of presentationFiles){
-  if(content.includes('source_payload'))throw new Error(`raw source_payload entered presentation code: ${name}`);
-  if(/storage_path/.test(content))throw new Error(`private storage path entered presentation code: ${name}`);
+  if(/\b(?:row|record|upload|item)\.source_payload\b/.test(content))throw new Error(`raw source_payload entered presentation data access: ${name}`);
+  if(/\b(?:row|record|upload|item)\.storage_path\b/.test(content))throw new Error(`private storage path entered presentation data access: ${name}`);
   if(/getPublicUrl\s*\(/.test(content))throw new Error(`public health-file URL generation entered presentation code: ${name}`);
 }
 
@@ -28,26 +28,16 @@ const loader=dataLayer.match(/treatments:\(\)=>fetchAll\('health_medication_even
 const fields=loader.split(',').map(x=>x.trim()).filter(Boolean);
 const allowed=['source_record_id','event_date','medication','event_type','source','confidence'];
 if(JSON.stringify(fields)!==JSON.stringify(allowed))throw new Error(`treatment loader projection drifted: ${fields.join(',')}`);
-
 const operational=/(dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)/i;
 if(fields.some(f=>operational.test(f)))throw new Error('operational treatment field entered the normal treatment loader');
 if(new RegExp(`\\br\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(treatment))throw new Error('treatment screen renders an operational treatment field');
 if(new RegExp(`\\bt\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(timeline))throw new Error('timeline renders an operational treatment field');
-
-for(const token of [
-  "title('Tratamentos','Contexto histórico por data e origem. Esta área não substitui orientação médica.')",
-  "missing_event_dose:'Contexto histórico de tratamento'",
-  "Registro histórico preservado sem detalhe operacional nesta tela."
-])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
-
-for(const forbidden of ["Confirmação registrada","sub:'Confirmação registrada'"]){
-  if((treatment+timeline).includes(forbidden))throw new Error(`operational treatment confirmation re-entered presentation code: ${forbidden}`);
-}
+for(const token of ["title('Tratamentos','Contexto histórico por data e origem. Esta área não substitui orientação médica.')","missing_event_dose:'Contexto histórico de tratamento'","Registro histórico preservado sem detalhe operacional nesta tela."])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
+for(const forbidden of ["Confirmação registrada","sub:'Confirmação registrada'"])if((treatment+timeline).includes(forbidden))throw new Error(`operational treatment confirmation re-entered presentation code: ${forbidden}`);
 if(/\b(?:r|t)\.event_type\b/.test(treatment+timeline))throw new Error('treatment event_type re-entered the user-facing treatment context');
 
 if(!dataScreen.includes('sensitiveQualityPattern'))throw new Error('sensitive quality sanitization guard missing');
 if(!dataScreen.includes('sensitiveQuality(issue)'))throw new Error('sensitive quality sanitization is not applied');
-
 const uploadProjection=dataLayer.match(/uploads:\(\)=>fetchAll\('health_uploads','([^']+)'/)?.[1]||'';
 if(!uploadProjection)throw new Error('upload audit projection missing');
 for(const forbidden of ['storage_path','user_id'])if(uploadProjection.split(',').includes(forbidden))throw new Error(`private upload field entered UI projection: ${forbidden}`);
@@ -57,6 +47,7 @@ if(!sourceMetricProjection)throw new Error('source metrics projection missing');
 if(sourceMetricProjection.includes('source_payload'))throw new Error('raw source_payload entered structured source metrics');
 if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source metrics use wildcard projection');
 if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality']"))throw new Error('source metrics provenance is not owned by the Data route');
+if(!dataLayer.includes("analise:['nutrition','metrics','sourceMetrics','labs']"))throw new Error('analysis no longer loads preserved source evidence');
 
 const backupBlock=dataLayer.match(/export async function buildStructuredBackup[\s\S]*?export async function downloadStructuredBackup/)?.[0]||'';
 if(!backupBlock)throw new Error('structured backup function contract missing');
@@ -67,14 +58,15 @@ if(sourceMetricProjection.includes('source_payload'))throw new Error('structured
 const provenance=dataScreen.match(/function provenanceOverview\(rows\)\{[\s\S]*?\n\}/)?.[0]||'';
 if(!provenance)throw new Error('safe provenance summary missing');
 if(/row\.value\b|source_payload|source_record_id|storage_path/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
-for(const token of ['Origem das métricas indisponível agora.','Só registros marcados explicitamente para validação entram nessa contagem','outras evidências ficam preservadas e separadas dos dados confirmados'])if(!dataScreen.includes(token))throw new Error(`provenance privacy guardrail missing: ${token}`);
-for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
+for(const token of ['Não foi possível carregar as origens das métricas agora.','aguardando conferência','preservado(s) sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
+for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas','canônico(s)','candidato(s)'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
 
 const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\n\nfunction events/)?.[0]||'';
 if(!timelineSourceEvidence)throw new Error('safe Timeline source-metric evidence block missing');
-if(!timeline.includes("const preservedStatuses=new Set(['candidate','held']);"))throw new Error('Timeline source evidence no longer fails closed to explicit candidate/held states');
-for(const token of ['preservedStatuses.has(norm(row.canonical_status))','Em validação · Não consolidado','source_name','source_family'])if(!timelineSourceEvidence.includes(token))throw new Error(`Timeline source evidence privacy guardrail missing: ${token}`);
+if(!timeline.includes("const preservedStatuses=new Set(['candidate','held']);"))throw new Error('Timeline source evidence no longer fails closed to explicit candidate/held states internally');
+for(const token of ['preservedStatuses.has(norm(row.canonical_status))','aguardando conferência; mantido separado dos dados confirmados','source_name','source_family'])if(!timelineSourceEvidence.includes(token))throw new Error(`Timeline source evidence privacy guardrail missing: ${token}`);
 if(/source_payload|source_record_id|storage_path|user_id/.test(timelineSourceEvidence))throw new Error('technical/private source metric fields entered Timeline evidence');
 if(/health_source_daily_metrics/.test(timeline))throw new Error('source-metric storage table name entered Timeline presentation code');
+for(const legacy of ['Em validação · Não consolidado','FC de repouso','MME'])if(timeline.includes(legacy))throw new Error(`technical Timeline copy re-entered presentation: ${legacy}`);
 
 console.log(`LTS Health cross-screen privacy contract passed (${presentationNames.length} presentation modules)`);

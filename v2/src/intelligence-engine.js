@@ -101,8 +101,8 @@ function pendingData(data){
   const uploads=(data.uploads||[]).filter(u=>['review_required','failed','uploaded','processing'].includes(String(u.status||'')));
   const candidates=(data.sourceMetrics||[]).filter(r=>['candidate','held'].includes(String(r.canonical_status||'').toLowerCase()));
   if(!uploads.length&&!candidates.length)return null;
-  const parts=[];if(uploads.length)parts.push(`${uploads.length} arquivo(s) ainda em processamento ou revisão`);if(candidates.length)parts.push(`${candidates.length} registro(s) por origem ainda não consolidados`);
-  return{kind:'coverage',title:'Há dados recebidos ainda fora da visão principal',summary:`${parts.join(' · ')}. Eles não entram nas análises até serem confirmados.`,route:'dados',priority:90};
+  const parts=[];if(uploads.length)parts.push(`${uploads.length} arquivo(s) ainda em processamento ou revisão`);if(candidates.length)parts.push(`${candidates.length} registro(s) por origem aguardando conferência`);
+  return{kind:'coverage',title:'Há dados recebidos ainda fora da visão principal',summary:`${parts.join(' · ')}. Eles só entram nas análises quando estiverem prontos para comparação.`,route:'dados',priority:90};
 }
 
 function coverageRows(data,status,ref){
