@@ -72,7 +72,7 @@ async function run(viewport,label){
   await page.click('.exerciseList button:has-text("Máquina A")');
   await page.waitForSelector('.trainingRecent');
   const text=(await page.locator('.exerciseDetail').textContent())||'';
-  for(const expected of ['Sessões recentes','60 kg','12 reps','65 kg','11 reps','placa','Unidades diferentes permanecem separadas']){
+  for(const expected of ['Sessões recentes','60 kg','12 reps','65 kg','11 reps','placa','Unidades diferentes permanecem separadas','mesma carga · +3 reps']){
     if(!text.includes(expected))throw new Error(`${label}: missing conservative training trend detail: ${expected}`);
   }
   if(text.includes('100 kg')||text.includes('20 reps'))throw new Error(`${label}: alternate machine leaked into selected exercise progression`);
