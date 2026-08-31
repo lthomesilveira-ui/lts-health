@@ -167,6 +167,18 @@ function comparisonSnapshot(group,date){
   return {date,sets,byUnit};
 }
 
+function comparisonChange(previous,latest,unit,digits){
+  if(!previous||!latest)return'sem comparação direta';
+  const loadDelta=latest.weight-previous.weight;
+  if(loadDelta!==0)return `carga ${loadDelta>0?'+':''}${fmtNum(loadDelta,digits)} ${displayUnit(unit)}`;
+  if(previous.reps!=null&&latest.reps!=null){
+    const repsDelta=latest.reps-previous.reps;
+    if(repsDelta!==0)return `mesma carga · ${repsDelta>0?'+':''}${fmtNum(repsDelta,0)} reps`;
+    return'mesma carga e mesmas reps registradas';
+  }
+  return'mesma carga · reps sem comparação completa';
+}
+
 function sessionComparison(group){
   if(failed('exercises'))return domainError('O histórico de exercícios não pôde ser carregado.');
   if(failed('sets'))return domainError('As séries necessárias para comparar sessões não puderam ser carregadas.');
@@ -179,8 +191,7 @@ function sessionComparison(group){
     const a=previous.byUnit.get(unit),b=latest.byUnit.get(unit),digits=[a?.weight,b?.weight].some(v=>v!=null&&!Number.isInteger(v))?1:0;
     const av=a?`${fmtNum(a.weight,digits)} ${displayUnit(unit)}${a.reps!=null?` · ${fmtNum(a.reps,0)} reps`:''}`:'—';
     const bv=b?`${fmtNum(b.weight,digits)} ${displayUnit(unit)}${b.reps!=null?` · ${fmtNum(b.reps,0)} reps`:''}`:'—';
-    const delta=a&&b?b.weight-a.weight:null;
-    const change=delta==null?'sem comparação direta':`diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${displayUnit(unit)}`;
+    const change=comparisonChange(a,b,unit,digits);
     return `<div class="trainingComparisonRow"><b>${esc(displayUnit(unit))}</b><span>${esc(av)}</span><span>${esc(bv)}</span><small>${esc(change)}</small></div>`;
   }).join('');
   return `<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div></section>`;
