@@ -47,14 +47,14 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 {
   const ctx=await open('nutrition','analise','Análise');
   const metric=await ctx.page.locator('.metric').filter({hasText:'Alimentação · 1 ano'}).first().textContent();
-  if(!metric?.includes('—')||!ctx.text.includes('cruzamento não pode ser calculado'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
+  if(!metric?.includes('—')||!ctx.text.includes('dados de alimentação não carregaram agora')||!ctx.text.includes('cruzamento fica indisponível'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
   await finish(ctx,'analise/nutrition');
 }
 {
-  const ctx=await open('metrics','analise','Análise');
-  const metric=await ctx.page.locator('.metric').filter({hasText:'Sono registrado · 1 ano'}).first().textContent();
-  if(!metric?.includes('—')||!ctx.text.includes('pareamento não pode ser calculado'))throw new Error('analise/metrics: failure hidden or rendered as zero');
-  await finish(ctx,'analise/metrics');
+  const ctx=await open('sourceMetrics','analise','Análise');
+  const metric=await ctx.page.locator('.metric').filter({hasText:'Sono preservado'}).first().textContent();
+  if(!metric?.includes('—')||!ctx.text.includes('registros por origem não carregaram agora'))throw new Error('analise/sourceMetrics: failure hidden or rendered as zero');
+  await finish(ctx,'analise/sourceMetrics');
 }
 {
   const ctx=await open('labs','timeline','Timeline');
@@ -82,18 +82,17 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await openToday('nutrition',{width:390,height:844});
-  const card=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Alimentação mais recente'}).first().textContent();
-  if(!card?.includes('Indisponível agora')||card?.includes('Sem alimentação')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
+  const card=await ctx.page.locator('.dashboardCurrent').filter({hasText:'Alimentação'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Sem registro recente')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
   if(!ctx.text.includes('Último treino'))throw new Error('hoje/nutrition mobile: healthy snapshot cards disappeared');
   await finish(ctx,'hoje/nutrition mobile');
 }
 {
-  const ctx=await openToday('metrics',{width:1440,height:900});
-  const card=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Atividade confirmada'}).first().textContent();
-  if(!card?.includes('Indisponível agora')||card?.includes('Nenhum registro confirmado')||card?.match(/\b0\b/))throw new Error('hoje/metrics desktop: failed domain presented as absence or zero');
-  const sleep=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Sono'}).first().textContent();
-  if(sleep?.match(forbidden))throw new Error('hoje/metrics desktop: sleep card leaked technical boundary copy');
-  await finish(ctx,'hoje/metrics desktop');
+  const ctx=await openToday('labs',{width:1440,height:900});
+  const card=await ctx.page.locator('.dashboardCurrent').filter({hasText:'Exames'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Sem coleta estruturada')||card?.match(/\b0\b/))throw new Error('hoje/labs desktop: failed domain presented as absence or zero');
+  if(!ctx.text.includes('Último treino')||!ctx.text.includes('Composição'))throw new Error('hoje/labs desktop: healthy snapshot cards disappeared');
+  await finish(ctx,'hoje/labs desktop');
 }
 
 console.log('LTS Health v2 failure-state smoke passed');

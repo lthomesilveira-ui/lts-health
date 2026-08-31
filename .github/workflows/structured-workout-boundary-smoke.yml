@@ -1,0 +1,37 @@
+name: LTS Health Structured Workout Boundary Smoke
+on:
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/intelligence-engine.js'
+      - 'v2/src/core.js'
+      - 'v2/src/today-screen.js'
+      - 'v2/structured-workout-boundary-smoke.mjs'
+      - '.github/workflows/structured-workout-boundary-smoke.yml'
+  push:
+    branches: [architecture-v2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  structured-workout-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/intelligence-engine.js
+          node --check v2/structured-workout-boundary-smoke.mjs
+          grep -q "structuredWorkouts" v2/src/intelligence-engine.js
+          grep -q "is_canonical===true" v2/src/intelligence-engine.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Structured workout boundary desktop and mobile
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/structured-workout-boundary-smoke.mjs

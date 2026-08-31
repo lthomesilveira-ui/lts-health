@@ -35,6 +35,7 @@ jobs:
           test -f v2/index.html
           test -f v2/styles.css
           test -f v2/product-finish.css
+          test -f v2/src/integrated-analysis.js
           test ! -f v2/app.js
           test ! -f v2/src/screens.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
@@ -59,9 +60,15 @@ jobs:
           grep -q "ensureRouteData" v2/src/data-layer.js
           grep -q "isRouteReady" v2/src/main.js
           grep -q "uploadOutcomeMessageFromState" v2/src/main.js
-          grep -q "buildHealthIntelligence" v2/src/today-screen.js
+
+          grep -q "buildIntegratedAnalysis" v2/src/today-screen.js
+          grep -q "canonicalWorkouts" v2/src/integrated-analysis.js
+          grep -q "comparableLoadUnit" v2/src/integrated-analysis.js
+          grep -q "comparableLabCount" v2/src/integrated-analysis.js
+          grep -q "sleepCoverageModel" v2/src/integrated-analysis.js
+          grep -q "As fontes permanecem separadas" v2/src/analysis-screen.js
+          grep -q "não transforma essa associação em causa" v2/src/today-screen.js
           grep -q "Sono permanece fora desta leitura" v2/src/intelligence-engine.js
-          grep -q "Dados conflitantes ou ainda em revisão ficam fora das conclusões" v2/src/today-screen.js
 
           ! grep -R 'loadAll' v2/src v2/index.html
           ! grep -R 'activateTab' v2/src v2/index.html

@@ -47,13 +47,7 @@ async function run(viewport,label){
       {source_record_id:'set-candidate',workout_source_record_id:'polar-only-candidate'},
       {source_record_id:'set-unpromoted',workout_source_record_id:'polar-unpromoted-null'}
     ]);
-    return {
-      metricIds:metrics.map(r=>r.source_record_id),
-      nutritionIds:nutrition.map(r=>r.source_record_id),
-      workoutIds:workouts.map(r=>r.source_record_id),
-      exerciseIds:children.exercises.map(r=>r.source_record_id),
-      setIds:children.sets.map(r=>r.source_record_id)
-    };
+    return {metricIds:metrics.map(r=>r.source_record_id),nutritionIds:nutrition.map(r=>r.source_record_id),workoutIds:workouts.map(r=>r.source_record_id),exerciseIds:children.exercises.map(r=>r.source_record_id),setIds:children.sets.map(r=>r.source_record_id)};
   });
 
   if(result.metricIds.join('|')!=='activity-energy|activity-stand|bridge-energy|other-resting')throw new Error(`${label}: Apple Health candidate-only metrics crossed the canonical boundary: ${result.metricIds.join('|')}`);
@@ -62,9 +56,10 @@ async function run(viewport,label){
   if(result.exerciseIds.join('|')!=='exercise-canonical')throw new Error(`${label}: child exercise from non-canonical workout crossed the boundary: ${result.exerciseIds.join('|')}`);
   if(result.setIds.join('|')!=='set-canonical')throw new Error(`${label}: child set from non-canonical workout crossed the boundary: ${result.setIds.join('|')}`);
 
-  await page.evaluate(async()=>{
+  const integrated=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {visibleRowsForDomain}=await import('./src/data-layer.js');
+    const {buildIntegratedAnalysis}=await import('./src/integrated-analysis.js');
     state.data.metrics=visibleRowsForDomain('metrics',[
       {source_record_id:'bridge-energy',measured_at:'2026-08-29T12:00:00Z',metric_type:'active_energy_kcal',value:510,unit:'kcal',source:'HealthKitBridge ActivitySummary'},
       {source_record_id:'bridge-steps',measured_at:'2026-08-29T12:00:00Z',metric_type:'steps',value:7200,unit:'count',source:'HealthKitBridge ActivitySummary'},
@@ -83,20 +78,24 @@ async function run(viewport,label){
       {source_record_id:'mfp-export',nutrition_date:'2026-08-28',calories_kcal:2100,protein_g:150,source:'MyFitnessPal export'},
       {source_record_id:'mfp-healthkit',nutrition_date:'2026-08-29',calories_kcal:2200,protein_g:160,source:'MyFitnessPal via Apple Health'}
     ]);
-    location.hash='bio';
+    const model=buildIntegratedAnalysis(state.data,state.domainStatus);
+    return {sleepDays:model.sleep.days,sleepSources:model.sleep.sources};
   });
+  if(integrated.sleepDays!==1||integrated.sleepSources.length!==2)throw new Error(`${label}: overlapping sleep evidence was not preserved separately`);
+
+  await page.evaluate(()=>{location.hash='bio';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForSelector('[data-executive-dashboard]');
-
   const todayText=(await page.textContent('#screenHost'))||'';
-  const sleepCard=(await page.locator('.intelCurrentCard').filter({hasText:'Sono'}).textContent())||'';
-  const activityCard=(await page.locator('.intelCurrentCard').filter({hasText:'Atividade confirmada'}).textContent())||'';
-  if(!sleepCard.includes('1 dia(s) registrado(s)')||!sleepCard.includes('aguardando conferência antes de entrar em médias'))throw new Error(`${label}: unresolved overlapping sleep was not shown as existing but held outside averages (${sleepCard})`);
-  if(/7[,.][14]\s*h/i.test(sleepCard)||sleepCard.includes('Sono consolidado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as confirmed Today data`);
-  if(!activityCard.includes('510')||!activityCard.includes('kcal'))throw new Error(`${label}: stable HealthKitBridge ActivitySummary energy disappeared from Today`);
-  if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into Today`);
-  for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','ActivitySummary','source_family','count/min'])if(todayText.includes(forbidden))throw new Error(`${label}: technical boundary language leaked into Today: ${forbidden}`);
+  if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into dashboard`);
+  for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','ActivitySummary','source_family','count/min'])if(todayText.includes(forbidden))throw new Error(`${label}: technical boundary language leaked into dashboard: ${forbidden}`);
+
+  await page.evaluate(()=>{location.hash='analise';});
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
+  const analysisText=(await page.textContent('#screenHost'))||'';
+  if(!analysisText.includes('1 dia(s) de sono preservado(s)')||!analysisText.includes('As fontes permanecem separadas'))throw new Error(`${label}: sleep evidence is not visibly preserved without consolidation`);
+  if(analysisText.includes('7,1 h')||analysisText.includes('7,4 h')||analysisText.includes('Sono consolidado'))throw new Error(`${label}: overlapping sleep values leaked as a consolidated analysis`);
 
   await page.evaluate(()=>{location.hash='nutricao';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Nutrição');

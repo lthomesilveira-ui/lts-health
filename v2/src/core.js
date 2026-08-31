@@ -63,7 +63,7 @@ export const since = days => { const d=new Date();d.setHours(12,0,0,0);d.setDate
 export const within = (value,days) => day(value)>=since(days);
 export const neutralDelta = (a,b,digits=1,unit='') => { a=num(a);b=num(b);if(a==null||b==null)return'—';const x=a-b;return`${x>0?'+':''}${fmtNum(x,digits)}${unit?` ${unit}`:''}`; };
 export const bodyRows = () => [...(state.data.body||[])].sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
-export const workoutRows = () => [...(state.data.workouts||[])].sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
+export const workoutRows = () => [...(state.data.workouts||[])].filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined').sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)));
 export const exercisesFor = workout => (state.data.exercises||[]).filter(e=>e.workout_source_record_id===workout.source_record_id).sort((a,b)=>(a.order_index??999)-(b.order_index??999));
 export const setsFor = exercise => (state.data.sets||[]).filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(a.set_index??999)-(b.set_index??999));
 export const inspectFunctionForSource = () => CONFIG.inspectFunction;
@@ -132,7 +132,12 @@ export async function uploadFile(file,sourceType){
   const{error:storageError}=await sb.storage.from(CONFIG.bucket).upload(path,file,{contentType:file.type||'application/octet-stream',upsert:false});if(storageError)throw storageError;
   const payload={user_id:session.user.id,source_type:sourceType||'other',original_filename:file.name,storage_path:path,mime_type:file.type||null,size_bytes:file.size,status:'uploaded'};
   const{data:row,error:dbError}=await sb.from('health_uploads').insert(payload).select('id').single();
-  if(dbError){try{await sb.storage.from(CONFIG.bucket).remove([path]);}catch{}throw dbError;}
+  if(dbError){
+    const preservedError=new Error('Arquivo recebido e preservado, mas não foi possível concluir o registro para processamento.');
+    preservedError.cause=dbError;
+    preservedError.storagePath=path;
+    throw preservedError;
+  }
   const functionName=inspectFunctionForSource(sourceType);
   const{error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});
   if(fnError){

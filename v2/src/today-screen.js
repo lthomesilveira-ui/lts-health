@@ -1,132 +1,103 @@
-import {state,esc,day,fmtDate,fmtNum,num,norm,unique} from './core.js';
-import {buildHealthIntelligence} from './intelligence-engine.js';
+import {state,esc,fmtDate,fmtNum,num} from './core.js';
+import {buildIntegratedAnalysis} from './integrated-analysis.js';
 
-const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
-const statusLabel={strong:'Boa cobertura',partial:'Cobertura parcial',limited:'Poucos dados',unavailable:'Indisponível'};
-const insightLabel={change:'O que mudou',cross:'Análise cruzada',coverage:'Limitação de cobertura',unavailable:'Indisponível'};
-const pendingStatuses=new Set(['candidate','held']);
-const activityTypes={
-  active_energy_kcal:'Energia ativa',
-  exercise_minutes:'Exercício',
-  stand_hours:'Horas em pé'
+const deltaText=(value,digits=1,unit='')=>{
+  const n=num(value);if(n==null)return'—';
+  return`${n>0?'+':''}${fmtNum(n,digits)}${unit?` ${unit}`:''}`;
 };
+const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
+const currentCard=(label,value,detail,route)=>`<button class="dashboardCurrent" data-route="${esc(route)}"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small><i>→</i></button>`;
+const infoCard=(eyebrow,title,body,route)=>`<article class="dashboardInsight"><span>${esc(eyebrow)}</span><h3>${esc(title)}</h3><p>${esc(body)}</p>${route?`<button data-route="${esc(route)}">Abrir detalhes →</button>`:''}</article>`;
+const domainFailed=key=>state.domainStatus?.[key]==='error';
 
-function latest(rows,key){return[...(rows||[])].sort((a,b)=>String(b?.[key]||'').localeCompare(String(a?.[key]||'')))[0]||null;}
-export function latestCanonicalActivityMetric(rows=[]){
-  return latest((rows||[]).filter(row=>activityTypes[row?.metric_type]&&day(row?.measured_at)),'measured_at');
-}
-function domainReady(key){return state.domainStatus?.[key]==='ready';}
-function currentCard(label,value,detail,route){return`<article class="intelCurrentCard"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small>${route?`<button data-route="${esc(route)}">Ver detalhes</button>`:''}</article>`;}
-function insightCard(item,index){
-  return`<article class="intelInsightCard ${esc(item.kind)}" data-intelligence-insight="${index}">
-    <div class="intelInsightMeta"><span>${esc(insightLabel[item.kind]||'Leitura')}</span><i>${String(index+1).padStart(2,'0')}</i></div>
-    <h3>${esc(item.title)}</h3>
-    <p>${esc(item.summary)}</p>
-    <button data-route="${esc(item.route||'analise')}">Abrir detalhes <span>→</span></button>
-  </article>`;
-}
-function attentionRow(item){return`<div class="intelAttentionRow"><div><span>${esc(insightLabel[item.kind]||'Cobertura')}</span><b>${esc(item.title)}</b><small>${esc(item.summary)}</small></div><button data-route="${esc(item.route||'dados')}">Revisar</button></div>`;}
-function coverageCard(row){return`<button class="intelCoverageCard ${esc(row.state)}" data-route="${esc(row.route)}"><div><span>${esc(row.label)}</span><b>${esc(statusLabel[row.state]||row.state)}</b><small>${esc(row.detail)}</small></div><i aria-hidden="true">→</i></button>`;}
-function question(text,route){return`<button class="intelQuestion" data-route="${esc(route)}"><span>${esc(text)}</span><i>→</i></button>`;}
-function dateText(value){return value?fmtDate(value):'Sem data';}
-function unavailableValue(label){return currentCard(label,'Indisponível agora','Não foi possível carregar esta área. Os demais dados continuam disponíveis.',null);}
-function pendingSleepSummary(){
-  if(!domainReady('sourceMetrics'))return null;
-  const rows=(state.data.sourceMetrics||[]).filter(row=>row.metric_type==='sleep_duration_h'&&pendingStatuses.has(norm(row.canonical_status))&&day(row.metric_date));
-  const days=unique(rows.map(row=>day(row.metric_date))).sort();
-  return{days:days.length,latest:days.at(-1)||null};
+function miniLine(points,key,unit=''){
+  const rows=(points||[]).map(p=>({date:p.date,value:num(p[key])})).filter(p=>p.value!=null);
+  if(rows.length<2)return'<div class="dashboardChartEmpty">Sem pontos suficientes.</div>';
+  const values=rows.map(r=>r.value),lo=Math.min(...values),hi=Math.max(...values),span=hi-lo||1,pad=span*.12,min=lo-pad,max=hi+pad,w=520,h=116,p=16;
+  const x=i=>p+i*(w-p*2)/Math.max(1,rows.length-1),y=v=>p+(max-v)*(h-p*2)/(max-min||1);
+  const path=rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(r.value).toFixed(1)}`).join(' ');
+  const dots=rows.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.value).toFixed(1)}" r="3"><title>${esc(fmtDate(r.date))}: ${esc(fmtNum(r.value,1))}${esc(unit)}</title></circle>`).join('');
+  return `<div class="dashboardMiniChart"><div class="dashboardScale"><span>${fmtNum(hi,1)}${esc(unit)}</span><span>${fmtNum((hi+lo)/2,1)}${esc(unit)}</span><span>${fmtNum(lo,1)}${esc(unit)}</span></div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path class="dashboardGrid" d="M16 30H504 M16 58H504 M16 86H504"/><path class="dashboardLine" d="${path}"/>${dots}</svg></div><div class="dashboardDates"><span>${fmtDate(rows[0].date)}</span><span>${fmtDate(rows.at(-1).date)}</span></div>`;
 }
 
-function currentSnapshot(){
-  const workout=domainReady('workouts')?latest(state.data.workouts||[],'workout_date'):null;
-  const body=domainReady('body')?latest(state.data.body||[],'measured_at'):null;
-  const nutrition=domainReady('nutrition')?latest(state.data.nutrition||[],'nutrition_date'):null;
-  const labs=domainReady('labs')?latest(state.data.labs||[],'collection_date'):null;
-  const activity=domainReady('metrics')?latestCanonicalActivityMetric(state.data.metrics||[]):null;
-  const sleep=pendingSleepSummary(),cards=[];
+function compositionPanel(model){
+  if(domainFailed('body'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">As medições corporais não carregaram nesta atualização.</div></section>`;
+  if(!model.trend.available)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">Ainda não há duas medições comparáveis.</div></section>`;
+  const body=model.body;
+  const latest=model.trend.points.at(-1);
+  return `<section class="dashboardPanel dashboardComposition">
+    <div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div><button data-route="bio">Ver composição →</button></div>
+    <div class="dashboardSeriesHead"><b>Massa muscular</b><span>${latest?.muscleKg==null?'—':`${fmtNum(latest.muscleKg,1)} kg`}${body.available?` · ${deltaText(body.delta.muscleKg,1,'kg')} desde a anterior`:''}</span></div>
+    ${miniLine(model.trend.points,'muscleKg',' kg')}
+    <div class="dashboardSeriesHead second"><b>Gordura corporal</b><span>${latest?.bodyFatPct==null?'—':`${fmtNum(latest.bodyFatPct,1)}%`}${body.available?` · ${deltaText(body.delta.bodyFatPp,1,'p.p.')} desde a anterior`:''}</span></div>
+    ${miniLine(model.trend.points,'bodyFatPct','%')}
+  </section>`;
+}
 
-  if(domainReady('workouts')){
-    const workoutValue=workout?(workout.workout_type||'Treino registrado'):'Nenhum treino registrado';
-    cards.push(currentCard('Último treino',workoutValue,workout?dateText(workout.workout_date):'O histórico carregado não tem uma sessão nesta área','treinos'));
-  }else cards.push(unavailableValue('Último treino'));
+function trainingPanel(model){
+  const dist=model.training.distribution;
+  if(domainFailed('workouts')||domainFailed('exercises'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição recente</h2></div></div><div class="dashboardChartEmpty">O histórico de treinos não carregou nesta atualização.</div></section>`;
+  if(!dist.available||!dist.rows.length)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição recente</h2></div></div><div class="dashboardChartEmpty">Sem grupos musculares estruturados no período.</div></section>`;
+  const rows=dist.rows.slice(0,8),max=Math.max(...rows.map(r=>r.sessions),1);
+  return `<section class="dashboardPanel dashboardTraining">
+    <div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição nas últimas 8 semanas</h2></div><button data-route="treinos">Ver treinos →</button></div>
+    <div class="dashboardBars">${rows.map(r=>`<div class="dashboardBarRow"><span>${esc(r.label)}</span><div><i style="width:${Math.max(6,r.sessions/max*100)}%"></i></div><b>${r.sessions}</b><small>${r.sets==null?'séries não carregadas':`${r.sets} séries estruturadas`}</small></div>`).join('')}</div>
+    <p class="dashboardFootnote">Mostra frequência registrada por grupo; não classifica nenhum grupo como “bom” ou “ruim”.</p>
+  </section>`;
+}
 
-  if(domainReady('body')){
-    const bodyValue=body?(num(body.weight_kg)!=null?`${fmtNum(body.weight_kg,1)} kg`:'Medição registrada'):'Nenhuma medição registrada';
-    cards.push(currentCard('Última composição corporal',bodyValue,body?dateText(body.measured_at):'O histórico carregado não tem uma medição nesta área','evolucao'));
-  }else cards.push(unavailableValue('Última composição corporal'));
-
-  if(domainReady('nutrition')){
-    const nutritionValue=nutrition?(num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:'Dia registrado'):'Nenhuma alimentação registrada';
-    cards.push(currentCard('Alimentação mais recente',nutritionValue,nutrition?dateText(nutrition.nutrition_date):'O histórico carregado não tem um dia de alimentação nesta área','nutricao'));
-  }else cards.push(unavailableValue('Alimentação mais recente'));
-
-  if(domainReady('metrics')){
-    const activityValue=activity?`${fmtNum(activity.value,Number.isInteger(num(activity.value))?0:1)} ${activity.unit||''}`.trim():'Nenhum registro confirmado';
-    const activityDetail=activity?`${activityTypes[activity.metric_type]} · ${dateText(activity.measured_at)}`:'Ainda não há energia ativa, minutos de exercício ou horas em pé confirmados nesta área';
-    cards.push(currentCard('Atividade confirmada',activityValue,activityDetail,'timeline'));
-  }else cards.push(unavailableValue('Atividade confirmada'));
-
-  if(sleep){
-    const value=sleep.days?`${sleep.days} dia(s) registrado(s)`:'Nenhum registro encontrado';
-    const detail=sleep.days?`Último em ${dateText(sleep.latest)} · aguardando conferência antes de entrar em médias`:'Nenhum registro de duração do sono foi encontrado nas fontes carregadas';
-    cards.push(currentCard('Sono',value,detail,'timeline'));
-  }else cards.push(unavailableValue('Sono'));
-
-  if(domainReady('labs'))cards.push(currentCard('Exames',labs?dateText(labs.collection_date):'Nenhum resultado registrado',labs?'Última coleta disponível':'O histórico carregado não tem resultados nesta área','saude'));
-  else cards.push(unavailableValue('Exames'));
-
-  return cards.join('');
+function segmentalInsight(model){
+  const seg=model.segmental;if(!seg.available)return null;
+  const parts=seg.regions.map(r=>`${r.label.toLowerCase()} ${deltaText(r.leanDeltaKg,2,'kg')}`);
+  const training=seg.regions.map(r=>r.training.sessions==null?null:`${r.label.toLowerCase()}: ${r.training.sessions} sessão(ões)`).filter(Boolean);
+  return infoCard('Composição × treino','Mudança segmentar com contexto do mesmo intervalo',`Massa magra segmentar: ${parts.join(' · ')}. No mesmo intervalo, registros de treino relacionados: ${training.join(' · ')}. A coincidência temporal não prova causa.`,'analise');
+}
+function rhythmInsight(model){
+  const r=model.training.rhythm;if(!r.available)return null;
+  const phrase=r.delta===0?'ficou no mesmo nível':r.delta>0?'teve mais sessões registradas':'teve menos sessões registradas';
+  return infoCard('Ritmo de treino',`O bloco mais recente ${phrase}`,`${r.previous} sessão(ões) nos 28 dias anteriores e ${r.recent} nos 28 dias mais recentes.`,'treinos');
+}
+function nutritionInsight(model){
+  const n=model.nutrition;if(!n.available||!n.days)return null;
+  const protein=n.proteinAvg==null?'proteína sem média disponível':`proteína média registrada ${fmtNum(n.proteinAvg,0)} g/dia`;
+  const comparison=n.proteinDelta==null?'sem período anterior comparável':`diferença frente ao período anterior equivalente ${deltaText(n.proteinDelta,0,'g/dia')}`;
+  return infoCard('Composição × alimentação','Alimentação no intervalo entre medições',`${n.days} dia(s) registrados no intervalo · ${protein} · ${comparison}. O app não transforma essa associação em causa.`,'analise');
+}
+function performanceInsight(model){
+  const p=model.training.performance?.[0];if(!p)return null;
+  return infoCard('Performance comparável','Mesmo exercício, máquina e unidade',`${p.exercise}: ${fmtNum(p.previousWeight,Number.isInteger(p.previousWeight)?0:1)} → ${fmtNum(p.weight,Number.isInteger(p.weight)?0:1)} ${p.unit}, entre ${fmtDate(p.previousDate)} e ${fmtDate(p.date)}.`,'treinos');
+}
+function limitationCards(model){
+  const rows=[];
+  if(model.labs.available&&model.labs.collectionDays.length<2)rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames ainda não têm duas coletas comparáveis</b><span>Há resultados estruturados, mas uma série temporal exige outra data de coleta.</span><i>→</i></button>`);
+  if(model.sleep.available&&model.sleep.days)rows.push(`<button class="dashboardLimitation" data-route="timeline"><b>Sono está preservado, mas ainda fora das conclusões</b><span>${model.sleep.days} dia(s) registrados por fontes que continuam separados até existir uma regra segura de consolidação.</span><i>→</i></button>`);
+  return rows.join('');
 }
 
 export function renderTodayHub(){
-  const model=buildHealthIntelligence(state.data,state.domainStatus);
-  const primaryInsights=model.insights.slice(0,4);
-  const questions=[];
-  if((state.data.body||[]).length>=2)questions.push(question('O que mudou entre minhas duas últimas medições?','evolucao'));
-  if((state.data.workouts||[]).length>=2)questions.push(question('Como mudou meu ritmo de treino?','analise'));
-  questions.push(question('Onde meu histórico ainda é insuficiente para concluir algo?','analise'));
-  questions.push(question((new Set((state.data.labs||[]).map(l=>day(l.collection_date))).size>=2)?'O que mudou entre minhas coletas de exames?':'O que falta para comparar meus exames?','saude'));
-
-  return `<div class="intelScreen" data-executive-dashboard>
-    <section class="intelHero">
-      <div class="intelHeroCopy">
-        <span class="intelEyebrow">LTS Health</span>
-        <h1>${esc(model.headline.title)}</h1>
-        <p>${esc(model.headline.subtitle)}</p>
-        <div class="intelHeroMeta"><span>Leitura até ${esc(fmtDate(model.referenceDay))}</span><span>${model.comparableDomains}/5 áreas com histórico comparável</span><span>${model.strongDomains}/5 com boa cobertura</span></div>
-      </div>
-      <div class="intelHeroActions">${action('analise','Abrir análise completa')}${action('dados','Adicionar dados')}</div>
+  const model=buildIntegratedAnalysis(state.data,state.domainStatus);
+  const body=model.body.available?model.body.latest:null,lastWorkout=model.training.lastWorkout,lastNutrition=model.lastNutrition;
+  const insights=[segmentalInsight(model),nutritionInsight(model),rhythmInsight(model),performanceInsight(model)].filter(Boolean).slice(0,4);
+  const labDate=model.labs.collectionDays?.at(-1)||null;
+  const bodyCard=domainFailed('body')?currentCard('Composição','Indisponível agora','As medições corporais não carregaram nesta atualização.','bio'):currentCard('Composição',body&&num(body.skeletal_muscle_mass_kg)!=null?`${fmtNum(body.skeletal_muscle_mass_kg,1)} kg de massa muscular`:'Sem medição recente',body&&num(body.body_fat_pct)!=null?`${fmtNum(body.body_fat_pct,1)}% de gordura corporal · ${fmtDate(body.measured_at)}`:'Abra a composição para ver o histórico','bio');
+  const workoutCard=domainFailed('workouts')?currentCard('Último treino','Indisponível agora','O histórico de treinos não carregou nesta atualização.','treinos'):currentCard('Último treino',lastWorkout?.workout_type||'Sem sessão recente',lastWorkout?`${fmtDate(lastWorkout.workout_date)}${lastWorkout.location?` · ${lastWorkout.location}`:''}`:'Nenhum treino estruturado disponível','treinos');
+  const nutritionCard=domainFailed('nutrition')?currentCard('Alimentação','Indisponível agora','Os dados de alimentação não carregaram nesta atualização.','nutricao'):currentCard('Alimentação',lastNutrition?fmtDate(lastNutrition.nutrition_date):'Sem registro recente',lastNutrition&&num(lastNutrition.protein_g)!=null?`${fmtNum(lastNutrition.protein_g,0)} g de proteína registrados no dia`:'Histórico diário disponível em Nutrição','nutricao');
+  const labCard=domainFailed('labs')?currentCard('Exames','Indisponível agora','Os resultados laboratoriais não carregaram nesta atualização.','saude'):currentCard('Exames',labDate?fmtDate(labDate):'Sem coleta estruturada',model.labs.collectionDays?.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis na última dupla de coletas`:'Ainda sem segunda coleta comparável','saude');
+  return `<div class="dashboardScreen" data-executive-dashboard>
+    <section class="dashboardHeader">
+      <div><span class="dashboardEyebrow">Resumo</span><h1>Seu histórico em uma tela</h1><p>Leitura até ${esc(fmtDate(model.referenceDay))}. Primeiro as mudanças e relações; cobertura e pendências ficam em segundo plano.</p></div>
+      <div class="dashboardHeaderActions">${action('analise','Análise completa')}${action('dados','Adicionar dados')}</div>
     </section>
 
-    <section class="intelSection intelNow">
-      <div class="intelSectionHead"><div><span>Estado atual</span><h2>O retrato mais recente, com a data sempre explícita.</h2></div><small>Ausência de dado nunca vira zero.</small></div>
-      <div class="intelCurrentGrid">${currentSnapshot()}</div>
+    <section class="dashboardCurrentGrid">${bodyCard}${workoutCard}${nutritionCard}${labCard}</section>
+
+    <div class="dashboardMainGrid">${compositionPanel(model)}${trainingPanel(model)}</div>
+
+    <section class="dashboardSection">
+      <div class="dashboardSectionHead"><div><span>Leituras integradas</span><h2>O que os dados já permitem relacionar</h2></div><small>Sem transformar coincidência temporal em causalidade.</small></div>
+      <div class="dashboardInsightGrid">${insights.length?insights.join(''):'<div class="dashboardChartEmpty">Ainda não há relações suficientes para destacar.</div>'}</div>
     </section>
 
-    <section class="intelSection intelChanges">
-      <div class="intelSectionHead"><div><span>Análise</span><h2>O que merece sua atenção no histórico.</h2></div><small>As relações entre datas servem como contexto; não são tratadas como causa.</small></div>
-      <div class="intelInsightGrid">${primaryInsights.length?primaryInsights.map(insightCard).join(''):'<div class="intelEmpty">Ainda não há mudanças com dados suficientes para destacar.</div>'}</div>
-    </section>
-
-    <section class="intelSplit">
-      <div class="intelSection">
-        <div class="intelSectionHead"><div><span>Pontos de atenção</span><h2>O que limita uma leitura mais completa.</h2></div></div>
-        <div class="intelAttentionList">${model.attention.length?model.attention.map(attentionRow).join(''):'<div class="intelEmpty compact">Nenhuma limitação adicional foi identificada pelos critérios atuais.</div>'}</div>
-      </div>
-      <div class="intelSection">
-        <div class="intelSectionHead"><div><span>Cobertura</span><h2>Quanto histórico existe em cada área.</h2></div></div>
-        <div class="intelCoverageGrid">${model.coverage.map(coverageCard).join('')}</div>
-      </div>
-    </section>
-
-    <section class="intelSection intelAsk">
-      <div class="intelSectionHead"><div><span>Pergunte ao histórico</span><h2>Perguntas que os dados já conseguem orientar.</h2></div><small>As respostas abrem os registros usados como base.</small></div>
-      <div class="intelQuestionGrid">${questions.join('')}</div>
-    </section>
-
-    <section class="intelFootnote">
-      <b>Como o LTS Health lê seus dados</b>
-      <p>O dashboard usa somente registros confirmados nas conclusões. Dados conflitantes ou ainda em revisão ficam fora das conclusões, mas continuam preservados no histórico. Nenhum valor é inventado para preencher lacunas.</p>
-    </section>
+    ${limitationCards(model)?`<section class="dashboardSection dashboardLimitations"><div class="dashboardSectionHead"><div><span>O que ainda limita</span><h2>Dados que estão presentes, mas ainda não sustentam uma conclusão</h2></div></div><div class="dashboardLimitationGrid">${limitationCards(model)}</div></section>`:''}
   </div>`;
 }

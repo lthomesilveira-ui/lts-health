@@ -18,14 +18,42 @@ function sourceDisplay(source=''){
   return source||'Origem registrada';
 }
 
-function lineChart(rows,key,label){
+function chartGeometry(rows,key,{width=960,height=238,padLeft=54,padRight=22,padY=24}={}){
   const pts=rows.map(r=>({date:r.measured_at,value:num(r[key])})).filter(p=>p.value!=null);
-  if(pts.length<2)return empty('Ainda não há pontos suficientes para este gráfico.');
-  const values=pts.map(p=>p.value),min0=Math.min(...values),max0=Math.max(...values),span=max0-min0||1,pad=span*.12,min=min0-pad,max=max0+pad,w=960,h=230,p=28;
-  const x=i=>p+i*(w-p*2)/Math.max(1,pts.length-1),y=v=>p+(max-v)*(h-p*2)/(max-min||1);
+  if(pts.length<2)return null;
+  const values=pts.map(p=>p.value),rawMin=Math.min(...values),rawMax=Math.max(...values),span=rawMax-rawMin||Math.max(Math.abs(rawMax)*.08,.5),pad=span*.14,min=rawMin-pad,max=rawMax+pad;
+  const x=i=>padLeft+i*(width-padLeft-padRight)/Math.max(1,pts.length-1),y=v=>padY+(max-v)*(height-padY*2)/(max-min||1);
+  return{pts,values,rawMin,rawMax,min,max,width,height,padLeft,padRight,padY,x,y};
+}
+
+function lineChart(rows,key,label,unit){
+  const g=chartGeometry(rows,key);if(!g)return empty('Ainda não há pontos suficientes para este gráfico.');
+  const{pts,rawMin,rawMax,width,height,padLeft,padRight,x,y}=g,mid=(rawMax+rawMin)/2;
   const path=pts.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(r.value).toFixed(1)}`).join(' ');
-  const dots=pts.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.value).toFixed(1)}" r="3.5"/>`).join('');
-  return `<div class="evoChart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path class="gridline" d="M28 58H932 M28 115H932 M28 172H932"/><path class="evoLine" d="${path}"/>${dots}</svg></div><div class="evoAxis"><span>${fmtDate(pts[0].date)}</span><b>${esc(label)}</b><span>${fmtDate(pts.at(-1).date)}</span></div>`;
+  const dots=pts.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.value).toFixed(1)}" r="3.8"><title>${esc(fmtDate(r.date))}: ${esc(fmtNum(r.value,1))} ${esc(unit)}</title></circle>`).join('');
+  const last=pts.at(-1),first=pts[0];
+  return `<div class="bioChartWrap">
+    <div class="bioChartY"><span>${fmtNum(rawMax,1)} ${esc(unit)}</span><span>${fmtNum(mid,1)} ${esc(unit)}</span><span>${fmtNum(rawMin,1)} ${esc(unit)}</span></div>
+    <div class="evoChart bioChart"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${esc(label)} ao longo do tempo"><path class="gridline" d="M${padLeft} 58H${width-padRight} M${padLeft} 119H${width-padRight} M${padLeft} 180H${width-padRight}"/><path class="evoLine" d="${path}"/>${dots}<text class="bioPointLabel" x="${x(0)+7}" y="${Math.max(15,y(first.value)-8)}">${esc(fmtNum(first.value,1))}</text><text class="bioPointLabel last" x="${Math.max(padLeft,x(pts.length-1)-48)}" y="${Math.max(15,y(last.value)-8)}">${esc(fmtNum(last.value,1))}</text></svg></div>
+  </div><div class="evoAxis"><span>${fmtDate(first.date)}</span><b>${esc(label)} (${esc(unit)})</b><span>${fmtDate(last.date)}</span></div>`;
+}
+
+function miniSeries(rows,key,label,unit){
+  const g=chartGeometry(rows,key,{width:380,height:92,padLeft:12,padRight:12,padY:12});
+  if(!g)return'';
+  const{pts,x,y}=g,path=pts.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(r.value).toFixed(1)}`).join(' '),first=pts[0],last=pts.at(-1),change=last.value-first.value;
+  return `<article class="bioMiniSeries"><div><span>${esc(label)}</span><b>${fmtNum(last.value,1)} ${esc(unit)}</b><small>${change>0?'+':''}${fmtNum(change,1)} ${esc(unit)} no período exibido</small></div><svg viewBox="0 0 380 92" preserveAspectRatio="none"><path class="bioMiniGrid" d="M12 46H368"/><path class="bioMiniLine" d="${path}"/>${pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="2.8"><title>${esc(fmtDate(p.date))}: ${esc(fmtNum(p.value,1))} ${esc(unit)}</title></circle>`).join('')}</svg><div class="bioMiniAxis"><span>${fmtDate(first.date)}</span><span>${fmtDate(last.date)}</span></div></article>`;
+}
+
+function combinedView(rows){
+  const recent=rows.slice(-12);
+  const cards=[
+    miniSeries(recent,'skeletal_muscle_mass_kg','Massa muscular','kg'),
+    miniSeries(recent,'fat_mass_kg','Massa de gordura','kg'),
+    miniSeries(recent,'body_fat_pct','Gordura corporal','%'),
+    miniSeries(recent,'weight_kg','Peso','kg')
+  ].filter(Boolean);
+  return cards.length?`<div class="bioCombinedGrid">${cards.join('')}</div><p class="footerNote">As quatro séries compartilham as mesmas datas, mas cada gráfico usa sua própria escala para não misturar kg e percentual.</p>`:empty('Ainda não há pontos suficientes para a visão combinada.');
 }
 
 function daysBetween(a,b){
@@ -38,9 +66,11 @@ function compare(rows){
   if(rows.length<2)return empty('São necessárias pelo menos duas medições para comparar datas.');
   if(!state.ui.compareA||!rows.some(r=>r.measured_at===state.ui.compareA))state.ui.compareA=rows.at(-2).measured_at;
   if(!state.ui.compareB||!rows.some(r=>r.measured_at===state.ui.compareB))state.ui.compareB=rows.at(-1).measured_at;
+  const selectors=`<div class="compareSelectors"><label>De<select id="compareA">${compareOptions(rows,state.ui.compareA)}</select></label><label>Até<select id="compareB">${compareOptions(rows,state.ui.compareB)}</select></label></div>`;
+  if(state.ui.compareA===state.ui.compareB)return `${selectors}<p class="compareContext">Mesma data</p>${empty('Escolha duas datas diferentes para comparar.')}`;
   const a=rows.find(r=>r.measured_at===state.ui.compareA),b=rows.find(r=>r.measured_at===state.ui.compareB),interval=daysBetween(state.ui.compareA,state.ui.compareB);
-  const intervalText=interval==null?'':interval===0?'Mesma data':`${Math.abs(interval)} dia${Math.abs(interval)===1?'':'s'} entre as medições${interval<0?' · ordem invertida':''}`;
-  return `<div class="compareSelectors"><label>De<select id="compareA">${compareOptions(rows,state.ui.compareA)}</select></label><label>Até<select id="compareB">${compareOptions(rows,state.ui.compareB)}</select></label></div>${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('Massa muscular',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Gordura corporal',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('Pontuação InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
+  const intervalText=interval==null?'':`${Math.abs(interval)} dia${Math.abs(interval)===1?'':'s'} entre as medições${interval<0?' · ordem invertida':''}`;
+  return `${selectors}${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('Massa muscular',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Massa de gordura',neutralDelta(b?.fat_mass_kg,a?.fat_mass_kg,1,'kg'))}${metric('Gordura corporal',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('Pontuação InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
 }
 function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${value==null?'—':`${fmtNum(value,Number.isInteger(num(value))?0:1)}${unit?` ${esc(unit)}`:''}`}</b></div>`;}
 function measurementDetail(row){
@@ -59,15 +89,16 @@ export function renderBioHub(){
   const key=state.ui.bioMetric||'weight_kg',meta=metrics[key]||metrics.weight_kg;
   if(!state.ui.selectedBodyDate||!rows.some(r=>r.measured_at===state.ui.selectedBodyDate))state.ui.selectedBodyDate=last.measured_at;
   const selected=rows.find(r=>r.measured_at===state.ui.selectedBodyDate);
-  return `${title('Composição corporal','Suas medições, comparação entre datas e histórico completo.')}
-    <div class="note"><b>Última medição · ${fmtDate(last.measured_at)}</b><span>${rows.length} medição(ões) no histórico carregado. Os indicadores abaixo usam a medição mais recente.</span></div>
+  return `${title('Composição corporal','Valores, escalas e comparação entre medidas ao longo do tempo.')}
+    <div class="note"><b>Última medição · ${fmtDate(last.measured_at)}</b><span>${rows.length} medição(ões) no histórico. Os números dos gráficos agora aparecem na escala e nos pontos.</span></div>
     <div class="grid cols4 sectionGap">
       ${metric('Peso',fmtNum(last.weight_kg),'kg',prev?`desde a anterior ${neutralDelta(last.weight_kg,prev.weight_kg,1,'kg')}`:`primeiro registro ${fmtDate(first.measured_at)}`)}
       ${metric('Massa muscular',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`:'')}
+      ${metric('Massa de gordura',fmtNum(last.fat_mass_kg),'kg',prev?`desde a anterior ${neutralDelta(last.fat_mass_kg,prev.fat_mass_kg,1,'kg')}`:'')}
       ${metric('Gordura corporal',fmtNum(last.body_fat_pct),'%',prev?`desde a anterior ${neutralDelta(last.body_fat_pct,prev.body_fat_pct,1,'%')}`:'')}
-      ${metric('Gordura visceral',num(last.visceral_fat_level)==null?'—':fmtNum(last.visceral_fat_level,0),'nível',`medição de ${fmtDate(last.measured_at)}`)}
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Evolução corporal</b><small>Escolha uma medida para acompanhar ao longo do tempo.</small></div><div class="segmented">${Object.entries(metrics).map(([k,m])=>`<button type="button" data-bio-metric="${k}" class="${key===k?'active':''}">${esc(m.label)}${k==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${lineChart(rows,key,`${meta.label} (${meta.unit})`)}</div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Evolução corporal</b><small>Escolha uma medida; escala, datas e valores ficam explícitos.</small></div><div class="segmented">${Object.entries(metrics).map(([k,m])=>`<button type="button" data-bio-metric="${k}" class="${key===k?'active':''}">${esc(m.label)}${k==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${lineChart(rows,key,meta.label,meta.unit)}</div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Visão combinada</b><small>Massa muscular, massa de gordura, percentual de gordura e peso nas mesmas datas.</small></div><span class="pill">últimas ${Math.min(12,rows.length)}</span></div>${combinedView(rows)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Comparar duas medições</b><small>Diferenças observadas entre as datas escolhidas.</small></div></div>${compare(rows)}</div>
       <div class="card"><div class="cardHead"><div><b>Primeiro e último registro</b><small>Visão descritiva do período completo.</small></div></div><div class="summaryPair"><div><span>${fmtDate(first.measured_at)}</span><b>${fmtNum(first.weight_kg)} kg</b><small>Massa muscular ${fmtNum(first.skeletal_muscle_mass_kg)} kg</small></div><div class="arrow">→</div><div><span>${fmtDate(last.measured_at)}</span><b>${fmtNum(last.weight_kg)} kg</b><small>Massa muscular ${fmtNum(last.skeletal_muscle_mass_kg)} kg</small></div></div></div>

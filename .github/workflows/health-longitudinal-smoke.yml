@@ -13,7 +13,9 @@ jobs:
       - name: Static health gates
         run: |
           node --check v2/src/health-screen.js
+          node --check v2/src/intelligence-engine.js
           node --check v2/health-longitudinal-smoke.mjs
+          node --check v2/lab-intelligence-boundary-smoke.mjs
           grep -q "collectionComparison" v2/src/health-screen.js
           grep -q "unidades diferentes permanecem em séries separadas" v2/src/health-screen.js
           grep -q "nenhuma conversão é feita automaticamente" v2/src/health-screen.js
@@ -33,3 +35,4 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           node v2/health-longitudinal-smoke.mjs
+          node v2/lab-intelligence-boundary-smoke.mjs

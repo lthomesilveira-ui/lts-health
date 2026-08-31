@@ -41,8 +41,10 @@ async function run(viewport,label){
       {source_record_id:'trend-set-1',exercise_source_record_id:'trend-ex-1',workout_source_record_id:'workout-1',workout_date:'2026-01-20',set_index:1,phase:'working',weight:60,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'},
       {source_record_id:'trend-set-2',exercise_source_record_id:'trend-ex-1',workout_source_record_id:'workout-1',workout_date:'2026-01-20',set_index:2,phase:'working',weight:60,weight_unit:'kg',reps_numeric:12,reps_raw:'12',source:'Fixture de interface'},
       {source_record_id:'trend-set-3',exercise_source_record_id:'trend-ex-2',workout_source_record_id:'workout-1',workout_date:'2026-01-27',set_index:1,phase:'working',weight:65,weight_unit:'kg',reps_numeric:8,reps_raw:'8',source:'Fixture de interface'},
+      {source_record_id:'trend-set-no-unit-prev',exercise_source_record_id:'trend-ex-2',workout_source_record_id:'workout-1',workout_date:'2026-01-27',set_index:2,phase:'working',weight:80,weight_unit:null,reps_numeric:7,reps_raw:'7',source:'Fixture de interface'},
       {source_record_id:'trend-set-4',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:1,phase:'working',weight:65,weight_unit:'kg',reps_numeric:11,reps_raw:'11',source:'Fixture de interface'},
       {source_record_id:'trend-set-unit',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:2,phase:'working',weight:7,weight_unit:'plate_index',reps_numeric:9,reps_raw:'9',source:'Fixture de interface'},
+      {source_record_id:'trend-set-no-unit-latest',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:3,phase:'working',weight:90,weight_unit:null,reps_numeric:6,reps_raw:'6',source:'Fixture de interface'},
       {source_record_id:'trend-set-other-machine',exercise_source_record_id:'trend-ex-other-machine',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:1,phase:'working',weight:100,weight_unit:'kg',reps_numeric:20,reps_raw:'20',source:'Fixture de interface'}
     ];
   });
@@ -72,10 +74,16 @@ async function run(viewport,label){
   await page.click('.exerciseList button:has-text("Máquina A")');
   await page.waitForSelector('.trainingRecent');
   const text=(await page.locator('.exerciseDetail').textContent())||'';
-  for(const expected of ['Sessões recentes','60 kg','12 reps','65 kg','11 reps','placa','Unidades diferentes permanecem separadas']){
+  for(const expected of ['Sessões recentes','60 kg','12 reps','65 kg','11 reps','placa','Unidades diferentes permanecem separadas','mesma carga · +3 reps','90 sem unidade']){
     if(!text.includes(expected))throw new Error(`${label}: missing conservative training trend detail: ${expected}`);
   }
   if(text.includes('100 kg')||text.includes('20 reps'))throw new Error(`${label}: alternate machine leaked into selected exercise progression`);
+  const comparisonText=(await page.locator('.trainingComparison').textContent())||'';
+  if(comparisonText.includes('sem unidade')||comparisonText.includes('+10'))throw new Error(`${label}: load without a recorded unit leaked into session comparison`);
+  const progressionText=(await page.locator('.exerciseProgression').textContent())||'';
+  if(progressionText.includes('80 sem unidade')||progressionText.includes('90 sem unidade'))throw new Error(`${label}: load without a recorded unit leaked into longitudinal progression`);
+  const recentText=(await page.locator('.trainingRecent').textContent())||'';
+  if(recentText.includes('80 sem unidade')||recentText.includes('90 sem unidade'))throw new Error(`${label}: load without a recorded unit leaked into recent-session trend`);
   const rows=await page.locator('.trainingRecentRow').count();
   if(rows<4)throw new Error(`${label}: recent-session trend did not render expected unit-separated rows`);
 

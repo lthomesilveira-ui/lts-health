@@ -1,136 +1,49 @@
 name: LTS Health v2 Pages Smoke
-
 on:
   workflow_run:
-    workflows: ["Deploy LTS Health"]
+    workflows: ['Deploy LTS Health']
     types: [completed]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   staging-smoke:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify public fallback and isolated v2 candidate
+        with:
+          ref: main
+      - name: Verify fallback, v2 identity and deployed bytes
         run: |
           set -euo pipefail
-          ROOT="https://lthomesilveira-ui.github.io/lts-health/"
-          V2="https://lthomesilveira-ui.github.io/lts-health/v2/"
-          CACHE_BUST="lts_sha=${GITHUB_SHA}&attempt=${GITHUB_RUN_ATTEMPT}"
-          TMP="$(mktemp -d)"
-          trap 'rm -rf "$TMP"' EXIT
-
-          fetch() {
-            local url="$1" out="$2"
-            local sep='?'
-            [[ "$url" == *\?* ]] && sep='&'
-            curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "${url}${sep}${CACHE_BUST}" -o "$out"
-          }
-          require_fixed() {
-            local label="$1" needle="$2" file="$3"
-            if ! grep -Fq -- "$needle" "$file"; then
-              echo "::error title=V2 Pages contract mismatch::${label} missing from ${file}"
-              return 1
-            fi
-            echo "PASS ${label}"
-          }
-          require_absent_fixed() {
-            local label="$1" needle="$2" file="$3"
-            if grep -Fq -- "$needle" "$file"; then
-              echo "::error title=V2 Pages contract mismatch::${label} unexpectedly present in ${file}"
-              return 1
-            fi
-            echo "PASS ${label}"
-          }
-          require_absent_regex() {
-            local label="$1" regex="$2" file="$3"
-            if grep -Eq -- "$regex" "$file"; then
-              echo "::error title=V2 Pages contract mismatch::${label} unexpectedly matched in ${file}"
-              return 1
-            fi
-            echo "PASS ${label}"
-          }
-          require_deployed_match() {
-            local label="$1" deployed="$2" local_file="$3"
-            if ! cmp -s "$deployed" "$local_file"; then
-              echo "::error title=V2 Pages deployment mismatch::${label} differs from checked-out ${GITHUB_SHA}"
-              echo "deployed sha256: $(sha256sum "$deployed" | cut -d' ' -f1)"
-              echo "expected sha256: $(sha256sum "$local_file" | cut -d' ' -f1)"
-              return 1
-            fi
-            echo "PASS ${label} deployed bytes"
-          }
-
-          fetch "$ROOT" "$TMP/root.html"
-          fetch "$V2" "$TMP/v2.html"
-          fetch "$V2/product-finish.css" "$TMP/product-finish.css"
-          fetch "$V2/src/main.js" "$TMP/main.js"
-          fetch "$V2/src/data-layer.js" "$TMP/data-layer.js"
-          fetch "$V2/src/core.js" "$TMP/core.js"
-          fetch "$V2/src/today-screen.js" "$TMP/today.js"
-          fetch "$V2/src/intelligence-engine.js" "$TMP/intelligence.js"
-          fetch "$V2/src/source-status.js" "$TMP/source-status.js"
-          fetch "$V2/src/data-screen.js" "$TMP/data.js"
-
-          require_fixed 'public root fallback marker' 'canonical v16' "$TMP/root.html"
-          require_fixed 'public root product bundle' './product.js?v=29' "$TMP/root.html"
-          require_absent_fixed 'public root excludes v2 bootstrap' 'type="module" src="./src/main.js"' "$TMP/root.html"
-
-          require_fixed 'v2 product identity' '<title>LTS Health</title>' "$TMP/v2.html"
-          require_fixed 'v2 screen host shell' 'id="screenHost"' "$TMP/v2.html"
-          require_fixed 'v2 module bootstrap' 'type="module" src="./src/main.js"' "$TMP/v2.html"
-          require_fixed 'v2 evolution stylesheet' './evolution.css' "$TMP/v2.html"
-          require_fixed 'v2 data stylesheet' './data.css' "$TMP/v2.html"
-          require_fixed 'v2 finished product stylesheet' './product-finish.css' "$TMP/v2.html"
-          require_fixed 'v2 finished product subtitle' 'Seu histórico de saúde' "$TMP/v2.html"
-          require_fixed 'training owner' 'renderTrainingScreen' "$TMP/main.js"
-          require_fixed 'post-upload outcome resolver' 'uploadOutcomeMessageFromState' "$TMP/main.js"
-          require_fixed 'ingestion preview data layer' 'health_ingestion_previews' "$TMP/data-layer.js"
-          require_fixed 'analysis owns preserved source evidence' "analise:['nutrition','metrics','sourceMetrics','labs']" "$TMP/data-layer.js"
-          require_fixed 'generic inspect function' "inspectFunction: 'health-inspect-upload'" "$TMP/core.js"
-          require_fixed 'single inspect router' 'inspectFunctionForSource = () => CONFIG.inspectFunction' "$TMP/core.js"
-          require_absent_fixed 'deprecated upload-v2 parser absent' 'health-inspect-upload-v2' "$TMP/core.js"
-          require_absent_fixed 'specialized lab parser absent' 'health-inspect-lab' "$TMP/core.js"
-          require_fixed 'executive intelligence owner' 'buildHealthIntelligence' "$TMP/today.js"
-          require_fixed 'review exclusion copy' 'Dados conflitantes ou ainda em revisão ficam fora das conclusões' "$TMP/today.js"
-          require_fixed 'sleep user-facing review copy' 'aguardando conferência antes de entrar em médias' "$TMP/today.js"
-          require_fixed 'pending source evidence copy' 'registro(s) por origem aguardando conferência' "$TMP/intelligence.js"
-          require_absent_fixed 'legacy non-consolidated evidence copy absent' 'não consolidados' "$TMP/intelligence.js"
-          require_fixed 'sleep canonical boundary contract' 'Sono permanece fora desta leitura' "$TMP/intelligence.js"
-          require_fixed 'stable Apple metric boundary' "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" "$TMP/source-status.js"
-          require_absent_regex 'sleep excluded from stable Apple metric set' 'stableAppleMetricTypes.*sleep_duration_h' "$TMP/source-status.js"
-          require_fixed 'ActivitySummary source guard' 'isAppleActivitySummarySource' "$TMP/source-status.js"
-          require_fixed 'data inventory begins with real availability' 'O que já está no seu histórico' "$TMP/data.js"
-          require_fixed 'automatic Apple copy' 'Entram automaticamente em Atividade: energia ativa, minutos de exercício e horas em pé.' "$TMP/data.js"
-          require_fixed 'Apple review metrics copy' 'Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso e sono ficam separados até conferência.' "$TMP/data.js"
-          require_fixed 'cross-source sleep separation copy' 'Fontes diferentes de sono continuam separadas.' "$TMP/data.js"
-          require_fixed 'direct MyFitnessPal preference' 'O arquivo direto do MyFitnessPal é a fonte preferida.' "$TMP/data.js"
-          require_fixed 'lab original preservation' 'O arquivo original é preservado.' "$TMP/data.js"
-          require_absent_fixed 'legacy canonical Apple copy absent' 'Automático canônico: energia ativa, minutos de exercício e horas em pé' "$TMP/data.js"
-          require_absent_fixed 'legacy Apple candidate copy absent' 'podem chegar como candidatos' "$TMP/data.js"
-          require_absent_fixed 'legacy validation abbreviation copy absent' 'Passos, FC de repouso, HRV' "$TMP/data.js"
-          require_absent_fixed 'legacy non-consolidated Today copy absent' 'Fontes ainda não consolidadas' "$TMP/today.js"
-          require_absent_fixed 'legacy validation Today copy absent' 'Em validação' "$TMP/today.js"
-
-          require_deployed_match 'v2 index' "$TMP/v2.html" 'v2/index.html'
-          require_deployed_match 'v2 product-finish.css' "$TMP/product-finish.css" 'v2/product-finish.css'
-          require_deployed_match 'v2 main.js' "$TMP/main.js" 'v2/src/main.js'
-          require_deployed_match 'v2 data-layer.js' "$TMP/data-layer.js" 'v2/src/data-layer.js'
-          require_deployed_match 'v2 core.js' "$TMP/core.js" 'v2/src/core.js'
-          require_deployed_match 'v2 today-screen.js' "$TMP/today.js" 'v2/src/today-screen.js'
-          require_deployed_match 'v2 intelligence-engine.js' "$TMP/intelligence.js" 'v2/src/intelligence-engine.js'
-          require_deployed_match 'v2 source-status.js' "$TMP/source-status.js" 'v2/src/source-status.js'
-          require_deployed_match 'v2 data-screen.js' "$TMP/data.js" 'v2/src/data-screen.js'
-      - name: Install deployed-browser runtime
+          ROOT='https://lthomesilveira-ui.github.io/lts-health/'
+          V2='https://lthomesilveira-ui.github.io/lts-health/v2/'
+          Q="lts_sha=${GITHUB_SHA}&attempt=${GITHUB_RUN_ATTEMPT}"
+          TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
+          fetch(){ local url="$1" out="$2" sep='?'; [[ "$url" == *\?* ]] && sep='&'; curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "${url}${sep}${Q}" -o "$out"; }
+          req(){ grep -Fq -- "$2" "$3" || { echo "::error::$1 missing"; exit 1; }; }
+          same(){ cmp -s "$2" "$3" || { echo "::error::$1 differs from checked-out main"; exit 1; }; }
+          fetch "$ROOT" "$TMP/root.html"; fetch "$V2" "$TMP/v2.html"
+          req root-fallback 'canonical v16' "$TMP/root.html"
+          req v2-title '<title>LTS Health</title>' "$TMP/v2.html"
+          req v2-dashboard-css './today.css' "$TMP/v2.html"
+          req v2-analysis-css './analysis.css' "$TMP/v2.html"
+          req v2-bio-css './bio.css' "$TMP/v2.html"
+          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js today.css analysis.css bio.css product-finish.css; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
+          req dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
+          req dashboard-copy 'Seu histórico em uma tela' "$TMP/today-screen.js-src_today-screen.js"
+          req workout-boundary 'canonicalWorkouts' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
+          req lab-boundary 'comparableLabCount' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
+          req composition-scale 'bioChartY' "$TMP/bio-screen.js-src_bio-screen.js"
+          req source-boundary "stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours'])" "$TMP/source-status.js-src_source-status.js"
+          req data-inventory 'O que já está no seu histórico' "$TMP/data-screen.js-src_data-screen.js"
+      - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Exercise deployed v2 on desktop and mobile
+      - name: Exercise deployed v2 desktop and mobile
         env:
           LTS_HEALTH_BASE_URL: https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1
         run: |
