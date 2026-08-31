@@ -1,0 +1,34 @@
+name: LTS Health v2 Confirmed Source Failure Smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/source-status.js'
+      - 'v2/src/data-screen.js'
+      - 'v2/source-confirmed-failure-smoke.mjs'
+      - '.github/workflows/source-confirmed-failure-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  confirmed-source-failure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static contract
+        run: |
+          node --check v2/src/source-status.js
+          node --check v2/source-confirmed-failure-smoke.mjs
+          grep -Fq "export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);" v2/src/source-status.js
+          ! grep -q "stableAppleMetricTypes.*sleep_duration_h" v2/src/source-status.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Confirmed source failure desktop and mobile
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 & SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/source-confirmed-failure-smoke.mjs
