@@ -1,4 +1,4 @@
-import {state,esc,day,fmtDate,fmtNum,num,norm,unique} from './core.js';
+import {state,esc,day,fmtDate,fmtNum,num,norm,unique,workoutRows} from './core.js';
 import {buildHealthIntelligence} from './intelligence-engine.js';
 
 const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
@@ -38,7 +38,8 @@ function pendingSleepSummary(){
 }
 
 function currentSnapshot(){
-  const workout=domainReady('workouts')?latest(state.data.workouts||[],'workout_date'):null;
+  const workouts=domainReady('workouts')?workoutRows():[];
+  const workout=latest(workouts,'workout_date');
   const body=domainReady('body')?latest(state.data.body||[],'measured_at'):null;
   const nutrition=domainReady('nutrition')?latest(state.data.nutrition||[],'nutrition_date'):null;
   const labs=domainReady('labs')?latest(state.data.labs||[],'collection_date'):null;
@@ -82,8 +83,9 @@ export function renderTodayHub(){
   const model=buildHealthIntelligence(state.data,state.domainStatus);
   const primaryInsights=model.insights.slice(0,4);
   const questions=[];
+  const structuredWorkouts=domainReady('workouts')?workoutRows():[];
   if((state.data.body||[]).length>=2)questions.push(question('O que mudou entre minhas duas últimas medições?','evolucao'));
-  if((state.data.workouts||[]).length>=2)questions.push(question('Como mudou meu ritmo de treino?','analise'));
+  if(structuredWorkouts.length>=2)questions.push(question('Como mudou meu ritmo de treino?','analise'));
   questions.push(question('Onde meu histórico ainda é insuficiente para concluir algo?','analise'));
   questions.push(question((new Set((state.data.labs||[]).map(l=>day(l.collection_date))).size>=2)?'O que mudou entre minhas coletas de exames?':'O que falta para comparar meus exames?','saude'));
 
