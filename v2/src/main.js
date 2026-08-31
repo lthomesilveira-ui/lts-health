@@ -70,9 +70,29 @@ function applyControlState(){
 async function refresh(){if(state.loading)return;setSync('Atualizando…');scheduleRender();await refreshData(state.route,setSync);scheduleRender();}
 
 export function uploadOutcomeMessage(result){
-  if(result?.processing==='review_required')return'Arquivo recebido e preservado. O processamento automático não terminou; ficou para revisão.';
-  if(result?.processing==='status_unknown')return'Arquivo recebido e preservado. Não foi possível atualizar o status do processamento agora; confira em Dados antes de reenviar.';
-  return'Arquivo recebido. O processamento foi iniciado.';
+  if(result?.processing==='review_required')return'Arquivo recebido e preservado. A leitura automática não terminou; ficou aguardando leitura segura.';
+  if(result?.processing==='status_unknown')return'Arquivo recebido e preservado. Não foi possível atualizar o resultado da leitura agora; confira em Arquivos & fontes antes de reenviar.';
+  return'Arquivo recebido. A leitura foi iniciada.';
+}
+
+export function uploadOutcomeMessageFromState(result){
+  const id=String(result?.id||'');
+  if(!id)return uploadOutcomeMessage(result);
+  const upload=(state.data.uploads||[]).find(row=>String(row.id)===id);
+  const preview=(state.data.previews||[]).find(row=>String(row.upload_id)===id);
+  const status=String(upload?.status||'').toLowerCase(),source=String(upload?.source_type||'').toLowerCase();
+  if(status==='imported'){
+    if(source==='apple_health')return'Arquivo incorporado ao histórico. Dados com regra segura entraram; sono e outras métricas sem regra segura continuam separados aguardando conferência.';
+    return'Arquivo incorporado ao histórico.';
+  }
+  if(status==='review_required'){
+    const format=preview?.detected_format?` (${String(preview.detected_format).toUpperCase()})`:'';
+    return`Arquivo recebido e guardado${format}. Ainda não entrou nas análises e você não precisa revisar linha por linha.`;
+  }
+  if(status==='processed')return'Arquivo processado e guardado. O histórico de arquivos já registra a conclusão.';
+  if(status==='rejected'||status==='failed')return'O arquivo foi guardado, mas não foi possível concluir o processamento. Para tentar novamente, envie outra versão do arquivo.';
+  if(status==='uploaded'||status==='processing')return'Arquivo recebido e guardado. A leitura ainda está em andamento.';
+  return uploadOutcomeMessage(result);
 }
 
 async function doLogin(){
@@ -157,6 +177,7 @@ function bindStaticEvents(){
     }
     try{
       await refresh();
+      if(msg)msg.textContent=uploadOutcomeMessageFromState(result);
     }catch(error){
       console.warn('upload_refresh_failed',error);
       if(msg)msg.textContent=`${uploadOutcomeMessage(result)} A tela não pôde ser atualizada agora.`;

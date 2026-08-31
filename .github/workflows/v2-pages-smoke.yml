@@ -88,6 +88,7 @@ jobs:
           require_fixed 'v2 finished product stylesheet' './product-finish.css' "$TMP/v2.html"
           require_fixed 'v2 finished product subtitle' 'Seu histórico de saúde' "$TMP/v2.html"
           require_fixed 'training owner' 'renderTrainingScreen' "$TMP/main.js"
+          require_fixed 'post-upload outcome resolver' 'uploadOutcomeMessageFromState' "$TMP/main.js"
           require_fixed 'ingestion preview data layer' 'health_ingestion_previews' "$TMP/data-layer.js"
           require_fixed 'analysis owns preserved source evidence' "analise:['nutrition','metrics','sourceMetrics','labs']" "$TMP/data-layer.js"
           require_fixed 'generic inspect function' "inspectFunction: 'health-inspect-upload'" "$TMP/core.js"
@@ -136,3 +137,4 @@ jobs:
           node v2/homologation-live-smoke.mjs
           node v2/executive-dashboard-smoke.mjs
           node v2/product-finish-smoke.mjs
+          node v2/upload-outcome-smoke.mjs
