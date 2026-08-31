@@ -38,9 +38,11 @@ function compare(rows){
   if(rows.length<2)return empty('São necessárias pelo menos duas medições para comparar datas.');
   if(!state.ui.compareA||!rows.some(r=>r.measured_at===state.ui.compareA))state.ui.compareA=rows.at(-2).measured_at;
   if(!state.ui.compareB||!rows.some(r=>r.measured_at===state.ui.compareB))state.ui.compareB=rows.at(-1).measured_at;
+  const selectors=`<div class="compareSelectors"><label>De<select id="compareA">${compareOptions(rows,state.ui.compareA)}</select></label><label>Até<select id="compareB">${compareOptions(rows,state.ui.compareB)}</select></label></div>`;
+  if(state.ui.compareA===state.ui.compareB)return `${selectors}<p class="compareContext">Mesma data</p>${empty('Escolha duas datas diferentes para comparar.')}`;
   const a=rows.find(r=>r.measured_at===state.ui.compareA),b=rows.find(r=>r.measured_at===state.ui.compareB),interval=daysBetween(state.ui.compareA,state.ui.compareB);
-  const intervalText=interval==null?'':interval===0?'Mesma data':`${Math.abs(interval)} dia${Math.abs(interval)===1?'':'s'} entre as medições${interval<0?' · ordem invertida':''}`;
-  return `<div class="compareSelectors"><label>De<select id="compareA">${compareOptions(rows,state.ui.compareA)}</select></label><label>Até<select id="compareB">${compareOptions(rows,state.ui.compareB)}</select></label></div>${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('Massa muscular',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Gordura corporal',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('Pontuação InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
+  const intervalText=interval==null?'':`${Math.abs(interval)} dia${Math.abs(interval)===1?'':'s'} entre as medições${interval<0?' · ordem invertida':''}`;
+  return `${selectors}${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('Massa muscular',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Gordura corporal',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('Pontuação InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
 }
 function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${value==null?'—':`${fmtNum(value,Number.isInteger(num(value))?0:1)}${unit?` ${esc(unit)}`:''}`}</b></div>`;}
 function measurementDetail(row){
