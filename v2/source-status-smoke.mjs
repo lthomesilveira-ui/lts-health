@@ -25,6 +25,7 @@ async function run(viewport,label){
       {source_record_id:'mfp-candidate',metric_date:'2026-02-10',metric_type:'dietary_protein_g',value:155,unit:'g',source_name:'MyFitnessPal via Apple Health',source_family:'myfitnesspal',canonical_status:'candidate'},
       {source_record_id:'polar-candidate',metric_date:'2026-02-10',metric_type:'resting_heart_rate_bpm',value:59,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'candidate'}
     ];
+    state.errors={};
     for(const key of ['uploads','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
     return {
       apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),
@@ -81,6 +82,7 @@ async function run(viewport,label){
     ];
     state.data.meals=[];
     state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-07T12:00:00Z',metric_type:'active_energy_kcal',value:450,unit:'kcal',source:'HealthKitBridge ActivitySummary'}];
+    state.errors={};
     for(const key of ['uploads','previews','quality','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
     return {
       apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),
@@ -100,10 +102,22 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     const {sourceStatusFor,latestSourceMetricDateFor,latestConfirmedSourceDateFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
     state.data.workouts=[];state.data.nutrition=[];state.data.meals=[];state.data.metrics=[];state.data.sourceMetrics=[];
+    state.errors={};
     state.domainStatus.sourceMetrics='error';
     return {apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),latest:latestSourceMetricDateFor('apple_health'),confirmed:latestConfirmedSourceDateFor('apple_health'),evidence:latestSourceEvidenceDateFor('apple_health')};
   });
   if(failed.apple!=='unknown'||failed.polar!=='unknown'||failed.mfp!=='unknown'||failed.latest!==null||failed.confirmed!==null||failed.evidence!==null)throw new Error(`${label}: failed provenance was converted into missing/zero evidence ${JSON.stringify(failed)}`);
+
+  const recordedError=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {sourceStatusFor,latestSourceMetricDateFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
+    state.data.uploads=[];state.data.workouts=[];state.data.nutrition=[];state.data.meals=[];state.data.metrics=[];
+    state.data.sourceMetrics=[{source_record_id:'apple-stale-candidate',metric_date:'2026-02-10',metric_type:'steps',value:9000,unit:'count',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'}];
+    for(const key of ['uploads','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
+    state.errors={sourceMetrics:new Error('fixture source metric failure')};
+    return {status:sourceStatusFor('apple_health'),latest:latestSourceMetricDateFor('apple_health'),evidence:latestSourceEvidenceDateFor('apple_health')};
+  });
+  if(recordedError.status!=='unknown'||recordedError.latest!==null||recordedError.evidence!==null)throw new Error(`${label}: recorded domain error was ignored and stale source evidence remained visible ${JSON.stringify(recordedError)}`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
