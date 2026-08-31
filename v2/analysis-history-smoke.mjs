@@ -50,8 +50,9 @@ async function run(viewport,label){
   await page.selectOption('#analysisPeriod','all');
   await page.waitForFunction(()=>document.querySelector('.analysisNarrative')?.textContent?.includes('3 sessão(ões) de treino registrada(s)'));
   text=(await page.textContent('#screenHost'))||'';
-  if(!text.includes('100% das sessões do período têm alimentação registrada no mesmo dia'))throw new Error(`${label}: same-day multiple workout sessions were undercounted in nutrition coverage`);
-  if(text.includes('2 de 3 treino(s) do período têm registro de alimentação no mesmo dia'))throw new Error(`${label}: nutrition limitation mixed unique days with workout sessions`);
+  if(!text.includes('67% das sessões do período têm alimentação registrada no mesmo dia'))throw new Error(`${label}: same-day multiple workout sessions were undercounted in nutrition coverage`);
+  if(!text.includes('Alimentação: 2 de 3 treino(s) do período têm registro de alimentação no mesmo dia.'))throw new Error(`${label}: nutrition limitation did not count matching workout sessions`);
+  if(text.includes('33% das sessões do período têm alimentação registrada no mesmo dia'))throw new Error(`${label}: nutrition coverage still mixed unique days with workout sessions`);
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.workouts=(state.data.workouts||[]).filter(row=>row.source_record_id!=='workout-same-day-second');
