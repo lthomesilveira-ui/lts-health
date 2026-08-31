@@ -27,7 +27,7 @@ async function run(viewport,label){
       {source_record_id:'shadow-set-2',exercise_source_record_id:'shadow-ex-2',weight:250,weight_unit:'kg',reps_numeric:3}
     );
   });
-  await page.locator('[data-route="hoje"]').first().click();
+  await page.locator('[data-route="hoje"]:visible').first().click();
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.textContent?.includes('Último treino'));
 
   const text=(await page.textContent('#screenHost'))||'';
