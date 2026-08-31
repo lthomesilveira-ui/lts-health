@@ -1,4 +1,4 @@
-import {state,esc,num,fmtNum,fmtDate,neutralDelta,bodyRows,norm} from './core.js';
+import {state,esc,num,fmtNum,fmtDate,neutralDelta,bodyRows,norm,day} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1>${description?`<p>${esc(description)}</p>`:''}</div></div>`;
 const metric=(label,value,unit='',sub='')=>`<div class="card metric"><span>${esc(label)}</span><strong>${esc(value)}${unit?` <small>${esc(unit)}</small>`:''}</strong>${sub?`<em>${esc(sub)}</em>`:''}</div>`;
@@ -17,6 +17,13 @@ function sourceDisplay(source=''){
   if(text.includes('bioimpedance'))return'Bioimpedância';
   return source||'Origem registrada';
 }
+function bodyDayGroups(rows){
+  const groups=new Map();
+  for(const row of rows||[]){const date=day(row?.measured_at);if(!date)continue;if(!groups.has(date))groups.set(date,[]);groups.get(date).push(row);}
+  return groups;
+}
+function comparableBodyRows(rows){return [...bodyDayGroups(rows).entries()].filter(([,items])=>items.length===1).sort((a,b)=>a[0].localeCompare(b[0])).map(([,items])=>items[0]);}
+function ambiguousBodyDays(rows){return new Set([...bodyDayGroups(rows).entries()].filter(([,items])=>items.length>1).map(([date])=>date));}
 
 function chartGeometry(rows,key,{width=960,height=238,padLeft=54,padRight=22,padY=24}={}){
   const pts=rows.map(r=>({date:r.measured_at,value:num(r[key])})).filter(p=>p.value!=null);
@@ -81,16 +88,24 @@ function measurementDetail(row){
       ${detailValue('Água corporal',row.body_water_l,'L')}${detailValue('Gordura visceral',row.visceral_fat_level,'nível')}${detailValue('Relação cintura/quadril',row.waist_hip_ratio,'')}${detailValue('Metabolismo basal',row.bmr_kcal,'kcal')}${detailValue('Pontuação InBody',row.score,'')}
     </div>${row.notes?`<p class="footerNote">${esc(row.notes)}</p>`:''}`;
 }
+function historyRow(row,ambiguousDays){
+  const content=`<time>${fmtDate(row.measured_at)}</time><div><b>${fmtNum(row.weight_kg)} kg</b><small>Massa muscular ${fmtNum(row.skeletal_muscle_mass_kg)} kg · gordura corporal ${fmtNum(row.body_fat_pct)}%${num(row.score)!=null?` · InBody ${fmtNum(row.score,0)}`:''}</small></div><span>${esc(sourceDisplay(row.source))}</span>`;
+  if(ambiguousDays.has(day(row.measured_at)))return `<div class="historyRow">${content}</div>`;
+  return `<button type="button" class="historyRow ${row.measured_at===state.ui.selectedBodyDate?'active':''}" data-body-date="${esc(row.measured_at)}">${content}</button>`;
+}
 
 export function renderBioHub(){
   if(bodyFailed())return `${title('Composição corporal','Histórico de bioimpedância e evolução das medições.')}<div class="errorState"><b>As medições corporais não carregaram agora.</b><span>O app não substitui essa falha por números zerados. Tente atualizar para carregar o histórico novamente.</span></div>`;
-  const rows=bodyRows(),last=rows.at(-1),prev=rows.at(-2),first=rows[0];
-  if(!rows.length)return `${title('Composição corporal','Histórico de bioimpedância e evolução das medições.')}${empty('Nenhuma medição corporal foi encontrada no histórico carregado.')}`;
-  const key=state.ui.bioMetric||'weight_kg',meta=metrics[key]||metrics.weight_kg;
+  const allRows=bodyRows(),ambiguousDays=ambiguousBodyDays(allRows),rows=comparableBodyRows(allRows);
+  if(!allRows.length)return `${title('Composição corporal','Histórico de bioimpedância e evolução das medições.')}${empty('Nenhuma medição corporal foi encontrada no histórico carregado.')}`;
+  if(!rows.length)return `${title('Composição corporal','Histórico de bioimpedância e evolução das medições.')}<div class="note"><b>Medições preservadas, comparação em revisão</b><span>As datas carregadas têm mais de um registro. Nenhuma delas será escolhida automaticamente para evolução ou comparação.</span></div>${empty(`${allRows.length} medição(ões) permanecem preservadas no histórico.`)}`;
+  const last=rows.at(-1),prev=rows.at(-2),first=rows[0],key=state.ui.bioMetric||'weight_kg',meta=metrics[key]||metrics.weight_kg;
   if(!state.ui.selectedBodyDate||!rows.some(r=>r.measured_at===state.ui.selectedBodyDate))state.ui.selectedBodyDate=last.measured_at;
   const selected=rows.find(r=>r.measured_at===state.ui.selectedBodyDate);
+  const ambiguityNote=ambiguousDays.size?`<div class="note sectionGap"><b>${ambiguousDays.size} ${ambiguousDays.size===1?'data com mais de uma medição ficou':'datas com mais de uma medição ficaram'} fora da evolução</b><span>Os registros continuam no histórico, mas não entram em gráficos, comparação ou “última medição” até revisão.</span></div>`:'';
   return `${title('Composição corporal','Valores, escalas e comparação entre medidas ao longo do tempo.')}
-    <div class="note"><b>Última medição · ${fmtDate(last.measured_at)}</b><span>${rows.length} medição(ões) no histórico. Os números dos gráficos agora aparecem na escala e nos pontos.</span></div>
+    <div class="note"><b>${ambiguousDays.size?'Última medição comparável':'Última medição'} · ${fmtDate(last.measured_at)}</b><span>${allRows.length} medição(ões) no histórico. Os números dos gráficos aparecem na escala e nos pontos.</span></div>
+    ${ambiguityNote}
     <div class="grid cols4 sectionGap">
       ${metric('Peso',fmtNum(last.weight_kg),'kg',prev?`desde a anterior ${neutralDelta(last.weight_kg,prev.weight_kg,1,'kg')}`:`primeiro registro ${fmtDate(first.measured_at)}`)}
       ${metric('Massa muscular',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`:'')}
@@ -101,10 +116,10 @@ export function renderBioHub(){
     <div class="card sectionGap"><div class="cardHead"><div><b>Visão combinada</b><small>Massa muscular, massa de gordura, percentual de gordura e peso nas mesmas datas.</small></div><span class="pill">últimas ${Math.min(12,rows.length)}</span></div>${combinedView(rows)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Comparar duas medições</b><small>Diferenças observadas entre as datas escolhidas.</small></div></div>${compare(rows)}</div>
-      <div class="card"><div class="cardHead"><div><b>Primeiro e último registro</b><small>Visão descritiva do período completo.</small></div></div><div class="summaryPair"><div><span>${fmtDate(first.measured_at)}</span><b>${fmtNum(first.weight_kg)} kg</b><small>Massa muscular ${fmtNum(first.skeletal_muscle_mass_kg)} kg</small></div><div class="arrow">→</div><div><span>${fmtDate(last.measured_at)}</span><b>${fmtNum(last.weight_kg)} kg</b><small>Massa muscular ${fmtNum(last.skeletal_muscle_mass_kg)} kg</small></div></div></div>
+      <div class="card"><div class="cardHead"><div><b>Primeiro e último registro comparável</b><small>Visão descritiva do período sem datas ambíguas.</small></div></div><div class="summaryPair"><div><span>${fmtDate(first.measured_at)}</span><b>${fmtNum(first.weight_kg)} kg</b><small>Massa muscular ${fmtNum(first.skeletal_muscle_mass_kg)} kg</small></div><div class="arrow">→</div><div><span>${fmtDate(last.measured_at)}</span><b>${fmtNum(last.weight_kg)} kg</b><small>Massa muscular ${fmtNum(last.skeletal_muscle_mass_kg)} kg</small></div></div></div>
     </div>
     <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Histórico</b><small>Toque em uma data para abrir todos os campos registrados.</small></div><span class="pill">${rows.length} medições</span></div><div class="list bodyHistory">${[...rows].reverse().map(r=>`<button type="button" class="historyRow ${r.measured_at===state.ui.selectedBodyDate?'active':''}" data-body-date="${esc(r.measured_at)}"><time>${fmtDate(r.measured_at)}</time><div><b>${fmtNum(r.weight_kg)} kg</b><small>Massa muscular ${fmtNum(r.skeletal_muscle_mass_kg)} kg · gordura corporal ${fmtNum(r.body_fat_pct)}%${num(r.score)!=null?` · InBody ${fmtNum(r.score,0)}`:''}</small></div><span>${esc(sourceDisplay(r.source))}</span></button>`).join('')}</div></div>
+      <div class="card"><div class="cardHead"><div><b>Histórico</b><small>Datas com mais de um registro ficam preservadas, mas aguardam revisão antes de entrar na evolução.</small></div><span class="pill">${allRows.length} medições</span></div><div class="list bodyHistory">${[...allRows].reverse().map(r=>historyRow(r,ambiguousDays)).join('')}</div></div>
       <div class="card bioDetail">${measurementDetail(selected)}<p class="footerNote">Os valores são apresentados de forma descritiva, sem classificação estética ou meta corporal.</p></div>
     </div>`;
 }
