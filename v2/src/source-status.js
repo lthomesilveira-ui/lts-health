@@ -113,8 +113,8 @@ export function sourceStatusFor(source){
   if(bucket==='attention')return'attention';
   if(bucket==='in_progress')return'processing';
   if(dataFound)return'ready';
-  if(candidateFound)return'candidate';
   if(domainKeys.some(failed)||failed('uploads'))return'unknown';
+  if(candidateFound)return'candidate';
   if(upload)return'received';
   return'missing';
 }
