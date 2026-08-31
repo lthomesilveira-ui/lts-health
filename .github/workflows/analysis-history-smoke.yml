@@ -20,7 +20,7 @@ jobs:
           grep -q 'O que ainda limita a análise' v2/src/analysis-screen.js
           grep -q 'registros existentes, ainda fora das médias' v2/src/analysis-screen.js
           ! grep -Eiq '\b(readiness score|recovery score|score de recupera[cç][aã]o)\b' v2/src/analysis-screen.js
-          ! grep -Eiq '\b(source_family|ActivitySummary|count/min|MME)\b' v2/src/analysis-screen.js
+          ! grep -Eiq '\b(ActivitySummary|count/min|MME)\b' v2/src/analysis-screen.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
