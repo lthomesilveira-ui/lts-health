@@ -37,7 +37,7 @@ function markerChart(ordered,unit){
 }
 function unitCohorts(numericRows){
   const map=new Map();
-  for(const row of numericRows){const unit=cleanUnit(row),key=unit||'__sem_unidade__';if(!map.has(key))map.set(key,{unit,rows:[]});map.get(key).rows.push(row);}
+  for(const row of numericRows){const unit=cleanUnit(row);if(!unit)continue;const key=unit;if(!map.has(key))map.set(key,{unit,rows:[]});map.get(key).rows.push(row);}
   return [...map.values()].sort((a,b)=>b.rows.length-a.rows.length||a.unit.localeCompare(b.unit,'pt-BR'));
 }
 function cohortTrend(cohort){
@@ -48,12 +48,13 @@ function cohortTrend(cohort){
 }
 function markerHistory(group){
   if(!group)return empty('Selecione um marcador para ver o histórico.');
-  const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),cohorts=unitCohorts(numeric),comparable=cohorts.filter(c=>c.rows.length>=2);
+  const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),unitless=numeric.filter(r=>!cleanUnit(r)).length,cohorts=unitCohorts(numeric),comparable=cohorts.filter(c=>c.rows.length>=2);
   const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||'Laboratório não informado')} · ${esc(resultKind(r))}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
+  const unitlessNote=unitless?'<div class="note">Resultados numéricos sem unidade ficam preservados no histórico, mas não entram em diferenças ou gráficos de tendência.</div>':'';
   let trend='';
-  if(comparable.length){trend=`${cohorts.length>1?'<div class="note">Resultados com unidades diferentes permanecem em séries separadas; nenhuma conversão é feita automaticamente.</div>':''}${comparable.map(cohortTrend).join('')}`;}
-  else if(rows.length>1)trend='<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos ou não há dois pontos com a mesma unidade.</div>';
-  else trend='<div class="note">Há um único ponto para este marcador. Novas coletas compatíveis permitirão comparação longitudinal.</div>';
+  if(comparable.length){trend=`${cohorts.length>1?'<div class="note">Resultados com unidades diferentes permanecem em séries separadas; nenhuma conversão é feita automaticamente.</div>':''}${unitlessNote}${comparable.map(cohortTrend).join('')}`;}
+  else if(rows.length>1)trend=`${unitlessNote}<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos, unidades ou dois pontos com a mesma unidade.</div>`;
+  else trend=`${unitlessNote}<div class="note">Há um único ponto para este marcador. Novas coletas compatíveis permitirão comparação longitudinal.</div>`;
   return `<div class="markerHead"><b>${esc(group.label)}</b><small>${numeric.length} numérico(s) · ${textual.length} textual(is)</small></div>${trend}<div class="list labHistory">${history}</div>`;
 }
 function collectionPanel(collection){
@@ -71,7 +72,8 @@ function compareResult(a,b){
   if(!a||!b)return{mode:'missing',detail:'resultado não comparável'};
   if(isNumericResult(a)&&isNumericResult(b)){
     const ua=cleanUnit(a),ub=cleanUnit(b);
-    if(ua===ub){const delta=num(a.result_numeric)-num(b.result_numeric);return{mode:'delta',detail:`${delta>0?'+':''}${fmtNum(delta)}${ua?` ${ua}`:''}`};}
+    if(!ua||!ub)return{mode:'units',detail:'unidade ausente'};
+    if(ua===ub){const delta=num(a.result_numeric)-num(b.result_numeric);return{mode:'delta',detail:`${delta>0?'+':''}${fmtNum(delta)} ${ua}`};}
     return{mode:'units',detail:'unidades diferentes'};
   }
   return{mode:'text',detail:'comparação lado a lado'};
@@ -88,7 +90,7 @@ function collectionComparison(cols,selectedKey){
     const left=ar[0],right=br[0],comparison=compareResult(left,right);
     return `<div class="collectionCompareRow"><div><b>${esc(label)}</b><small>${esc(resultKind(left))} / ${esc(resultKind(right))}</small></div><span>${esc(resultText(left))}</span><span>${esc(resultText(right))}</span><em class="${comparison.mode==='delta'?'delta':''}">${esc(comparison.detail)}</em></div>`;
   }).join('');
-  return `<div class="collectionCompareHead"><div><b>${fmtDate(current.date)}</b><small>${esc(current.lab)}</small></div><span>comparado com</span><div><b>${fmtDate(previous.date)}</b><small>${esc(previous.lab)}</small></div></div><div class="collectionCompareLegend"><span>Marcador</span><span>Selecionada</span><span>Anterior</span><span>Diferença</span></div><div class="collectionCompareList">${rows||empty('As duas coletas não têm marcadores em comum com a busca atual.')}</div><small class="labHistoryNote">A comparação usa uma data de coleta anterior, nunca outra origem do mesmo dia. Diferenças só são calculadas quando há um único valor numérico em cada coleta e a unidade é exatamente a mesma. Resultados textuais e unidades diferentes ficam lado a lado, sem conversão.</small>`;
+  return `<div class="collectionCompareHead"><div><b>${fmtDate(current.date)}</b><small>${esc(current.lab)}</small></div><span>comparado com</span><div><b>${fmtDate(previous.date)}</b><small>${esc(previous.lab)}</small></div></div><div class="collectionCompareLegend"><span>Marcador</span><span>Selecionada</span><span>Anterior</span><span>Diferença</span></div><div class="collectionCompareList">${rows||empty('As duas coletas não têm marcadores em comum com a busca atual.')}</div><small class="labHistoryNote">A comparação usa uma data de coleta anterior, nunca outra origem do mesmo dia. Diferenças só são calculadas quando há um único valor numérico em cada coleta e a unidade está presente e é exatamente a mesma. Resultados textuais, sem unidade ou com unidades diferentes ficam lado a lado, sem conversão.</small>`;
 }
 function documentStatus(doc){
   const status=norm(doc.extraction_status);
