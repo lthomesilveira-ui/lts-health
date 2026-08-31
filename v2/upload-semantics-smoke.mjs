@@ -38,7 +38,8 @@ for(const text of [result.review,result.unknown,result.safe,result.failed])if(/i
 for(const text of [result.started,result.review,result.unknown,result.imported,result.safe,result.failed])for(const forbidden of ['review_required','needs_specialized_parser','source_payload','canonical','candidate'])if(text.includes(forbidden))throw new Error(`internal term leaked into upload message: ${forbidden}`);
 if(!result.coreSource.includes("processing:statusError?'status_unknown':'review_required'"))throw new Error('parser failure no longer returns a preserved-upload outcome');
 if(!result.coreSource.includes("processing:'started'"))throw new Error('successful inspector invocation no longer returns started outcome');
-if(!result.coreSource.includes("remove([path])"))throw new Error('orphaned storage cleanup is missing after metadata failure');
+if(result.coreSource.includes("remove([path])"))throw new Error('metadata failure must not delete an original already preserved in health-inbox');
+if(!result.coreSource.includes('Arquivo recebido e preservado, mas não foi possível concluir o registro para processamento.'))throw new Error('metadata failure no longer reports preserved original semantics');
 if(result.coreSource.includes('throw fnError'))throw new Error('parser failure is again surfaced as upload failure');
 if(errors.length)throw new Error(`browser errors: ${errors.join(' | ')}`);
 
