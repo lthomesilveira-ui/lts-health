@@ -74,29 +74,35 @@ async function run(viewport,label){
       {source_record_id:'polar-sleep',measured_at:'2026-08-29T12:00:00Z',metric_type:'sleep_duration_h',value:7.4,unit:'h',source:'Polar Flow via Apple Health'},
       {source_record_id:'other-resting',measured_at:'2026-08-29T12:00:00Z',metric_type:'resting_heart_rate_bpm',value:58,unit:'bpm',source:'Validated external source'}
     ]);
+    state.data.sourceMetrics=[
+      {source_record_id:'watch-sleep-review',metric_date:'2026-08-29',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'polar-sleep-review',metric_date:'2026-08-29',metric_type:'sleep_duration_h',value:7.4,unit:'h',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'held'}
+    ];
+    state.domainStatus.sourceMetrics='ready';
     state.data.nutrition=visibleRowsForDomain('nutrition',[
       {source_record_id:'mfp-export',nutrition_date:'2026-08-28',calories_kcal:2100,protein_g:150,source:'MyFitnessPal export'},
       {source_record_id:'mfp-healthkit',nutrition_date:'2026-08-29',calories_kcal:2200,protein_g:160,source:'MyFitnessPal via Apple Health'}
     ]);
     location.hash='bio';
   });
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   await page.evaluate(()=>{location.hash='hoje';});
   await page.waitForSelector('[data-executive-dashboard]');
 
   const todayText=(await page.textContent('#screenHost'))||'';
   const sleepCard=(await page.locator('.intelCurrentCard').filter({hasText:'Sono'}).textContent())||'';
-  const activityCard=(await page.locator('.intelCurrentCard').filter({hasText:'Atividade consolidada'}).textContent())||'';
-  if(!sleepCard.includes('Em validação')||!sleepCard.includes('Fontes ainda não consolidadas'))throw new Error(`${label}: unresolved overlapping sleep was not held outside canonical readiness`);
-  if(/7[,.][124]\s*h/i.test(sleepCard)||sleepCard.includes('Sono consolidado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as canonical Today data`);
+  const activityCard=(await page.locator('.intelCurrentCard').filter({hasText:'Atividade confirmada'}).textContent())||'';
+  if(!sleepCard.includes('1 dia(s) registrado(s)')||!sleepCard.includes('aguardando conferência antes de entrar em médias'))throw new Error(`${label}: unresolved overlapping sleep was not shown as existing but held outside averages (${sleepCard})`);
+  if(/7[,.][14]\s*h/i.test(sleepCard)||sleepCard.includes('Sono consolidado'))throw new Error(`${label}: unresolved overlapping Apple/Polar sleep appeared as confirmed Today data`);
   if(!activityCard.includes('510')||!activityCard.includes('kcal'))throw new Error(`${label}: stable HealthKitBridge ActivitySummary energy disappeared from Today`);
   if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h')||todayText.includes('7,1 h')||todayText.includes('7,4 h'))throw new Error(`${label}: source-preserving Apple Health candidate leaked into Today`);
+  for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','ActivitySummary','source_family','count/min'])if(todayText.includes(forbidden))throw new Error(`${label}: technical boundary language leaked into Today: ${forbidden}`);
 
   await page.evaluate(()=>{location.hash='nutricao';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Nutrição');
   const nutritionText=(await page.textContent('#screenHost'))||'';
   if(!nutritionText.includes('28/08/2026'))throw new Error(`${label}: direct MyFitnessPal export disappeared from Nutrition`);
-  if(nutritionText.includes('29/08/2026')||nutritionText.includes('2.200'))throw new Error(`${label}: MyFitnessPal via Apple Health candidate appeared as canonical Nutrition`);
+  if(nutritionText.includes('29/08/2026')||nutritionText.includes('2.200'))throw new Error(`${label}: MyFitnessPal via Apple Health candidate appeared as confirmed Nutrition`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: canonical boundary flow caused horizontal overflow ${overflow}px`);
