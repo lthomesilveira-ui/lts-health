@@ -71,7 +71,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 {
   const ctx=await open('labs','dados','Dados');
   const exams=await ctx.page.locator('.sourceCard').filter({hasText:'Exames'}).first().textContent();
-  if(!exams?.includes('—')||!exams?.includes('indisponível agora'))throw new Error('dados/labs: area count rendered as zero');
+  if(!exams?.includes('—')||!exams?.includes('não carregou agora'))throw new Error('dados/labs: failed exam area was presented as zero or absent');
   await finish(ctx,'dados/labs');
 }
 {
