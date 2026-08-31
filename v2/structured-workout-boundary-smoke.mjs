@@ -49,7 +49,7 @@ async function run(viewport,label){
   if(text.includes('Atividade complementar 1')||text.includes('Atividade complementar 2')||text.includes('Exercício sombra'))throw new Error(`${label}: non-canonical activity leaked into dashboard`);
   if(text.includes('250 → 300 kg')||text.includes('300 kg'))throw new Error(`${label}: non-canonical activity leaked into a performance card`);
 
-  await page.locator('[data-route="timeline"]:visible').first().click();
+  await page.evaluate(()=>{location.hash='timeline';});
   await page.waitForFunction(()=>document.querySelector('.screenTitle h1')?.textContent?.trim()==='Timeline');
   const timelineText=(await page.textContent('#screenHost'))||'';
   if(timelineText.includes('Atividade complementar 1')||timelineText.includes('Atividade complementar 2'))throw new Error(`${label}: non-canonical activity leaked into Timeline as structured training`);
