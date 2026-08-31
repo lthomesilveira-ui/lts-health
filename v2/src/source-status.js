@@ -5,7 +5,7 @@ const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphon
 const preservedCandidateStatuses=new Set(['candidate','held']);
 const appleSourceTerms=['apple health','healthkit','activitysummary','activity summary','apple watch','apple_watch','iphone'];
 
-const failed=key=>state.domainStatus[key]==='error';
+const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 const contains=(rows,fields,term)=>{term=norm(term);return(rows||[]).some(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
 const matching=(rows,fields,term)=>{term=norm(term);return(rows||[]).filter(row=>fields.some(field=>norm(row?.[field]).includes(term)));};
 const isPreservedCandidate=row=>preservedCandidateStatuses.has(norm(row?.canonical_status));
