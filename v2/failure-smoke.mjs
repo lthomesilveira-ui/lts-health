@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1';
-const forbidden=/\b(canonical|parity|backend|provenance[- ]first|readiness|PWA)\b/i;
+const forbidden=/\b(canonical|candidate|parity|backend|provenance[- ]first|readiness|PWA|source_family|ActivitySummary|MME)\b|não consolidado|count\/min|can[oô]nic[oa]|candidat[oa]/i;
 
 async function open(kind,route,title){
   const browser=await chromium.launch({headless:true});
@@ -46,13 +46,13 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await open('nutrition','analise','Análise');
-  const metric=await ctx.page.locator('.metric').filter({hasText:'Alimentação · 90 dias'}).first().textContent();
+  const metric=await ctx.page.locator('.metric').filter({hasText:'Alimentação · 1 ano'}).first().textContent();
   if(!metric?.includes('—')||!ctx.text.includes('cruzamento não pode ser calculado'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
   await finish(ctx,'analise/nutrition');
 }
 {
   const ctx=await open('metrics','analise','Análise');
-  const metric=await ctx.page.locator('.metric').filter({hasText:'Sono · 90 dias'}).first().textContent();
+  const metric=await ctx.page.locator('.metric').filter({hasText:'Sono registrado · 1 ano'}).first().textContent();
   if(!metric?.includes('—')||!ctx.text.includes('pareamento não pode ser calculado'))throw new Error('analise/metrics: failure hidden or rendered as zero');
   await finish(ctx,'analise/metrics');
 }
@@ -89,9 +89,10 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await openToday('metrics',{width:1440,height:900});
-  const card=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Atividade consolidada'}).first().textContent();
-  if(!card?.includes('Indisponível agora')||card?.includes('Sem dado consolidado')||card?.match(/\b0\b/))throw new Error('hoje/metrics desktop: failed domain presented as absence or zero');
-  if(!ctx.text.includes('Em validação'))throw new Error('hoje/metrics desktop: sleep boundary copy disappeared');
+  const card=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Atividade confirmada'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Nenhum registro confirmado')||card?.match(/\b0\b/))throw new Error('hoje/metrics desktop: failed domain presented as absence or zero');
+  const sleep=await ctx.page.locator('.intelCurrentCard').filter({hasText:'Sono'}).first().textContent();
+  if(sleep?.match(forbidden))throw new Error('hoje/metrics desktop: sleep card leaked technical boundary copy');
   await finish(ctx,'hoje/metrics desktop');
 }
 

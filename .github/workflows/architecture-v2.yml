@@ -28,13 +28,18 @@ jobs:
             v2/canonical-boundary-smoke.mjs \
             v2/source-status-smoke.mjs \
             v2/provenance-alias-smoke.mjs \
-            v2/executive-dashboard-smoke.mjs; do node --check "$file"; done
+            v2/executive-dashboard-smoke.mjs \
+            v2/product-finish-smoke.mjs; do node --check "$file"; done
 
           test -f v2/index.html
           test -f v2/styles.css
+          test -f v2/product-finish.css
           test ! -f v2/app.js
           test ! -f v2/src/screens.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
+          grep -q './product-finish.css' v2/index.html
+          grep -q 'Seu histórico de saúde' v2/index.html
+          grep -q 'data-route="bio">Composição<' v2/index.html
 
           grep -q "https://plztdqyuqcjohiimudnr.supabase.co" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
@@ -86,3 +91,4 @@ jobs:
           node v2/source-status-smoke.mjs
           node v2/provenance-alias-smoke.mjs
           node v2/executive-dashboard-smoke.mjs
+          node v2/product-finish-smoke.mjs
