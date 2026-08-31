@@ -1,7 +1,7 @@
 import {state,norm} from './core.js';
 
 export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
-const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone']);
+const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone','healthkit_candidate']);
 const preservedCandidateStatuses=new Set(['candidate','held']);
 const appleSourceTerms=['apple health','healthkit','activitysummary','activity summary','apple watch','apple_watch','iphone'];
 

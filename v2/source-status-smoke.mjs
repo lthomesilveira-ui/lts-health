@@ -21,7 +21,7 @@ async function run(viewport,label){
     state.data.meals=[];
     state.data.metrics=[];
     state.data.sourceMetrics=[
-      {source_record_id:'apple-candidate',metric_date:'2026-02-10',metric_type:'steps',value:9000,unit:'count',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'apple-healthkit-candidate',metric_date:'2026-02-10',metric_type:'sleep_duration_h',value:7.2,unit:'h',source_name:'Apple Saúde export',source_family:'healthkit_candidate',canonical_status:'candidate'},
       {source_record_id:'mfp-candidate',metric_date:'2026-02-10',metric_type:'dietary_protein_g',value:155,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate'},
       {source_record_id:'polar-candidate',metric_date:'2026-02-10',metric_type:'resting_heart_rate_bpm',value:59,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'candidate'}
     ];
@@ -46,7 +46,7 @@ async function run(viewport,label){
   const foreignOnly=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {sourceStatusFor,latestSourceMetricDateFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
-    state.data.sourceMetrics=state.data.sourceMetrics.filter(row=>row.source_family!=='apple_watch'&&row.source_family!=='iphone'&&row.source_family!=='apple_activity_summary');
+    state.data.sourceMetrics=state.data.sourceMetrics.filter(row=>!['apple_watch','iphone','apple_activity_summary','healthkit_candidate'].includes(row.source_family));
     return {status:sourceStatusFor('apple_health'),latest:latestSourceMetricDateFor('apple_health'),evidence:latestSourceEvidenceDateFor('apple_health')};
   });
   if(foreignOnly.status!=='missing'||foreignOnly.latest!==null||foreignOnly.evidence!==null)throw new Error(`${label}: foreign candidates leaked into Apple source status ${JSON.stringify(foreignOnly)}`);
@@ -66,6 +66,7 @@ async function run(viewport,label){
   const promoted=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {sourceStatusFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
+    state.data.sourceMetrics=[{source_record_id:'apple-healthkit-candidate',metric_date:'2026-02-10',metric_type:'sleep_duration_h',value:7.2,unit:'h',source_name:'Apple Saúde export',source_family:'healthkit_candidate',canonical_status:'candidate'}];
     state.data.workouts=[{source_record_id:'polar-workout',workout_date:'2026-02-08',workout_type:'Treino',source:'Polar Flow'}];
     state.data.nutrition=[{source_record_id:'mfp-direct',nutrition_date:'2026-02-09',calories_kcal:2100,source:'MyFitnessPal'}];
     state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-07T12:00:00Z',metric_type:'active_energy_kcal',value:450,unit:'kcal',source:'HealthKitBridge ActivitySummary'}];
@@ -75,7 +76,7 @@ async function run(viewport,label){
     };
   });
   if(promoted.apple!=='ready'||promoted.polar!=='ready'||promoted.mfp!=='ready')throw new Error(`${label}: direct/canonical evidence did not outrank candidate-only status ${JSON.stringify(promoted)}`);
-  if(promoted.appleEvidence!=='2026-02-10'||promoted.polarEvidence!=='2026-02-10'||promoted.mfpEvidence!=='2026-02-10')throw new Error(`${label}: source freshness did not preserve latest source evidence ${JSON.stringify(promoted)}`);
+  if(promoted.appleEvidence!=='2026-02-10'||promoted.polarEvidence!=='2026-02-08'||promoted.mfpEvidence!=='2026-02-09')throw new Error(`${label}: source freshness did not preserve latest source evidence ${JSON.stringify(promoted)}`);
 
   const failed=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
