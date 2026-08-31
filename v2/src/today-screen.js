@@ -8,6 +8,7 @@ const deltaText=(value,digits=1,unit='')=>{
 const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
 const currentCard=(label,value,detail,route)=>`<button class="dashboardCurrent" data-route="${esc(route)}"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small><i>→</i></button>`;
 const infoCard=(eyebrow,title,body,route)=>`<article class="dashboardInsight"><span>${esc(eyebrow)}</span><h3>${esc(title)}</h3><p>${esc(body)}</p>${route?`<button data-route="${esc(route)}">Abrir detalhes →</button>`:''}</article>`;
+const domainFailed=key=>state.domainStatus?.[key]==='error';
 
 function miniLine(points,key,unit=''){
   const rows=(points||[]).map(p=>({date:p.date,value:num(p[key])})).filter(p=>p.value!=null);
@@ -20,6 +21,7 @@ function miniLine(points,key,unit=''){
 }
 
 function compositionPanel(model){
+  if(domainFailed('body'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">As medições corporais não carregaram nesta atualização.</div></section>`;
   if(!model.trend.available)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">Ainda não há duas medições comparáveis.</div></section>`;
   const body=model.body;
   const latest=model.trend.points.at(-1);
@@ -34,6 +36,7 @@ function compositionPanel(model){
 
 function trainingPanel(model){
   const dist=model.training.distribution;
+  if(domainFailed('workouts')||domainFailed('exercises'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição recente</h2></div></div><div class="dashboardChartEmpty">O histórico de treinos não carregou nesta atualização.</div></section>`;
   if(!dist.available||!dist.rows.length)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição recente</h2></div></div><div class="dashboardChartEmpty">Sem grupos musculares estruturados no período.</div></section>`;
   const rows=dist.rows.slice(0,8),max=Math.max(...rows.map(r=>r.sessions),1);
   return `<section class="dashboardPanel dashboardTraining">
@@ -76,18 +79,17 @@ export function renderTodayHub(){
   const body=model.body.available?model.body.latest:null,lastWorkout=model.training.lastWorkout,lastNutrition=model.lastNutrition;
   const insights=[segmentalInsight(model),nutritionInsight(model),rhythmInsight(model),performanceInsight(model)].filter(Boolean).slice(0,4);
   const labDate=model.labs.collectionDays?.at(-1)||null;
+  const bodyCard=domainFailed('body')?currentCard('Composição','Indisponível agora','As medições corporais não carregaram nesta atualização.','bio'):currentCard('Composição',body&&num(body.skeletal_muscle_mass_kg)!=null?`${fmtNum(body.skeletal_muscle_mass_kg,1)} kg de massa muscular`:'Sem medição recente',body&&num(body.body_fat_pct)!=null?`${fmtNum(body.body_fat_pct,1)}% de gordura corporal · ${fmtDate(body.measured_at)}`:'Abra a composição para ver o histórico','bio');
+  const workoutCard=domainFailed('workouts')?currentCard('Último treino','Indisponível agora','O histórico de treinos não carregou nesta atualização.','treinos'):currentCard('Último treino',lastWorkout?.workout_type||'Sem sessão recente',lastWorkout?`${fmtDate(lastWorkout.workout_date)}${lastWorkout.location?` · ${lastWorkout.location}`:''}`:'Nenhum treino estruturado disponível','treinos');
+  const nutritionCard=domainFailed('nutrition')?currentCard('Alimentação','Indisponível agora','Os dados de alimentação não carregaram nesta atualização.','nutricao'):currentCard('Alimentação',lastNutrition?fmtDate(lastNutrition.nutrition_date):'Sem registro recente',lastNutrition&&num(lastNutrition.protein_g)!=null?`${fmtNum(lastNutrition.protein_g,0)} g de proteína registrados no dia`:'Histórico diário disponível em Nutrição','nutricao');
+  const labCard=domainFailed('labs')?currentCard('Exames','Indisponível agora','Os resultados laboratoriais não carregaram nesta atualização.','saude'):currentCard('Exames',labDate?fmtDate(labDate):'Sem coleta estruturada',model.labs.collectionDays?.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis na última dupla de coletas`:'Ainda sem segunda coleta comparável','saude');
   return `<div class="dashboardScreen" data-executive-dashboard>
     <section class="dashboardHeader">
       <div><span class="dashboardEyebrow">Resumo</span><h1>Seu histórico em uma tela</h1><p>Leitura até ${esc(fmtDate(model.referenceDay))}. Primeiro as mudanças e relações; cobertura e pendências ficam em segundo plano.</p></div>
       <div class="dashboardHeaderActions">${action('analise','Análise completa')}${action('dados','Adicionar dados')}</div>
     </section>
 
-    <section class="dashboardCurrentGrid">
-      ${currentCard('Composição',body&&num(body.skeletal_muscle_mass_kg)!=null?`${fmtNum(body.skeletal_muscle_mass_kg,1)} kg de massa muscular`:'Sem medição recente',body&&num(body.body_fat_pct)!=null?`${fmtNum(body.body_fat_pct,1)}% de gordura corporal · ${fmtDate(body.measured_at)}`:'Abra a composição para ver o histórico','bio')}
-      ${currentCard('Último treino',lastWorkout?.workout_type||'Sem sessão recente',lastWorkout?`${fmtDate(lastWorkout.workout_date)}${lastWorkout.location?` · ${lastWorkout.location}`:''}`:'Nenhum treino estruturado disponível','treinos')}
-      ${currentCard('Alimentação',lastNutrition?fmtDate(lastNutrition.nutrition_date):'Sem registro recente',lastNutrition&&num(lastNutrition.protein_g)!=null?`${fmtNum(lastNutrition.protein_g,0)} g de proteína registrados no dia`:'Histórico diário disponível em Nutrição','nutricao')}
-      ${currentCard('Exames',labDate?fmtDate(labDate):'Sem coleta estruturada',model.labs.collectionDays?.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis na última dupla de coletas`:'Ainda sem segunda coleta comparável','saude')}
-    </section>
+    <section class="dashboardCurrentGrid">${bodyCard}${workoutCard}${nutritionCard}${labCard}</section>
 
     <div class="dashboardMainGrid">${compositionPanel(model)}${trainingPanel(model)}</div>
 

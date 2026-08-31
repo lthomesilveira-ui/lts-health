@@ -29,7 +29,7 @@ function performanceRows(model){
 
 function nutritionPanel(model){
   const n=model.nutrition;
-  if(!n.available)return'<div class="empty">Não há um intervalo corporal comparável para cruzar com alimentação.</div>';
+  if(!n.available)return n.reason==='unavailable'?'<div class="empty">Os dados de alimentação não carregaram agora; o cruzamento fica indisponível nesta atualização.</div>':'<div class="empty">Não há um intervalo corporal comparável para cruzar com alimentação.</div>';
   if(!n.days)return'<div class="empty">O intervalo existe, mas não há dias de alimentação registrados nele.</div>';
   return `<div class="analysisNutritionGrid">
     ${metric('Dias registrados',String(n.days),n.coveragePct==null?'':`${n.coveragePct}% dos dias do intervalo`)}
@@ -84,9 +84,9 @@ export function renderAnalysisHub(){
 
     <div class="grid cols4 sectionGap analysisSecondaryMetrics">
       ${metric(`Treinos · ${periodText}`,failed('workouts')?'—':String(periodWorkouts.length),'contagem de sessões estruturadas')}
-      ${metric(`Alimentação · ${periodText}`,failed('nutrition')?'—':String(periodNutritionDays),'dias com registro diário')}
-      ${metric('Coletas de exames',model.labs.available?String(model.labs.collectionDays.length):'—',model.labs.available&&model.labs.collectionDays.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis na última dupla`:'ainda sem tendência longitudinal')}
-      ${metric('Sono preservado',model.sleep.available?String(model.sleep.days):'—','fora das conclusões até regra segura')}
+      ${metric(`Alimentação · ${periodText}`,failed('nutrition')?'—':String(periodNutritionDays),failed('nutrition')?'dados de alimentação não carregaram agora':'dias com registro diário')}
+      ${metric('Coletas de exames',model.labs.available?String(model.labs.collectionDays.length):'—',model.labs.available?(model.labs.collectionDays.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis na última dupla`:'ainda sem tendência longitudinal'):'resultados laboratoriais não carregaram agora')}
+      ${metric('Sono preservado',model.sleep.available?String(model.sleep.days):'—',model.sleep.available?'fora das conclusões até regra segura':'registros por origem não carregaram agora')}
     </div>
 
     <div class="grid cols2 sectionGap">
