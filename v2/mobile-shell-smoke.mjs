@@ -6,9 +6,9 @@ const errors=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',msg=>{if(msg.type()==='error')errors.push(msg.text())});
 
-await page.goto('http://127.0.0.1:4173/?fixture=1',{waitUntil:'domcontentloaded'});
+await page.goto('http://127.0.0.1:4173/?fixture=1#bio',{waitUntil:'domcontentloaded'});
 await page.waitForSelector('#app:not(.hidden)');
-await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
 
 const layout=await page.evaluate(()=>{
   const app=document.querySelector('#app').getBoundingClientRect();
@@ -35,9 +35,9 @@ if(layout.overflow>3)throw new Error(`horizontal overflow ${layout.overflow}px`)
 if(layout.topbarHeight>62)throw new Error(`mobile header is too tall: ${Math.round(layout.topbarHeight)}px`);
 if(layout.metricRects.length===4){
   const [a,b,c]=layout.metricRects;
-  if(Math.abs(a.top-b.top)>2)throw new Error('first two Bio metrics are not on the same mobile row');
-  if(c.top<=a.top+2)throw new Error('Bio metrics did not form a compact 2x2 mobile grid');
-  if(a.width<130||b.width<130)throw new Error('Bio metric cards became too narrow on mobile');
+  if(Math.abs(a.top-b.top)>2)throw new Error('first two composition metrics are not on the same mobile row');
+  if(c.top<=a.top+2)throw new Error('composition metrics did not form a compact 2x2 mobile grid');
+  if(a.width<130||b.width<130)throw new Error('composition metric cards became too narrow on mobile');
 }
 
 await page.evaluate(()=>{const host=document.querySelector('#screenHost');host.scrollTop=host.scrollHeight;});
