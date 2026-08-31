@@ -18,7 +18,8 @@ for(const[name,content]of presentationFiles){
 
 if(!core.includes("bucket: 'health-inbox'"))throw new Error('private health-inbox bucket contract drifted');
 if(!core.includes("sb.storage.from(CONFIG.bucket).upload"))throw new Error('health upload no longer uses configured private bucket');
-if(!core.includes("sb.storage.from(CONFIG.bucket).remove"))throw new Error('failed upload cleanup no longer uses configured private bucket');
+if(/sb\.storage\.from\(CONFIG\.bucket\)\.remove\s*\(/.test(core))throw new Error('health upload can delete a preserved original during a failure path');
+for(const token of ['preservedError.storagePath=path',"status:'review_required'",'arquivo preservado'])if(!core.toLowerCase().includes(token.toLowerCase()))throw new Error(`failed-processing preservation guard missing: ${token}`);
 if(/getPublicUrl\s*\(/.test(core))throw new Error('health upload path can generate public URLs');
 if(!core.includes("inspectFunction: 'health-inspect-upload'"))throw new Error('stable generic upload inspector contract drifted');
 if(!core.includes('export const inspectFunctionForSource = () => CONFIG.inspectFunction'))throw new Error('source-specific parser routing was enabled without validated samples');
