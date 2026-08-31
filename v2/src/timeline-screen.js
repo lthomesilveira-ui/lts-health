@@ -1,4 +1,4 @@
-import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num} from './core.js';
+import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows} from './core.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
@@ -79,7 +79,7 @@ function sourceMetricEvents(rows=[]){
 
 function events(){
   const out=[];
-  if(!failed('workouts'))for(const w of state.data.workouts||[])out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:sourceDisplay(w.source),route:'treinos',kind:'workout',ref:w.source_record_id});
+  if(!failed('workouts'))for(const w of workoutRows())out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:sourceDisplay(w.source),route:'treinos',kind:'workout',ref:w.source_record_id});
   if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição corporal',title:bodyEventTitle(b),sub:bodyEventSub(b),source:sourceDisplay(b.source),route:'bio',kind:'body',ref:b.measured_at});
   if(!failed('labs')){
     const collections=new Map();

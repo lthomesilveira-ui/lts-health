@@ -36,6 +36,13 @@ async function run(viewport,label){
   if(!text.includes('2 sessão(ões) nas últimas 8 semanas'))throw new Error(`${label}: workout coverage counted non-canonical activity`);
   if(text.includes('4 sessão(ões) nas últimas 8 semanas'))throw new Error(`${label}: workout coverage still includes complementary activity`);
   if(text.includes('250 → 300 kg')||text.includes('300 kg'))throw new Error(`${label}: non-canonical activity created a performance conclusion`);
+
+  await page.locator('[data-route="timeline"]:visible').first().click();
+  await page.waitForFunction(()=>document.querySelector('.screenTitle h1')?.textContent?.trim()==='Timeline');
+  const timelineText=(await page.textContent('#screenHost'))||'';
+  if(timelineText.includes('Atividade complementar 1')||timelineText.includes('Atividade complementar 2'))throw new Error(`${label}: non-canonical activity leaked into Timeline as structured training`);
+  if(await page.locator('[data-timeline-route="treinos"]').count()===0)throw new Error(`${label}: Timeline lost canonical structured workouts`);
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: page errors ${errors.join(' | ')}`);
