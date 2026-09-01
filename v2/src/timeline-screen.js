@@ -81,11 +81,27 @@ function labCollectionIdentity(row,index){
   const origin=lab||source||String(row.source_record_id||row.id||`registro-${index}`);
   return{lab,source,origin};
 }
+function ambiguousDateSet(rows=[],dateKey){
+  const counts=new Map();
+  for(const row of rows){
+    const value=row?.[dateKey];
+    if(!value)continue;
+    const date=String(value);
+    counts.set(date,(counts.get(date)||0)+1);
+  }
+  return new Set([...counts.entries()].filter(([,count])=>count>1).map(([date])=>date));
+}
 
 function events(){
   const out=[];
   if(!failed('workouts'))for(const w of workoutRows())out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:sourceDisplay(w.source),route:'treinos',kind:'workout',ref:w.source_record_id});
-  if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição corporal',title:bodyEventTitle(b),sub:bodyEventSub(b),source:sourceDisplay(b.source),route:'bio',kind:'body',ref:b.measured_at});
+  if(!failed('body')){
+    const rows=state.data.body||[],ambiguous=ambiguousDateSet(rows,'measured_at');
+    for(const b of rows){
+      const review=ambiguous.has(String(b.measured_at||''));
+      out.push({date:b.measured_at,domain:'Composição corporal',title:review?'Composição em revisão':bodyEventTitle(b),sub:review?'Mais de um registro nesta data; valores preservados sem escolha automática.':bodyEventSub(b),source:sourceDisplay(b.source),route:'bio',kind:'body',ref:b.measured_at});
+    }
+  }
   if(!failed('labs')){
     const collections=new Map();
     for(const [index,row] of (state.data.labs||[]).entries()){
@@ -96,7 +112,13 @@ function events(){
     for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:`${c.rows.length} resultado(s)`,source:c.lab||sourceDisplay(c.source),route:'saude',kind:'labs',ref:key});
   }
   if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
-  if(!failed('nutrition'))for(const n of state.data.nutrition||[])out.push({date:n.nutrition_date,domain:'Alimentação',title:n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'' ,source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
+  if(!failed('nutrition')){
+    const rows=state.data.nutrition||[],ambiguous=ambiguousDateSet(rows,'nutrition_date');
+    for(const n of rows){
+      const review=ambiguous.has(String(n.nutrition_date||''));
+      out.push({date:n.nutrition_date,domain:'Alimentação',title:review?'Alimentação em revisão':n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:review?'Mais de um total diário nesta data; valores preservados sem escolha automática.':n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'',source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
+    }
+  }
   if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:sourceDisplay(a.source)});}
   if(!failed('metrics'))for(const m of state.data.metrics||[]){const label=metricLabels[m.metric_type];if(!label)continue;const domain=m.metric_type==='sleep_duration_h'?'Sono':'Métricas confirmadas';out.push({date:day(m.measured_at),domain,title:label,sub:metricValueText(m),source:sourceDisplay(m.source)});}
   if(!failed('sourceMetrics'))out.push(...sourceMetricEvents(state.data.sourceMetrics||[]));
