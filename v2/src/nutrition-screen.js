@@ -72,18 +72,26 @@ function mfpCandidateGroups(){
   if(failed('sourceMetrics'))return null;
   const rows=(state.data.sourceMetrics||[]).filter(row=>String(row?.source_family||'').toLowerCase()==='myfitnesspal'&&candidateStatuses.has(String(row?.canonical_status||'').toLowerCase())&&mfpMetricTypes.has(String(row?.metric_type||''))&&num(row?.value)!=null&&/^\d{4}-\d{2}-\d{2}$/.test(String(row?.metric_date||'')));
   const groups=new Map();
-  for(const row of rows){const date=String(row.metric_date),type=String(row.metric_type);if(!groups.has(date))groups.set(date,{date,values:{},sources:new Set()});const group=groups.get(date);if(group.values[type]==null)group.values[type]=num(row.value);if(row.source_name)group.sources.add(String(row.source_name));}
-  return [...groups.values()].sort((a,b)=>b.date.localeCompare(a.date));
+  for(const row of rows){
+    const date=String(row.metric_date),type=String(row.metric_type);
+    if(!groups.has(date))groups.set(date,{date,values:{},counts:{},sources:new Set()});
+    const group=groups.get(date);
+    group.counts[type]=(group.counts[type]||0)+1;
+    if(group.counts[type]===1)group.values[type]=num(row.value);else delete group.values[type];
+    if(row.source_name)group.sources.add(String(row.source_name));
+  }
+  return [...groups.values()].map(group=>({...group,ambiguousTypes:new Set(Object.entries(group.counts).filter(([,count])=>count>1).map(([type])=>type))})).sort((a,b)=>b.date.localeCompare(a.date));
 }
 function mfpCandidatePanel(){
   const groups=mfpCandidateGroups();
   if(groups===null)return `<div class="card sectionGap mfpCandidatePanel"><div class="cardHead"><div><b>MyFitnessPal via Apple Saúde</b><small>Totais diários separados da alimentação principal.</small></div><span class="pill">em validação</span></div><div class="errorState"><b>Não foi possível verificar estes totais agora.</b><span>A alimentação principal continua disponível e nenhum valor ausente é tratado como zero.</span></div></div>`;
   const rows=groups.slice(0,30).map(group=>{
-    const calories=group.values.dietary_energy_kcal,macros=[['dietary_protein_g','P'],['dietary_carbs_g','C'],['dietary_fat_g','G'],['dietary_fiber_g','Fibra']].map(([type,label])=>group.values[type]!=null?`${fmtNum(group.values[type],0)}g ${label}`:null).filter(Boolean);
-    const source=[...group.sources].join(', ')||'MyFitnessPal';
-    return `<div class="mealRow mfpCandidateDay"><div><b>${fmtDate(group.date)}</b><small>${esc(source)}</small></div><span>${calories!=null?`${fmtNum(calories,0)} kcal`:'calorias não disponíveis'}</span><em>${macros.join(' · ')||'macros não disponíveis'}</em></div>`;
+    const calories=group.values.dietary_energy_kcal,caloriesAmbiguous=group.ambiguousTypes.has('dietary_energy_kcal');
+    const macros=[['dietary_protein_g','P'],['dietary_carbs_g','C'],['dietary_fat_g','G'],['dietary_fiber_g','Fibra']].map(([type,label])=>group.ambiguousTypes.has(type)?`${label} em revisão`:group.values[type]!=null?`${fmtNum(group.values[type],0)}g ${label}`:null).filter(Boolean);
+    const source=[...group.sources].join(', ')||'MyFitnessPal',review=group.ambiguousTypes.size?' · valores repetidos para revisão':'';
+    return `<div class="mealRow mfpCandidateDay"><div><b>${fmtDate(group.date)}</b><small>${esc(source)}${esc(review)}</small></div><span>${caloriesAmbiguous?'calorias em revisão':calories!=null?`${fmtNum(calories,0)} kcal`:'calorias não disponíveis'}</span><em>${macros.join(' · ')||'macros não disponíveis'}</em></div>`;
   }).join('');
-  return `<div class="card sectionGap mfpCandidatePanel"><div class="cardHead"><div><b>MyFitnessPal via Apple Saúde</b><small>Totais diários preservados por origem. Não entram nas médias nem no histórico principal até validação.</small></div><span class="pill">em validação</span></div>${rows?`<div class="mealList">${rows}</div><p class="footerNote">Estes dados não criam alimentos, refeições ou horários. O export direto do MyFitnessPal continua sendo a fonte preferida para histórico detalhado.</p>`:empty('Nenhum total diário do MyFitnessPal via Apple Saúde aguardando validação.')}</div>`;
+  return `<div class="card sectionGap mfpCandidatePanel"><div class="cardHead"><div><b>MyFitnessPal via Apple Saúde</b><small>Totais diários preservados por origem. Não entram nas médias nem no histórico principal até validação.</small></div><span class="pill">em validação</span></div>${rows?`<div class="mealList">${rows}</div><p class="footerNote">Estes dados não criam alimentos, refeições ou horários. Quando há mais de um candidato para a mesma métrica no mesmo dia, nenhum valor é escolhido ou somado automaticamente. O export direto do MyFitnessPal continua sendo a fonte preferida para histórico detalhado.</p>`:empty('Nenhum total diário do MyFitnessPal via Apple Saúde aguardando validação.')}</div>`;
 }
 function daySummary(row){
   if(!row)return empty('Selecione um dia com registro.');
