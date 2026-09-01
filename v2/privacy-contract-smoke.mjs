@@ -62,7 +62,7 @@ if(/row\.value\b|source_payload|source_record_id|storage_path/.test(provenance))
 for(const token of ['Não foi possível carregar as origens das métricas agora.','aguardando conferência','preservado(s) sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
 for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas','canônico(s)','candidato(s)'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
 
-const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\n(?=\nfunction )/)?.[0]||'';
+const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\s*(?=function )/)?.[0]||'';
 if(!timelineSourceEvidence)throw new Error('safe Timeline source-metric evidence block missing');
 if(!timeline.includes("const preservedStatuses=new Set(['candidate','held']);"))throw new Error('Timeline source evidence no longer fails closed to explicit candidate/held states internally');
 for(const token of ['preservedStatuses.has(norm(row.canonical_status))','aguardando conferência; mantido separado dos dados confirmados','source_name','source_family'])if(!timelineSourceEvidence.includes(token))throw new Error(`Timeline source evidence privacy guardrail missing: ${token}`);
