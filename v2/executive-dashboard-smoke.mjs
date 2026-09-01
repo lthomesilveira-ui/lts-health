@@ -70,6 +70,23 @@ async function run(viewport,label){
   if(!labAmbiguity.includes('Os resultados foram preservados'))throw new Error(`${label}: Today limitation does not confirm preserved lab evidence`);
   if(labAmbiguity.includes('0 biomarcador(es) comparáveis'))throw new Error(`${label}: ambiguous labs are misleadingly rendered as numeric zero`);
 
+  const labNoComparable=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {renderTodayHub}=await import('./src/today-screen.js');
+    const original=state.data.labs||[];
+    state.data.labs=[
+      {source_record_id:'lab-prior',collection_date:'2026-01-01',laboratory:'Lab A',biomarker:'Glicose',result_numeric:90,unit:'mg/dL'},
+      {source_record_id:'lab-current',collection_date:'2026-02-01',laboratory:'Lab A',biomarker:'Glicose',result_numeric:5,unit:'mmol/L'}
+    ];
+    const html=renderTodayHub();
+    state.data.labs=original;
+    return html;
+  });
+  if(!labNoComparable.includes('Sem comparação segura'))throw new Error(`${label}: Today does not distinguish incompatible lab units from numeric zero`);
+  if(!labNoComparable.includes('não têm biomarcadores compatíveis'))throw new Error(`${label}: Today does not explain why recent lab collections are not comparable`);
+  if(!labNoComparable.includes('marcadores não têm correspondência segura de nome, unidade e valor numérico'))throw new Error(`${label}: Today limitation omits the conservative lab comparison rule`);
+  if(labNoComparable.includes('0 biomarcador(es) comparáveis'))throw new Error(`${label}: non-comparable labs are misleadingly rendered as numeric zero`);
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
