@@ -8,6 +8,7 @@ const injected=[
   {source_record_id:'a-now',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',source:'Fixture'},
   {source_record_id:'unitless-now',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador sem unidade',result_raw:'7',result_numeric:7,unit:null,source:'Fixture'},
   {source_record_id:'same-day-other',collection_date:'2026-01-03',laboratory:'Outra origem',biomarker:'Marcador A',result_raw:'99',result_numeric:99,unit:'u',source:'Fixture'},
+  {source_record_id:'intervening-other',collection_date:'2025-12-20',laboratory:'Origem intermediária',biomarker:'Marcador A',result_raw:'500',result_numeric:500,unit:'u',source:'Fixture'},
   {source_record_id:'prior-decoy',collection_date:'2025-12-03',laboratory:'Origem sem sobreposição',biomarker:'Marcador X',result_raw:'77',result_numeric:77,unit:'u',source:'Fixture'},
   {source_record_id:'a-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'Marcador A',result_raw:'6',result_numeric:6,unit:'u',source:'Fixture'},
   {source_record_id:'unitless-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'Marcador sem unidade',result_raw:'5',result_numeric:5,unit:null,source:'Fixture'},
@@ -34,7 +35,7 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   },injected);
   await page.fill('#labQuery','x');
-  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=10);
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=11);
   await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.querySelector('#labQuery')?.value==='');
 
@@ -50,13 +51,17 @@ async function run(viewport,label){
 
   await page.selectOption('#collectionSelect','2026-01-03__Origem teste');
   await page.waitForFunction(()=>{const h=document.querySelector('.collectionCompareHead')?.textContent||'',l=document.querySelector('.collectionCompareList')?.textContent||'';return h.includes('03/12/2025')&&h.includes('Origem teste')&&l.includes('+2,0 u')&&l.includes('unidade ausente');});
+  const compareHead=(await page.locator('.collectionCompareHead').textContent())||'';
   const compare=(await page.locator('.collectionCompareList').textContent())||'';
+  if(compareHead.includes('20/12/2025')||compareHead.includes('Origem intermediária'))throw new Error(`${label}: intervening foreign source replaced same-source longitudinal history`);
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit difference missing`);
   if(!compare.includes('Marcador sem unidade')||!compare.includes('unidade ausente'))throw new Error(`${label}: unitless result was compared`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Terceira origem');
-  await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('Nenhuma foi escolhida automaticamente')));
-  if(await page.locator('.collectionCompareHead').count())throw new Error(`${label}: ambiguous prior source produced comparison`);
+  await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
+  const sourceGap=(await page.locator('.card.sectionGap').filter({hasText:'Comparação com histórico da mesma origem'}).textContent())||'';
+  if(!sourceGap.includes('Nenhuma diferença foi calculada automaticamente'))throw new Error(`${label}: source-gap guardrail missing`);
+  if(await page.locator('.collectionCompareHead').count())throw new Error(`${label}: different-source history produced comparison`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Origem teste');
   await page.waitForFunction(()=>document.querySelector('.collectionCompareHead')?.textContent?.includes('03/12/2025'));
