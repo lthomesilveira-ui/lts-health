@@ -6,14 +6,14 @@ const injected=[
   {source_record_id:'src-e',collection_date:'2026-02-03',laboratory:null,biomarker:'Origem E',result_raw:'47',result_numeric:47,unit:'u',source:'Fonte E preservada'},
   {source_record_id:'third',collection_date:'2026-01-03',laboratory:'Terceira origem',biomarker:'Marcador A',result_raw:'12',result_numeric:12,unit:'u',source:'Fixture'},
   {source_record_id:'a-now',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',source:'Fixture'},
-  {source_record_id:'ambig-now-1',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador ambíguo',result_raw:'1',result_numeric:1,unit:'u',source:'Fixture'},
-  {source_record_id:'ambig-now-2',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador ambíguo',result_raw:'2',result_numeric:2,unit:'u',source:'Fixture'},
+  {source_record_id:'ambig-now-1',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'AAA marcador ambíguo',result_raw:'1',result_numeric:1,unit:'u',source:'Fixture'},
+  {source_record_id:'ambig-now-2',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'AAA marcador ambíguo',result_raw:'2',result_numeric:2,unit:'u',source:'Fixture'},
   {source_record_id:'unitless-now',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador sem unidade',result_raw:'7',result_numeric:7,unit:null,source:'Fixture'},
   {source_record_id:'same-day-other',collection_date:'2026-01-03',laboratory:'Outra origem',biomarker:'Marcador A',result_raw:'99',result_numeric:99,unit:'u',source:'Fixture'},
   {source_record_id:'intervening-other',collection_date:'2025-12-20',laboratory:'Origem intermediária',biomarker:'Marcador A',result_raw:'500',result_numeric:500,unit:'u',source:'Fixture'},
   {source_record_id:'prior-decoy',collection_date:'2025-12-03',laboratory:'Origem sem sobreposição',biomarker:'Marcador X',result_raw:'77',result_numeric:77,unit:'u',source:'Fixture'},
   {source_record_id:'a-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'Marcador A',result_raw:'6',result_numeric:6,unit:'u',source:'Fixture'},
-  {source_record_id:'ambig-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'Marcador ambíguo',result_raw:'0,5',result_numeric:0.5,unit:'u',source:'Fixture'},
+  {source_record_id:'ambig-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'AAA marcador ambíguo',result_raw:'0,5',result_numeric:0.5,unit:'u',source:'Fixture'},
   {source_record_id:'unitless-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'Marcador sem unidade',result_raw:'5',result_numeric:5,unit:null,source:'Fixture'},
   {source_record_id:'a-alt-1',collection_date:'2025-11-03',laboratory:'Origem teste',biomarker:'Marcador A',result_raw:'100',result_numeric:100,unit:'outra',source:'Fixture'},
   {source_record_id:'a-alt-2',collection_date:'2025-10-03',laboratory:'Origem teste',biomarker:'Marcador A',result_raw:'90',result_numeric:90,unit:'outra',source:'Fixture'},
@@ -59,7 +59,7 @@ async function run(viewport,label){
   if(compareHead.includes('20/12/2025')||compareHead.includes('Origem intermediária'))throw new Error(`${label}: intervening foreign source replaced same-source longitudinal history`);
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit difference missing`);
   if(!compare.includes('Marcador sem unidade')||!compare.includes('unidade ausente'))throw new Error(`${label}: unitless result was compared`);
-  if(!compare.includes('Marcador ambíguo')||!compare.includes('revisar registros'))throw new Error(`${label}: same-source duplicate marker was treated as a direct comparison`);
+  if(!compare.includes('AAA marcador ambíguo')||!compare.includes('revisar registros'))throw new Error(`${label}: same-source duplicate marker was treated as a direct comparison`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Terceira origem');
   await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
@@ -91,7 +91,7 @@ async function run(viewport,label){
   const trendOrigins=await page.locator('.exerciseDetail .labUnitCohort').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-origin')));
   if(trendOrigins.some(origin=>origin!=='origem teste'))throw new Error(`${label}: a foreign source became a comparable trend`);
 
-  await page.click('[data-marker="marcador ambíguo"]');
+  await page.click('[data-marker="aaa marcador ambiguo"]');
   await page.waitForFunction(()=>document.querySelector('.exerciseDetail')?.textContent?.includes('mesma data, origem e unidade'));
   if(await page.locator('.exerciseDetail .labUnitCohort').count())throw new Error(`${label}: same-source same-date ambiguity produced a trend`);
 
