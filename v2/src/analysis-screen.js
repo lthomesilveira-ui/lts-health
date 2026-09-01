@@ -57,6 +57,7 @@ function limitations(model){
   const rows=[];
   if(model.labs.available&&model.labs.reason==='ambiguous_source')rows.push('Exames: há mais de uma origem possível na comparação recente; os resultados ficam preservados e a tendência aguarda revisão.');
   else if(model.labs.available&&model.labs.collectionDays.length<2)rows.push('Exames: ainda existe apenas uma data de coleta estruturada; não há série longitudinal laboratorial suficiente para tendência.');
+  else if(model.labs.available&&!model.labs.safe)rows.push('Exames: as coletas recentes estão preservadas, mas não há correspondência segura de nome, unidade e valor numérico para comparar.');
   if(model.sleep.available&&model.sleep.days)rows.push('Sono: há dados preservados, porém ainda fora das conclusões por sobreposição entre fontes.');
   if(!model.segmental.available)rows.push('Composição segmentar: são necessárias pelo menos duas medições segmentares para cruzar regiões com o treino do intervalo.');
   if(!model.nutrition.available||!model.nutrition.days)rows.push('Alimentação: o cruzamento corporal fica limitado quando o intervalo não tem registros diários suficientes.');
