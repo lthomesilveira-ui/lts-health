@@ -1,4 +1,4 @@
-globalThis.location={search:''};
+globalThis.location={search:'?fixture'};
 const {comparablePerformanceModel}=await import('./src/integrated-analysis.js');
 
 const status={workouts:'ready',exercises:'ready',sets:'ready'};
