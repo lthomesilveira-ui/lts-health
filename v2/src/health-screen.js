@@ -85,14 +85,11 @@ function rowsByMarker(collection){
 }
 function previousComparableCollection(cols,current){
   if(!current?.date)return{collection:null,reason:'missing_current',date:null};
-  const priorDates=unique(cols.map(c=>c.date).filter(d=>d&&String(d)<String(current.date))).sort((a,b)=>String(b).localeCompare(String(a)));
-  const date=priorDates[0];
-  if(!date)return{collection:null,reason:'no_prior',date:null};
-  const candidates=cols.filter(c=>c.date===date);
-  if(candidates.length===1)return{collection:candidates[0],reason:'single_source',date};
-  const sameSource=candidates.filter(c=>norm(c.lab)===norm(current.lab));
-  if(sameSource.length===1)return{collection:sameSource[0],reason:'same_source',date};
-  return{collection:null,reason:'ambiguous_source',date,candidates};
+  const prior=cols.filter(c=>c.date&&String(c.date)<String(current.date)).sort((a,b)=>String(b.date).localeCompare(String(a.date))||a.lab.localeCompare(b.lab,'pt-BR'));
+  if(!prior.length)return{collection:null,reason:'no_prior',date:null};
+  const sameSource=prior.filter(c=>norm(c.lab)===norm(current.lab));
+  if(sameSource.length)return{collection:sameSource[0],reason:'same_source',date:sameSource[0].date};
+  return{collection:null,reason:'source_gap',date:prior[0].date,candidates:prior.filter(c=>c.date===prior[0].date)};
 }
 function compareResult(a,b){
   if(!a||!b)return{mode:'missing',detail:'resultado não comparável'};
@@ -108,7 +105,7 @@ function collectionComparison(cols,selectedKey){
   const current=cols.find(c=>c.key===selectedKey);
   if(!current)return empty('Selecione uma coleta para comparar.');
   const prior=previousComparableCollection(cols,current),previous=prior.collection;
-  if(prior.reason==='ambiguous_source')return `<div class="note">Há mais de uma origem na data anterior (${fmtDate(prior.date)}). Nenhuma foi escolhida automaticamente; revise as origens antes de comparar.</div>`;
+  if(prior.reason==='source_gap')return `<div class="note">Há coleta(s) anterior(es), mas nenhuma da mesma origem de ${esc(current.lab)}. Nenhuma diferença foi calculada automaticamente; compare somente após confirmar que as origens são equivalentes.</div>`;
   if(!previous)return empty('Ainda não há outra data de coleta disponível para comparação direta.');
   const a=rowsByMarker(current),b=rowsByMarker(previous),q=norm(state.ui.labQuery),keys=[...a.keys()].filter(k=>b.has(k)&&(!q||k.includes(q))).sort((x,y)=>String(a.get(x)?.[0]?.biomarker||x).localeCompare(String(a.get(y)?.[0]?.biomarker||y),'pt-BR'));
   const rows=keys.map(key=>{
@@ -117,7 +114,7 @@ function collectionComparison(cols,selectedKey){
     const left=ar[0],right=br[0],comparison=compareResult(left,right);
     return `<div class="collectionCompareRow"><div><b>${esc(label)}</b><small>${esc(resultKind(left))} / ${esc(resultKind(right))}</small></div><span>${esc(resultText(left))}</span><span>${esc(resultText(right))}</span><em class="${comparison.mode==='delta'?'delta':''}">${esc(comparison.detail)}</em></div>`;
   }).join('');
-  return `<div class="collectionCompareHead"><div><b>${fmtDate(current.date)}</b><small>${esc(current.lab)}</small></div><span>comparado com</span><div><b>${fmtDate(previous.date)}</b><small>${esc(previous.lab)}</small></div></div><div class="collectionCompareLegend"><span>Marcador</span><span>Selecionada</span><span>Anterior</span><span>Diferença</span></div><div class="collectionCompareList">${rows||empty('As duas coletas não têm marcadores em comum com a busca atual.')}</div><small class="labHistoryNote">A comparação usa a data de coleta anterior. Se houver mais de uma origem nessa data, só usa automaticamente a mesma origem da coleta selecionada; sem uma correspondência única, a comparação fica em revisão. Origens diferentes do mesmo dia nunca são tratadas como evolução. Diferenças só são calculadas quando há um único valor numérico em cada coleta e a unidade está presente e é exatamente a mesma.</small>`;
+  return `<div class="collectionCompareHead"><div><b>${fmtDate(current.date)}</b><small>${esc(current.lab)}</small></div><span>comparado com</span><div><b>${fmtDate(previous.date)}</b><small>${esc(previous.lab)}</small></div></div><div class="collectionCompareLegend"><span>Marcador</span><span>Selecionada</span><span>Anterior</span><span>Diferença</span></div><div class="collectionCompareList">${rows||empty('As duas coletas não têm marcadores em comum com a busca atual.')}</div><small class="labHistoryNote">A comparação procura a coleta anterior mais recente da mesma origem, mesmo quando existem coletas de outras origens entre as duas datas. Origens diferentes nunca são usadas automaticamente como continuidade longitudinal. Diferenças só são calculadas quando há um único valor numérico em cada coleta e a unidade está presente e é exatamente a mesma.</small>`;
 }
 function documentStatus(doc){
   const status=norm(doc.extraction_status);
@@ -163,7 +160,7 @@ export function renderHealthHub(){
       <div class="card">${labFailed?unavailable('Não é possível listar coletas enquanto os resultados estão indisponíveis.'):`<div class="cardHead"><div><b>Coleta</b><small>Escolha uma coleta para ver os resultados disponíveis.</small></div><select id="collectionSelect">${cols.map(c=>`<option value="${esc(c.key)}">${fmtDate(c.date)} · ${esc(c.lab)}</option>`).join('')}</select></div><input id="labQuery" class="fullInput" type="search" placeholder="Buscar marcador ou resultado" value="${esc(state.ui.labQuery)}">${collectionPanel(collection)}`}</div>
       <div class="card">${labFailed?unavailable('O histórico por marcador ficará disponível após o carregamento dos exames.'):`<div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando os valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div>`}</div>
     </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Comparação com a coleta anterior</b><small>Usa a data anterior somente quando a origem é inequívoca.</small></div></div>${labFailed?unavailable('A comparação fica disponível quando os resultados carregarem.'):collectionComparison(cols,state.ui.selectedCollection)}</div>
+    <div class="card sectionGap"><div class="cardHead"><div><b>Comparação com histórico da mesma origem</b><small>Usa a coleta anterior mais recente da mesma origem; outras origens ficam separadas.</small></div></div>${labFailed?unavailable('A comparação fica disponível quando os resultados carregarem.'):collectionComparison(cols,state.ui.selectedCollection)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Documentos</b><small>PDF e imagem podem ficar guardados sem gerar resultados até uma leitura especializada ser segura.</small></div>${!docsFailed?pill(`${docs.length}`):''}</div>${docsFailed?unavailable('Os documentos não carregaram agora.'):`${documentSummary(docs)}<div class="documentGrid">${docs.slice(0,100).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div>${documentStatus(d)}</article>`).join('')||empty('Nenhum documento registrado.')}</div>`}</div>
       <div class="card"><div class="cardHead"><div><b>Resultados e documentos na mesma data</b><small>Ajuda a localizar registros relacionados pela data sem assumir que um item explica o outro.</small></div></div>${labFailed||docsFailed?unavailable('Esta visão precisa dos resultados e dos documentos carregados ao mesmo tempo.'):evidenceByDate(cols,docs)}</div>
