@@ -8,6 +8,7 @@ const deltaText=(value,digits=1,unit='')=>{const n=num(value);return n==null?'�
 const periodLabel=period=>period==='30'?'30 dias':period==='90'?'90 dias':period==='365'?'1 ano':'todo o histórico';
 const periodStart=period=>period==='all'?null:since(Number(period));
 const inPeriod=(value,start)=>!start||day(value)>=start;
+const reviewState=(title,body)=>`<div class="empty"><b>${esc(title)}</b><br>${esc(body)}</div>`;
 
 function regionCard(region){
   const training=region.training.sessions==null?'treino do intervalo indisponível':`${region.training.sessions} sessão(ões) relacionadas${region.training.sets==null?'':` · ${region.training.sets} séries estruturadas`}`;
@@ -55,11 +56,13 @@ function labMetric(model){
 
 function limitations(model){
   const rows=[];
+  if(model.body.reason==='ambiguous')rows.push('Composição global: há mais de uma medição em uma das duas datas recentes; os valores ficam preservados e nenhuma diferença é calculada até a revisão.');
+  if(model.segmental.reason==='ambiguous')rows.push('Composição segmentar: há mais de uma medição em uma das duas datas recentes; as regiões ficam preservadas e não entram no cruzamento com treino ou alimentação até a revisão.');
   if(model.labs.available&&model.labs.reason==='ambiguous_source')rows.push('Exames: há mais de uma origem possível na comparação recente; os resultados ficam preservados e a tendência aguarda revisão.');
   else if(model.labs.available&&model.labs.collectionDays.length<2)rows.push('Exames: ainda existe apenas uma data de coleta estruturada; não há série longitudinal laboratorial suficiente para tendência.');
   else if(model.labs.available&&!model.labs.safe)rows.push('Exames: as coletas recentes estão preservadas, mas não há correspondência segura de nome, unidade e valor numérico para comparar.');
   if(model.sleep.available&&model.sleep.days)rows.push('Sono: há dados preservados, porém ainda fora das conclusões por sobreposição entre fontes.');
-  if(!model.segmental.available)rows.push('Composição segmentar: são necessárias pelo menos duas medições segmentares para cruzar regiões com o treino do intervalo.');
+  if(!model.segmental.available&&model.segmental.reason!=='ambiguous')rows.push('Composição segmentar: são necessárias pelo menos duas medições segmentares para cruzar regiões com o treino do intervalo.');
   if(!model.nutrition.available||!model.nutrition.days)rows.push('Alimentação: o cruzamento corporal fica limitado quando o intervalo não tem registros diários suficientes.');
   return rows;
 }
@@ -73,6 +76,8 @@ export function renderAnalysisHub(){
   const periodNutrition=failed('nutrition')?[]:(state.data.nutrition||[]).filter(n=>inPeriod(n.nutrition_date,start));
   const periodNutritionDays=unique(periodNutrition.map(n=>day(n.nutrition_date))).length;
   const limits=limitations(model);
+  const segmentalLead=model.segmental.available?`<div class="analysisInterval"><b>${fmtDate(model.segmental.start)} → ${fmtDate(model.segmental.end)}</b><span>Último intervalo segmentar comparável. Treino e alimentação abaixo usam o mesmo intervalo quando possível.</span></div><div class="analysisRegionGrid">${model.segmental.regions.map(regionCard).join('')}</div>`:model.segmental.reason==='ambiguous'?reviewState('Composição segmentar em revisão','Há mais de uma medição em uma das duas datas recentes. Os registros foram preservados e nenhuma região foi escolhida para o cruzamento.'): '<div class="empty">Ainda não há duas medições segmentares comparáveis para montar esta leitura.</div>';
+  const bodyPanel=body.available?`<div class="grid cols2 compact">${metric('Peso',deltaText(body.delta.weightKg,1,'kg'))}${metric('Massa muscular',deltaText(body.delta.muscleKg,1,'kg'))}${metric('Massa de gordura',deltaText(body.delta.fatKg,1,'kg'))}${metric('Gordura corporal',deltaText(body.delta.bodyFatPp,1,'p.p.'))}</div><p class="footerNote">Mudanças observadas entre ${fmtDate(body.previous.measured_at)} e ${fmtDate(body.latest.measured_at)}.</p>`:body.reason==='ambiguous'?reviewState('Composição em revisão','Há mais de uma medição em uma das duas datas recentes. Os valores foram preservados e nenhuma diferença foi calculada.'): '<div class="empty">São necessárias duas medições corporais comparáveis.</div>';
 
   return `${title('Análise','Relações entre composição, treino, alimentação, sono e exames com a evidência disponível.')}
     <div class="controls"><select id="analysisPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo histórico</option></select></div>
@@ -80,11 +85,11 @@ export function renderAnalysisHub(){
 
     <section class="analysisLead sectionGap">
       <div class="analysisLeadHead"><div><span>Leitura integrada</span><h2>O que mudou e qual era o contexto registrado</h2></div><small>${esc(fmtDate(model.referenceDay))}</small></div>
-      ${model.segmental.available?`<div class="analysisInterval"><b>${fmtDate(model.segmental.start)} → ${fmtDate(model.segmental.end)}</b><span>Último intervalo segmentar comparável. Treino e alimentação abaixo usam o mesmo intervalo quando possível.</span></div><div class="analysisRegionGrid">${model.segmental.regions.map(regionCard).join('')}</div>`:'<div class="empty">Ainda não há duas medições segmentares comparáveis para montar esta leitura.</div>'}
+      ${segmentalLead}
     </section>
 
     <div class="grid cols2 sectionGap">
-      <section class="card"><div class="cardHead"><div><b>Composição global</b><small>Duas últimas medições corporais.</small></div></div>${body.available?`<div class="grid cols2 compact">${metric('Peso',deltaText(body.delta.weightKg,1,'kg'))}${metric('Massa muscular',deltaText(body.delta.muscleKg,1,'kg'))}${metric('Massa de gordura',deltaText(body.delta.fatKg,1,'kg'))}${metric('Gordura corporal',deltaText(body.delta.bodyFatPp,1,'p.p.'))}</div><p class="footerNote">Mudanças observadas entre ${fmtDate(body.previous.measured_at)} e ${fmtDate(body.latest.measured_at)}.</p>`:'<div class="empty">São necessárias duas medições corporais comparáveis.</div>'}</section>
+      <section class="card"><div class="cardHead"><div><b>Composição global</b><small>Duas últimas medições corporais.</small></div></div>${bodyPanel}</section>
       <section class="card"><div class="cardHead"><div><b>Alimentação no mesmo intervalo</b><small>Sem classificar consumo como alto ou baixo sem uma referência apropriada.</small></div></div>${nutritionPanel(model)}</section>
     </div>
 
