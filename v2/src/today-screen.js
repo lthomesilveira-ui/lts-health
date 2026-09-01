@@ -1,4 +1,4 @@
-import {state,esc,fmtDate,fmtNum,num} from './core.js';
+import {state,esc,day,fmtDate,fmtNum,num} from './core.js';
 import {buildIntegratedAnalysis} from './integrated-analysis.js';
 
 const deltaText=(value,digits=1,unit='')=>{
@@ -18,6 +18,19 @@ function miniLine(points,key,unit=''){
   const path=rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(r.value).toFixed(1)}`).join(' ');
   const dots=rows.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.value).toFixed(1)}" r="3"><title>${esc(fmtDate(r.date))}: ${esc(fmtNum(r.value,1))}${esc(unit)}</title></circle>`).join('');
   return `<div class="dashboardMiniChart"><div class="dashboardScale"><span>${fmtNum(hi,1)}${esc(unit)}</span><span>${fmtNum((hi+lo)/2,1)}${esc(unit)}</span><span>${fmtNum(lo,1)}${esc(unit)}</span></div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path class="dashboardGrid" d="M16 30H504 M16 58H504 M16 86H504"/><path class="dashboardLine" d="${path}"/>${dots}</svg></div><div class="dashboardDates"><span>${fmtDate(rows[0].date)}</span><span>${fmtDate(rows.at(-1).date)}</span></div>`;
+}
+
+function nutritionReviewDays(model){
+  const n=model?.nutrition;
+  if(!n?.available||!n.start||!n.end||domainFailed('nutrition'))return 0;
+  const groups=new Map();
+  for(const row of state.data.nutrition||[]){
+    const date=day(row?.nutrition_date);
+    if(!date||date<=n.start||date>n.end)continue;
+    if(!groups.has(date))groups.set(date,0);
+    groups.set(date,groups.get(date)+1);
+  }
+  return[...groups.values()].filter(count=>count>1).length;
 }
 
 function compositionPanel(model){
@@ -60,9 +73,11 @@ function rhythmInsight(model){
 }
 function nutritionInsight(model){
   const n=model.nutrition;if(!n.available||!n.days)return null;
+  const reviewDays=nutritionReviewDays(model);
   const protein=n.proteinAvg==null?'proteína sem média disponível':`proteína média registrada ${fmtNum(n.proteinAvg,0)} g/dia`;
   const comparison=n.proteinDelta==null?'sem período anterior comparável':`diferença frente ao período anterior equivalente ${deltaText(n.proteinDelta,0,'g/dia')}`;
-  return infoCard('Composição × alimentação','Alimentação no intervalo entre medições',`${n.days} dia(s) registrados no intervalo · ${protein} · ${comparison}. O app não transforma essa associação em causa.`,'analise');
+  const review=reviewDays?` · ${reviewDays} dia(s) em revisão fora das médias`:'';
+  return infoCard('Composição × alimentação','Alimentação no intervalo entre medições',`${n.days} dia(s) usados no intervalo${review} · ${protein} · ${comparison}. O app não transforma essa associação em causa.`,'analise');
 }
 function performanceInsight(model){
   const p=model.training.performance?.[0];if(!p)return null;
@@ -73,6 +88,8 @@ function limitationCards(model){
   if(model.labs.available&&model.labs.reason==='ambiguous_source')rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames precisam de revisão antes da comparação</b><span>Há mais de uma origem nas coletas recentes. Os resultados foram preservados, mas nenhuma origem foi combinada automaticamente.</span><i>→</i></button>`);
   else if(model.labs.available&&model.labs.collectionDays.length<2)rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames ainda não têm duas coletas comparáveis</b><span>Há resultados estruturados, mas uma série temporal exige outra data de coleta.</span><i>→</i></button>`);
   else if(model.labs.available&&model.labs.reason==='no_comparable_markers')rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames ainda não têm marcadores comparáveis</b><span>As coletas recentes foram preservadas, mas os marcadores não têm correspondência segura de nome, unidade e valor numérico.</span><i>→</i></button>`);
+  const nutritionReview=nutritionReviewDays(model);
+  if(nutritionReview)rows.push(`<button class="dashboardLimitation" data-route="nutricao"><b>Alimentação tem dados em revisão</b><span>${nutritionReview} dia(s) têm mais de um total preservado no mesmo dia. Esses registros ficam fora das médias e comparações até revisão.</span><i>→</i></button>`);
   if(model.sleep.available&&model.sleep.days)rows.push(`<button class="dashboardLimitation" data-route="timeline"><b>Sono está preservado, mas ainda fora das conclusões</b><span>${model.sleep.days} dia(s) registrados por fontes que continuam separados até existir uma regra segura de consolidação.</span><i>→</i></button>`);
   return rows.join('');
 }

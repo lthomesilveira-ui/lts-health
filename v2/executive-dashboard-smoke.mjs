@@ -54,6 +54,28 @@ async function run(viewport,label){
   if(ambiguity.includes('Ainda não há duas medições comparáveis.'))throw new Error(`${label}: ambiguous body evolution is misleadingly shown as ordinary missing history`);
   if(ambiguity.includes('999,0 kg de massa muscular')||ambiguity.includes('99,0% de gordura corporal'))throw new Error(`${label}: ambiguous body measurement was presented as current in Today`);
 
+  const nutritionAmbiguity=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {renderTodayHub}=await import('./src/today-screen.js');
+    const originalBody=state.data.body||[],originalNutrition=state.data.nutrition||[];
+    state.data.body=[
+      {source_record_id:'body-nutrition-prior',measured_at:'2026-01-01',weight_kg:80,skeletal_muscle_mass_kg:36,fat_mass_kg:16,body_fat_pct:20},
+      {source_record_id:'body-nutrition-current',measured_at:'2026-02-01',weight_kg:81,skeletal_muscle_mass_kg:37,fat_mass_kg:15,body_fat_pct:18.5}
+    ];
+    state.data.nutrition=[
+      {source_record_id:'nutrition-safe',nutrition_date:'2026-01-10',protein_g:120,calories_kcal:2100},
+      {source_record_id:'nutrition-review-a',nutrition_date:'2026-01-20',protein_g:130,calories_kcal:2200},
+      {source_record_id:'nutrition-review-b',nutrition_date:'2026-01-20',protein_g:999,calories_kcal:9999}
+    ];
+    const html=renderTodayHub();
+    state.data.body=originalBody;state.data.nutrition=originalNutrition;
+    return html;
+  });
+  if(!nutritionAmbiguity.includes('1 dia(s) usados no intervalo · 1 dia(s) em revisão fora das médias'))throw new Error(`${label}: Today silently hides ambiguous nutrition days from the integrated insight`);
+  if(!nutritionAmbiguity.includes('Alimentação tem dados em revisão'))throw new Error(`${label}: Today omits the nutrition review limitation`);
+  if(!nutritionAmbiguity.includes('mais de um total preservado no mesmo dia'))throw new Error(`${label}: Today does not explain why nutrition data is excluded`);
+  if(nutritionAmbiguity.includes('999 g/dia')||nutritionAmbiguity.includes('9999 kcal'))throw new Error(`${label}: ambiguous nutrition values leaked into Today analysis`);
+
   const labAmbiguity=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {renderTodayHub}=await import('./src/today-screen.js');
