@@ -37,11 +37,26 @@ async function run(viewport,label){
   if((await page.locator('#segmentalCompareDate').count())!==0)throw new Error(`${label}: ambiguous segmental date remains available as comparison`);
   for(const expected of ['1 data em revisão','última comparável 01/01/2026','Os registros foram preservados para revisão.'])if(!text.includes(expected))throw new Error(`${label}: segmental review summary missing ${expected}`);
   for(const forbidden of ['99,99 kg','98,88 kg','97,77 kg','96,66 kg'])if(text.includes(forbidden))throw new Error(`${label}: ambiguous segmental values contaminated evolution ${forbidden}`);
-  const rawCount=await page.evaluate(async()=>{const{state}=await import('./src/core.js');return state.data.segmental.filter(r=>String(r.measured_at).startsWith('2026-02-01')).length;});
-  if(rawCount!==2)throw new Error(`${label}: ambiguous segmental records were not preserved`);
+  const rawSegmentalCount=await page.evaluate(async()=>{const{state}=await import('./src/core.js');return state.data.segmental.filter(r=>String(r.measured_at).startsWith('2026-02-01')).length;});
+  if(rawSegmentalCount!==2)throw new Error(`${label}: ambiguous segmental records were not preserved`);
+
+  await page.evaluate(async()=>{
+    const{state}=await import('./src/core.js');
+    const latest=state.data.body.find(r=>String(r.measured_at).startsWith('2026-02-01'));
+    state.data.body.push({...latest,source_record_id:'body-ambiguous-duplicate',weight_kg:199.9,skeletal_muscle_mass_kg:99.9,fat_mass_kg:88.8,body_fat_pct:77.7,source:'Duplicado corporal de teste'});
+    document.querySelector('[data-evolution-metric="weight_kg"]')?.click();
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost')?.textContent?.includes('1 data com mais de uma medição corporal ficou fora da evolução.'));
+  text=(await page.textContent('#screenHost'))||'';
+  for(const expected of ['1 data em revisão','última comparável 01/01/2026','Os registros foram preservados para revisão.'])if(!text.includes(expected))throw new Error(`${label}: body review summary missing ${expected}`);
+  for(const forbidden of ['199,9 kg','99,9 kg','88,8 kg','77,7%'])if(text.includes(forbidden))throw new Error(`${label}: ambiguous body values contaminated evolution ${forbidden}`);
+  const rawBodyCount=await page.evaluate(async()=>{const{state}=await import('./src/core.js');return state.data.body.filter(r=>String(r.measured_at).startsWith('2026-02-01')).length;});
+  if(rawBodyCount!==2)throw new Error(`${label}: ambiguous body records were not preserved`);
+  if(!text.includes('Ainda não há pontos suficientes para este gráfico.'))throw new Error(`${label}: body chart still used an ambiguous date`);
+  if(!text.includes('São necessárias pelo menos duas medições corporais para comparar mudanças entre medições.'))throw new Error(`${label}: body change table still used an ambiguous date`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
-  if(overflow>3)throw new Error(`${label}: segmental comparison caused horizontal overflow ${overflow}px`);
+  if(overflow>3)throw new Error(`${label}: evolution comparison caused horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();
 }
