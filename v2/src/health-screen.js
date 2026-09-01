@@ -6,10 +6,17 @@ const unavailable=text=>`<div class="errorState"><b>Esta parte não carregou ago
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
 const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 
-function collectionKey(row){return `${row.collection_date||''}__${row.laboratory||''}`;}
+function collectionOrigin(row,index=0){
+  return String(row?.laboratory||row?.source||row?.source_file||row?.source_record_id||row?.id||`Origem ${index+1}`).trim();
+}
+function collectionKey(row,index=0){return `${row.collection_date||''}__${collectionOrigin(row,index)}`;}
 function collections(){
   const map=new Map();
-  for(const row of state.data.labs||[]){const key=collectionKey(row);if(!map.has(key))map.set(key,{key,date:row.collection_date,lab:row.laboratory||'Laboratório não informado',rows:[]});map.get(key).rows.push(row);}
+  for(const [index,row] of (state.data.labs||[]).entries()){
+    const key=collectionKey(row,index),origin=collectionOrigin(row,index);
+    if(!map.has(key))map.set(key,{key,date:row.collection_date,lab:origin,rows:[]});
+    map.get(key).rows.push(row);
+  }
   return [...map.values()].sort((a,b)=>String(b.date).localeCompare(String(a.date))||a.lab.localeCompare(b.lab,'pt-BR'));
 }
 function biomarkerGroups(){
@@ -56,7 +63,7 @@ function cohortTrend(cohort){
 function markerHistory(group){
   if(!group)return empty('Selecione um marcador para ver o histórico.');
   const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),unitless=numeric.filter(r=>!cleanUnit(r)).length,cohorts=unitCohorts(numeric),ambiguousDates=unique(cohorts.flatMap(c=>trendRows(c).ambiguousDates)),comparable=cohorts.filter(c=>trendRows(c).rows.length>=2);
-  const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||'Laboratório não informado')} · ${esc(resultKind(r))}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
+  const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||r.source||'Origem não informada')} · ${esc(resultKind(r))}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
   const unitlessNote=unitless?'<div class="note">Resultados numéricos sem unidade ficam preservados no histórico, mas não entram em diferenças ou gráficos de tendência.</div>':'';
   const ambiguityNote=ambiguousDates.length?`<div class="note">Há mais de um resultado deste marcador na mesma data (${ambiguousDates.map(fmtDate).join(', ')}). Esses registros ficam preservados no histórico e fora da tendência até revisão.</div>`:'';
   let trend='';
