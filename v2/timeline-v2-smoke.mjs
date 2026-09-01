@@ -23,6 +23,10 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.body=[...(state.data.body||[]),{source_record_id:'missing-body-fields',measured_at:'2026-02-03',weight_kg:null,skeletal_muscle_mass_kg:null,body_fat_pct:null,source:'Fixture de interface'}];
     state.data.metrics=[...(state.data.metrics||[]),{source_record_id:'missing-metric-value',measured_at:'2026-02-03T12:00:00Z',metric_type:'weight_kg',value:null,unit:'kg',source:'Fixture de interface'}];
+    state.data.labs=[...(state.data.labs||[]),
+      {source_record_id:'lab-source-a',collection_date:'2026-02-04',laboratory:null,test_name:'Marcador A',value_num:1,unit:'u',source:'Fleury arquivo A'},
+      {source_record_id:'lab-source-b',collection_date:'2026-02-04',laboratory:null,test_name:'Marcador B',value_num:2,unit:'u',source:'Einstein arquivo B'}
+    ];
     state.data.sourceMetrics=[...(state.data.sourceMetrics||[]),
       {source_record_id:'sleep-watch',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
       {source_record_id:'sleep-ring',metric_date:'2026-02-03',metric_type:'sleep_duration_h',value:6.8,unit:'h',source_name:'RingConn',source_family:'ringconn',canonical_status:'held'},
@@ -49,6 +53,12 @@ async function run(viewport,label){
   if(text.includes('Confirmação registrada')||/\btaken\b/i.test(text))throw new Error(`${label}: treatment operational context reappeared after rerender`);
   for(const expected of ['Sono em conferência','Métricas em conferência','Alimentação em conferência','Apple Watch','RingConn','MyFitnessPal (via Apple Saúde)','Sono 7,1 h','Sono 6,8 h','Passos 7.100 passos','Frequência cardíaca em repouso 59 bpm','Calorias 2.100 kcal','Proteína 165,0 g','aguardando conferência; mantido separado dos dados confirmados']){
     if(!text.includes(expected))throw new Error(`${label}: readable source-preserving evidence missing ${expected}`);
+  }
+  const labItems=page.locator('.timelineDay').filter({hasText:'04/02/2026'}).locator('.timelineItem').filter({hasText:/Fleury arquivo A|Einstein arquivo B/});
+  if(await labItems.count()!==2)throw new Error(`${label}: same-day lab sources were not preserved as two Timeline collections`);
+  for(let i=0;i<2;i++){
+    const labText=(await labItems.nth(i).textContent())||'';
+    if(!labText.includes('1 resultado(s)'))throw new Error(`${label}: a lab source was merged with another source on the same date`);
   }
   if(text.includes('Origem sem status')||text.includes('8,2 h')||text.includes('Apple ambíguo')||text.includes('42 ms'))throw new Error(`${label}: ambiguous source metric status leaked into Timeline evidence`);
   if(text.includes('Fonte técnica indevida')||text.includes('9.999'))throw new Error(`${label}: confirmed sourceMetrics row leaked into review evidence`);
