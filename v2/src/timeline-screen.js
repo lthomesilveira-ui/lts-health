@@ -132,8 +132,9 @@ function item(e){
 }
 
 function crossDomainDays(rows){
+  const confirmedRows=rows.filter(e=>!String(e.domain||'').endsWith(' em conferência'));
   const byDate=new Map();
-  for(const e of rows){if(!byDate.has(e.date))byDate.set(e.date,[]);byDate.get(e.date).push(e);}
+  for(const e of confirmedRows){if(!byDate.has(e.date))byDate.set(e.date,[]);byDate.get(e.date).push(e);}
   return [...byDate.entries()].map(([date,dayRows])=>({date,rows:dayRows,domains:unique(dayRows.map(r=>r.domain)).sort((a,b)=>a.localeCompare(b,'pt-BR'))})).filter(x=>x.domains.length>=2).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
 }
 
