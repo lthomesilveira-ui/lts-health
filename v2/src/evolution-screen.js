@@ -90,11 +90,11 @@ function bodyChangeTable(rows){
   </div>`;
 }
 
-function comparableSegmentalRows(rows){
+function comparableRowsByDay(rows,key='measured_at'){
   const counts=new Map();
-  for(const row of rows){const key=day(row.measured_at);if(key)counts.set(key,(counts.get(key)||0)+1);}
-  const ambiguousDates=new Set([...counts].filter(([,count])=>count>1).map(([key])=>key));
-  return{rows:rows.filter(row=>{const key=day(row.measured_at);return key&&counts.get(key)===1;}),ambiguousDates};
+  for(const row of rows){const date=day(row?.[key]);if(date)counts.set(date,(counts.get(date)||0)+1);}
+  const ambiguousDates=new Set([...counts].filter(([,count])=>count>1).map(([date])=>date));
+  return{rows:rows.filter(row=>{const date=day(row?.[key]);return date&&counts.get(date)===1;}),ambiguousDates};
 }
 
 function segmentCompareControl(segmental,current){
@@ -105,8 +105,9 @@ function segmentCompareControl(segmental,current){
 
 export function renderEvolutionHub(){
   const bodyFailed=failed('body'),segFailed=failed('segmental'),workoutFailed=failed('workouts');
-  const body=bodyFailed?[]:bodyRows(),workouts=workoutFailed?[]:workoutRows(),rawSegmental=segFailed?[]:[...(state.data.segmental||[])].sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
-  const {rows:segmental,ambiguousDates}=comparableSegmentalRows(rawSegmental);
+  const rawBody=bodyFailed?[]:bodyRows(),workouts=workoutFailed?[]:workoutRows(),rawSegmental=segFailed?[]:[...(state.data.segmental||[])].sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
+  const {rows:body,ambiguousDates:ambiguousBodyDates}=comparableRowsByDay(rawBody);
+  const {rows:segmental,ambiguousDates}=comparableRowsByDay(rawSegmental);
   const first=body[0],last=body.at(-1),metricKey=state.ui.evolutionMetric||'weight_kg',meta=metrics[metricKey]||metrics.weight_kg;
   if(!state.ui.segmentalDate||!segmental.some(s=>s.measured_at===state.ui.segmentalDate))state.ui.segmentalDate=segmental.at(-1)?.measured_at||null;
   const currentSeg=segmental.find(s=>s.measured_at===state.ui.segmentalDate),idx=segmental.findIndex(s=>s.measured_at===state.ui.segmentalDate);
@@ -116,15 +117,17 @@ export function renderEvolutionHub(){
   }
   const compareSeg=segmental.find(s=>s.measured_at===state.ui.segmentalCompareDate)||null;
   const weeks=weeklyCounts(),maxWeek=Math.max(1,...weeks.map(w=>w.days)),failures=[bodyFailed?'composição corporal':null,segFailed?'análise segmentar':null,workoutFailed?'treinos':null].filter(Boolean);
+  const bodySub=bodyFailed?'indisponíveis agora':ambiguousBodyDates.size?`${ambiguousBodyDates.size} ${ambiguousBodyDates.size===1?'data em revisão':'datas em revisão'}${body.length?` · última comparável ${fmtDate(last?.measured_at)}`:''}`:body.length?`${fmtDate(first?.measured_at)} → ${fmtDate(last?.measured_at)}`:'sem registros';
   const segmentalSub=segFailed?'indisponíveis agora':ambiguousDates.size?`${ambiguousDates.size} ${ambiguousDates.size===1?'data em revisão':'datas em revisão'}${segmental.length?` · última comparável ${fmtDate(segmental.at(-1).measured_at)}`:''}`:segmental.length?`última ${fmtDate(segmental.at(-1).measured_at)}`:'sem registros';
   return `${title('Evolução','Composição corporal, análise segmentar e ritmo de treinos ao longo do tempo.')}
     ${failures.length?`<div class="errorState"><b>Parte da evolução está indisponível agora.</b><span>Não foi possível carregar: ${esc(failures.join(', '))}. O restante continua visível.</span></div>`:''}
     <div class="grid cols4 sectionGap">
-      ${metric('Medições corporais',bodyFailed?'—':String(body.length),bodyFailed?'indisponíveis agora':body.length?`${fmtDate(first?.measured_at)} → ${fmtDate(last?.measured_at)}`:'sem registros')}
+      ${metric('Medições corporais',bodyFailed?'—':String(rawBody.length),bodySub)}
       ${metric('Análises segmentares',segFailed?'—':String(rawSegmental.length),segmentalSub)}
       ${metric('Treinos',workoutFailed?'—':String(workouts.length),workoutFailed?'indisponíveis agora':workouts[0]?`último ${fmtDate(workouts[0].workout_date)}`:'sem registros')}
-      ${metric('Intervalo corporal',bodyFailed?'—':first&&last?`${Math.round((new Date(last.measured_at)-new Date(first.measured_at))/86400000)} dias`:'—',bodyFailed?'indisponível agora':'entre primeiro e último registro')}
+      ${metric('Intervalo corporal',bodyFailed?'—':first&&last?`${Math.round((new Date(last.measured_at)-new Date(first.measured_at))/86400000)} dias`:'—',bodyFailed?'indisponível agora':ambiguousBodyDates.size?'somente entre medições comparáveis':'entre primeiro e último registro')}
     </div>
+    ${!bodyFailed&&ambiguousBodyDates.size?`<div class="empty sectionGap">${ambiguousBodyDates.size===1?'1 data com mais de uma medição corporal ficou fora da evolução.':'Datas com mais de uma medição corporal ficaram fora da evolução.'} Os registros foram preservados para revisão.</div>`:''}
     <div class="card sectionGap"><div class="cardHead"><div><b>Composição corporal</b><small>Escolha uma medida para acompanhar. O gráfico é descritivo.</small></div><div class="segmented">${Object.entries(metrics).map(([key,m])=>`<button type="button" data-evolution-metric="${key}" class="${key===metricKey?'active':''}" ${bodyFailed?'disabled':''}>${esc(m.label)}${key==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):lineChart(body,metricKey,`${meta.label} (${meta.unit})`)}${!bodyFailed&&first&&last?`<div class="evoDelta"><span>Primeiro ${fmtNum(first[metricKey])} ${esc(meta.unit)}</span><b>Diferença ${neutralDelta(last[metricKey],first[metricKey],1,meta.unit)}</b><span>Último ${fmtNum(last[metricKey])} ${esc(meta.unit)}</span></div>`:''}</div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Mudança entre medições</b><small>Últimas mudanças consecutivas registradas. Sem classificação de melhor ou pior.</small></div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):bodyChangeTable(body)}</div>
     <div class="grid cols2 sectionGap">
