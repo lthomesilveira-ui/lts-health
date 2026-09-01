@@ -22,6 +22,7 @@ function miniLine(points,key,unit=''){
 
 function compositionPanel(model){
   if(domainFailed('body'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">As medições corporais não carregaram nesta atualização.</div></section>`;
+  if(!model.trend.available&&model.body.reason==='ambiguous')return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div><button data-route="bio">Ver composição →</button></div><div class="dashboardChartEmpty"><b>Evolução em revisão.</b><br>Há mais de uma medição em uma das duas datas mais recentes. Os valores foram preservados e nenhuma diferença foi calculada até a revisão.</div></section>`;
   if(!model.trend.available)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">Ainda não há duas medições comparáveis.</div></section>`;
   const body=model.body;
   const latest=model.trend.points.at(-1);
