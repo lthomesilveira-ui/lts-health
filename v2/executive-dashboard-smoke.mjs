@@ -50,6 +50,8 @@ async function run(viewport,label){
     return html;
   });
   if(!ambiguity.includes('Revisão necessária')||!ambiguity.includes('mais de uma medição corporal na data mais recente'))throw new Error(`${label}: Today hides latest same-date body ambiguity`);
+  if(!ambiguity.includes('Evolução em revisão.')||!ambiguity.includes('nenhuma diferença foi calculada até a revisão'))throw new Error(`${label}: Today composition panel hides why body evolution is not comparable`);
+  if(ambiguity.includes('Ainda não há duas medições comparáveis.'))throw new Error(`${label}: ambiguous body evolution is misleadingly shown as ordinary missing history`);
   if(ambiguity.includes('999,0 kg de massa muscular')||ambiguity.includes('99,0% de gordura corporal'))throw new Error(`${label}: ambiguous body measurement was presented as current in Today`);
 
   const labAmbiguity=await page.evaluate(async()=>{
