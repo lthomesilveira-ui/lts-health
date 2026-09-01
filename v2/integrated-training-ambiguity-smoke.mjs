@@ -1,4 +1,5 @@
-import {comparablePerformanceModel} from './src/integrated-analysis.js';
+globalThis.location={search:''};
+const {comparablePerformanceModel}=await import('./src/integrated-analysis.js');
 
 const status={workouts:'ready',exercises:'ready',sets:'ready'};
 const base={
