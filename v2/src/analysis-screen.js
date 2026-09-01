@@ -44,9 +44,19 @@ function sleepPanel(model){
   return `<div class="analysisSleep"><b>${model.sleep.days} dia(s) de sono preservado(s)</b><span>Último registro em ${fmtDate(model.sleep.latest)}. As fontes permanecem separadas e esses valores não entram em médias enquanto a regra de consolidação não estiver validada.</span></div>`;
 }
 
+function labMetric(model){
+  const labs=model.labs;
+  if(!labs.available)return metric('Coletas de exames','—','resultados laboratoriais não carregaram agora');
+  if(labs.reason==='ambiguous_source')return metric('Coletas de exames','Em revisão',`${labs.collectionDays.length} data(s) preservada(s); origens não foram combinadas`);
+  if(labs.collectionDays.length<2)return metric('Coletas de exames',String(labs.collectionDays.length),'ainda sem tendência longitudinal');
+  if(!labs.safe)return metric('Coletas de exames',String(labs.collectionDays.length),'sem biomarcadores comparáveis na última dupla');
+  return metric('Coletas de exames',String(labs.collectionDays.length),`${labs.comparable} biomarcador(es) comparáveis na última dupla`);
+}
+
 function limitations(model){
   const rows=[];
-  if(model.labs.available&&model.labs.collectionDays.length<2)rows.push('Exames: ainda existe apenas uma data de coleta estruturada; não há série longitudinal laboratorial suficiente para tendência.');
+  if(model.labs.available&&model.labs.reason==='ambiguous_source')rows.push('Exames: há mais de uma origem possível na comparação recente; os resultados ficam preservados e a tendência aguarda revisão.');
+  else if(model.labs.available&&model.labs.collectionDays.length<2)rows.push('Exames: ainda existe apenas uma data de coleta estruturada; não há série longitudinal laboratorial suficiente para tendência.');
   if(model.sleep.available&&model.sleep.days)rows.push('Sono: há dados preservados, porém ainda fora das conclusões por sobreposição entre fontes.');
   if(!model.segmental.available)rows.push('Composição segmentar: são necessárias pelo menos duas medições segmentares para cruzar regiões com o treino do intervalo.');
   if(!model.nutrition.available||!model.nutrition.days)rows.push('Alimentação: o cruzamento corporal fica limitado quando o intervalo não tem registros diários suficientes.');
@@ -85,7 +95,7 @@ export function renderAnalysisHub(){
     <div class="grid cols4 sectionGap analysisSecondaryMetrics">
       ${metric(`Treinos · ${periodText}`,failed('workouts')?'—':String(periodWorkouts.length),'contagem de sessões estruturadas')}
       ${metric(`Alimentação · ${periodText}`,failed('nutrition')?'—':String(periodNutritionDays),failed('nutrition')?'dados de alimentação não carregaram agora':'dias com registro diário')}
-      ${metric('Coletas de exames',model.labs.available?String(model.labs.collectionDays.length):'—',model.labs.available?(model.labs.collectionDays.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis na última dupla`:'ainda sem tendência longitudinal'):'resultados laboratoriais não carregaram agora')}
+      ${labMetric(model)}
       ${metric('Sono preservado',model.sleep.available?String(model.sleep.days):'—',model.sleep.available?'fora das conclusões até regra segura':'registros por origem não carregaram agora')}
     </div>
 
