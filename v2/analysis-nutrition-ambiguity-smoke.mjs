@@ -15,12 +15,17 @@ async function run(viewport,label){
   const html=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {renderAnalysisHub}=await import('./src/analysis-screen.js');
-    const original={body:state.data.body,nutrition:state.data.nutrition,period:state.ui.analysisPeriod,status:{...state.domainStatus}};
+    const original={body:state.data.body,segmental:state.data.segmental,nutrition:state.data.nutrition,period:state.ui.analysisPeriod,status:{...state.domainStatus}};
     state.domainStatus.body='ready';
+    state.domainStatus.segmental='ready';
     state.domainStatus.nutrition='ready';
     state.data.body=[
       {source_record_id:'b1',measured_at:'2026-01-01',weight_kg:80,skeletal_muscle_mass_kg:36,fat_mass_kg:16,body_fat_pct:20},
       {source_record_id:'b2',measured_at:'2026-02-01',weight_kg:81,skeletal_muscle_mass_kg:36.5,fat_mass_kg:15.5,body_fat_pct:19}
+    ];
+    state.data.segmental=[
+      {source_record_id:'s1',measured_at:'2026-01-01',lean_right_arm_kg:4,lean_left_arm_kg:4,lean_trunk_kg:30,lean_right_leg_kg:10,lean_left_leg_kg:10},
+      {source_record_id:'s2',measured_at:'2026-02-01',lean_right_arm_kg:4.1,lean_left_arm_kg:4.1,lean_trunk_kg:30.2,lean_right_leg_kg:10.2,lean_left_leg_kg:10.2}
     ];
     state.data.nutrition=[
       {source_record_id:'n1',nutrition_date:'2026-01-15',protein_g:100,calories_kcal:2000},
@@ -29,6 +34,7 @@ async function run(viewport,label){
     state.ui.analysisPeriod='all';
     const result=renderAnalysisHub();
     state.data.body=original.body;
+    state.data.segmental=original.segmental;
     state.data.nutrition=original.nutrition;
     state.ui.analysisPeriod=original.period;
     Object.assign(state.domainStatus,original.status);
