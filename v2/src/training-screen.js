@@ -118,7 +118,8 @@ function exerciseGroups(sourceRows=state.data.exercises||[]){
 }
 
 function exerciseSessionKey(exercise){
-  return String(exercise?.workout_source_record_id||exercise?.source_record_id||`sem-id:${day(exercise?.workout_date)}`);
+  const date=day(exercise?.workout_date);
+  return `${date}::${String(exercise?.workout_source_record_id||exercise?.source_record_id||'sem-id')}`;
 }
 
 function exerciseSessions(group){
