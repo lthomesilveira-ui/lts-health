@@ -15,7 +15,11 @@ async function run(viewport,label){
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
-    state.data.nutrition.push({source_record_id:'nut-2024',nutrition_date:'2024-06-10',calories_kcal:2050,protein_g:140,source:'Teste'});
+    state.data.nutrition.push(
+      {source_record_id:'nut-2024',nutrition_date:'2024-06-10',calories_kcal:2050,protein_g:140,source:'Teste'},
+      {source_record_id:'nut-2024-amb-a',nutrition_date:'2024-06-11',calories_kcal:9000,protein_g:900,source:'Teste A'},
+      {source_record_id:'nut-2024-amb-b',nutrition_date:'2024-06-11',calories_kcal:100,protein_g:10,source:'Teste B'}
+    );
     state.data.meals.push({source_record_id:'meal-2024',meal_date:'2024-06-10',meal_name:'Almoço 2024',calories_kcal:600,protein_g:40,source:'Teste'});
     state.data.sourceMetrics.push(
       {source_record_id:'mfp-energy',metric_date:'2026-02-02',metric_type:'dietary_energy_kcal',value:1999,unit:'kcal',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
@@ -53,14 +57,51 @@ async function run(viewport,label){
   await page.click('[data-nutrition-year="2024"]');
   await page.waitForFunction(()=>document.querySelector('#nutritionYear')?.value==='2024');
   const coverageMetric=(await page.locator('.metric').filter({hasText:'Cobertura do período'}).textContent())||'';
-  if(!coverageMetric.includes('1 de 366 dias')||!coverageMetric.includes('365 dia(s) sem registro'))throw new Error(`${label}: calendar coverage does not distinguish recorded from missing days`);
-  if(coverageMetric.includes('365 dia(s) com consumo zero'))throw new Error(`${label}: missing nutrition days were mislabeled as zero consumption`);
+  if(!coverageMetric.includes('2 de 366 dias')||!coverageMetric.includes('364 dia(s) sem registro'))throw new Error(`${label}: calendar coverage does not distinguish recorded from missing days`);
+  if(coverageMetric.includes('364 dia(s) com consumo zero'))throw new Error(`${label}: missing nutrition days were mislabeled as zero consumption`);
 
-  await page.waitForSelector('[data-nutrition-date="2024-06-10"]');
+  const yearAverage=(await page.locator('.metric').filter({hasText:'Calorias · média'}).textContent())||'';
+  if(!yearAverage.includes('2.050'))throw new Error(`${label}: ambiguous canonical daily totals affected the yearly average (${yearAverage})`);
+  if(yearAverage.includes('9.000')||yearAverage.includes('100'))throw new Error(`${label}: an ambiguous canonical daily total was selected for the yearly average`);
+  const monthly=(await page.locator('.nutritionTrend').textContent())||'';
+  if(!monthly.includes('2.050 kcal/dia')||monthly.includes('9.000 kcal/dia'))throw new Error(`${label}: ambiguous canonical day contaminated monthly nutrition trend`);
+
+  await page.waitForSelector('[data-nutrition-date="2024-06-11"]');
+  const ambiguousRow=(await page.locator('[data-nutrition-date="2024-06-11"]').textContent())||'';
+  if(!ambiguousRow.includes('Em revisão')||!ambiguousRow.includes('nenhum valor foi escolhido'))throw new Error(`${label}: duplicate canonical daily totals are not explicitly held for review`);
+  if(ambiguousRow.includes('9.000')||ambiguousRow.includes('100 kcal'))throw new Error(`${label}: one duplicate canonical daily total was silently displayed as accepted`);
+  await page.click('[data-nutrition-date="2024-06-11"]');
+  const ambiguousDetail=(await page.locator('.grid.split.sectionGap').last().textContent())||'';
+  if(!ambiguousDetail.includes('Totais do dia em revisão')||!ambiguousDetail.includes('Nenhum total foi escolhido')||!ambiguousDetail.includes('ficam fora das médias até revisão'))throw new Error(`${label}: canonical nutrition ambiguity is not explained in the day detail`);
+  if(ambiguousDetail.includes('9.000 kcal')||ambiguousDetail.includes('100 kcal'))throw new Error(`${label}: conflicting canonical nutrition values leaked into accepted day detail`);
+
+  const intervalModel=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {nutritionIntervalModel}=await import('./src/integrated-analysis.js');
+    return nutritionIntervalModel(state.data,state.domainStatus,'2024-06-09','2024-06-11');
+  });
+  if(intervalModel.days!==1||Math.round(intervalModel.calorieAvg)!==2050||Math.round(intervalModel.proteinAvg)!==140)throw new Error(`${label}: integrated analysis did not exclude ambiguous canonical nutrition day (${JSON.stringify(intervalModel)})`);
+
   await page.click('[data-nutrition-date="2024-06-10"]');
   const detail=(await page.textContent('#screenHost'))||'';
   if(!detail.includes('10/06/2024')||!detail.includes('Almoço 2024'))throw new Error(`${label}: historical nutrition day drilldown failed`);
 
+  const latestDate=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return [...state.data.nutrition].map(r=>r.nutrition_date).filter(Boolean).sort().at(-1);});
+  await page.evaluate(async(latest)=>{
+    const {state}=await import('./src/core.js');
+    state.data.nutrition.push({source_record_id:'latest-nutrition-duplicate',nutrition_date:latest,calories_kcal:9900,protein_g:999,source:'Teste duplicado'});
+  },latestDate);
+  const latestModel=await page.evaluate(async()=>{const {state}=await import('./src/core.js');const {buildIntegratedAnalysis}=await import('./src/integrated-analysis.js');const model=buildIntegratedAnalysis(state.data,state.domainStatus);return{date:model.lastNutritionDate,ambiguous:model.nutritionLatestAmbiguous,last:model.lastNutrition};});
+  if(latestModel.date!==latestDate||latestModel.ambiguous!==true||latestModel.last!==null)throw new Error(`${label}: latest ambiguous nutrition day was silently resolved (${JSON.stringify(latestModel)})`);
+
+  await page.evaluate(()=>{location.hash='#hoje';});
+  await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]'));
+  const nutritionCurrent=(await page.locator('.dashboardCurrent').filter({hasText:'Alimentação'}).textContent())||'';
+  if(!nutritionCurrent.includes('Revisão necessária')||!nutritionCurrent.includes('nenhum foi escolhido como atual'))throw new Error(`${label}: Hoje did not surface latest nutrition ambiguity`);
+  if(nutritionCurrent.includes('9.900')||nutritionCurrent.includes('999 g'))throw new Error(`${label}: Hoje selected a conflicting nutrition total`);
+
+  await page.evaluate(()=>{location.hash='#nutricao';});
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Nutrição');
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';});
   await page.selectOption('#nutritionPeriod','365');
   await page.waitForFunction(()=>document.querySelector('.mfpCandidatePanel')?.textContent?.includes('Não foi possível verificar estes totais agora'));
