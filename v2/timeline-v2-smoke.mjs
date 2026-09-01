@@ -78,6 +78,13 @@ async function run(viewport,label){
   if(text.includes('Fonte técnica indevida')||text.includes('9.999'))throw new Error(`${label}: confirmed sourceMetrics row leaked into review evidence`);
   if(text.includes('13,9 h'))throw new Error(`${label}: overlapping sleep sources were summed`);
   if(text.includes('14.000 passos'))throw new Error(`${label}: source-specific step records were summed across sources`);
+  const reviewContext=page.locator('.timelineContextCard').filter({hasText:'03/02/2026'});
+  if(await reviewContext.count()){
+    const reviewContextText=(await reviewContext.first().textContent())||'';
+    for(const reviewDomain of ['Sono em conferência','Alimentação em conferência','Métricas em conferência']){
+      if(reviewContextText.includes(reviewDomain))throw new Error(`${label}: review-only evidence leaked into cross-domain context: ${reviewDomain}`);
+    }
+  }
   for(const forbidden of [' count','count/min','ActivitySummary','source_family','Em validação · Não consolidado','canônico','candidato','FC de repouso','MME']){
     if(text.includes(forbidden))throw new Error(`${label}: technical language leaked into Timeline: ${forbidden}`);
   }
