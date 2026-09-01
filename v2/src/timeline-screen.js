@@ -76,6 +76,11 @@ function sourceMetricEvents(rows=[]){
     return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more} · aguardando conferência; mantido separado dos dados confirmados`,source:group.source};
   });
 }
+function labCollectionIdentity(row,index){
+  const lab=String(row.laboratory||'').trim(),source=String(row.source||'').trim();
+  const origin=lab||source||String(row.source_record_id||row.id||`registro-${index}`);
+  return{lab,source,origin};
+}
 
 function events(){
   const out=[];
@@ -83,8 +88,12 @@ function events(){
   if(!failed('body'))for(const b of state.data.body||[])out.push({date:b.measured_at,domain:'Composição corporal',title:bodyEventTitle(b),sub:bodyEventSub(b),source:sourceDisplay(b.source),route:'bio',kind:'body',ref:b.measured_at});
   if(!failed('labs')){
     const collections=new Map();
-    for(const row of state.data.labs||[]){const lab=row.laboratory||'',key=`${row.collection_date||''}__${lab}`;if(!collections.has(key))collections.set(key,{date:row.collection_date,lab,rows:[]});collections.get(key).rows.push(row);}
-    for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:`${c.rows.length} resultado(s)`,source:c.lab||sourceDisplay(unique(c.rows.map(r=>r.source)).join(', ')),route:'saude',kind:'labs',ref:key});
+    for(const [index,row] of (state.data.labs||[]).entries()){
+      const {lab,source,origin}=labCollectionIdentity(row,index),key=`${row.collection_date||''}__${origin}`;
+      if(!collections.has(key))collections.set(key,{date:row.collection_date,lab,source,rows:[]});
+      collections.get(key).rows.push(row);
+    }
+    for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:`${c.rows.length} resultado(s)`,source:c.lab||sourceDisplay(c.source),route:'saude',kind:'labs',ref:key});
   }
   if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
   if(!failed('nutrition'))for(const n of state.data.nutrition||[])out.push({date:n.nutrition_date,domain:'Alimentação',title:n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'' ,source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
