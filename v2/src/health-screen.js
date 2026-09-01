@@ -33,19 +33,20 @@ function resultText(row){
 }
 function resultKind(row){return isNumericResult(row)?'numérico':isTextResult(row)?'textual':'sem valor estruturado';}
 function cleanUnit(row){return String(row.unit||'').trim();}
-function markerChart(ordered,unit){
+function trendOrigin(row){return String(row?.laboratory||row?.source||row?.source_file||row?.source_record_id||row?.id||'').trim();}
+function markerChart(ordered,unit,origin){
   if(ordered.length<2)return'';
   const points=ordered.map(r=>({date:r.collection_date,value:num(r.result_numeric)})).filter(p=>p.value!=null),values=points.map(p=>p.value);if(points.length<2)return'';
   const w=560,h=150,p=20,lo=Math.min(...values),hi=Math.max(...values),span=hi-lo||1,pad=span*.14,min=lo-pad,max=hi+pad;
   const x=i=>p+i*(w-p*2)/Math.max(1,points.length-1),y=v=>p+(max-v)*(h-p*2)/(max-min||1);
   const path=points.map((pt,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(pt.value).toFixed(1)}`).join(' ');
   const dots=points.map((pt,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(pt.value).toFixed(1)}" r="3.5"><title>${esc(fmtDate(pt.date))}: ${esc(fmtNum(pt.value))} ${esc(unit||'')}</title></circle>`).join('');
-  return `<div class="labHistoryChart"><div class="labHistoryChartHead"><b>Série histórica</b><small>${points.length} ponto(s) · mesma unidade (${esc(unit||'sem unidade')})</small></div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Série histórica do marcador selecionado"><path class="labHistoryGrid" d="M20 50H540 M20 100H540"/><path class="labHistoryLine" d="${path}"/>${dots}</svg><div class="labHistoryAxis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points.at(-1).date)}</span></div><small class="labHistoryNote">Valores exibidos de forma descritiva; o gráfico não classifica o resultado nem substitui a interpretação clínica.</small></div>`;
+  return `<div class="labHistoryChart"><div class="labHistoryChartHead"><b>Série histórica</b><small>${points.length} ponto(s) · ${esc(origin)} · ${esc(unit||'sem unidade')}</small></div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Série histórica do marcador selecionado"><path class="labHistoryGrid" d="M20 50H540 M20 100H540"/><path class="labHistoryLine" d="${path}"/>${dots}</svg><div class="labHistoryAxis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points.at(-1).date)}</span></div><small class="labHistoryNote">Valores exibidos de forma descritiva; o gráfico não classifica o resultado nem substitui a interpretação clínica.</small></div>`;
 }
-function unitCohorts(numericRows){
+function sourceUnitCohorts(numericRows){
   const map=new Map();
-  for(const row of numericRows){const unit=cleanUnit(row);if(!unit)continue;const key=unit;if(!map.has(key))map.set(key,{unit,rows:[]});map.get(key).rows.push(row);}
-  return [...map.values()].sort((a,b)=>b.rows.length-a.rows.length||a.unit.localeCompare(b.unit,'pt-BR'));
+  for(const row of numericRows){const unit=cleanUnit(row),origin=trendOrigin(row);if(!unit||!origin)continue;const key=`${norm(origin)}__${unit}`;if(!map.has(key))map.set(key,{unit,origin,rows:[]});map.get(key).rows.push(row);}
+  return [...map.values()].sort((a,b)=>b.rows.length-a.rows.length||a.origin.localeCompare(b.origin,'pt-BR')||a.unit.localeCompare(b.unit,'pt-BR'));
 }
 function trendRows(cohort){
   const byDate=new Map();
@@ -58,18 +59,21 @@ function cohortTrend(cohort){
   const {rows:ordered}=trendRows(cohort);
   if(ordered.length<2)return'';
   const first=ordered[0],last=ordered.at(-1),delta=num(last.result_numeric)-num(first.result_numeric),unit=cohort.unit;
-  return `<section class="labUnitCohort"><div class="labTrend"><span>${fmtDate(first.collection_date)} · ${fmtNum(first.result_numeric)} ${esc(unit)}</span><b>Diferença ${delta>0?'+':''}${fmtNum(delta)}${unit?` ${esc(unit)}`:''}</b><span>${fmtDate(last.collection_date)} · ${fmtNum(last.result_numeric)} ${esc(unit)}</span></div>${markerChart(ordered,unit)}</section>`;
+  return `<section class="labUnitCohort" data-origin="${esc(norm(cohort.origin))}"><div class="labTrend"><span>${fmtDate(first.collection_date)} · ${fmtNum(first.result_numeric)} ${esc(unit)}</span><b>Diferença ${delta>0?'+':''}${fmtNum(delta)}${unit?` ${esc(unit)}`:''}</b><span>${fmtDate(last.collection_date)} · ${fmtNum(last.result_numeric)} ${esc(unit)}</span></div>${markerChart(ordered,unit,cohort.origin)}</section>`;
 }
 function markerHistory(group){
   if(!group)return empty('Selecione um marcador para ver o histórico.');
-  const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),unitless=numeric.filter(r=>!cleanUnit(r)).length,cohorts=unitCohorts(numeric),ambiguousDates=unique(cohorts.flatMap(c=>trendRows(c).ambiguousDates)),comparable=cohorts.filter(c=>trendRows(c).rows.length>=2);
-  const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||r.source||'Origem não informada')} · ${esc(resultKind(r))}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
+  const rows=[...group.rows].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))),numeric=rows.filter(isNumericResult),textual=rows.filter(isTextResult),unitless=numeric.filter(r=>!cleanUnit(r)).length,sourceless=numeric.filter(r=>!trendOrigin(r)).length,cohorts=sourceUnitCohorts(numeric),ambiguousDates=unique(cohorts.flatMap(c=>trendRows(c).ambiguousDates)),comparable=cohorts.filter(c=>trendRows(c).rows.length>=2),origins=unique(numeric.map(trendOrigin).filter(Boolean)),units=unique(numeric.map(cleanUnit).filter(Boolean));
+  const history=rows.map(r=>`<div class="labResultRow"><time>${fmtDate(r.collection_date)}</time><div><b>${esc(resultText(r))}${!r.result_raw&&r.unit?'':r.result_raw&&r.unit&&!String(r.result_raw).includes(r.unit)?` ${esc(r.unit)}`:''}</b><small>${esc(r.laboratory||r.source||r.source_file||'Origem não informada')} · ${esc(resultKind(r))}${r.reference_range?` · referência ${esc(r.reference_range)}`:''}${r.method?` · método ${esc(r.method)}`:''}</small></div>${r.flag?pill(r.flag,'warn'):''}</div>`).join('');
   const unitlessNote=unitless?'<div class="note">Resultados numéricos sem unidade ficam preservados no histórico, mas não entram em diferenças ou gráficos de tendência.</div>':'';
-  const ambiguityNote=ambiguousDates.length?`<div class="note">Há mais de um resultado deste marcador na mesma data (${ambiguousDates.map(fmtDate).join(', ')}). Esses registros ficam preservados no histórico e fora da tendência até revisão.</div>`:'';
+  const sourcelessNote=sourceless?'<div class="note">Resultados sem origem identificada ficam preservados no histórico, mas não entram em diferenças ou gráficos de tendência.</div>':'';
+  const sourceNote=origins.length>1?'<div class="note">Resultados de origens diferentes permanecem em séries separadas; uma origem não é tratada automaticamente como continuação de outra.</div>':'';
+  const unitNote=units.length>1?'<div class="note">Resultados com unidades diferentes permanecem em séries separadas; nenhuma conversão é feita automaticamente.</div>':'';
+  const ambiguityNote=ambiguousDates.length?`<div class="note">Há mais de um resultado deste marcador na mesma data, origem e unidade (${ambiguousDates.map(fmtDate).join(', ')}). Esses registros ficam preservados no histórico e fora da tendência até revisão.</div>`:'';
   let trend='';
-  if(comparable.length){trend=`${cohorts.length>1?'<div class="note">Resultados com unidades diferentes permanecem em séries separadas; nenhuma conversão é feita automaticamente.</div>':''}${ambiguityNote}${unitlessNote}${comparable.map(cohortTrend).join('')}`;}
-  else if(rows.length>1)trend=`${ambiguityNote}${unitlessNote}<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos, unidades ou dois pontos inequívocos com a mesma unidade em datas diferentes.</div>`;
-  else trend=`${unitlessNote}<div class="note">Há um único ponto para este marcador. Novas coletas compatíveis permitirão comparação longitudinal.</div>`;
+  if(comparable.length){trend=`${sourceNote}${unitNote}${ambiguityNote}${unitlessNote}${sourcelessNote}${comparable.map(cohortTrend).join('')}`;}
+  else if(rows.length>1)trend=`${sourceNote}${unitNote}${ambiguityNote}${unitlessNote}${sourcelessNote}<div class="note">Há mais de um resultado, mas eles não são combinados em tendência quando faltam valores numéricos, origem, unidade ou dois pontos inequívocos da mesma origem e unidade em datas diferentes.</div>`;
+  else trend=`${unitlessNote}${sourcelessNote}<div class="note">Há um único ponto para este marcador. Novas coletas compatíveis da mesma origem permitirão comparação longitudinal.</div>`;
   return `<div class="markerHead"><b>${esc(group.label)}</b><small>${numeric.length} numérico(s) · ${textual.length} textual(is)</small></div>${trend}<div class="list labHistory">${history}</div>`;
 }
 function collectionPanel(collection){
@@ -152,13 +156,13 @@ export function renderHealthHub(){
     ${labFailed?unavailable('Os exames continuam preservados; tente atualizar para carregar os resultados.') : ''}
     <div class="grid cols4">
       <div class="card metric"><span>Datas de coleta</span><strong>${labFailed?'—':labDates.length}</strong><em>${labFailed?'não carregado':labDates.length?`${fmtDate([...labDates].sort().at(0))} → ${fmtDate([...labDates].sort().at(-1))} · ${cols.length} conjunto(s)`:'sem datas'}</em></div>
-      <div class="card metric"><span>Resultados numéricos</span><strong>${labFailed?'—':numericCount}</strong><em>${labFailed?'não carregado':'comparáveis só com mesma unidade'}</em></div>
+      <div class="card metric"><span>Resultados numéricos</span><strong>${labFailed?'—':numericCount}</strong><em>${labFailed?'não carregado':'comparáveis só com mesma origem e unidade'}</em></div>
       <div class="card metric"><span>Resultados textuais</span><strong>${labFailed?'—':textCount}</strong><em>${labFailed?'não carregado':'preservados como texto'}</em></div>
       <div class="card metric"><span>Documentos aguardando leitura</span><strong>${docsFailed?'—':pendingDocs}</strong><em>${docsFailed?'não carregado':'sem criar resultados por estimativa'}</em></div>
     </div>
     <div class="grid split sectionGap">
       <div class="card">${labFailed?unavailable('Não é possível listar coletas enquanto os resultados estão indisponíveis.'):`<div class="cardHead"><div><b>Coleta</b><small>Escolha uma coleta para ver os resultados disponíveis.</small></div><select id="collectionSelect">${cols.map(c=>`<option value="${esc(c.key)}">${fmtDate(c.date)} · ${esc(c.lab)}</option>`).join('')}</select></div><input id="labQuery" class="fullInput" type="search" placeholder="Buscar marcador ou resultado" value="${esc(state.ui.labQuery)}">${collectionPanel(collection)}`}</div>
-      <div class="card">${labFailed?unavailable('O histórico por marcador ficará disponível após o carregamento dos exames.'):`<div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando os valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div>`}</div>
+      <div class="card">${labFailed?unavailable('O histórico por marcador ficará disponível após o carregamento dos exames.'):`<div class="cardHead"><div><b>Histórico por marcador</b><small>Compare coletas somente quando origem, valores e unidades forem compatíveis.</small></div></div><div class="labExplorer refined"><div class="exerciseList markerList">${filteredGroups.slice(0,200).map(g=>`<button type="button" data-marker="${esc(g.key)}" class="${g.key===state.ui.selectedBiomarker?'active':''}"><b>${esc(g.label)}</b><small>${g.rows.length} resultado(s)</small></button>`).join('')||empty('Nenhum marcador encontrado.')}</div><div class="exerciseDetail">${markerHistory(marker)}</div></div>`}</div>
     </div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Comparação com histórico da mesma origem</b><small>Usa a coleta anterior mais recente da mesma origem; outras origens ficam separadas.</small></div></div>${labFailed?unavailable('A comparação fica disponível quando os resultados carregarem.'):collectionComparison(cols,state.ui.selectedCollection)}</div>
     <div class="grid cols2 sectionGap">
