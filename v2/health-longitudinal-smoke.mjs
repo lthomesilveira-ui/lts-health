@@ -15,6 +15,7 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.labs=[
       ...(state.data.labs||[]),
+      {source_record_id:'lab-current-third-source',collection_date:'2026-02-03',report_date:'2026-02-03',laboratory:'Terceiro laboratório',biomarker:'Marcador A',result_raw:'12',result_numeric:12,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-history-a',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'},
       {source_record_id:'lab-history-b',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador B',result_raw:'18',result_numeric:18,unit:'mg/dL',reference_range:'10–30',source:'Fixture de interface'},
       {source_record_id:'lab-unitless-current',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador sem unidade',result_raw:'7',result_numeric:7,unit:null,source:'Fixture de interface'},
@@ -32,9 +33,9 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   });
   await page.fill('#labQuery','x');
-  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=8);
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=9);
   await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=8);
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=9);
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
@@ -48,10 +49,24 @@ async function run(viewport,label){
   if(compare.includes('+2,0Marcador sem unidade')||compare.match(/Marcador sem unidade[\s\S]{0,80}\+2,0(?!\s*u)/))throw new Error(`${label}: unitless numeric delta was rendered`);
   const compareHead=(await page.locator('.collectionCompareHead').textContent())||'';
   if(!compareHead.includes('03/12/2025'))throw new Error(`${label}: comparison did not use the prior distinct collection date`);
-  if(!compareHead.includes('Laboratório de teste')||compareHead.includes('A laboratório sem sobreposição'))throw new Error(`${label}: prior-date comparison did not prefer the collection with stronger marker overlap`);
+  if(!compareHead.includes('Laboratório de teste')||compareHead.includes('A laboratório sem sobreposição'))throw new Error(`${label}: prior-date comparison did not preserve same-source continuity`);
   if(compareHead.includes('Outro laboratório'))throw new Error(`${label}: same-day source was treated as prior longitudinal collection`);
+
+  await page.selectOption('#collectionSelect','2026-02-03__Terceiro laboratório');
+  await page.waitForFunction(()=>{
+    const select=document.querySelector('#collectionSelect');
+    const notes=[...document.querySelectorAll('.card.sectionGap .note')].map(n=>n.textContent||'');
+    return select?.value==='2026-02-03__Terceiro laboratório'&&notes.some(t=>t.includes('Há mais de uma origem na data anterior')&&t.includes('Nenhuma foi escolhida automaticamente')&&t.includes('03/01/2026'));
+  });
+  const ambiguityCard=(await page.locator('.card.sectionGap').first().textContent())||'';
+  if(!ambiguityCard.includes('Há mais de uma origem na data anterior')||!ambiguityCard.includes('Nenhuma foi escolhida automaticamente'))throw new Error(`${label}: ambiguous prior sources were not held for review`);
+  if(await page.locator('.collectionCompareHead').count())throw new Error(`${label}: ambiguous prior source still produced a comparison header`);
+  if(await page.locator('.collectionCompareList').count())throw new Error(`${label}: ambiguous prior source still produced comparison rows`);
+
+  await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
+  await page.waitForFunction(()=>document.querySelector('.collectionCompareHead')?.textContent?.includes('03/12/2025'));
   const firstMetric=(await page.locator('.metric').first().textContent())||'';
-  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('6'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
+  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('7'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
   await page.click('[data-marker="marcador textual"]');
   await page.waitForFunction(()=>{const t=document.querySelector('.exerciseDetail')?.textContent||'';return t.includes('Presente')&&t.includes('Ausente')&&t.includes('textual');});
   const textual=(await page.locator('.exerciseDetail').textContent())||'';
