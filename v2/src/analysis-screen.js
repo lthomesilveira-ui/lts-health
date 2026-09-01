@@ -9,6 +9,20 @@ const periodLabel=period=>period==='30'?'30 dias':period==='90'?'90 dias':period
 const periodStart=period=>period==='all'?null:since(Number(period));
 const inPeriod=(value,start)=>!start||day(value)>=start;
 const reviewState=(title,body)=>`<div class="empty"><b>${esc(title)}</b><br>${esc(body)}</div>`;
+const countDays=(value,label='dia')=>`${value} ${label}${value===1?'':'s'}`;
+
+function nutritionEvidence(rows,start=null,end=null,{afterStart=false}={}){
+  const groups=new Map();
+  for(const row of rows||[]){
+    const date=day(row?.nutrition_date);
+    if(!date||start&&(afterStart?date<=start:date<start)||end&&date>end)continue;
+    if(!groups.has(date))groups.set(date,[]);
+    groups.get(date).push(row);
+  }
+  let safeDays=0,reviewDays=0;
+  for(const items of groups.values())items.length===1?safeDays++:reviewDays++;
+  return{safeDays,reviewDays,totalDays:groups.size};
+}
 
 function regionCard(region){
   const training=region.training.sessions==null?'treino do intervalo indisponível':`${region.training.sessions} sessão(ões) relacionadas${region.training.sets==null?'':` · ${region.training.sets} séries estruturadas`}`;
@@ -28,15 +42,17 @@ function performanceRows(model){
   return `<div class="analysisPerformance">${rows.map(p=>`<div><span>${fmtDate(p.previousDate)} → ${fmtDate(p.date)}</span><b>${esc(p.exercise)}</b><small>${fmtNum(p.previousWeight,Number.isInteger(p.previousWeight)?0:1)} → ${fmtNum(p.weight,Number.isInteger(p.weight)?0:1)} ${esc(p.unit)} · diferença ${deltaText(p.delta,Number.isInteger(p.delta)?0:1,p.unit)}</small></div>`).join('')}</div>`;
 }
 
-function nutritionPanel(model){
+function nutritionPanel(model,evidence){
   const n=model.nutrition;
   if(!n.available)return n.reason==='unavailable'?'<div class="empty">Os dados de alimentação não carregaram agora; o cruzamento fica indisponível nesta atualização.</div>':'<div class="empty">Não há um intervalo corporal comparável para cruzar com alimentação.</div>';
+  if(!n.days&&evidence.reviewDays)return reviewState('Alimentação em revisão',`${countDays(evidence.reviewDays)} tem mais de um registro preservado neste intervalo. Nenhum deles foi somado, escolhido ou usado em médias.`);
   if(!n.days)return'<div class="empty">O intervalo existe, mas não há dias de alimentação registrados nele.</div>';
+  const coverage=[n.coveragePct==null?'':`${n.coveragePct}% dos dias do intervalo`,evidence.reviewDays?`${countDays(evidence.reviewDays)} em revisão fora das médias`:'' ].filter(Boolean).join(' · ');
   return `<div class="analysisNutritionGrid">
-    ${metric('Dias registrados',String(n.days),n.coveragePct==null?'':`${n.coveragePct}% dos dias do intervalo`)}
+    ${metric('Dias registrados',String(n.days),coverage)}
     ${metric('Proteína média',n.proteinAvg==null?'—':`${fmtNum(n.proteinAvg,0)} g/dia`,n.proteinDelta==null?'sem período anterior equivalente':`${deltaText(n.proteinDelta,0,'g/dia')} vs período anterior equivalente`)}
     ${metric('Energia média',n.calorieAvg==null?'—':`${fmtNum(n.calorieAvg,0)} kcal/dia`,'valor registrado, sem meta inferida')}
-  </div><p class="footerNote">O app pode comparar alimentação e composição no mesmo intervalo, mas não atribui causalidade entre as mudanças observadas.</p>`;
+  </div><p class="footerNote">O app pode comparar alimentação e composição no mesmo intervalo, mas não atribui causalidade entre as mudanças observadas.${evidence.reviewDays?' Dias com mais de um total preservado ficam fora das médias até revisão.':''}</p>`;
 }
 
 function sleepPanel(model){
@@ -54,7 +70,7 @@ function labMetric(model){
   return metric('Coletas de exames',String(labs.collectionDays.length),`${labs.comparable} biomarcador(es) comparáveis na última dupla`);
 }
 
-function limitations(model){
+function limitations(model,nutritionReview){
   const rows=[];
   if(model.body.reason==='ambiguous')rows.push('Composição global: há mais de uma medição em uma das duas datas recentes; os valores ficam preservados e nenhuma diferença é calculada até a revisão.');
   if(model.segmental.reason==='ambiguous')rows.push('Composição segmentar: há mais de uma medição em uma das duas datas recentes; as regiões ficam preservadas e não entram no cruzamento com treino ou alimentação até a revisão.');
@@ -63,7 +79,8 @@ function limitations(model){
   else if(model.labs.available&&!model.labs.safe)rows.push('Exames: as coletas recentes estão preservadas, mas não há correspondência segura de nome, unidade e valor numérico para comparar.');
   if(model.sleep.available&&model.sleep.days)rows.push('Sono: há dados preservados, porém ainda fora das conclusões por sobreposição entre fontes.');
   if(!model.segmental.available&&model.segmental.reason!=='ambiguous')rows.push('Composição segmentar: são necessárias pelo menos duas medições segmentares para cruzar regiões com o treino do intervalo.');
-  if(!model.nutrition.available||!model.nutrition.days)rows.push('Alimentação: o cruzamento corporal fica limitado quando o intervalo não tem registros diários suficientes.');
+  if(nutritionReview.reviewDays)rows.push(`Alimentação: ${countDays(nutritionReview.reviewDays)} tem mais de um registro preservado no intervalo e fica fora das médias e comparações até revisão.`);
+  else if(!model.nutrition.available||!model.nutrition.days)rows.push('Alimentação: o cruzamento corporal fica limitado quando o intervalo não tem registros diários suficientes.');
   return rows;
 }
 
@@ -74,10 +91,13 @@ export function renderAnalysisHub(){
   const body=model.body,structuredWorkouts=failed('workouts')?[]:workoutRows();
   const periodWorkouts=structuredWorkouts.filter(w=>inPeriod(w.workout_date,start));
   const periodNutrition=failed('nutrition')?[]:(state.data.nutrition||[]).filter(n=>inPeriod(n.nutrition_date,start));
-  const periodNutritionDays=unique(periodNutrition.map(n=>day(n.nutrition_date))).length;
-  const limits=limitations(model);
+  const periodNutritionEvidence=nutritionEvidence(periodNutrition);
+  const intervalNutritionEvidence=model.nutrition.available?nutritionEvidence(state.data.nutrition||[],model.nutrition.start,model.nutrition.end,{afterStart:true}):{safeDays:0,reviewDays:0,totalDays:0};
+  const limits=limitations(model,intervalNutritionEvidence);
   const segmentalLead=model.segmental.available?`<div class="analysisInterval"><b>${fmtDate(model.segmental.start)} → ${fmtDate(model.segmental.end)}</b><span>Último intervalo segmentar comparável. Treino e alimentação abaixo usam o mesmo intervalo quando possível.</span></div><div class="analysisRegionGrid">${model.segmental.regions.map(regionCard).join('')}</div>`:model.segmental.reason==='ambiguous'?reviewState('Composição segmentar em revisão','Há mais de uma medição em uma das duas datas recentes. Os registros foram preservados e nenhuma região foi escolhida para o cruzamento.'): '<div class="empty">Ainda não há duas medições segmentares comparáveis para montar esta leitura.</div>';
   const bodyPanel=body.available?`<div class="grid cols2 compact">${metric('Peso',deltaText(body.delta.weightKg,1,'kg'))}${metric('Massa muscular',deltaText(body.delta.muscleKg,1,'kg'))}${metric('Massa de gordura',deltaText(body.delta.fatKg,1,'kg'))}${metric('Gordura corporal',deltaText(body.delta.bodyFatPp,1,'p.p.'))}</div><p class="footerNote">Mudanças observadas entre ${fmtDate(body.previous.measured_at)} e ${fmtDate(body.latest.measured_at)}.</p>`:body.reason==='ambiguous'?reviewState('Composição em revisão','Há mais de uma medição em uma das duas datas recentes. Os valores foram preservados e nenhuma diferença foi calculada.'): '<div class="empty">São necessárias duas medições corporais comparáveis.</div>';
+  const periodNutritionValue=failed('nutrition')?'—':periodNutritionEvidence.reviewDays&&!periodNutritionEvidence.safeDays?'Em revisão':String(periodNutritionEvidence.safeDays);
+  const periodNutritionSub=failed('nutrition')?'dados de alimentação não carregaram agora':periodNutritionEvidence.reviewDays?`${countDays(periodNutritionEvidence.safeDays)} comparável(is) · ${countDays(periodNutritionEvidence.reviewDays)} em revisão`:'dias com registro diário';
 
   return `${title('Análise','Relações entre composição, treino, alimentação, sono e exames com a evidência disponível.')}
     <div class="controls"><select id="analysisPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo histórico</option></select></div>
@@ -90,7 +110,7 @@ export function renderAnalysisHub(){
 
     <div class="grid cols2 sectionGap">
       <section class="card"><div class="cardHead"><div><b>Composição global</b><small>Duas últimas medições corporais.</small></div></div>${bodyPanel}</section>
-      <section class="card"><div class="cardHead"><div><b>Alimentação no mesmo intervalo</b><small>Sem classificar consumo como alto ou baixo sem uma referência apropriada.</small></div></div>${nutritionPanel(model)}</section>
+      <section class="card"><div class="cardHead"><div><b>Alimentação no mesmo intervalo</b><small>Sem classificar consumo como alto ou baixo sem uma referência apropriada.</small></div></div>${nutritionPanel(model,intervalNutritionEvidence)}</section>
     </div>
 
     <div class="grid cols2 sectionGap">
@@ -100,7 +120,7 @@ export function renderAnalysisHub(){
 
     <div class="grid cols4 sectionGap analysisSecondaryMetrics">
       ${metric(`Treinos · ${periodText}`,failed('workouts')?'—':String(periodWorkouts.length),'contagem de sessões estruturadas')}
-      ${metric(`Alimentação · ${periodText}`,failed('nutrition')?'—':String(periodNutritionDays),failed('nutrition')?'dados de alimentação não carregaram agora':'dias com registro diário')}
+      ${metric(`Alimentação · ${periodText}`,periodNutritionValue,periodNutritionSub)}
       ${labMetric(model)}
       ${metric('Sono preservado',model.sleep.available?String(model.sleep.days):'—',model.sleep.available?'fora das conclusões até regra segura':'registros por origem não carregaram agora')}
     </div>
