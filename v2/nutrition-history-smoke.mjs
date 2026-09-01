@@ -22,7 +22,11 @@ async function run(viewport,label){
       {source_record_id:'mfp-protein',metric_date:'2026-02-02',metric_type:'dietary_protein_g',value:151.5,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
       {source_record_id:'mfp-carbs',metric_date:'2026-02-02',metric_type:'dietary_carbs_g',value:201,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
       {source_record_id:'mfp-fat',metric_date:'2026-02-02',metric_type:'dietary_fat_g',value:66,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
-      {source_record_id:'mfp-fiber',metric_date:'2026-02-02',metric_type:'dietary_fiber_g',value:29,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'}
+      {source_record_id:'mfp-fiber',metric_date:'2026-02-02',metric_type:'dietary_fiber_g',value:29,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-energy-a',metric_date:'2026-02-01',metric_type:'dietary_energy_kcal',value:1800,unit:'kcal',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-energy-b',metric_date:'2026-02-01',metric_type:'dietary_energy_kcal',value:2600,unit:'kcal',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-protein-a',metric_date:'2026-02-01',metric_type:'dietary_protein_g',value:120,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'},
+      {source_record_id:'mfp-protein-b',metric_date:'2026-02-01',metric_type:'dietary_protein_g',value:170,unit:'g',source_name:'MyFitnessPal',source_family:'myfitnesspal',canonical_status:'candidate',confidence:'high',source_file:'apple-health-export'}
     );
   });
 
@@ -33,10 +37,13 @@ async function run(viewport,label){
   const candidate=(await page.locator('.mfpCandidatePanel').textContent())||'';
   if(!candidate.includes('MyFitnessPal via Apple Saúde')||!candidate.includes('em validação'))throw new Error(`${label}: MyFitnessPal Apple daily totals are not visibly held for validation`);
   if(!candidate.includes('1.999 kcal')||!candidate.includes('152g P')||!candidate.includes('201g C')||!candidate.includes('66g G')||!candidate.includes('29g Fibra'))throw new Error(`${label}: preserved MyFitnessPal daily candidate values are not rendered as received`);
+  if(!candidate.includes('calorias em revisão')||!candidate.includes('P em revisão')||!candidate.includes('valores repetidos para revisão'))throw new Error(`${label}: ambiguous MyFitnessPal daily candidates are not held for review`);
+  if(candidate.includes('1.800 kcal')||candidate.includes('2.600 kcal')||candidate.includes('120g P')||candidate.includes('170g P'))throw new Error(`${label}: one ambiguous MyFitnessPal candidate was silently selected`);
+  if(!candidate.includes('nenhum valor é escolhido ou somado automaticamente'))throw new Error(`${label}: ambiguous candidate boundary is not explicit`);
   if(!candidate.includes('não criam alimentos, refeições ou horários'))throw new Error(`${label}: MyFitnessPal candidate granularity boundary is not explicit`);
   const calorieAverage=(await page.locator('.metric').filter({hasText:'Calorias · média'}).textContent())||'';
   if(!calorieAverage.includes('2.150'))throw new Error(`${label}: candidate MyFitnessPal energy contaminated canonical nutrition averages (${calorieAverage})`);
-  if(calorieAverage.includes('2.100')||calorieAverage.includes('1.999'))throw new Error(`${label}: candidate or single-day value replaced the canonical nutrition average`);
+  if(calorieAverage.includes('2.100')||calorieAverage.includes('1.999')||calorieAverage.includes('1.800')||calorieAverage.includes('2.600'))throw new Error(`${label}: candidate or ambiguous value replaced the canonical nutrition average`);
 
   const coverage=(await page.textContent('.yearGrid'))||'';
   if(!coverage.includes('2026')||!coverage.includes('2025')||!coverage.includes('2024'))throw new Error(`${label}: contiguous nutrition year coverage is incomplete`);
