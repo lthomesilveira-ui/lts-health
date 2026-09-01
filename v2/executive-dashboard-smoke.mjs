@@ -52,6 +52,24 @@ async function run(viewport,label){
   if(!ambiguity.includes('Revisão necessária')||!ambiguity.includes('mais de uma medição corporal na data mais recente'))throw new Error(`${label}: Today hides latest same-date body ambiguity`);
   if(ambiguity.includes('999,0 kg de massa muscular')||ambiguity.includes('99,0% de gordura corporal'))throw new Error(`${label}: ambiguous body measurement was presented as current in Today`);
 
+  const labAmbiguity=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {renderTodayHub}=await import('./src/today-screen.js');
+    const original=state.data.labs||[];
+    state.data.labs=[
+      {source_record_id:'lab-prior-a',collection_date:'2026-01-01',laboratory:'Lab A',biomarker:'X',result_numeric:1,unit:'u'},
+      {source_record_id:'lab-prior-b',collection_date:'2026-01-01',laboratory:'Lab B',biomarker:'X',result_numeric:900,unit:'u'},
+      {source_record_id:'lab-current-a',collection_date:'2026-02-01',laboratory:'Lab C',biomarker:'X',result_numeric:2,unit:'u'}
+    ];
+    const html=renderTodayHub();
+    state.data.labs=original;
+    return html;
+  });
+  if(!labAmbiguity.includes('Exames')||!labAmbiguity.includes('Revisão necessária'))throw new Error(`${label}: Today hides ambiguous lab-source review state`);
+  if(!labAmbiguity.includes('nenhuma foi escolhida para comparação'))throw new Error(`${label}: Today does not explain ambiguous lab comparison safely`);
+  if(!labAmbiguity.includes('Os resultados foram preservados'))throw new Error(`${label}: Today limitation does not confirm preserved lab evidence`);
+  if(labAmbiguity.includes('0 biomarcador(es) comparáveis'))throw new Error(`${label}: ambiguous labs are misleadingly rendered as numeric zero`);
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
