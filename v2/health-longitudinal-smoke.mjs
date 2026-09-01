@@ -15,6 +15,8 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.labs=[
       ...(state.data.labs||[]),
+      {source_record_id:'lab-source-only-fleury',collection_date:'2026-02-03',report_date:'2026-02-03',laboratory:null,biomarker:'Marcador origem Fleury',result_raw:'31',result_numeric:31,unit:'u',source:'Fleury arquivo preservado'},
+      {source_record_id:'lab-source-only-einstein',collection_date:'2026-02-03',report_date:'2026-02-03',laboratory:null,biomarker:'Marcador origem Einstein',result_raw:'47',result_numeric:47,unit:'u',source:'Einstein arquivo preservado'},
       {source_record_id:'lab-current-third-source',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Terceiro laboratório',biomarker:'Marcador A',result_raw:'12',result_numeric:12,unit:'u',source:'Fixture de interface'},
       {source_record_id:'lab-history-a',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'},
       {source_record_id:'lab-history-b',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador B',result_raw:'18',result_numeric:18,unit:'mg/dL',reference_range:'10–30',source:'Fixture de interface'},
@@ -33,9 +35,21 @@ async function run(viewport,label){
     state.ui.selectedBiomarker='marcador a';
   });
   await page.fill('#labQuery','x');
-  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=9);
+  await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=11);
   await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=9);
+  await page.waitForFunction(()=>document.querySelector('#labQuery')?.value===''&&document.querySelectorAll('#collectionSelect option').length>=11);
+
+  const options=await page.locator('#collectionSelect option').allTextContents();
+  if(!options.some(t=>t.includes('03/02/2026')&&t.includes('Fleury arquivo preservado'))||!options.some(t=>t.includes('03/02/2026')&&t.includes('Einstein arquivo preservado')))throw new Error(`${label}: source-only labs on the same date were merged`);
+  await page.selectOption('#collectionSelect','2026-02-03__Fleury arquivo preservado');
+  await page.waitForFunction(()=>{const t=document.querySelector('.labTable')?.textContent||'';return t.includes('Marcador origem Fleury')&&!t.includes('Marcador origem Einstein');});
+  const sourceOnlyFleury=(await page.locator('.labTable').textContent())||'';
+  if(sourceOnlyFleury.includes('Marcador origem Einstein')||sourceOnlyFleury.includes('47'))throw new Error(`${label}: Einstein result leaked into Fleury source-only collection`);
+  await page.selectOption('#collectionSelect','2026-02-03__Einstein arquivo preservado');
+  await page.waitForFunction(()=>{const t=document.querySelector('.labTable')?.textContent||'';return t.includes('Marcador origem Einstein')&&!t.includes('Marcador origem Fleury');});
+  const sourceOnlyEinstein=(await page.locator('.labTable').textContent())||'';
+  if(sourceOnlyEinstein.includes('Marcador origem Fleury')||sourceOnlyEinstein.includes('31'))throw new Error(`${label}: Fleury result leaked into Einstein source-only collection`);
+
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>{
     const select=document.querySelector('#collectionSelect');
@@ -66,7 +80,7 @@ async function run(viewport,label){
   await page.selectOption('#collectionSelect','2026-01-03__Laboratório de teste');
   await page.waitForFunction(()=>document.querySelector('.collectionCompareHead')?.textContent?.includes('03/12/2025'));
   const firstMetric=(await page.locator('.metric').first().textContent())||'';
-  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('6'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
+  if(!firstMetric.includes('Datas de coleta')||!firstMetric.includes('7'))throw new Error(`${label}: collection-date summary is not based on distinct dates`);
   await page.click('[data-marker="marcador textual"]');
   await page.waitForFunction(()=>{const t=document.querySelector('.exerciseDetail')?.textContent||'';return t.includes('Presente')&&t.includes('Ausente')&&t.includes('textual');});
   const textual=(await page.locator('.exerciseDetail').textContent())||'';
