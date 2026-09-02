@@ -137,13 +137,19 @@ function documentSummary(docs){
   const top=map=>[...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
   return `<div class="documentSummary"><div><span>Tipos de documento</span>${top(types).map(([k,v])=>`<b>${esc(k)} <em>${v}</em></b>`).join('')||'<b>Sem registros</b>'}</div><div><span>Origens</span>${top(sources).map(([k,v])=>`<b>${esc(k)} <em>${v}</em></b>`).join('')||'<b>Sem registros</b>'}</div><div><span>Por ano</span>${top(years).map(([k,v])=>`<b>${esc(k)} <em>${v}</em></b>`).join('')||'<b>Sem registros</b>'}</div></div>`;
 }
+function documentOrigin(doc){return String(doc?.source||doc?.source_file||'').trim();}
 function evidenceByDate(cols,docs){
   const dateMap=new Map();
   for(const c of cols){if(!c.date)continue;if(!dateMap.has(c.date))dateMap.set(c.date,{date:c.date,collections:[],docs:[]});dateMap.get(c.date).collections.push(c);}
   for(const d of docs){if(!d.document_date)continue;if(!dateMap.has(d.document_date))dateMap.set(d.document_date,{date:d.document_date,collections:[],docs:[]});dateMap.get(d.document_date).docs.push(d);}
   const rows=[...dateMap.values()].filter(x=>x.collections.length&&x.docs.length).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,12);
   if(!rows.length)return empty('Ainda não há datas com coleta estruturada e documento registrado no mesmo dia.');
-  return `<div class="evidenceDateList">${rows.map(x=>`<article><time>${fmtDate(x.date)}</time><div><b>${x.collections.reduce((s,c)=>s+c.rows.length,0)} resultado(s) · ${x.docs.length} documento(s)</b><small>${esc(unique(x.collections.map(c=>c.lab)).join(' · '))}</small><div class="evidenceDocNames">${x.docs.slice(0,4).map(d=>`<span>${esc(d.title||d.document_type||'Documento')}</span>`).join('')}</div></div></article>`).join('')}</div>`;
+  return `<div class="evidenceDateList">${rows.map(x=>{
+    const collectionOrigins=unique(x.collections.map(c=>c.lab).filter(Boolean)),originKeys=new Set(collectionOrigins.map(norm).filter(Boolean));
+    const sameOrigin=x.docs.filter(d=>{const origin=documentOrigin(d);return origin&&originKeys.has(norm(origin));}),dateOnly=x.docs.filter(d=>!sameOrigin.includes(d));
+    const status=sameOrigin.length?`${sameOrigin.length} documento(s) da mesma origem`:dateOnly.length?'Documentos só coincidem na data':'Origem do documento não informada';
+    return `<article data-evidence-date="${esc(x.date)}"><time>${fmtDate(x.date)}</time><div><b>${x.collections.reduce((s,c)=>s+c.rows.length,0)} resultado(s) · ${x.docs.length} documento(s)</b><small>${esc(collectionOrigins.join(' · '))}</small><div>${pill(status,sameOrigin.length?'ok':'warn')}</div><div class="evidenceDocNames">${sameOrigin.slice(0,4).map(d=>`<span>${esc(d.title||d.document_type||'Documento')} · mesma origem</span>`).join('')}${dateOnly.slice(0,4).map(d=>`<span>${esc(d.title||d.document_type||'Documento')} · apenas mesma data</span>`).join('')}</div></div></article>`;
+  }).join('')}</div><small class="labHistoryNote">A mesma data ajuda a localizar registros. Só mostramos “mesma origem” quando a origem preservada do documento coincide com a da coleta; os demais ficam identificados apenas como coincidência de data.</small>`;
 }
 
 export function renderHealthHub(){
@@ -167,7 +173,7 @@ export function renderHealthHub(){
     <div class="card sectionGap"><div class="cardHead"><div><b>Comparação com histórico da mesma origem</b><small>Usa a coleta anterior mais recente da mesma origem; outras origens ficam separadas.</small></div></div>${labFailed?unavailable('A comparação fica disponível quando os resultados carregarem.'):collectionComparison(cols,state.ui.selectedCollection)}</div>
     <div class="grid cols2 sectionGap">
       <div class="card"><div class="cardHead"><div><b>Documentos</b><small>PDF e imagem podem ficar guardados sem gerar resultados até uma leitura especializada ser segura.</small></div>${!docsFailed?pill(`${docs.length}`):''}</div>${docsFailed?unavailable('Os documentos não carregaram agora.'):`${documentSummary(docs)}<div class="documentGrid">${docs.slice(0,100).map(d=>`<article class="documentItem"><time>${fmtDate(d.document_date)}</time><div><b>${esc(d.title||d.document_type||'Documento')}</b><small>${esc(d.document_type||'tipo não informado')} · ${esc(d.source||'origem registrada')}</small>${d.source_file?`<em>${esc(d.source_file)}</em>`:''}</div>${documentStatus(d)}</article>`).join('')||empty('Nenhum documento registrado.')}</div>`}</div>
-      <div class="card"><div class="cardHead"><div><b>Resultados e documentos na mesma data</b><small>Ajuda a localizar registros relacionados pela data sem assumir que um item explica o outro.</small></div></div>${labFailed||docsFailed?unavailable('Esta visão precisa dos resultados e dos documentos carregados ao mesmo tempo.'):evidenceByDate(cols,docs)}</div>
+      <div class="card"><div class="cardHead"><div><b>Resultados e documentos na mesma data</b><small>Separa documentos da mesma origem daqueles que apenas coincidem na data.</small></div></div>${labFailed||docsFailed?unavailable('Esta visão precisa dos resultados e dos documentos carregados ao mesmo tempo.'):evidenceByDate(cols,docs)}</div>
     </div>
     <p class="footerNote">A tela organiza os resultados registrados. Coincidência de data não demonstra causa, e interpretação clínica ou decisões de tratamento devem considerar o contexto médico completo.</p>`;
 }
