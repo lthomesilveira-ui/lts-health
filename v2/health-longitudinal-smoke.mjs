@@ -21,6 +21,10 @@ const injected=[
   {source_record_id:'text-now',collection_date:'2026-01-03',laboratory:'Origem teste',biomarker:'Marcador textual',result_raw:'Presente',result_numeric:null,unit:null,source:'Fixture'},
   {source_record_id:'text-prev',collection_date:'2025-12-03',laboratory:'Origem teste',biomarker:'Marcador textual',result_raw:'Ausente',result_numeric:null,unit:null,source:'Fixture'}
 ];
+const injectedDocs=[
+  {id:'doc-same-origin',document_date:'2026-01-03',title:'Documento mesma origem',document_type:'Exame',source:'Origem teste',source_file:'same-origin.pdf',extraction_status:'structured'},
+  {id:'doc-date-only',document_date:'2026-01-03',title:'Documento outra origem',document_type:'Exame',source:'Origem documental distinta',source_file:'date-only.pdf',extraction_status:'review'}
+];
 
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
@@ -31,12 +35,13 @@ async function run(viewport,label){
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Saúde & exames');
-  await page.evaluate(async rows=>{
+  await page.evaluate(async payload=>{
     const {state}=await import('./src/core.js');
-    state.data.labs=[...(state.data.labs||[]),...rows];
+    state.data.labs=[...(state.data.labs||[]),...payload.rows];
+    state.data.docs=[...(state.data.docs||[]),...payload.docs];
     state.ui.selectedCollection=null;
     state.ui.selectedBiomarker='marcador a';
-  },injected);
+  },{rows:injected,docs:injectedDocs});
   await page.fill('#labQuery','x');
   await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=11);
   await page.fill('#labQuery','');
@@ -60,6 +65,13 @@ async function run(viewport,label){
   if(!compare.includes('Marcador A')||!compare.includes('+2,0 u'))throw new Error(`${label}: same-unit difference missing`);
   if(!compare.includes('Marcador sem unidade')||!compare.includes('unidade ausente'))throw new Error(`${label}: unitless result was compared`);
   if(!compare.includes('AAA marcador ambíguo')||!compare.includes('revisar registros'))throw new Error(`${label}: same-source duplicate marker was treated as a direct comparison`);
+
+  const evidence=page.locator('[data-evidence-date="2026-01-03"]');
+  await evidence.waitFor();
+  const evidenceText=(await evidence.textContent())||'';
+  if(!evidenceText.includes('Documento mesma origem · mesma origem'))throw new Error(`${label}: same-source document not identified as same source`);
+  if(!evidenceText.includes('Documento outra origem · apenas mesma data'))throw new Error(`${label}: date-only document implied source equivalence`);
+  if(!evidenceText.includes('documento(s) da mesma origem'))throw new Error(`${label}: source-aware evidence summary missing`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Terceira origem');
   await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
