@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import {labSeriesModel} from './src/integrated-analysis.js';
+
+globalThis.location={search:'?fixture=1'};
+const {labSeriesModel}=await import('./src/integrated-analysis.js');
 
 const ready={labs:'ready'};
 const row=(collection_date,laboratory,result_numeric,source='lab report')=>({collection_date,laboratory,biomarker:'Glicose',result_numeric,unit:'mg/dL',source});
