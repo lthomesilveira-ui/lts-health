@@ -19,6 +19,42 @@ async function run(viewport,label){
     if(!text.includes(expected))throw new Error(`${label}: default segmental comparison missing ${expected}`);
   }
 
+  await page.evaluate(async()=>{
+    const{state}=await import('./src/core.js');
+    const latest=state.data.segmental.find(r=>String(r.measured_at).startsWith('2026-02-01'));
+    latest.source='Outra origem segmentar';
+    document.querySelector('[data-segmental-date="2026-02-01"]')?.click();
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost')?.textContent?.includes('Origens diferentes. Os valores foram preservados, mas a diferença entre essas datas não foi calculada.'));
+  text=(await page.textContent('#screenHost'))||'';
+  if(text.includes('Braço D +0,20 kg')||text.includes('Tronco -0,40 kg'))throw new Error(`${label}: cross-source segmental delta leaked`);
+  for(const raw of ['4,40 kg','4,30 kg','34,00 kg'])if(!text.includes(raw))throw new Error(`${label}: cross-source segmental raw value hidden ${raw}`);
+  await page.evaluate(async()=>{
+    const{state}=await import('./src/core.js');
+    const latest=state.data.segmental.find(r=>String(r.measured_at).startsWith('2026-02-01'));
+    latest.source='Teste';
+    document.querySelector('[data-segmental-date="2026-02-01"]')?.click();
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost')?.textContent?.includes('Diferença entre 01/01/2026 e 01/02/2026'));
+
+  await page.evaluate(async()=>{
+    const{state}=await import('./src/core.js');
+    const latest=state.data.body.find(r=>String(r.measured_at).startsWith('2026-02-01'));
+    latest.source='Outra origem corporal';
+    document.querySelector('[data-evolution-metric="weight_kg"]')?.click();
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost')?.textContent?.includes('Origem diferente · sem diferença calculada'));
+  text=(await page.textContent('#screenHost'))||'';
+  for(const expected of ['1 intervalo tem mudança de origem.','91,0 kg','46,0 kg','14,0 kg'])if(!text.includes(expected))throw new Error(`${label}: body source-change state missing ${expected}`);
+  if(text.includes('Diferença +1,0 kg'))throw new Error(`${label}: cross-source body first-last delta leaked`);
+  await page.evaluate(async()=>{
+    const{state}=await import('./src/core.js');
+    const latest=state.data.body.find(r=>String(r.measured_at).startsWith('2026-02-01'));
+    latest.source='Teste';
+    document.querySelector('[data-evolution-metric="weight_kg"]')?.click();
+  });
+  await page.waitForFunction(()=>document.querySelector('#screenHost')?.textContent?.includes('Diferença +1,0 kg'));
+
   await page.click('[data-segmental-date="2026-01-01"]');
   await page.waitForFunction(()=>document.querySelector('[data-segmental-date="2026-01-01"]')?.classList.contains('active'));
   if(await page.inputValue('#segmentalCompareDate')!=='2026-02-01')throw new Error(`${label}: comparison date did not switch away from selected primary date`);
