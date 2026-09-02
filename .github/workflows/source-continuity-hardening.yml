@@ -1,0 +1,80 @@
+name: Source continuity hardening
+
+on:
+  push:
+    branches: [architecture-v2]
+    paths: ['.github/workflows/source-continuity-hardening.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: architecture-v2
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Harden source continuity
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('v2/src/integrated-analysis.js')
+          s=p.read_text()
+          old="const knownSourceMismatch=(a,b)=>{const sa=sourceIdentity(a),sb=sourceIdentity(b);return Boolean(sa&&sb&&sa!==sb);};"
+          new=old+"\nconst sourceContinuityBreak=(a,b)=>{const sa=sourceIdentity(a),sb=sourceIdentity(b);return Boolean((sa||sb)&&sa!==sb);};"
+          assert old in s
+          s=s.replace(old,new,1)
+          s=s.replace("if(knownSourceMismatch(ordered[i],ordered[i-1]))start=i;","if(sourceContinuityBreak(ordered[i],ordered[i-1]))start=i;",1)
+          s=s.replace("if(knownSourceMismatch(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};","if(sourceContinuityBreak(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};",2)
+          p.write_text(s)
+          PY
+      - name: Add adversarial continuity test
+        run: |
+          cat > v2/source-continuity-unknown-smoke.mjs <<'EOF'
+          import assert from 'node:assert/strict';
+          import {bodyChangeModel,bodyTrendModel,segmentalContextModel} from './src/integrated-analysis.js';
+          const ready={body:'ready',segmental:'ready',workouts:'ready',exercises:'ready',sets:'ready'};
+          const body=[
+            {measured_at:'2026-08-01',source_family:'inbody',weight_kg:80,body_fat_pct:15},
+            {measured_at:'2026-08-15',weight_kg:79,body_fat_pct:14},
+            {measured_at:'2026-09-01',source_family:'inbody',weight_kg:78,body_fat_pct:13},
+          ];
+          const trend=bodyTrendModel({body},ready,12);
+          assert.equal(trend.points.length,1,'unknown-source bridge must break the known-source trend');
+          assert.equal(trend.reason,'source_changed');
+          const change=bodyChangeModel({body:body.slice(1)},ready);
+          assert.equal(change.available,false,'known versus unknown source must not produce a numeric body delta');
+          assert.equal(change.reason,'source_changed');
+          const segmental=[
+            {measured_at:'2026-08-15',lean_trunk_kg:30},
+            {measured_at:'2026-09-01',source_family:'inbody',lean_trunk_kg:31},
+          ];
+          const seg=segmentalContextModel({segmental,workouts:[],exercises:[],sets:[]},ready);
+          assert.equal(seg.available,false,'known versus unknown source must not produce segmental deltas');
+          assert.equal(seg.reason,'source_changed');
+          console.log('source continuity unknown smoke: ok');
+          EOF
+          node v2/source-continuity-unknown-smoke.mjs
+      - name: Run required branch gates
+        run: |
+          node v2/failure-smoke.mjs
+          node v2/timeline-v2-smoke.mjs
+          node v2/nutrition-history-smoke.mjs
+          node v2/analysis-history-smoke.mjs
+          node v2/health-longitudinal-smoke.mjs
+          node v2/training-progression-smoke.mjs
+          node v2/bio-comparison-smoke.mjs
+          node v2/evolution-comparison-smoke.mjs
+      - name: Commit branch-only hardening
+        run: |
+          rm .github/workflows/source-continuity-hardening.yml
+          git config user.name 'lts-health-automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add v2/src/integrated-analysis.js v2/source-continuity-unknown-smoke.mjs .github/workflows/source-continuity-hardening.yml
+          git commit -m 'Harden body source continuity across unknown origins'
+          git push origin HEAD:architecture-v2
