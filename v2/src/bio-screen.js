@@ -20,7 +20,6 @@ function sourceDisplay(source=''){
 function sourceIdentity(row){return norm(row?.source_family||row?.source_name||row?.source||'');}
 function knownSourceMismatch(a,b){const sa=sourceIdentity(a),sb=sourceIdentity(b);return !!sa&&!!sb&&sa!==sb;}
 function mixedKnownSources(rows){return new Set((rows||[]).map(sourceIdentity).filter(Boolean)).size>1;}
-function sourceAwareDelta(current,previous,decimals,unit){return knownSourceMismatch(current,previous)?'diferença não calculada · origens diferentes':neutralDelta(current,previous,decimals,unit);}
 function bodyDayGroups(rows){
   const groups=new Map();
   for(const row of rows||[]){const date=day(row?.measured_at);if(!date)continue;if(!groups.has(date))groups.set(date,[]);groups.get(date).push(row);}
@@ -110,14 +109,15 @@ export function renderBioHub(){
   const ambiguityNote=ambiguousDays.size?`<div class="note sectionGap"><b>${ambiguousDays.size} ${ambiguousDays.size===1?'data com mais de uma medição ficou':'datas com mais de uma medição ficaram'} fora da evolução</b><span>Os registros continuam no histórico, mas não entram em gráficos, comparação ou “última medição” até revisão.</span></div>`:'';
   const sourceChanges=rows.slice(1).filter((r,i)=>knownSourceMismatch(r,rows[i])).length;
   const sourceNote=sourceChanges?`<div class="note sectionGap"><b>${sourceChanges} ${sourceChanges===1?'intervalo tem':'intervalos têm'} mudança de origem</b><span>Os valores continuam visíveis, mas a linha é interrompida e as diferenças desses intervalos não são calculadas.</span></div>`:'';
+  const latestMismatch=prev&&knownSourceMismatch(last,prev);
   return `${title('Composição corporal','Valores, escalas e comparação entre medidas ao longo do tempo.')}
     <div class="note"><b>${ambiguousDays.size?'Última medição comparável':'Última medição'} · ${fmtDate(last.measured_at)}</b><span>${allRows.length} medição(ões) no histórico. Os números dos gráficos aparecem na escala e nos pontos.</span></div>
     ${ambiguityNote}${sourceNote}
     <div class="grid cols4 sectionGap">
-      ${metric('Peso',fmtNum(last.weight_kg),'kg',prev?`desde a anterior ${sourceAwareDelta(last.weight_kg==null?last:last,prev,1,'kg').replace('diferença não calculada · origens diferentes',knownSourceMismatch(last,prev)?'diferença não calculada · origens diferentes':neutralDelta(last.weight_kg,prev.weight_kg,1,'kg'))}`:`primeiro registro ${fmtDate(first.measured_at)}`)}
-      ${metric('Massa muscular',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?(knownSourceMismatch(last,prev)?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`):'')}
-      ${metric('Massa de gordura',fmtNum(last.fat_mass_kg),'kg',prev?(knownSourceMismatch(last,prev)?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.fat_mass_kg,prev.fat_mass_kg,1,'kg')}`):'')}
-      ${metric('Gordura corporal',fmtNum(last.body_fat_pct),'%',prev?(knownSourceMismatch(last,prev)?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.body_fat_pct,prev.body_fat_pct,1,'%')}`):'')}
+      ${metric('Peso',fmtNum(last.weight_kg),'kg',prev?(latestMismatch?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.weight_kg,prev.weight_kg,1,'kg')}`):`primeiro registro ${fmtDate(first.measured_at)}`)}
+      ${metric('Massa muscular',fmtNum(last.skeletal_muscle_mass_kg),'kg',prev?(latestMismatch?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.skeletal_muscle_mass_kg,prev.skeletal_muscle_mass_kg,1,'kg')}`):'')}
+      ${metric('Massa de gordura',fmtNum(last.fat_mass_kg),'kg',prev?(latestMismatch?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.fat_mass_kg,prev.fat_mass_kg,1,'kg')}`):'')}
+      ${metric('Gordura corporal',fmtNum(last.body_fat_pct),'%',prev?(latestMismatch?'desde a anterior diferença não calculada · origens diferentes':`desde a anterior ${neutralDelta(last.body_fat_pct,prev.body_fat_pct,1,'%')}`):'')}
     </div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Evolução corporal</b><small>Escolha uma medida; escala, datas e valores ficam explícitos.</small></div><div class="segmented">${Object.entries(metrics).map(([k,m])=>`<button type="button" data-bio-metric="${k}" class="${key===k?'active':''}">${esc(m.label)}${k==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${lineChart(rows,key,meta.label,meta.unit)}</div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Visão combinada</b><small>Massa muscular, massa de gordura, percentual de gordura e peso nas mesmas datas.</small></div><span class="pill">últimas ${Math.min(12,rows.length)}</span></div>${combinedView(rows)}</div>
