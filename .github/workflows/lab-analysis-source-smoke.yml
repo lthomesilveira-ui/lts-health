@@ -1,0 +1,20 @@
+name: Lab analysis source smoke
+
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/integrated-analysis.js'
+      - 'v2/lab-analysis-source-smoke.mjs'
+      - '.github/workflows/lab-analysis-source-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node v2/lab-analysis-source-smoke.mjs
