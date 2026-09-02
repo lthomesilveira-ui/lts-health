@@ -16,9 +16,6 @@ jobs:
         with:
           ref: architecture-v2
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
       - name: Harden source continuity
         run: |
           python - <<'PY'
@@ -30,40 +27,47 @@ jobs:
           assert old in s
           s=s.replace(old,new,1)
           s=s.replace("if(knownSourceMismatch(ordered[i],ordered[i-1]))start=i;","if(sourceContinuityBreak(ordered[i],ordered[i-1]))start=i;",1)
-          s=s.replace("if(knownSourceMismatch(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};","if(sourceContinuityBreak(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};",2)
+          target="if(knownSourceMismatch(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};"
+          assert s.count(target)>=2
+          s=s.replace(target,target.replace('knownSourceMismatch','sourceContinuityBreak'),2)
           p.write_text(s)
           PY
-      - name: Add adversarial continuity test
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Add and run adversarial browser gate
         run: |
           cat > v2/source-continuity-unknown-smoke.mjs <<'EOF'
-          import assert from 'node:assert/strict';
-          import {bodyChangeModel,bodyTrendModel,segmentalContextModel} from './src/integrated-analysis.js';
-          const ready={body:'ready',segmental:'ready',workouts:'ready',exercises:'ready',sets:'ready'};
-          const body=[
-            {measured_at:'2026-08-01',source_family:'inbody',weight_kg:80,body_fat_pct:15},
-            {measured_at:'2026-08-15',weight_kg:79,body_fat_pct:14},
-            {measured_at:'2026-09-01',source_family:'inbody',weight_kg:78,body_fat_pct:13},
-          ];
-          const trend=bodyTrendModel({body},ready,12);
-          assert.equal(trend.points.length,1,'unknown-source bridge must break the known-source trend');
-          assert.equal(trend.reason,'source_changed');
-          const change=bodyChangeModel({body:body.slice(1)},ready);
-          assert.equal(change.available,false,'known versus unknown source must not produce a numeric body delta');
-          assert.equal(change.reason,'source_changed');
-          const segmental=[
-            {measured_at:'2026-08-15',lean_trunk_kg:30},
-            {measured_at:'2026-09-01',source_family:'inbody',lean_trunk_kg:31},
-          ];
-          const seg=segmentalContextModel({segmental,workouts:[],exercises:[],sets:[]},ready);
-          assert.equal(seg.available,false,'known versus unknown source must not produce segmental deltas');
-          assert.equal(seg.reason,'source_changed');
-          console.log('source continuity unknown smoke: ok');
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          for(const viewport of [{width:1280,height:900},{width:390,height:844}]){
+            const page=await browser.newPage({viewport});
+            await page.goto('http://127.0.0.1:4173/?fixture=1#hoje',{waitUntil:'domcontentloaded'});
+            const result=await page.evaluate(async()=>{
+              const m=await import('./src/integrated-analysis.js');
+              const ready={body:'ready',segmental:'ready',workouts:'ready',exercises:'ready',sets:'ready'};
+              const body=[{measured_at:'2026-08-01',source_family:'inbody',weight_kg:80},{measured_at:'2026-08-15',weight_kg:79},{measured_at:'2026-09-01',source_family:'inbody',weight_kg:78}];
+              const trend=m.bodyTrendModel({body},ready,12);
+              const change=m.bodyChangeModel({body:body.slice(1)},ready);
+              const segmental=[{measured_at:'2026-08-15',lean_trunk_kg:30},{measured_at:'2026-09-01',source_family:'inbody',lean_trunk_kg:31}];
+              const seg=m.segmentalContextModel({segmental,workouts:[],exercises:[],sets:[]},ready);
+              return{trendPoints:trend.points.length,trendReason:trend.reason,changeAvailable:change.available,changeReason:change.reason,segAvailable:seg.available,segReason:seg.reason};
+            });
+            if(result.trendPoints!==1||result.trendReason!=='source_changed'||result.changeAvailable!==false||result.changeReason!=='source_changed'||result.segAvailable!==false||result.segReason!=='source_changed')throw new Error(JSON.stringify(result));
+            await page.close();
+          }
+          await browser.close();
+          console.log('source continuity unknown smoke passed');
           EOF
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
           node v2/source-continuity-unknown-smoke.mjs
-      - name: Run required branch gates
-        run: |
           node v2/failure-smoke.mjs
-          node v2/timeline-v2-smoke.mjs
+          node v2/timeline-interaction-smoke.mjs
           node v2/nutrition-history-smoke.mjs
           node v2/analysis-history-smoke.mjs
           node v2/health-longitudinal-smoke.mjs
