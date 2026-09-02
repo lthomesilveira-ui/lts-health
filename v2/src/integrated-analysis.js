@@ -12,13 +12,14 @@ const canonicalWorkouts=data=>(data.workouts||[]).filter(row=>row?.is_canonical=
 const comparableLoadUnit=unit=>Boolean(norm(unit)&&norm(unit)!=='unitless');
 const sourceIdentity=row=>norm(row?.source_family||row?.source_name||row?.source||'');
 const knownSourceMismatch=(a,b)=>{const sa=sourceIdentity(a),sb=sourceIdentity(b);return Boolean(sa&&sb&&sa!==sb);};
+const sourceContinuityBreak=(a,b)=>{const sa=sourceIdentity(a),sb=sourceIdentity(b);return Boolean((sa||sb)&&sa!==sb);};
 function dailyGroups(rows,key){const groups=new Map();for(const row of rows||[]){const date=day(row?.[key]);if(!date)continue;if(!groups.has(date))groups.set(date,[]);groups.get(date).push(row);}return groups;}
 function latestComparablePair(rows,key){const groups=dailyGroups(rows,key),dates=[...groups.keys()].sort();if(dates.length<2)return{available:false,reason:'insufficient',rows};const previousDay=dates.at(-2),latestDay=dates.at(-1),previousRows=groups.get(previousDay)||[],latestRows=groups.get(latestDay)||[];if(previousRows.length!==1||latestRows.length!==1)return{available:false,reason:'ambiguous',rows,previousDay,latestDay};return{available:true,previous:previousRows[0],latest:latestRows[0],previousDay,latestDay};}
 function unambiguousDailyRows(rows,key){return [...dailyGroups(rows,key).entries()].filter(([,items])=>items.length===1).sort((a,b)=>a[0].localeCompare(b[0])).map(([,items])=>items[0]);}
 function latestSourceContinuousRows(rows){
   const ordered=[...(rows||[])];if(ordered.length<2)return ordered;
   let start=0;
-  for(let i=1;i<ordered.length;i++)if(knownSourceMismatch(ordered[i],ordered[i-1]))start=i;
+  for(let i=1;i<ordered.length;i++)if(sourceContinuityBreak(ordered[i],ordered[i-1]))start=i;
   return ordered.slice(start);
 }
 
@@ -39,7 +40,7 @@ export function bodyChangeModel(data={},status={}){
   const rows=sortAsc(data.body,'measured_at'),pair=latestComparablePair(rows,'measured_at');
   if(!pair.available)return pair;
   const{previous,latest}=pair;
-  if(knownSourceMismatch(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};
+  if(sourceContinuityBreak(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};
   return{available:true,previous,latest,delta:{weightKg:delta(latest.weight_kg,previous.weight_kg),muscleKg:delta(latest.skeletal_muscle_mass_kg,previous.skeletal_muscle_mass_kg),fatKg:delta(latest.fat_mass_kg,previous.fat_mass_kg),bodyFatPp:delta(latest.body_fat_pct,previous.body_fat_pct)}};
 }
 export function bodyTrendModel(data={},status={},limit=12){
@@ -56,7 +57,7 @@ export function segmentalContextModel(data={},status={}){
   const rows=sortAsc(data.segmental,'measured_at'),pair=latestComparablePair(rows,'measured_at');
   if(!pair.available)return pair;
   const{previous,latest}=pair;
-  if(knownSourceMismatch(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};
+  if(sourceContinuityBreak(previous,latest))return{available:false,reason:'source_changed',rows,previous,latest,previousDay:pair.previousDay,latestDay:pair.latestDay};
   const start=day(previous.measured_at),end=day(latest.measured_at),region=(key,label,leanNow,leanPrev,fatNow,fatPrev)=>({key,label,leanDeltaKg:delta(leanNow,leanPrev),fatDeltaKg:delta(fatNow,fatPrev),training:regionTraining(data,status,start,end,key)});
   return{available:true,previous,latest,start,end,regions:[region('arms','Braços',sumPair(latest.lean_right_arm_kg,latest.lean_left_arm_kg),sumPair(previous.lean_right_arm_kg,previous.lean_left_arm_kg),sumPair(latest.fat_right_arm_kg,latest.fat_left_arm_kg),sumPair(previous.fat_right_arm_kg,previous.fat_left_arm_kg)),region('trunk','Tronco',latest.lean_trunk_kg,previous.lean_trunk_kg,latest.fat_trunk_kg,previous.fat_trunk_kg),region('legs','Pernas',sumPair(latest.lean_right_leg_kg,latest.lean_left_leg_kg),sumPair(previous.lean_right_leg_kg,previous.lean_left_leg_kg),sumPair(latest.fat_right_leg_kg,latest.fat_left_leg_kg),sumPair(previous.fat_right_leg_kg,previous.fat_left_leg_kg))]};
 }
