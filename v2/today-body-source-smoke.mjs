@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1#hoje';
+const waitToday=page=>page.waitForSelector('[data-executive-dashboard]');
 
 async function renderScenario(page,bodyRows){
   await page.evaluate(async rows=>{
@@ -11,7 +12,7 @@ async function renderScenario(page,bodyRows){
   },bodyRows);
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   await page.evaluate(()=>{location.hash='hoje';});
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+  await waitToday(page);
 }
 
 async function run(viewport,label){
@@ -23,7 +24,7 @@ async function run(viewport,label){
     page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
     await page.goto(base,{waitUntil:'domcontentloaded'});
     await page.waitForSelector('#app:not(.hidden)');
-    await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Hoje');
+    await waitToday(page);
 
     await renderScenario(page,[
       {source_record_id:'body-a',measured_at:'2026-07-01T09:00:00Z',skeletal_muscle_mass_kg:40.1,body_fat_pct:18.2,source_family:'inbody'},
