@@ -82,8 +82,8 @@ async function run(viewport,label){
     const original=state.data.labs||[];
     state.data.labs=[
       {source_record_id:'lab-prior-a',collection_date:'2026-01-01',laboratory:'Lab A',biomarker:'X',result_numeric:1,unit:'u'},
-      {source_record_id:'lab-prior-b',collection_date:'2026-01-01',laboratory:'Lab B',biomarker:'X',result_numeric:900,unit:'u'},
-      {source_record_id:'lab-current-a',collection_date:'2026-02-01',laboratory:'Lab C',biomarker:'X',result_numeric:2,unit:'u'}
+      {source_record_id:'lab-current-b',collection_date:'2026-02-01',laboratory:'Lab B',biomarker:'X',result_numeric:2,unit:'u'},
+      {source_record_id:'lab-current-c',collection_date:'2026-02-01',laboratory:'Lab C',biomarker:'X',result_numeric:900,unit:'u'}
     ];
     const html=renderTodayHub();
     state.data.labs=original;
