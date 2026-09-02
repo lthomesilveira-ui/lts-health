@@ -66,8 +66,9 @@ function labMetric(model){
   if(!labs.available)return metric('Coletas de exames','—','resultados laboratoriais não carregaram agora');
   if(labs.reason==='ambiguous_source')return metric('Coletas de exames','Em revisão',`${labs.collectionDays.length} data(s) preservada(s); origens não foram combinadas`);
   if(labs.collectionDays.length<2)return metric('Coletas de exames',String(labs.collectionDays.length),'ainda sem tendência longitudinal');
-  if(!labs.safe)return metric('Coletas de exames',String(labs.collectionDays.length),'sem biomarcadores comparáveis na última dupla');
-  return metric('Coletas de exames',String(labs.collectionDays.length),`${labs.comparable} biomarcador(es) comparáveis na última dupla`);
+  if(labs.reason==='no_prior_same_source')return metric('Coletas de exames',String(labs.collectionDays.length),'histórico existe, mas não há coleta anterior da mesma origem');
+  if(!labs.safe)return metric('Coletas de exames',String(labs.collectionDays.length),'sem biomarcadores comparáveis entre coletas da mesma origem');
+  return metric('Coletas de exames',String(labs.collectionDays.length),`${labs.comparable} biomarcador(es) comparáveis entre coletas da mesma origem`);
 }
 
 function limitations(model,nutritionReview){
@@ -76,7 +77,8 @@ function limitations(model,nutritionReview){
   if(model.segmental.reason==='ambiguous')rows.push('Composição segmentar: há mais de uma medição em uma das duas datas recentes; as regiões ficam preservadas e não entram no cruzamento com treino ou alimentação até a revisão.');
   if(model.labs.available&&model.labs.reason==='ambiguous_source')rows.push('Exames: há mais de uma origem possível na comparação recente; os resultados ficam preservados e a tendência aguarda revisão.');
   else if(model.labs.available&&model.labs.collectionDays.length<2)rows.push('Exames: ainda existe apenas uma data de coleta estruturada; não há série longitudinal laboratorial suficiente para tendência.');
-  else if(model.labs.available&&!model.labs.safe)rows.push('Exames: as coletas recentes estão preservadas, mas não há correspondência segura de nome, unidade e valor numérico para comparar.');
+  else if(model.labs.available&&model.labs.reason==='no_prior_same_source')rows.push('Exames: há histórico laboratorial, mas a coleta mais recente ainda não tem outra coleta anterior da mesma origem; fontes diferentes não são tratadas como continuidade.');
+  else if(model.labs.available&&!model.labs.safe)rows.push('Exames: as coletas da mesma origem estão preservadas, mas não há correspondência segura de nome, unidade e valor numérico para comparar.');
   if(model.sleep.available&&model.sleep.days)rows.push('Sono: há dados preservados, porém ainda fora das conclusões por sobreposição entre fontes.');
   if(!model.segmental.available&&model.segmental.reason!=='ambiguous')rows.push('Composição segmentar: são necessárias pelo menos duas medições segmentares para cruzar regiões com o treino do intervalo.');
   if(nutritionReview.reviewDays)rows.push(`Alimentação: ${countDays(nutritionReview.reviewDays)} tem mais de um registro preservado no intervalo e fica fora das médias e comparações até revisão.`);
