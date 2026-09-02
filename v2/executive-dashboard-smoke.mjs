@@ -94,6 +94,23 @@ async function run(viewport,label){
   if(!labAmbiguity.includes('Os resultados foram preservados'))throw new Error(`${label}: Today limitation does not confirm preserved lab evidence`);
   if(labAmbiguity.includes('0 biomarcador(es) comparáveis'))throw new Error(`${label}: ambiguous labs are misleadingly rendered as numeric zero`);
 
+  const labSourceGap=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {renderTodayHub}=await import('./src/today-screen.js');
+    const original=state.data.labs||[];
+    state.data.labs=[
+      {source_record_id:'lab-old-a',collection_date:'2026-01-01',laboratory:'Lab A',biomarker:'X',result_numeric:1,unit:'u'},
+      {source_record_id:'lab-current-b',collection_date:'2026-02-01',laboratory:'Lab B',biomarker:'X',result_numeric:2,unit:'u'}
+    ];
+    const html=renderTodayHub();
+    state.data.labs=original;
+    return html;
+  });
+  if(!labSourceGap.includes('Sem comparação da mesma origem'))throw new Error(`${label}: Today hides the missing same-source lab history`);
+  if(!labSourceGap.includes('não há outra coleta anterior da mesma origem'))throw new Error(`${label}: Today does not explain the same-source boundary`);
+  if(!labSourceGap.includes('Exames têm histórico, mas não da mesma origem'))throw new Error(`${label}: Today omits the source-gap limitation`);
+  if(labSourceGap.includes('0 biomarcador(es) comparáveis'))throw new Error(`${label}: source-gap labs are misleadingly rendered as numeric zero`);
+
   const labNoComparable=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {renderTodayHub}=await import('./src/today-screen.js');
