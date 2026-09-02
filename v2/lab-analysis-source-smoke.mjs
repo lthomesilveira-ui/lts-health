@@ -23,6 +23,7 @@ const noPriorSameSource=labSeriesModel({labs:[
 assert.equal(noPriorSameSource.safe,false,'different sources must not be treated as one longitudinal series');
 assert.equal(noPriorSameSource.reason,'no_prior_same_source');
 assert.equal(noPriorSameSource.comparable,0);
+assert.equal(noPriorSameSource.previous,null,'a different-origin date must not be exposed as the previous comparable collection');
 
 const ambiguousLatest=labSeriesModel({labs:[
   row('2026-01-10','Fleury',92),
