@@ -2,6 +2,19 @@ import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1#evolucao';
 
+async function navigateToEvolution(page,viewport){
+  if(viewport.width<720){
+    await page.click('#mobileNav [data-route="bio"]');
+    await page.click('#mobileNav [data-route="mais"]');
+    await page.waitForSelector('#moreSheet:not(.hidden)');
+    await page.click('#moreSheet [data-route="evolucao"]');
+  }else{
+    await page.click('#primaryNav [data-route="bio"]');
+    await page.click('#primaryNav [data-route="evolucao"]');
+  }
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução');
+}
+
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport});
@@ -22,10 +35,7 @@ async function run(viewport,label){
     ];
     state.domainStatus.workouts='ready';
   });
-  const nav=viewport.width<720?'#mobileNav':'#primaryNav';
-  await page.click(`${nav} [data-route="bio"]`);
-  await page.click(`${nav} [data-route="evolucao"]`);
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução');
+  await navigateToEvolution(page,viewport);
   const card=page.locator('.card:has-text("Ritmo semanal de treinos")');
   await card.waitFor();
   const text=(await card.textContent())||'';

@@ -70,8 +70,8 @@ async function run(viewport,label){
       {source_record_id:'other-resting',measured_at:'2026-08-29T12:00:00Z',metric_type:'resting_heart_rate_bpm',value:58,unit:'bpm',source:'Validated external source'}
     ]);
     state.data.sourceMetrics=[
-      {source_record_id:'watch-sleep-review',metric_date:'2026-08-29',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
-      {source_record_id:'polar-sleep-review',metric_date:'2026-08-29',metric_type:'sleep_duration_h',value:7.4,unit:'h',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'held'}
+      {source_record_id:'watch-sleep-review',metric_date:'2026-08-28',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'},
+      {source_record_id:'polar-sleep-review',metric_date:'2026-08-28',metric_type:'sleep_duration_h',value:7.4,unit:'h',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'held'}
     ];
     state.domainStatus.sourceMetrics='ready';
     state.data.nutrition=visibleRowsForDomain('nutrition',[
@@ -93,6 +93,8 @@ async function run(viewport,label){
 
   await page.evaluate(()=>{location.hash='analise';});
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
+  await page.selectOption('#analysisPeriod','all');
+  await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all');
   const analysisText=(await page.textContent('#screenHost'))||'';
   if(!analysisText.includes('1 dia(s) de sono preservado(s)')||!analysisText.includes('As fontes permanecem separadas'))throw new Error(`${label}: sleep evidence is not visibly preserved without consolidation`);
   if(analysisText.includes('7,1 h')||analysisText.includes('7,4 h')||analysisText.includes('Sono consolidado'))throw new Error(`${label}: overlapping sleep values leaked as a consolidated analysis`);

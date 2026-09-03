@@ -15,11 +15,15 @@ jobs:
           node --check v2/src/integrated-analysis.js
           node --check v2/src/analysis-screen.js
           node --check v2/analysis-history-smoke.mjs
+          node --check v2/analysis-period-consistency-smoke.mjs
+          node --check v2/analysis-source-gap-smoke.mjs
           grep -q 'id="analysisPeriod"' v2/src/analysis-screen.js
-          grep -q 'Leitura integrada' v2/src/analysis-screen.js
-          grep -q 'O que ainda limita a análise' v2/src/analysis-screen.js
+          grep -q 'Mesma janela em toda esta seção' v2/src/analysis-screen.js
+          grep -q 'Janela entre bioimpedâncias' v2/src/analysis-screen.js
+          grep -q 'O que ainda limita a leitura' v2/src/analysis-screen.js
           grep -q 'comparableLabCount' v2/src/integrated-analysis.js
           grep -q 'comparableLoadUnit' v2/src/integrated-analysis.js
+          grep -q 'periodBounds' v2/src/integrated-analysis.js
           ! grep -Eiq '\b(readiness score|recovery score|ActivitySummary|count/min|MME)\b' v2/src/analysis-screen.js
       - name: Install browser runtime
         run: |
@@ -32,3 +36,5 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           node v2/analysis-history-smoke.mjs
+          node v2/analysis-period-consistency-smoke.mjs
+          node v2/analysis-source-gap-smoke.mjs

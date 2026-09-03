@@ -46,8 +46,10 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await open('nutrition','analise','Análise');
-  const metric=await ctx.page.locator('.metric').filter({hasText:'Alimentação · 1 ano'}).first().textContent();
-  if(!metric?.includes('—')||!ctx.text.includes('dados de alimentação não carregaram agora')||!ctx.text.includes('cruzamento fica indisponível'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
+  const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Alimentação'}).first().textContent();
+  const nutritionBlock=await ctx.page.locator('section.card').filter({hasText:'Alimentação no período'}).first().textContent();
+  if(!metric?.includes('—')||!nutritionBlock?.includes('Os dados de alimentação não carregaram agora.')||!ctx.text.includes('nenhuma falha é convertida em zero'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
+  if(/\b\d+(?:[.,]\d+)?\s*(?:kcal|g|mL)\b/i.test(nutritionBlock||''))throw new Error('analise/nutrition: failed domain rendered numeric nutrition values');
   await finish(ctx,'analise/nutrition');
 }
 {
