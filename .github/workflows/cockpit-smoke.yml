@@ -6,7 +6,11 @@ on:
       - 'v2/index.html'
       - 'v2/src/today-screen.js'
       - 'v2/src/treatment-screen.js'
+      - 'v2/src/analysis-screen.js'
+      - 'v2/src/data-layer.js'
       - 'v2/cockpit.css'
+      - 'v2/analysis.css'
+      - 'v2/secondary.css'
       - 'v2/cockpit-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   pull_request:
@@ -14,7 +18,11 @@ on:
       - 'v2/index.html'
       - 'v2/src/today-screen.js'
       - 'v2/src/treatment-screen.js'
+      - 'v2/src/analysis-screen.js'
+      - 'v2/src/data-layer.js'
       - 'v2/cockpit.css'
+      - 'v2/analysis.css'
+      - 'v2/secondary.css'
       - 'v2/cockpit-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   workflow_dispatch:
@@ -35,6 +43,8 @@ jobs:
         run: |
           node --check v2/src/today-screen.js
           node --check v2/src/treatment-screen.js
+          node --check v2/src/analysis-screen.js
+          node --check v2/src/data-layer.js
           node --check v2/cockpit-smoke.mjs
       - name: Start fixture server
         run: |

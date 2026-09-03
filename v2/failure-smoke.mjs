@@ -45,7 +45,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   await finish(ctx,'evolucao/workouts');
 }
 {
-  const ctx=await open('nutrition','analise','Análise');
+  const ctx=await open('nutrition','analise','Insights');
   const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Alimentação'}).first().textContent();
   const nutritionBlock=await ctx.page.locator('section.card').filter({hasText:'Alimentação no período'}).first().textContent();
   if(!metric?.includes('—')||!nutritionBlock?.includes('Os dados de alimentação não carregaram agora.')||!ctx.text.includes('nenhuma falha é convertida em zero'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
@@ -53,7 +53,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   await finish(ctx,'analise/nutrition');
 }
 {
-  const ctx=await open('sourceMetrics','analise','Análise');
+  const ctx=await open('sourceMetrics','analise','Insights');
   const metric=await ctx.page.locator('.metric').filter({hasText:'Sono preservado'}).first().textContent();
   if(!metric?.includes('—')||!ctx.text.includes('registros por origem não carregaram agora'))throw new Error('analise/sourceMetrics: failure hidden or rendered as zero');
   await finish(ctx,'analise/sourceMetrics');
@@ -78,7 +78,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await open('treatments','tratamentos','Protocolos');
-  if(!ctx.text.includes('histórico de protocolos não carregou agora'))throw new Error('protocolos: failure hidden');
+  if(!ctx.text.includes('O histórico de protocolos não carregou completamente.'))throw new Error('protocolos: partial failure hidden');
   if(ctx.text.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error('protocolos: operational guidance visible');
   await finish(ctx,'protocolos');
 }

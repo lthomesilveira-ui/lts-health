@@ -35,14 +35,17 @@ async function run(viewport,label){
   if(backup.components?.structured_records!=='included'||backup.components?.private_original_files!=='not_included'||backup.components?.credentials_and_tokens!=='not_included')throw new Error(`${label}: backup component manifest is incomplete or ambiguous`);
   if(!Array.isArray(backup.domains)||backup.domains.length!==backup.domain_count)throw new Error(`${label}: backup domain manifest mismatch`);
   if(Object.keys(backup.counts||{}).length!==backup.domain_count)throw new Error(`${label}: backup counts do not cover all domains`);
-  if(backup.counts?.body!==2||backup.counts?.workouts!==2||backup.counts?.labs!==2||backup.counts?.metrics!==3||backup.counts?.sourceMetrics!==1)throw new Error(`${label}: backup did not include all fixture structured domains`);
-  for(const key of ['body','segmental','workouts','exercises','sets','labs','docs','treatments','uploads','previews','quality','nutrition','meals','activity','metrics','sourceMetrics']){
+  if(backup.counts?.body!==2||backup.counts?.workouts!==2||backup.counts?.labs!==2||backup.counts?.metrics!==3||backup.counts?.sourceMetrics!==1||backup.counts?.regimens!==2)throw new Error(`${label}: backup did not include all fixture structured domains`);
+  for(const key of ['body','segmental','workouts','workoutEvidence','exercises','sets','labs','docs','treatments','regimens','uploads','previews','quality','nutrition','meals','activity','metrics','sourceMetrics']){
     if(!backup.domains.includes(key))throw new Error(`${label}: backup manifest missing domain ${key}`);
     if(!Array.isArray(backup.data?.[key]))throw new Error(`${label}: backup missing domain ${key}`);
   }
   const sourceMetric=backup.data.sourceMetrics?.[0];
   if(!sourceMetric||sourceMetric.metric_type!=='steps'||sourceMetric.canonical_status!=='candidate'||sourceMetric.source_family!=='test_device')throw new Error(`${label}: source metric provenance/candidate status was not preserved`);
   if(Object.hasOwn(sourceMetric,'source_payload'))throw new Error(`${label}: raw source payload leaked into sourceMetrics backup`);
+  const regimen=backup.data.regimens?.[0];
+  if(!regimen||!regimen.medication||!regimen.source)throw new Error(`${label}: safe protocol context was not preserved`);
+  for(const forbidden of ['source_payload','storage_path'])if(Object.hasOwn(regimen,forbidden))throw new Error(`${label}: private protocol context field leaked: ${forbidden}`);
   if(!backup.notes?.some?.(n=>String(n).includes('nenhum arquivo de backup é baixado')))throw new Error(`${label}: incomplete-backup guardrail note missing`);
   if(!backup.notes?.some?.(n=>String(n).includes('complete se refere somente ao escopo structured_records_only')))throw new Error(`${label}: complete-field scope qualification missing`);
   if(!backup.notes?.some?.(n=>String(n).includes('Arquivos originais armazenados na área privada não são incorporados')))throw new Error(`${label}: private-file exclusion note missing`);
