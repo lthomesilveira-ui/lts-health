@@ -1,0 +1,44 @@
+name: cockpit-smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/index.html'
+      - 'v2/src/today-screen.js'
+      - 'v2/src/treatment-screen.js'
+      - 'v2/cockpit.css'
+      - 'v2/cockpit-smoke.mjs'
+      - '.github/workflows/cockpit-smoke.yml'
+  pull_request:
+    paths:
+      - 'v2/index.html'
+      - 'v2/src/today-screen.js'
+      - 'v2/src/treatment-screen.js'
+      - 'v2/cockpit.css'
+      - 'v2/cockpit-smoke.mjs'
+      - '.github/workflows/cockpit-smoke.yml'
+  workflow_dispatch:
+jobs:
+  cockpit-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser smoke dependency
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Syntax checks
+        run: |
+          node --check v2/src/today-screen.js
+          node --check v2/src/treatment-screen.js
+          node --check v2/cockpit-smoke.mjs
+      - name: Start fixture server
+        run: |
+          cd v2
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-cockpit-server.log 2>&1 &
+      - name: Cockpit desktop and mobile
+        run: node v2/cockpit-smoke.mjs
