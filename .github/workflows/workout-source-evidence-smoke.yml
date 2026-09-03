@@ -6,6 +6,7 @@ on:
       - 'supabase/migrations/20260903195000_add_workout_source_evidence.sql'
       - 'v2/src/data-layer.js'
       - 'v2/src/workout-evidence.js'
+      - 'v2/src/source-status.js'
       - 'v2/workout-source-evidence-smoke.mjs'
       - '.github/workflows/workout-source-evidence-smoke.yml'
   workflow_dispatch:
@@ -28,6 +29,7 @@ jobs:
       - name: Workout evidence contract
         run: |
           node --check v2/src/workout-evidence.js
+          node --check v2/src/source-status.js
           node --check v2/src/data-layer.js
           node --check v2/workout-source-evidence-smoke.mjs
           node v2/workout-source-evidence-smoke.mjs

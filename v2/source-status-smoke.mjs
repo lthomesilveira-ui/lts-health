@@ -17,6 +17,7 @@ async function run(viewport,label){
     const {sourceStatusFor,latestSourceMetricDateFor,latestConfirmedSourceDateFor,latestSourceEvidenceDateFor,sourceCoverageFor}=await import('./src/source-status.js');
     state.data.uploads=[];
     state.data.workouts=[];
+    state.data.workoutEvidence=[];
     state.data.nutrition=[];
     state.data.meals=[];
     state.data.metrics=[];
@@ -26,7 +27,7 @@ async function run(viewport,label){
       {source_record_id:'polar-candidate',metric_date:'2026-02-10',metric_type:'resting_heart_rate_bpm',value:59,unit:'count/min',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'candidate'}
     ];
     state.errors={};
-    for(const key of ['uploads','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
+    for(const key of ['uploads','workouts','workoutEvidence','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
     return {
       apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),
       appleDate:latestSourceMetricDateFor('apple_health'),polarDate:latestSourceMetricDateFor('polar_flow'),mfpDate:latestSourceMetricDateFor('myfitnesspal'),
@@ -75,7 +76,8 @@ async function run(viewport,label){
       {source_record_id:'mfp-candidate',metric_date:'2026-02-10',metric_type:'dietary_protein_g',value:155,unit:'g',source_name:'MyFitnessPal via Apple Health',source_family:'myfitnesspal',canonical_status:'candidate'},
       {source_record_id:'polar-candidate',metric_date:'2026-02-10',metric_type:'steps',value:8500,unit:'count',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'held'}
     ];
-    state.data.workouts=[{source_record_id:'polar-workout',workout_date:'2026-02-08',workout_type:'Treino',source:'Polar Flow'}];
+    state.data.workouts=[{source_record_id:'polar-workout',workout_date:'2026-02-08',workout_type:'Treino',source:'LTS Health'}];
+    state.data.workoutEvidence=[{source_record_id:'polar-evidence-confirmed',workout_source_record_id:'polar-workout',workout_date:'2026-02-08',source_family:'polar_flow',source_name:'Polar Flow',evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}];
     state.data.nutrition=[
       {source_record_id:'mfp-direct',nutrition_date:'2026-02-09',calories_kcal:2100,source:'MyFitnessPal'},
       {source_record_id:'mfp-via-apple-not-confirmed',nutrition_date:'2026-02-11',calories_kcal:2200,source:'MyFitnessPal via Apple Health'}
@@ -83,7 +85,7 @@ async function run(viewport,label){
     state.data.meals=[];
     state.data.metrics=[{source_record_id:'apple-energy',measured_at:'2026-02-07T12:00:00Z',metric_type:'active_energy_kcal',value:450,unit:'kcal',source:'HealthKitBridge ActivitySummary'}];
     state.errors={};
-    for(const key of ['uploads','previews','quality','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
+    for(const key of ['uploads','previews','quality','workouts','workoutEvidence','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
     return {
       apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),
       appleEvidence:latestSourceEvidenceDateFor('apple_health'),polarEvidence:latestSourceEvidenceDateFor('polar_flow'),mfpEvidence:latestSourceEvidenceDateFor('myfitnesspal'),
@@ -101,8 +103,9 @@ async function run(viewport,label){
   const failed=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {sourceStatusFor,latestSourceMetricDateFor,latestConfirmedSourceDateFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
-    state.data.workouts=[];state.data.nutrition=[];state.data.meals=[];state.data.metrics=[];state.data.sourceMetrics=[];
+    state.data.workouts=[];state.data.workoutEvidence=[];state.data.nutrition=[];state.data.meals=[];state.data.metrics=[];state.data.sourceMetrics=[];
     state.errors={};
+    state.domainStatus.workoutEvidence='ready';
     state.domainStatus.sourceMetrics='error';
     return {apple:sourceStatusFor('apple_health'),polar:sourceStatusFor('polar_flow'),mfp:sourceStatusFor('myfitnesspal'),latest:latestSourceMetricDateFor('apple_health'),confirmed:latestConfirmedSourceDateFor('apple_health'),evidence:latestSourceEvidenceDateFor('apple_health')};
   });
@@ -111,9 +114,9 @@ async function run(viewport,label){
   const recordedError=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {sourceStatusFor,latestSourceMetricDateFor,latestSourceEvidenceDateFor}=await import('./src/source-status.js');
-    state.data.uploads=[];state.data.workouts=[];state.data.nutrition=[];state.data.meals=[];state.data.metrics=[];
+    state.data.uploads=[];state.data.workouts=[];state.data.workoutEvidence=[];state.data.nutrition=[];state.data.meals=[];state.data.metrics=[];
     state.data.sourceMetrics=[{source_record_id:'apple-stale-candidate',metric_date:'2026-02-10',metric_type:'steps',value:9000,unit:'count',source_name:'Apple Watch',source_family:'apple_watch',canonical_status:'candidate'}];
-    for(const key of ['uploads','workouts','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
+    for(const key of ['uploads','workouts','workoutEvidence','nutrition','meals','metrics','sourceMetrics'])state.domainStatus[key]='ready';
     state.errors={sourceMetrics:new Error('fixture source metric failure')};
     return {status:sourceStatusFor('apple_health'),latest:latestSourceMetricDateFor('apple_health'),evidence:latestSourceEvidenceDateFor('apple_health')};
   });

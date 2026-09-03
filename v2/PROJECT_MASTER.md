@@ -21,18 +21,21 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - Limites canônicos de Apple/MyFitnessPal/treinos e separação de métricas por origem protegidos por gates.
 - Inbox privado, inspetor de upload, backup estruturado e proteção contra exposição de payload bruto.
 - Reconhecimento defensivo de ActivitySummary por `source_payload.method` limitado às três métricas Apple autorizadas, promovido por PR normal.
-- Camada normalizada `health_workout_source_evidence` implementada neste pacote para ligar telemetria complementar ao treino LTS sem criar uma segunda sessão. Backfill somente quando a proveniência registrada cita a fonte explicitamente; telemetria histórica sem origem comprovada permanece sem atribuição.
+- Camada normalizada `health_workout_source_evidence` promovida para ligar telemetria complementar ao treino LTS sem criar uma segunda sessão. O backfill só atribui Polar quando a proveniência registrada o cita explicitamente; telemetria histórica sem origem comprovada permanece sem atribuição.
+- Gate da evidência complementar validado: vínculo somente com treino canônico visível, evidência candidata não vira fonte confirmada, backup preserva evidência estruturada sem decoração de UI e sem `source_payload`.
 
 ## Em validação neste pacote
 
-- Gate dedicado de evidência complementar de treino: vínculo somente com treino canônico visível, evidência candidata não vira fonte confirmada, backup preserva evidência estruturada sem decoração de UI e sem `source_payload`.
-- CI completo do `architecture-v2` e smoke do candidato após o commit.
+- Status e cobertura do Polar passam a consumir `health_workout_source_evidence` diretamente, sem depender de texto decorado do treino.
+- Evidência de treino `candidate/held` permanece como fonte aguardando regra segura; somente `confirmed` torna Polar disponível.
+- “Detalhes por origem” combina métricas por origem e evidência complementar de treino sem mostrar payload/valores brutos e mantém informação parcial quando apenas um dos domínios falha.
+- Gates de proveniência exercitam desktop/mobile, falha parcial e independência entre fonte estruturada e texto de exibição.
 
 ## Próximas prioridades
 
-1. Consolidar Polar/Apple complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
+1. Consolidar Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
 2. Revisar registros LTS com telemetria histórica sem proveniência explícita; manter origem desconhecida até existir evidência real, sem retroatribuição por suposição.
-3. Simplificar futuramente `health-inspect-upload` para escrever evidências não canônicas diretamente em `health_source_daily_metrics`, mantendo trigger de banco como defesa secundária.
+3. Simplificar `health-inspect-upload` para escrever evidências não canônicas diretamente em `health_source_daily_metrics`, mantendo trigger de banco como defesa secundária.
 4. Continuar análises integradas descritivas: composição × consistência de treino; composição segmentar × grupos treinados; nutrição × períodos; performance apenas com exercício/máquina/unidade comparáveis; sono × performance apenas com dado confirmado e sem sobreposição; exames ao longo do tempo quando houver múltiplas coletas.
 5. Ampliar importação/Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
 6. Ampliar Fleury/Einstein somente a partir de originais reais; manter investigação de caminho autenticado Fleury sem prometer API inexistente.
