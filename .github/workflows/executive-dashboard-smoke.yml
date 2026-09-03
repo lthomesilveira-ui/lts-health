@@ -2,7 +2,7 @@ name: LTS Health Executive Dashboard Smoke
 on:
   pull_request:
     branches: [architecture-v2]
-    paths: ['v2/src/integrated-analysis.js','v2/src/today-screen.js','v2/today.css','v2/executive-dashboard-smoke.mjs','.github/workflows/executive-dashboard-smoke.yml']
+    paths: ['v2/src/integrated-analysis.js','v2/src/today-screen.js','v2/today.css','v2/cockpit.css','v2/executive-dashboard-smoke.mjs','.github/workflows/executive-dashboard-smoke.yml']
   push:
     branches: [architecture-v2]
   workflow_dispatch:
@@ -19,9 +19,10 @@ jobs:
           node --check v2/src/today-screen.js
           node --check v2/executive-dashboard-smoke.mjs
           grep -q 'buildIntegratedAnalysis' v2/src/today-screen.js
-          grep -q 'Seu histórico em uma tela' v2/src/today-screen.js
+          grep -q 'Cockpit LTS Health' v2/src/today-screen.js
           grep -q 'canonicalWorkouts' v2/src/integrated-analysis.js
           grep -q 'comparableLoadUnit' v2/src/integrated-analysis.js
+          grep -q 'Sem comparação entre origens diferentes' v2/src/today-screen.js
           ! grep -q 'buildHealthIntelligence' v2/src/today-screen.js
       - name: Install browser runtime
         run: |
