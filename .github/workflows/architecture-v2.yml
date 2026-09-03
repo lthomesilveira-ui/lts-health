@@ -23,6 +23,7 @@ jobs:
             v2/timeline-interaction-smoke.mjs \
             v2/nutrition-history-smoke.mjs \
             v2/analysis-history-smoke.mjs \
+            v2/analysis-period-consistency-smoke.mjs \
             v2/health-longitudinal-smoke.mjs \
             v2/training-progression-smoke.mjs \
             v2/canonical-boundary-smoke.mjs \
@@ -30,7 +31,8 @@ jobs:
             v2/provenance-alias-smoke.mjs \
             v2/executive-dashboard-smoke.mjs \
             v2/product-finish-smoke.mjs \
-            v2/upload-outcome-smoke.mjs; do node --check "$file"; done
+            v2/upload-outcome-smoke.mjs \
+            v2/source-continuity-unknown-smoke.mjs; do node --check "$file"; done
 
           test -f v2/index.html
           test -f v2/styles.css
@@ -66,6 +68,12 @@ jobs:
           grep -q "comparableLoadUnit" v2/src/integrated-analysis.js
           grep -q "comparableLabCount" v2/src/integrated-analysis.js
           grep -q "sleepCoverageModel" v2/src/integrated-analysis.js
+          grep -q "sourceContinuityBreak" v2/src/integrated-analysis.js
+          grep -q "periodBounds" v2/src/integrated-analysis.js
+          grep -q "nutritionPeriodModel" v2/src/integrated-analysis.js
+          grep -q "Mesma janela em toda esta seção" v2/src/analysis-screen.js
+          grep -q "Janela entre bioimpedâncias" v2/src/analysis-screen.js
+          grep -q "Água ingerida" v2/src/analysis-screen.js
           grep -q "As fontes permanecem separadas" v2/src/analysis-screen.js
           grep -q "não transforma essa associação em causa" v2/src/today-screen.js
           grep -q "Sono permanece fora desta leitura" v2/src/intelligence-engine.js
@@ -94,6 +102,7 @@ jobs:
           node v2/timeline-interaction-smoke.mjs
           node v2/nutrition-history-smoke.mjs
           node v2/analysis-history-smoke.mjs
+          node v2/analysis-period-consistency-smoke.mjs
           node v2/health-longitudinal-smoke.mjs
           node v2/training-progression-smoke.mjs
           node v2/canonical-boundary-smoke.mjs
@@ -102,3 +111,4 @@ jobs:
           node v2/executive-dashboard-smoke.mjs
           node v2/product-finish-smoke.mjs
           node v2/upload-outcome-smoke.mjs
+          node v2/source-continuity-unknown-smoke.mjs
