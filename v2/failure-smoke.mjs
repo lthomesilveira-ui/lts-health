@@ -77,14 +77,14 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   await finish(ctx,'dados/labs');
 }
 {
-  const ctx=await open('treatments','tratamentos','Tratamentos');
-  if(!ctx.text.includes('histórico de tratamentos não carregou agora'))throw new Error('tratamentos: failure hidden');
-  if(ctx.text.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error('tratamentos: operational guidance visible');
-  await finish(ctx,'tratamentos');
+  const ctx=await open('treatments','tratamentos','Protocolos');
+  if(!ctx.text.includes('histórico de protocolos não carregou agora'))throw new Error('protocolos: failure hidden');
+  if(ctx.text.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error('protocolos: operational guidance visible');
+  await finish(ctx,'protocolos');
 }
 {
   const ctx=await openToday('nutrition',{width:390,height:844});
-  const card=await ctx.page.locator('.dashboardCurrent').filter({hasText:'Alimentação'}).first().textContent();
+  const card=await ctx.page.locator('.dashboardCurrent').filter({hasText:'Nutrição'}).first().textContent();
   if(!card?.includes('Indisponível agora')||card?.includes('Sem registro recente')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
   if(!ctx.text.includes('Último treino'))throw new Error('hoje/nutrition mobile: healthy snapshot cards disappeared');
   await finish(ctx,'hoje/nutrition mobile');
