@@ -6,7 +6,7 @@ async function run(viewport,label){
   const page=await browser.newPage({viewport});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
   const audit=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {renderAnalysisHub}=await import('./src/analysis-screen.js');
@@ -64,6 +64,7 @@ async function run(viewport,label){
   if(!audit.renderedLegText.includes('3 sessão(ões) relacionadas'))throw new Error(`${label}: segmental interval did not preserve its separate 3-session context`);
   if(!audit.text.includes('As contagens abaixo usam somente esse intervalo, não o período inteiro.'))throw new Error(`${label}: segmental scope is not explicit`);
   if(!audit.text.includes('Mesma janela em toda esta seção'))throw new Error(`${label}: selected-period scope contract missing`);
+  if(!audit.text.includes('Resumo executivo'))throw new Error(`${label}: executive Insights digest missing`);
   if(!audit.text.includes('Água ingerida')||!audit.text.includes('Sem dado')||!audit.text.includes('Carboidratos médios')||!audit.text.includes('Gordura média')||!audit.text.includes('Fibra média'))throw new Error(`${label}: expanded nutrition context missing`);
   if(audit.nutrition.waterDays!==0||audit.nutrition.waterAvgMl!==null)throw new Error(`${label}: missing water was converted to zero`);
   if(/\b(causou|provou|garante|piorou)\b/i.test(audit.text))throw new Error(`${label}: causal/value judgment leaked`);
@@ -73,4 +74,4 @@ async function run(viewport,label){
 }
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
-console.log('LTS Health v2 analysis period consistency smoke passed');
+console.log('LTS Health v2 Insights period consistency smoke passed');
