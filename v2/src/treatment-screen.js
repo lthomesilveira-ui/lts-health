@@ -7,7 +7,7 @@ const failed=key=>state.domainStatus?.[key]==='error';
 function query(){return norm(state.ui.treatmentQuery||'');}
 function events(){
   const q=query();
-  return [...(state.data.treatments||[])].filter(r=>!q||norm(`${r.medication} ${r.source} ${r.event_type}`).includes(q)).sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)));
+  return [...(state.data.treatments||[])].filter(r=>!q||norm(`${r.medication} ${r.source}`).includes(q)).sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date)));
 }
 function regimens(){
   const q=query();

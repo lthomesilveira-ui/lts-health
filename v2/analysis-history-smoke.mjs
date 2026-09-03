@@ -9,7 +9,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
 
   const boundary=await page.evaluate(async()=>{
     const {buildIntegratedAnalysis}=await import('./src/integrated-analysis.js');
@@ -83,7 +83,7 @@ async function run(viewport,label){
 
   await page.selectOption('#analysisPeriod','all');
   const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Período selecionado','Mesma janela em toda esta seção','Distribuição dos treinos','Performance comparável','Alimentação no período','Composição global','Exames no período','Janela entre bioimpedâncias','Alimentação entre as mesmas medições','Sono no período','O que ainda limita a leitura'])if(!text.includes(expected))throw new Error(`${label}: missing analysis section ${expected}`);
+  for(const expected of ['Resumo executivo','Período selecionado','Mesma janela em toda esta seção','Distribuição dos treinos','Performance comparável','Alimentação no período','Composição global','Exames no período','Janela entre bioimpedâncias','Alimentação entre as mesmas medições','Sono no período','O que ainda limita a leitura'])if(!text.includes(expected))throw new Error(`${label}: missing analysis section ${expected}`);
   for(const forbidden of ['ActivitySummary','source_family','readiness score'])if(text.includes(forbidden))throw new Error(`${label}: technical language leaked ${forbidden}`);
   if(/\b(causou|provou|garante|piorou)\b/i.test(text))throw new Error(`${label}: causal/value judgment language leaked`);
 
@@ -93,8 +93,8 @@ async function run(viewport,label){
     state.data.labs=[{source_record_id:'lab-a',collection_date:'2026-01-01',laboratory:'Lab A',biomarker:'Glicose',result_numeric:90,unit:'mg/dL'},{source_record_id:'lab-b',collection_date:'2026-02-01',laboratory:'Lab A',biomarker:'Glicose',result_numeric:5,unit:'mmol/L'}];
     const html=renderAnalysisHub();state.data.labs=originalLabs;return html;
   });
-  if(!incompatibleLabCopy.includes('as coletas da mesma origem estão preservadas'))throw new Error(`${label}: Analysis does not explain preserved same-source non-comparable lab evidence`);
-  if(!incompatibleLabCopy.includes('não há correspondência segura de nome, unidade e valor numérico'))throw new Error(`${label}: Analysis omits conservative lab comparison rule`);
+  if(!incompatibleLabCopy.includes('as coletas da mesma origem estão preservadas'))throw new Error(`${label}: Insights does not explain preserved same-source non-comparable lab evidence`);
+  if(!incompatibleLabCopy.includes('não há correspondência segura de nome, unidade e valor numérico'))throw new Error(`${label}: Insights omits conservative lab comparison rule`);
 
   const ambiguityCopy=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');const {renderAnalysisHub}=await import('./src/analysis-screen.js');
@@ -105,7 +105,7 @@ async function run(viewport,label){
     state.data.segmental=[sa,sb,{...sb,source_record_id:'segment-conflict',lean_trunk_kg:10}];
     const html=renderAnalysisHub();state.data.body=originalBody;state.data.segmental=originalSegmental;return html;
   });
-  for(const expected of ['Composição em revisão','Composição segmentar em revisão','Nenhuma diferença foi calculada','Nenhuma região foi escolhida'])if(!ambiguityCopy.includes(expected))throw new Error(`${label}: Analysis ambiguity state missing ${expected}`);
+  for(const expected of ['Composição em revisão','Composição segmentar em revisão','Nenhuma diferença foi calculada','Nenhuma região foi escolhida'])if(!ambiguityCopy.includes(expected))throw new Error(`${label}: Insights ambiguity state missing ${expected}`);
   for(const forbidden of ['+29,0 kg','-16,5 kg','+25,0 p.p.'])if(ambiguityCopy.includes(forbidden))throw new Error(`${label}: ambiguous body evidence leaked as change ${forbidden}`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
@@ -115,4 +115,4 @@ async function run(viewport,label){
 }
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
-console.log('LTS Health v2 integrated analysis smoke passed');
+console.log('LTS Health v2 integrated Insights smoke passed');
