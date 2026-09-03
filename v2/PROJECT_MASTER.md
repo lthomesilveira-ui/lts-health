@@ -26,21 +26,21 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - Cockpit longitudinal promovido por PR normal: composição, treino, nutrição, hidratação, exames e protocolos aparecem juntos na abertura, com acesso direto a Insights, Exames e Protocolos.
 - Gráficos do cockpit exibem escalas e datas explícitas e preservam o limite de não comparar composição corporal entre origens diferentes.
 - Exames estruturados existentes aparecem no cockpit com cobertura e acesso ao histórico, sem interpretação clínica automática.
+- Explorador longitudinal de Exames promovido: marcadores com pelo menos dois pontos inequívocos da mesma origem e unidade ganham atalhos, escala vertical explícita e datas de série; origens, unidades e datas ambíguas permanecem separadas.
 - Hidratação é uma dimensão explícita e fail-closed: como a importação estruturada atual do MyFitnessPal não contém volume real de água, o app mostra a lacuna e não estima nem preenche valores.
 - Conflitos no total nutricional mais recente permanecem fail-closed: quando há mais de um total para a mesma data, nenhum é escolhido automaticamente como atual.
+- O `health-inspect-upload` roteia sono do export Apple diretamente para `health_source_daily_metrics` como candidato, enquanto apenas as três métricas ActivitySummary autorizadas seguem para o caminho canônico; o gatilho de banco permanece como defesa secundária.
 - O `/v2/` promovido passou homologação externa automatizada em desktop/mobile; o fallback público anterior permaneceu intacto.
 
 ## Próximas prioridades
 
 1. Recuperar hidratação somente de uma fonte real que contenha água; ampliar o importador apenas quando um formato validado trouxer esse campo, sem preenchimento por estimativa.
-2. Aprofundar Exames com tendências por marcador quando existirem coletas comparáveis, preservando marcador, unidade, origem e referência e sem inventar interpretação clínica.
-3. Simplificar `health-inspect-upload` para escrever evidências não canônicas diretamente em `health_source_daily_metrics`, mantendo a defesa de banco como camada secundária.
-4. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
-5. Continuar análises integradas descritivas e fortalecer a experiência de Insights sem transformar associação temporal em causalidade.
-6. Ampliar Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
-7. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
-8. Continuar homologação visual/funcional autônoma do `/v2/` em desktop e mobile, sem usar o usuário para QA básico.
-9. Manter a raiz antiga como fallback até autorização explícita de promoção.
+2. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
+3. Continuar análises integradas descritivas e fortalecer a experiência de Insights sem transformar associação temporal em causalidade.
+4. Ampliar Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
+5. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
+6. Continuar homologação visual/funcional autônoma do `/v2/` em desktop e mobile, sem usar o usuário para QA básico.
+7. Manter a raiz antiga como fallback até autorização explícita de promoção.
 
 ## Bloqueios externos
 
