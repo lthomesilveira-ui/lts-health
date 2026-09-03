@@ -78,7 +78,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await open('treatments','tratamentos','Protocolos');
-  if(!ctx.text.includes('histórico de protocolos não carregou agora'))throw new Error('protocolos: failure hidden');
+  if(!ctx.text.includes('O histórico de protocolos não carregou completamente.'))throw new Error('protocolos: partial failure hidden');
   if(ctx.text.match(/\b(dose|dosagem|ciclo|aplica[cç][aã]o)\b/i))throw new Error('protocolos: operational guidance visible');
   await finish(ctx,'protocolos');
 }
