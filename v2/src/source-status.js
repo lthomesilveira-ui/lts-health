@@ -13,6 +13,9 @@ const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_f
 const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&isPreservedCandidate(row);
 const anyCandidateMetric=rows=>(rows||[]).some(appleCandidate);
 const appleSourceMetric=row=>appleNativeFamilies.has(norm(row?.source_family));
+const workoutEvidenceFor=(rows,family,statuses=null)=>(rows||[]).filter(row=>norm(row?.source_family)===norm(family)&&(!statuses||statuses.has(norm(row?.evidence_status))));
+const confirmedWorkoutEvidence=(rows,family)=>workoutEvidenceFor(rows,family,new Set(['confirmed']));
+const preservedWorkoutEvidence=(rows,family)=>workoutEvidenceFor(rows,family,preservedCandidateStatuses);
 const dateOnly=value=>{const date=String(value??'').slice(0,10);return /^\d{4}-\d{2}-\d{2}$/.test(date)?date:null;};
 const latestDate=values=>(values||[]).map(dateOnly).filter(Boolean).reduce((latest,date)=>!latest||date>latest?date:latest,null);
 
@@ -56,16 +59,16 @@ function latestUploadFor(source){
 }
 
 function sourceEvidence(source){
-  const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
+  const workoutEvidence=state.data.workoutEvidence||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
   if(source==='apple_health')return{
     dataFound:!failed('metrics')&&metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&isAppleSource(m)&&isAppleActivitySummarySource(m)),
     candidateFound:!failed('sourceMetrics')&&anyCandidateMetric(sourceMetrics),
     domainKeys:['metrics','sourceMetrics']
   };
   if(source==='polar_flow')return{
-    dataFound:!failed('workouts')&&contains(workouts,['source','source_file'],'polar'),
-    candidateFound:!failed('sourceMetrics')&&candidateFromFamily(sourceMetrics,'polar_flow'),
-    domainKeys:['workouts','sourceMetrics']
+    dataFound:!failed('workoutEvidence')&&confirmedWorkoutEvidence(workoutEvidence,'polar_flow').length>0,
+    candidateFound:(!failed('workoutEvidence')&&preservedWorkoutEvidence(workoutEvidence,'polar_flow').length>0)||(!failed('sourceMetrics')&&candidateFromFamily(sourceMetrics,'polar_flow')),
+    domainKeys:['workoutEvidence','sourceMetrics']
   };
   if(source==='myfitnesspal')return{
     dataFound:(!failed('nutrition')&&nutrition.some(directMyFitnessPal))||(!failed('meals')&&meals.some(directMyFitnessPal)),
@@ -86,12 +89,17 @@ export function latestSourceMetricDateFor(source){
   return latestDate(relevant.map(row=>row?.metric_date));
 }
 
+export function latestWorkoutEvidenceDateFor(source,statuses=preservedCandidateStatuses){
+  if(source!=='polar_flow'||failed('workoutEvidence'))return null;
+  return latestDate(workoutEvidenceFor(state.data.workoutEvidence||[],'polar_flow',statuses).map(row=>row?.workout_date));
+}
+
 export function latestConfirmedSourceDateFor(source){
-  const workouts=state.data.workouts||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],directDates=[];
+  const workoutEvidence=state.data.workoutEvidence||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],directDates=[];
   if(source==='apple_health'){
     if(!failed('metrics'))directDates.push(...metrics.filter(row=>stableAppleMetricTypes.has(row?.metric_type)&&isAppleSource(row)&&isAppleActivitySummarySource(row)).map(row=>row?.measured_at));
   }else if(source==='polar_flow'){
-    if(!failed('workouts'))directDates.push(...matching(workouts,['source','source_file'],'polar').map(row=>row?.workout_date));
+    if(!failed('workoutEvidence'))directDates.push(...confirmedWorkoutEvidence(workoutEvidence,'polar_flow').map(row=>row?.workout_date));
   }else if(source==='myfitnesspal'){
     if(!failed('nutrition'))directDates.push(...nutrition.filter(directMyFitnessPal).map(row=>row?.nutrition_date));
     if(!failed('meals'))directDates.push(...meals.filter(directMyFitnessPal).map(row=>row?.meal_date));
@@ -105,7 +113,7 @@ export function latestConfirmedSourceDateFor(source){
 }
 
 export function sourceCoverageFor(source){
-  const confirmedDate=latestConfirmedSourceDateFor(source),preservedDate=latestSourceMetricDateFor(source);
+  const confirmedDate=latestConfirmedSourceDateFor(source),metricPreservedDate=latestSourceMetricDateFor(source),workoutPreservedDate=latestWorkoutEvidenceDateFor(source),preservedDate=latestDate([metricPreservedDate,workoutPreservedDate]);
   return {confirmedDate,preservedDate,latestDate:latestDate([confirmedDate,preservedDate])};
 }
 

@@ -5,6 +5,8 @@ on:
     paths:
       - 'v2/src/data-layer.js'
       - 'v2/src/data-screen.js'
+      - 'v2/src/source-status.js'
+      - 'v2/src/workout-evidence.js'
       - 'v2/source-provenance-smoke.mjs'
       - '.github/workflows/source-provenance-smoke.yml'
   workflow_dispatch:
@@ -25,4 +27,8 @@ jobs:
           cd v2
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-provenance-server.log 2>&1 &
       - name: Source provenance interactions
-        run: node v2/source-provenance-smoke.mjs
+        run: |
+          node --check v2/src/source-status.js
+          node --check v2/src/data-screen.js
+          node --check v2/source-provenance-smoke.mjs
+          node v2/source-provenance-smoke.mjs
