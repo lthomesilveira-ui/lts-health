@@ -121,19 +121,23 @@ function reviewInbox(uploads,previews,issues,sourceMetrics){
   </section>`;
 }
 
-function provenanceOverview(rows){
-  if(failed('sourceMetrics'))return'<div class="errorState"><b>Não foi possível carregar as origens das métricas agora.</b><span>Os dados já confirmados continuam disponíveis. Atualize para tentar novamente.</span></div>';
+function provenanceOverview(metricRows,workoutEvidenceRows){
+  const metricsFailed=failed('sourceMetrics'),evidenceFailed=failed('workoutEvidence');
+  if(metricsFailed&&evidenceFailed)return'<div class="errorState"><b>Não foi possível carregar as origens agora.</b><span>Os dados confirmados continuam preservados. Atualize para tentar novamente.</span></div>';
   const groups=new Map();
-  for(const row of rows||[]){
-    const family=String(row.source_family||'unknown');
-    if(!groups.has(family))groups.set(family,{total:0,confirmed:0,review:0,preserved:0,latest:null});
-    const group=groups.get(family);group.total++;
-    const status=String(row.canonical_status||'').toLowerCase();
-    if(status==='canonical')group.confirmed++;else if(['candidate','held'].includes(status))group.review++;else group.preserved++;
-    const date=dateValue(row.metric_date);if(date&&(!group.latest||date>group.latest))group.latest=date;
-  }
-  const cards=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total||sourceFamilyLabel(a[0]).localeCompare(sourceFamilyLabel(b[0]),'pt-BR')).map(([family,group])=>`<div class="sourceCard provenanceCard"><div><b>${esc(sourceFamilyLabel(family))}</b><small>${group.latest?`dados até ${esc(fmtDate(group.latest))} · `:''}${group.confirmed} confirmado(s) · ${group.review} aguardando conferência${group.preserved?` · ${group.preserved} preservado(s) sem uso automático`:''}</small></div><span>${group.total}</span></div>`).join('');
-  return `<div class="sourceGrid provenanceGrid">${cards||'<div class="sourceCard"><div><b>Sem registros separados por origem</b><small>Nenhum registro desse tipo foi carregado.</small></div><span>0</span></div>'}</div><p class="footerNote">Registros aguardando conferência permanecem separados dos dados confirmados. Uma fonte não é somada a outra automaticamente.</p>`;
+  const add=(family,status,date,kind)=>{
+    family=String(family||'unknown');
+    if(!groups.has(family))groups.set(family,{total:0,confirmed:0,review:0,preserved:0,latest:null,kinds:new Set()});
+    const group=groups.get(family);group.total++;group.kinds.add(kind);
+    status=String(status||'').toLowerCase();
+    if(status==='canonical'||status==='confirmed')group.confirmed++;else if(['candidate','held'].includes(status))group.review++;else group.preserved++;
+    date=dateValue(date);if(date&&(!group.latest||date>group.latest))group.latest=date;
+  };
+  if(!metricsFailed)for(const row of metricRows||[])add(row.source_family,row.canonical_status,row.metric_date,'métricas');
+  if(!evidenceFailed)for(const row of workoutEvidenceRows||[])add(row.source_family,row.evidence_status,row.workout_date,'telemetria de treino');
+  const cards=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total||sourceFamilyLabel(a[0]).localeCompare(sourceFamilyLabel(b[0]),'pt-BR')).map(([family,group])=>`<div class="sourceCard provenanceCard"><div><b>${esc(sourceFamilyLabel(family))}</b><small>${group.latest?`dados até ${esc(fmtDate(group.latest))} · `:''}${group.confirmed} confirmado(s) · ${group.review} aguardando conferência${group.preserved?` · ${group.preserved} preservado(s) sem uso automático`:''} · ${esc([...group.kinds].join(' + '))}</small></div><span>${group.total}</span></div>`).join('');
+  const partial=metricsFailed?'<p class="footerNote">As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.</p>':evidenceFailed?'<p class="footerNote">As evidências complementares de treino não carregaram agora; as origens das métricas continuam exibidas.</p>':'';
+  return `${partial}<div class="sourceGrid provenanceGrid">${cards||'<div class="sourceCard"><div><b>Sem registros separados por origem</b><small>Nenhum registro desse tipo foi carregado.</small></div><span>0</span></div>'}</div><p class="footerNote">Registros aguardando conferência permanecem separados dos dados confirmados. Uma fonte não é somada a outra automaticamente.</p>`;
 }
 
 function qualityRow(issue,mode){
@@ -149,7 +153,7 @@ function qualitySections(issues){
 }
 
 export function renderDataHub(){
-  const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],filtered=filteredUploads(uploads);
+  const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados','Envie arquivos, acompanhe o que já entrou no histórico e veja apenas as conferências que realmente precisam de você.')}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
@@ -162,7 +166,7 @@ export function renderDataHub(){
 
     <section class="sectionGap"><div class="sectionHeading"><div><h2>Fontes</h2><p>Veja quais origens já têm dados, quais ainda estão aguardando uma regra segura e quais ainda não foram conectadas.</p></div></div><div class="sourceStatusGrid">${sourceState().map(statusCard).join('')}</div></section>
 
-    <details class="card sectionGap reviewDetails provenancePanel"><summary><span><b>Detalhes por origem</b><small>Abra se quiser entender de qual dispositivo ou aplicativo vieram os registros.</small></span><span>Ver detalhes</span></summary><div class="reviewDetailsBody">${provenanceOverview(sourceMetrics)}</div></details>
+    <details class="card sectionGap reviewDetails provenancePanel"><summary><span><b>Detalhes por origem</b><small>Abra se quiser entender de qual dispositivo ou aplicativo vieram os registros.</small></span><span>Ver detalhes</span></summary><div class="reviewDetailsBody">${provenanceOverview(sourceMetrics,workoutEvidence)}</div></details>
 
     <section class="card sectionGap"><div class="cardHead"><div><b>Histórico de arquivos</b><small>Veja o que foi recebido e filtre por situação ou origem.</small></div></div>${failed('uploads')?'<div class="errorState"><b>Não foi possível verificar os arquivos agora.</b><span>Atualize para tentar novamente.</span></div>':`${uploadFilters(uploads)}<div class="uploadAuditList">${uploadRows(filtered,previews)}</div>`}</section>
 
