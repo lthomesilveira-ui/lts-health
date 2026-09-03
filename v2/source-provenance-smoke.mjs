@@ -30,10 +30,15 @@ async function run(viewport,label){
   await page.goto('http://127.0.0.1:4173/?fixture=1&fixtureError=sourceMetrics#dados',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
-  const failed=(await page.locator('.provenancePanel').textContent())||'';
+  const failedPanel=page.locator('.provenancePanel');
+  const failed=(await failedPanel.textContent())||'';
   if(!failed.includes('As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.'))throw new Error(`${label}: partial provenance state missing`);
   if(!failed.includes('Polar Flow')||!failed.includes('telemetria de treino'))throw new Error(`${label}: available workout evidence disappeared during sourceMetrics failure`);
-  if(/\b0\s+(confirmado|aguardando)/i.test(failed))throw new Error(`${label}: failed metric provenance was presented as numeric zero`);
+  if(failed.includes('Dispositivo de teste')||failed.includes('Outra origem'))throw new Error(`${label}: failed metric provenance remained visible`);
+  const failedCards=failedPanel.locator('.provenanceCard');
+  if(await failedCards.count()!==1)throw new Error(`${label}: partial provenance must show only available source domains`);
+  const onlyCard=(await failedCards.first().textContent())||'';
+  if(!onlyCard.includes('Polar Flow')||!onlyCard.includes('telemetria de treino'))throw new Error(`${label}: partial provenance card is not the available workout evidence`);
   const availability=(await page.locator('#screenHost').textContent())||'';
   if(!availability.includes('Detalhes por origem')||!availability.includes('As origens das métricas não carregaram agora'))throw new Error(`${label}: partial source-domain availability is not explicit`);
   const polarDuringMetricFailure=(await page.locator('.sourceStatus').filter({hasText:'Polar Flow'}).textContent())||'';

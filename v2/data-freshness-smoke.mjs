@@ -13,8 +13,9 @@ async function run(viewport,label,fixtureError=''){
 
   const body=(await page.locator('#screenHost').textContent())||'';
   if(fixtureError==='sourceMetrics'){
-    if(!body.includes('Não foi possível carregar as origens das métricas agora.'))throw new Error(`${label}: sourceMetrics failure must remain unavailable`);
-    if(body.includes('dados até 02/02/2026'))throw new Error(`${label}: failed sourceMetrics must not display stale fixture freshness`);
+    if(!body.includes('As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.'))throw new Error(`${label}: partial sourceMetrics failure state missing`);
+    if(body.includes('Dispositivo de teste'))throw new Error(`${label}: failed sourceMetrics displayed stale fixture provenance`);
+    if(!body.includes('Polar Flow')||!body.includes('telemetria de treino'))throw new Error(`${label}: available workout evidence disappeared during sourceMetrics failure`);
   }else{
     const panel=(await page.locator('.provenancePanel').textContent())||'';
     if(!panel.includes('dados até 02/02/2026'))throw new Error(`${label}: real metric_date freshness missing`);
