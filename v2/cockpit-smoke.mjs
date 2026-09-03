@@ -11,6 +11,8 @@ async function run(viewport,label){
   const text=(await page.locator('#screenHost').textContent())||'';
   for(const expected of ['Cockpit LTS Health','Composição','Último treino','Nutrição','Hidratação','Exames','Protocolos','Insights','Evolução e cobertura'])if(!text.includes(expected))throw new Error(`${label}: cockpit missing ${expected}`);
   if(!text.includes('Nenhum registro de água foi importado'))throw new Error(`${label}: hydration gap is not explicit`);
+  const protocolCardText=(await page.locator('.cockpitMetric[data-route="tratamentos"]').textContent())||'';
+  if(!protocolCardText.includes('2 cadastro(s)')||!protocolCardText.includes('1 evento(s)')||!protocolCardText.includes('3 item(ns) distintos'))throw new Error(`${label}: cockpit protocol card does not combine safe context and historical events`);
   const charts=page.locator('.cockpitChart svg');if(await charts.count()<2)throw new Error(`${label}: expected scaled cockpit charts`);
   const axisLabels=page.locator('.cockpitAxisLabels text');if(await axisLabels.count()<4)throw new Error(`${label}: chart scale labels missing`);
   await noOverflow(page,label,'hoje');
