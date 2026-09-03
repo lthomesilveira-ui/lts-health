@@ -1,7 +1,8 @@
 import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
 import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFitnessPalViaApple} from './source-status.js';
+import {visibleWorkoutEvidence,decorateWorkoutProvenance} from './workout-evidence.js';
 
-const initialKeys=['body','segmental','workouts','exercises','sets'];
+const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
   bio:[],
   treinos:[],
@@ -34,6 +35,7 @@ const loaders={
   body:()=>fetchAll('health_body_composition','source_record_id,measured_at,weight_kg,skeletal_muscle_mass_kg,fat_mass_kg,body_fat_pct,body_water_l,visceral_fat_level,score,waist_hip_ratio,bmr_kcal,source,source_file,confidence,notes','measured_at',true),
   segmental:()=>fetchAll('health_segmental_composition','source_record_id,measured_at,lean_right_arm_kg,lean_left_arm_kg,lean_trunk_kg,lean_right_leg_kg,lean_left_leg_kg,fat_right_arm_kg,fat_left_arm_kg,fat_trunk_kg,fat_right_leg_kg,fat_left_leg_kg,source,source_file,confidence,notes','measured_at',true),
   workouts:()=>fetchAll('health_workouts','source_record_id,workout_date,workout_type,location,duration_minutes,calories_kcal,heart_rate_avg,heart_rate_min,heart_rate_max,muscle_groups,sets_by_group,raw_exercises,source,source_file,confidence,notes,record_status,is_canonical','workout_date',false),
+  workoutEvidence:()=>fetchAll('health_workout_source_evidence','source_record_id,workout_source_record_id,workout_date,source_family,source_name,evidence_kind,evidence_status,field_names,confidence,source_file,notes','workout_date',false),
   exercises:()=>fetchAll('health_workout_exercises','source_record_id,workout_source_record_id,workout_date,order_index,exercise,machine,muscle_group,sets,reps,weight_kg,source_text,source,confidence,notes','workout_date',false),
   sets:()=>fetchAll('health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,workout_date,exercise_name,exercise_order,set_index,phase,weight,weight_unit,reps_numeric,reps_raw,failure,near_failure,technique,source,confidence,notes','workout_date',false),
   labs:()=>fetchAll('health_lab_results','source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,source,source_file,confidence,notes','collection_date',false),
@@ -53,6 +55,11 @@ const backupLoaders={...loaders};
 const fixtureSourceMetrics=[{
   source_record_id:'source-metric-candidate-1',metric_date:'2026-02-02',metric_type:'steps',value:7100,unit:'count',
   source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
+}];
+const fixtureWorkoutEvidence=[{
+  source_record_id:'workout-evidence-polar-1',workout_source_record_id:'workout-2',workout_date:'2026-02-02',
+  source_family:'polar_flow',source_name:'Polar Flow',evidence_kind:'telemetry',evidence_status:'confirmed',
+  field_names:['duration_minutes','calories_kcal','heart_rate_avg','heart_rate_max'],confidence:'high',source_file:'fixture-source'
 }];
 
 export function visibleRowsForDomain(key,rows=[]){
@@ -78,16 +85,21 @@ function enforceStructuredWorkoutBoundary(){
   const {exercises,sets}=visibleWorkoutChildren(state.data.workouts||[],state.data.exercises||[],state.data.sets||[]);
   if(state.domainStatus.exercises==='ready')state.data.exercises=exercises;
   if(state.domainStatus.sets==='ready')state.data.sets=sets;
+  if(state.domainStatus.workoutEvidence==='ready'){
+    state.data.workoutEvidence=visibleWorkoutEvidence(state.data.workouts||[],state.data.workoutEvidence||[]);
+    state.data.workouts=decorateWorkoutProvenance(state.data.workouts||[],state.data.workoutEvidence||[]);
+  }
 }
 
 function setFixture(){
-  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics};state.errors={};state.domainStatus={};
+  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
   if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
     state.data[fixtureError]=[];
     state.errors[fixtureError]='Falha simulada de carregamento.';
     state.domainStatus[fixtureError]='error';
   }
+  enforceStructuredWorkoutBoundary();
   state.loaded=true;state.loading=false;
 }
 
@@ -153,7 +165,7 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
@@ -184,7 +196,8 @@ export async function buildStructuredBackup(onProgress=()=>{}){
       'Backup estruturado completo dos domínios suportados e acessíveis à sessão atual no momento da exportação.',
       'O campo complete se refere somente ao escopo structured_records_only; não significa cópia dos arquivos privados originais.',
       'Métricas por origem são preservadas separadamente em sourceMetrics para manter proveniência e candidatos ainda não promovidos a métricas canônicas.',
-      'O backup de sourceMetrics preserva apenas campos estruturados de proveniência; payloads brutos de origem ficam de fora.',
+      'Evidências complementares de treino são preservadas separadamente em workoutEvidence; elas não criam uma segunda sessão canônica.',
+      'O backup de sourceMetrics e workoutEvidence preserva somente campos estruturados de proveniência; payloads brutos de origem ficam de fora.',
       'Se qualquer domínio falhar durante a leitura, nenhum arquivo de backup é baixado.',
       'Arquivos originais armazenados na área privada não são incorporados neste JSON.',
       'Credenciais, tokens e segredos de autenticação não são exportados.',
