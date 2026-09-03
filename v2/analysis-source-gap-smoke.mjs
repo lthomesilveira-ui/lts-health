@@ -25,7 +25,7 @@ async function run(viewport,label){
   });
 
   for(const expected of [
-    'histórico existe, mas não há coleta anterior da mesma origem',
+    'há histórico laboratorial, mas a coleta mais recente ainda não tem outra coleta anterior da mesma origem',
     'fontes diferentes não são tratadas como continuidade'
   ])if(!html.includes(expected))throw new Error(`${label}: missing same-source gap copy: ${expected}`);
 
