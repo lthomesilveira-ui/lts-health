@@ -11,7 +11,7 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - MyFitnessPal direto é preferencial; MyFitnessPal via Apple permanece candidato e não cria nutrição duplicada.
 - `source_payload` não pode aparecer na UI nem no backup estruturado público.
 - Fleury/Einstein não recebem parser específico sem documento original real e validação explícita.
-- Tratamentos aparecem somente como contexto temporal, sem atribuição causal.
+- Protocolos/tratamentos aparecem somente como contexto temporal, sem atribuição causal ou orientação de uso.
 - Não declarar E2E web autenticado ou HealthKit em iPhone físico como concluído sem execução real.
 
 ## Concluído e preservado
@@ -20,27 +20,31 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - Dashboard executivo e análises longitudinais principais promovidos por PR normal.
 - Limites canônicos de Apple/MyFitnessPal/treinos e separação de métricas por origem protegidos por gates.
 - Inbox privado, inspetor de upload, backup estruturado e proteção contra exposição de payload bruto.
-- Reconhecimento defensivo de ActivitySummary por `source_payload.method` limitado às três métricas Apple autorizadas, promovido por PR normal.
-- Camada normalizada `health_workout_source_evidence` promovida para ligar telemetria complementar ao treino LTS sem criar uma segunda sessão. O backfill só atribui Polar quando a proveniência registrada o cita explicitamente; telemetria histórica sem origem comprovada permanece sem atribuição.
-- Gate da evidência complementar validado: vínculo somente com treino canônico visível, evidência candidata não vira fonte confirmada, backup preserva evidência estruturada sem decoração de UI e sem `source_payload`.
+- Reconhecimento defensivo de ActivitySummary limitado às três métricas Apple autorizadas.
+- Camada normalizada `health_workout_source_evidence` promovida para ligar telemetria complementar ao treino LTS sem criar uma segunda sessão.
+- Topologia de fontes promovida: Polar usa evidência estruturada, `candidate/held` permanece separado e falhas parciais de proveniência não apagam o domínio que continua disponível.
 
 ## Em validação neste pacote
 
-- Status e cobertura do Polar passam a consumir `health_workout_source_evidence` diretamente, sem depender de texto decorado do treino.
-- Evidência de treino `candidate/held` permanece como fonte aguardando regra segura; somente `confirmed` torna Polar disponível.
-- “Detalhes por origem” combina métricas por origem e evidência complementar de treino sem mostrar payload/valores brutos e mantém informação parcial quando apenas um dos domínios falha.
-- Gates de proveniência exercitam desktop/mobile, falha parcial e independência entre fonte estruturada e texto de exibição.
+- Início passa a funcionar como cockpit: composição, treino, nutrição, hidratação, exames e protocolos em uma visão executiva.
+- Insights, Exames e Protocolos ficam visíveis na navegação principal; Protocolos continua mostrando somente contexto temporal já registrado.
+- Gráficos do cockpit passam a exibir escalas e datas explícitas e respeitam o limite de não comparar composição corporal entre origens diferentes.
+- Exames estruturados existentes passam a aparecer no cockpit com cobertura e acesso direto ao histórico, sem interpretação clínica automática.
+- Hidratação passa a ser uma dimensão explícita. O campo existe, mas a importação atual do MyFitnessPal não forneceu volume de água estruturado; o app mostra a lacuna e não estima valores.
+- Gates desktop/mobile/compact, privacidade, proveniência e fronteiras canônicas precisam permanecer verdes antes da promoção.
 
 ## Próximas prioridades
 
-1. Consolidar Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
-2. Revisar registros LTS com telemetria histórica sem proveniência explícita; manter origem desconhecida até existir evidência real, sem retroatribuição por suposição.
-3. Simplificar `health-inspect-upload` para escrever evidências não canônicas diretamente em `health_source_daily_metrics`, mantendo trigger de banco como defesa secundária.
-4. Continuar análises integradas descritivas: composição × consistência de treino; composição segmentar × grupos treinados; nutrição × períodos; performance apenas com exercício/máquina/unidade comparáveis; sono × performance apenas com dado confirmado e sem sobreposição; exames ao longo do tempo quando houver múltiplas coletas.
-5. Ampliar importação/Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
-6. Ampliar Fleury/Einstein somente a partir de originais reais; manter investigação de caminho autenticado Fleury sem prometer API inexistente.
-7. Continuar homologação visual/funcional autônoma do `/v2/` em desktop e mobile, sem usar o usuário para QA básico.
-8. Preservar a candidata em paralelo e manter a raiz antiga como fallback até autorização explícita de promoção.
+1. Fechar e promover o pacote cockpit somente com todos os gates verdes e raiz pública anterior intacta.
+2. Recuperar hidratação apenas quando houver fonte real que contenha água; ampliar o importador se um formato validado trouxer esse campo, sem preencher por estimativa.
+3. Aprofundar Exames com tendências por marcador quando existirem coletas comparáveis, preservando unidade, origem e referência sem inventar interpretação.
+4. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
+5. Simplificar `health-inspect-upload` para escrever evidências não canônicas diretamente em `health_source_daily_metrics`, mantendo defesa de banco secundária.
+6. Continuar análises integradas descritivas e fortalecer a experiência de Insights sem transformar associação temporal em causalidade.
+7. Ampliar Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
+8. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
+9. Continuar homologação visual/funcional autônoma do `/v2/` em desktop e mobile, sem usar o usuário para QA básico.
+10. Manter a raiz antiga como fallback até autorização explícita de promoção.
 
 ## Bloqueios externos
 

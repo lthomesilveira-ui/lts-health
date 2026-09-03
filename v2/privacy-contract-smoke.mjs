@@ -33,7 +33,7 @@ const operational=/(dose|dosage|frequency|frequencia|route|via|injection|injecao
 if(fields.some(f=>operational.test(f)))throw new Error('operational treatment field entered the normal treatment loader');
 if(new RegExp(`\\br\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(treatment))throw new Error('treatment screen renders an operational treatment field');
 if(new RegExp(`\\bt\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(timeline))throw new Error('timeline renders an operational treatment field');
-for(const token of ["title('Tratamentos','Contexto histórico por data e origem. Esta área não substitui orientação médica.')","missing_event_dose:'Contexto histórico de tratamento'","Registro histórico preservado sem detalhe operacional nesta tela."])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
+for(const token of ["title('Protocolos','Contexto temporal dos registros existentes. O LTS Health organiza o histórico sem recomendar início, interrupção ou alteração de uso.')","missing_event_dose:'Contexto histórico de tratamento'","Registro histórico preservado sem detalhe operacional nesta tela."])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
 for(const forbidden of ["Confirmação registrada","sub:'Confirmação registrada'"])if((treatment+timeline).includes(forbidden))throw new Error(`operational treatment confirmation re-entered presentation code: ${forbidden}`);
 if(/\b(?:r|t)\.event_type\b/.test(treatment+timeline))throw new Error('treatment event_type re-entered the user-facing treatment context');
 
@@ -56,10 +56,10 @@ for(const token of ['complete:true','structured_complete:true','includes_private
 if(!backupBlock.includes('Backup não criado'))throw new Error('incomplete structured backup is no longer fail-closed');
 if(sourceMetricProjection.includes('source_payload'))throw new Error('structured backup can include raw source metric payload');
 
-const provenance=dataScreen.match(/function provenanceOverview\(rows\)\{[\s\S]*?\n\}/)?.[0]||'';
+const provenance=dataScreen.match(/function provenanceOverview\(metricRows,workoutEvidenceRows\)\{[\s\S]*?\n\}/)?.[0]||'';
 if(!provenance)throw new Error('safe provenance summary missing');
 if(/row\.value\b|source_payload|source_record_id|storage_path/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
-for(const token of ['Não foi possível carregar as origens das métricas agora.','aguardando conferência','preservado(s) sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
+for(const token of ['Não foi possível carregar as origens agora.','As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.','aguardando conferência','preservado(s) sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
 for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas','canônico(s)','candidato(s)'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
 
 const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\s*(?=function )/)?.[0]||'';

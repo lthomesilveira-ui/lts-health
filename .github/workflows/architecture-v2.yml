@@ -30,6 +30,7 @@ jobs:
             v2/source-status-smoke.mjs \
             v2/provenance-alias-smoke.mjs \
             v2/executive-dashboard-smoke.mjs \
+            v2/cockpit-smoke.mjs \
             v2/product-finish-smoke.mjs \
             v2/upload-outcome-smoke.mjs \
             v2/source-continuity-unknown-smoke.mjs; do node --check "$file"; done
@@ -42,8 +43,11 @@ jobs:
           test ! -f v2/src/screens.js
           grep -q 'type="module" src="./src/main.js"' v2/index.html
           grep -q './product-finish.css' v2/index.html
-          grep -q 'Seu histórico de saúde' v2/index.html
+          grep -q 'Seu cockpit longitudinal de saúde' v2/index.html
           grep -q 'data-route="bio">Composição<' v2/index.html
+          grep -q 'data-route="analise">Insights<' v2/index.html
+          grep -q 'data-route="saude">Exames<' v2/index.html
+          grep -q 'data-route="tratamentos">Protocolos<' v2/index.html
 
           grep -q "https://plztdqyuqcjohiimudnr.supabase.co" v2/src/core.js
           grep -q "bucket: 'health-inbox'" v2/src/core.js
@@ -75,7 +79,8 @@ jobs:
           grep -q "Janela entre bioimpedâncias" v2/src/analysis-screen.js
           grep -q "Água ingerida" v2/src/analysis-screen.js
           grep -q "As fontes permanecem separadas" v2/src/analysis-screen.js
-          grep -q "não transforma essa associação em causa" v2/src/today-screen.js
+          grep -q "sem atribuir causa" v2/src/today-screen.js
+          grep -q "Sem comparação entre origens diferentes" v2/src/today-screen.js
           grep -q "Sono permanece fora desta leitura" v2/src/intelligence-engine.js
 
           ! grep -R 'loadAll' v2/src v2/index.html
@@ -109,6 +114,7 @@ jobs:
           node v2/source-status-smoke.mjs
           node v2/provenance-alias-smoke.mjs
           node v2/executive-dashboard-smoke.mjs
+          node v2/cockpit-smoke.mjs
           node v2/product-finish-smoke.mjs
           node v2/upload-outcome-smoke.mjs
           node v2/source-continuity-unknown-smoke.mjs
