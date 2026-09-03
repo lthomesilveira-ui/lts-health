@@ -1,0 +1,23 @@
+name: LTS Health Apple upload trigger smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/functions/health-inspect-upload/**'
+      - 'supabase/migrations/20260831025515_route_noncanonical_metrics_to_source_review.sql'
+      - 'supabase/migrations/20260903172500_recognize_apple_activity_summary_payload.sql'
+      - 'v2/apple-upload-trigger-smoke.mjs'
+      - '.github/workflows/apple-upload-trigger-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apple-upload-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Apple XML upload boundary
+        run: |
+          node --check v2/apple-upload-trigger-smoke.mjs
+          test -f supabase/migrations/20260903172500_recognize_apple_activity_summary_payload.sql
+          node v2/apple-upload-trigger-smoke.mjs
