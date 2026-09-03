@@ -1,0 +1,33 @@
+name: LTS Health workout source evidence smoke
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'supabase/migrations/20260903195000_add_workout_source_evidence.sql'
+      - 'v2/src/data-layer.js'
+      - 'v2/src/workout-evidence.js'
+      - 'v2/workout-source-evidence-smoke.mjs'
+      - '.github/workflows/workout-source-evidence-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  workout-source-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser test runtime
+        run: npm install --no-save playwright@1.55.0 && npx playwright install --with-deps chromium
+      - name: Start fixture server
+        run: |
+          cd v2
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-workout-evidence-server.log 2>&1 &
+      - name: Workout evidence contract
+        run: |
+          node --check v2/src/workout-evidence.js
+          node --check v2/src/data-layer.js
+          node --check v2/workout-source-evidence-smoke.mjs
+          node v2/workout-source-evidence-smoke.mjs
