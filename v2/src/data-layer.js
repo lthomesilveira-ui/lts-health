@@ -7,13 +7,13 @@ const routeDomains={
   bio:[],
   treinos:[],
   evolucao:[],
-  analise:['nutrition','metrics','sourceMetrics','labs'],
-  tratamentos:['treatments'],
-  hoje:['nutrition','metrics','sourceMetrics','labs','uploads'],
+  analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens'],
+  tratamentos:['treatments','regimens'],
+  hoje:['nutrition','metrics','sourceMetrics','labs','uploads','treatments','regimens'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
   nutricao:['nutrition','meals','sourceMetrics'],
-  dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality']
+  dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens']
 };
 
 export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb){
@@ -40,7 +40,8 @@ const loaders={
   sets:()=>fetchAll('health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,workout_date,exercise_name,exercise_order,set_index,phase,weight,weight_unit,reps_numeric,reps_raw,failure,near_failure,technique,source,confidence,notes','workout_date',false),
   labs:()=>fetchAll('health_lab_results','source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,source,source_file,confidence,notes','collection_date',false),
   docs:()=>fetchAll('health_documents','source_record_id,document_date,title,document_type,source_file,source,extraction_status,confidence,notes','document_date',false),
-  treatments:()=>fetchAll('health_medication_events','source_record_id,event_date,medication,event_type,source,confidence','event_date',false),
+  treatments:()=>fetchAll('health_medication_events','source_record_id,event_date,medication,event_type,source,source_file,confidence','event_date',false),
+  regimens:()=>fetchAll('health_medication_regimens','source_record_id,medication,source,source_file,confidence','medication',true),
   uploads:()=>fetchAll('health_uploads','id,source_type,original_filename,mime_type,size_bytes,status,created_at,processed_at,notes','created_at',false,'id'),
   previews:()=>fetchAll('health_ingestion_previews','upload_id,source_type,parser_version,detected_format,detected_schema,row_count,date_min,date_max,status,warnings,error_message,updated_at','updated_at',false,'upload_id'),
   quality:()=>fetchAll('health_data_quality_issues','source_record_id,issue_code,category,severity,status,entity_name,record_ref,description,detected_at,resolution_notes','detected_at',false,'issue_code'),
@@ -61,6 +62,10 @@ const fixtureWorkoutEvidence=[{
   source_family:'polar_flow',source_name:'Polar Flow',evidence_kind:'telemetry',evidence_status:'confirmed',
   field_names:['duration_minutes','calories_kcal','heart_rate_avg','heart_rate_max'],confidence:'high',source_file:'fixture-source'
 }];
+const fixtureRegimens=[
+  {source_record_id:'regimen-1',medication:'Protocolo de teste',source:'Cadastro de teste',source_file:'fixture-regimens.csv',confidence:'high'},
+  {source_record_id:'regimen-2',medication:'Suplementação de teste',source:'Cadastro de teste',source_file:'fixture-regimens.csv',confidence:'medium'}
+];
 
 export function visibleRowsForDomain(key,rows=[]){
   if(key==='metrics')return rows.filter(row=>{
@@ -92,7 +97,7 @@ function enforceStructuredWorkoutBoundary(){
 }
 
 function setFixture(){
-  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence};state.errors={};state.domainStatus={};
+  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
   if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
     state.data[fixtureError]=[];
@@ -165,7 +170,7 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
@@ -197,6 +202,7 @@ export async function buildStructuredBackup(onProgress=()=>{}){
       'O campo complete se refere somente ao escopo structured_records_only; não significa cópia dos arquivos privados originais.',
       'Métricas por origem são preservadas separadamente em sourceMetrics para manter proveniência e candidatos ainda não promovidos a métricas canônicas.',
       'Evidências complementares de treino são preservadas separadamente em workoutEvidence; elas não criam uma segunda sessão canônica.',
+      'Registros de contexto de protocolos são preservados separadamente em regimens com apenas nome e proveniência segura; campos operacionais de uso e payload bruto ficam fora deste backup.',
       'O backup de sourceMetrics e workoutEvidence preserva somente campos estruturados de proveniência; payloads brutos de origem ficam de fora.',
       'Se qualquer domínio falhar durante a leitura, nenhum arquivo de backup é baixado.',
       'Arquivos originais armazenados na área privada não são incorporados neste JSON.',

@@ -98,17 +98,40 @@ function limitations({body,segmental,nutritionEvidencePeriod,nutritionEvidenceIn
   else if(labModel?.available&&!labModel.safe&&labModel.reason==='no_comparable_markers')rows.push('Exames: as coletas da mesma origem estão preservadas, mas não há correspondência segura de nome, unidade e valor numérico para comparar.');
   return rows;
 }
+function protocolContext(bounds){
+  if(failed('treatments')||failed('regimens'))return{available:false,regimens:0,events:0,eventsInPeriod:0,last:null};
+  const events=state.data.treatments||[],regimens=state.data.regimens||[],dates=events.map(r=>day(r.event_date)).filter(Boolean).sort(),periodEvents=events.filter(r=>inBounds(r.event_date,bounds));
+  return{available:true,regimens:regimens.length,events:events.length,eventsInPeriod:periodEvents.length,last:dates.at(-1)||null};
+}
+function digestCard(label,titleText,body,route,tone=''){
+  return `<article class="analysisDigestCard ${esc(tone)}"><span>${esc(label)}</span><h3>${esc(titleText)}</h3><p>${esc(body)}</p>${route?`<button data-route="${esc(route)}">Abrir →</button>`:''}</article>`;
+}
+function insightDigest({body,distribution,performance,nutrition,nutritionEvidencePeriod,sleep,labsInPeriod,protocol,periodText}){
+  const cards=[];
+  if(body.available)cards.push(digestCard('Composição','Duas medições comparáveis',`${fmtDate(body.previous.measured_at)} → ${fmtDate(body.latest.measured_at)} · massa muscular ${deltaText(body.delta.muscleKg,1,'kg')} · massa de gordura ${deltaText(body.delta.fatKg,1,'kg')}. Leitura descritiva, sem atribuir causa.`,'evolucao','change'));
+  else cards.push(digestCard('Composição','Comparação limitada',body.reason==='source_changed'?'As medições recentes têm origens diferentes; a variação não é calculada automaticamente.':'Não há duas medições corporais comparáveis nesta janela.','bio','coverage'));
+  cards.push(digestCard('Treino',`${distribution.available?distribution.totalSessions:0} sessão(ões) no período`,performance.length?`${performance.length} comparação(ões) de performance preservadas com mesmo exercício, máquina e unidade.`:`Ainda não há pares de performance comparáveis em ${periodText}.`,'treinos','change'));
+  if(nutrition.available&&nutrition.days)cards.push(digestCard('Nutrição',`${nutrition.days} dia(s) comparáveis`,nutrition.waterDays?`${nutrition.waterDays} dia(s) também têm água registrada.`:`Água continua sem cobertura estruturada. ${nutritionEvidencePeriod.reviewDays?`${nutritionEvidencePeriod.reviewDays} dia(s) de nutrição permanecem em revisão.`:'Os demais campos permanecem restritos ao que foi importado.'}`,'nutricao',nutrition.waterDays?'coverage':'attention'));
+  else cards.push(digestCard('Nutrição','Cobertura insuficiente','Não há dias comparáveis de alimentação nesta janela.','nutricao','coverage'));
+  const labDates=unique(labsInPeriod.map(r=>day(r.collection_date))).filter(Boolean).sort();
+  cards.push(digestCard('Exames',labDates.length?`${labDates.length} coleta(s) no período`:'Nenhuma coleta no período',labDates.length?`${labsInPeriod.length} resultado(s) estruturados entre ${fmtDate(labDates[0])} e ${fmtDate(labDates.at(-1))}. Tendências só usam origem e unidade compatíveis.`:'O histórico completo de exames continua disponível fora desta janela.','saude',labDates.length?'change':'coverage'));
+  if(protocol.available)cards.push(digestCard('Protocolos',`${protocol.regimens} cadastro(s) de contexto`,`${protocol.events} evento(s) histórico(s) no total${protocol.eventsInPeriod?` · ${protocol.eventsInPeriod} nesta janela`:''}${protocol.last?` · último registro ${fmtDate(protocol.last)}`:''}. Situação atual não inferida.`,'tratamentos','context'));
+  if(sleep.available)cards.push(digestCard('Sono',`${sleep.days} dia(s) preservado(s)`,sleep.days?`Último registro em ${fmtDate(sleep.latest)}. Fontes permanecem separadas e não são somadas automaticamente.`:'Nenhum registro de sono preservado nesta janela.','dados','coverage'));
+  return cards.slice(0,6).join('');
+}
 
 export function renderAnalysisHub(){
   const model=buildIntegratedAnalysis(state.data,state.domainStatus),period=state.ui.analysisPeriod||'365',periodText=periodLabel(period),bounds=periodBounds(period,model.referenceDay),scope=scopeLine(period,bounds);
   const distribution=trainingDistributionModel(state.data,state.domainStatus,bounds.start,bounds.end),performance=comparablePerformanceModel(state.data,state.domainStatus,3,bounds.start,bounds.end),periodNutrition=nutritionPeriodModel(state.data,state.domainStatus,bounds.start,bounds.end),periodSleep=sleepCoverageModel(state.data,state.domainStatus,bounds.start,bounds.end),body=bodyChangeModel(state.data,state.domainStatus,bounds.start,bounds.end),segmental=segmentalContextModel(state.data,state.domainStatus,bounds.start,bounds.end);
   const intervalStart=segmental.available?segmental.start:body.available?day(body.previous.measured_at):null,intervalEnd=segmental.available?segmental.end:body.available?day(body.latest.measured_at):null,intervalNutrition=nutritionIntervalModel(state.data,state.domainStatus,intervalStart,intervalEnd);
-  const periodNutritionEvidence=nutritionEvidence(state.data.nutrition||[],bounds.start,bounds.end),intervalNutritionEvidence=intervalNutrition.available?nutritionEvidence(state.data.nutrition||[],intervalNutrition.start,intervalNutrition.end,{afterStart:true}):{safeDays:0,reviewDays:0,totalDays:0},labsInPeriod=failed('labs')?[]:(state.data.labs||[]).filter(r=>inBounds(r.collection_date,bounds));
-  const failures=['body','segmental','workouts','exercises','sets','nutrition','labs','sourceMetrics'].filter(failed),limits=limitations({body,segmental,nutritionEvidencePeriod:periodNutritionEvidence,nutritionEvidenceInterval:intervalNutritionEvidence,sleep:periodSleep,labsInPeriod,periodText,labModel:model.labs});
+  const periodNutritionEvidence=nutritionEvidence(state.data.nutrition||[],bounds.start,bounds.end),intervalNutritionEvidence=intervalNutrition.available?nutritionEvidence(state.data.nutrition||[],intervalNutrition.start,intervalNutrition.end,{afterStart:true}):{safeDays:0,reviewDays:0,totalDays:0},labsInPeriod=failed('labs')?[]:(state.data.labs||[]).filter(r=>inBounds(r.collection_date,bounds)),protocol=protocolContext(bounds);
+  const failures=['body','segmental','workouts','exercises','sets','nutrition','labs','sourceMetrics','treatments','regimens'].filter(failed),limits=limitations({body,segmental,nutritionEvidencePeriod:periodNutritionEvidence,nutritionEvidenceInterval:intervalNutritionEvidence,sleep:periodSleep,labsInPeriod,periodText,labModel:model.labs});
 
-  return `${title('Análise','Uma janela de tempo única para treino, alimentação, composição, sono e exames.')}
+  return `${title('Insights','O que mudou, quanto do período está coberto e onde ainda faltam dados — sempre a partir dos registros existentes.')}
     <div class="controls"><select id="analysisPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo histórico</option></select></div>
     ${failures.length?`<div class="errorState sectionGap"><b>Algumas fontes não carregaram.</b><span>As áreas disponíveis continuam visíveis e nenhuma falha é convertida em zero.</span></div>`:''}
+
+    <section class="analysisDigest sectionGap"><div class="analysisDigestHead"><div><span>Resumo executivo</span><h2>O que merece sua atenção nesta janela</h2></div><small>${esc(scope)}</small></div><div class="analysisDigestGrid">${insightDigest({body,distribution,performance,nutrition:periodNutrition,nutritionEvidencePeriod:periodNutritionEvidence,sleep:periodSleep,labsInPeriod,protocol,periodText})}</div></section>
 
     <section class="analysisLead sectionGap">
       <div class="analysisLeadHead"><div><span>Período selecionado</span><h2>${esc(scope)}</h2></div><small>referência ${esc(fmtDate(model.referenceDay))}</small></div>
@@ -145,5 +168,5 @@ export function renderAnalysisHub(){
       <section class="card"><div class="cardHead"><div><b>O que ainda limita a leitura</b><small>Faltas de cobertura ou comparabilidade ficam explícitas.</small></div></div><div class="limitationList">${limits.length?limits.map(row=>`<div>${esc(row)}</div>`).join(''):'<div>Nenhuma limitação adicional foi identificada pelos critérios atuais.</div>'}</div></section>
     </div>
 
-    <div class="analysisSafety sectionGap"><b>Como interpretar</b><span>O LTS Health mostra mudanças registradas e contexto temporal. Ele não classifica seu corpo como melhor ou pior, não transforma associação em causa e não gera recomendação automática de aumentar treino ou restringir alimentação.</span></div>`;
+    <div class="analysisSafety sectionGap"><b>Como interpretar</b><span>O LTS Health mostra mudanças registradas e contexto temporal. Ele não classifica seu corpo como melhor ou pior, não transforma associação em causa e não gera recomendação automática de aumentar treino, restringir alimentação ou alterar protocolos.</span></div>`;
 }

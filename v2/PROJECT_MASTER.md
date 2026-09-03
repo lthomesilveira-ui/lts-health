@@ -30,13 +30,17 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - Hidratação é uma dimensão explícita e fail-closed: como a importação estruturada atual do MyFitnessPal não contém volume real de água, o app mostra a lacuna e não estima nem preenche valores.
 - Conflitos no total nutricional mais recente permanecem fail-closed: quando há mais de um total para a mesma data, nenhum é escolhido automaticamente como atual.
 - O `health-inspect-upload` roteia sono do export Apple diretamente para `health_source_daily_metrics` como candidato, enquanto apenas as três métricas ActivitySummary autorizadas seguem para o caminho canônico; o gatilho de banco permanece como defesa secundária.
+- Protocolos passam a combinar, na experiência de produto, eventos históricos e cadastros de contexto preservados. O cockpit carrega o domínio desde a abertura; a tela separa cadastro de contexto de ocorrências históricas e nunca infere situação atual ou orientação de uso.
+- Insights ganha resumo executivo por janela com composição, treino, nutrição/hidratação, exames, protocolos e sono, sempre descritivo, sem causalidade automática e com rotas para aprofundamento.
+- Cadastros de contexto entram no backup estruturado somente com nome e proveniência segura; campos operacionais de uso e payload bruto permanecem fora da UI e do backup público.
+- O gate do cockpit cobre desktop e mobile em Início, Insights e Protocolos e verifica ausência de overflow e de vazamento de conteúdo privado.
 - O `/v2/` promovido passou homologação externa automatizada em desktop/mobile; o fallback público anterior permaneceu intacto.
 
 ## Próximas prioridades
 
 1. Recuperar hidratação somente de uma fonte real que contenha água; ampliar o importador apenas quando um formato validado trouxer esse campo, sem preenchimento por estimativa.
 2. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
-3. Continuar análises integradas descritivas e fortalecer a experiência de Insights sem transformar associação temporal em causalidade.
+3. Continuar análises integradas descritivas, priorização de cobertura e navegação de Insights sem transformar associação temporal em causalidade.
 4. Ampliar Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
 5. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
 6. Continuar homologação visual/funcional autônoma do `/v2/` em desktop e mobile, sem usar o usuário para QA básico.
