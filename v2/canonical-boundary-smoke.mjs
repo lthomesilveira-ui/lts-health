@@ -92,7 +92,7 @@ async function run(viewport,label){
   for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','ActivitySummary','source_family','count/min'])if(todayText.includes(forbidden))throw new Error(`${label}: technical boundary language leaked into dashboard: ${forbidden}`);
 
   await page.evaluate(()=>{location.hash='analise';});
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
   await page.selectOption('#analysisPeriod','all');
   await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all');
   const analysisText=(await page.textContent('#screenHost'))||'';
