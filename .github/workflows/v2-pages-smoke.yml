@@ -27,12 +27,16 @@ jobs:
           fetch "$ROOT" "$TMP/root.html"; fetch "$V2" "$TMP/v2.html"
           req root-fallback 'canonical v16' "$TMP/root.html"
           req v2-title '<title>LTS Health</title>' "$TMP/v2.html"
+          req v2-cockpit-css './cockpit.css' "$TMP/v2.html"
           req v2-dashboard-css './today.css' "$TMP/v2.html"
           req v2-analysis-css './analysis.css' "$TMP/v2.html"
           req v2-bio-css './bio.css' "$TMP/v2.html"
-          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js today.css analysis.css bio.css product-finish.css; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
+          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
           req dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
-          req dashboard-copy 'Seu histórico em uma tela' "$TMP/today-screen.js-src_today-screen.js"
+          req dashboard-copy 'Seu estado de saúde em uma tela' "$TMP/today-screen.js-src_today-screen.js"
+          req hydration-copy 'Hidratação' "$TMP/today-screen.js-src_today-screen.js"
+          req exams-copy 'Exames' "$TMP/today-screen.js-src_today-screen.js"
+          req protocols-copy 'Protocolos' "$TMP/today-screen.js-src_today-screen.js"
           req workout-boundary 'canonicalWorkouts' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
           req lab-boundary 'comparableLabCount' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
           req composition-scale 'bioChartY' "$TMP/bio-screen.js-src_bio-screen.js"
