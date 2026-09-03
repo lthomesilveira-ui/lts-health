@@ -1,132 +1,114 @@
-import {state,esc,day,fmtDate,fmtNum,num} from './core.js';
-import {buildIntegratedAnalysis} from './integrated-analysis.js';
+import {state,esc,day,fmtDate,fmtNum,num,unique,norm} from './core.js';
 
-const deltaText=(value,digits=1,unit='')=>{
-  const n=num(value);if(n==null)return'—';
-  return`${n>0?'+':''}${fmtNum(n,digits)}${unit?` ${unit}`:''}`;
-};
+const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 const action=(route,label)=>`<button class="todayAction" data-route="${esc(route)}">${esc(label)}</button>`;
-const currentCard=(label,value,detail,route)=>`<button class="dashboardCurrent" data-route="${esc(route)}"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small><i>→</i></button>`;
-const infoCard=(eyebrow,title,body,route)=>`<article class="dashboardInsight"><span>${esc(eyebrow)}</span><h3>${esc(title)}</h3><p>${esc(body)}</p>${route?`<button data-route="${esc(route)}">Abrir detalhes →</button>`:''}</article>`;
-const domainFailed=key=>state.domainStatus?.[key]==='error';
+const routeCard=(route,label,value,detail,status='')=>`<button class="dashboardCurrent cockpitMetric ${status}" data-route="${esc(route)}"><span>${esc(label)}</span><b>${esc(value)}</b><small>${esc(detail)}</small><i>→</i></button>`;
+const noteCard=(label,title,body,route)=>`<article class="dashboardInsight"><span>${esc(label)}</span><h3>${esc(title)}</h3><p>${esc(body)}</p>${route?`<button data-route="${esc(route)}">Abrir →</button>`:''}</article>`;
 
-function latestBodySnapshot(){
-  const groups=new Map();
-  for(const row of state.data.body||[]){const date=day(row?.measured_at);if(!date)continue;if(!groups.has(date))groups.set(date,[]);groups.get(date).push(row);}
-  const latestDate=[...groups.keys()].sort().at(-1)||null,rows=latestDate?groups.get(latestDate)||[]:[];
-  return{latestDate,row:rows.length===1?rows[0]:null,ambiguous:rows.length>1};
+function dateRows(rows,dateKey){
+  const map=new Map();
+  for(const row of rows||[]){const d=day(row?.[dateKey]);if(!d)continue;if(!map.has(d))map.set(d,[]);map.get(d).push(row);}
+  return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
 }
-
-function miniLine(points,key,unit=''){
-  const rows=(points||[]).map(p=>({date:p.date,value:num(p[key])})).filter(p=>p.value!=null);
-  if(rows.length<2)return'<div class="dashboardChartEmpty">Sem pontos suficientes.</div>';
-  const values=rows.map(r=>r.value),lo=Math.min(...values),hi=Math.max(...values),span=hi-lo||1,pad=span*.12,min=lo-pad,max=hi+pad,w=520,h=116,p=16;
-  const x=i=>p+i*(w-p*2)/Math.max(1,rows.length-1),y=v=>p+(max-v)*(h-p*2)/(max-min||1);
-  const path=rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(r.value).toFixed(1)}`).join(' ');
-  const dots=rows.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.value).toFixed(1)}" r="3"><title>${esc(fmtDate(r.date))}: ${esc(fmtNum(r.value,1))}${esc(unit)}</title></circle>`).join('');
-  return `<div class="dashboardMiniChart"><div class="dashboardScale"><span>${fmtNum(hi,1)}${esc(unit)}</span><span>${fmtNum((hi+lo)/2,1)}${esc(unit)}</span><span>${fmtNum(lo,1)}${esc(unit)}</span></div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path class="dashboardGrid" d="M16 30H504 M16 58H504 M16 86H504"/><path class="dashboardLine" d="${path}"/>${dots}</svg></div><div class="dashboardDates"><span>${fmtDate(rows[0].date)}</span><span>${fmtDate(rows.at(-1).date)}</span></div>`;
+function latestSingle(rows,dateKey){
+  const groups=dateRows(rows,dateKey);if(!groups.length)return{date:null,row:null,ambiguous:false};
+  const [date,items]=groups.at(-1);return{date,row:items.length===1?items[0]:null,ambiguous:items.length>1};
 }
-
-function nutritionReviewDays(model){
-  const n=model?.nutrition;
-  if(!n?.available||!n.start||!n.end||domainFailed('nutrition'))return 0;
-  const groups=new Map();
-  for(const row of state.data.nutrition||[]){
-    const date=day(row?.nutrition_date);
-    if(!date||date<=n.start||date>n.end)continue;
-    if(!groups.has(date))groups.set(date,0);
-    groups.set(date,groups.get(date)+1);
+function latestDate(rows,dateKey){return dateRows(rows,dateKey).at(-1)?.[0]||null;}
+function distinctCount(rows,key){return unique((rows||[]).map(r=>String(r?.[key]||'').trim()).filter(Boolean)).length;}
+function safeLatestWorkout(){return [...(state.data.workouts||[])].filter(r=>r?.is_canonical===true&&r?.record_status!=='quarantined').sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)))[0]||null;}
+function nutritionSafeRows(){return dateRows(state.data.nutrition||[],'nutrition_date').filter(([,items])=>items.length===1).map(([,items])=>items[0]);}
+function hydrationRows(){return nutritionSafeRows().map(r=>({date:day(r.nutrition_date),value:num(r.water_ml)})).filter(r=>r.date&&r.value!=null&&r.value>0).sort((a,b)=>a.date.localeCompare(b.date));}
+function bodySeries(){
+  const out=[];
+  for(const [date,items] of dateRows(state.data.body||[],'measured_at')){
+    if(items.length!==1)continue;const r=items[0],muscle=num(r.skeletal_muscle_mass_kg),fat=num(r.body_fat_pct),weight=num(r.weight_kg);
+    if(muscle==null&&fat==null&&weight==null)continue;out.push({date,muscle,fat,weight});
   }
-  return[...groups.values()].filter(count=>count>1).length;
+  return out.slice(-18);
 }
-
-function compositionPanel(model){
-  if(domainFailed('body'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div></div><div class="dashboardChartEmpty">As medições corporais não carregaram nesta atualização.</div></section>`;
-  if(!model.trend.available&&model.body.reason==='ambiguous')return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div><button data-route="bio">Ver composição →</button></div><div class="dashboardChartEmpty"><b>Evolução em revisão.</b><br>Há mais de uma medição em uma das duas datas mais recentes. Os valores foram preservados e nenhuma diferença foi calculada até a revisão.</div></section>`;
-  if(!model.trend.available&&model.body.reason==='source_changed')return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div><button data-route="bio">Ver composição →</button></div><div class="dashboardChartEmpty"><b>Sem comparação entre origens diferentes.</b><br>A medição mais recente continua preservada; a variação só volta quando houver uma comparação segura na mesma origem.</div></section>`;
-  if(!model.trend.available)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div><button data-route="bio">Ver composição →</button></div><div class="dashboardChartEmpty">Ainda não há duas medições comparáveis.</div></section>`;
-  const body=model.body;
-  const latest=model.trend.points.at(-1);
-  return `<section class="dashboardPanel dashboardComposition">
-    <div class="dashboardPanelHead"><div><span>Composição</span><h2>Evolução corporal</h2></div><button data-route="bio">Ver composição →</button></div>
-    <div class="dashboardSeriesHead"><b>Massa muscular</b><span>${latest?.muscleKg==null?'—':`${fmtNum(latest.muscleKg,1)} kg`}${body.available?` · ${deltaText(body.delta.muscleKg,1,'kg')} desde a anterior`:''}</span></div>
-    ${miniLine(model.trend.points,'muscleKg',' kg')}
-    <div class="dashboardSeriesHead second"><b>Gordura corporal</b><span>${latest?.bodyFatPct==null?'—':`${fmtNum(latest.bodyFatPct,1)}%`}${body.available?` · ${deltaText(body.delta.bodyFatPp,1,'p.p.')} desde a anterior`:''}</span></div>
-    ${miniLine(model.trend.points,'bodyFatPct','%')}
-  </section>`;
+function labStats(){
+  const rows=state.data.labs||[],dates=unique(rows.map(r=>day(r.collection_date)).filter(Boolean)).sort();
+  return{rows:rows.length,markers:distinctCount(rows,'biomarker'),dates,first:dates[0]||null,last:dates.at(-1)||null};
 }
-
-function trainingPanel(model){
-  const dist=model.training.distribution;
-  if(domainFailed('workouts')||domainFailed('exercises'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição recente</h2></div></div><div class="dashboardChartEmpty">O histórico de treinos não carregou nesta atualização.</div></section>`;
-  if(!dist.available||!dist.rows.length)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição recente</h2></div></div><div class="dashboardChartEmpty">Sem grupos musculares estruturados no período.</div></section>`;
-  const rows=dist.rows.slice(0,8),max=Math.max(...rows.map(r=>r.sessions),1);
-  return `<section class="dashboardPanel dashboardTraining">
-    <div class="dashboardPanelHead"><div><span>Treinos</span><h2>Distribuição nas últimas 8 semanas</h2></div><button data-route="treinos">Ver treinos →</button></div>
-    <div class="dashboardBars">${rows.map(r=>`<div class="dashboardBarRow"><span>${esc(r.label)}</span><div><i style="width:${Math.max(6,r.sessions/max*100)}%"></i></div><b>${r.sessions}</b><small>${r.sets==null?'séries não carregadas':`${r.sets} séries estruturadas`}</small></div>`).join('')}</div>
-    <p class="dashboardFootnote">Mostra frequência registrada por grupo; não classifica nenhum grupo como “bom” ou “ruim”.</p>
-  </section>`;
+function protocolStats(){
+  const rows=state.data.treatments||[],dates=unique(rows.map(r=>day(r.event_date)).filter(Boolean)).sort();
+  return{rows:rows.length,names:distinctCount(rows,'medication'),first:dates[0]||null,last:dates.at(-1)||null};
 }
-
-function segmentalInsight(model){
-  const seg=model.segmental;if(!seg.available)return null;
-  const parts=seg.regions.map(r=>`${r.label.toLowerCase()} ${deltaText(r.leanDeltaKg,2,'kg')}`);
-  const training=seg.regions.map(r=>r.training.sessions==null?null:`${r.label.toLowerCase()}: ${r.training.sessions} sessão(ões)`).filter(Boolean);
-  return infoCard('Composição × treino','Mudança segmentar com contexto do mesmo intervalo',`Massa magra segmentar: ${parts.join(' · ')}. No mesmo intervalo, registros de treino relacionados: ${training.join(' · ')}. A coincidência temporal não prova causa.`,'analise');
+function weeklyWorkouts(weeks=8){
+  const nowDates=(state.data.workouts||[]).map(r=>day(r.workout_date)).filter(Boolean).sort();
+  const reference=nowDates.at(-1)||new Date().toISOString().slice(0,10),ref=new Date(`${reference}T12:00:00`),out=[];
+  for(let i=weeks-1;i>=0;i--){const end=new Date(ref);end.setDate(ref.getDate()-i*7);const start=new Date(end);start.setDate(end.getDate()-6);const a=start.toISOString().slice(0,10),b=end.toISOString().slice(0,10);const count=(state.data.workouts||[]).filter(r=>r?.is_canonical===true&&r?.record_status!=='quarantined'&&day(r.workout_date)>=a&&day(r.workout_date)<=b).length;out.push({date:b,value:count});}
+  return out;
 }
-function rhythmInsight(model){
-  const r=model.training.rhythm;if(!r.available)return null;
-  const phrase=r.delta===0?'ficou no mesmo nível':r.delta>0?'teve mais sessões registradas':'teve menos sessões registradas';
-  return infoCard('Ritmo de treino',`O bloco mais recente ${phrase}`,`${r.previous} sessão(ões) nos 28 dias anteriores e ${r.recent} nos 28 dias mais recentes.`,'treinos');
+function labCollectionSeries(){
+  const map=new Map();for(const row of state.data.labs||[]){const d=day(row.collection_date);if(!d)continue;map.set(d,(map.get(d)||0)+1);}
+  return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0])).slice(-14).map(([date,value])=>({date,value}));
 }
-function nutritionInsight(model){
-  const n=model.nutrition;if(!n.available||!n.days)return null;
-  const reviewDays=nutritionReviewDays(model);
-  const protein=n.proteinAvg==null?'proteína sem média disponível':`proteína média registrada ${fmtNum(n.proteinAvg,0)} g/dia`;
-  const comparison=n.proteinDelta==null?'sem período anterior comparável':`diferença frente ao período anterior equivalente ${deltaText(n.proteinDelta,0,'g/dia')}`;
-  const review=reviewDays?` · ${reviewDays} dia(s) em revisão fora das médias`:'';
-  return infoCard('Composição × alimentação','Alimentação no intervalo entre medições',`${n.days} dia(s) usados no intervalo${review} · ${protein} · ${comparison}. O app não transforma essa associação em causa.`,'analise');
+function scaledChart(points,{unit='',digits=0,label='Série histórica',bar=false}={}){
+  const rows=(points||[]).filter(p=>p?.date&&num(p?.value)!=null).map(p=>({date:p.date,value:num(p.value)}));
+  if(rows.length<2)return`<div class="dashboardChartEmpty">Ainda não há pontos suficientes para este gráfico.</div>`;
+  const values=rows.map(r=>r.value),lo=bar?0:Math.min(...values),hi=Math.max(...values),span=Math.max(hi-lo,1),pad=bar?0:span*.12,min=bar?0:lo-pad,max=bar?Math.max(hi,1):hi+pad,w=620,h=170,left=58,right=16,top=16,bottom=28,plotW=w-left-right,plotH=h-top-bottom;
+  const x=i=>left+i*plotW/Math.max(1,rows.length-1),y=v=>top+(max-v)*plotH/Math.max(max-min,1e-9);
+  const ticks=[max,max-(max-min)/3,max-2*(max-min)/3,min];
+  const grid=ticks.map(v=>`<line x1="${left}" y1="${y(v).toFixed(1)}" x2="${w-right}" y2="${y(v).toFixed(1)}"/>`).join('');
+  const labels=ticks.map(v=>`<text x="${left-8}" y="${(y(v)+3).toFixed(1)}" text-anchor="end">${esc(fmtNum(v,digits))}${esc(unit)}</text>`).join('');
+  let marks='';
+  if(bar){const bw=Math.max(6,Math.min(28,plotW/Math.max(rows.length,1)*.55));marks=rows.map((r,i)=>`<rect x="${(x(i)-bw/2).toFixed(1)}" y="${y(r.value).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(1,y(min)-y(r.value)).toFixed(1)}" rx="3"><title>${esc(fmtDate(r.date))}: ${esc(fmtNum(r.value,digits))}${esc(unit)}</title></rect>`).join('');}
+  else{const path=rows.map((r,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(r.value).toFixed(1)}`).join(' ');marks=`<path class="cockpitLine" d="${path}"/>${rows.map((r,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(r.value).toFixed(1)}" r="3.5"><title>${esc(fmtDate(r.date))}: ${esc(fmtNum(r.value,digits))}${esc(unit)}</title></circle>`).join('')}`;}
+  return `<div class="cockpitChart" role="img" aria-label="${esc(label)}"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g class="cockpitGrid">${grid}</g><g class="cockpitAxisLabels">${labels}</g><g class="cockpitMarks">${marks}</g></svg><div class="cockpitXAxis"><span>${fmtDate(rows[0].date)}</span><span>${fmtDate(rows[Math.floor((rows.length-1)/2)].date)}</span><span>${fmtDate(rows.at(-1).date)}</span></div></div>`;
 }
-function performanceInsight(model){
-  const p=model.training.performance?.[0];if(!p)return null;
-  return infoCard('Performance comparável','Mesmo exercício, máquina e unidade',`${p.exercise}: ${fmtNum(p.previousWeight,Number.isInteger(p.previousWeight)?0:1)} → ${fmtNum(p.weight,Number.isInteger(p.weight)?0:1)} ${p.unit}, entre ${fmtDate(p.previousDate)} e ${fmtDate(p.date)}.`,'treinos');
+function compositionChart(){
+  const rows=bodySeries(),muscle=rows.filter(r=>r.muscle!=null).map(r=>({date:r.date,value:r.muscle}));
+  if(muscle.length<2)return`<div class="dashboardChartEmpty">Ainda não há duas medições de massa muscular comparáveis.</div>`;
+  return scaledChart(muscle,{unit:' kg',digits:1,label:'Evolução de massa muscular'});
 }
-function limitationCards(model){
-  const rows=[];
-  if(model.labs.available&&model.labs.reason==='ambiguous_source')rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames precisam de revisão antes da comparação</b><span>Há mais de uma origem nas coletas recentes. Os resultados foram preservados, mas nenhuma origem foi combinada automaticamente.</span><i>→</i></button>`);
-  else if(model.labs.available&&model.labs.reason==='no_prior_same_source')rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames têm histórico, mas não da mesma origem</b><span>A coleta mais recente foi preservada, porém ainda não há outra coleta anterior da mesma origem para uma comparação segura.</span><i>→</i></button>`);
-  else if(model.labs.available&&model.labs.collectionDays.length<2)rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames ainda não têm duas coletas comparáveis</b><span>Há resultados estruturados, mas uma série temporal exige outra data de coleta.</span><i>→</i></button>`);
-  else if(model.labs.available&&model.labs.reason==='no_comparable_markers')rows.push(`<button class="dashboardLimitation" data-route="saude"><b>Exames ainda não têm marcadores comparáveis</b><span>As coletas recentes foram preservadas, mas os marcadores não têm correspondência segura de nome, unidade e valor numérico.</span><i>→</i></button>`);
-  const nutritionReview=nutritionReviewDays(model);
-  if(nutritionReview)rows.push(`<button class="dashboardLimitation" data-route="nutricao"><b>Alimentação tem dados em revisão</b><span>${nutritionReview} dia(s) têm mais de um total preservado no mesmo dia. Esses registros ficam fora das médias e comparações até revisão.</span><i>→</i></button>`);
-  if(model.sleep.available&&model.sleep.days)rows.push(`<button class="dashboardLimitation" data-route="timeline"><b>Sono está preservado, mas ainda fora das conclusões</b><span>${model.sleep.days} dia(s) registrados por fontes que continuam separados até existir uma regra segura de consolidação.</span><i>→</i></button>`);
-  return rows.join('');
+function hydrationPanel(){
+  if(failed('nutrition'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Hidratação</span><h2>Água registrada</h2></div><button data-route="nutricao">Nutrição →</button></div><div class="dashboardChartEmpty">Os dados de alimentação não carregaram agora.</div></section>`;
+  const rows=hydrationRows();
+  if(!rows.length)return`<section class="dashboardPanel cockpitHydration missing"><div class="dashboardPanelHead"><div><span>Hidratação</span><h2>Água registrada</h2></div><button data-route="nutricao">Nutrição →</button></div><div class="cockpitMissing"><b>Nenhum registro de água foi importado.</b><p>O histórico do MyFitnessPal está no LTS Health, mas os registros atuais de nutrição não trazem volume de água. O app não estima nem preenche esse campo.</p></div></section>`;
+  const latest=rows.at(-1),avg=rows.slice(-30).reduce((s,r)=>s+r.value,0)/Math.min(30,rows.length);
+  return`<section class="dashboardPanel cockpitHydration"><div class="dashboardPanelHead"><div><span>Hidratação</span><h2>Água registrada</h2></div><button data-route="nutricao">Nutrição →</button></div><div class="cockpitPanelStat"><b>${fmtNum(latest.value,0)} mL</b><span>${fmtDate(latest.date)} · média dos últimos ${Math.min(30,rows.length)} registros: ${fmtNum(avg,0)} mL/dia</span></div>${scaledChart(rows.slice(-30),{unit:' mL',digits:0,label:'Água registrada por dia'})}</section>`;
+}
+function labPanel(){
+  if(failed('labs'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Exames</span><h2>Histórico laboratorial</h2></div><button data-route="saude">Exames →</button></div><div class="dashboardChartEmpty">Os resultados laboratoriais não carregaram agora.</div></section>`;
+  const s=labStats(),series=labCollectionSeries();
+  if(!s.rows)return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Exames</span><h2>Histórico laboratorial</h2></div><button data-route="saude">Exames →</button></div><div class="dashboardChartEmpty">Nenhum resultado laboratorial estruturado.</div></section>`;
+  return`<section class="dashboardPanel cockpitLabs"><div class="dashboardPanelHead"><div><span>Exames</span><h2>Histórico laboratorial</h2></div><button data-route="saude">Abrir exames →</button></div><div class="cockpitFactGrid"><div><b>${s.rows}</b><span>resultados</span></div><div><b>${s.markers}</b><span>marcadores</span></div><div><b>${s.dates.length}</b><span>datas de coleta</span></div></div>${scaledChart(series,{unit:'',digits:0,label:'Quantidade de resultados por coleta',bar:true})}<p class="dashboardFootnote">O gráfico mostra quantidade de resultados por coleta, não interpretação clínica. Tendências de cada marcador ficam em Exames.</p></section>`;
+}
+function trainingPanel(){
+  if(failed('workouts'))return`<section class="dashboardPanel"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Ritmo recente</h2></div><button data-route="treinos">Treinos →</button></div><div class="dashboardChartEmpty">Os treinos não carregaram agora.</div></section>`;
+  const rows=weeklyWorkouts(8);return`<section class="dashboardPanel cockpitTraining"><div class="dashboardPanelHead"><div><span>Treinos</span><h2>Sessões por semana</h2></div><button data-route="treinos">Abrir treinos →</button></div>${scaledChart(rows,{digits:0,label:'Sessões canônicas por semana',bar:true})}</section>`;
+}
+function insightCards(){
+  const cards=[],body=bodySeries(),work=weeklyWorkouts(8),labs=labStats(),hydration=hydrationRows(),protocol=protocolStats();
+  if(body.length>=2){const a=body.at(-2),b=body.at(-1);if(a.muscle!=null&&b.muscle!=null)cards.push(noteCard('Composição',`Massa muscular: ${fmtNum(b.muscle,1)} kg`,`Diferença registrada desde ${fmtDate(a.date)}: ${b.muscle-a.muscle>=0?'+':''}${fmtNum(b.muscle-a.muscle,1)} kg. Leitura descritiva, sem atribuir causa.`,'evolucao'));}
+  const recent=work.slice(-4).reduce((s,r)=>s+r.value,0),prior=work.slice(0,4).reduce((s,r)=>s+r.value,0);cards.push(noteCard('Treino','Ritmo das últimas 4 semanas',`${recent} sessão(ões) registradas nas 4 semanas mais recentes versus ${prior} nas 4 anteriores.`,'analise'));
+  if(labs.rows)cards.push(noteCard('Exames',`${labs.rows} resultados estruturados`,`${labs.markers} marcador(es) em ${labs.dates.length} data(s) de coleta, de ${fmtDate(labs.first)} a ${fmtDate(labs.last)}.`,'saude'));
+  if(!hydration.length)cards.push(noteCard('Hidratação','Cobertura ainda ausente','Nenhum dia tem água estruturada no histórico nutricional atual. O app mantém essa lacuna explícita em vez de estimar consumo.','nutricao'));
+  else cards.push(noteCard('Hidratação',`${hydration.length} dia(s) com água registrada`,`Último registro em ${fmtDate(hydration.at(-1).date)}. Abra Nutrição para consultar o histórico.`,'nutricao'));
+  if(protocol.rows)cards.push(noteCard('Protocolos',`${protocol.rows} evento(s) registrados`,`${protocol.names} item(ns) distintos preservados como contexto temporal, de ${fmtDate(protocol.first)} a ${fmtDate(protocol.last)}.`,'tratamentos'));
+  return cards.slice(0,6).join('');
 }
 
 export function renderTodayHub(){
-  const model=buildIntegratedAnalysis(state.data,state.domainStatus);
-  const bodySnapshot=latestBodySnapshot(),body=model.body.latest||bodySnapshot.row,lastWorkout=model.training.lastWorkout,lastNutrition=model.lastNutrition;
-  const insights=[segmentalInsight(model),nutritionInsight(model),rhythmInsight(model),performanceInsight(model)].filter(Boolean).slice(0,4);
-  const labDate=model.labs.collectionDays?.at(-1)||null;
-  const bodyCard=domainFailed('body')?currentCard('Composição','Indisponível agora','As medições corporais não carregaram nesta atualização.','bio'):(model.body.reason==='ambiguous'||bodySnapshot.ambiguous)?currentCard('Composição','Revisão necessária','Há mais de uma medição corporal na data mais recente; nenhuma foi escolhida como atual.','bio'):model.body.reason==='source_changed'?currentCard('Composição',body&&num(body.skeletal_muscle_mass_kg)!=null?`${fmtNum(body.skeletal_muscle_mass_kg,1)} kg de massa muscular`:'Medição mais recente preservada',body&&num(body.body_fat_pct)!=null?`${fmtNum(body.body_fat_pct,1)}% de gordura corporal · ${fmtDate(body.measured_at)} · sem comparação entre origens diferentes`:`${fmtDate(body?.measured_at)} · sem comparação entre origens diferentes`,'bio'):currentCard('Composição',body&&num(body.skeletal_muscle_mass_kg)!=null?`${fmtNum(body.skeletal_muscle_mass_kg,1)} kg de massa muscular`:'Sem medição recente',body&&num(body.body_fat_pct)!=null?`${fmtNum(body.body_fat_pct,1)}% de gordura corporal · ${fmtDate(body.measured_at)}`:'Abra a composição para ver o histórico','bio');
-  const workoutCard=domainFailed('workouts')?currentCard('Último treino','Indisponível agora','O histórico de treinos não carregou nesta atualização.','treinos'):currentCard('Último treino',lastWorkout?.workout_type||'Sem sessão recente',lastWorkout?`${fmtDate(lastWorkout.workout_date)}${lastWorkout.location?` · ${lastWorkout.location}`:''}`:'Nenhum treino estruturado disponível','treinos');
-  const nutritionCard=domainFailed('nutrition')?currentCard('Alimentação','Indisponível agora','Os dados de alimentação não carregaram nesta atualização.','nutricao'):model.nutritionLatestAmbiguous?currentCard('Alimentação','Revisão necessária',`Há mais de um total diário em ${fmtDate(model.lastNutritionDate)}; nenhum foi escolhido como atual.`,'nutricao'):currentCard('Alimentação',lastNutrition?fmtDate(lastNutrition.nutrition_date):'Sem registro recente',lastNutrition&&num(lastNutrition.protein_g)!=null?`${fmtNum(lastNutrition.protein_g,0)} g de proteína registrados no dia`:'Histórico diário disponível em Nutrição','nutricao');
-  const labCard=domainFailed('labs')?currentCard('Exames','Indisponível agora','Os resultados laboratoriais não carregaram nesta atualização.','saude'):model.labs.reason==='ambiguous_source'?currentCard('Exames','Revisão necessária','Há mais de uma origem nas coletas recentes; nenhuma foi escolhida para comparação.','saude'):model.labs.reason==='no_prior_same_source'?currentCard('Exames','Sem comparação da mesma origem','A coleta mais recente está preservada, mas não há outra coleta anterior da mesma origem.','saude'):model.labs.reason==='no_comparable_markers'?currentCard('Exames','Sem comparação segura','As duas coletas mais recentes da mesma origem não têm biomarcadores compatíveis para comparar sem suposição.','saude'):currentCard('Exames',labDate?fmtDate(labDate):'Sem coleta estruturada',model.labs.collectionDays?.length>=2?`${model.labs.comparable} biomarcador(es) comparáveis entre coletas da mesma origem`:'Ainda sem segunda coleta comparável','saude');
-  return `<div class="dashboardScreen" data-executive-dashboard>
-    <section class="dashboardHeader">
-      <div><span class="dashboardEyebrow">Resumo</span><h1>Seu histórico em uma tela</h1><p>Leitura até ${esc(fmtDate(model.referenceDay))}. Primeiro as mudanças e relações; cobertura e pendências ficam em segundo plano.</p></div>
-      <div class="dashboardHeaderActions">${action('analise','Análise completa')}${action('dados','Adicionar dados')}</div>
-    </section>
+  const body=latestSingle(state.data.body||[],'measured_at'),workout=safeLatestWorkout(),nutrition=latestSingle(state.data.nutrition||[],'nutrition_date'),labs=labStats(),protocol=protocolStats(),water=hydrationRows(),reference=unique([
+    body.date,day(workout?.workout_date),nutrition.date,labs.last,protocol.last,water.at(-1)?.date
+  ].filter(Boolean)).sort().at(-1)||null;
 
-    <section class="dashboardCurrentGrid">${bodyCard}${workoutCard}${nutritionCard}${labCard}</section>
+  const bodyCard=failed('body')?routeCard('bio','Composição','Indisponível agora','As medições não carregaram.','error'):body.ambiguous?routeCard('bio','Composição','Revisão necessária',`Mais de um registro em ${fmtDate(body.date)}.`,'warn'):body.row?routeCard('bio','Composição',num(body.row.skeletal_muscle_mass_kg)!=null?`${fmtNum(body.row.skeletal_muscle_mass_kg,1)} kg massa muscular`:num(body.row.weight_kg)!=null?`${fmtNum(body.row.weight_kg,1)} kg`:'Medição disponível',`${num(body.row.body_fat_pct)!=null?`${fmtNum(body.row.body_fat_pct,1)}% gordura · `:''}${fmtDate(body.date)}`):routeCard('bio','Composição','Sem medição','Abra o histórico corporal.');
+  const workoutCard=failed('workouts')?routeCard('treinos','Treino','Indisponível agora','O histórico não carregou.','error'):workout?routeCard('treinos','Último treino',workout.workout_type||'Treino registrado',`${fmtDate(workout.workout_date)}${workout.location?` · ${workout.location}`:''}`):routeCard('treinos','Treino','Sem sessão','Nenhum treino canônico disponível.');
+  const nutritionCard=failed('nutrition')?routeCard('nutricao','Nutrição','Indisponível agora','Os dados não carregaram.','error'):nutrition.ambiguous?routeCard('nutricao','Nutrição','Revisão necessária',`Mais de um total em ${fmtDate(nutrition.date)}.`,'warn'):nutrition.row?routeCard('nutricao','Nutrição',`${fmtDate(nutrition.date)}`,num(nutrition.row.protein_g)!=null?`${fmtNum(nutrition.row.protein_g,0)} g proteína registrada`:'Total diário disponível'):routeCard('nutricao','Nutrição','Sem registro','Nenhum total diário estruturado.');
+  const hydrationCard=failed('nutrition')?routeCard('nutricao','Hidratação','Indisponível agora','Os dados nutricionais não carregaram.','error'):water.length?routeCard('nutricao','Hidratação',`${fmtNum(water.at(-1).value,0)} mL`,`Último registro: ${fmtDate(water.at(-1).date)}`):routeCard('nutricao','Hidratação','Sem água importada','O histórico atual não contém volume de água.','warn');
+  const labsCard=failed('labs')?routeCard('saude','Exames','Indisponível agora','Os resultados não carregaram.','error'):labs.rows?routeCard('saude','Exames',`${labs.rows} resultados`,`${labs.markers} marcadores · última coleta ${fmtDate(labs.last)}`):routeCard('saude','Exames','Sem resultados','Nenhum exame estruturado.');
+  const protocolReady=state.domainStatus?.treatments==='ready';
+  const protocolCard=failed('treatments')?routeCard('tratamentos','Protocolos','Indisponível agora','O histórico não carregou.','error'):protocolReady&&protocol.rows?routeCard('tratamentos','Protocolos',`${protocol.rows} registros`,`${protocol.names} item(ns) distintos · até ${fmtDate(protocol.last)}`):protocolReady?routeCard('tratamentos','Protocolos','Sem registros','Nenhum evento estruturado.'):routeCard('tratamentos','Protocolos','Abrir histórico','Eventos registrados por data e origem.');
 
-    <div class="dashboardMainGrid">${compositionPanel(model)}${trainingPanel(model)}</div>
-
-    <section class="dashboardSection">
-      <div class="dashboardSectionHead"><div><span>Leituras integradas</span><h2>O que os dados já permitem relacionar</h2></div><small>Sem transformar coincidência temporal em causalidade.</small></div>
-      <div class="dashboardInsightGrid">${insights.length?insights.join(''):'<div class="dashboardChartEmpty">Ainda não há relações suficientes para destacar.</div>'}</div>
-    </section>
-
-    ${limitationCards(model)?`<section class="dashboardSection dashboardLimitations"><div class="dashboardSectionHead"><div><span>O que ainda limita</span><h2>Dados que estão presentes, mas ainda não sustentam uma conclusão</h2></div></div><div class="dashboardLimitationGrid">${limitationCards(model)}</div></section>`:''}
+  return`<div class="dashboardScreen cockpitScreen" data-executive-dashboard>
+    <section class="dashboardHeader cockpitHero"><div><span class="dashboardEyebrow">Cockpit LTS Health</span><h1>Seu estado de saúde em uma tela</h1><p>${reference?`Dados estruturados disponíveis até ${fmtDate(reference)}.`:'Ainda sem data de referência.'} Composição, treino, nutrição, hidratação, exames e protocolos ficam lado a lado, com lacunas explícitas e sem preencher dados por estimativa.</p></div><div class="dashboardHeaderActions">${action('analise','Abrir Insights')}${action('dados','Adicionar dados')}</div></section>
+    <section class="dashboardCurrentGrid cockpitCurrentGrid">${bodyCard}${workoutCard}${nutritionCard}${hydrationCard}${labsCard}${protocolCard}</section>
+    <section class="dashboardSection cockpitSection"><div class="dashboardSectionHead"><div><span>Visão executiva</span><h2>Evolução e cobertura</h2></div><small>Escalas e datas explícitas</small></div><div class="cockpitDashboardGrid"><article class="dashboardPanel cockpitComposition"><div class="dashboardPanelHead"><div><span>Composição</span><h2>Massa muscular</h2></div><button data-route="evolucao">Evolução →</button></div>${compositionChart()}</article>${trainingPanel()}${hydrationPanel()}${labPanel()}</div></section>
+    <section class="dashboardSection cockpitSection"><div class="dashboardSectionHead"><div><span>Insights</span><h2>Leituras sustentadas pelos dados</h2></div><button class="todayAction" data-route="analise">Ver todos</button></div><div class="dashboardInsightGrid cockpitInsightGrid">${insightCards()}</div></section>
+    <p class="dashboardFootnote cockpitFooter">O LTS Health organiza e compara registros existentes. Protocolos aparecem apenas como contexto temporal e os exames não recebem interpretação clínica automática.</p>
   </div>`;
 }
