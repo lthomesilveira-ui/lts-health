@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--text)}
 .executivePeriodControl>span{display:none!important}
 .executivePeriodSelect{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .executivePeriodTabs{display:flex;align-items:center;padding:3px;border:1px solid #d9e2ee;border-radius:12px;background:#fff;box-shadow:0 3px 10px rgba(30,55,90,.035)}
-.executivePeriodTabs button{min-width:70px;border:0;background:transparent;color:#62738a;padding:8px 13px;border-radius:9px;font-size:10px;font-weight:850;line-height:1;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+.executivePeriodTabs button{min-width:70px;border:0;background:transparent;color:#62738a;padding:8px 13px;border-radius:9px;font-size:11px;font-weight:850;line-height:1;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
 .executivePeriodTabs button:hover{background:#f5f8fc;color:#29435f}
 .executivePeriodTabs button.active{background:#eef4ff;color:#1f5ecf;box-shadow:inset 0 0 0 1px #bfd3f7}
 .cockpitStatus{position:relative;overflow:hidden;background:#fff!important;border-color:#e1e8f0!important}
@@ -108,7 +108,7 @@ body{background:var(--bg);color:var(--text)}
   .primaryNav button{
     width:100%;display:flex;align-items:center;justify-content:flex-start;
     text-align:left;border-color:transparent;background:transparent;
-    color:#50627a;padding:10px 11px;border-radius:10px;font-size:11px;font-weight:800;
+    color:#50627a;padding:10px 11px;border-radius:10px;font-size:12px;font-weight:800;
   }
   .primaryNav button:before{
     width:19px;display:inline-grid;place-items:center;
@@ -137,10 +137,11 @@ body{background:var(--bg);color:var(--text)}
   .cockpitV3{margin:-20px -24px -46px;padding:26px 26px 48px;min-height:calc(100vh - 68px)}
   .cockpitWelcome{position:relative;padding-right:4px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:22px}
   .cockpitWelcome h1{font-size:28px}
+  .cockpitWelcome p{font-size:13px}
   .cockpitWelcome .cockpitPeriod{grid-column:2;grid-row:1/3;align-self:start;margin-top:2px}
   .cockpitStatusGrid{gap:12px}
   .cockpitStatus{min-height:172px;padding:15px 13px 22px;box-shadow:0 7px 20px rgba(30,55,90,.045)}
-  .cockpitStatusText small{font-size:9px}
+  .cockpitStatusText small{font-size:11px}
   .cockpitStatusText b{font-size:18px}
   .cockpitInsightHero{padding:15px 17px}
   .cockpitModule,.cockpitSummary,.cockpitReview,.cockpitSources{box-shadow:0 7px 20px rgba(30,55,90,.045)}
