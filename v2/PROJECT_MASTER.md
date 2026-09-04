@@ -42,6 +42,7 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - O `/v2/` passou homologação externa automatizada em desktop/mobile.
 - A versão anterior da raiz foi copiada integralmente para `legacy.html` antes da promoção pública, preservando rollback sem force ou perda de histórico.
 - Em 04/09/2026 a entrada pública principal foi promovida por PR normal ao cockpit aprovado; o deploy de `main` concluiu com sucesso e o smoke pós-deploy abriu a URL pública real, confirmou redirecionamento para `/v2/`, encontrou `Visão geral da sua saúde` e concluiu a bateria desktop/mobile sem overflow. A homologação pós-deploy também concluiu com sucesso.
+- Em 04/09/2026 o cockpit recebeu um pacote adicional de fidelidade visual: cartões executivos, Leitura principal, módulos de Treino/Nutrição/Composição, Recuperação/Exames/Hidratação e fechamento Resumo/Revisões/Fontes foram refinados sem alterar semântica dos dados. O primeiro gate rejeitou apenas texto de apoio mobile abaixo do mínimo; a correção foi feita antes da promoção. O head corrigido concluiu todos os workflows disparados sem falha, o PR normal foi promovido e os smokes pós-deploy da raiz pública e homologação concluíram com sucesso em desktop/mobile. Este marco corresponde a 8/10 da entrega visual acordada; 10/10 continua condicionado ao fechamento dos estados reais aplicáveis e acabamento final, sem declarar E2E autenticado enquanto ele não ocorrer de fato.
 
 ## Pendências abertas confirmadas
 
