@@ -1,0 +1,41 @@
+name: LTS Health Real Auth E2E
+on:
+  push:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/real-auth-e2e.mjs'
+      - '.github/workflows/real-auth-e2e.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  real-auth-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static validation
+        run: node --check v2/real-auth-e2e.mjs
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Obtain one-time authenticated session link
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_RESPONSE="$(curl -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
+          echo "::add-mask::$OIDC_TOKEN"
+          curl -fsS -X POST \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
+            -o /tmp/lts-health-e2e-link.json
+          ACTION_LINK="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-e2e-link.json','utf8'));if(!x.action_link)process.exit(2);process.stdout.write(x.action_link)")"
+          echo "::add-mask::$ACTION_LINK"
+          umask 077
+          printf '%s' "$ACTION_LINK" > /tmp/lts-health-action-link
+      - name: Exercise public app with real authenticated data
+        run: node v2/real-auth-e2e.mjs
