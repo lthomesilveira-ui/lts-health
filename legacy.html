@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102c47">
+<title>LTS Health</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./v11.css?v=16">
+<link rel="stylesheet" href="./v12.css?v=16">
+<link rel="stylesheet" href="./v13.css?v=16">
+<link rel="stylesheet" href="./v14.css?v=16">
+<link rel="stylesheet" href="./v15.css?v=16">
+<link rel="stylesheet" href="./v16.css?v=16">
+<link rel="stylesheet" href="./product.css?v=29">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="loginView" class="login hidden">
+  <div class="brand" style="color:var(--ink);margin-bottom:18px"><div class="logo">L</div><div class="brandtext"><b>LTS Health</b><small class="mut">histórico, evidência e performance longitudinal</small></div></div>
+  <h1 style="margin:0;font-size:25px">Entrar</h1><div class="mut" style="font-size:12px;margin-top:5px">Use o acesso do LTS Health.</div>
+  <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="email"></div>
+  <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password"></div>
+  <button id="loginBtn" class="btn full">Acessar LTS Health</button><div id="loginMsg" class="mut" style="font-size:11px;margin-top:10px"></div>
+</div>
+<div id="app" class="shell hidden">
+<header class="hdr"><div class="hdrin"><div class="top">
+  <div class="brand"><div class="logo">L</div><div class="brandtext"><b>LTS Health</b><small>dedicated canonical health intelligence cockpit</small></div></div>
+  <div class="topActions"><div id="syncState" class="sync">carregando</div><button id="logoutBtn" class="logout">Sair</button></div>
+</div>
+<nav class="nav"><button data-tab="today" class="active">Hoje</button><button data-tab="timeline">Timeline</button><button data-tab="evolution">Evolução</button><button data-tab="training">Treino</button><button data-tab="health">Saúde</button><button data-tab="nutrition">Nutrição</button><button data-tab="insights">Insights</button><button data-tab="inbox">Dados / Inbox</button></nav>
+</div></header>
+<main class="wrap">
+<div id="systemNotice" class="notice info">Carregando histórico canônico…</div>
+
+<section id="today" class="tab section">
+  <div class="hero"><div class="card heroPrimary"><div class="eyebrow mut">Estado canônico</div><div id="headline" class="headline">Carregando seu histórico…</div><div id="subheadline" class="mut" style="font-size:12px;margin-top:8px;line-height:1.45"></div></div>
+  <div class="card"><div class="eyebrow">Próxima fonte prioritária</div><div id="nextData" style="font-size:19px;font-weight:950;margin-top:8px">—</div><div id="nextDataWhy" class="mut" style="font-size:11px;margin-top:6px;line-height:1.45"></div></div></div>
+  <div class="kpis"><div class="kp"><span>Treinos canônicos</span><strong id="kWorkout">0</strong></div><div class="kp"><span>Exercícios estruturados</span><strong id="kExercises">0</strong></div><div class="kp"><span>Séries estruturadas</span><strong id="kSets">0</strong></div><div class="kp"><span>Composição corporal</span><strong id="kBody">0</strong></div><div class="kp"><span>Resultados laboratoriais</span><strong id="kLabs">0</strong></div></div>
+  <div class="grid4 section"><div id="statusTraining" class="statusCard"></div><div id="statusNutrition" class="statusCard"></div><div id="statusRecovery" class="statusCard"></div><div id="statusLabs" class="statusCard"></div></div>
+  <div class="grid2 section"><div><div class="title">Treinos recentes</div><div id="recentWorkouts" class="list"></div></div><div><div class="title">Próximos dados</div><div id="topRequests" class="list"></div></div></div>
+  <div class="grid2 section"><div class="statusCard"><b>Qualidade dos dados</b><div id="qualityCount" class="statusValue">0</div><small>questões abertas preservadas no ledger de auditoria.</small></div><div class="statusCard"><b>Quarentena</b><div id="quarantineCount" class="statusValue">0</div><small>registros excluídos das leituras canônicas até haver evidência.</small></div></div>
+</section>
+
+<section id="timeline" class="tab section hidden"><div class="title">Timeline longitudinal</div><div class="sectionLead">Treinos, composição, exames, documentos, planos, nutrição e atividade/sono em ordem temporal. Cada evento mantém fonte quando disponível.</div><div id="timelineList" class="list"></div></section>
+
+<section id="evolution" class="tab section hidden"><div class="title">Evolução corporal</div><div class="sectionLead">Série descritiva; o app não classifica aparência corporal como melhor ou pior.</div>
+<div class="grid3"><div class="card"><div class="eyebrow">Último peso registrado</div><div id="evoWeight" class="metric">—</div><div id="weightSpark" class="spark"></div></div><div class="card"><div class="eyebrow">Registros</div><div id="evoCount" class="metric">0</div><div class="mut" style="font-size:10px">série histórica preservada</div></div><div class="card"><div class="eyebrow">Variação registrada</div><div id="bodyDelta" class="metric">—</div><div class="mut" style="font-size:10px">diferença entre primeiro e último registro disponível</div></div></div>
+<div class="grid2 section"><div><div class="title" style="font-size:14px">Histórico</div><div id="bodyList" class="list"></div></div><div><div class="title" style="font-size:14px">Última análise segmental</div><div id="segmentLatest" class="card"></div></div></div></section>
+
+<section id="training" class="tab section hidden"><div class="title">Treino</div><div class="sectionLead">Sessões concluídas e planos ficam separados. Cargas sem unidade explícita permanecem como valor da fonte/índice de placa; não há conversão inventada.</div><div class="grid2"><div><div class="title" style="font-size:14px">Sessões concluídas</div><div id="trainingList" class="list"></div></div><div><div class="title" style="font-size:14px">Planos preservados</div><div id="planList" class="list"></div></div></div></section>
+
+<section id="health" class="tab section hidden"><div class="title">Saúde & exames</div><div class="sectionLead">Resultados e documentos são exibidos com proveniência; interpretações clínicas não são inventadas a partir de lacunas.</div><div class="grid2"><div><div class="title" style="font-size:14px">Resultados laboratoriais</div><div id="labList" class="list"></div></div><div><div class="title" style="font-size:14px">Documentos</div><div id="docList" class="list"></div></div></div><div class="grid2 section"><div><div class="title" style="font-size:14px">Atividade & sono</div><div id="metricList" class="list"></div></div><div><div class="title" style="font-size:14px">Limitações / qualidade</div><div id="healthQuality" class="list"></div></div></div></section>
+
+<section id="nutrition" class="tab section hidden"><div class="title">Nutrição</div><div class="card"><b id="nutritionTitle">Sem dados nutricionais reais importados</b><div id="nutritionText" class="mut" style="font-size:11px;margin-top:6px;line-height:1.45"></div></div><div id="nutritionList" class="list section"></div></section>
+
+<section id="insights" class="tab section hidden"><div class="title">Insights & prediction readiness</div><div class="sectionLead">Insights são descritivos e sustentados por dados observados. Números preditivos ficam retidos quando a base é insuficiente.</div><div class="grid3" id="insightGrid"></div><div class="card section"><div class="eyebrow">Prontidão para previsão</div><div id="predictionReadiness" class="metric" style="font-size:21px;margin-top:7px">—</div><div id="readinessGrid" class="readiness"></div><div id="predictionStatus" class="mut" style="font-size:11px;margin-top:11px;line-height:1.45"></div></div><div id="persistedInsights" class="list section"></div></section>
+
+<section id="inbox" class="tab section hidden"><div class="title">Dados / Health Data Inbox</div><div class="sectionLead">Fluxo guiado para novas fontes. O original entra primeiro no storage privado; inspeção e normalização acontecem sem preencher lacunas por estimativa.</div>
+<div class="grid2"><div class="uploadBox"><b>Adicionar fonte</b><div class="mut" style="font-size:10px;margin-top:5px">Máximo de 50 MB por arquivo. Múltiplos arquivos são aceitos.</div><div class="uploadGrid section"><div><label class="microLabel">Fonte</label><select id="uploadType"><option value="myfitnesspal">MyFitnessPal</option><option value="lab">Exames históricos</option><option value="apple_health">Apple Health</option><option value="polar">Polar</option><option value="body_composition">Bioimpedância</option><option value="training">Treino</option><option value="document">Outro documento</option></select></div><div><label class="microLabel">Arquivo</label><input id="uploadFile" type="file" multiple accept=".csv,.json,.pdf,.jpg,.jpeg,.png,.heic,.zip,.xml,text/csv,application/json,application/pdf,image/*,application/zip,application/xml,text/xml"></div><button id="uploadBtn" class="btn">Enviar</button></div><div id="uploadMsg" class="msg"></div></div>
+<div><div class="guide current"><b id="uploadGuideTitle">MyFitnessPal</b><span id="uploadGuideText"></span><div id="uploadGuideFormats" class="sourceTag" style="margin-top:6px"></div></div><div class="guideSteps" style="margin-top:8px"><div class="guide"><b>1 · Preservar</b>Arquivo bruto no bucket privado, por usuário.</div><div class="guide"><b>2 · Inspecionar</b>Formato, colunas, quantidade e intervalo de datas.</div><div class="guide"><b>3 · Normalizar</b>Autoimportação apenas nos parsers suportados e confiáveis.</div><div class="guide"><b>4 · Auditar</b>Quarentenas e revisões ficam visíveis, não escondidas.</div></div></div></div>
+<div class="section"><div class="title" style="font-size:14px">Uploads & processamento</div><div id="uploadList" class="list"></div></div>
+<div class="grid2 section"><div><div class="title" style="font-size:14px">Cobertura de fontes</div><div class="card"><div class="coverage"><i id="coverageBar" style="width:0%"></i></div><div id="coverageLabel" class="mut" style="font-size:10px;margin-top:6px"></div></div><div id="requestList" class="list section"></div></div><div><div class="title" style="font-size:14px">Ledger de qualidade</div><div id="qualityList" class="list"></div></div></div></section>
+
+<div class="footer">LTS Health · canonical v16 · dedicated GitHub / Supabase · provenance first</div>
+</main>
+<nav class="mobileDock"><button data-tab="today" class="active">Hoje</button><button data-tab="timeline">Timeline</button><button data-tab="training">Treino</button><button data-tab="health">Saúde</button><button id="moreBtn" class="more">Dados</button></nav>
+</div>
+<script src="./config.js"></script>
+<script src="./app.js"></script>
+<script src="./app-v8.js"></script>
+<script src="./app-v11.js?v=16"></script>
+<script src="./app-v12.js?v=16"></script>
+<script src="./app-v13.js?v=16"></script>
+<script src="./app-v14.js?v=16"></script>
+<script src="./app-v15.js?v=16"></script>
+<script src="./app-v16.js?v=16"></script>
+<script src="./product.js?v=29"></script>
+</body>
+</html>
