@@ -162,6 +162,7 @@ body{background:var(--bg);color:var(--text)}
   }
   .screenHost{background:#f4f7fb}
   .cockpitV3{background:#f4f7fb}
+  .cockpitWelcome p{font-size:13px}
   .executivePeriodControl{justify-content:flex-start;width:100%;overflow:auto;padding-bottom:2px}
   .executivePeriodTabs{width:max-content;min-width:100%}
   .executivePeriodTabs button{min-width:66px;flex:1;padding:8px 10px}
