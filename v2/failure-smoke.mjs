@@ -84,16 +84,18 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await openToday('nutrition',{width:390,height:844});
-  const card=await ctx.page.locator('.dashboardCurrent').filter({hasText:'Nutrição'}).first().textContent();
-  if(!card?.includes('Indisponível agora')||card?.includes('Sem registro recente')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
-  if(!ctx.text.includes('Último treino'))throw new Error('hoje/nutrition mobile: healthy snapshot cards disappeared');
+  const card=await ctx.page.locator('.cockpitStatus').filter({hasText:'Nutrição'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Sem cobertura')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
+  if(!ctx.text.includes('Os dados de nutrição não carregaram agora.'))throw new Error('hoje/nutrition mobile: failed nutrition module is not explicit');
+  if(!ctx.text.includes('Ritmo e distribuição'))throw new Error('hoje/nutrition mobile: healthy training module disappeared');
   await finish(ctx,'hoje/nutrition mobile');
 }
 {
   const ctx=await openToday('labs',{width:1440,height:900});
-  const card=await ctx.page.locator('.dashboardCurrent').filter({hasText:'Exames'}).first().textContent();
-  if(!card?.includes('Indisponível agora')||card?.includes('Sem coleta estruturada')||card?.match(/\b0\b/))throw new Error('hoje/labs desktop: failed domain presented as absence or zero');
-  if(!ctx.text.includes('Último treino')||!ctx.text.includes('Composição'))throw new Error('hoje/labs desktop: healthy snapshot cards disappeared');
+  const card=await ctx.page.locator('.cockpitStatus').filter({hasText:'Exames'}).first().textContent();
+  if(!card?.includes('Indisponível agora')||card?.includes('Nenhuma coleta')||card?.match(/\b0\b/))throw new Error('hoje/labs desktop: failed domain presented as absence or zero');
+  if(!ctx.text.includes('Os dados de exames não carregaram agora.'))throw new Error('hoje/labs desktop: failed exam module is not explicit');
+  if(!ctx.text.includes('Ritmo e distribuição')||!ctx.text.includes('Composição corporal'))throw new Error('hoje/labs desktop: healthy cockpit domains disappeared');
   await finish(ctx,'hoje/labs desktop');
 }
 
