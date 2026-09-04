@@ -66,6 +66,28 @@ body{background:var(--bg);color:var(--text)}
 .note,.empty,.loadingState{color:var(--mut);border-color:var(--line2)}
 .sheet{background:rgba(20,34,52,.32)}
 
+.executivePeriodControl{display:flex!important;align-items:center;justify-content:flex-end;gap:8px}
+.executivePeriodControl>span{display:none!important}
+.executivePeriodSelect{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.executivePeriodTabs{display:flex;align-items:center;padding:3px;border:1px solid #d9e2ee;border-radius:12px;background:#fff;box-shadow:0 3px 10px rgba(30,55,90,.035)}
+.executivePeriodTabs button{min-width:70px;border:0;background:transparent;color:#62738a;padding:8px 13px;border-radius:9px;font-size:10px;font-weight:850;line-height:1;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+.executivePeriodTabs button:hover{background:#f5f8fc;color:#29435f}
+.executivePeriodTabs button.active{background:#eef4ff;color:#1f5ecf;box-shadow:inset 0 0 0 1px #bfd3f7}
+.cockpitStatus{position:relative;overflow:hidden;background:#fff!important;border-color:#e1e8f0!important}
+.cockpitStatus:after{content:'';position:absolute;left:13px;right:13px;bottom:10px;height:3px;border-radius:99px;background:#dce4ef}
+.cockpitStatus:nth-child(1):after{background:#3b76e8}
+.cockpitStatus:nth-child(2):after{background:#26a66f}
+.cockpitStatus:nth-child(3):after{background:#e29835}
+.cockpitStatus:nth-child(4):after{background:#8b64d8}
+.cockpitStatus:nth-child(5):after{background:#35a8b1}
+.cockpitStatusText b{letter-spacing:-.2px}
+.cockpitStatusText p{padding-bottom:8px}
+.cockpitInsightHero{background:#fff!important;border-color:#dfe7f0!important;box-shadow:0 8px 24px rgba(30,55,90,.055)!important}
+.cockpitModule{background:#fff!important;border-color:#e1e8f0!important}
+.cockpitModuleHead b,.cockpitSummary b,.cockpitReview b,.cockpitSources b{color:#1d2d46}
+.cockpitMetric b{color:#172a45}
+.cockpitModule .mut,.cockpitSummary .mut,.cockpitReview .mut,.cockpitSources .mut{color:#6f8095}
+
 @media (min-width:721px){
   .app{
     display:grid;
@@ -89,9 +111,20 @@ body{background:var(--bg);color:var(--text)}
     color:#50627a;padding:10px 11px;border-radius:10px;font-size:11px;font-weight:800;
   }
   .primaryNav button:before{
-    content:'•';width:19px;display:inline-grid;place-items:center;
-    color:#91a2b8;font-size:12px;margin-right:4px;
+    width:19px;display:inline-grid;place-items:center;
+    color:#91a2b8;font-size:13px;margin-right:5px;
   }
+  .primaryNav button[data-route="hoje"]:before{content:'⌂'}
+  .primaryNav button[data-route="treinos"]:before{content:'↗'}
+  .primaryNav button[data-route="nutricao"]:before{content:'◉'}
+  .primaryNav button[data-route="bio"]:before{content:'◇'}
+  .primaryNav button[data-route="analise"]:before{content:'◔'}
+  .primaryNav button[data-route="saude"]:before{content:'＋'}
+  .primaryNav button[data-route="tratamentos"]:before{content:'▣'}
+  .primaryNav button[data-route="evolucao"]:before{content:'⌁'}
+  .primaryNav button[data-route="timeline"]:before{content:'≡'}
+  .primaryNav button[data-route="dados"]:before{content:'▱'}
+  .primaryNav button[data-route="mais"]:before{content:'•••';font-size:9px}
   .primaryNav button.active:before{color:#2766d9}
   .primaryNav button.active{background:#eaf2ff;border-color:#dce8fa;color:#1d56bd}
   .primaryNav .navDivider{height:1px;background:#edf1f5;margin:8px 8px}
@@ -102,10 +135,11 @@ body{background:var(--bg);color:var(--text)}
   }
   .mobileNav{display:none!important}
   .cockpitV3{margin:-20px -24px -46px;padding:26px 26px 48px;min-height:calc(100vh - 68px)}
-  .cockpitWelcome{position:relative;padding-right:4px}
+  .cockpitWelcome{position:relative;padding-right:4px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:22px}
   .cockpitWelcome h1{font-size:28px}
+  .cockpitWelcome .cockpitPeriod{grid-column:2;grid-row:1/3;align-self:start;margin-top:2px}
   .cockpitStatusGrid{gap:12px}
-  .cockpitStatus{min-height:172px;padding:15px 13px;box-shadow:0 7px 20px rgba(30,55,90,.045)}
+  .cockpitStatus{min-height:172px;padding:15px 13px 22px;box-shadow:0 7px 20px rgba(30,55,90,.045)}
   .cockpitStatusText small{font-size:9px}
   .cockpitStatusText b{font-size:18px}
   .cockpitInsightHero{padding:15px 17px}
@@ -127,4 +161,7 @@ body{background:var(--bg);color:var(--text)}
   }
   .screenHost{background:#f4f7fb}
   .cockpitV3{background:#f4f7fb}
+  .executivePeriodControl{justify-content:flex-start;width:100%;overflow:auto;padding-bottom:2px}
+  .executivePeriodTabs{width:max-content;min-width:100%}
+  .executivePeriodTabs button{min-width:66px;flex:1;padding:8px 10px}
 }
