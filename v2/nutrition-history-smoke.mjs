@@ -96,7 +96,7 @@ async function run(viewport,label){
 
   await page.evaluate(()=>{location.hash='#hoje';});
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]'));
-  const nutritionCurrent=(await page.locator('.dashboardCurrent').filter({hasText:'Nutrição'}).textContent())||'';
+  const nutritionCurrent=(await page.locator('.cockpitStatus').filter({hasText:'Nutrição'}).textContent())||'';
   if(!nutritionCurrent.includes('Revisão necessária')||!nutritionCurrent.includes('nenhum foi escolhido como atual'))throw new Error(`${label}: Hoje did not surface latest nutrition ambiguity`);
   if(nutritionCurrent.includes('9.900')||nutritionCurrent.includes('999 g'))throw new Error(`${label}: Hoje selected a conflicting nutrition total`);
 
