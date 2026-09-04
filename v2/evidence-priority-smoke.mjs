@@ -22,12 +22,14 @@ async function run(viewport,label){
 
   const synthetic=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
+    const {referenceDayFor}=await import('./src/integrated-analysis.js');
     const {coveragePriorityModel,traceabilityModel,renderTraceabilityPanel}=await import('./src/evidence-priority.js');
     const data=structuredClone(state.data),status={...state.domainStatus};
+    const referenceDay=referenceDayFor(data)||'2026-01-01';
     status.sourceMetrics='ready';status.uploads='ready';status.quality='ready';
     data.sourceMetrics=[
-      {metric_date:'2026-08-01',metric_type:'steps',unit:'count',source_family:'apple_watch',source_name:'WATCH-PRIVATE-001',canonical_status:'candidate'},
-      {metric_date:'2026-08-02',metric_type:'steps',unit:'count',source_family:'polar_flow',source_name:'POLAR-PRIVATE-002',canonical_status:'held'}
+      {metric_date:referenceDay,metric_type:'steps',unit:'count',source_family:'apple_watch',source_name:'WATCH-PRIVATE-001',canonical_status:'candidate'},
+      {metric_date:referenceDay,metric_type:'steps',unit:'count',source_family:'polar_flow',source_name:'POLAR-PRIVATE-002',canonical_status:'held'}
     ];
     data.uploads=[
       {status:'processed',original_filename:'PRIVATE-A.zip'},
