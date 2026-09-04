@@ -39,7 +39,7 @@ async function run(viewport,label){
   });
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
   const rerenderData=async()=>{
-    await page.click(`${nav} [data-route="bio"]`);
+    await page.click(`${nav} [data-route="treinos"]`);
     await page.click(`${nav} [data-route="mais"]`);
     await page.waitForSelector('#moreSheet:not(.hidden)');
     await page.click('#moreSheet [data-route="dados"]');
