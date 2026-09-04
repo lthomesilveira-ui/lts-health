@@ -45,6 +45,7 @@ async function run(viewport,label){
     ];
     document.querySelector('#screenHost').innerHTML=renderDataHub();
   });
+  await page.locator('.provenancePanel > summary').click();
   const coverage=page.locator('[data-complementary-coverage]');
   await coverage.waitFor();
   const coverageText=(await coverage.textContent())||'';
