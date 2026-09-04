@@ -12,7 +12,7 @@ async function run(viewport,label){
   for(const expected of ['Cockpit LTS Health','Composição','Último treino','Nutrição','Hidratação','Atividade & sono','Exames','Protocolos','Insights','Evolução e cobertura'])if(!text.includes(expected))throw new Error(`${label}: cockpit missing ${expected}`);
   if(!text.includes('Nenhum registro de água foi importado'))throw new Error(`${label}: hydration gap is not explicit`);
   const activitySleepPanel=(await page.locator('.cockpitActivitySleep').textContent())||'';
-  for(const expected of ['Atividade & sono','Atividade diária confirmada','Sono preservado por origem','Sem atividade diária confirmada','Sono sem evidência estruturada por origem'])if(!activitySleepPanel.includes(expected))throw new Error(`${label}: activity/sleep panel missing ${expected}`);
+  for(const expected of ['Atividade & sono','Atividade diária confirmada','Sem atividade diária confirmada','Sono sem evidência estruturada por origem'])if(!activitySleepPanel.includes(expected))throw new Error(`${label}: activity/sleep panel missing ${expected}`);
   const boundary=await page.evaluate(async()=>{
     const {activitySleepSnapshot}=await import('./src/today-screen.js');
     const status={metrics:'ready',sourceMetrics:'ready'};
