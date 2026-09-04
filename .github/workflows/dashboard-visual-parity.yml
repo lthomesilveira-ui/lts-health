@@ -59,6 +59,7 @@ jobs:
               const cards=[...document.querySelectorAll('.cockpitStatus')].map(el=>el.getBoundingClientRect());
               const analytics=[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
               const secondary=[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
+              const host=document.querySelector('#screenHost');
               return{
                 overflow:document.documentElement.scrollWidth-window.innerWidth,
                 nav:rect('.primaryNav'),
@@ -66,7 +67,9 @@ jobs:
                 insight:rect('.cockpitInsightHero'),
                 analytics,
                 secondary,
-                bottom:rect('.cockpitBottomGrid')
+                bottom:rect('.cockpitBottomGrid'),
+                hostScrollHeight:host?.scrollHeight||0,
+                hostClientHeight:host?.clientHeight||0
               };
             });
 
@@ -83,10 +86,23 @@ jobs:
               if(cardTops.size!==1)throw new Error(`${label}: five domain cards are not one aligned row`);
               const moduleTops=new Set(metrics.analytics.map(r=>Math.round(r.top/3)*3));
               if(moduleTops.size!==1)throw new Error(`${label}: analytical modules are not one aligned row`);
+              await page.screenshot({path,fullPage:true});
+            }else{
+              if(metrics.hostScrollHeight<=metrics.hostClientHeight+300)throw new Error(`${label}: dashboard does not expose a scrollable analytical body`);
+              await page.screenshot({path});
+              const analyticsGrid=page.locator('.cockpitAnalyticsGrid');
+              await analyticsGrid.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(120);
+              if(!(await analyticsGrid.isVisible()))throw new Error(`${label}: analytical modules cannot be reached by scrolling`);
+              await page.screenshot({path:'artifacts/dashboard-mobile-analytics.png'});
+              const bottom=page.locator('.cockpitBottomGrid');
+              await bottom.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(120);
+              if(!(await bottom.isVisible()))throw new Error(`${label}: executive closing row cannot be reached by scrolling`);
+              await page.screenshot({path:'artifacts/dashboard-mobile-bottom.png'});
             }
 
             if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
-            await page.screenshot({path,fullPage:true});
             await page.close();
           }
 
