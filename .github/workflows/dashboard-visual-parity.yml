@@ -14,8 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Static visual contract
+      - name: Static visual and product contract
         run: |
+          set -euo pipefail
           test -f v2/dashboard-parity.css
           grep -q './dashboard-parity.css' v2/index.html
           grep -q 'grid-template-columns:238px' v2/dashboard-parity.css
@@ -24,6 +25,25 @@ jobs:
           grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
           grep -q 'Leitura principal da janela' v2/src/today-screen.js
           grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+          for file in v2/src/*.js; do node --check "$file"; done
+          for file in \
+            v2/failure-smoke.mjs \
+            v2/timeline-interaction-smoke.mjs \
+            v2/nutrition-history-smoke.mjs \
+            v2/analysis-history-smoke.mjs \
+            v2/analysis-period-consistency-smoke.mjs \
+            v2/health-longitudinal-smoke.mjs \
+            v2/training-progression-smoke.mjs \
+            v2/canonical-boundary-smoke.mjs \
+            v2/source-status-smoke.mjs \
+            v2/provenance-alias-smoke.mjs \
+            v2/executive-dashboard-smoke.mjs \
+            v2/cockpit-smoke.mjs \
+            v2/product-finish-smoke.mjs \
+            v2/upload-outcome-smoke.mjs \
+            v2/source-continuity-unknown-smoke.mjs; do node --check "$file"; done
+          grep -q "https://plztdqyuqcjohiimudnr.supabase.co" v2/src/core.js
+          ! grep -R 'tadhkamnwtsbdozwkyut' v2/src v2/index.html
 
       - name: Install browser runtime
         run: |
@@ -112,6 +132,29 @@ jobs:
           console.log('Dashboard visual parity gate passed');
           EOF
           node dashboard-parity-run.mjs
+
+      - name: Run existing product regression battery
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-regression.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/failure-smoke.mjs
+          node v2/timeline-interaction-smoke.mjs
+          node v2/nutrition-history-smoke.mjs
+          node v2/analysis-history-smoke.mjs
+          node v2/analysis-period-consistency-smoke.mjs
+          node v2/health-longitudinal-smoke.mjs
+          node v2/training-progression-smoke.mjs
+          node v2/canonical-boundary-smoke.mjs
+          node v2/source-status-smoke.mjs
+          node v2/provenance-alias-smoke.mjs
+          node v2/executive-dashboard-smoke.mjs
+          node v2/cockpit-smoke.mjs
+          node v2/product-finish-smoke.mjs
+          node v2/upload-outcome-smoke.mjs
+          node v2/source-continuity-unknown-smoke.mjs
 
       - name: Upload autonomous visual QA
         if: always()
