@@ -119,9 +119,9 @@ function domainCard({route,icon,label,value,sub,detail,tone='neutral'}){
 }
 function keyInsight(model){
   const rows=[];
-  if(model.body.available){rows.push(`Composição: entre ${fmtDate(model.body.previous.measured_at)} e ${fmtDate(model.body.latest.measured_at)}, massa muscular ${signed(num(model.body.latest.skeletal_muscle_mass_kg)-num(model.body.previous.skeletal_muscle_mass_kg),1,'kg')} e massa de gordura ${signed(num(model.body.latest.fat_mass_kg)-num(model.body.previous.fat_mass_kg),1,'kg')}.`);}
+  if(model.body.available){rows.push(`Composição: entre ${fmtDate(model.body.previous.measured_at)} e ${fmtDate(model.body.latest.measured_at)}, massa muscular ${signed(model.body.delta.muscleKg,1,'kg')} e massa de gordura ${signed(model.body.delta.fatKg,1,'kg')}.`);}
   if(model.training.available)rows.push(`Treino: ${model.training.totalSessions} sessão(ões) em ${periodLabel(model.period)}${model.training.previousSessions!=null?`, versus ${model.training.previousSessions} no período anterior equivalente`:''}.`);
-  if(model.nutrition.available)rows.push(`Nutrição: ${model.nutrition.days} de ${model.nutrition.intervalDays||'—'} dias têm total diário inequívoco${model.nutrition.coveragePct!=null?` (${model.nutrition.coveragePct}% de cobertura)`:''}.`);
+  if(model.nutrition.available)rows.push(`Nutrição: ${model.nutrition.days} dia(s) têm total diário inequívoco${model.nutrition.intervalDays?` em ${model.nutrition.intervalDays} dias possíveis`:''}${model.nutrition.coveragePct!=null?` (${model.nutrition.coveragePct}% de cobertura)`:''}.`);
   if(model.water.length===0)rows.push('Hidratação: não existe ingestão de água estruturada nesta janela; nenhum valor é estimado.');
   return rows.slice(0,3).join(' ');
 }
@@ -129,7 +129,7 @@ function summaryList(model){
   const rows=[];
   if(model.training.topGroups.length){const top=model.training.topGroups[0];rows.push(`<li><b>Treino</b><span>${esc(top.label)} aparece em ${top.sessions} sessão(ões), maior presença entre os grupos estruturados desta janela.</span></li>`);}
   if(model.training.performance.length){const p=model.training.performance[0];rows.push(`<li><b>Performance</b><span>${esc(p.exercise)}: ${fmtNum(p.previousWeight,1)} → ${fmtNum(p.weight,1)} ${esc(p.unit)} entre ${fmtDate(p.previousDate)} e ${fmtDate(p.date)}.</span></li>`);}
-  if(model.nutrition.available&&model.nutrition.days){rows.push(`<li><b>Nutrição</b><span>${model.nutrition.coveragePct??'—'}% da janela registrada · média ${model.nutrition.calorieAvg==null?'sem energia':`${fmtNum(model.nutrition.calorieAvg,0)} kcal/dia`} · ${model.nutrition.proteinAvg==null?'proteína sem cobertura':`${fmtNum(model.nutrition.proteinAvg,0)} g proteína/dia`}.</span></li>`);}
+  if(model.nutrition.available&&model.nutrition.days){rows.push(`<li><b>Nutrição</b><span>${model.nutrition.coveragePct==null?`${model.nutrition.days} dia(s) registrados no histórico`:`${model.nutrition.coveragePct}% da janela registrada`} · média ${model.nutrition.calorieAvg==null?'sem energia':`${fmtNum(model.nutrition.calorieAvg,0)} kcal/dia`} · ${model.nutrition.proteinAvg==null?'proteína sem cobertura':`${fmtNum(model.nutrition.proteinAvg,0)} g proteína/dia`}.</span></li>`);}
   if(model.sleep.available&&model.sleep.days){rows.push(`<li><b>Recuperação</b><span>${model.sleep.days} dia(s) com sono preservado; valores permanecem separados por origem e não são promediados entre dispositivos.</span></li>`);}
   if(model.labs.collections){rows.push(`<li><b>Exames</b><span>${model.labs.collections} data(s) de coleta e ${model.labs.markers} marcador(es) nesta janela; última coleta ${fmtDate(model.labs.last)}.</span></li>`);}
   if(!model.water.length)rows.push('<li class="missing"><b>Hidratação</b><span>Sem registro de ingestão de água. A água corporal da bioimpedância não é tratada como hidratação.</span></li>');
@@ -137,9 +137,10 @@ function summaryList(model){
 }
 function nextReview(model){
   const items=[];
-  if(model.nutrition.coveragePct==null||model.nutrition.coveragePct<70)items.push(['Nutrição',model.nutrition.coveragePct==null?'Sem cobertura comparável nesta janela.':`Cobertura de ${model.nutrition.coveragePct}% da janela.`,'nutricao']);
+  if(model.nutrition.coveragePct!=null&&model.nutrition.coveragePct<70)items.push(['Nutrição',`Cobertura de ${model.nutrition.coveragePct}% da janela.`,'nutricao']);
+  else if(!model.nutrition.days)items.push(['Nutrição','Sem cobertura comparável nesta janela.','nutricao']);
   if(!model.water.length)items.push(['Hidratação','Ainda não há fonte com ingestão de água estruturada.','dados']);
-  if(!model.body.available)items.push(['Composição','Não há duas medições comparáveis dentro desta janela.','bio']);
+  if(!model.body.available)items.push(['Composição',model.body.reason==='source_changed'?'Sem comparação entre origens diferentes.':'Não há duas medições comparáveis dentro desta janela.','bio']);
   if(!model.labs.collections)items.push(['Exames','Nenhuma coleta dentro da janela selecionada.','saude']);
   if(!items.length)items.push(['Dados','Cobertura suficiente para os resumos atuais; abra Insights para aprofundar.','analise']);
   return items.slice(0,4).map(([title,body,route])=>`<button class="cockpitReviewItem" data-route="${route}"><b>${esc(title)}</b><span>${esc(body)}</span><i>→</i></button>`).join('');
@@ -154,10 +155,12 @@ export function renderTodayHub(){
   const period=state.ui.analysisPeriod||'30',model=executiveCockpitModel(state.data,state.domainStatus,period),latestBody=model.body.latestOverall,bodyRow=latestBody.row;
   const bodyValue=failed('body')?'Indisponível':latestBody.ambiguous?'Em revisão':bodyRow&&num(bodyRow.weight_kg)!=null?`${fmtNum(bodyRow.weight_kg,1)} kg`:'Sem medição';
   const bodySub=bodyRow&&num(bodyRow.body_fat_pct)!=null?`${fmtNum(bodyRow.body_fat_pct,1)}% gordura · ${num(bodyRow.skeletal_muscle_mass_kg)!=null?`${fmtNum(bodyRow.skeletal_muscle_mass_kg,1)} kg músculo`:''}`:'Última composição disponível';
-  const bodyDetail=model.body.available?`Δ músculo ${signed(model.body.delta.muscleKg,1,'kg')} · Δ gordura ${signed(model.body.delta.fatKg,1,'kg')}`:'sem duas medições comparáveis na janela';
+  const bodyDetail=model.body.available?`Δ músculo ${signed(model.body.delta.muscleKg,1,'kg')} · Δ gordura ${signed(model.body.delta.fatKg,1,'kg')}`:model.body.reason==='source_changed'?'Sem comparação entre origens diferentes.':'sem duas medições comparáveis na janela';
   const nutritionTone=statusTone(model.nutrition.coveragePct),sleepTone=model.sleep.days?'neutral':'missing';
   const activity=model.activitySleep;
   const activityLatest=activity.activityLatest?`atividade até ${fmtDate(activity.activityLatest)}`:'atividade sem ponto confirmado';
+  const nutritionValue=model.nutrition.available?(model.nutrition.coveragePct==null?`${model.nutrition.days||0} dias registrados`:`${model.nutrition.coveragePct}% cobertura`):'Sem cobertura';
+  const nutritionSub=model.nutrition.available?(model.nutrition.intervalDays?`${model.nutrition.days} de ${model.nutrition.intervalDays} dias registrados`:`${model.nutrition.days||0} dias inequívocos no histórico`):'dados indisponíveis';
   return`<div class="dashboardScreen cockpitScreen cockpitV3" data-executive-dashboard data-period="${esc(period)}">
     <section class="cockpitWelcome">
       <div><span class="cockpitKicker">LTS Health · assistente longitudinal</span><h1>Visão geral da sua saúde</h1><p>Um resumo executivo para entender estado atual, mudança, cobertura e o que merece revisão.</p></div>
@@ -167,7 +170,7 @@ export function renderTodayHub(){
     <section class="cockpitStatusGrid" aria-label="Estado atual por domínio">
       ${domainCard({route:'bio',icon:'◉',label:'Composição corporal',value:bodyValue,sub:bodySub,detail:bodyDetail,tone:model.body.available?'ok':'partial'})}
       ${domainCard({route:'treinos',icon:'↗',label:'Treinos',value:model.training.available?`${model.training.totalSessions} sessões`:'Indisponível',sub:periodLabel(period),detail:model.training.available?deltaLine(model.training.totalSessions,model.training.previousSessions):'histórico não carregado',tone:model.training.totalSessions?'ok':'missing'})}
-      ${domainCard({route:'nutricao',icon:'⌁',label:'Nutrição',value:model.nutrition.available&&model.nutrition.intervalDays?`${model.nutrition.coveragePct??0}% cobertura`:'Sem cobertura',sub:model.nutrition.available?`${model.nutrition.days} de ${model.nutrition.intervalDays||'—'} dias registrados`:'dados indisponíveis',detail:model.water.length?'há água registrada':'água: sem registro',tone:nutritionTone})}
+      ${domainCard({route:'nutricao',icon:'⌁',label:'Nutrição',value:nutritionValue,sub:nutritionSub,detail:model.water.length?'há água registrada':'água: sem registro',tone:nutritionTone})}
       ${domainCard({route:'analise',icon:'☾',label:'Recuperação',value:model.sleep.available?`${model.sleep.days} dias de sono`:'Indisponível',sub:`${model.sleep.sources.length} origem(ns) na janela`,detail:activityLatest,tone:sleepTone})}
       ${domainCard({route:'saude',icon:'＋',label:'Exames',value:model.labs.collections?`${model.labs.collections} coleta(s)`:'Nenhuma coleta',sub:model.labs.collections?`${model.labs.markers} marcadores na janela`:`em ${periodLabel(period)}`,detail:model.labs.last?`última ${fmtDate(model.labs.last)}`:'histórico fora da janela continua disponível',tone:model.labs.collections?'neutral':'missing'})}
     </section>
@@ -176,7 +179,7 @@ export function renderTodayHub(){
 
     <section class="cockpitAnalyticsGrid">
       <article class="cockpitModule training"><div class="cockpitModuleHead"><div><span>Treino</span><h2>Ritmo e distribuição</h2></div>${action('treinos','Ver detalhes')}</div><div class="cockpitModuleFacts"><b>${model.training.totalSessions||0} sessões</b><span>${model.training.previousSessions==null?'sem período anterior comparável':`${model.training.previousSessions} no período anterior`}</span></div>${chart(model.trainingSeries,{digits:0,label:'Sessões de treino por semana',bar:true})}<div class="cockpitGroupBars">${model.training.topGroups.map(g=>`<div><span>${esc(g.label)}</span><i><u style="width:${Math.max(8,g.sessions/Math.max(1,model.training.topGroups[0]?.sessions||1)*100)}%"></u></i><b>${g.sessions}</b></div>`).join('')||'<p>Sem grupos estruturados nesta janela.</p>'}</div></article>
-      <article class="cockpitModule nutrition"><div class="cockpitModuleHead"><div><span>Nutrição</span><h2>Registro e médias</h2></div>${action('nutricao','Ver detalhes')}</div><div class="cockpitModuleFacts"><b>${model.nutrition.coveragePct??0}% da janela</b><span>${model.nutrition.days||0} dia(s) com total inequívoco</span></div>${chart(model.calorieSeries,{unit:' kcal',digits:0,label:'Energia registrada por dia'})}<div class="cockpitMiniMetrics"><div><b>${model.nutrition.calorieAvg==null?'—':`${fmtNum(model.nutrition.calorieAvg,0)} kcal`}</b><span>média diária</span></div><div><b>${model.nutrition.proteinAvg==null?'—':`${fmtNum(model.nutrition.proteinAvg,0)} g`}</b><span>proteína média</span></div><div><b>${model.water.length}</b><span>dias com água</span></div></div></article>
+      <article class="cockpitModule nutrition"><div class="cockpitModuleHead"><div><span>Nutrição</span><h2>Registro e médias</h2></div>${action('nutricao','Ver detalhes')}</div><div class="cockpitModuleFacts"><b>${model.nutrition.coveragePct==null?`${model.nutrition.days||0} dias`:`${model.nutrition.coveragePct}% da janela`}</b><span>${model.nutrition.days||0} dia(s) com total inequívoco</span></div>${chart(model.calorieSeries,{unit:' kcal',digits:0,label:'Energia registrada por dia'})}<div class="cockpitMiniMetrics"><div><b>${model.nutrition.calorieAvg==null?'—':`${fmtNum(model.nutrition.calorieAvg,0)} kcal`}</b><span>média diária</span></div><div><b>${model.nutrition.proteinAvg==null?'—':`${fmtNum(model.nutrition.proteinAvg,0)} g`}</b><span>proteína média</span></div><div><b>${model.water.length}</b><span>dias com água</span></div></div></article>
       <article class="cockpitModule body"><div class="cockpitModuleHead"><div><span>Composição</span><h2>Gordura corporal</h2></div>${action('evolucao','Ver detalhes')}</div><div class="cockpitModuleFacts"><b>${bodyRow&&num(bodyRow.body_fat_pct)!=null?`${fmtNum(bodyRow.body_fat_pct,1)}%`:'—'}</b><span>${latestBody.date?`última medição ${fmtDate(latestBody.date)}`:'sem medição'}</span></div>${chart(model.bodyFatSeries,{unit:'%',digits:1,label:'Percentual de gordura corporal'})}<div class="cockpitMiniMetrics"><div><b>${bodyRow&&num(bodyRow.weight_kg)!=null?`${fmtNum(bodyRow.weight_kg,1)} kg`:'—'}</b><span>peso</span></div><div><b>${bodyRow&&num(bodyRow.skeletal_muscle_mass_kg)!=null?`${fmtNum(bodyRow.skeletal_muscle_mass_kg,1)} kg`:'—'}</b><span>massa muscular</span></div><div><b>${model.body.available?signed(model.body.delta.fatKg,1,'kg'):'—'}</b><span>Δ gordura na janela</span></div></div></article>
     </section>
 
@@ -191,6 +194,6 @@ export function renderTodayHub(){
       <article class="cockpitReview"><div class="cockpitModuleHead"><div><span>Próximas revisões</span><h2>Onde aprofundar</h2></div></div><div>${nextReview(model)}</div></article>
       <article class="cockpitSources"><div class="cockpitModuleHead"><div><span>Fontes</span><h2>Dados conectados</h2></div>${action('dados','Ver todas')}</div><div class="cockpitSourceList"><span>Apple Saúde / Watch <i>evidência</i></span><span>Polar <i>evidência</i></span><span>MyFitnessPal <i>nutrição</i></span><span>Bioimpedância <i>composição</i></span><span>Exames <i>laboratório</i></span></div></article>
     </section>
-    <p class="cockpitFooter">Referência dos dados: ${model.referenceDay?fmtDate(model.referenceDay):'sem data'}. O LTS Health descreve registros existentes, explicita lacunas e não transforma associação temporal em causa.</p>
+    <p class="cockpitFooter">Referência dos dados: ${model.referenceDay?fmtDate(model.referenceDay):'sem data'}. Leituras descritivas, sem atribuir causa. Sem comparação entre origens diferentes quando a continuidade não está validada.</p>
   </div>`;
 }
