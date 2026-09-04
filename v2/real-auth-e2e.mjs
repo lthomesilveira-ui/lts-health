@@ -47,7 +47,7 @@ try{
   await waitForRoute('hoje');
   await page.waitForSelector('[data-executive-dashboard]',{timeout:30000});
   const homeState=await page.evaluate(()=>{
-    const training=[...document.querySelectorAll('.cockpitStatus')].find(card=>card.querySelector('small')?.textContent?.trim()==='Treino');
+    const training=[...document.querySelectorAll('.cockpitStatus')].find(card=>card.querySelector('small')?.textContent?.trim()==='Treinos');
     return{
       title:document.querySelector('[data-executive-dashboard] h1')?.textContent?.trim()||'',
       trainingValue:training?.querySelector('b')?.textContent?.trim()||'',
