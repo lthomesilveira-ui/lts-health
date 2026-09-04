@@ -22,7 +22,7 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Obtain one-time authenticated session link
+      - name: Obtain one-time authenticated token hash
         shell: bash
         run: |
           set -euo pipefail
@@ -32,10 +32,10 @@ jobs:
           curl -fsS -X POST \
             -H "Authorization: Bearer $OIDC_TOKEN" \
             'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
-            -o /tmp/lts-health-e2e-link.json
-          ACTION_LINK="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-e2e-link.json','utf8'));if(!x.action_link)process.exit(2);process.stdout.write(x.action_link)")"
-          echo "::add-mask::$ACTION_LINK"
+            -o /tmp/lts-health-e2e-token.json
+          TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-e2e-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          echo "::add-mask::$TOKEN_HASH"
           umask 077
-          printf '%s' "$ACTION_LINK" > /tmp/lts-health-action-link
+          printf '%s' "$TOKEN_HASH" > /tmp/lts-health-token-hash
       - name: Exercise public app with real authenticated data
         run: node v2/real-auth-e2e.mjs

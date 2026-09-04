@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 
-const actionLink=readFileSync('/tmp/lts-health-action-link','utf8').trim();
-if(!actionLink)throw new Error('authenticated bootstrap link missing');
+const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
+if(!tokenHash)throw new Error('authenticated token hash missing');
 
 const coreSource=readFileSync(new URL('./src/core.js',import.meta.url),'utf8');
 const supabaseUrl=/url:\s*'([^']+)'/.exec(coreSource)?.[1];
@@ -11,19 +11,6 @@ if(!supabaseUrl||!supabaseKey)throw new Error('public Supabase configuration not
 
 const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
 let runtimeErrorCount=0;
-
-function tokensFrom(url){
-  try{
-    const parsed=new URL(url),params=new URLSearchParams(parsed.hash.replace(/^#/,''));
-    return{accessToken:params.get('access_token'),refreshToken:params.get('refresh_token')};
-  }catch{return{accessToken:null,refreshToken:null};}
-}
-
-const verification=await fetch(actionLink,{redirect:'manual'});
-const redirectLocation=verification.headers.get('location')||'';
-const tokenState=tokensFrom(redirectLocation);
-if(!tokenState.accessToken||!tokenState.refreshToken)throw new Error('magic link did not yield authenticated session tokens');
-
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
 const page=await context.newPage();
@@ -45,11 +32,11 @@ try{
   await page.goto(`${appUrl}#hoje`,{waitUntil:'domcontentloaded',timeout:45000});
   await page.waitForFunction(()=>Boolean(window.supabase?.createClient),null,{timeout:20000});
 
-  const sessionResult=await page.evaluate(async ({url,key,accessToken,refreshToken})=>{
+  const sessionResult=await page.evaluate(async ({url,key,tokenHash})=>{
     const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-    const {data,error}=await client.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
+    const {data,error}=await client.auth.verifyOtp({token_hash:tokenHash,type:'email'});
     return{ok:!error&&Boolean(data?.session?.user)};
-  },{url:supabaseUrl,key:supabaseKey,...tokenState});
+  },{url:supabaseUrl,key:supabaseKey,tokenHash});
   if(!sessionResult.ok)throw new Error('real authenticated session could not be established');
   await page.reload({waitUntil:'domcontentloaded',timeout:45000});
 
