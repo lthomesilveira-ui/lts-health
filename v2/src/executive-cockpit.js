@@ -7,9 +7,9 @@ const periodOptions=[
 
 function enhancePeriodControl(root=document){
   const select=root.querySelector?.('#analysisPeriod');
-  if(!select||select.dataset.executiveEnhanced==='1')return;
+  if(!select||select.dataset.executiveEnhanced==='1')return Boolean(select);
   const label=select.closest('.cockpitPeriod');
-  if(!label)return;
+  if(!label)return false;
   select.dataset.executiveEnhanced='1';
   label.classList.add('executivePeriodControl');
   select.classList.add('executivePeriodSelect');
@@ -37,28 +37,38 @@ function enhancePeriodControl(root=document){
       select.value=value;
       sync();
       select.dispatchEvent(new Event('change',{bubbles:true}));
+      queueEnhancement();
     });
     tabs.appendChild(button);
   }
 
   label.appendChild(tabs);
-  select.addEventListener('change',sync);
+  select.addEventListener('change',()=>{sync();queueEnhancement();});
   sync();
+  return true;
 }
 
 function enhanceDashboard(){
   const host=document.getElementById('screenHost');
-  if(!host)return;
-  enhancePeriodControl(host);
+  return host?enhancePeriodControl(host):false;
 }
 
-const observer=new MutationObserver(()=>enhanceDashboard());
-const start=()=>{
-  const host=document.getElementById('screenHost');
-  if(!host)return;
-  observer.observe(host,{childList:true,subtree:true});
-  enhanceDashboard();
-};
+let enhancementTimer=null;
+function queueEnhancement(attempt=0){
+  clearTimeout(enhancementTimer);
+  enhancementTimer=setTimeout(()=>{
+    if(enhanceDashboard()||attempt>=16)return;
+    queueEnhancement(attempt+1);
+  },attempt?60:0);
+}
+
+function start(){
+  queueEnhancement();
+  window.addEventListener('hashchange',()=>queueEnhancement());
+  document.addEventListener('click',event=>{
+    if(event.target.closest('#refreshBtn')||event.target.closest('[data-route="hoje"]'))queueEnhancement();
+  });
+}
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
 else start();
