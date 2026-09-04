@@ -1,0 +1,165 @@
+name: LTS Health Dashboard Visual Parity
+
+on:
+  push:
+    branches: [dashboard-visual-parity]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static visual and product contract
+        run: |
+          set -euo pipefail
+          test -f v2/dashboard-parity.css
+          grep -q './dashboard-parity.css' v2/index.html
+          grep -q 'grid-template-columns:238px' v2/dashboard-parity.css
+          grep -q 'repeat(5,minmax(0,1fr))' v2/dashboard-parity.css
+          grep -q 'repeat(3,minmax(0,1fr))' v2/dashboard-parity.css
+          grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
+          grep -q 'Leitura principal da janela' v2/src/today-screen.js
+          grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+          for file in v2/src/*.js; do node --check "$file"; done
+          for file in \
+            v2/failure-smoke.mjs \
+            v2/timeline-interaction-smoke.mjs \
+            v2/nutrition-history-smoke.mjs \
+            v2/analysis-history-smoke.mjs \
+            v2/analysis-period-consistency-smoke.mjs \
+            v2/health-longitudinal-smoke.mjs \
+            v2/training-progression-smoke.mjs \
+            v2/canonical-boundary-smoke.mjs \
+            v2/source-status-smoke.mjs \
+            v2/provenance-alias-smoke.mjs \
+            v2/executive-dashboard-smoke.mjs \
+            v2/cockpit-smoke.mjs \
+            v2/product-finish-smoke.mjs \
+            v2/upload-outcome-smoke.mjs \
+            v2/source-continuity-unknown-smoke.mjs; do node --check "$file"; done
+          grep -q "https://plztdqyuqcjohiimudnr.supabase.co" v2/src/core.js
+          ! grep -R 'tadhkamnwtsbdozwkyut' v2/src v2/index.html
+
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Run desktop and mobile visual gate
+        run: |
+          mkdir -p artifacts
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-dashboard.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          cat > dashboard-parity-run.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const base='http://127.0.0.1:4173/?fixture=1#hoje';
+          const browser=await chromium.launch({headless:true});
+
+          async function run(viewport,label,path){
+            const page=await browser.newPage({viewport});
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            await page.goto(base,{waitUntil:'domcontentloaded'});
+            await page.waitForSelector('#app:not(.hidden)');
+            await page.waitForSelector('[data-executive-dashboard]');
+            await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
+            await page.waitForTimeout(350);
+
+            const metrics=await page.evaluate(()=>{
+              const rect=s=>document.querySelector(s)?.getBoundingClientRect();
+              const cards=[...document.querySelectorAll('.cockpitStatus')].map(el=>el.getBoundingClientRect());
+              const analytics=[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
+              const secondary=[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
+              const host=document.querySelector('#screenHost');
+              return{
+                overflow:document.documentElement.scrollWidth-window.innerWidth,
+                nav:rect('.primaryNav'),
+                cards,
+                insight:rect('.cockpitInsightHero'),
+                analytics,
+                secondary,
+                bottom:rect('.cockpitBottomGrid'),
+                hostScrollHeight:host?.scrollHeight||0,
+                hostClientHeight:host?.clientHeight||0
+              };
+            });
+
+            if(metrics.overflow>3)throw new Error(`${label}: horizontal overflow ${metrics.overflow}px`);
+            if(metrics.cards.length!==5)throw new Error(`${label}: expected 5 executive cards, got ${metrics.cards.length}`);
+            if(!metrics.insight)throw new Error(`${label}: main reading block missing`);
+            if(metrics.analytics.length!==3)throw new Error(`${label}: expected 3 analytical modules`);
+            if(metrics.secondary.length!==3)throw new Error(`${label}: expected 3 secondary modules`);
+            if(!metrics.bottom)throw new Error(`${label}: executive closing row missing`);
+
+            if(viewport.width>=900){
+              if(!metrics.nav||metrics.nav.width<228||metrics.nav.width>252)throw new Error(`${label}: sidebar width outside approved composition`);
+              const cardTops=new Set(metrics.cards.map(r=>Math.round(r.top/3)*3));
+              if(cardTops.size!==1)throw new Error(`${label}: five domain cards are not one aligned row`);
+              const moduleTops=new Set(metrics.analytics.map(r=>Math.round(r.top/3)*3));
+              if(moduleTops.size!==1)throw new Error(`${label}: analytical modules are not one aligned row`);
+              await page.screenshot({path,fullPage:true});
+            }else{
+              if(metrics.hostScrollHeight<=metrics.hostClientHeight+300)throw new Error(`${label}: dashboard does not expose a scrollable analytical body`);
+              await page.screenshot({path});
+              const analyticsGrid=page.locator('.cockpitAnalyticsGrid');
+              await analyticsGrid.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(120);
+              if(!(await analyticsGrid.isVisible()))throw new Error(`${label}: analytical modules cannot be reached by scrolling`);
+              await page.screenshot({path:'artifacts/dashboard-mobile-analytics.png'});
+              const bottom=page.locator('.cockpitBottomGrid');
+              await bottom.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(120);
+              if(!(await bottom.isVisible()))throw new Error(`${label}: executive closing row cannot be reached by scrolling`);
+              await page.screenshot({path:'artifacts/dashboard-mobile-bottom.png'});
+            }
+
+            if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+            await page.close();
+          }
+
+          await run({width:1440,height:1050},'desktop','artifacts/dashboard-desktop.png');
+          await run({width:390,height:844},'mobile','artifacts/dashboard-mobile.png');
+          await browser.close();
+          console.log('Dashboard visual parity gate passed');
+          EOF
+          node dashboard-parity-run.mjs
+
+      - name: Run existing product regression battery
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-regression.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/failure-smoke.mjs
+          node v2/timeline-interaction-smoke.mjs
+          node v2/nutrition-history-smoke.mjs
+          node v2/analysis-history-smoke.mjs
+          node v2/analysis-period-consistency-smoke.mjs
+          node v2/health-longitudinal-smoke.mjs
+          node v2/training-progression-smoke.mjs
+          node v2/canonical-boundary-smoke.mjs
+          node v2/source-status-smoke.mjs
+          node v2/provenance-alias-smoke.mjs
+          node v2/executive-dashboard-smoke.mjs
+          node v2/cockpit-smoke.mjs
+          node v2/product-finish-smoke.mjs
+          node v2/upload-outcome-smoke.mjs
+          node v2/source-continuity-unknown-smoke.mjs
+
+      - name: Upload autonomous visual QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-visual-parity
+          path: artifacts/*.png
+          if-no-files-found: warn
