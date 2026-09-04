@@ -33,10 +33,10 @@ jobs:
           req v2-bio-css './bio.css' "$TMP/v2.html"
           for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
           req dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
-          req dashboard-copy 'Seu estado de saúde em uma tela' "$TMP/today-screen.js-src_today-screen.js"
-          req hydration-copy 'Hidratação' "$TMP/today-screen.js-src_today-screen.js"
+          req dashboard-copy 'Visão geral da sua saúde' "$TMP/today-screen.js-src_today-screen.js"
+          req dashboard-insight 'Leitura principal da janela' "$TMP/today-screen.js-src_today-screen.js"
+          req hydration-copy 'Sem registro de ingestão de água' "$TMP/today-screen.js-src_today-screen.js"
           req exams-copy 'Exames' "$TMP/today-screen.js-src_today-screen.js"
-          req protocols-copy 'Protocolos' "$TMP/today-screen.js-src_today-screen.js"
           req workout-boundary 'canonicalWorkouts' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
           req lab-boundary 'comparableLabCount' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
           req composition-scale 'bioChartY' "$TMP/bio-screen.js-src_bio-screen.js"
