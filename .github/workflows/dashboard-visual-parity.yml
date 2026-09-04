@@ -38,7 +38,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          cat > /tmp/dashboard-parity.mjs <<'EOF'
+          cat > dashboard-parity-run.mjs <<'EOF'
           import {chromium} from 'playwright';
           const base='http://127.0.0.1:4173/?fixture=1#hoje';
           const browser=await chromium.launch({headless:true});
@@ -56,22 +56,17 @@ jobs:
 
             const metrics=await page.evaluate(()=>{
               const rect=s=>document.querySelector(s)?.getBoundingClientRect();
-              const style=s=>getComputedStyle(document.querySelector(s));
               const cards=[...document.querySelectorAll('.cockpitStatus')].map(el=>el.getBoundingClientRect());
               const analytics=[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
               const secondary=[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
               return{
-                width:window.innerWidth,
                 overflow:document.documentElement.scrollWidth-window.innerWidth,
                 nav:rect('.primaryNav'),
-                navBg:document.querySelector('.primaryNav')?style('.primaryNav').backgroundColor:null,
-                title:rect('.cockpitWelcome h1'),
                 cards,
                 insight:rect('.cockpitInsightHero'),
                 analytics,
                 secondary,
-                bottom:rect('.cockpitBottomGrid'),
-                bg:document.querySelector('.cockpitV3')?style('.cockpitV3').backgroundColor:null
+                bottom:rect('.cockpitBottomGrid')
               };
             });
 
@@ -100,7 +95,7 @@ jobs:
           await browser.close();
           console.log('Dashboard visual parity gate passed');
           EOF
-          node /tmp/dashboard-parity.mjs
+          node dashboard-parity-run.mjs
 
       - name: Upload autonomous visual QA
         if: always()
