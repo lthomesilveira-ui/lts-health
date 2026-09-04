@@ -1,0 +1,111 @@
+name: LTS Health Dashboard Visual Parity
+
+on:
+  push:
+    branches: [dashboard-visual-parity]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static visual contract
+        run: |
+          test -f v2/dashboard-parity.css
+          grep -q './dashboard-parity.css' v2/index.html
+          grep -q 'grid-template-columns:238px' v2/dashboard-parity.css
+          grep -q 'repeat(5,minmax(0,1fr))' v2/dashboard-parity.css
+          grep -q 'repeat(3,minmax(0,1fr))' v2/dashboard-parity.css
+          grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
+          grep -q 'Leitura principal da janela' v2/src/today-screen.js
+          grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Run desktop and mobile visual gate
+        run: |
+          mkdir -p artifacts
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-dashboard.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          cat > /tmp/dashboard-parity.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const base='http://127.0.0.1:4173/?fixture=1#hoje';
+          const browser=await chromium.launch({headless:true});
+
+          async function run(viewport,label,path){
+            const page=await browser.newPage({viewport});
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            await page.goto(base,{waitUntil:'domcontentloaded'});
+            await page.waitForSelector('#app:not(.hidden)');
+            await page.waitForSelector('[data-executive-dashboard]');
+            await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
+            await page.waitForTimeout(350);
+
+            const metrics=await page.evaluate(()=>{
+              const rect=s=>document.querySelector(s)?.getBoundingClientRect();
+              const style=s=>getComputedStyle(document.querySelector(s));
+              const cards=[...document.querySelectorAll('.cockpitStatus')].map(el=>el.getBoundingClientRect());
+              const analytics=[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
+              const secondary=[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')].map(el=>el.getBoundingClientRect());
+              return{
+                width:window.innerWidth,
+                overflow:document.documentElement.scrollWidth-window.innerWidth,
+                nav:rect('.primaryNav'),
+                navBg:document.querySelector('.primaryNav')?style('.primaryNav').backgroundColor:null,
+                title:rect('.cockpitWelcome h1'),
+                cards,
+                insight:rect('.cockpitInsightHero'),
+                analytics,
+                secondary,
+                bottom:rect('.cockpitBottomGrid'),
+                bg:document.querySelector('.cockpitV3')?style('.cockpitV3').backgroundColor:null
+              };
+            });
+
+            if(metrics.overflow>3)throw new Error(`${label}: horizontal overflow ${metrics.overflow}px`);
+            if(metrics.cards.length!==5)throw new Error(`${label}: expected 5 executive cards, got ${metrics.cards.length}`);
+            if(!metrics.insight)throw new Error(`${label}: main reading block missing`);
+            if(metrics.analytics.length!==3)throw new Error(`${label}: expected 3 analytical modules`);
+            if(metrics.secondary.length!==3)throw new Error(`${label}: expected 3 secondary modules`);
+            if(!metrics.bottom)throw new Error(`${label}: executive closing row missing`);
+
+            if(viewport.width>=900){
+              if(!metrics.nav||metrics.nav.width<228||metrics.nav.width>252)throw new Error(`${label}: sidebar width outside approved composition`);
+              const cardTops=new Set(metrics.cards.map(r=>Math.round(r.top/3)*3));
+              if(cardTops.size!==1)throw new Error(`${label}: five domain cards are not one aligned row`);
+              const moduleTops=new Set(metrics.analytics.map(r=>Math.round(r.top/3)*3));
+              if(moduleTops.size!==1)throw new Error(`${label}: analytical modules are not one aligned row`);
+            }
+
+            if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+            await page.screenshot({path,fullPage:true});
+            await page.close();
+          }
+
+          await run({width:1440,height:1050},'desktop','artifacts/dashboard-desktop.png');
+          await run({width:390,height:844},'mobile','artifacts/dashboard-mobile.png');
+          await browser.close();
+          console.log('Dashboard visual parity gate passed');
+          EOF
+          node /tmp/dashboard-parity.mjs
+
+      - name: Upload autonomous visual QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-visual-parity
+          path: artifacts/*.png
+          if-no-files-found: warn
