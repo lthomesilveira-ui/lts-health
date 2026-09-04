@@ -13,6 +13,59 @@ const inBounds=(value,bounds)=>{const d=day(value);return Boolean(d&&(!bounds.st
 const reviewState=(heading,body)=>`<div class="empty"><b>${esc(heading)}</b><br>${esc(body)}</div>`;
 const countDays=(value,label='dia')=>`${value} ${label}${value===1?'':'s'}`;
 
+const complementarySignalDefs={
+  steps:{label:'Passos',digits:0},
+  resting_heart_rate_bpm:{label:'Frequência cardíaca em repouso',digits:0},
+  hrv_sdnn_ms:{label:'Variabilidade da frequência cardíaca (SDNN)',digits:0},
+  respiratory_rate_bpm:{label:'Frequência respiratória',digits:1},
+  oxygen_saturation_pct:{label:'Saturação de oxigênio',digits:1}
+};
+const complementarySourceLabels={apple_watch:'Apple Watch',iphone:'iPhone',polar_flow:'Polar Flow',healthkit_candidate:'Apple Saúde',ringconn:'RingConn'};
+const signalUnit=(metricType,unit)=>metricType==='steps'?'passos':unit.endsWith('/min')?'/min':unit||'unidade não informada';
+const signalValue=(series,point)=>`${fmtNum(point.value,complementarySignalDefs[series.metric]?.digits??1)}${signalUnit(series.metric,series.unit)==='/min'?' /min':signalUnit(series.metric,series.unit)==='passos'?' passos':` ${signalUnit(series.metric,series.unit)}`}`;
+
+export function complementarySignalSeries(rows,bounds={start:null,end:null}){
+  const groups=new Map();
+  for(const row of rows||[]){
+    if(!['candidate','held'].includes(String(row?.canonical_status||'').toLowerCase()))continue;
+    const metricType=String(row?.metric_type||''),definition=complementarySignalDefs[metricType];
+    if(!definition||!inBounds(row?.metric_date,bounds))continue;
+    const value=num(row?.value),date=day(row?.metric_date),unit=String(row?.unit||'').trim()||'unidade não informada';
+    if(value==null||!date)continue;
+    const family=String(row?.source_family||'other'),identity=String(row?.source_name||row?.source_family||'Outra origem'),key=`${family}\u0000${identity}\u0000${metricType}\u0000${unit}`;
+    if(!groups.has(key))groups.set(key,{family,identity,metric:metricType,unit,rows:[]});
+    groups.get(key).rows.push({date,value});
+  }
+  const series=[];
+  for(const group of groups.values()){
+    const byDate=new Map();
+    for(const row of group.rows){if(!byDate.has(row.date))byDate.set(row.date,[]);byDate.get(row.date).push(row.value);}
+    const points=[...byDate.entries()].filter(([,values])=>values.length===1).map(([date,values])=>({date,value:values[0]})).sort((a,b)=>a.date.localeCompare(b.date));
+    const reviewDays=[...byDate.values()].filter(values=>values.length!==1).length;
+    if(!points.length)continue;
+    series.push({...group,points,reviewDays,first:points[0],last:points.at(-1),baseLabel:complementarySourceLabels[group.family]||'Outra origem'});
+  }
+  const duplicateBases=new Map();
+  for(const item of series){if(!duplicateBases.has(item.baseLabel))duplicateBases.set(item.baseLabel,new Set());duplicateBases.get(item.baseLabel).add(item.identity);}
+  const ordinals=new Map();
+  for(const [base,identities] of duplicateBases.entries())ordinals.set(base,[...identities].sort((a,b)=>a.localeCompare(b,'pt-BR')));
+  for(const item of series){const identities=ordinals.get(item.baseLabel)||[];item.sourceLabel=identities.length>1?`${item.baseLabel} · origem ${identities.indexOf(item.identity)+1}`:item.baseLabel;}
+  return series.sort((a,b)=>(complementarySignalDefs[a.metric]?.label||a.metric).localeCompare(complementarySignalDefs[b.metric]?.label||b.metric,'pt-BR')||a.sourceLabel.localeCompare(b.sourceLabel,'pt-BR'));
+}
+
+function complementarySignalCard(series){
+  const definition=complementarySignalDefs[series.metric],first=series.first,last=series.last,delta=series.points.length>1?last.value-first.value:null;
+  const change=delta==null?'Ainda há apenas um dia inequívoco nesta janela.':`Primeiro registro ${signalValue(series,first)} em ${fmtDate(first.date)} · diferença até o último ${deltaText(delta,definition?.digits??1,signalUnit(series.metric,series.unit)==='passos'?'passos':signalUnit(series.metric,series.unit))}.`;
+  const review=series.reviewDays?` ${countDays(series.reviewDays)} com mais de um valor da mesma origem ficou fora desta leitura.`:'';
+  return `<article class="analysisDigestCard coverage" data-complementary-signal="${esc(series.metric)}"><span>${esc(series.sourceLabel)}</span><h3>${esc(definition?.label||series.metric)}</h3><p><b>${esc(signalValue(series,last))}</b> em ${esc(fmtDate(last.date))}. ${esc(change)}${esc(review)}</p></article>`;
+}
+function complementarySignalsPanel(rows,bounds,periodText){
+  if(failed('sourceMetrics'))return `<section class="card sectionGap"><div class="cardHead"><div><b>Sinais complementares por origem</b><small>Apple, Polar e outras origens permanecem isoladas.</small></div></div><div class="empty">Os registros complementares não carregaram agora.</div></section>`;
+  const series=complementarySignalSeries(rows,bounds);
+  if(!series.length)return `<section class="card sectionGap"><div class="cardHead"><div><b>Sinais complementares por origem</b><small>Apple, Polar e outras origens permanecem isoladas.</small></div></div><div class="empty">Nenhum sinal complementar comparável em ${esc(periodText)}.</div></section>`;
+  return `<section class="card sectionGap"><div class="cardHead"><div><b>Sinais complementares por origem</b><small>Valores preservados que ainda não entram na leitura principal.</small></div></div><div class="analysisDigestGrid" data-complementary-signals>${series.slice(0,12).map(complementarySignalCard).join('')}</div><p class="footerNote">Cada cartão usa somente uma origem, uma métrica e uma unidade. Datas ambíguas da mesma origem ficam de fora; nenhuma média ou comparação entre fontes é calculada.</p></section>`;
+}
+
 function nutritionEvidence(rows,start=null,end=null,{afterStart=false}={}){
   const groups=new Map();
   for(const row of rows||[]){
@@ -143,6 +196,8 @@ export function renderAnalysisHub(){
         ${metric('Coletas de exames',failed('labs')?'—':String(unique(labsInPeriod.map(r=>day(r.collection_date))).length),periodText)}
       </div>
     </section>
+
+    ${complementarySignalsPanel(state.data.sourceMetrics||[],bounds,periodText)}
 
     <div class="grid cols2 sectionGap">
       <section class="card"><div class="cardHead"><div><b>Distribuição dos treinos</b><small>${esc(scope)}</small></div></div>${distributionPanel(distribution,periodText)}</section>
