@@ -10,17 +10,7 @@ const supabaseKey=/key:\s*'([^']+)'/.exec(coreSource)?.[1];
 if(!supabaseUrl||!supabaseKey)throw new Error('public Supabase configuration not resolved');
 
 const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
-const browser=await chromium.launch({headless:true});
-const context=await browser.newContext({viewport:{width:1440,height:1000}});
-const page=await context.newPage();
-let capturedTokenUrl='';
 let runtimeErrorCount=0;
-
-page.on('pageerror',()=>runtimeErrorCount++);
-page.on('console',message=>{if(message.type()==='error')runtimeErrorCount++;});
-page.on('framenavigated',frame=>{
-  if(frame===page.mainFrame()&&frame.url().includes('access_token='))capturedTokenUrl=frame.url();
-});
 
 function tokensFrom(url){
   try{
@@ -28,6 +18,17 @@ function tokensFrom(url){
     return{accessToken:params.get('access_token'),refreshToken:params.get('refresh_token')};
   }catch{return{accessToken:null,refreshToken:null};}
 }
+
+const verification=await fetch(actionLink,{redirect:'manual'});
+const redirectLocation=verification.headers.get('location')||'';
+const tokenState=tokensFrom(redirectLocation);
+if(!tokenState.accessToken||!tokenState.refreshToken)throw new Error('magic link did not yield authenticated session tokens');
+
+const browser=await chromium.launch({headless:true});
+const context=await browser.newContext({viewport:{width:1440,height:1000}});
+const page=await context.newPage();
+page.on('pageerror',()=>runtimeErrorCount++);
+page.on('console',message=>{if(message.type()==='error')runtimeErrorCount++;});
 
 async function waitForRoute(route){
   await page.evaluate(value=>{location.hash=`#${value}`;},route);
@@ -41,22 +42,16 @@ async function assertNoHorizontalOverflow(){
 }
 
 try{
-  await page.goto(actionLink,{waitUntil:'domcontentloaded',timeout:45000});
-  await page.waitForTimeout(1200);
-  const tokenState=tokensFrom(capturedTokenUrl||page.url());
-
   await page.goto(`${appUrl}#hoje`,{waitUntil:'domcontentloaded',timeout:45000});
   await page.waitForFunction(()=>Boolean(window.supabase?.createClient),null,{timeout:20000});
 
-  if(tokenState.accessToken&&tokenState.refreshToken){
-    const sessionResult=await page.evaluate(async ({url,key,accessToken,refreshToken})=>{
-      const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-      const {error}=await client.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
-      return{ok:!error};
-    },{url:supabaseUrl,key:supabaseKey,...tokenState});
-    if(!sessionResult.ok)throw new Error('real authenticated session could not be established');
-    await page.reload({waitUntil:'domcontentloaded',timeout:45000});
-  }
+  const sessionResult=await page.evaluate(async ({url,key,accessToken,refreshToken})=>{
+    const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+    const {data,error}=await client.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
+    return{ok:!error&&Boolean(data?.session?.user)};
+  },{url:supabaseUrl,key:supabaseKey,...tokenState});
+  if(!sessionResult.ok)throw new Error('real authenticated session could not be established');
+  await page.reload({waitUntil:'domcontentloaded',timeout:45000});
 
   await page.waitForSelector('#app:not(.hidden)',{timeout:30000});
   if(await page.locator('#login:not(.hidden)').count())throw new Error('real authenticated app returned to login');
