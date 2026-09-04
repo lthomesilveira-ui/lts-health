@@ -41,17 +41,17 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - O gate do cockpit cobre desktop e mobile em Início, Insights e Protocolos e verifica ausência de overflow e de vazamento de conteúdo privado.
 - O `/v2/` passou homologação externa automatizada em desktop/mobile.
 - A versão anterior da raiz foi copiada integralmente para `legacy.html` antes da promoção pública, preservando rollback sem force ou perda de histórico.
+- Em 04/09/2026 a entrada pública principal foi promovida por PR normal ao cockpit aprovado; o deploy de `main` concluiu com sucesso e o smoke pós-deploy abriu a URL pública real, confirmou redirecionamento para `/v2/`, encontrou `Visão geral da sua saúde` e concluiu a bateria desktop/mobile sem overflow. A homologação pós-deploy também concluiu com sucesso.
 
 ## Pendências abertas confirmadas
 
-1. Fechar a promoção da entrada pública principal para o cockpit aprovado com PR normal, deploy e smoke pós-deploy que valide a URL pública em desktop e mobile. A entrega só fecha quando a raiz efetivamente entrar em `/v2/` e renderizar `Visão geral da sua saúde`.
-2. Fechar E2E web autenticado real com dados reais, incluindo navegação completa e ausência de zeros/estados contraditórios. O gate automatizado com fixture não substitui essa prova.
-3. Recuperar hidratação somente de uma fonte real que contenha ingestão de água; ampliar o importador apenas quando um formato validado trouxer esse campo, sem estimativa.
-4. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
-5. Continuar análises integradas descritivas, priorização de cobertura e navegação de Insights sem transformar associação temporal em causalidade.
-6. Ampliar Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
-7. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
-8. Continuar homologação visual/funcional autônoma do cockpit em desktop e mobile, sem usar o usuário para QA básico.
+1. Fechar E2E web autenticado real com dados reais, incluindo navegação completa e ausência de zeros/estados contraditórios. O gate automatizado com fixture não substitui essa prova.
+2. Recuperar hidratação somente de uma fonte real que contenha ingestão de água; ampliar o importador apenas quando um formato validado trouxer esse campo, sem estimativa.
+3. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
+4. Continuar análises integradas descritivas, priorização de cobertura e navegação de Insights sem transformar associação temporal em causalidade.
+5. Ampliar Inbox, qualidade automática, rastreabilidade e preservação do backup estruturado completo.
+6. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
+7. Continuar homologação visual/funcional autônoma do cockpit em desktop e mobile, sem usar o usuário para QA básico.
 
 ## Feedbacks anteriores preservados / resolvidos por decisão posterior
 
