@@ -14,18 +14,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Verify fallback, v2 identity and deployed bytes
+      - name: Verify promoted root, legacy fallback, v2 identity and deployed bytes
         run: |
           set -euo pipefail
           ROOT='https://lthomesilveira-ui.github.io/lts-health/'
+          LEGACY='https://lthomesilveira-ui.github.io/lts-health/legacy.html'
           V2='https://lthomesilveira-ui.github.io/lts-health/v2/'
           Q="lts_sha=${GITHUB_SHA}&attempt=${GITHUB_RUN_ATTEMPT}"
           TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
           fetch(){ local url="$1" out="$2" sep='?'; [[ "$url" == *\?* ]] && sep='&'; curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "${url}${sep}${Q}" -o "$out"; }
           req(){ grep -Fq -- "$2" "$3" || { echo "::error::$1 missing"; exit 1; }; }
           same(){ cmp -s "$2" "$3" || { echo "::error::$1 differs from checked-out main"; exit 1; }; }
-          fetch "$ROOT" "$TMP/root.html"; fetch "$V2" "$TMP/v2.html"
-          req root-fallback 'canonical v16' "$TMP/root.html"
+          fetch "$ROOT" "$TMP/root.html"; fetch "$LEGACY" "$TMP/legacy.html"; fetch "$V2" "$TMP/v2.html"
+          req root-promotion './v2/' "$TMP/root.html"
+          req root-loading-copy 'Abrindo LTS Health' "$TMP/root.html"
+          req legacy-fallback 'canonical v16' "$TMP/legacy.html"
+          same root "$TMP/root.html" index.html
+          same legacy "$TMP/legacy.html" legacy.html
           req v2-title '<title>LTS Health</title>' "$TMP/v2.html"
           req v2-cockpit-css './cockpit.css' "$TMP/v2.html"
           req v2-dashboard-css './today.css' "$TMP/v2.html"
@@ -47,6 +52,26 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
+      - name: Verify public root enters the approved cockpit
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+              const page=await browser.newPage({viewport});
+              await page.goto('https://lthomesilveira-ui.github.io/lts-health/?fixture=1',{waitUntil:'networkidle'});
+              if(!page.url().includes('/lts-health/v2/')) throw new Error(`public root did not promote to /v2/: ${page.url()}`);
+              await page.waitForSelector('[data-executive-dashboard]');
+              const title=await page.locator('h1').first().textContent();
+              if(!String(title||'').includes('Visão geral da sua saúde')) throw new Error(`approved cockpit title missing: ${title}`);
+              const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+              if(overflow) throw new Error(`horizontal overflow at ${viewport.width}px`);
+              await page.close();
+            }
+            await browser.close();
+          })();
+          NODE
       - name: Exercise deployed v2 desktop and mobile
         env:
           LTS_HEALTH_BASE_URL: https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1
