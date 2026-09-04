@@ -89,7 +89,7 @@ export function executiveCockpitModel(data={},status={},period='30'){
   return{
     period,bounds,previous,referenceDay:integrated.referenceDay,
     training:{...training,previousSessions:trainingPrevious?.totalSessions??null,deltaPct:trainingPrevious?pctDelta(training.totalSessions,trainingPrevious.totalSessions):null,topGroups,performance},
-    nutrition:{...nutrition,coveragePct:nutritionCoverage,previousCoveragePct:prevNutritionCoverage,coverageDelta:prevNutritionCoverage==null||nutritionCoverage==null?null:nutritionCoverage-prevNutritionCoverage},
+    nutrition:{...nutrition,latestDate:integrated.lastNutritionDate,latestAmbiguous:integrated.nutritionLatestAmbiguous,coveragePct:nutritionCoverage,previousCoveragePct:prevNutritionCoverage,coverageDelta:prevNutritionCoverage==null||nutritionCoverage==null?null:nutritionCoverage-prevNutritionCoverage},
     body:{...body,latestOverall:latestBody},
     sleep:{...sleep,previousDays:sleepPrevious?.days??null,sources:sleepSources},
     activitySleep,
@@ -138,6 +138,7 @@ function summaryList(model){
 function nextReview(model){
   const items=[];
   if(failed('nutrition'))items.push(['Nutrição','Os dados não carregaram agora.','nutricao']);
+  else if(model.nutrition.latestAmbiguous)items.push(['Nutrição',`O dia mais recente (${fmtDate(model.nutrition.latestDate)}) tem totais conflitantes e nenhum foi escolhido como atual.`,'nutricao']);
   else if(model.nutrition.coveragePct!=null&&model.nutrition.coveragePct<70)items.push(['Nutrição',`Cobertura de ${model.nutrition.coveragePct}% da janela.`,'nutricao']);
   else if(!model.nutrition.days)items.push(['Nutrição','Sem cobertura comparável nesta janela.','nutricao']);
   if(!model.water.length)items.push(['Hidratação','Ainda não há fonte com ingestão de água estruturada.','dados']);
@@ -159,11 +160,11 @@ export function renderTodayHub(){
   const bodySub=bodyRow&&num(bodyRow.body_fat_pct)!=null?`${fmtNum(bodyRow.body_fat_pct,1)}% gordura · ${num(bodyRow.skeletal_muscle_mass_kg)!=null?`${fmtNum(bodyRow.skeletal_muscle_mass_kg,1)} kg músculo`:''}`:'Última composição disponível';
   const bodyDetail=model.body.available?`Δ músculo ${signed(model.body.delta.muscleKg,1,'kg')} · Δ gordura ${signed(model.body.delta.fatKg,1,'kg')}`:model.body.reason==='source_changed'?'Sem comparação entre origens diferentes.':'sem duas medições comparáveis na janela';
   const nutritionFailed=failed('nutrition'),labsFailed=failed('labs');
-  const nutritionTone=nutritionFailed?'partial':statusTone(model.nutrition.coveragePct),sleepTone=model.sleep.days?'neutral':'missing';
+  const nutritionTone=nutritionFailed||model.nutrition.latestAmbiguous?'partial':statusTone(model.nutrition.coveragePct),sleepTone=model.sleep.days?'neutral':'missing';
   const activity=model.activitySleep;
   const activityLatest=activity.activityLatest?`atividade até ${fmtDate(activity.activityLatest)}`:'atividade sem ponto confirmado';
-  const nutritionValue=nutritionFailed?'Indisponível agora':model.nutrition.available?(model.nutrition.coveragePct==null?`${model.nutrition.days||0} dias registrados`:`${model.nutrition.coveragePct}% cobertura`):'Sem cobertura';
-  const nutritionSub=nutritionFailed?'os dados não carregaram':model.nutrition.available?(model.nutrition.intervalDays?`${model.nutrition.days} de ${model.nutrition.intervalDays} dias registrados`:`${model.nutrition.days||0} dias inequívocos no histórico`):'dados indisponíveis';
+  const nutritionValue=nutritionFailed?'Indisponível agora':model.nutrition.latestAmbiguous?'Revisão necessária':model.nutrition.available?(model.nutrition.coveragePct==null?`${model.nutrition.days||0} dias registrados`:`${model.nutrition.coveragePct}% cobertura`):'Sem cobertura';
+  const nutritionSub=nutritionFailed?'os dados não carregaram':model.nutrition.latestAmbiguous?`${fmtDate(model.nutrition.latestDate)} · totais conflitantes`:model.nutrition.available?(model.nutrition.intervalDays?`${model.nutrition.days} de ${model.nutrition.intervalDays} dias registrados`:`${model.nutrition.days||0} dias inequívocos no histórico`):'dados indisponíveis';
   return`<div class="dashboardScreen cockpitScreen cockpitV3" data-executive-dashboard data-period="${esc(period)}">
     <section class="cockpitWelcome">
       <div><span class="cockpitKicker">LTS Health · assistente longitudinal</span><h1>Visão geral da sua saúde</h1><p>Um resumo executivo para entender estado atual, mudança, cobertura e o que merece revisão.</p></div>
@@ -173,7 +174,7 @@ export function renderTodayHub(){
     <section class="cockpitStatusGrid" aria-label="Estado atual por domínio">
       ${domainCard({route:'bio',icon:'◉',label:'Composição corporal',value:bodyValue,sub:bodySub,detail:bodyDetail,tone:model.body.available?'ok':'partial'})}
       ${domainCard({route:'treinos',icon:'↗',label:'Treinos',value:model.training.available?`${model.training.totalSessions} sessões`:'Indisponível',sub:periodLabel(period),detail:model.training.available?deltaLine(model.training.totalSessions,model.training.previousSessions):'histórico não carregado',tone:model.training.totalSessions?'ok':'missing'})}
-      ${domainCard({route:'nutricao',icon:'⌁',label:'Nutrição',value:nutritionValue,sub:nutritionSub,detail:nutritionFailed?'tente novamente depois':model.water.length?'há água registrada':'água: sem registro',tone:nutritionTone})}
+      ${domainCard({route:'nutricao',icon:'⌁',label:'Nutrição',value:nutritionValue,sub:nutritionSub,detail:nutritionFailed?'tente novamente depois':model.nutrition.latestAmbiguous?'nenhum foi escolhido como atual':model.water.length?'há água registrada':'água: sem registro',tone:nutritionTone})}
       ${domainCard({route:'analise',icon:'☾',label:'Recuperação',value:model.sleep.available?`${model.sleep.days} dias de sono`:'Indisponível',sub:`${model.sleep.sources.length} origem(ns) na janela`,detail:activityLatest,tone:sleepTone})}
       ${domainCard({route:'saude',icon:'＋',label:'Exames',value:labsFailed?'Indisponível agora':model.labs.collections?`${model.labs.collections} coleta(s)`:'Nenhuma coleta',sub:labsFailed?'os dados não carregaram':model.labs.collections?`${model.labs.markers} marcadores na janela`:`em ${periodLabel(period)}`,detail:labsFailed?'tente novamente depois':model.labs.last?`última ${fmtDate(model.labs.last)}`:'histórico fora da janela continua disponível',tone:labsFailed?'partial':model.labs.collections?'neutral':'missing'})}
     </section>
