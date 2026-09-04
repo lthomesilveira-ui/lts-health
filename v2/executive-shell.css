@@ -1,0 +1,130 @@
+:root{
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --panel2:#fbfcfe;
+  --line:#dfe6ef;
+  --line2:#cfd9e6;
+  --text:#12213a;
+  --mut:#68778e;
+  --soft:#465a73;
+  --accent:#2766d9;
+  --accent2:#1d56bd;
+  --gold:#d88928;
+  --ok:#1f9d6c;
+  --warn:#d88928;
+  --danger:#ce5b6f;
+  --shadow:0 10px 30px rgba(30,55,90,.07);
+}
+html{background:var(--bg);color-scheme:light}
+body{background:var(--bg);color:var(--text)}
+.app{min-height:100vh;padding-bottom:0;background:var(--bg)}
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(18px);
+  box-shadow:0 2px 14px rgba(30,55,90,.035);
+}
+.brandMark,.brandMark.small{
+  background:linear-gradient(135deg,#2766d9,#3e8df5);
+  color:#fff;box-shadow:none;
+}
+.brand b{color:var(--text)}
+.brand span,.topActions span{color:var(--mut)}
+.topActions button,.primaryNav button,.mobileNav button,.sheet button,.primary{
+  border-color:var(--line);
+  background:#fff;
+  color:var(--text);
+  box-shadow:none;
+}
+.topActions button:hover,.primaryNav button:hover{border-color:#b8c8db;background:#f7faff}
+.topActions .primary,.primary{
+  color:#fff;
+  background:linear-gradient(180deg,#2f73e4,#2766d9);
+  border-color:#2766d9;
+}
+.primaryNav button.active,.mobileNav button.active{
+  color:#1d56bd;
+  background:#eaf2ff;
+  border-color:#cfe0fb;
+}
+.screenHost{max-width:none;color:var(--text)}
+.card,.loginCard,.sheetPanel{
+  background:#fff;
+  border-color:var(--line);
+  color:var(--text);
+  box-shadow:var(--shadow);
+}
+.cardHead select,.controls input,.controls select,.fullInput,.compareSelectors select,.uploadForm input,.uploadForm select{
+  background:#fff;color:var(--text);border-color:var(--line)
+}
+.row,.historyRow,.session,.timelineItem{border-color:#edf1f5}
+.exercise,.sourceCard,.recentMetrics span,.exerciseList button{background:#fbfcfe;border-color:var(--line);color:var(--text)}
+.set{background:#f4f7fb;border-color:#dce4ee;color:#52647b}
+.barRow>div{background:#edf2f7}
+.chart .gridline{stroke:#e7edf4}
+.note,.empty,.loadingState{color:var(--mut);border-color:var(--line2)}
+.sheet{background:rgba(20,34,52,.32)}
+
+@media (min-width:721px){
+  .app{
+    display:grid;
+    grid-template-columns:206px minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1fr);
+    min-height:100vh;
+  }
+  .topbar{grid-column:1/-1;grid-row:1;padding:13px 22px}
+  .primaryNav{
+    grid-column:1;grid-row:2;
+    width:206px;max-width:none;margin:0;padding:18px 12px 28px;
+    display:flex;flex-direction:column;flex-wrap:nowrap;gap:5px;
+    align-self:stretch;
+    border-right:1px solid var(--line);
+    background:#fff;
+    position:sticky;top:67px;height:calc(100vh - 67px);overflow:auto;
+  }
+  .primaryNav button{
+    width:100%;display:flex;align-items:center;justify-content:flex-start;
+    text-align:left;border-color:transparent;background:transparent;
+    color:#50627a;padding:10px 11px;border-radius:10px;font-size:11px;font-weight:800;
+  }
+  .primaryNav button:before{
+    content:'•';width:19px;display:inline-grid;place-items:center;
+    color:#91a2b8;font-size:12px;margin-right:4px;
+  }
+  .primaryNav button.active:before{color:#2766d9}
+  .primaryNav button.active{background:#eaf2ff;border-color:#dce8fa;color:#1d56bd}
+  .primaryNav .navDivider{height:1px;background:#edf1f5;margin:8px 8px}
+  .screenHost{
+    grid-column:2;grid-row:2;
+    width:100%;margin:0;padding:20px 24px 46px;
+    min-width:0;
+  }
+  .mobileNav{display:none!important}
+  .cockpitV3{margin:-20px -24px -46px;padding:26px 26px 48px;min-height:calc(100vh - 68px)}
+  .cockpitWelcome{position:relative;padding-right:4px}
+  .cockpitWelcome h1{font-size:28px}
+  .cockpitStatusGrid{gap:12px}
+  .cockpitStatus{min-height:172px;padding:15px 13px;box-shadow:0 7px 20px rgba(30,55,90,.045)}
+  .cockpitStatusText small{font-size:9px}
+  .cockpitStatusText b{font-size:18px}
+  .cockpitInsightHero{padding:15px 17px}
+  .cockpitModule,.cockpitSummary,.cockpitReview,.cockpitSources{box-shadow:0 7px 20px rgba(30,55,90,.045)}
+}
+
+@media (min-width:1400px){
+  .app{grid-template-columns:220px minmax(0,1fr)}
+  .primaryNav{width:220px}
+  .screenHost{padding-left:30px;padding-right:30px}
+  .cockpitV3{margin-left:-30px;margin-right:-30px;padding-left:30px;padding-right:30px}
+}
+
+@media (max-width:720px){
+  html,body{background:#f4f7fb}
+  .topbar{background:rgba(255,255,255,.97)}
+  .mobileNav{
+    background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(30,55,90,.12)
+  }
+  .screenHost{background:#f4f7fb}
+  .cockpitV3{background:#f4f7fb}
+}
