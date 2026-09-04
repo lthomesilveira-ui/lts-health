@@ -42,6 +42,7 @@ const sourceFamilyLabels={apple_activity_summary:'Apple Saúde',apple_watch:'App
 const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'aguardando leitura segura',rejected:'não processado',failed:'falha no processamento'};
 const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
 const metricTopicLabels={sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',oxygen_saturation_pct:'Saturação de oxigênio',weight_kg:'Peso',dietary_energy_kcal:'Alimentação',dietary_protein_g:'Alimentação',dietary_carbs_g:'Alimentação',dietary_fat_g:'Alimentação'};
+const metricCoverageLabels={...metricTopicLabels,dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína alimentar',dietary_carbs_g:'Carboidratos alimentares',dietary_fat_g:'Gordura alimentar'};
 const sensitiveQualityPattern=/(^|_)(dose|dosage|frequency|injection|application|aplicacao|medication|medicacao|treatment|tratamento)(_|$)/i;
 const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|source_payload|storage_path|secret|private_field)/i;
 function sourceLabel(value){return sourceLabels[value]||'Outra origem';}
@@ -102,6 +103,23 @@ function reviewTopicCards(rows){
   return `<div class="reviewTopicGrid">${groups.map(([topic,group])=>`<div class="reviewTopic"><div><b>${esc(topic)}</b><small>${esc([...group.sources].join(' + '))}${group.latest?` · até ${esc(fmtDate(group.latest))}`:''}</small></div><strong>${group.count}</strong></div>`).join('')}</div>`;
 }
 
+function complementaryCoverageGroups(rows){
+  const groups=new Map();
+  for(const row of reviewRows(rows)){
+    const family=String(row.source_family||'unknown'),metric=String(row.metric_type||'unknown'),unit=String(row.unit||'').trim()||'unidade não informada',key=`${family}\u0000${metric}\u0000${unit}`;
+    if(!groups.has(key))groups.set(key,{family,metric,unit,count:0,first:null,last:null});
+    const group=groups.get(key),date=dateValue(row.metric_date);group.count++;
+    if(date&&(!group.first||date<group.first))group.first=date;
+    if(date&&(!group.last||date>group.last))group.last=date;
+  }
+  return [...groups.values()].sort((a,b)=>sourceFamilyLabel(a.family).localeCompare(sourceFamilyLabel(b.family),'pt-BR')||(metricCoverageLabels[a.metric]||a.metric).localeCompare(metricCoverageLabels[b.metric]||b.metric,'pt-BR')||a.unit.localeCompare(b.unit,'pt-BR'));
+}
+function complementaryCoverage(rows){
+  const groups=complementaryCoverageGroups(rows);
+  if(!groups.length)return '<div class="complementaryCoverage" data-complementary-coverage><div class="coverageHead"><div><h3>Cobertura complementar preservada</h3><p>Nenhuma série complementar está aguardando uma regra segura agora.</p></div></div></div>';
+  return `<div class="complementaryCoverage" data-complementary-coverage><div class="coverageHead"><div><h3>Cobertura complementar preservada</h3><p>Uma linha por origem, métrica e unidade. As séries continuam separadas: esta visão não calcula média, tendência nem combina fontes.</p></div>${pill(`${groups.length} série(s)`)}</div><div class="coverageList">${groups.map(group=>`<div class="coverageRow"><div class="coverageIdentity"><b>${esc(sourceFamilyLabel(group.family))}</b><small>${esc(metricCoverageLabels[group.metric]||'Outra métrica')}</small></div><div class="coveragePeriod"><span>Período</span><b>${group.first&&group.last?`${esc(fmtDate(group.first))} → ${esc(fmtDate(group.last))}`:'data não informada'}</b></div><div class="coverageUnit"><span>Unidade</span><b>${esc(group.unit)}</b></div><div class="coverageCount"><strong>${group.count}</strong><span>${group.count===1?'registro':'registros'}</span></div></div>`).join('')}</div><p class="footerNote">Contagens e períodos descrevem apenas cobertura da fonte. Valores individuais e payloads brutos não aparecem aqui.</p></div>`;
+}
+
 function reviewInbox(uploads,previews,issues,sourceMetrics){
   const uploadCounts=processingCounts(uploads),issueActions=failed('quality')?[]:actionableIssues(issues),uploadActions=failed('uploads')?[]:actionableUploads(uploads),manualCount=issueActions.length+uploadActions.length;
   const heldRows=failed('sourceMetrics')?null:reviewRows(sourceMetrics),safeCount=(heldRows?.length||0)+uploadCounts.safeReview;
@@ -137,7 +155,8 @@ function provenanceOverview(metricRows,workoutEvidenceRows){
   if(!evidenceFailed)for(const row of workoutEvidenceRows||[])add(row.source_family,row.evidence_status,row.workout_date,'telemetria de treino');
   const cards=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total||sourceFamilyLabel(a[0]).localeCompare(sourceFamilyLabel(b[0]),'pt-BR')).map(([family,group])=>`<div class="sourceCard provenanceCard"><div><b>${esc(sourceFamilyLabel(family))}</b><small>${group.latest?`dados até ${esc(fmtDate(group.latest))} · `:''}${group.confirmed} confirmado(s) · ${group.review} aguardando conferência${group.preserved?` · ${group.preserved} preservado(s) sem uso automático`:''} · ${esc([...group.kinds].join(' + '))}</small></div><span>${group.total}</span></div>`).join('');
   const partial=metricsFailed?'<p class="footerNote">As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.</p>':evidenceFailed?'<p class="footerNote">As evidências complementares de treino não carregaram agora; as origens das métricas continuam exibidas.</p>':'';
-  return `${partial}<div class="sourceGrid provenanceGrid">${cards||'<div class="sourceCard"><div><b>Sem registros separados por origem</b><small>Nenhum registro desse tipo foi carregado.</small></div><span>0</span></div>'}</div><p class="footerNote">Registros aguardando conferência permanecem separados dos dados confirmados. Uma fonte não é somada a outra automaticamente.</p>`;
+  const coverage=metricsFailed?'':complementaryCoverage(metricRows);
+  return `${partial}<div class="sourceGrid provenanceGrid">${cards||'<div class="sourceCard"><div><b>Sem registros separados por origem</b><small>Nenhum registro desse tipo foi carregado.</small></div><span>0</span></div>'}</div>${coverage}<p class="footerNote">Registros aguardando conferência permanecem separados dos dados confirmados. Uma fonte não é somada a outra automaticamente.</p>`;
 }
 
 function qualityRow(issue,mode){
