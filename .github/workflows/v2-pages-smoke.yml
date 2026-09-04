@@ -62,8 +62,9 @@ jobs:
               const page=await browser.newPage({viewport});
               await page.goto('https://lthomesilveira-ui.github.io/lts-health/?fixture=1',{waitUntil:'networkidle'});
               if(!page.url().includes('/lts-health/v2/')) throw new Error(`public root did not promote to /v2/: ${page.url()}`);
-              await page.waitForSelector('[data-executive-dashboard]');
-              const title=await page.locator('h1').first().textContent();
+              const dashboard=page.locator('[data-executive-dashboard]');
+              await dashboard.waitFor();
+              const title=await dashboard.locator('h1').first().textContent();
               if(!String(title||'').includes('Visão geral da sua saúde')) throw new Error(`approved cockpit title missing: ${title}`);
               const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
               if(overflow) throw new Error(`horizontal overflow at ${viewport.width}px`);
