@@ -44,7 +44,7 @@ async function run(viewport,label){
   if(boundary.after.performance!==boundary.before.performance)throw new Error(`${label}: non-canonical activity changed performance comparisons`);
 
   await page.locator('[data-route="hoje"]:visible').first().click();
-  await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.textContent?.includes('Último treino'));
+  await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.textContent?.includes('Ritmo e distribuição'));
   const text=(await page.textContent('#screenHost'))||'';
   if(text.includes('Atividade complementar 1')||text.includes('Atividade complementar 2')||text.includes('Exercício sombra'))throw new Error(`${label}: non-canonical activity leaked into dashboard`);
   if(text.includes('250 → 300 kg')||text.includes('300 kg'))throw new Error(`${label}: non-canonical activity leaked into a performance card`);
