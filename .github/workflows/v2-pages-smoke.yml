@@ -36,7 +36,7 @@ jobs:
           req v2-dashboard-css './today.css' "$TMP/v2.html"
           req v2-analysis-css './analysis.css' "$TMP/v2.html"
           req v2-bio-css './bio.css' "$TMP/v2.html"
-          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
+          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css dashboard-pixel-parity.css dashboard-final-polish.css src/dashboard-reference-runtime.js; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
           req dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
           req dashboard-copy 'Visão geral da sua saúde' "$TMP/today-screen.js-src_today-screen.js"
           req dashboard-insight 'Leitura principal da janela' "$TMP/today-screen.js-src_today-screen.js"
@@ -52,27 +52,46 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Verify public root enters the approved cockpit
+      - name: Verify public root enters the approved cockpit and capture visual evidence
         run: |
+          mkdir -p artifacts
           node <<'NODE'
           const { chromium } = require('playwright');
           (async()=>{
             const browser=await chromium.launch({headless:true});
-            for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
-              const page=await browser.newPage({viewport});
+            const cases=[
+              {label:'desktop-1536x864',viewport:{width:1536,height:864}},
+              {label:'mobile-390x844',viewport:{width:390,height:844}}
+            ];
+            for(const item of cases){
+              const page=await browser.newPage({viewport:item.viewport});
+              const errors=[];
+              page.on('pageerror',e=>errors.push(e.message));
+              page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
               await page.goto('https://lthomesilveira-ui.github.io/lts-health/?fixture=1',{waitUntil:'networkidle'});
               if(!page.url().includes('/lts-health/v2/')) throw new Error(`public root did not promote to /v2/: ${page.url()}`);
               const dashboard=page.locator('[data-executive-dashboard]');
               await dashboard.waitFor();
+              await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
+              await page.waitForTimeout(250);
               const title=await dashboard.locator('h1').first().textContent();
               if(!String(title||'').includes('Visão geral da sua saúde')) throw new Error(`approved cockpit title missing: ${title}`);
               const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
-              if(overflow) throw new Error(`horizontal overflow at ${viewport.width}px`);
+              if(overflow) throw new Error(`horizontal overflow at ${item.viewport.width}px`);
+              if(errors.length) throw new Error(`${item.label}: browser errors ${errors.join(' | ')}`);
+              await page.screenshot({path:`artifacts/deployed-public-dashboard-${item.label}.png`});
               await page.close();
             }
             await browser.close();
           })();
           NODE
+      - name: Upload deployed Dashboard visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-dashboard-visual-evidence
+          path: artifacts/deployed-public-dashboard-*.png
+          if-no-files-found: error
+          retention-days: 90
       - name: Exercise deployed v2 desktop and mobile
         env:
           LTS_HEALTH_BASE_URL: https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1
