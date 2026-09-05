@@ -8,7 +8,7 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
     private let api = SupabaseAPI.shared
     private let defaults = UserDefaults.standard
     private let calendar = Calendar.autoupdatingCurrent
-    private let bridgeVersion = "ios-healthkit-candidates-v4"
+    private let bridgeVersion = "ios-healthkit-candidates-v5"
     private let syncGate = CandidateSyncGate()
     private var observers: [HKObserverQuery] = []
 
@@ -107,6 +107,13 @@ final class CandidateHealthMetricsCoordinator: @unchecked Sendable {
                 metricType: "dietary_fiber_g",
                 unit: .gram(),
                 unitLabel: "g",
+                options: [.cumulativeSum, .separateBySource]
+            ),
+            MetricSpec(
+                identifier: .dietaryWater,
+                metricType: "dietary_water_ml",
+                unit: .literUnit(with: .milli),
+                unitLabel: "mL",
                 options: [.cumulativeSum, .separateBySource]
             )
         ]
