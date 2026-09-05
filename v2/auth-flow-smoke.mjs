@@ -25,7 +25,7 @@ const locked=await page.evaluate(()=>{
 if(!locked.disabled||locked.busy!=='true'||locked.message!=='Entrando…')throw new Error(`login was not synchronously locked: ${JSON.stringify(locked)}`);
 
 await page.waitForSelector('#app:not(.hidden)');
-await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
 await page.waitForFunction(()=>document.querySelector('#loginBtn')?.disabled===false&&!document.querySelector('#loginBtn')?.hasAttribute('aria-busy'));
 if(errors.length)throw new Error(`browser errors: ${errors.join(' | ')}`);
 
