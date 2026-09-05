@@ -1,0 +1,81 @@
+/* Final visual polish against the user-approved Dashboard reference. */
+@media (min-width:900px){
+  body:has(.cockpitV3) .primaryNav button:before{
+    content:''!important;
+    width:18px!important;
+    height:18px!important;
+    background:currentColor!important;
+    -webkit-mask-repeat:no-repeat!important;
+    mask-repeat:no-repeat!important;
+    -webkit-mask-position:center!important;
+    mask-position:center!important;
+    -webkit-mask-size:18px 18px!important;
+    mask-size:18px 18px!important;
+    color:#90a2bd!important;
+  }
+  body:has(.cockpitV3) .primaryNav button.active:before{color:#f6f9ff!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="hoje"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="treinos"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 9h3v6H2zm4-2h3v10H6zm3 4h6v2H9zm6-4h3v10h-3zm4 2h3v6h-3z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 9h3v6H2zm4-2h3v10H6zm3 4h6v2H9zm6-4h3v10h-3zm4 2h3v6h-3z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="nutricao"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 7c1-2.4 2.6-3.6 5-3.6-.2 2.3-1.6 3.8-4 4.6 3.6-1 6.7 1.6 6.7 5.2 0 4.8-3.1 8.8-6.3 8.8-1 0-1.7-.6-2.4-.6s-1.4.6-2.4.6c-3.2 0-6.3-4-6.3-8.8C3.3 8.8 8.5 6.1 12 8.3c.3-.5.6-.9 1-1.3z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 7c1-2.4 2.6-3.6 5-3.6-.2 2.3-1.6 3.8-4 4.6 3.6-1 6.7 1.6 6.7 5.2 0 4.8-3.1 8.8-6.3 8.8-1 0-1.7-.6-2.4-.6s-1.4.6-2.4.6c-3.2 0-6.3-4-6.3-8.8C3.3 8.8 8.5 6.1 12 8.3c.3-.5.6-.9 1-1.3z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="bio"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='4' r='2.5'/%3E%3Cpath d='M8.6 8.1C10.9 6.7 13.1 6.7 15.4 8l2.7 4.2-2.2 1.4-1.5-2.4v3.5l2.6 6.1-2.4 1-2.6-5.4-2.6 5.4-2.4-1 2.6-6.1v-3.5l-1.5 2.4-2.2-1.4z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='4' r='2.5'/%3E%3Cpath d='M8.6 8.1C10.9 6.7 13.1 6.7 15.4 8l2.7 4.2-2.2 1.4-1.5-2.4v3.5l2.6 6.1-2.4 1-2.6-5.4-2.6 5.4-2.4-1 2.6-6.1v-3.5l-1.5 2.4-2.2-1.4z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="analise"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19.5 15.8A8.7 8.7 0 0 1 8.2 4.5 9 9 0 1 0 19.5 15.8z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19.5 15.8A8.7 8.7 0 0 1 8.2 4.5 9 9 0 1 0 19.5 15.8z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="saude"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 2h8v2l-1.6 2.5v3L20 19a2 2 0 0 1-1.7 3H5.7A2 2 0 0 1 4 19l5.6-9.5v-3L8 4zm2.8 10L7 18.5h10L13.2 12z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 2h8v2l-1.6 2.5v3L20 19a2 2 0 0 1-1.7 3H5.7A2 2 0 0 1 4 19l5.6-9.5v-3L8 4zm2.8 10L7 18.5h10L13.2 12z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="tratamentos"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 3h8v2h3v17H5V5h3zm2 2h4V4h-4zM8 10h8v2H8zm0 4h8v2H8zm0 4h5v2H8z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 3h8v2h3v17H5V5h3zm2 2h4V4h-4zM8 10h8v2H8zm0 4h8v2H8zm0 4h5v2H8z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="evolucao"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 20h18v2H1V3h2zm2-4 4-5 4 3 6-8 1.6 1.2-7.3 9.7-4-3-2.7 3.4z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 20h18v2H1V3h2zm2-4 4-5 4 3 6-8 1.6 1.2-7.3 9.7-4-3-2.7 3.4z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="timeline"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v5.6l4 2.3-1 1.8-5-2.9V7z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm1 3v5.6l4 2.3-1 1.8-5-2.9V7z'/%3E%3C/svg%3E")!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="dados"]:before{
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 6h8l2 2h10v12H2zm1-3h7l2 2h9v2H11L9 5H3z'/%3E%3C/svg%3E")!important;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M2 6h8l2 2h10v12H2zm1-3h7l2 2h9v2H11L9 5H3z'/%3E%3C/svg%3E")!important;
+  }
+
+  body:has(.cockpitV3) .primaryNav button{font-weight:600!important;letter-spacing:-.01em!important}
+  body:has(.cockpitV3) .primaryNav button.active{box-shadow:inset 2px 0 0 #3c8df5!important}
+}
+
+/* Keep no-data states honest, but give them the same visual chart footprint as the approved reference. */
+.cockpitModule.body .cockpitChart .cockpitEmpty,
+.cockpitModule.recovery .cockpitEmpty{
+  position:relative!important;
+  overflow:hidden!important;
+  background:
+    linear-gradient(to bottom,transparent 32%,rgba(157,174,198,.14) 33%,transparent 34%,transparent 65%,rgba(157,174,198,.14) 66%,transparent 67%),
+    linear-gradient(180deg,#fbfdff 0%,#f8fbfe 100%)!important;
+  border-color:#d9e3ef!important;
+}
+.cockpitModule.body .cockpitChart .cockpitEmpty:after,
+.cockpitModule.recovery .cockpitEmpty:after{
+  content:'';
+  position:absolute;
+  left:16px;right:16px;bottom:16px;height:1px;
+  background:#dce5f0;
+}
+
+.cockpitBottomGrid>article{box-shadow:0 1px 4px rgba(27,52,84,.035)!important}
+.cockpitSourceList span{min-height:26px!important;align-items:center!important}

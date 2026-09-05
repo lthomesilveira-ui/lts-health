@@ -31,7 +31,7 @@ async function run(viewport,label){
   if(boundary.labs!==1)throw new Error(`${label}: safe lab comparison failed`);
 
   const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Visão geral da sua saúde','Leitura principal da janela','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Resumo executivo','Próximas revisões','Dados conectados','Hidratação'])if(!text.includes(expected))throw new Error(`${label}: missing executive cockpit section ${expected}`);
+  for(const expected of ['Visão geral da sua saúde','Leitura principal da janela','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Resumo executivo','Pontos a revisar','Dados conectados','Hidratação'])if(!text.includes(expected))throw new Error(`${label}: missing executive cockpit section ${expected}`);
   if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: cockpit should expose five executive domains`);
   if((await page.locator('.cockpitModule').count())<6)throw new Error(`${label}: analytical cockpit modules missing`);
   if(!await page.locator('#analysisPeriod').isVisible())throw new Error(`${label}: global period filter missing`);
