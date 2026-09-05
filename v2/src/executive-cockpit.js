@@ -63,6 +63,8 @@ function enhancePeriodControl(root=document){
 
 function enhanceDashboard(){
   const host=document.getElementById('screenHost');
+  const supporting=host?.querySelector('.cockpitWelcome p');
+  if(supporting)supporting.style.setProperty('font-size','13px','important');
   return host?enhancePeriodControl(host):false;
 }
 
