@@ -120,10 +120,48 @@
 .cockpitReview .cockpitModuleHead>div:first-child:before{content:'!'}
 .cockpitSources .cockpitModuleHead>div:first-child:before{content:'◎'}
 
+/* Second visual pass: keep the same measured geometry while matching the reference hierarchy more closely. */
+.executiveDateRange,.executiveDateRange *{text-transform:none!important;letter-spacing:0!important}
+.executiveDateRange{min-width:132px!important;gap:7px!important;padding-top:5px!important}
+.executiveDateRange span{font-size:8.2px!important;line-height:1.35!important;color:#718097!important}
+.executiveDateRange b{font-size:8.4px!important;color:#44536a!important;font-weight:650!important}
+.cockpitStatus{grid-template-columns:35px minmax(0,1fr) 54px!important;gap:8px!important}
+.cockpitStatusText b{font-size:18.5px!important;white-space:nowrap!important;letter-spacing:-.03em!important}
+.cockpitStatusText em{font-size:9.4px!important}
+.cockpitStatusText i{font-size:8.5px!important}
+.cockpitArrow,.cockpitArrow svg{width:54px!important}
+.cockpitInsightHero b{font-size:13.3px!important;line-height:1.24!important}
+.cockpitInsightSupporting{font-size:8.4px!important;margin-top:4px!important}
+.cockpitModule.training .cockpitMarks rect{fill:#5a91e8!important}
+.cockpitModule.nutrition .cockpitMarks rect{fill:#f0a158!important}
+.cockpitModule.nutrition .cockpitLine{stroke:#f0a158!important}
+.cockpitModule.body .cockpitLine{stroke:#4b79db!important}
+.cockpitModule.training .cockpitGroupBars{display:none!important}
+.cockpitTrainingMetrics{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:7px!important}
+.cockpitTrainingMetrics>div{padding:8px!important;border-radius:6px!important;background:#f4f7fb!important;min-width:0!important}
+.cockpitTrainingMetrics b{display:block!important;color:#17233c!important;font-size:12px!important;line-height:1.05!important;font-weight:780!important;white-space:nowrap!important}
+.cockpitTrainingMetrics span{display:block!important;margin-top:3px!important;color:#78869a!important;font-size:7.4px!important;line-height:1.2!important}
+.cockpitHydrationMissing>span{font-size:0!important;width:42px!important;height:52px!important;left:22px!important;top:16px!important;border:3px solid #91a3be!important;border-radius:55% 55% 60% 60% / 65% 65% 42% 42%!important;transform:rotate(42deg)!important;opacity:.9!important}
+.cockpitHydrationMissing>span:after{content:'';position:absolute;left:-7px;top:23px;width:56px;height:3px;border-radius:3px;background:#91a3be;transform:rotate(-88deg)}
+@media (min-width:900px){
+  body:has(.cockpitV3) .primaryNav:before{background:none!important}
+  .sidebarBrandGlyph{position:absolute!important;z-index:3!important;left:19px!important;top:22px!important;width:30px!important;height:30px!important;pointer-events:none!important}
+  .sidebarBrandGlyph svg{width:30px!important;height:30px!important;display:block!important}
+  body:has(.cockpitV3) .topbar:before{
+    background:
+      linear-gradient(180deg,rgba(10,18,31,.02) 0%,rgba(10,18,31,.12) 48%,rgba(9,16,28,.86) 100%),
+      conic-gradient(from 212deg at 39% 78%,transparent 0 30deg,#53647a 31deg 59deg,transparent 60deg) 0 0/145px 83px no-repeat,
+      conic-gradient(from 212deg at 72% 78%,transparent 0 29deg,#34465f 30deg 58deg,transparent 59deg) 25px 5px/156px 78px no-repeat,
+      linear-gradient(180deg,#283950 0%,#1d2c42 54%,#142035 100%)!important;
+  }
+}
+
 @media (max-width:899px){
   .executivePeriodControl{display:block!important}
   .executiveDateRange{margin-top:7px!important;padding-left:2px!important}
   .cockpitStatus{grid-template-columns:32px minmax(0,1fr)!important}
+  .cockpitStatusText b{white-space:normal!important}
   .cockpitArrow{display:none!important}
   .cockpitModuleHead>div:first-child{padding-left:30px!important}
+  .cockpitTrainingMetrics{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
