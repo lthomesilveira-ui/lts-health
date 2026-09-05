@@ -2,51 +2,77 @@
 
 Status: referência obrigatória de produto para a Home do LTS Health.
 
-A imagem aprovada pelo usuário continua sendo a autoridade visual. Este documento registra as características não negociáveis extraídas dessa referência para impedir que testes funcionais ou layouts apenas aproximados sejam confundidos com fidelidade visual.
+A imagem aprovada pelo usuário é a autoridade visual. Este documento apenas registra os elementos observáveis da referência para impedir regressões. Se houver conflito, a imagem prevalece.
 
-## Linguagem visual
+## Linguagem visual aprovada
 
-- Canvas principal em azul-marinho muito escuro, com contraste sofisticado e pouca decoração.
-- Sidebar fixa e discreta integrada ao mesmo campo escuro do produto.
-- Cards brancos grandes, com cantos arredondados, sombra suave e bastante espaço interno.
-- Tipografia de exibição serifada nos títulos e números de maior hierarquia; tipografia sem serifa apenas para navegação, rótulos e texto de apoio.
-- Composição arejada, premium e executiva, com espaço negativo suficiente entre blocos.
-- Cor tem função semântica. Não usar arco-íris decorativo nem competir com o conteúdo.
+- Sidebar fixa em azul-marinho escuro, separada visualmente do conteúdo principal.
+- Canvas principal claro, quase branco com leve tom azulado. O conteúdo principal **não** usa fundo escuro.
+- Tipografia de interface sans-serif; o título principal é grande, escuro e em peso forte. Não usar serif no Dashboard.
+- Cards e módulos compactos, com cantos moderadamente arredondados, bordas muito suaves e sombra discreta.
+- Cor tem função semântica: azul para composição, verde para treino, laranja para nutrição, violeta para recuperação e rosa/vermelho para exames.
+- Densidade executiva: muita informação útil cabe na primeira tela desktop, sem parecer planilha nem dashboard SaaS genérico.
+
+## Geometria da referência desktop
+
+Referência de inspeção: 1536 × 864 px.
+
+- Sidebar: aproximadamente 211 px de largura.
+- Conteúdo principal: padding horizontal aproximado de 20–22 px.
+- Cabeçalho: título no topo esquerdo; seletor de período no topo direito.
+- Cinco cartões executivos na mesma linha, aproximadamente 146 px de altura, com cerca de 12 px entre eles.
+- Leitura principal imediatamente abaixo, em um único bloco branco com acento azul à esquerda.
+- Linha analítica principal com três módulos equivalentes: Treino, Nutrição e Composição corporal.
+- Segunda linha com Sono e recuperação, Exames e Hidratação.
+- Fechamento compacto com Resumo executivo, Pontos a revisar e Fontes.
+- Em viewport de referência, o conjunto deve ocupar a primeira tela com ritmo semelhante à imagem aprovada, sem grandes vazios ou blocos desproporcionalmente altos.
+
+## Cartões executivos
+
+1. Composição: fundo azul muito claro.
+2. Treinos: fundo verde muito claro.
+3. Nutrição: fundo pêssego/laranja muito claro.
+4. Recuperação: fundo violeta muito claro.
+5. Exames: fundo rosa muito claro.
+
+Cada cartão mostra dado atual, contexto/comparação segura e uma pequena indicação visual semântica. Os cards não são todos brancos e não usam faixas decorativas inferiores.
+
+## Navegação
+
+- Rail escuro contínuo à esquerda.
+- Marca LTS Health no topo.
+- Item ativo com preenchimento azul-marinho mais claro e acento azul.
+- Itens inativos discretos em cinza-azulado.
+- Estado privado/sincronizado fica visualmente secundário, próximo ao rodapé da rail.
 
 ## Composição obrigatória da Home
 
-1. Cabeçalho simples com título, texto curto de contexto e seletor de período claramente visível.
-2. Cinco cartões executivos no topo: Composição, Treino, Nutrição, Recuperação e Exames.
-3. Cada cartão deve mostrar estado atual, mudança/comparação quando segura e cobertura/contexto.
-4. Bloco de Leitura principal imediatamente abaixo dos cinco cartões.
-5. Linha analítica principal com três módulos equivalentes: Treino, Nutrição e Composição.
-6. Segunda linha com Recuperação/Sono, Saúde & Exames e Hidratação.
-7. Fechamento com Resumo executivo, Próximas revisões e Fontes.
-8. Gráficos somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
-
-## Proporções e ritmo
-
-- Desktop: rail fixo estreito + canvas flexível; cinco cartões na mesma linha em viewport amplo; três módulos analíticos na mesma linha; espaçamento de 16–24 px entre cartões e blocos; raios generosos de 17–20 px.
-- O conteúdo não deve parecer uma planilha, uma coleção de cards equivalentes ou um dashboard SaaS genérico claro.
-- O título principal deve ter presença editorial e não aparência de heading utilitário.
-- Cards precisam respirar: evitar texto comprimido, fontes minúsculas ou excesso de micro-métricas.
+1. Cabeçalho com título, texto curto e seletor 30 dias / 90 dias / 1 ano / Histórico.
+2. Cinco cartões executivos: Composição, Treinos, Nutrição, Recuperação e Exames.
+3. Bloco de Leitura principal da janela.
+4. Linha analítica: Treino, Nutrição e Composição.
+5. Segunda linha: Recuperação/Sono, Exames e Hidratação.
+6. Fechamento: Resumo executivo, Pontos a revisar e Fontes.
+7. Gráficos somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
 
 ## Mobile
 
-- Preservar o mesmo sistema visual escuro + cards brancos, não criar um produto visualmente diferente.
-- O seletor de período continua visível.
-- Cards executivos podem quebrar para duas colunas e, em telas estreitas, uma coluna; legibilidade tem prioridade sobre replicar a grade desktop.
-- Módulos analíticos e fechamento passam para uma coluna vertical alcançável por scroll, sem overflow horizontal.
-- Navegação inferior pode permanecer, desde que não cubra o conteúdo.
+- Preservar a linguagem clara do conteúdo; não transformar a Home em um produto escuro no celular.
+- Seletor de período sempre acessível.
+- Cards executivos podem quebrar para duas colunas e, em telas estreitas, uma coluna.
+- Módulos analíticos e fechamento passam para uma coluna vertical por scroll, sem overflow horizontal.
+- Navegação inferior pode permanecer desde que não cubra conteúdo.
 
 ## Gate de homologação
 
-Nenhuma versão volta ao usuário como pronta apenas porque CI, smoke ou E2E passaram. Antes de homologação é obrigatório:
+Nenhuma versão é considerada pronta apenas por CI verde. Antes de promover ao `main` é obrigatório:
 
-- capturar render desktop e mobile;
-- conferir lado a lado com a imagem aprovada;
-- verificar sidebar, fundo, tipografia, cinco cards, leitura principal, linhas analíticas, fechamento, proporções, espaçamento e densidade;
+- renderizar a Home em 1536 × 864 e em viewport mobile;
+- conferir sidebar, canvas claro, tipografia sans-serif, cinco cartões coloridos, leitura principal, duas linhas analíticas e fechamento;
+- medir ausência de overflow horizontal;
+- verificar que a sidebar permanece próxima de 211 px no desktop de referência;
+- verificar que o fundo do canvas e as cinco famílias de cor dos cartões correspondem à referência;
 - validar funcionamento e dados reais sem degradar a composição;
-- nunca usar 9/10 ou 10/10 apenas para significar testes verdes.
+- preservar os testes funcionais e de proveniência existentes.
 
-A imagem aprovada prevalece sobre este texto caso qualquer detalhe visual entre em conflito.
+A imagem aprovada prevalece sobre qualquer regra textual ou teste caso uma futura implementação volte a divergir visualmente.
