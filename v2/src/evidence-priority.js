@@ -123,7 +123,7 @@ export function coveragePriorityModel(data={},status={},period='365'){
   if(failed(status,'workouts')){
     addPriority(rows,'training','block','Treinos não carregaram','A distribuição de treino desta janela fica indisponível sem converter falha em zero.','treinos');
   }else if(!training.available||!training.totalSessions){
-    addPriority(rows,'training','block','Sem treino estruturado na janela','Não há sessão canônica estruturada suficiente para analisar distribuição no período.','treinos');
+    addPriority(rows,'training','block','Sem treino estruturado na janela','Não há sessão estruturada suficiente para analisar distribuição no período.','treinos');
   }else if(!performance.length){
     addPriority(rows,'training','limit','Performance sem par comparável','Há treinos, mas ainda não há dois registros do mesmo exercício, máquina e unidade para comparar carga.','treinos');
   }
@@ -182,7 +182,7 @@ export function renderCoveragePriorityPanel(model){
 export function renderTraceabilityPanel(model){
   const partial=model?.partial;
   return `<section class="card evidenceTraceability sectionGap" data-evidence-traceability>
-    <div class="evidenceTraceabilityHead"><div><span>Rastreabilidade</span><h2>Do arquivo recebido ao dado analisável</h2><p>Visão agregada da cadeia de dados. Payload bruto, identificadores internos e conteúdo sensível não aparecem aqui.</p></div>${partial?'<small>algumas fontes não carregaram</small>':'<small>cadeia verificada</small>'}</div>
+    <div class="evidenceTraceabilityHead"><div><span>Rastreabilidade</span><h2>Do arquivo recebido ao dado analisável</h2><p>Visão agregada da cadeia de dados. Conteúdo bruto, identificadores internos e informações sensíveis não aparecem aqui.</p></div>${partial?'<small>algumas fontes não carregaram</small>':'<small>cadeia verificada</small>'}</div>
     <div class="evidenceTraceabilityMetrics">
       <div><span>Arquivos recebidos</span><b>${metricValue(model?.uploads)}</b></div>
       <div><span>Processados/importados</span><b>${metricValue(model?.processed)}</b></div>
@@ -192,10 +192,10 @@ export function renderTraceabilityPanel(model){
     <div class="evidenceTraceabilityFlow">
       <div><i>1</i><span><b>Originais</b><small>${model?.uploads==null?'origem indisponível agora':`${model.uploads} arquivo(s) preservado(s)`}</small></span></div>
       <div><i>2</i><span><b>Processamento</b><small>${model?.processed==null?'situação indisponível agora':`${model.processed} concluído(s) · ${model.inProgress} em andamento · ${model.uploadAttention} com atenção`}</small></span></div>
-      <div><i>3</i><span><b>Estrutura e proveniência</b><small>${model?.preservedSeries==null?'cobertura complementar indisponível agora':`${model.structuredDomains} domínio(s) com dados · ${model.preservedSeries} série(s) complementares mantidas separadas${model.workoutEvidence==null?'':` · ${model.workoutEvidence} vínculo(s) complementares de treino`}`}</small></span></div>
+      <div><i>3</i><span><b>Estrutura e origem</b><small>${model?.preservedSeries==null?'cobertura complementar indisponível agora':`${model.structuredDomains} domínio(s) com dados · ${model.preservedSeries} série(s) complementares mantidas separadas${model.workoutEvidence==null?'':` · ${model.workoutEvidence} vínculo(s) complementares de treino`}`}</small></span></div>
       <div><i>4</i><span><b>Qualidade</b><small>${model?.qualityOpen==null?'qualidade indisponível agora':`${model.qualityOpen} aberto(s) · ${model.qualityKnown} limitação(ões) conhecida(s) · ${model.qualityResolved} resolvido(s)`}</small></span></div>
     </div>
-    <div class="evidenceBoundary"><b>Fronteira de fontes preservada</b><span>Apple, Polar e outras origens complementares só avançam para uma leitura consolidada quando existir regra validada. Até lá, permanecem separadas e não criam eventos canônicos duplicados.</span></div>
+    <div class="evidenceBoundary"><b>Separação de fontes preservada</b><span>Apple, Polar e outras origens complementares só avançam para uma leitura consolidada quando existir regra validada. Até lá, permanecem separadas e não geram registros duplicados no histórico principal.</span></div>
   </section>`;
 }
 
@@ -222,26 +222,4 @@ export function mountEvidencePanels(){
     const anchor=host.querySelector('[data-review-inbox]');
     if(anchor&&panel)anchor.after(panel);
   }
-}
-function start(){
-  const host=document.querySelector('#screenHost');
-  if(!host)return;
-  let scheduled=false;
-  const schedule=()=>{
-    if(scheduled)return;
-    scheduled=true;
-    queueMicrotask(()=>{scheduled=false;mountEvidencePanels();});
-  };
-  new MutationObserver(schedule).observe(host,{childList:true,subtree:true});
-  document.addEventListener('click',event=>{
-    const button=event.target.closest?.('[data-evidence-route]');
-    if(!button)return;
-    const route=button.getAttribute('data-evidence-route');
-    if(route)location.hash=`#${route}`;
-  });
-  schedule();
-}
-if(typeof document!=='undefined'){
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
-  else start();
 }
