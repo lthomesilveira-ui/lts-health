@@ -18,7 +18,10 @@ function polishInsight(){
 let timer=null;
 function queue(attempt=0){
   clearTimeout(timer);
-  timer=setTimeout(()=>{if(polishInsight()||attempt>=16)return;queue(attempt+1);},attempt?70:20);
+  timer=setTimeout(()=>{
+    polishInsight();
+    if(attempt<16)queue(attempt+1);
+  },attempt?70:20);
 }
 
 window.addEventListener('hashchange',()=>queue());
