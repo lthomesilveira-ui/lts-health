@@ -14,15 +14,19 @@ jobs:
         run: |
           node --check v2/src/integrated-analysis.js
           node --check v2/src/analysis-screen.js
+          node --check v2/src/evidence-priority.js
           node --check v2/analysis-history-smoke.mjs
           node --check v2/analysis-period-consistency-smoke.mjs
           node --check v2/analysis-source-gap-smoke.mjs
           node --check v2/complementary-signals-smoke.mjs
+          node --check v2/evidence-priority-smoke.mjs
           grep -q 'id="analysisPeriod"' v2/src/analysis-screen.js
           grep -q 'Mesma janela em toda esta seção' v2/src/analysis-screen.js
           grep -q 'Janela entre bioimpedâncias' v2/src/analysis-screen.js
           grep -q 'O que ainda limita a leitura' v2/src/analysis-screen.js
           grep -q 'Sinais complementares por origem' v2/src/analysis-screen.js
+          grep -q 'O que mais limita esta leitura agora' v2/src/evidence-priority.js
+          grep -q 'Separação de fontes preservada' v2/src/evidence-priority.js
           grep -q 'comparableLabCount' v2/src/integrated-analysis.js
           grep -q 'comparableLoadUnit' v2/src/integrated-analysis.js
           grep -q 'periodBounds' v2/src/integrated-analysis.js
@@ -41,3 +45,4 @@ jobs:
           node v2/analysis-period-consistency-smoke.mjs
           node v2/analysis-source-gap-smoke.mjs
           node v2/complementary-signals-smoke.mjs
+          node v2/evidence-priority-smoke.mjs
