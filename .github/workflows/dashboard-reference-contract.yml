@@ -1,0 +1,140 @@
+name: LTS Health Dashboard Reference Contract
+
+on:
+  push:
+    branches: [dashboard-reference-contract-v2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static visual contract
+        run: |
+          set -euo pipefail
+          test -f v2/REFERENCE_VISUAL_CONTRACT.md
+          test -f v2/dashboard-reference-contract.css
+          grep -q './dashboard-reference-contract.css' v2/index.html
+          grep -q -- '--reference-bg:#0b1220' v2/dashboard-reference-contract.css
+          grep -q -- '--reference-serif:' v2/dashboard-reference-contract.css
+          grep -q 'repeat(5,minmax(0,1fr))' v2/dashboard-reference-contract.css
+          grep -q 'repeat(3,minmax(0,1fr))' v2/dashboard-reference-contract.css
+          grep -q 'font-family:var(--reference-serif)' v2/dashboard-reference-contract.css
+          grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
+          grep -q 'Leitura principal da janela' v2/src/today-screen.js
+          grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+          ! grep -R 'MutationObserver' v2/src v2/index.html
+          for file in v2/src/*.js; do node --check "$file"; done
+
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Render desktop and mobile
+        run: |
+          mkdir -p artifacts
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-reference.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          cat > dashboard-reference-run.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          const base='http://127.0.0.1:4173/?fixture=1#hoje';
+
+          async function inspect(viewport,label,path){
+            const page=await browser.newPage({viewport});
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+            await page.goto(base,{waitUntil:'domcontentloaded'});
+            await page.waitForSelector('[data-executive-dashboard]');
+            await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
+            await page.waitForTimeout(350);
+
+            const metrics=await page.evaluate(()=>{
+              const one=s=>document.querySelector(s);
+              const rect=s=>one(s)?.getBoundingClientRect();
+              const style=s=>one(s)?getComputedStyle(one(s)):null;
+              return {
+                overflow:document.documentElement.scrollWidth-window.innerWidth,
+                nav:rect('.primaryNav'),
+                cards:[...document.querySelectorAll('.cockpitStatus')].map(el=>el.getBoundingClientRect()),
+                analytics:[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')].map(el=>el.getBoundingClientRect()),
+                secondary:[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')].map(el=>el.getBoundingClientRect()),
+                insight:rect('.cockpitInsightHero'),
+                bottom:rect('.cockpitBottomGrid'),
+                canvas:style('.cockpitV3'),
+                title:style('.cockpitWelcome h1'),
+                firstCard:style('.cockpitStatus')
+              };
+            });
+
+            if(metrics.overflow>3)throw new Error(`${label}: horizontal overflow ${metrics.overflow}px`);
+            if(metrics.cards.length!==5)throw new Error(`${label}: expected 5 executive cards`);
+            if(metrics.analytics.length!==3)throw new Error(`${label}: expected 3 analytical modules`);
+            if(metrics.secondary.length!==3)throw new Error(`${label}: expected 3 secondary modules`);
+            if(!metrics.insight||!metrics.bottom)throw new Error(`${label}: required executive block missing`);
+            if(!metrics.canvas?.backgroundColor||!['rgb(11, 18, 32)','rgba(0, 0, 0, 0)'].includes(metrics.canvas.backgroundColor)){
+              const bg=metrics.canvas?.backgroundImage||'';
+              if(!bg.includes('gradient'))throw new Error(`${label}: dark navy canvas contract missing`);
+            }
+            if(!metrics.title?.fontFamily?.toLowerCase().includes('georgia')&&!metrics.title?.fontFamily?.toLowerCase().includes('palatino')&&!metrics.title?.fontFamily?.toLowerCase().includes('iowan'))throw new Error(`${label}: serif display title contract missing`);
+            if(metrics.firstCard?.backgroundColor!=='rgb(255, 255, 255)')throw new Error(`${label}: executive cards are not white`);
+
+            if(viewport.width>=900){
+              if(!metrics.nav||metrics.nav.width<236||metrics.nav.width>266)throw new Error(`${label}: fixed rail width outside contract`);
+              const cardTops=new Set(metrics.cards.map(r=>Math.round(r.top/3)*3));
+              if(cardTops.size!==1)throw new Error(`${label}: five cards are not aligned in one row`);
+              const moduleTops=new Set(metrics.analytics.map(r=>Math.round(r.top/3)*3));
+              if(moduleTops.size!==1)throw new Error(`${label}: analytical modules are not aligned in one row`);
+              await page.screenshot({path,fullPage:true});
+            }else{
+              await page.screenshot({path});
+              const analyticsGrid=page.locator('.cockpitAnalyticsGrid');
+              await analyticsGrid.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(120);
+              await page.screenshot({path:'artifacts/reference-mobile-analytics.png'});
+              const bottom=page.locator('.cockpitBottomGrid');
+              await bottom.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(120);
+              await page.screenshot({path:'artifacts/reference-mobile-bottom.png'});
+            }
+            if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+            await page.close();
+          }
+
+          await inspect({width:1440,height:1050},'desktop','artifacts/reference-desktop.png');
+          await inspect({width:390,height:844},'mobile','artifacts/reference-mobile.png');
+          await browser.close();
+          console.log('Dashboard reference contract gate passed');
+          EOF
+          node dashboard-reference-run.mjs
+
+      - name: Existing dashboard regression
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-regression.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/failure-smoke.mjs
+          node v2/executive-dashboard-smoke.mjs
+          node v2/cockpit-smoke.mjs
+          node v2/product-finish-smoke.mjs
+          node v2/canonical-boundary-smoke.mjs
+
+      - name: Upload autonomous visual QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-reference-contract
+          path: artifacts/*.png
+          if-no-files-found: warn
