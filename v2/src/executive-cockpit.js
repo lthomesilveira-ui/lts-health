@@ -1,4 +1,4 @@
-import {state,day,num} from './core.js';
+import {state,day,num,fmtNum} from './core.js';
 import {executiveCockpitModel} from './today-screen.js';
 
 const periodOptions=[
@@ -23,6 +23,16 @@ function ensurePixelParityStyles(){
   link.href=new URL('../dashboard-pixel-parity.css',import.meta.url).href;
   link.dataset.dashboardPixelParity='1';
   document.head.appendChild(link);
+}
+
+function ensureSidebarBrand(){
+  const nav=document.getElementById('primaryNav');
+  if(!nav||nav.querySelector('.sidebarBrandGlyph'))return;
+  const mark=document.createElement('span');
+  mark.className='sidebarBrandGlyph';
+  mark.setAttribute('aria-hidden','true');
+  mark.innerHTML='<svg viewBox="0 0 32 32"><path d="M5 25.7 13.1 6.5c.8-1.9 3.4-1.9 4.2-.1l2.1 4.8-3.7 7.7-2.3-5.3-4.9 12.1H5z" fill="#2f80ed"/><path d="M18.1 7.3 28 24.8c1 1.8-.3 4-2.3 4H8.8l3.1-6.5h8.9l-6.2-10.7 3.5-4.3z" fill="#6ab0ff"/></svg>';
+  nav.appendChild(mark);
 }
 
 function formatDate(value){
@@ -62,6 +72,33 @@ function labCollectionSeries(model){
   const counts=new Map();
   for(const row of model?.labs?.rows||[]){const d=day(row?.collection_date);if(d)counts.set(d,(counts.get(d)||0)+1);}
   return [...counts.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([date,value])=>({date,value}));
+}
+
+function signedShort(value,unit='kg'){
+  const n=num(value);if(n==null)return null;
+  return `${n>0?'+':''}${fmtNum(n,1)} ${unit}`;
+}
+
+function insightHeadline(model){
+  const parts=[];
+  if(model?.body?.available){
+    const muscle=signedShort(model.body.delta?.muscleKg),fat=signedShort(model.body.delta?.fatKg);
+    if(muscle||fat)parts.push(`composição: ${muscle?`músculo ${muscle}`:''}${muscle&&fat?' e ':''}${fat?`gordura ${fat}`:''}`);
+  }
+  if(model?.training?.available)parts.push(`${model.training.totalSessions||0} sessão(ões) de treino`);
+  if(model?.nutrition?.coveragePct!=null)parts.push(`${model.nutrition.coveragePct}% de cobertura nutricional`);
+  if(!parts.length&&model?.labs?.collections)parts.push(`${model.labs.collections} coleta(s) de exames na janela`);
+  if(!parts.length)return'Ainda não há cobertura suficiente para uma leitura integrada desta janela.';
+  const sentence=`Na janela, ${parts.join(', com ')}.`;
+  return sentence.charAt(0).toUpperCase()+sentence.slice(1);
+}
+
+function insightSupporting(model){
+  const notes=[];
+  if(!model?.water?.length)notes.push('Ainda não há registro estruturado de ingestão de água, o que limita a leitura de hidratação.');
+  if(!model?.sleep?.days)notes.push('Sono sem cobertura estruturada nesta janela.');
+  if(model?.labs?.last)notes.push(`Última coleta de exames em ${formatDate(model.labs.last)}.`);
+  return notes.slice(0,2).join(' ')||'A leitura usa somente dados disponíveis e preserva a separação entre fontes quando necessário.';
 }
 
 function enhancePeriodControl(root=document){
@@ -120,7 +157,16 @@ function enhanceCards(root,model){
   });
 }
 
-function enhanceModules(root){
+function enhanceTrainingMetrics(root,model){
+  const module=root.querySelector('.cockpitModule.training');if(!module)return;
+  let metrics=module.querySelector('.cockpitTrainingMetrics');
+  if(!metrics){metrics=document.createElement('div');metrics.className='cockpitTrainingMetrics';const old=module.querySelector('.cockpitGroupBars');if(old)old.before(metrics);else module.appendChild(metrics);}
+  const activeWeeks=(model?.trainingSeries||[]).filter(point=>num(point?.value)>0).length;
+  const groups=model?.training?.rows?.length||0;
+  metrics.innerHTML=`<div><b>${model?.training?.totalSessions||0}</b><span>sessões</span></div><div><b>${groups}</b><span>grupos estruturados</span></div><div><b>${activeWeeks}</b><span>semanas com treino</span></div>`;
+}
+
+function enhanceModules(root,model){
   const bodyTitle=root.querySelector('.cockpitModule.body .cockpitModuleHead span');if(bodyTitle)bodyTitle.textContent='Composição corporal';
   const recoveryTitle=root.querySelector('.cockpitModule.recovery .cockpitModuleHead span');if(recoveryTitle)recoveryTitle.textContent='Sono e recuperação';
   const labTitle=root.querySelector('.cockpitModule.labs .cockpitModuleHead span');if(labTitle)labTitle.textContent='Exames';
@@ -131,18 +177,22 @@ function enhanceModules(root){
   if(insight){
     const button=insight.querySelector('.cockpitButton');if(button)button.textContent='Ver detalhes →';
     const text=insight.querySelector('div:nth-child(2)');
-    if(text&&!text.querySelector('.cockpitInsightSupporting')){const small=document.createElement('small');small.className='cockpitInsightSupporting';small.textContent='A leitura usa somente dados disponíveis e mantém fontes distintas quando a continuidade não está validada.';text.appendChild(small);}
+    const headline=text?.querySelector('b');if(headline)headline.textContent=insightHeadline(model);
+    let small=text?.querySelector('.cockpitInsightSupporting');
+    if(text&&!small){small=document.createElement('small');small.className='cockpitInsightSupporting';text.appendChild(small);}
+    if(small)small.textContent=insightSupporting(model);
   }
+  enhanceTrainingMetrics(root,model);
 }
 
 function enhanceDashboard(){
-  ensurePixelParityStyles();
+  ensurePixelParityStyles();ensureSidebarBrand();
   const host=document.getElementById('screenHost');
   if(!host||!enhancePeriodControl(host))return false;
   try{
     const select=host.querySelector('#analysisPeriod');
     const model=executiveCockpitModel(state.data||{},state.domainStatus||{},select?.value||'30');
-    enhanceHeader(host,model);enhanceCards(host,model);enhanceModules(host);
+    enhanceHeader(host,model);enhanceCards(host,model);enhanceModules(host,model);
   }catch(error){console.warn('Dashboard parity enhancement skipped:',error);}
   return true;
 }
@@ -154,7 +204,7 @@ function queueEnhancement(attempt=0){
 }
 
 function start(){
-  ensurePixelParityStyles();queueEnhancement();
+  ensurePixelParityStyles();ensureSidebarBrand();queueEnhancement();
   window.addEventListener('hashchange',()=>queueEnhancement());
   document.addEventListener('change',event=>{if(event.target?.matches?.('#analysisPeriod'))queueEnhancement();});
   document.addEventListener('click',event=>{if(event.target.closest('#refreshBtn')||event.target.closest('[data-route="hoje"]'))queueEnhancement();});
