@@ -64,7 +64,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   await page.waitForSelector('[data-evidence-traceability]');
   const traceText=(await page.textContent('[data-evidence-traceability]'))||'';
-  for(const expected of ['Rastreabilidade','Do arquivo recebido ao dado analisável','Fronteira de fontes preservada','não criam eventos canônicos duplicados']){
+  for(const expected of ['Rastreabilidade','Do arquivo recebido ao dado analisável','Separação de fontes preservada','não geram registros duplicados no histórico principal']){
     if(!traceText.includes(expected))throw new Error(`${label}: traceability copy missing ${expected}`);
   }
   for(const forbidden of ['source_payload','storage_path','raw_payload','WATCH-PRIVATE','POLAR-PRIVATE']){
