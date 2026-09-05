@@ -11,10 +11,10 @@ async function run(viewport,label){
 
   await page.goto(`${base}#bio`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Última medição · 01/02/2026'))throw new Error(`${label}: latest body date is not explicit`);
-  if(!text.includes('2 medição(ões) no histórico carregado'))throw new Error(`${label}: body history count missing from latest summary`);
+  if(!text.includes('2 medição(ões) no histórico'))throw new Error(`${label}: body history count missing from latest summary`);
 
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.ui.trainingPeriod='all';});
