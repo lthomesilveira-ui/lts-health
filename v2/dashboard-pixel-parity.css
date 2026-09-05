@@ -81,7 +81,7 @@
   body:has(.cockpitV3) .topActions #logoutBtn:before{content:'⌄';font-size:16px!important}
 }
 
-.cockpitWelcome p{font-size:12px!important;color:#56667f!important}
+.cockpitWelcome p{font-size:13px!important;color:#56667f!important}
 .executivePeriodControl{display:flex!important;align-items:flex-start!important;gap:14px!important}
 .executiveDateRange{display:flex!important;align-items:flex-start!important;gap:8px!important;min-width:122px!important;padding:4px 0 0 3px!important;color:#4e5d72!important}
 .executiveDateRange svg{width:18px!important;height:18px!important;margin-top:1px!important;stroke:#8292aa!important}
