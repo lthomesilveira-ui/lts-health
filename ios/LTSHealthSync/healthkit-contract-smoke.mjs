@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-const [project,info,entitlements,api,health,candidates,appModel,contentView,appDelegate,readme,workflow] = await Promise.all([
+const [project,info,entitlements,api,health,candidates,appModel,contentView,appDelegate,readme,workflow,backend] = await Promise.all([
   readFile('ios/LTSHealthSync/project.yml','utf8'),
   readFile('ios/LTSHealthSync/Resources/Info.plist','utf8'),
   readFile('ios/LTSHealthSync/Resources/LTSHealthSync.entitlements','utf8'),
@@ -11,7 +11,8 @@ const [project,info,entitlements,api,health,candidates,appModel,contentView,appD
   readFile('ios/LTSHealthSync/Sources/ContentView.swift','utf8'),
   readFile('ios/LTSHealthSync/Sources/AppDelegate.swift','utf8'),
   readFile('ios/LTSHealthSync/README.md','utf8'),
-  readFile('.github/workflows/ios-healthkit-build.yml','utf8')
+  readFile('.github/workflows/ios-healthkit-build.yml','utf8'),
+  readFile('supabase/functions/health-apple-sync-batch/index.ts','utf8')
 ]);
 
 for (const token of [
@@ -55,7 +56,7 @@ for (const token of [
 ]) if (!health.includes(token)) throw new Error(`HealthKit sync contract missing: ${token}`);
 
 if (health.includes('HKObjectQueryNoLimit')) throw new Error('HealthKit anchor query must not materialize unbounded history');
-for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g']) {
+for (const metric of ['steps','oxygen_saturation_pct','resting_heart_rate_bpm','sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g','dietary_water_ml']) {
   const canonicalPayloadPattern = new RegExp(`metric_type:\\s*"${metric}"`);
   if (canonicalPayloadPattern.test(health)) throw new Error(`${metric} must not be emitted by the canonical ActivitySummary client`);
 }
@@ -78,6 +79,10 @@ for (const token of [
   'metricType: "dietary_fat_g"',
   'identifier: .dietaryFiber',
   'metricType: "dietary_fiber_g"',
+  'identifier: .dietaryWater',
+  'metricType: "dietary_water_ml"',
+  'unit: .literUnit(with: .milli)',
+  'unitLabel: "mL"',
   'unit: .kilocalorie()',
   'unit: .gram()',
   'options: [.cumulativeSum, .separateBySource]',
@@ -112,17 +117,25 @@ for (const token of [
   'return "apple_watch"',
   'return "iphone"',
   'return "healthkit_candidate"',
-  'ios-healthkit-candidates-v4',
+  'ios-healthkit-candidates-v5',
   'frequency: .hourly'
 ]) if (!candidates.includes(token)) throw new Error(`Candidate HealthKit contract missing: ${token}`);
 
 if (candidates.includes('apple_activity_summary')) throw new Error('Candidate coordinator must never emit the canonical ActivitySummary family');
-if (candidates.includes('oxygen_saturation_pct')) throw new Error('Oxygen saturation remains outside candidate v4 until dedicated validation');
+if (candidates.includes('oxygen_saturation_pct')) throw new Error('Oxygen saturation remains outside candidate v5 until dedicated validation');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)')) throw new Error('active energy observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleExerciseTime)')) throw new Error('exercise-time observer trigger missing');
 if (!health.includes('HKObjectType.quantityType(forIdentifier: .appleStandTime)')) throw new Error('stand-time observer trigger missing');
 if (!health.includes('requiringSecureCoding: true')) throw new Error('HealthKit anchors must use secure coding');
 if (!appDelegate.includes('HealthKitSyncCoordinator.shared.startObserversIfConfigured()') || !appDelegate.includes('CandidateHealthMetricsCoordinator.shared.startObserversIfConfigured()')) throw new Error('core and candidate background observers are not bootstrapped on launch');
+
+if (!backend.includes("'dietary_water_ml'")) throw new Error('Apple sync backend must accept source-preserved dietary water');
+const canonicalActivity = backend.match(/const canonicalActivity=new Set\(\[([^\]]*)\]\)/)?.[1] || '';
+if (!canonicalActivity) throw new Error('canonical ActivitySummary allowlist not found');
+if (canonicalActivity.includes('dietary_water_ml')) throw new Error('dietary water must never auto-promote through ActivitySummary');
+for (const metric of ['active_energy_kcal','exercise_minutes','stand_hours']) {
+  if (!canonicalActivity.includes(metric)) throw new Error(`canonical ActivitySummary metric missing: ${metric}`);
+}
 
 for (const token of [
   '@Published var healthConfigured = false',
@@ -153,11 +166,14 @@ for (const token of [
 if (/canônic|candidat/i.test(contentView)) throw new Error('technical canonical/candidate jargon must not be shown in the iOS activation UI');
 if (!project.includes('platform: iOS') || !project.includes('iOS: "17.0"')) throw new Error('iOS project target contract drifted');
 for (const token of [
+  'volume de água realmente registrado',
+  'mantido por origem',
+  'não é somado automaticamente entre fontes',
   'A etapa final de conectividade precisa de um iPhone físico',
   'autorização HealthKit',
   'background delivery',
   'TestFlight exige uma conta Apple Developer/App Store Connect configurada'
-]) if (!readme.includes(token)) throw new Error(`physical-device activation documentation missing: ${token}`);
+]) if (!readme.includes(token)) throw new Error(`physical-device/source-preservation documentation missing: ${token}`);
 for (const token of [
   '-sdk iphonesimulator',
   '-sdk iphoneos',
