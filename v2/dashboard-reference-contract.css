@@ -167,7 +167,7 @@ body:has(.cockpitV3){background:var(--reference-bg)!important}
 .cockpitStatusText small{
   margin-top:2px!important;
   color:#8a93a3!important;
-  font-size:10px!important;
+  font-size:10.8px!important;
   letter-spacing:.085em!important;
   font-weight:780!important;
 }
