@@ -1,0 +1,48 @@
+name: LTS Health Backup Traceability Smoke
+on:
+  push:
+    branches: [architecture-v2, backup-traceability-v3]
+    paths:
+      - 'v2/src/backup-traceability.js'
+      - 'v2/src/data-layer.js'
+      - 'v2/backup-smoke.mjs'
+      - 'v2/index.html'
+      - '.github/workflows/backup-smoke.yml'
+  pull_request:
+    paths:
+      - 'v2/src/backup-traceability.js'
+      - 'v2/src/data-layer.js'
+      - 'v2/backup-smoke.mjs'
+      - 'v2/index.html'
+      - '.github/workflows/backup-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backup-traceability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Syntax and wiring checks
+        run: |
+          node --check v2/src/backup-traceability.js
+          node --check v2/backup-smoke.mjs
+          grep -q './src/backup-traceability.js' v2/index.html
+          grep -q "schema_version:3" v2/src/backup-traceability.js
+          grep -q "algorithm:'SHA-256'" v2/src/backup-traceability.js
+          grep -q 'verifyTraceableBackup' v2/src/backup-traceability.js
+      - name: Run desktop and mobile backup verification
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-backup.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/backup-smoke.mjs
