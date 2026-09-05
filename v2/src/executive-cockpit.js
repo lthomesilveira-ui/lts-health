@@ -14,6 +14,19 @@ function enhancePeriodControl(root=document){
   label.classList.add('executivePeriodControl');
   select.classList.add('executivePeriodSelect');
 
+  /*
+    Keep the native select present for form semantics and regression coverage,
+    while the approved segmented tabs remain the visible control.
+  */
+  select.style.setProperty('display','block','important');
+  select.style.setProperty('position','absolute','important');
+  select.style.setProperty('width','1px','important');
+  select.style.setProperty('height','1px','important');
+  select.style.setProperty('padding','0','important');
+  select.style.setProperty('border','0','important');
+  select.style.setProperty('opacity','0','important');
+  select.style.setProperty('pointer-events','none','important');
+
   const tabs=document.createElement('div');
   tabs.className='executivePeriodTabs';
   tabs.setAttribute('role','group');
@@ -50,6 +63,8 @@ function enhancePeriodControl(root=document){
 
 function enhanceDashboard(){
   const host=document.getElementById('screenHost');
+  const supporting=host?.querySelector('.cockpitWelcome p');
+  if(supporting)supporting.style.setProperty('font-size','13px','important');
   return host?enhancePeriodControl(host):false;
 }
 

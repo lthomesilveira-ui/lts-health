@@ -2,7 +2,15 @@ name: LTS Health Dashboard Reference Contract
 
 on:
   push:
-    branches: [dashboard-reference-contract-v2]
+    branches: [dashboard-approved-image-parity-v3, dashboard-reference-contract-v2]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'v2/dashboard-reference-contract.css'
+      - 'v2/REFERENCE_VISUAL_CONTRACT.md'
+      - 'v2/src/today-screen.js'
+      - 'v2/src/executive-cockpit.js'
+      - '.github/workflows/dashboard-reference-contract.yml'
   workflow_dispatch:
 
 permissions:
@@ -14,20 +22,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Static visual contract
+      - name: Static approved-image contract
         run: |
           set -euo pipefail
           test -f v2/REFERENCE_VISUAL_CONTRACT.md
           test -f v2/dashboard-reference-contract.css
           grep -q './dashboard-reference-contract.css' v2/index.html
-          grep -q -- '--reference-bg:#0b1220' v2/dashboard-reference-contract.css
-          grep -q -- '--reference-serif:' v2/dashboard-reference-contract.css
+          grep -q -- '--reference-canvas:#f6fafe' v2/dashboard-reference-contract.css
+          grep -q -- '--reference-sidebar:#17202f' v2/dashboard-reference-contract.css
+          grep -q 'grid-template-columns:211px' v2/dashboard-reference-contract.css
           grep -q 'repeat(5,minmax(0,1fr))' v2/dashboard-reference-contract.css
           grep -q 'repeat(3,minmax(0,1fr))' v2/dashboard-reference-contract.css
-          grep -q 'font-family:var(--reference-serif)' v2/dashboard-reference-contract.css
+          grep -q 'background:#eff6fe' v2/dashboard-reference-contract.css
+          grep -q 'background:#edfaf4' v2/dashboard-reference-contract.css
+          grep -q 'background:#fef5ee' v2/dashboard-reference-contract.css
+          grep -q 'background:#f3f1fe' v2/dashboard-reference-contract.css
+          grep -q 'background:#feeff4' v2/dashboard-reference-contract.css
           grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
           grep -q 'Leitura principal da janela' v2/src/today-screen.js
           grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+          ! grep -q -- '--reference-bg:#0b1220' v2/dashboard-reference-contract.css
+          ! grep -q 'font-family:var(--reference-serif)' v2/dashboard-reference-contract.css
           ! grep -R 'MutationObserver' v2/src v2/index.html
           for file in v2/src/*.js; do node --check "$file"; done
 
@@ -37,8 +52,9 @@ jobs:
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
 
-      - name: Render desktop and mobile
+      - name: Render and measure approved reference viewport
         run: |
+          set -euo pipefail
           mkdir -p artifacts
           python3 -m http.server 4173 --directory v2 >/tmp/lts-health-reference.log 2>&1 &
           SERVER_PID=$!
@@ -49,12 +65,17 @@ jobs:
           const browser=await chromium.launch({headless:true});
           const base='http://127.0.0.1:4173/?fixture=1#hoje';
 
+          const near=(value,target,tolerance,label)=>{
+            if(value==null||Math.abs(value-target)>tolerance)throw new Error(`${label}: ${value} outside ${target}±${tolerance}`);
+          };
+
           async function inspect(viewport,label,path){
             const page=await browser.newPage({viewport});
             const errors=[];
             page.on('pageerror',e=>errors.push(e.message));
             page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
             await page.goto(base,{waitUntil:'domcontentloaded'});
+            await page.waitForSelector('#app:not(.hidden)');
             await page.waitForSelector('[data-executive-dashboard]');
             await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
             await page.waitForTimeout(350);
@@ -63,17 +84,20 @@ jobs:
               const one=s=>document.querySelector(s);
               const rect=s=>one(s)?.getBoundingClientRect();
               const style=s=>one(s)?getComputedStyle(one(s)):null;
-              return {
+              const cards=[...document.querySelectorAll('.cockpitStatus')];
+              const analytics=[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')];
+              const secondary=[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')];
+              const bottom=[...document.querySelectorAll('.cockpitBottomGrid > article')];
+              return{
                 overflow:document.documentElement.scrollWidth-window.innerWidth,
                 nav:rect('.primaryNav'),
-                cards:[...document.querySelectorAll('.cockpitStatus')].map(el=>el.getBoundingClientRect()),
-                analytics:[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')].map(el=>el.getBoundingClientRect()),
-                secondary:[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')].map(el=>el.getBoundingClientRect()),
-                insight:rect('.cockpitInsightHero'),
-                bottom:rect('.cockpitBottomGrid'),
                 canvas:style('.cockpitV3'),
                 title:style('.cockpitWelcome h1'),
-                firstCard:style('.cockpitStatus')
+                cards:cards.map(el=>({rect:el.getBoundingClientRect(),style:getComputedStyle(el)})),
+                insight:rect('.cockpitInsightHero'),
+                analytics:analytics.map(el=>el.getBoundingClientRect()),
+                secondary:secondary.map(el=>el.getBoundingClientRect()),
+                bottom:bottom.map(el=>el.getBoundingClientRect())
               };
             });
 
@@ -81,20 +105,26 @@ jobs:
             if(metrics.cards.length!==5)throw new Error(`${label}: expected 5 executive cards`);
             if(metrics.analytics.length!==3)throw new Error(`${label}: expected 3 analytical modules`);
             if(metrics.secondary.length!==3)throw new Error(`${label}: expected 3 secondary modules`);
-            if(!metrics.insight||!metrics.bottom)throw new Error(`${label}: required executive block missing`);
-            if(!metrics.canvas?.backgroundColor||!['rgb(11, 18, 32)','rgba(0, 0, 0, 0)'].includes(metrics.canvas.backgroundColor)){
-              const bg=metrics.canvas?.backgroundImage||'';
-              if(!bg.includes('gradient'))throw new Error(`${label}: dark navy canvas contract missing`);
-            }
-            if(!metrics.title?.fontFamily?.toLowerCase().includes('georgia')&&!metrics.title?.fontFamily?.toLowerCase().includes('palatino')&&!metrics.title?.fontFamily?.toLowerCase().includes('iowan'))throw new Error(`${label}: serif display title contract missing`);
-            if(metrics.firstCard?.backgroundColor!=='rgb(255, 255, 255)')throw new Error(`${label}: executive cards are not white`);
+            if(metrics.bottom.length!==3)throw new Error(`${label}: expected 3 closing modules`);
+            if(!metrics.insight)throw new Error(`${label}: main reading block missing`);
 
-            if(viewport.width>=900){
-              if(!metrics.nav||metrics.nav.width<236||metrics.nav.width>266)throw new Error(`${label}: fixed rail width outside contract`);
-              const cardTops=new Set(metrics.cards.map(r=>Math.round(r.top/3)*3));
-              if(cardTops.size!==1)throw new Error(`${label}: five cards are not aligned in one row`);
-              const moduleTops=new Set(metrics.analytics.map(r=>Math.round(r.top/3)*3));
-              if(moduleTops.size!==1)throw new Error(`${label}: analytical modules are not aligned in one row`);
+            if(viewport.width===1536){
+              near(metrics.nav?.width,211,2,'sidebar width');
+              if(metrics.canvas?.backgroundColor!=='rgb(246, 250, 254)')throw new Error(`canvas must be light reference color, got ${metrics.canvas?.backgroundColor}`);
+              if(!metrics.title?.fontFamily||/georgia|palatino|iowan/i.test(metrics.title.fontFamily))throw new Error(`title must use sans-serif interface family, got ${metrics.title?.fontFamily}`);
+              const expected=['rgb(239, 246, 254)','rgb(237, 250, 244)','rgb(254, 245, 238)','rgb(243, 241, 254)','rgb(254, 239, 244)'];
+              metrics.cards.forEach((card,index)=>{
+                if(card.style.backgroundColor!==expected[index])throw new Error(`card ${index+1} background ${card.style.backgroundColor} != ${expected[index]}`);
+              });
+              const cardTops=new Set(metrics.cards.map(c=>Math.round(c.rect.top/2)*2));
+              if(cardTops.size!==1)throw new Error('five executive cards are not aligned in one row');
+              const analyticsTops=new Set(metrics.analytics.map(r=>Math.round(r.top/2)*2));
+              if(analyticsTops.size!==1)throw new Error('analytical modules are not aligned in one row');
+              near(metrics.cards[0].rect.height,146,4,'executive card height');
+              near(metrics.insight.height,86,5,'main reading height');
+              near(metrics.analytics[0].height,230,5,'analytical row height');
+              near(metrics.secondary[0].height,157,5,'secondary row height');
+              near(metrics.bottom[0].height,104,5,'closing row height');
               await page.screenshot({path,fullPage:true});
             }else{
               await page.screenshot({path});
@@ -102,8 +132,8 @@ jobs:
               await analyticsGrid.scrollIntoViewIfNeeded();
               await page.waitForTimeout(120);
               await page.screenshot({path:'artifacts/reference-mobile-analytics.png'});
-              const bottom=page.locator('.cockpitBottomGrid');
-              await bottom.scrollIntoViewIfNeeded();
+              const bottomGrid=page.locator('.cockpitBottomGrid');
+              await bottomGrid.scrollIntoViewIfNeeded();
               await page.waitForTimeout(120);
               await page.screenshot({path:'artifacts/reference-mobile-bottom.png'});
             }
@@ -111,30 +141,30 @@ jobs:
             await page.close();
           }
 
-          await inspect({width:1440,height:1050},'desktop','artifacts/reference-desktop.png');
+          await inspect({width:1536,height:864},'approved-desktop','artifacts/reference-desktop-1536x864.png');
           await inspect({width:390,height:844},'mobile','artifacts/reference-mobile.png');
           await browser.close();
-          console.log('Dashboard reference contract gate passed');
+          console.log('Approved-image dashboard reference gate passed');
           EOF
           node dashboard-reference-run.mjs
 
-      - name: Existing dashboard regression
+      - name: Run existing dashboard regressions
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --directory v2 >/tmp/lts-health-regression.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          node v2/failure-smoke.mjs
           node v2/executive-dashboard-smoke.mjs
           node v2/cockpit-smoke.mjs
           node v2/product-finish-smoke.mjs
-          node v2/canonical-boundary-smoke.mjs
+          node v2/navigation-resilience-smoke.mjs
+          node v2/source-continuity-unknown-smoke.mjs
 
       - name: Upload autonomous visual QA
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dashboard-reference-contract
+          name: dashboard-approved-image-reference
           path: artifacts/*.png
           if-no-files-found: warn
