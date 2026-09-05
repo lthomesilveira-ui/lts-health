@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1';
-const routeTitles={bio:'Composição corporal',treinos:'Treinos',evolucao:'Evolução',analise:'Insights',tratamentos:'Tratamentos',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
+const routeTitles={bio:'Composição corporal',treinos:'Treinos',evolucao:'Evolução',analise:'Insights',tratamentos:'Protocolos',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
 const focusableSelector='button:not([disabled]),a[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 async function waitRoute(page,route){
