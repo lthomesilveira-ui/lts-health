@@ -26,7 +26,7 @@ jobs:
           grep -q 'O que ainda limita a leitura' v2/src/analysis-screen.js
           grep -q 'Sinais complementares por origem' v2/src/analysis-screen.js
           grep -q 'O que mais limita esta leitura agora' v2/src/evidence-priority.js
-          grep -q 'Fronteira de fontes preservada' v2/src/evidence-priority.js
+          grep -q 'Separação de fontes preservada' v2/src/evidence-priority.js
           grep -q 'comparableLabCount' v2/src/integrated-analysis.js
           grep -q 'comparableLoadUnit' v2/src/integrated-analysis.js
           grep -q 'periodBounds' v2/src/integrated-analysis.js
