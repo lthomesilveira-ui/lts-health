@@ -1,0 +1,24 @@
+/* Restore contextual registration actions outside the approved Dashboard shell.
+   dashboard-parity.css intentionally hides routeAction in the cockpit rail,
+   but Bio and Treinos still need their route-scoped actions on desktop. */
+@media (min-width:900px){
+  body:not(:has(.cockpitV3)) .topActions{
+    grid-template-columns:1fr 1fr!important;
+    gap:6px!important;
+  }
+  body:not(:has(.cockpitV3)) .topActions #routeAction:not(.hidden){
+    display:inline-flex!important;
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-height:34px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid rgba(103,145,235,.26)!important;
+    border-radius:9px!important;
+    background:#2f73df!important;
+    color:#fff!important;
+    font-size:10.5px!important;
+    font-weight:760!important;
+    box-shadow:0 3px 10px rgba(25,75,155,.18)!important;
+  }
+}
