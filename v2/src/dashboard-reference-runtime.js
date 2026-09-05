@@ -1,5 +1,15 @@
 import {state} from './core.js';
 
+function ensureFinalPolishStyles(){
+  if(document.querySelector('link[data-dashboard-final-polish]'))return;
+  const link=document.createElement('link');
+  link.rel='stylesheet';
+  link.href=new URL('../dashboard-final-polish.css',import.meta.url).href;
+  link.dataset.dashboardFinalPolish='1';
+  document.head.appendChild(link);
+}
+ensureFinalPolishStyles();
+
 // The approved Dashboard reference opens on the 30-day window.
 // Apply that only to the initial in-memory default; later user choices are preserved.
 if(state.ui?.analysisPeriod==='365')state.ui.analysisPeriod='30';
