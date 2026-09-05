@@ -16,7 +16,19 @@ async function run(viewport,label){
   if(!text.includes('Última medição · 01/02/2026'))throw new Error(`${label}: latest body date is not explicit`);
   if(!text.includes('2 medição(ões) no histórico'))throw new Error(`${label}: body history count missing from latest summary`);
 
-  const nav=viewport.width<720?'#mobileNav':'#primaryNav';
+  const mobile=viewport.width<720;
+  const nav=mobile?'#mobileNav':'#primaryNav';
+  async function openBio(){
+    if(mobile){
+      await page.click('#mobileNav [data-route="mais"]');
+      await page.waitForSelector('#moreSheet:not(.hidden)');
+      await page.click('#moreSheet [data-route="bio"]');
+    }else{
+      await page.click('#primaryNav [data-route="bio"]');
+    }
+    await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
+  }
+
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.ui.trainingPeriod='all';});
   await page.click(`${nav} [data-route="treinos"]`);
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
@@ -33,7 +45,7 @@ async function run(viewport,label){
     state.domainStatus.sets='error';
     state.ui.trainingPeriod='all';
   });
-  await page.click(`${nav} [data-route="bio"]`);
+  await openBio();
   await page.click(`${nav} [data-route="treinos"]`);
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   const failedLatest=(await page.locator('.session.latest .sessionHead').first().textContent())||'';
