@@ -23,7 +23,7 @@ async function run(viewport,label){
   if(localDateCheck!=='2026-08-29')throw new Error(`${label}: backup filename date drifted to UTC next day (${localDateCheck})`);
 
   const panel=await page.locator('#backupExportBtn').evaluate(button=>button.closest('.card')?.textContent||'');
-  if(!panel.includes('Exportar registros organizados')||!panel.includes('Arquivos privados e credenciais ficam de fora')||!panel.includes('dados de saúde'))throw new Error(`${label}: backup privacy/scope copy missing`);
+  for(const expected of ['Backup dos dados','registros estruturados','Arquivos privados originais e credenciais ficam de fora','não é criado como se estivesse completo'])if(!panel.includes(expected))throw new Error(`${label}: backup privacy/scope copy missing ${expected}`);
   const downloadPromise=page.waitForEvent('download');
   await page.click('#backupExportBtn');
   const download=await downloadPromise;
