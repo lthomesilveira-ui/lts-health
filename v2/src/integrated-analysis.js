@@ -67,12 +67,17 @@ export function periodBounds(period='365',referenceDay=''){
 }
 
 export function referenceDayFor(data={}){
+  const preservedSourceMetricDates=(data.sourceMetrics||[])
+    .filter(row=>['candidate','held'].includes(norm(row?.canonical_status)))
+    .map(row=>day(row?.metric_date));
   return maxDate([
     maxDate((data.body||[]).map(r=>day(r.measured_at))),
     maxDate((data.segmental||[]).map(r=>day(r.measured_at))),
     maxDate(canonicalWorkouts(data).map(r=>day(r.workout_date))),
     maxDate((data.nutrition||[]).map(r=>day(r.nutrition_date))),
-    maxDate((data.labs||[]).map(r=>day(r.collection_date)))
+    maxDate((data.labs||[]).map(r=>day(r.collection_date))),
+    maxDate(preservedSourceMetricDates),
+    maxDate((data.treatments||[]).map(r=>day(r.event_date)))
   ]);
 }
 
