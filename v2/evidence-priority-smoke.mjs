@@ -26,9 +26,8 @@ async function run(viewport,label){
     const {coveragePriorityModel,traceabilityModel,renderTraceabilityPanel}=await import('./src/evidence-priority.js');
     const data=structuredClone(state.data),status={...state.domainStatus};
     const referenceDay=referenceDayFor(data)||'2026-01-01';
-    const structuredKeys=['body','workouts','nutrition','metrics','labs','docs','treatments'];
-    for(const key of structuredKeys)status[key]='ready';
-    status.sourceMetrics='ready';status.uploads='ready';status.quality='ready';status.workoutEvidence='ready';
+    const traceabilityKeys=['body','segmental','workouts','workoutEvidence','exercises','sets','nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens'];
+    for(const key of traceabilityKeys)status[key]='ready';
     data.sourceMetrics=[
       {metric_date:referenceDay,metric_type:'steps',unit:'count',source_family:'apple_watch',source_name:'WATCH-PRIVATE-001',canonical_status:'candidate'},
       {metric_date:referenceDay,metric_type:'steps',unit:'count',source_family:'polar_flow',source_name:'POLAR-PRIVATE-002',canonical_status:'held'}
@@ -49,7 +48,7 @@ async function run(viewport,label){
     const failedStatus={...status,workoutEvidence:'error'};
     const failedTrace=traceabilityModel(data,failedStatus);
     const failedHtml=renderTraceabilityPanel(failedTrace);
-    const structuredFailures=structuredKeys.map(key=>{
+    const traceabilityFailures=traceabilityKeys.map(key=>{
       const model=traceabilityModel(data,{...status,[key]:'error'});
       return{key,partial:model.partial,html:renderTraceabilityPanel(model)};
     });
@@ -60,7 +59,7 @@ async function run(viewport,label){
       html,
       failedTrace,
       failedHtml,
-      structuredFailures
+      traceabilityFailures
     };
   });
   if(synthetic.sourceSeries!==2)throw new Error(`${label}: Apple/Polar preserved series were merged`);
@@ -71,13 +70,14 @@ async function run(viewport,label){
   if(synthetic.failedTrace.workoutEvidence!==null)throw new Error(`${label}: failed workout evidence was not represented as unavailable`);
   if(!synthetic.failedHtml.includes('algumas fontes não carregaram'))throw new Error(`${label}: partial traceability warning missing`);
   if(synthetic.failedHtml.includes('cadeia verificada'))throw new Error(`${label}: failed workout evidence still claimed verified chain`);
-  for(const item of synthetic.structuredFailures){
-    if(!item.partial)throw new Error(`${label}: structured domain ${item.key} failure did not mark traceability partial`);
-    if(!item.html.includes('algumas fontes não carregaram'))throw new Error(`${label}: structured domain ${item.key} partial warning missing`);
-    if(item.html.includes('cadeia verificada'))throw new Error(`${label}: structured domain ${item.key} failure still claimed verified chain`);
+  if(synthetic.traceabilityFailures.length!==18)throw new Error(`${label}: traceability failure matrix is incomplete`);
+  for(const item of synthetic.traceabilityFailures){
+    if(!item.partial)throw new Error(`${label}: traceability domain ${item.key} failure did not mark chain partial`);
+    if(!item.html.includes('algumas fontes não carregaram'))throw new Error(`${label}: traceability domain ${item.key} partial warning missing`);
+    if(item.html.includes('cadeia verificada'))throw new Error(`${label}: traceability domain ${item.key} failure still claimed verified chain`);
   }
   for(const forbidden of ['WATCH-PRIVATE-001','POLAR-PRIVATE-002','PRIVATE-A.zip','PRIVATE ISSUE','PRIVATE-LINK']){
-    const rendered=[synthetic.html,synthetic.failedHtml,...synthetic.structuredFailures.map(item=>item.html)].join('');
+    const rendered=[synthetic.html,synthetic.failedHtml,...synthetic.traceabilityFailures.map(item=>item.html)].join('');
     if(rendered.includes(forbidden))throw new Error(`${label}: traceability leaked private/raw identity ${forbidden}`);
   }
 
