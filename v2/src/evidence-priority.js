@@ -148,7 +148,8 @@ export function traceabilityModel(data={},status={}){
   const qualityKnown=quality.filter(row=>['accepted','known','ignored'].includes(norm(row?.status))).length;
   const qualityResolved=quality.filter(row=>norm(row?.status)==='resolved').length;
   const structuredKeys=['body','workouts','nutrition','metrics','labs','docs','treatments'];
-  const structuredFailed=structuredKeys.some(key=>failed(status,key));
+  const traceabilityKeys=['body','segmental','workouts','workoutEvidence','exercises','sets','nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens'];
+  const traceabilityFailed=traceabilityKeys.some(key=>failed(status,key));
   const structuredDomains=structuredKeys.filter(key=>!failed(status,key)&&(data[key]||[]).length>0).length;
   const preservedSeries=sourceFailed?null:preservedSeriesCount(sourceMetrics,{start:null,end:null});
   const workoutEvidence=workoutEvidenceFailed?null:(data.workoutEvidence||[]).length;
@@ -158,7 +159,7 @@ export function traceabilityModel(data={},status={}){
     structuredDomains,preservedSeries,workoutEvidence,
     qualityOpen:qualityFailed?null:qualityOpen,qualityKnown:qualityFailed?null:qualityKnown,
     qualityResolved:qualityFailed?null:qualityResolved,
-    partial:uploadsFailed||qualityFailed||sourceFailed||workoutEvidenceFailed||structuredFailed
+    partial:traceabilityFailed
   };
 }
 
