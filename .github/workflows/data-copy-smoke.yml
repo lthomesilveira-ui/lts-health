@@ -6,6 +6,12 @@ on:
       - 'v2/src/data-screen.js'
       - 'v2/data-copy-smoke.mjs'
       - '.github/workflows/data-copy-smoke.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-screen.js'
+      - 'v2/data-copy-smoke.mjs'
+      - '.github/workflows/data-copy-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read
