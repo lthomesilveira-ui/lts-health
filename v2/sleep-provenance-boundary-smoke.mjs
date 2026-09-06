@@ -33,12 +33,16 @@ assert.match(appleSync,/apple_export:\$\{sourceFamily\}:\$\{metric\}:\$\{d\}:\$\
 
 assert.match(dataLayer,/timeline:\['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'\]/,'Timeline must stage source-preserving metrics explicitly');
 assert.match(dataLayer,/if\(key==='workouts'\)return rows\.filter\(row=>row\?\.is_canonical===true&&row\?\.record_status!=='quarantined'\)/,'training UI must require explicit canonical status through the centralized domain boundary');
-assert.match(timeline,/preservedStatuses=new Set\(\['candidate','held'\]\)/,'Timeline sleep evidence must require an explicit preserved status');
-assert.match(timeline,/m\.metric_type!=='sleep_duration_h'\|\|!preservedStatuses\.has\(norm\(m\.canonical_status\)\)/,'Timeline must show only preserved sleep-duration source evidence');
-assert.match(timeline,/domain:'Sono por fonte'/,'source sleep must remain a distinct Timeline domain');
-assert.match(timeline,/Em validação/,'source sleep must be visibly marked as under validation');
-assert.match(timeline,/Não consolidado/,'source sleep must be visibly marked as non-consolidated');
-assert.match(timeline,/source_name\|\|row\.source_family/,'Timeline must preserve source identity for sleep evidence');
-assert.doesNotMatch(timeline,/sourceMetrics[\s\S]{0,400}reduce\s*\(/,'Timeline must not reduce source sleep into a combined value');
+assert.match(timeline,/preservedStatuses=new Set\(\['candidate','held'\]\)/,'Timeline source evidence must require an explicit preserved status');
+assert.match(timeline,/if\(type\.startsWith\('sleep_'\)\)return'Sono em conferência'/,'sleep source evidence must stay in its own review domain');
+assert.match(timeline,/if\(domain==='Sono em conferência'\)return'Sono registrado'/,'sleep source evidence must keep a distinct user-facing title');
+assert.match(timeline,/rawSource=row\.source_name\|\|row\.source_family/,'Timeline must preserve source identity for review evidence');
+assert.match(timeline,/aguardando conferência; mantido separado dos dados confirmados/,'review evidence must be visibly separated from confirmed data');
+assert.match(timeline,/dietary_water_ml:'Água'/,'water evidence must have an explicit label');
+assert.match(timeline,/if\(type==='dietary_water_ml'\)return`\$\{fmtNum\(value,0\)\} mL`/,'water evidence must render in milliliters');
+assert.match(timeline,/if\(type==='dietary_water_ml'\)return'Hidratação em conferência'/,'water evidence must remain a distinct hydration review domain');
+assert.match(timeline,/if\(domain==='Hidratação em conferência'\)return'Hidratação registrada'/,'water evidence must use the hydration review title');
+assert.match(timeline,/endsWith\(' em conferência'\)/,'unconfirmed source evidence must stay out of confirmed cross-domain context');
+assert.doesNotMatch(timeline,/sourceMetrics[\s\S]{0,400}reduce\s*\(/,'Timeline must not reduce preserved source evidence into a combined value');
 
 console.log('sleep/provenance boundary contract: ok');

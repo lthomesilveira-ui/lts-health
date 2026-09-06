@@ -28,7 +28,10 @@ O companion também lê e envia como candidatos, mantendo a origem separada:
 - carboidratos;
 - gordura;
 - fibra;
+- volume de água realmente registrado no Apple Saúde;
 - duração de sono.
+
+O volume de água usa o tipo `dietaryWater` do HealthKit, é convertido para mililitros e mantido por origem. Ele não é estimado quando ausente, não é somado automaticamente entre fontes e não é promovido pelo caminho canônico de ActivitySummary. O Dashboard só poderá tratá-lo como hidratação consolidada quando existir dado real no aparelho e uma regra de seleção de origem explicitamente validada.
 
 Quando o MyFitnessPal compartilha nutrição com o Apple Saúde, os nutrientes compatíveis podem chegar como totais diários da origem `myfitnesspal`. Isso não cria alimentos, refeições ou horários que o HealthKit não forneça e não transforma esses totais em nutrição consolidada sem validação.
 
@@ -82,6 +85,6 @@ Esses gates comprovam que o código compila nos SDKs alvo, mas não substituem a
 
 ## Gate físico de ativação
 
-A etapa final de conectividade precisa de um iPhone físico porque a autorização HealthKit e o comportamento real de background delivery dependem do aparelho. Para esse gate será necessário instalar uma versão assinada do companion, entrar na conta LTS Health e conceder as permissões do Apple Saúde. Depois disso, a validação deve confirmar no backend que novos registros chegam com a origem correta e sem mistura entre dispositivos.
+A etapa final de conectividade precisa de um iPhone físico porque a autorização HealthKit e o comportamento real de background delivery dependem do aparelho. Para esse gate será necessário instalar uma versão assinada do companion, entrar na conta LTS Health e conceder as permissões do Apple Saúde. Depois disso, a validação deve confirmar no backend que novos registros chegam com a origem correta e sem mistura entre dispositivos. Para água, esse gate também precisa confirmar que `dietaryWater` realmente existe no aparelho e chega como volume em mililitros, sem consolidar fontes diferentes automaticamente.
 
 A instalação assinada pode ser feita por Xcode em um Mac com uma equipe de assinatura válida. Distribuição por TestFlight exige uma conta Apple Developer/App Store Connect configurada; o archive de CI atual é propositalmente não assinado e não deve ser tratado como aplicativo instalável em produção.
