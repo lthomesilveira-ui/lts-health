@@ -10,7 +10,8 @@ async function run(viewport,label){
   const audit=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {renderAnalysisHub}=await import('./src/analysis-screen.js');
-    const {normalizeMuscleGroup,periodBounds,trainingDistributionModel,nutritionPeriodModel}=await import('./src/integrated-analysis.js');
+    const {coveragePriorityModel}=await import('./src/evidence-priority.js');
+    const {normalizeMuscleGroup,periodBounds,referenceDayFor,trainingDistributionModel,nutritionPeriodModel}=await import('./src/integrated-analysis.js');
     const bounds=periodBounds('365','2026-08-31');
     const recentDates=['2026-07-07','2026-07-14','2026-07-25','2026-08-05','2026-08-20','2026-08-27','2026-08-31'];
     const oldDates=['2025-10-01','2025-11-01','2025-12-01','2026-01-05','2026-02-05','2026-03-05','2026-04-05','2026-05-05'];
@@ -37,11 +38,31 @@ async function run(viewport,label){
     const snapshot={data:state.data,domainStatus:state.domainStatus,analysisPeriod:state.ui.analysisPeriod};
     state.data=synthetic;state.domainStatus={...status};state.ui.analysisPeriod='365';
     const html=renderAnalysisHub();
-    state.data=snapshot.data;state.domainStatus=snapshot.domainStatus;state.ui.analysisPeriod=snapshot.analysisPeriod;
     const doc=new DOMParser().parseFromString(html,'text/html');
     const bars=[...doc.querySelectorAll('.analysisBarRow')].map(r=>({label:r.querySelector('span')?.textContent||'',sessions:Number(r.querySelector('b')?.textContent||0)}));
     const top=[...doc.querySelectorAll('.analysisLead .analysisSecondaryMetrics .metric')].map(r=>({label:r.querySelector('span')?.textContent||'',value:r.querySelector('strong')?.textContent||''}));
     const legs=[...doc.querySelectorAll('.analysisRegion')].find(r=>r.querySelector('.analysisRegionHead span')?.textContent==='Pernas');
+
+    const recentEvidence={
+      ...synthetic,
+      sourceMetrics:[
+        {metric_date:'2026-09-15',metric_type:'steps',value:7000,unit:'count',canonical_status:'candidate',source_family:'polar_flow',source_name:'Polar'},
+        {metric_date:'2026-10-05',metric_type:'steps',value:7100,unit:'count',canonical_status:'rejected',source_family:'other',source_name:'Rejected source'}
+      ],
+      treatments:[{event_date:'2026-09-20',medication:'Contexto temporal de teste',event_type:'historical',source:'fixture'}],
+      regimens:[{medication:'Contexto temporal de teste',source:'fixture'}]
+    };
+    const recentStatus={...status,treatments:'ready',regimens:'ready'};
+    const sourceOnlyReference=referenceDayFor({...recentEvidence,treatments:[]});
+    const integratedReference=referenceDayFor(recentEvidence);
+    const recentBounds=periodBounds('30',integratedReference);
+    const coverage=coveragePriorityModel(recentEvidence,recentStatus,'30');
+    state.data=recentEvidence;state.domainStatus=recentStatus;state.ui.analysisPeriod='30';
+    const recentHtml=renderAnalysisHub();
+    const recentDoc=new DOMParser().parseFromString(recentHtml,'text/html');
+    const recentText=recentDoc.body.textContent||'';
+
+    state.data=snapshot.data;state.domainStatus=snapshot.domainStatus;state.ui.analysisPeriod=snapshot.analysisPeriod;
     return{
       bounds,
       adductor:normalizeMuscleGroup('Adutor/Abdutor'),
@@ -53,7 +74,13 @@ async function run(viewport,label){
       renderedQuad:bars.find(r=>r.label==='Quadríceps')?.sessions,
       renderedTotal:top.find(r=>r.label==='Treinos')?.value,
       renderedLegText:legs?.textContent||'',
-      text:doc.body.textContent||''
+      text:doc.body.textContent||'',
+      sourceOnlyReference,
+      integratedReference,
+      recentBounds,
+      coverageReference:coverage.referenceDay,
+      coverageSourceSeries:coverage.sourceSeries,
+      recentText
     };
   });
   if(audit.bounds.start!=='2025-09-01'||audit.bounds.end!=='2026-08-31')throw new Error(`${label}: 365-day bounds incorrect ${JSON.stringify(audit.bounds)}`);
@@ -67,7 +94,13 @@ async function run(viewport,label){
   if(!audit.text.includes('Resumo executivo'))throw new Error(`${label}: executive Insights digest missing`);
   if(!audit.text.includes('Água ingerida')||!audit.text.includes('Sem dado')||!audit.text.includes('Carboidratos médios')||!audit.text.includes('Gordura média')||!audit.text.includes('Fibra média'))throw new Error(`${label}: expanded nutrition context missing`);
   if(audit.nutrition.waterDays!==0||audit.nutrition.waterAvgMl!==null)throw new Error(`${label}: missing water was converted to zero`);
-  if(/\b(causou|provou|garante|piorou)\b/i.test(audit.text))throw new Error(`${label}: causal/value judgment leaked`);
+  if(audit.sourceOnlyReference!=='2026-09-15')throw new Error(`${label}: preserved candidate evidence did not advance reference day safely: ${audit.sourceOnlyReference}`);
+  if(audit.integratedReference!=='2026-09-20'||audit.coverageReference!=='2026-09-20')throw new Error(`${label}: treatment context did not align integrated reference day: ${audit.integratedReference}/${audit.coverageReference}`);
+  if(audit.recentBounds.start!=='2026-08-22'||audit.recentBounds.end!=='2026-09-20')throw new Error(`${label}: 30-day evidence-aligned bounds incorrect ${JSON.stringify(audit.recentBounds)}`);
+  if(audit.coverageSourceSeries!==1)throw new Error(`${label}: rejected complementary row shifted or entered preserved coverage: ${audit.coverageSourceSeries}`);
+  if(!audit.recentText.includes('Passos')||!audit.recentText.includes('Contexto temporal de teste')||!audit.recentText.includes('20/09/2026'))throw new Error(`${label}: recent complementary/protocol evidence is not visible in the aligned Insights window`);
+  if(audit.recentText.includes('Rejected source'))throw new Error(`${label}: rejected complementary source leaked into Insights`);
+  if(/\b(causou|provou|garante|piorou)\b/i.test(audit.text)||/\b(causou|provou|garante|piorou)\b/i.test(audit.recentText))throw new Error(`${label}: causal/value judgment leaked`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   await browser.close();
