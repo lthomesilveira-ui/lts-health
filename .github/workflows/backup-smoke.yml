@@ -6,13 +6,16 @@ on:
       - 'v2/src/backup-traceability.js'
       - 'v2/src/data-layer.js'
       - 'v2/backup-smoke.mjs'
+      - 'v2/backup-verification-ui-smoke.mjs'
       - 'v2/index.html'
       - '.github/workflows/backup-smoke.yml'
   pull_request:
+    branches: [architecture-v2]
     paths:
       - 'v2/src/backup-traceability.js'
       - 'v2/src/data-layer.js'
       - 'v2/backup-smoke.mjs'
+      - 'v2/backup-verification-ui-smoke.mjs'
       - 'v2/index.html'
       - '.github/workflows/backup-smoke.yml'
   workflow_dispatch:
@@ -35,14 +38,24 @@ jobs:
         run: |
           node --check v2/src/backup-traceability.js
           node --check v2/backup-smoke.mjs
+          node --check v2/backup-verification-ui-smoke.mjs
           grep -q './src/backup-traceability.js' v2/index.html
           grep -q "schema_version:3" v2/src/backup-traceability.js
           grep -q "algorithm:'SHA-256'" v2/src/backup-traceability.js
           grep -q 'verifyTraceableBackup' v2/src/backup-traceability.js
-      - name: Run desktop and mobile backup verification
+          grep -q 'backupVerifyBtn' v2/src/backup-traceability.js
+          grep -q 'somente neste dispositivo' v2/src/backup-traceability.js
+      - name: Run desktop and mobile backup export verification
         run: |
           python3 -m http.server 4173 --directory v2 >/tmp/lts-health-backup.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           node v2/backup-smoke.mjs
+      - name: Run local backup verifier desktop and mobile
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-backup-ui.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/backup-verification-ui-smoke.mjs
