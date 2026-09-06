@@ -5,10 +5,15 @@ on:
     paths:
       - 'v2/real-auth-e2e.mjs'
       - '.github/workflows/real-auth-e2e.yml'
+  schedule:
+    - cron: '17 12 * * *'
   workflow_dispatch:
 permissions:
   contents: read
   id-token: write
+concurrency:
+  group: lts-health-real-auth-e2e-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   real-auth-e2e:
     runs-on: ubuntu-latest
