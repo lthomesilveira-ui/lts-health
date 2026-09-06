@@ -51,7 +51,7 @@ async function run(viewport,label){
 
   let text=(await page.textContent('#screenHost'))||'';
   for(const expected of [
-    'Conferências','3 itens realmente precisam de você','O que precisa de você','O que está guardado aguardando uma regra segura',
+    'Conferências','1 item realmente precisa de você','O que precisa de você','O que o LTS Health está tratando','Tratamento interno','backlog operacional do LTS Health','O que está guardado aguardando uma regra segura',
     'Sono','Passos','Hidratação','Volume de água','Fibra alimentar','Apple Saúde + Polar Flow','Fontes sobrepostas continuam separadas e não são somadas.','O que já está no seu histórico',
     'Bioimpedâncias','Treinos','Alimentação por dia','Refeições','Atividade','Exames','Documentos','Tratamentos',
     'Histórico de arquivos','Qualidade e limitações','Inventário preservado; depende do arquivo original.',
@@ -59,7 +59,7 @@ async function run(viewport,label){
     'O arquivo está guardado e ainda não entrou nas análises. Você não precisa revisar linha por linha.',
     'O processamento não foi concluído. O arquivo original continua guardado.',
     'Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso, volume de água e sono ficam separados até conferência',
-    'Fontes diferentes de sono e hidratação continuam separadas','O arquivo direto do MyFitnessPal é a fonte preferida','Detalhes por origem'
+    'Fontes diferentes de sono e hidratação continuam separadas','O arquivo direto do MyFitnessPal é a fonte preferida','Detalhes por origem','Ação necessária · interna','ação interna'
   ]){
     if(!text.includes(expected))throw new Error(`${label}: missing user-facing status ${expected}`);
   }
@@ -68,7 +68,12 @@ async function run(viewport,label){
   }
 
   const inboxStats=await page.locator('[data-review-inbox] .reviewStat strong').allTextContents();
-  if(inboxStats.join('|')!=='3|6|1|1')throw new Error(`${label}: review inbox counts are wrong ${inboxStats.join('|')}`);
+  if(inboxStats.join('|')!=='1|2|6|1')throw new Error(`${label}: review inbox counts are wrong ${inboxStats.join('|')}`);
+  const userActionText=(await page.locator('[data-user-actions]').textContent())||'';
+  const internalActionText=(await page.locator('[data-internal-quality]').textContent())||'';
+  if(!userActionText.includes('bad.zip')||userActionText.includes('Detalhe ainda depende de revisão da fonte.'))throw new Error(`${label}: internal quality work leaked into user action queue`);
+  if(!internalActionText.includes('Detalhe ainda depende de revisão da fonte.')||!internalActionText.includes('tratamento interno')||internalActionText.includes('bad.zip'))throw new Error(`${label}: internal quality queue is not separated from user file actions`);
+
   const sourceCards=await page.locator('.sourceStatus').allTextContents();
   const sourceCard=name=>sourceCards.find(card=>card.includes(name))||'';
   if(!sourceCard('Apple Saúde').includes('processando')||sourceCard('Apple Saúde').includes('com dados'))throw new Error(`${label}: Apple upload was falsely presented as confirmed data`);
@@ -120,7 +125,8 @@ async function run(viewport,label){
   text=(await page.textContent('#screenHost'))||'';
   const failedStats=await page.locator('[data-review-inbox] .reviewStat strong').allTextContents();
   if(failedStats[0]!=='—'||failedStats[2]!=='—'||failedStats[3]!=='—')throw new Error(`${label}: unloaded uploads rendered numeric inbox counts ${failedStats.join('|')}`);
-  if(!text.includes('Não foi possível verificar os arquivos agora.'))throw new Error(`${label}: missing upload-domain failure state`);
+  if(!text.includes('Não foi possível verificar se há ação sua agora')||!text.includes('Não foi possível verificar suas pendências de arquivo agora.')||!text.includes('Não foi possível verificar os arquivos agora.'))throw new Error(`${label}: user-action fail-closed state missing when uploads are unavailable`);
+  if(text.includes('Nada exige sua ação agora'))throw new Error(`${label}: upload failure falsely rendered a calm user-action state`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
