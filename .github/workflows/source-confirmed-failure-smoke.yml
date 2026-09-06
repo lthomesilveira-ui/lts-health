@@ -7,6 +7,13 @@ on:
       - 'v2/src/data-screen.js'
       - 'v2/source-confirmed-failure-smoke.mjs'
       - '.github/workflows/source-confirmed-failure-smoke.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/source-status.js'
+      - 'v2/src/data-screen.js'
+      - 'v2/source-confirmed-failure-smoke.mjs'
+      - '.github/workflows/source-confirmed-failure-smoke.yml'
   workflow_dispatch:
 permissions:
   contents: read

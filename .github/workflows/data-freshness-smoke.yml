@@ -8,6 +8,13 @@ on:
       - 'v2/src/data-layer.js'
       - 'v2/data-freshness-smoke.mjs'
       - '.github/workflows/data-freshness-smoke.yml'
+  pull_request:
+    branches: [architecture-v2]
+    paths:
+      - 'v2/src/data-screen.js'
+      - 'v2/src/data-layer.js'
+      - 'v2/data-freshness-smoke.mjs'
+      - '.github/workflows/data-freshness-smoke.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,8 +31,8 @@ jobs:
           node --check v2/data-freshness-smoke.mjs
           grep -q 'dados até' v2/src/data-screen.js
           grep -q 'metric_date' v2/src/data-screen.js
-          grep -q 'peso e sono ficam separados até conferência' v2/src/data-screen.js
-          grep -q 'Fontes diferentes de sono continuam separadas' v2/src/data-screen.js
+          grep -q 'peso, volume de água e sono ficam separados até conferência' v2/src/data-screen.js
+          grep -q 'Fontes diferentes de sono e hidratação continuam separadas' v2/src/data-screen.js
           ! grep -R 'MutationObserver' v2/src v2/index.html
       - name: Install browser runtime
         run: |
