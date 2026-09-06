@@ -137,7 +137,7 @@ export function coveragePriorityModel(data={},status={},period='365'){
 }
 
 export function traceabilityModel(data={},status={}){
-  const uploadsFailed=failed(status,'uploads'),qualityFailed=failed(status,'quality'),sourceFailed=failed(status,'sourceMetrics');
+  const uploadsFailed=failed(status,'uploads'),qualityFailed=failed(status,'quality'),sourceFailed=failed(status,'sourceMetrics'),workoutEvidenceFailed=failed(status,'workoutEvidence');
   const uploads=uploadsFailed?[]:(data.uploads||[]);
   const quality=qualityFailed?[]:(data.quality||[]);
   const sourceMetrics=sourceFailed?[]:(data.sourceMetrics||[]);
@@ -150,14 +150,14 @@ export function traceabilityModel(data={},status={}){
   const structuredKeys=['body','workouts','nutrition','metrics','labs','docs','treatments'];
   const structuredDomains=structuredKeys.filter(key=>!failed(status,key)&&(data[key]||[]).length>0).length;
   const preservedSeries=sourceFailed?null:preservedSeriesCount(sourceMetrics,{start:null,end:null});
-  const workoutEvidence=failed(status,'workoutEvidence')?null:(data.workoutEvidence||[]).length;
+  const workoutEvidence=workoutEvidenceFailed?null:(data.workoutEvidence||[]).length;
   return{
     uploads:uploadsFailed?null:uploads.length,processed:uploadsFailed?null:processed,
     inProgress:uploadsFailed?null:inProgress,uploadAttention:uploadsFailed?null:uploadAttention,
     structuredDomains,preservedSeries,workoutEvidence,
     qualityOpen:qualityFailed?null:qualityOpen,qualityKnown:qualityFailed?null:qualityKnown,
     qualityResolved:qualityFailed?null:qualityResolved,
-    partial:uploadsFailed||qualityFailed||sourceFailed
+    partial:uploadsFailed||qualityFailed||sourceFailed||workoutEvidenceFailed
   };
 }
 
