@@ -5,10 +5,15 @@ on:
     paths:
       - 'v2/real-auth-e2e.mjs'
       - '.github/workflows/real-auth-e2e.yml'
+  schedule:
+    - cron: '17 12 * * *'
   workflow_dispatch:
 permissions:
   contents: read
   id-token: write
+concurrency:
+  group: lts-health-real-auth-e2e-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   real-auth-e2e:
     runs-on: ubuntu-latest
@@ -26,10 +31,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          OIDC_RESPONSE="$(curl -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
+          CURL_RETRY=(--retry 4 --retry-delay 2 --retry-all-errors --connect-timeout 10 --max-time 45)
+          OIDC_RESPONSE="$(curl "${CURL_RETRY[@]}" -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
           echo "::add-mask::$OIDC_TOKEN"
-          curl -fsS -X POST \
+          curl "${CURL_RETRY[@]}" -fsS -X POST \
             -H "Authorization: Bearer $OIDC_TOKEN" \
             'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
             -o /tmp/lts-health-e2e-token.json
