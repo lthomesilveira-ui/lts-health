@@ -6,6 +6,7 @@ on:
       - 'v2/src/data-screen.js'
       - 'v2/data-copy-smoke.mjs'
       - 'v2/data.css'
+      - 'v2/PROJECT_MASTER.md'
       - '.github/workflows/data-copy-smoke.yml'
   pull_request:
     branches: [architecture-v2]
@@ -13,6 +14,7 @@ on:
       - 'v2/src/data-screen.js'
       - 'v2/data-copy-smoke.mjs'
       - 'v2/data.css'
+      - 'v2/PROJECT_MASTER.md'
       - '.github/workflows/data-copy-smoke.yml'
   workflow_dispatch:
 permissions:
@@ -29,6 +31,10 @@ jobs:
           grep -q "imported:'importado'" v2/src/data-screen.js
           grep -q "rejected:'não processado'" v2/src/data-screen.js
           grep -q "previewNotice" v2/src/data-screen.js
+          grep -q 'data-user-actions' v2/src/data-screen.js
+          grep -q 'data-internal-quality' v2/src/data-screen.js
+          grep -q 'Não foi possível verificar se há ação sua agora' v2/src/data-screen.js
+          grep -q 'backlog operacional interno' v2/PROJECT_MASTER.md
           ! grep -q 'esc(preview.error_message)' v2/src/data-screen.js
           ! grep -q 'warnings.map' v2/src/data-screen.js
           grep -q "inspectFunction: 'health-inspect-upload'" v2/src/core.js
