@@ -26,7 +26,7 @@ async function run(viewport,label){
     const {coveragePriorityModel,traceabilityModel,renderTraceabilityPanel}=await import('./src/evidence-priority.js');
     const data=structuredClone(state.data),status={...state.domainStatus};
     const referenceDay=referenceDayFor(data)||'2026-01-01';
-    status.sourceMetrics='ready';status.uploads='ready';status.quality='ready';
+    status.sourceMetrics='ready';status.uploads='ready';status.quality='ready';status.workoutEvidence='ready';
     data.sourceMetrics=[
       {metric_date:referenceDay,metric_type:'steps',unit:'count',source_family:'apple_watch',source_name:'WATCH-PRIVATE-001',canonical_status:'candidate'},
       {metric_date:referenceDay,metric_type:'steps',unit:'count',source_family:'polar_flow',source_name:'POLAR-PRIVATE-002',canonical_status:'held'}
@@ -44,18 +44,28 @@ async function run(viewport,label){
     const coverage=coveragePriorityModel(data,status,'all');
     const trace=traceabilityModel(data,status);
     const html=renderTraceabilityPanel(trace);
+    const failedStatus={...status,workoutEvidence:'error'};
+    const failedTrace=traceabilityModel(data,failedStatus);
+    const failedHtml=renderTraceabilityPanel(failedTrace);
     return{
       sourceSeries:coverage.sourceSeries,
       contextRows:coverage.rows.filter(row=>row.key==='sources').length,
       trace,
-      html
+      html,
+      failedTrace,
+      failedHtml
     };
   });
   if(synthetic.sourceSeries!==2)throw new Error(`${label}: Apple/Polar preserved series were merged`);
   if(synthetic.contextRows!==1)throw new Error(`${label}: complementary mapping boundary is not surfaced`);
   if(synthetic.trace.preservedSeries!==2)throw new Error(`${label}: traceability merged source series`);
+  if(synthetic.trace.partial)throw new Error(`${label}: complete traceability was marked partial`);
+  if(!synthetic.failedTrace.partial)throw new Error(`${label}: workout evidence failure did not mark traceability partial`);
+  if(synthetic.failedTrace.workoutEvidence!==null)throw new Error(`${label}: failed workout evidence was not represented as unavailable`);
+  if(!synthetic.failedHtml.includes('algumas fontes não carregaram'))throw new Error(`${label}: partial traceability warning missing`);
+  if(synthetic.failedHtml.includes('cadeia verificada'))throw new Error(`${label}: failed workout evidence still claimed verified chain`);
   for(const forbidden of ['WATCH-PRIVATE-001','POLAR-PRIVATE-002','PRIVATE-A.zip','PRIVATE ISSUE','PRIVATE-LINK']){
-    if(synthetic.html.includes(forbidden))throw new Error(`${label}: traceability leaked private/raw identity ${forbidden}`);
+    if(`${synthetic.html}${synthetic.failedHtml}`.includes(forbidden))throw new Error(`${label}: traceability leaked private/raw identity ${forbidden}`);
   }
 
   const waterRow=page.locator('[data-coverage-priority] .coveragePriorityRow').filter({hasText:'Sem registro de ingestão de água'}).first();
