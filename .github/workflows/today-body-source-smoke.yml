@@ -21,7 +21,7 @@ jobs:
           node --check v2/src/today-screen.js
           node --check v2/src/integrated-analysis.js
           node --check v2/today-body-source-smoke.mjs
-          grep -q 'latestBodySnapshot' v2/src/today-screen.js
+          grep -q 'latestOverall:latestBody' v2/src/today-screen.js
           grep -q 'Sem comparação entre origens diferentes' v2/src/today-screen.js
           ! grep -R 'MutationObserver' v2/src v2/index.html
       - name: Install browser runtime
