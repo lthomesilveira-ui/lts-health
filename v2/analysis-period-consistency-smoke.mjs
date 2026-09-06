@@ -98,7 +98,7 @@ async function run(viewport,label){
   if(audit.integratedReference!=='2026-09-20'||audit.coverageReference!=='2026-09-20')throw new Error(`${label}: treatment context did not align integrated reference day: ${audit.integratedReference}/${audit.coverageReference}`);
   if(audit.recentBounds.start!=='2026-08-22'||audit.recentBounds.end!=='2026-09-20')throw new Error(`${label}: 30-day evidence-aligned bounds incorrect ${JSON.stringify(audit.recentBounds)}`);
   if(audit.coverageSourceSeries!==1)throw new Error(`${label}: rejected complementary row shifted or entered preserved coverage: ${audit.coverageSourceSeries}`);
-  if(!audit.recentText.includes('Passos')||!audit.recentText.includes('Contexto temporal de teste')||!audit.recentText.includes('20/09/2026'))throw new Error(`${label}: recent complementary/protocol evidence is not visible in the aligned Insights window`);
+  if(!audit.recentText.includes('Passos')||!audit.recentText.includes('1 nesta janela')||!audit.recentText.includes('20/09/2026'))throw new Error(`${label}: recent complementary/protocol evidence is not visible in the aligned Insights window`);
   if(audit.recentText.includes('Rejected source'))throw new Error(`${label}: rejected complementary source leaked into Insights`);
   if(/\b(causou|provou|garante|piorou)\b/i.test(audit.text)||/\b(causou|provou|garante|piorou)\b/i.test(audit.recentText))throw new Error(`${label}: causal/value judgment leaked`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
