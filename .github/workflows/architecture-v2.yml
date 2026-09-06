@@ -24,6 +24,7 @@ jobs:
             v2/nutrition-history-smoke.mjs \
             v2/analysis-history-smoke.mjs \
             v2/analysis-period-consistency-smoke.mjs \
+            v2/evidence-priority-smoke.mjs \
             v2/health-longitudinal-smoke.mjs \
             v2/training-progression-smoke.mjs \
             v2/canonical-boundary-smoke.mjs \
@@ -108,6 +109,7 @@ jobs:
           node v2/nutrition-history-smoke.mjs
           node v2/analysis-history-smoke.mjs
           node v2/analysis-period-consistency-smoke.mjs
+          node v2/evidence-priority-smoke.mjs
           node v2/health-longitudinal-smoke.mjs
           node v2/training-progression-smoke.mjs
           node v2/canonical-boundary-smoke.mjs

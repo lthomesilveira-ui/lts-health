@@ -75,6 +75,33 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
   await page.waitForSelector('[data-coverage-priority]');
 
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {referenceDayFor}=await import('./src/integrated-analysis.js');
+    const referenceDay=referenceDayFor(state.data)||'2026-01-01';
+    const oldDate=new Date(`${referenceDay}T00:00:00Z`);
+    oldDate.setUTCDate(oldDate.getUTCDate()-60);
+    const oldDay=oldDate.toISOString().slice(0,10);
+    state.domainStatus.nutrition='ready';
+    state.data.nutrition=[
+      {nutrition_date:referenceDay,calories:2100,protein_g:160,carbs_g:190,fat_g:70,water_ml:null},
+      {nutrition_date:oldDay,calories:2050,protein_g:155,carbs_g:185,fat_g:68,water_ml:900}
+    ];
+    const select=document.getElementById('analysisPeriod');
+    select.value='all';
+    select.dispatchEvent(new Event('change',{bubbles:true}));
+  });
+  await page.waitForFunction(()=>{
+    const text=document.querySelector('[data-coverage-priority]')?.textContent||'';
+    return document.getElementById('analysisPeriod')?.value==='all'&&!text.includes('Sem registro de ingestão de água');
+  });
+
+  await page.selectOption('#analysisPeriod','30');
+  await page.waitForFunction(()=>{
+    const text=document.querySelector('[data-coverage-priority]')?.textContent||'';
+    return document.getElementById('analysisPeriod')?.value==='30'&&text.includes('Sem registro de ingestão de água');
+  });
+
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
