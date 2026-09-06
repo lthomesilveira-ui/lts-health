@@ -20,8 +20,8 @@ async function run(viewport,label,fixtureError=''){
     const panel=(await page.locator('.provenancePanel').textContent())||'';
     if(!panel.includes('dados até 02/02/2026'))throw new Error(`${label}: real metric_date freshness missing`);
     if(!panel.includes('Registros aguardando conferência permanecem separados dos dados confirmados.'))throw new Error(`${label}: source separation note missing`);
-    if(!body.includes('Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso e sono ficam separados até conferência'))throw new Error(`${label}: Apple plain-language validation scope drifted`);
-    if(!body.includes('Fontes diferentes de sono continuam separadas'))throw new Error(`${label}: sleep source separation guardrail missing`);
+    if(!body.includes('Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso, volume de água e sono ficam separados até conferência'))throw new Error(`${label}: Apple plain-language validation scope drifted`);
+    if(!body.includes('Fontes diferentes de sono e hidratação continuam separadas'))throw new Error(`${label}: sleep and hydration source separation guardrail missing`);
     if(!body.includes('O arquivo direto do MyFitnessPal é a fonte preferida'))throw new Error(`${label}: direct MyFitnessPal preference drifted`);
     if(!body.includes('Totais recebidos pelo Apple Saúde ficam separados até conferência'))throw new Error(`${label}: MyFitnessPal-via-Apple review boundary drifted`);
   }

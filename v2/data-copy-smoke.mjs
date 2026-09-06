@@ -33,7 +33,9 @@ async function run(viewport,label){
     state.data.sourceMetrics=[
       {source_record_id:'apple-sleep',metric_date:'2026-02-04',metric_type:'sleep_duration_h',value:7.2,unit:'h',source_name:'Apple Saúde',source_family:'healthkit_candidate',canonical_status:'candidate'},
       {source_record_id:'polar-sleep',metric_date:'2026-02-04',metric_type:'sleep_duration_h',value:7.1,unit:'h',source_name:'Polar Flow',source_family:'polar_flow',canonical_status:'held'},
-      {source_record_id:'iphone-steps',metric_date:'2026-02-04',metric_type:'steps',value:8400,unit:'count',source_name:'iPhone',source_family:'iphone',canonical_status:'candidate'}
+      {source_record_id:'iphone-steps',metric_date:'2026-02-04',metric_type:'steps',value:8400,unit:'count',source_name:'iPhone',source_family:'iphone',canonical_status:'candidate'},
+      {source_record_id:'apple-water',metric_date:'2026-02-04',metric_type:'dietary_water_ml',value:1250,unit:'mL',source_name:'Apple Saúde',source_family:'healthkit_candidate',canonical_status:'candidate'},
+      {source_record_id:'apple-fiber',metric_date:'2026-02-04',metric_type:'dietary_fiber_g',value:20,unit:'g',source_name:'Apple Saúde',source_family:'healthkit_candidate',canonical_status:'candidate'}
     ];
     for(const key of ['uploads','previews','quality','sourceMetrics'])state.domainStatus[key]='ready';
   });
@@ -50,23 +52,23 @@ async function run(viewport,label){
   let text=(await page.textContent('#screenHost'))||'';
   for(const expected of [
     'Conferências','3 itens realmente precisam de você','O que precisa de você','O que está guardado aguardando uma regra segura',
-    'Sono','Passos','Apple Saúde + Polar Flow','Fontes sobrepostas continuam separadas e não são somadas.','O que já está no seu histórico',
+    'Sono','Passos','Hidratação','Volume de água','Fibra alimentar','Apple Saúde + Polar Flow','Fontes sobrepostas continuam separadas e não são somadas.','O que já está no seu histórico',
     'Bioimpedâncias','Treinos','Alimentação por dia','Refeições','Atividade','Exames','Documentos','Tratamentos',
     'Histórico de arquivos','Qualidade e limitações','Inventário preservado; depende do arquivo original.',
     'Contexto histórico de tratamento','Registro histórico preservado sem detalhe operacional nesta tela.',
     'O arquivo está guardado e ainda não entrou nas análises. Você não precisa revisar linha por linha.',
     'O processamento não foi concluído. O arquivo original continua guardado.',
-    'Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso e sono ficam separados até conferência',
-    'Fontes diferentes de sono continuam separadas','O arquivo direto do MyFitnessPal é a fonte preferida','Detalhes por origem'
+    'Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso, volume de água e sono ficam separados até conferência',
+    'Fontes diferentes de sono e hidratação continuam separadas','O arquivo direto do MyFitnessPal é a fonte preferida','Detalhes por origem'
   ]){
     if(!text.includes(expected))throw new Error(`${label}: missing user-facing status ${expected}`);
   }
-  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação','RAW_PARSER_WARNING','STACK_TRACE','RAW_FAILURE_DIAGNOSTIC','INTERNAL_ERROR_PAYLOAD','RAW_INTERNAL_ENTITY','RAW_INTERNAL_DESCRIPTION','backend_table=row','ActivitySummary','source_family','source_payload','storage_path','canônico','candidato']){
+  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação','RAW_PARSER_WARNING','STACK_TRACE','RAW_FAILURE_DIAGNOSTIC','INTERNAL_ERROR_PAYLOAD','RAW_INTERNAL_ENTITY','RAW_INTERNAL_DESCRIPTION','backend_table=row','ActivitySummary','source_family','source_payload','storage_path','canônico','candidato','dietary_water_ml','dietary_fiber_g']){
     if(text.includes(forbidden))throw new Error(`${label}: raw internal or operational value visible: ${forbidden}`);
   }
 
   const inboxStats=await page.locator('[data-review-inbox] .reviewStat strong').allTextContents();
-  if(inboxStats.join('|')!=='3|4|1|1')throw new Error(`${label}: review inbox counts are wrong ${inboxStats.join('|')}`);
+  if(inboxStats.join('|')!=='3|6|1|1')throw new Error(`${label}: review inbox counts are wrong ${inboxStats.join('|')}`);
   const sourceCards=await page.locator('.sourceStatus').allTextContents();
   const sourceCard=name=>sourceCards.find(card=>card.includes(name))||'';
   if(!sourceCard('Apple Saúde').includes('processando')||sourceCard('Apple Saúde').includes('com dados'))throw new Error(`${label}: Apple upload was falsely presented as confirmed data`);
