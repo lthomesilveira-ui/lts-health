@@ -22,15 +22,15 @@ async function run(viewport,label){
     state.data.quality=[];
     state.data.sourceMetrics=[];
     state.data.metrics=[{source_record_id:'apple-stale-confirmed',measured_at:'2026-02-07T12:00:00Z',metric_type:'active_energy_kcal',value:450,unit:'kcal',source:'HealthKitBridge ActivitySummary'}];
-    state.data.workouts=[{source_record_id:'polar-stale-confirmed',workout_date:'2026-02-08',workout_type:'Treino',source:'Polar Flow'}];
+    state.data.workoutEvidence=[{source_record_id:'polar-stale-confirmed',workout_date:'2026-02-08',source_family:'polar_flow',evidence_status:'confirmed'}];
     state.data.nutrition=[{source_record_id:'mfp-stale-confirmed',nutrition_date:'2026-02-09',calories_kcal:2100,source:'MyFitnessPal'}];
     state.data.meals=[];
     state.data.labs=[{source_record_id:'fleury-stale-confirmed',collection_date:'2026-02-06',laboratory:'Fleury',biomarker:'Marcador',result_raw:'10',result_numeric:10,unit:'u',source:'Fleury'}];
     state.errors={};
-    for(const key of ['uploads','previews','quality','sourceMetrics','metrics','workouts','nutrition','meals','labs'])state.domainStatus[key]='ready';
+    for(const key of ['uploads','previews','quality','sourceMetrics','metrics','workoutEvidence','nutrition','meals','labs'])state.domainStatus[key]='ready';
 
     state.domainStatus.metrics='error';
-    state.domainStatus.workouts='error';
+    state.domainStatus.workoutEvidence='error';
     state.domainStatus.nutrition='error';
     state.domainStatus.labs='error';
 
