@@ -24,7 +24,7 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
   await page.waitForSelector('#backupVerifyBtn');
-  await page.waitForSelector('#backupVerifyFile');
+  await page.waitForSelector('#backupVerifyFile',{state:'attached'});
 
   const initial=(await page.locator('#backupVerifyMsg').textContent())||'';
   if(!initial.includes('somente neste dispositivo')||!initial.includes('não é enviado'))throw new Error(`${label}: local-only verification privacy copy missing`);
