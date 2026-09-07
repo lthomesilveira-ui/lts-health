@@ -1,5 +1,6 @@
 const text=value=>String(value??'').trim();
 const norm=value=>text(value).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+const markerKey=value=>text(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 const date=value=>{const m=text(value).match(/^(\d{4}-\d{2}-\d{2})/);return m?.[1]||null;};
 const numeric=value=>{if(value==null||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null;};
 const rounded=value=>Math.round(value*1000)/1000;
@@ -51,7 +52,7 @@ function labUnit(row){return text(row?.unit);}
 export function labNarrativeSeries(rows=[]){
   const groups=new Map();
   for(const row of rows||[]){
-    const key=norm(row?.biomarker),value=numeric(row?.result_numeric),d=date(row?.collection_date),origin=labOrigin(row),unit=labUnit(row);
+    const key=markerKey(row?.biomarker),value=numeric(row?.result_numeric),d=date(row?.collection_date),origin=labOrigin(row),unit=labUnit(row);
     if(!key||value==null||!d||!origin||!unit)continue;
     if(!groups.has(key))groups.set(key,{key,label:text(row.biomarker),cohorts:new Map()});
     const group=groups.get(key),cohortKey=`${norm(origin)}__${norm(unit)}`;
