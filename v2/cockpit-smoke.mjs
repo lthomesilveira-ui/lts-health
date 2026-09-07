@@ -11,7 +11,7 @@ async function run(viewport,label){
   const text=(await page.locator('#screenHost').textContent())||'';
   for(const expected of ['assistente longitudinal','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Leitura principal','Ritmo e distribuição','Registro e médias','Gordura corporal','Resumo executivo','Pontos a revisar','Dados conectados'])if(!text.includes(expected))throw new Error(`${label}: cockpit v3 missing ${expected}`);
   if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: cockpit should expose five executive domains`);
-  if(!text.includes('Sem registro de ingestão de água')||!text.includes('Água corporal da bioimpedância não é hidratação'))throw new Error(`${label}: hydration boundary is not explicit`);
+  if(!text.includes('Sem dado de ingestão de água')||!text.includes('Água corporal da bioimpedância é outra medida e aparece em Composição.'))throw new Error(`${label}: hydration boundary is not explicit`);
   if(!await page.locator('#analysisPeriod').isVisible())throw new Error(`${label}: period filter missing from cockpit`);
   await page.selectOption('#analysisPeriod','90');
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');
