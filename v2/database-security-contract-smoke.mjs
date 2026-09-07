@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 const migration=await readFile('supabase/migrations/20260830170500_harden_health_function_execute_grants.sql','utf8');
 const workoutIntegrity=await readFile('supabase/migrations/20260906213500_enforce_workout_parent_integrity.sql','utf8');
 const workoutParentChain=await readFile('supabase/migrations/20260906222500_enforce_workout_set_parent_chain.sql','utf8');
+const activeOwnerIntegrity=await readFile('supabase/migrations/20260906224700_enforce_active_domain_owner_integrity.sql','utf8');
 const appleSync=await readFile('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const writes=await readFile('v2/src/writes.js','utf8');
 
@@ -42,6 +43,25 @@ for(const token of [
 ])if(!workoutParentChain.includes(token))throw new Error(`workout set parent-chain contract missing: ${token}`);
 if((workoutParentChain.match(/health_workout_sets_exercise_fk/g)||[]).length!==2)throw new Error('workout set parent-chain migration must replace the exercise FK exactly once');
 
+const activeOwnerTables=[
+  'health_activity_records',
+  'health_daily_nutrition',
+  'health_medication_events',
+  'health_medication_regimens',
+  'health_metrics',
+  'health_nutrition_meals',
+  'health_segmental_composition',
+  'health_uploads'
+];
+for(const table of activeOwnerTables){
+  for(const token of [
+    `alter table public.${table}`,
+    `constraint ${table}_user_id_fkey`
+  ])if(!activeOwnerIntegrity.includes(token))throw new Error(`active-domain owner-integrity contract missing: ${token}`);
+}
+if((activeOwnerIntegrity.match(/foreign key \(user_id\) references auth\.users\(id\) on delete cascade;/g)||[]).length!==activeOwnerTables.length)throw new Error('active-domain owner-integrity contract must protect every active runtime table with auth.users cascade');
+if(!activeOwnerIntegrity.includes("set local lock_timeout = '5s';")||!activeOwnerIntegrity.includes("set local statement_timeout = '30s';"))throw new Error('active-domain owner-integrity migration must bound lock and statement timeouts');
+
 for(const token of [
   "Deno.env.get('SUPABASE_ANON_KEY')!",
   '{global:{headers:{Authorization:auth}}',
@@ -54,4 +74,4 @@ for(const token of [
   "sb.rpc('health_log_structured_workout'"
 ])if(!writes.includes(token))throw new Error(`structured workout authenticated-RPC contract missing: ${token}`);
 
-console.log('LTS Health database security and workout parent-chain integrity contract passed');
+console.log('LTS Health database security, workout parent-chain and active-domain owner integrity contract passed');
