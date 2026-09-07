@@ -1,6 +1,7 @@
 import {readFile} from 'node:fs/promises';
 
 const migration=await readFile('supabase/migrations/20260830170500_harden_health_function_execute_grants.sql','utf8');
+const workoutIntegrity=await readFile('supabase/migrations/20260906213500_enforce_workout_parent_integrity.sql','utf8');
 const appleSync=await readFile('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const writes=await readFile('v2/src/writes.js','utf8');
 
@@ -17,6 +18,19 @@ for(const token of requiredMigrationTokens)if(!migration.includes(token))throw n
 if(/grant\s+execute[\s\S]*\bto\s+(?:public|anon)\b/i.test(migration))throw new Error('health function migration grants EXECUTE to public/anon');
 if(/grant\s+execute\s+on\s+function\s+public\.health_source_daily_metrics_preserve_status\(\)\s+to\s+[^;]*authenticated/i.test(migration))throw new Error('trigger function is directly executable by authenticated clients');
 
+const requiredParentIntegrityTokens=[
+  'alter column workout_source_record_id set not null',
+  'alter column exercise_source_record_id set not null',
+  'constraint health_workout_exercises_workout_fk',
+  'constraint health_workout_sets_workout_fk',
+  'constraint health_workout_sets_exercise_fk',
+  'references public.health_workouts(user_id, source_record_id)',
+  'references public.health_workout_exercises(user_id, source_record_id)'
+];
+for(const token of requiredParentIntegrityTokens)if(!workoutIntegrity.includes(token))throw new Error(`workout parent-integrity contract missing: ${token}`);
+if((workoutIntegrity.match(/foreign key \(user_id, workout_source_record_id\)/g)||[]).length!==2)throw new Error('workout parent-integrity contract must protect exercise and set workout parents');
+if((workoutIntegrity.match(/on delete cascade/g)||[]).length!==3)throw new Error('workout parent-integrity contract must cascade all three parent relations');
+
 for(const token of [
   "Deno.env.get('SUPABASE_ANON_KEY')!",
   '{global:{headers:{Authorization:auth}}',
@@ -29,4 +43,4 @@ for(const token of [
   "sb.rpc('health_log_structured_workout'"
 ])if(!writes.includes(token))throw new Error(`structured workout authenticated-RPC contract missing: ${token}`);
 
-console.log('LTS Health database function EXECUTE least-privilege contract passed');
+console.log('LTS Health database security and workout parent-integrity contract passed');
