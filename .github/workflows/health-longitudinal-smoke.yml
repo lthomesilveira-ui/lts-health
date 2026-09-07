@@ -14,13 +14,22 @@ jobs:
         run: |
           node --check v2/src/health-screen.js
           node --check v2/src/intelligence-engine.js
+          node --check v2/src/longitudinal-model.js
+          node --check v2/src/longitudinal-story.js
           node --check v2/health-longitudinal-smoke.mjs
           node --check v2/lab-intelligence-boundary-smoke.mjs
+          node --check v2/product-clarity-p0-smoke.mjs
+          node --check v2/product-clarity-browser-smoke.mjs
+          node v2/product-clarity-p0-smoke.mjs
           grep -q "collectionComparison" v2/src/health-screen.js
           grep -q "unidades diferentes permanecem em séries separadas" v2/src/health-screen.js
           grep -q "nenhuma conversão é feita automaticamente" v2/src/health-screen.js
           grep -q "Resultados textuais" v2/src/health-screen.js
           grep -q "PDF e imagem podem ficar guardados sem gerar resultados" v2/src/health-screen.js
+          grep -q "bodyChangeModel(data,status,null,null)" v2/src/today-screen.js
+          grep -q "const labs=labSnapshot(data)" v2/src/today-screen.js
+          grep -q "./longitudinal-story.css" v2/index.html
+          grep -q "./src/longitudinal-story.js" v2/index.html
           ! grep -R 'MutationObserver\|loadAll\|activateTab' v2/src v2/index.html
           ! grep -R 'health-inspect-upload-v2' v2/src/data-screen.js
       - name: Install browser runtime
@@ -28,7 +37,7 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Longitudinal lab browser smoke
+      - name: Longitudinal browser smokes
         run: |
           python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-health.log 2>&1 &
           SERVER_PID=$!
@@ -36,3 +45,4 @@ jobs:
           sleep 2
           node v2/health-longitudinal-smoke.mjs
           node v2/lab-intelligence-boundary-smoke.mjs
+          node v2/product-clarity-browser-smoke.mjs
