@@ -2,6 +2,7 @@ import {readFile} from 'node:fs/promises';
 
 const migration=await readFile('supabase/migrations/20260830170500_harden_health_function_execute_grants.sql','utf8');
 const workoutIntegrity=await readFile('supabase/migrations/20260906213500_enforce_workout_parent_integrity.sql','utf8');
+const workoutParentChain=await readFile('supabase/migrations/20260906222500_enforce_workout_set_parent_chain.sql','utf8');
 const appleSync=await readFile('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const writes=await readFile('v2/src/writes.js','utf8');
 
@@ -32,6 +33,16 @@ if((workoutIntegrity.match(/foreign key \(user_id, workout_source_record_id\)/g)
 if((workoutIntegrity.match(/on delete cascade/g)||[]).length!==3)throw new Error('workout parent-integrity contract must cascade all three parent relations');
 
 for(const token of [
+  'constraint health_workout_exercises_user_workout_source_record_key',
+  'unique (user_id, workout_source_record_id, source_record_id)',
+  'drop constraint health_workout_sets_exercise_fk',
+  'foreign key (user_id, workout_source_record_id, exercise_source_record_id)',
+  'references public.health_workout_exercises(user_id, workout_source_record_id, source_record_id)',
+  'on delete cascade'
+])if(!workoutParentChain.includes(token))throw new Error(`workout set parent-chain contract missing: ${token}`);
+if((workoutParentChain.match(/health_workout_sets_exercise_fk/g)||[]).length!==2)throw new Error('workout set parent-chain migration must replace the exercise FK exactly once');
+
+for(const token of [
   "Deno.env.get('SUPABASE_ANON_KEY')!",
   '{global:{headers:{Authorization:auth}}',
   "sb.rpc('health_promote_apple_activity_summary'"
@@ -43,4 +54,4 @@ for(const token of [
   "sb.rpc('health_log_structured_workout'"
 ])if(!writes.includes(token))throw new Error(`structured workout authenticated-RPC contract missing: ${token}`);
 
-console.log('LTS Health database security and workout parent-integrity contract passed');
+console.log('LTS Health database security and workout parent-chain integrity contract passed');
