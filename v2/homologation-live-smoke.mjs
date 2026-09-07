@@ -13,7 +13,8 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
-  if(!text.includes('Última medição · 01/02/2026'))throw new Error(`${label}: deployed latest body date missing`);
+  const latestBodyHeader=((await page.locator('#screenHost .note b').filter({hasText:'Última medição'}).first().textContent().catch(()=>''))||'').trim();
+  if(!/^Última medição(?: comparável)? · 01\/02\/2026$/.test(latestBodyHeader))throw new Error(`${label}: deployed latest body header incorrect: ${latestBodyHeader||'missing'}`);
   if(!text.includes('Massa muscular'))throw new Error(`${label}: readable muscle-mass label missing`);
   if(text.includes('MME')||text.includes('source_file')||text.includes('confidence'))throw new Error(`${label}: technical body-composition language leaked into deployed UI`);
 
