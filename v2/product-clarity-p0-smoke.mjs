@@ -44,7 +44,7 @@ assert(ferritin?.pointCount===3,'ferritin series must stay inside one origin and
 assert(ferritin?.firstDate==='2022-01-10'&&ferritin?.lastDate==='2024-01-10','ferritin longitudinal span must be preserved');
 assert(ferritin?.delta===20,'ferritin delta must be descriptive within the comparable series');
 assert(testosterone?.pointCount===2&&testosterone?.delta===120,'testosterone longitudinal series must be available when supported');
-assert(!series.some(item=>item.key==='marcador ambíguo'),'an ambiguous same-date cohort must not become a two-point trend');
+assert(!series.some(item=>item.key==='marcador ambiguo'),'an ambiguous same-date cohort must not become a two-point trend');
 
 const sampled=sampleSeries(Array.from({length:1096},(_,index)=>({date:String(index),value:index})),72);
 assert(sampled.length<=72&&sampled[0].value===0&&sampled.at(-1).value===1095,'long history sampling must retain endpoints without inventing points');
