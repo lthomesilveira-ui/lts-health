@@ -76,10 +76,11 @@ jobs:
           grep -q "sourceContinuityBreak" v2/src/integrated-analysis.js
           grep -q "periodBounds" v2/src/integrated-analysis.js
           grep -q "nutritionPeriodModel" v2/src/integrated-analysis.js
-          grep -q "Mesma janela em toda esta seção" v2/src/analysis-screen.js
-          grep -q "Janela entre bioimpedâncias" v2/src/analysis-screen.js
+          grep -q "Mesma janela para os sinais de maior frequência" v2/src/analysis-screen.js
+          grep -q "Últimas duas medições comparáveis, independentemente da janela recente" v2/src/analysis-screen.js
+          grep -q "O histórico não desaparece quando a janela recente não tem coleta" v2/src/analysis-screen.js
           grep -q "Água ingerida" v2/src/analysis-screen.js
-          grep -q "As fontes permanecem separadas" v2/src/analysis-screen.js
+          grep -q "Origens diferentes permanecem separadas" v2/src/analysis-screen.js
           grep -q "sem atribuir causa" v2/src/today-screen.js
           grep -q "Sem comparação entre origens diferentes" v2/src/today-screen.js
           grep -q "Sono permanece fora desta leitura" v2/src/intelligence-engine.js

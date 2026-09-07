@@ -41,7 +41,6 @@ async function run(viewport,label){
     const doc=new DOMParser().parseFromString(html,'text/html');
     const bars=[...doc.querySelectorAll('.analysisBarRow')].map(r=>({label:r.querySelector('span')?.textContent||'',sessions:Number(r.querySelector('b')?.textContent||0)}));
     const top=[...doc.querySelectorAll('.analysisLead .analysisSecondaryMetrics .metric')].map(r=>({label:r.querySelector('span')?.textContent||'',value:r.querySelector('strong')?.textContent||''}));
-    const legs=[...doc.querySelectorAll('.analysisRegion')].find(r=>r.querySelector('.analysisRegionHead span')?.textContent==='Pernas');
 
     const recentEvidence={
       ...synthetic,
@@ -60,6 +59,8 @@ async function run(viewport,label){
     state.data=recentEvidence;state.domainStatus=recentStatus;state.ui.analysisPeriod='30';
     const recentHtml=renderAnalysisHub();
     const recentDoc=new DOMParser().parseFromString(recentHtml,'text/html');
+    const recentTop=[...recentDoc.querySelectorAll('.analysisLead .analysisSecondaryMetrics .metric')].map(r=>({label:r.querySelector('span')?.textContent||'',value:r.querySelector('strong')?.textContent||''}));
+    const recentRecovery=[...recentDoc.querySelectorAll('.card')].find(r=>r.querySelector('.cardHead b')?.textContent==='Recuperação')?.textContent||'';
     const recentText=recentDoc.body.textContent||'';
 
     state.data=snapshot.data;state.domainStatus=snapshot.domainStatus;state.ui.analysisPeriod=snapshot.analysisPeriod;
@@ -73,13 +74,14 @@ async function run(viewport,label){
       nutrition,
       renderedQuad:bars.find(r=>r.label==='Quadríceps')?.sessions,
       renderedTotal:top.find(r=>r.label==='Treinos')?.value,
-      renderedLegText:legs?.textContent||'',
       text:doc.body.textContent||'',
       sourceOnlyReference,
       integratedReference,
       recentBounds,
       coverageReference:coverage.referenceDay,
       coverageSourceSeries:coverage.sourceSeries,
+      recentProtocolValue:recentTop.find(r=>r.label==='Protocolos')?.value,
+      recentRecovery,
       recentText
     };
   });
@@ -87,18 +89,19 @@ async function run(viewport,label){
   if(audit.adductor!=='Adutores/abdutores'||audit.abdomen!=='Abdômen')throw new Error(`${label}: muscle taxonomy incorrect`);
   if(audit.annualQuad!==15||audit.recentQuad!==7)throw new Error(`${label}: period counts inconsistent annual=${audit.annualQuad} recent=${audit.recentQuad}`);
   if(audit.annualAbdomen!==0)throw new Error(`${label}: adductor leaked into abdomen`);
-  if(audit.renderedQuad!==15||audit.renderedTotal!=='15')throw new Error(`${label}: rendered selected-period workout counts do not match canonical model`);
-  if(!audit.renderedLegText.includes('3 sessão(ões) relacionadas'))throw new Error(`${label}: segmental interval did not preserve its separate 3-session context`);
-  if(!audit.text.includes('As contagens abaixo usam somente esse intervalo, não o período inteiro.'))throw new Error(`${label}: segmental scope is not explicit`);
-  if(!audit.text.includes('Mesma janela em toda esta seção'))throw new Error(`${label}: selected-period scope contract missing`);
+  if(audit.renderedQuad!==15||audit.renderedTotal!=='15')throw new Error(`${label}: rendered selected-period workout counts do not match confirmed model`);
+  if(!audit.text.includes('Mesma janela para os sinais de maior frequência'))throw new Error(`${label}: selected-period scope contract missing`);
+  if(!audit.text.includes('Últimas duas medições comparáveis, independentemente da janela recente'))throw new Error(`${label}: body history disappeared behind the recent-window contract`);
+  if(!audit.text.includes('O histórico não desaparece quando a janela recente não tem coleta'))throw new Error(`${label}: lab history disappeared behind the recent-window contract`);
   if(!audit.text.includes('Resumo executivo'))throw new Error(`${label}: executive Insights digest missing`);
   if(!audit.text.includes('Água ingerida')||!audit.text.includes('Sem dado')||!audit.text.includes('Carboidratos médios')||!audit.text.includes('Gordura média')||!audit.text.includes('Fibra média'))throw new Error(`${label}: expanded nutrition context missing`);
   if(audit.nutrition.waterDays!==0||audit.nutrition.waterAvgMl!==null)throw new Error(`${label}: missing water was converted to zero`);
-  if(audit.sourceOnlyReference!=='2026-09-15')throw new Error(`${label}: preserved candidate evidence did not advance reference day safely: ${audit.sourceOnlyReference}`);
+  if(audit.sourceOnlyReference!=='2026-09-15')throw new Error(`${label}: preserved source evidence did not advance reference day safely: ${audit.sourceOnlyReference}`);
   if(audit.integratedReference!=='2026-09-20'||audit.coverageReference!=='2026-09-20')throw new Error(`${label}: treatment context did not align integrated reference day: ${audit.integratedReference}/${audit.coverageReference}`);
   if(audit.recentBounds.start!=='2026-08-22'||audit.recentBounds.end!=='2026-09-20')throw new Error(`${label}: 30-day evidence-aligned bounds incorrect ${JSON.stringify(audit.recentBounds)}`);
   if(audit.coverageSourceSeries!==1)throw new Error(`${label}: rejected complementary row shifted or entered preserved coverage: ${audit.coverageSourceSeries}`);
-  if(!audit.recentText.includes('Passos')||!audit.recentText.includes('1 nesta janela')||!audit.recentText.includes('20/09/2026'))throw new Error(`${label}: recent complementary/protocol evidence is not visible in the aligned Insights window`);
+  if(audit.recentProtocolValue!=='1')throw new Error(`${label}: protocol event count is not visible in the aligned recent window`);
+  if(!audit.recentRecovery.includes('Sinais complementares')||!audit.recentRecovery.includes('1')||!audit.recentText.includes('20/09/2026'))throw new Error(`${label}: preserved complementary/protocol context is not visible in the aligned Insights window`);
   if(audit.recentText.includes('Rejected source'))throw new Error(`${label}: rejected complementary source leaked into Insights`);
   if(/\b(causou|provou|garante|piorou)\b/i.test(audit.text)||/\b(causou|provou|garante|piorou)\b/i.test(audit.recentText))throw new Error(`${label}: causal/value judgment leaked`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);

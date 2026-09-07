@@ -24,7 +24,7 @@ jobs:
           grep -q 'canonicalWorkouts' v2/src/integrated-analysis.js
           grep -q 'comparableLoadUnit' v2/src/integrated-analysis.js
           grep -q 'Sem comparação entre origens diferentes' v2/src/today-screen.js
-          grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+          grep -q 'Hidratação: não existe ingestão de água estruturada nesta janela; nenhum valor é estimado' v2/src/today-screen.js
           ! grep -q 'buildHealthIntelligence' v2/src/today-screen.js
       - name: Install browser runtime
         run: |

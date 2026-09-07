@@ -21,10 +21,11 @@ jobs:
           node --check v2/complementary-signals-smoke.mjs
           node --check v2/evidence-priority-smoke.mjs
           grep -q 'id="analysisPeriod"' v2/src/analysis-screen.js
-          grep -q 'Mesma janela em toda esta seção' v2/src/analysis-screen.js
-          grep -q 'Janela entre bioimpedâncias' v2/src/analysis-screen.js
+          grep -q 'Mesma janela para os sinais de maior frequência' v2/src/analysis-screen.js
+          grep -q 'Últimas duas medições comparáveis, independentemente da janela recente' v2/src/analysis-screen.js
+          grep -q 'O histórico não desaparece quando a janela recente não tem coleta' v2/src/analysis-screen.js
           grep -q 'O que ainda limita a leitura' v2/src/analysis-screen.js
-          grep -q 'Sinais complementares por origem' v2/src/analysis-screen.js
+          grep -q 'Origens diferentes permanecem separadas' v2/src/analysis-screen.js
           grep -q 'O que mais limita esta leitura agora' v2/src/evidence-priority.js
           grep -q 'Separação de fontes preservada' v2/src/evidence-priority.js
           grep -q 'comparableLabCount' v2/src/integrated-analysis.js

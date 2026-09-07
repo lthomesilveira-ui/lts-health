@@ -31,11 +31,11 @@ async function run(viewport,label){
   if(boundary.labs!==1)throw new Error(`${label}: safe lab comparison failed`);
 
   const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Visão geral da sua saúde','Leitura principal da janela','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Resumo executivo','Pontos a revisar','Dados conectados','Hidratação'])if(!text.includes(expected))throw new Error(`${label}: missing executive cockpit section ${expected}`);
+  for(const expected of ['Visão geral da sua saúde','Leitura principal','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Resumo executivo','Pontos a revisar','Dados conectados','Hidratação'])if(!text.includes(expected))throw new Error(`${label}: missing executive cockpit section ${expected}`);
   if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: cockpit should expose five executive domains`);
   if((await page.locator('.cockpitModule').count())<6)throw new Error(`${label}: analytical cockpit modules missing`);
   if(!await page.locator('#analysisPeriod').isVisible())throw new Error(`${label}: global period filter missing`);
-  if(!text.includes('Sem registro de ingestão de água')||!text.includes('Água corporal da bioimpedância não é hidratação'))throw new Error(`${label}: missing hydration boundary is not explicit`);
+  if(!text.includes('Sem dado de ingestão de água')||!text.includes('Água corporal da bioimpedância'))throw new Error(`${label}: missing hydration boundary is not explicit`);
   for(const forbidden of ['LTS Health Intelligence','ActivitySummary','source_family','canonical','candidato'])if(text.includes(forbidden))throw new Error(`${label}: technical language leaked: ${forbidden}`);
   if(/\b(causou|provou|garante|piorou)\b/i.test(text))throw new Error(`${label}: causal/value judgment language leaked`);
 

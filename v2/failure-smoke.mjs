@@ -46,16 +46,17 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 {
   const ctx=await open('nutrition','analise','Insights');
-  const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Alimentação'}).first().textContent();
-  const nutritionBlock=await ctx.page.locator('section.card').filter({hasText:'Alimentação no período'}).first().textContent();
-  if(!metric?.includes('—')||!nutritionBlock?.includes('Os dados de alimentação não carregaram agora.')||!ctx.text.includes('nenhuma falha é convertida em zero'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
+  const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Nutrição'}).first().textContent();
+  const nutritionBlock=await ctx.page.locator('.card').filter({hasText:'Nutrição e hidratação'}).first().textContent();
+  if(!metric?.includes('—')||!nutritionBlock?.includes('Nutrição indisponível')||!nutritionBlock?.includes('Os totais diários não carregaram agora.')||!ctx.text.includes('nenhum valor ausente foi substituído por zero'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
   if(/\b\d+(?:[.,]\d+)?\s*(?:kcal|g|mL)\b/i.test(nutritionBlock||''))throw new Error('analise/nutrition: failed domain rendered numeric nutrition values');
   await finish(ctx,'analise/nutrition');
 }
 {
   const ctx=await open('sourceMetrics','analise','Insights');
-  const metric=await ctx.page.locator('.metric').filter({hasText:'Sono preservado'}).first().textContent();
-  if(!metric?.includes('—')||!ctx.text.includes('registros por origem não carregaram agora'))throw new Error('analise/sourceMetrics: failure hidden or rendered as zero');
+  const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Sono'}).first().textContent();
+  const recoveryBlock=await ctx.page.locator('.card').filter({hasText:'Recuperação'}).first().textContent();
+  if(!metric?.includes('—')||!recoveryBlock?.includes('Recuperação indisponível')||!recoveryBlock?.includes('registros complementares não carregaram agora'))throw new Error('analise/sourceMetrics: failure hidden or rendered as zero');
   await finish(ctx,'analise/sourceMetrics');
 }
 {

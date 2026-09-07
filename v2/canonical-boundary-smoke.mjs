@@ -100,7 +100,7 @@ async function run(viewport,label){
   await page.selectOption('#analysisPeriod','all');
   await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all');
   const analysisText=(await page.textContent('#screenHost'))||'';
-  if(!analysisText.includes('1 dia(s) de sono preservado(s)')||!analysisText.includes('As fontes permanecem separadas'))throw new Error(`${label}: sleep evidence is not visibly preserved without consolidation`);
+  if(!analysisText.includes('Sono estruturado')||!analysisText.includes('2 origem(ns) preservada(s)')||!analysisText.includes('Origens diferentes permanecem separadas'))throw new Error(`${label}: sleep evidence is not visibly preserved without consolidation`);
   if(analysisText.includes('7,1 h')||analysisText.includes('7,4 h')||analysisText.includes('Sono consolidado'))throw new Error(`${label}: overlapping sleep values leaked as a consolidated analysis`);
 
   await page.evaluate(()=>{location.hash='nutricao';});
