@@ -4,6 +4,7 @@ const migration=await readFile('supabase/migrations/20260830170500_harden_health
 const workoutIntegrity=await readFile('supabase/migrations/20260906213500_enforce_workout_parent_integrity.sql','utf8');
 const workoutParentChain=await readFile('supabase/migrations/20260906222500_enforce_workout_set_parent_chain.sql','utf8');
 const activeOwnerIntegrity=await readFile('supabase/migrations/20260906224700_enforce_active_domain_owner_integrity.sql','utf8');
+const sourceMetricsRls=await readFile('supabase/migrations/20260906235500_optimize_source_metrics_rls_initplan.sql','utf8');
 const appleSync=await readFile('supabase/functions/health-apple-sync-batch/index.ts','utf8');
 const writes=await readFile('v2/src/writes.js','utf8');
 
@@ -62,6 +63,23 @@ for(const table of activeOwnerTables){
 if((activeOwnerIntegrity.match(/foreign key \(user_id\) references auth\.users\(id\) on delete cascade;/g)||[]).length!==activeOwnerTables.length)throw new Error('active-domain owner-integrity contract must protect every active runtime table with auth.users cascade');
 if(!activeOwnerIntegrity.includes("set local lock_timeout = '5s';")||!activeOwnerIntegrity.includes("set local statement_timeout = '30s';"))throw new Error('active-domain owner-integrity migration must bound lock and statement timeouts');
 
+const sourceMetricPolicies=[
+  'health_source_daily_metrics_select_own',
+  'health_source_daily_metrics_insert_own',
+  'health_source_daily_metrics_update_own',
+  'health_source_daily_metrics_delete_own'
+];
+for(const policy of sourceMetricPolicies){
+  if((sourceMetricsRls.match(new RegExp(`drop policy if exists ${policy}`,'g'))||[]).length!==1)throw new Error(`source-metric RLS migration must drop ${policy} exactly once`);
+  if((sourceMetricsRls.match(new RegExp(`create policy ${policy}`,'g'))||[]).length!==1)throw new Error(`source-metric RLS migration must recreate ${policy} exactly once`);
+}
+if((sourceMetricsRls.match(/\bto authenticated\b/g)||[]).length!==sourceMetricPolicies.length)throw new Error('source-metric RLS policies must remain restricted to authenticated');
+if((sourceMetricsRls.match(/\(select auth\.uid\(\)\) = user_id/g)||[]).length!==5)throw new Error('source-metric RLS ownership predicates must use init-plan auth.uid() for all USING/WITH CHECK paths');
+if(/\bto\s+(?:anon|public)\b/i.test(sourceMetricsRls))throw new Error('source-metric RLS migration widens access to anon/public');
+if(/(?:using|with check)\s*\(auth\.uid\(\)\s*=\s*user_id\)/i.test(sourceMetricsRls))throw new Error('source-metric RLS migration leaves an unwrapped per-row auth.uid() predicate');
+if(!/for update\s+to authenticated\s+using \(\(select auth\.uid\(\)\) = user_id\)\s+with check \(\(select auth\.uid\(\)\) = user_id\);/s.test(sourceMetricsRls))throw new Error('source-metric UPDATE RLS must preserve both USING and WITH CHECK ownership guards');
+if(!sourceMetricsRls.includes("set local lock_timeout = '5s';")||!sourceMetricsRls.includes("set local statement_timeout = '30s';"))throw new Error('source-metric RLS migration must bound lock and statement timeouts');
+
 for(const token of [
   "Deno.env.get('SUPABASE_ANON_KEY')!",
   '{global:{headers:{Authorization:auth}}',
@@ -74,4 +92,4 @@ for(const token of [
   "sb.rpc('health_log_structured_workout'"
 ])if(!writes.includes(token))throw new Error(`structured workout authenticated-RPC contract missing: ${token}`);
 
-console.log('LTS Health database security, workout parent-chain and active-domain owner integrity contract passed');
+console.log('LTS Health database security, workout parent-chain, active-domain owner and source-metric RLS init-plan contracts passed');
