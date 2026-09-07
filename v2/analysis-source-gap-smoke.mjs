@@ -25,20 +25,25 @@ async function run(viewport,label){
   });
 
   for(const expected of [
-    'há histórico laboratorial, mas a coleta mais recente ainda não tem outra coleta anterior da mesma origem',
-    'fontes diferentes não são tratadas como continuidade'
-  ])if(!html.includes(expected))throw new Error(`${label}: missing same-source gap copy: ${expected}`);
+    'O histórico não desaparece quando a janela recente não tem coleta.',
+    'Comparações detalhadas continuam em Exames quando nome, origem e unidade permitem.',
+    '2 resultado(s) estruturado(s) em 2 data(s) de coleta no histórico.'
+  ])if(!html.includes(expected))throw new Error(`${label}: missing P0 lab boundary copy: ${expected}`);
 
   for(const forbidden of [
-    'sem biomarcadores comparáveis na última dupla',
-    'não há correspondência segura de nome, unidade e valor numérico'
-  ])if(html.includes(forbidden))throw new Error(`${label}: source gap was misclassified as incompatible biomarkers: ${forbidden}`);
+    '90 → 92',
+    '92 → 90',
+    'Lab A → Lab B',
+    'Lab B → Lab A',
+    '0 biomarcador(es) comparáveis'
+  ])if(html.includes(forbidden))throw new Error(`${label}: cross-source lab comparison leaked into Insights: ${forbidden}`);
 
-  if(/0 biomarcador\(es\) comparáveis/i.test(html))throw new Error(`${label}: source gap rendered as numeric zero`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
   await browser.close();
 }
 
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
-console.log('LTS Health Insights same-source gap smoke passed');
+console.log('LTS Health Insights lab source-boundary smoke passed');

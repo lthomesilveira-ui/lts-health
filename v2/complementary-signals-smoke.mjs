@@ -12,7 +12,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
 
   const defaultText=(await page.textContent('#screenHost'))||'';
-  if(!defaultText.includes('Sinais complementares por origem'))throw new Error(`${label}: complementary signal section missing`);
+  if(!defaultText.includes('Recuperação')||!defaultText.includes('Sem média entre aparelhos ou origens diferentes.'))throw new Error(`${label}: P0 recovery source-separation contract missing`);
 
   const result=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
@@ -41,25 +41,33 @@ async function run(viewport,label){
     const series=complementarySignalSeries(state.data.sourceMetrics,{start:null,end:null});
     const html=renderAnalysisHub();
     state.data.sourceMetrics=originalRows;state.domainStatus.sourceMetrics=originalStatus;state.ui.analysisPeriod=originalPeriod;
-    return{html,series:series.map(s=>({metric:s.metric,sourceLabel:s.sourceLabel,reviewDays:s.reviewDays,last:s.last?.date,points:s.points.length}))};
+    return{html,series:series.map(s=>({metric:s.metric,identity:s.identity,family:s.family,reviewDays:s.reviewDays,last:s.last?.date,points:s.points.length}))};
   });
 
   const {html,series}=result;
   if(series.length!==6)throw new Error(`${label}: expected six separated complementary series, got ${series.length}`);
-  const phoneLabels=[...new Set(series.filter(s=>s.sourceLabel.startsWith('iPhone')).map(s=>s.sourceLabel))];
-  if(phoneLabels.length!==2||!phoneLabels.includes('iPhone · origem 1')||!phoneLabels.includes('iPhone · origem 2'))throw new Error(`${label}: multiple iPhone origins were merged or leaked raw identifiers`);
+  const phoneSteps=series.filter(s=>s.metric==='steps'&&s.family==='iphone');
+  if(phoneSteps.length!==2||new Set(phoneSteps.map(s=>s.identity)).size!==2)throw new Error(`${label}: separate iPhone step origins were merged`);
   const rhr=series.find(s=>s.metric==='resting_heart_rate_bpm');
   if(!rhr||rhr.reviewDays!==1||rhr.last!=='2026-01-02'||rhr.points!==2)throw new Error(`${label}: ambiguous same-origin day was not excluded conservatively`);
-  for(const expected of ['Sinais complementares por origem','Variabilidade da frequência cardíaca (SDNN)','Frequência cardíaca em repouso','Saturação de oxigênio','Passos','Apple Watch','Polar Flow','iPhone · origem 1','iPhone · origem 2','nenhuma média ou comparação entre fontes é calculada'])if(!html.includes(expected))throw new Error(`${label}: missing complementary signal copy ${expected}`);
+
+  for(const expected of [
+    'Recuperação',
+    'Sem média entre aparelhos ou origens diferentes.',
+    'Sinais complementares',
+    '6',
+    'séries preservadas na janela',
+    'Elas permanecem separadas por origem.'
+  ])if(!html.includes(expected))throw new Error(`${label}: missing P0 complementary-signal copy ${expected}`);
+
   for(const forbidden of ['iPhone-PRIVATE-A','iPhone-PRIVATE-B','9999','3333','ActivitySummary','canonical','candidate','held'])if(html.includes(forbidden))throw new Error(`${label}: raw/internal or excluded value leaked ${forbidden}`);
-  if(!html.includes('1 dia com mais de um valor da mesma origem ficou fora desta leitura'))throw new Error(`${label}: ambiguous-day disclosure missing`);
 
   const failedHtml=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');const {renderAnalysisHub}=await import('./src/analysis-screen.js');
     const original=state.domainStatus.sourceMetrics;state.domainStatus.sourceMetrics='error';const html=renderAnalysisHub();state.domainStatus.sourceMetrics=original;return html;
   });
   if(!failedHtml.includes('Os registros complementares não carregaram agora.'))throw new Error(`${label}: complementary source failure is not explicit`);
-  if(failedHtml.includes('data-complementary-signals'))throw new Error(`${label}: complementary signals did not fail closed`);
+  if(failedHtml.includes('séries preservadas na janela'))throw new Error(`${label}: complementary signals did not fail closed`);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
