@@ -91,7 +91,7 @@ async function run(viewport,label){
   if(intervalModel.days!==1||Math.round(intervalModel.calorieAvg)!==2050||Math.round(intervalModel.proteinAvg)!==140)throw new Error(`${label}: integrated analysis did not exclude ambiguous canonical nutrition day (${JSON.stringify(intervalModel)})`);
 
   await page.click('[data-nutrition-date="2024-06-10"]');
-  await page.waitForFunction(()=>[...document.querySelectorAll('details.uxDisclosure')].some(node=>node.open&&(node.textContent||'').includes('Detalhe do dia selecionado')));
+  await page.waitForFunction(()=>[...document.querySelectorAll('details.uxDisclosure')].some(node=>node.open&&(node.textContent||'').includes('Detalhe do dia selecionado')&&(node.textContent||'').includes('10/06/2024')));
   const detail=(await dayDisclosure.locator('.disclosureBody').textContent())||'';
   if(!detail.includes('10/06/2024')||!detail.includes('Almoço 2024'))throw new Error(`${label}: historical nutrition day drilldown failed`);
 

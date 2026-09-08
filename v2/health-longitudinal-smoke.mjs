@@ -80,8 +80,8 @@ async function run(viewport,label){
   if(!evidenceText.includes('1 documento da mesma origem'))throw new Error(`${label}: source-aware evidence summary missing`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Terceira origem');
-  await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
-  const sourceGap=(await page.locator('.card.sectionGap').filter({hasText:'Comparação com histórico da mesma origem'}).textContent())||'';
+  await page.waitForFunction(()=>[...document.querySelectorAll('details.uxDisclosure .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
+  const sourceGap=(await comparisonDisclosure.locator('.disclosureBody').textContent())||'';
   if(!sourceGap.includes('Nenhuma diferença foi calculada automaticamente'))throw new Error(`${label}: source-gap guardrail missing`);
   if(await page.locator('.collectionCompareHead').count())throw new Error(`${label}: different-source history produced comparison`);
 
