@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 
 globalThis.location={search:'?fixture=1'};
-const{hydrationModel,normalizeWaterMl,validLocalDate}=await import('./src/hydration.js');
+const{hydrationModel,historicalMyFitnessPalWaterStatus,normalizeWaterMl,validLocalDate}=await import('./src/hydration.js');
 const{state,fixtureData}=await import('./src/core.js');
 const{saveMyFitnessPalWater}=await import('./src/writes.js');
 const{renderNutritionHub}=await import('./src/nutrition-screen.js');
@@ -29,6 +29,10 @@ assert.equal(equalSources.conflicts.length,0);
 const conflict=hydrationModel({nutrition:[{nutrition_date:'2026-09-08',water_ml:2000,source:'MFP ZIP'}],sourceMetrics:[canonical]});
 assert.equal(conflict.rows.length,0);
 assert.deepEqual(conflict.conflicts.map(row=>row.date),['2026-09-08']);
+assert.equal(historicalMyFitnessPalWaterStatus({sourceMetrics:[]},{sourceMetrics:'ready'}),'pending');
+assert.equal(historicalMyFitnessPalWaterStatus({sourceMetrics:[canonical]},{sourceMetrics:'ready'}),'pending');
+assert.equal(historicalMyFitnessPalWaterStatus({sourceMetrics:[{...canonical,confidence:'account_authenticated_export'}]},{sourceMetrics:'ready'}),'imported');
+assert.equal(historicalMyFitnessPalWaterStatus({sourceMetrics:[]},{sourceMetrics:'error'}),'unknown');
 
 const migration=await fs.readFile(new URL('../supabase/migrations/20260908100000_allow_user_confirmed_mfp_water.sql',import.meta.url),'utf8');
 for(const contract of ["source_family = 'myfitnesspal'","metric_type = 'dietary_water_ml'","confidence = 'user_confirmed'","source_payload ->> 'entry_method' = 'mfp_water_total_v1'"]){
@@ -46,6 +50,7 @@ assert.match(renderNutritionHub(),/2\.600 mL/);
 assert.match(renderNutritionHub(),/Importar histórico do MFP/);
 assert.match(renderNutritionHub(),/Registrar um dia manualmente/);
 assert.match(renderTodayHub(),/2\.600 mL/);
-assert.match(renderTodayHub(),/Trazer do MFP/);
+assert.match(renderTodayHub(),/data-entry="water-import"/);
+assert.match(renderTodayHub(),/Atualizar MFP/);
 
 console.log('LTS Health hydration contract passed');

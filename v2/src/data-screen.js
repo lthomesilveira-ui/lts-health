@@ -1,5 +1,6 @@
 import {state,esc,fmtDate,norm} from './core.js';
 import {sourceStatusFor,sourceCoverageFor,uploadBucket} from './source-status.js';
+import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
@@ -175,15 +176,19 @@ function qualitySections(issues){
   return `<div class="sourceGrid"><div class="sourceCard"><div><b>Ação necessária</b><small>backlog operacional interno; não exige clique seu</small></div><span>${action.length}</span></div><div class="sourceCard"><div><b>Limitações conhecidas</b><small>preservadas no histórico</small></div><span>${known.length}</span></div><div class="sourceCard"><div><b>Resolvidos</b><small>já tratados</small></div><span>${resolved.length}</span></div></div><div class="qualityColumns sectionGap"><div><h3>Ação necessária · interna</h3>${action.map(issue=>qualityRow(issue,'action')).join('')||empty('Nenhuma ação interna pendente.')}</div><div><h3>Limitações conhecidas</h3>${known.map(issue=>qualityRow(issue,'known')).join('')||empty('Nenhuma limitação registrada.')}</div><div><h3>Resolvidos</h3>${resolved.map(issue=>qualityRow(issue,'resolved')).join('')||empty('Nenhum item resolvido registrado.')}</div></div>`;
 }
 
+function waterSourceBridge(){
+  const status=historicalMyFitnessPalWaterStatus(state.data,state.domainStatus);
+  if(status==='unknown')return `<section class="card sectionGap waterSourceBridge"><div><span>MyFitnessPal</span><h2>Histórico de água não verificado</h2><p>Os registros de hidratação não carregaram agora. Atualize a tela antes de concluir que a importação está pendente ou concluída.</p></div><button type="button" class="primary" data-entry="water-import">Abrir importação</button></section>`;
+  if(status==='imported')return `<section class="card sectionGap waterSourceBridge"><div><span>MyFitnessPal · conectado</span><h2>Histórico de água importado</h2><p>O LTS já recebeu ao menos uma extração autenticada. Você pode repetir o processo para atualizar novas datas; a mesma data é atualizada sem duplicação.</p></div><button type="button" class="primary" data-entry="water-import">Atualizar histórico do MFP</button></section>`;
+  return `<section class="card sectionGap waterSourceBridge" data-water-import-pending><div><span>MyFitnessPal · pendente no notebook</span><h2>Importar o histórico de água</h2><p>O extrator já está pronto. Quando estiver no notebook, execute-o na sessão aberta do MyFitnessPal e importe um único JSON aqui. Ele percorre o período automaticamente: não é necessário digitar dia a dia.</p></div><button type="button" class="primary" data-entry="water-import">Importar histórico do MFP</button></section>`;
+}
+
 export function renderDataHub(){
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados','Envie arquivos, acompanhe o que já entrou no histórico e veja apenas as conferências que realmente precisam de você.')}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
-    <section class="card sectionGap waterSourceBridge">
-      <div><span>MyFitnessPal</span><h2>Água com confirmação simples</h2><p>O MyFitnessPal do iPhone não oferece Água ao Apple Saúde. Enquanto o acesso oficial de API não está disponível, informe no LTS o total diário exibido no MFP; não é necessário compartilhar senha ou sessão.</p></div>
-      <button type="button" class="primary" data-entry="water">Trazer água do MFP</button>
-    </section>
+    ${waterSourceBridge()}
 
     <section class="grid cols2 sectionGap dataActions">
       <div class="card"><div class="cardHead"><div><b>Adicionar arquivo</b><small>O original fica em uma área privada. O que puder ser lido com segurança entra no histórico; o restante fica guardado sem inventar informação.</small></div></div><form id="uploadForm" class="uploadForm"><label>Origem<select id="uploadType"><option value="apple_health">Apple Saúde</option><option value="polar_flow">Polar Flow</option><option value="myfitnesspal">MyFitnessPal</option><option value="fleury">Fleury</option><option value="einstein">Einstein</option><option value="other">Outra origem</option></select></label><label>Arquivo<input id="uploadFile" type="file" required></label><button type="submit">Enviar arquivo</button><p id="uploadMsg" class="footerNote" aria-live="polite"></p></form></div>

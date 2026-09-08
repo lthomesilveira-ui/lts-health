@@ -2,6 +2,13 @@
 
 Este arquivo é a referência pública de engenharia/produto para continuidade do projeto. Não contém dados pessoais de saúde, valores clínicos, credenciais ou payloads privados.
 
+## Como retomar o projeto
+
+- `PROJECT_BRIEF.md` consolida o resultado esperado, escopo, regras de fontes, experiência, privacidade e definição de pronto.
+- `EXECUTION_STATE.json` é a fila operacional vigente e a única fonte para estados `ready`, `in_progress` e bloqueios.
+- `CONTINUITY_PROTOCOL.md` define o ritual de retomada, a hierarquia de evidências e a regra de atualização.
+- Este arquivo preserva marcos e decisões. Ele não deve ser usado como backlog em paralelo ao ledger estruturado.
+
 ## Regras permanentes
 
 - Em 04/09/2026 houve autorização explícita para promover o cockpit aprovado à entrada pública principal. A versão pública anterior deve permanecer preservada em `legacy.html` como fallback auditável, sem ser sobrescrita ou perdida.
@@ -31,7 +38,7 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - Explorador longitudinal de Exames promovido: marcadores com pelo menos dois pontos inequívocos da mesma origem e unidade ganham atalhos, escala vertical explícita e datas de série; origens, unidades e datas ambíguas permanecem separadas.
 - Hidratação é uma dimensão explícita e fail-closed: como a importação estruturada atual do MyFitnessPal não contém volume real de água, o app mostra a lacuna e não estima nem preenche valores.
 - O LTS Health preserva um caminho manual seguro para corrigir uma data isolada de água do MyFitnessPal: o usuário confirma data e total diário em mL, sem compartilhar senha ou sessão. O registro fica em série própria com identificador determinístico por data, atualização idempotente, proveniência `user_confirmed` e promoção canônica limitada por constraint ao contrato `mfp_water_total_v1`.
-- Em 08/09/2026 foi confirmada, na sessão autenticada real do usuário no Safari, a resposta diária `GET /food/water?date=AAAA-MM-DD` com o contrato exato `{item:{date,milliliters}}`; o caso observado devolveu 700 mL para 07/09/2026. A partir dessa evidência foi implementado o transporte histórico MyFitnessPal → LTS Health: um favorito executado no mesmo domínio percorre automaticamente o período, usa lote moderado, retries e checkpoint local para pausa/retomada, omite dias sem total positivo e gera um único JSON contendo somente data e mL. O LTS valida esquema, período, cobertura, contagens, datas, valores e duplicidades antes de mostrar a prévia e importar em lotes idempotentes. A proveniência `account_authenticated_export` fica limitada no banco ao contrato `mfp_authenticated_water_export_v1`; refeições, senha, e-mail, perfil, cookies e o JSON original não são enviados ou armazenados. Nutrição/Hoje consolidam apenas valores inequívocos; divergência entre fontes permanece fora da leitura.
+- Em 08/09/2026 foi confirmada, na sessão autenticada real do usuário no Safari, a resposta diária `GET /food/water?date=AAAA-MM-DD` com o contrato exato `{item:{date,milliliters}}` e um total positivo real. A partir dessa evidência foi implementado o transporte histórico MyFitnessPal → LTS Health: um favorito executado no mesmo domínio percorre automaticamente o período, usa lote moderado, retries e checkpoint local para pausa/retomada, omite dias sem total positivo e gera um único JSON contendo somente data e mL. O LTS valida esquema, período, cobertura, contagens, datas, valores e duplicidades antes de mostrar a prévia e importar em lotes idempotentes. A proveniência `account_authenticated_export` fica limitada no banco ao contrato `mfp_authenticated_water_export_v1`; refeições, senha, e-mail, perfil, cookies e o JSON original não são enviados ou armazenados. Nutrição/Hoje consolidam apenas valores inequívocos; divergência entre fontes permanece fora da leitura.
 - Conflitos no total nutricional mais recente permanecem fail-closed: quando há mais de um total para a mesma data, nenhum é escolhido automaticamente como atual.
 - O `health-inspect-upload` roteia sono do export Apple diretamente para `health_source_daily_metrics` como candidato, enquanto apenas as três métricas ActivitySummary autorizadas seguem para o caminho canônico; o gatilho de banco permanece como defesa secundária.
 - O cockpit ganhou `Atividade & sono`: atividade diária usa somente `active_energy_kcal`, `exercise_minutes` e `stand_hours` de Apple ActivitySummary já autorizadas; sono candidato/held aparece apenas como evidência separada por origem, sem média, soma ou série consolidada entre Apple Watch, Polar ou outras fontes. Estados sem evidência permanecem explícitos e os limites são cobertos por smoke desktop/mobile e canonical-boundary.
@@ -66,12 +73,12 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 
 ## Pendências abertas confirmadas
 
-1. Acompanhar a possibilidade de OAuth oficial do MyFitnessPal para uma sincronização contínua sem intervenção quando o fornecedor voltar a aceitar novos acessos de API. O transporte autenticado via Safari resolve a recuperação histórica sem digitação diária, mas continua sendo uma exportação acionada pelo usuário. `dietary_water_ml` vindo de outras fontes do Apple Saúde permanece separado e depende de validação física/origem antes de qualquer promoção; fontes diferentes nunca são somadas por suposição.
-2. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
-3. Continuar análises integradas descritivas, priorização de cobertura e navegação de Insights sem transformar associação temporal em causalidade.
-4. Continuar ampliando qualidade automática a partir de sinais comprovados e reduzir backlog operacional interno sem transferir QA técnico ao usuário; rastreabilidade, Inbox fail-closed e backup verificável permanecem obrigatórios.
-5. Ampliar Fleury/Einstein somente a partir de originais reais e validação segura.
-6. Continuar homologação visual/funcional autônoma do cockpit em desktop e mobile, sem usar o usuário para QA básico.
+O estado detalhado, o critério de aceite e o próximo passo de cada item ficam exclusivamente em `EXECUTION_STATE.json`. Resumo humano atual:
+
+1. A importação histórica de água do MyFitnessPal está pronta tecnicamente e bloqueada apenas pela execução do extrator na sessão autenticada do usuário em um notebook.
+2. OAuth contínuo do MyFitnessPal, teste HealthKit em aparelho físico, expansão Polar e parsers/integrações laboratoriais dependem de acesso, dispositivo ou originais externos ainda indisponíveis.
+3. Inventários sem arquivo original e medições sem fonte datada permanecem limitações aceitas; não geram dados ou tarefas artificiais.
+4. Não há item `ready` ou `in_progress` ao fechar o pacote de continuidade; QA visual, funcional, segurança, privacidade e proveniência continuam sendo gates de toda release.
 
 ## Feedbacks anteriores preservados / resolvidos por decisão posterior
 

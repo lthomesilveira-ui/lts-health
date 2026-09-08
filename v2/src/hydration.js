@@ -68,3 +68,15 @@ export function hydrationModel(data={}){
 }
 
 export function hydrationRows(data={}){return hydrationModel(data).rows;}
+
+export function historicalMyFitnessPalWaterStatus(data={},domainStatus={}){
+  if(domainStatus?.sourceMetrics==='error')return'unknown';
+  const imported=(data.sourceMetrics||[]).some(row=>
+    norm(row?.source_family)==='myfitnesspal'&&
+    row?.metric_type==='dietary_water_ml'&&
+    norm(row?.canonical_status)==='canonical'&&
+    norm(row?.unit)==='ml'&&
+    norm(row?.confidence)==='account_authenticated_export'
+  );
+  return imported?'imported':'pending';
+}

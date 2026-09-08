@@ -38,8 +38,10 @@ jobs:
             v2/source-continuity-unknown-smoke.mjs; do node --check "$file"; done
           node --check v2/hydration-contract-test.mjs
           node --check v2/mfp-water-transfer-test.mjs
+          node --check v2/continuity-contract-smoke.mjs
           node v2/hydration-contract-test.mjs
           node v2/mfp-water-transfer-test.mjs
+          node v2/continuity-contract-smoke.mjs
 
           test -f v2/index.html
           test -f v2/styles.css
