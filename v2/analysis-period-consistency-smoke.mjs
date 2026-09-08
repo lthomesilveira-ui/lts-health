@@ -6,7 +6,7 @@ async function run(viewport,label){
   const page=await browser.newPage({viewport});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
   const audit=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     const {renderAnalysisHub}=await import('./src/analysis-screen.js');
@@ -111,3 +111,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 Insights period consistency smoke passed');
+

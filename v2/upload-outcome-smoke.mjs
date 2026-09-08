@@ -10,7 +10,7 @@ async function run(viewport,label){
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
   await page.goto(`${base}#dados`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
 
   const messages=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');

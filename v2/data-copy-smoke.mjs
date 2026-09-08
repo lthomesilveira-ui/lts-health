@@ -10,7 +10,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.uploads=[
@@ -45,7 +45,7 @@ async function run(viewport,label){
     await page.click(`${nav} [data-route="mais"]`);
     await page.waitForSelector('#moreSheet:not(.hidden)');
     await page.click('#moreSheet [data-route="dados"]');
-    await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+    await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   };
   await rerenderData();
 

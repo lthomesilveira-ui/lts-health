@@ -21,26 +21,36 @@
   <link rel="stylesheet" href="./data.css">
   <link rel="stylesheet" href="./evidence-priority.css">
   <link rel="stylesheet" href="./today.css">
-  <link rel="stylesheet" href="./cockpit.css">
   <link rel="stylesheet" href="./product-finish.css">
   <link rel="stylesheet" href="./longitudinal-story.css">
   <link rel="stylesheet" href="./accessibility.css">
   <link rel="stylesheet" href="./executive-shell.css">
-  <link rel="stylesheet" href="./dashboard-parity.css">
-  <link rel="stylesheet" href="./dashboard-reference-contract.css">
+  <link rel="stylesheet" href="./cockpit.css">
   <link rel="stylesheet" href="./shell-route-actions.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div id="login" class="login hidden">
-    <div class="loginCard">
-      <div class="brandMark">L</div>
-      <h1>LTS Health</h1>
-      <p>Entre para acessar seu histórico de saúde.</p>
-      <label>E-mail<input id="email" type="email" autocomplete="email"></label>
-      <label>Senha<input id="password" type="password" autocomplete="current-password"></label>
-      <button id="loginBtn" class="primary">Entrar</button>
-      <div id="loginMsg" class="msg" role="status"></div>
+    <div class="loginShell">
+      <section class="loginStory" aria-label="Sobre o LTS Health">
+        <div class="loginBrand"><span class="brandMark">L</span><b>LTS Health</b></div>
+        <h1>Seu histórico de saúde, finalmente em contexto.</h1>
+        <p>Uma visão longitudinal privada para entender o que está documentado, o que mudou e onde ainda falta cobertura.</p>
+        <ul>
+          <li><b>Uma linha do tempo</b><span>Treinos, composição, nutrição, recuperação e exames no mesmo contexto.</span></li>
+          <li><b>Leitura com evidência</b><span>Origem e limitações preservadas, sem preencher lacunas por suposição.</span></li>
+          <li><b>Detalhe quando necessário</b><span>Do resumo ao registro original por caminhos curtos.</span></li>
+        </ul>
+      </section>
+      <div class="loginCard">
+        <span class="loginEyebrow">Área privada</span>
+        <h2>Acesse seu cockpit</h2>
+        <p>Use as credenciais da sua conta LTS Health.</p>
+        <label>E-mail<input id="email" type="email" autocomplete="email"></label>
+        <label>Senha<input id="password" type="password" autocomplete="current-password"></label>
+        <button id="loginBtn" class="primary">Entrar</button>
+        <div id="loginMsg" class="msg" role="status"></div>
+      </div>
     </div>
   </div>
 
@@ -51,26 +61,31 @@
     </header>
 
     <nav id="primaryNav" class="primaryNav" aria-label="Navegação principal">
+      <div class="railBrand" aria-hidden="true"><span class="brandMark small">L</span><span><b>LTS Health</b><small>Histórico em contexto</small></span></div>
+      <span class="navGroupLabel">Acompanhar</span>
       <button data-route="hoje">Visão geral</button>
+      <button data-route="timeline">Timeline</button>
+      <span class="navGroupLabel">Áreas</span>
       <button data-route="treinos">Treinos</button>
-      <button data-route="nutricao">Nutrição</button>
       <button data-route="bio">Composição</button>
-      <button data-route="analise">Recuperação & Insights</button>
+      <button data-route="nutricao">Nutrição</button>
       <button data-route="saude">Exames</button>
+      <span class="navGroupLabel">Contexto</span>
+      <button data-route="analise">Recuperação & análises</button>
       <button data-route="tratamentos">Protocolos</button>
-      <button data-route="evolucao">Evolução</button>
-      <button data-route="timeline">Histórico</button>
-      <button data-route="dados">Arquivos & fontes</button>
-      <button data-route="mais" class="moreButton">Mais</button>
+      <span class="navGroupLabel">Sistema</span>
+      <button data-route="dados">Dados & fontes</button>
+      <button data-route="mais" class="moreButton">Todas as áreas</button>
+      <div class="railStatus"><span></span><b>Privado</b><small id="railSyncText">Dados protegidos por conta</small></div>
     </nav>
 
     <main id="screenHost" class="screenHost" aria-live="polite"></main>
 
     <nav id="mobileNav" class="mobileNav" aria-label="Navegação no celular">
       <button data-route="hoje">Início</button>
+      <button data-route="timeline">Timeline</button>
       <button data-route="treinos">Treinos</button>
-      <button data-route="analise">Insights</button>
-      <button data-route="saude">Exames</button>
+      <button data-route="analise">Análises</button>
       <button data-route="mais">Mais</button>
     </nav>
   </div>
@@ -79,13 +94,16 @@
     <div class="sheetPanel">
       <div class="sheetHead"><b>Mais áreas</b><button id="closeMore" aria-label="Fechar">×</button></div>
       <div class="sheetGrid">
-        <button data-route="evolucao">Evolução</button>
+        <button data-route="hoje">Visão geral</button>
+        <button data-route="timeline">Timeline</button>
+        <button data-route="treinos">Treinos</button>
+        <button data-route="evolucao">Evolução detalhada</button>
         <button data-route="bio">Composição</button>
-        <button data-route="timeline">Histórico</button>
         <button data-route="saude">Exames</button>
         <button data-route="nutricao">Nutrição</button>
+        <button data-route="analise">Recuperação & análises</button>
         <button data-route="tratamentos">Protocolos</button>
-        <button data-route="dados">Arquivos & fontes</button>
+        <button data-route="dados">Dados & fontes</button>
       </div>
     </div>
   </div>
@@ -107,8 +125,6 @@
     }catch{}
   </script>
   <script type="module" src="./src/shell-accessibility.js"></script>
-  <script type="module" src="./src/executive-cockpit.js"></script>
-  <script type="module" src="./src/dashboard-reference-runtime.js"></script>
   <script type="module" src="./src/backup-traceability.js"></script>
   <script type="module" src="./src/main.js"></script>
   <script type="module" src="./src/longitudinal-story.js"></script>

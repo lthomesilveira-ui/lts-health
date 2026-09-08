@@ -10,7 +10,7 @@ async function run(viewport,label){
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
 
   const initial=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
@@ -131,3 +131,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 source status smoke passed');
+

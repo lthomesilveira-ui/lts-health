@@ -1,169 +1,82 @@
 :root{
-  --bg:#f4f7fb;
-  --panel:#ffffff;
-  --panel2:#fbfcfe;
-  --line:#dfe6ef;
-  --line2:#cfd9e6;
-  --text:#12213a;
-  --mut:#68778e;
-  --soft:#465a73;
-  --accent:#2766d9;
-  --accent2:#1d56bd;
-  --gold:#d88928;
-  --ok:#1f9d6c;
-  --warn:#d88928;
-  --danger:#ce5b6f;
-  --shadow:0 10px 30px rgba(30,55,90,.07);
+  --bg:#f4f7fb;--panel:#fff;--panel2:#f8fafc;--line:#dfe7f0;--line2:#cbd7e5;
+  --text:#17243a;--mut:#6b7b91;--soft:#465970;--accent:#2f72dc;--accent2:#225db9;
+  --gold:#bd7b27;--ok:#20835c;--warn:#a86418;--danger:#b8485a;
+  --shadow:0 14px 36px rgba(30,52,84,.08);--rail:#152033;--rail-soft:#1d2b42
 }
+
 html{background:var(--bg);color-scheme:light}
-body{background:var(--bg);color:var(--text)}
-.app{min-height:100vh;padding-bottom:0;background:var(--bg)}
-.topbar{
-  position:sticky;top:0;z-index:40;
-  background:rgba(255,255,255,.96);
-  border-bottom:1px solid var(--line);
-  backdrop-filter:blur(18px);
-  box-shadow:0 2px 14px rgba(30,55,90,.035);
-}
-.brandMark,.brandMark.small{
-  background:linear-gradient(135deg,#2766d9,#3e8df5);
-  color:#fff;box-shadow:none;
-}
+body{background:var(--bg);color:var(--text);font-size:16px;line-height:1.5}
+body:has(#login:not(.hidden)) #app{display:none!important}
+.app{min-height:100vh;padding:0;background:var(--bg)}
+.screenHost{max-width:none;color:var(--text);min-width:0}
+.screenTitle.domainHeader{margin:0 0 24px;padding:0 0 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;border-bottom:1px solid var(--line)}
+.screenTitle.domainHeader>div{min-width:0}.screenEyebrow{display:block;margin-bottom:7px;color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.screenTitle.domainHeader h1{margin:0;color:#142139;font-size:34px;line-height:1.08;letter-spacing:-.04em}.screenTitle.domainHeader p{max-width:760px;margin:9px 0 0;color:var(--mut);font-size:15px;line-height:1.55}
+.domainHomeAction{flex:0 0 auto;min-height:40px;padding:9px 13px;border:1px solid var(--line2);border-radius:11px;background:#fff;color:var(--accent2);font-size:13px;font-weight:760}.domainHomeAction:hover{border-color:#9db6d4;background:#f6f9fd}
+
+.brandMark,.brandMark.small{display:grid;place-items:center;background:linear-gradient(145deg,#2d70dc,#65a4ff);color:#fff;font-weight:850;box-shadow:0 8px 22px rgba(35,92,180,.22)}
 .brand b{color:var(--text)}
 .brand span,.topActions span{color:var(--mut)}
-.topActions button,.primaryNav button,.mobileNav button,.sheet button,.primary{
-  border-color:var(--line);
-  background:#fff;
-  color:var(--text);
-  box-shadow:none;
-}
-.topActions button:hover,.primaryNav button:hover{border-color:#b8c8db;background:#f7faff}
-.topActions .primary,.primary{
-  color:#fff;
-  background:linear-gradient(180deg,#2f73e4,#2766d9);
-  border-color:#2766d9;
-}
-.primaryNav button.active,.mobileNav button.active{
-  color:#1d56bd;
-  background:#eaf2ff;
-  border-color:#cfe0fb;
-}
-.screenHost{max-width:none;color:var(--text)}
-.card,.loginCard,.sheetPanel{
-  background:#fff;
-  border-color:var(--line);
-  color:var(--text);
-  box-shadow:var(--shadow);
-}
-.cardHead select,.controls input,.controls select,.fullInput,.compareSelectors select,.uploadForm input,.uploadForm select{
-  background:#fff;color:var(--text);border-color:var(--line)
-}
-.row,.historyRow,.session,.timelineItem{border-color:#edf1f5}
-.exercise,.sourceCard,.recentMetrics span,.exerciseList button{background:#fbfcfe;border-color:var(--line);color:var(--text)}
-.set{background:#f4f7fb;border-color:#dce4ee;color:#52647b}
-.barRow>div{background:#edf2f7}
-.chart .gridline{stroke:#e7edf4}
-.note,.empty,.loadingState{color:var(--mut);border-color:var(--line2)}
-.sheet{background:rgba(20,34,52,.32)}
+.topActions button,.primaryNav button,.mobileNav button,.sheet button,.primary{border:1px solid var(--line);background:#fff;color:var(--text);box-shadow:none}
+.topActions button:hover,.primaryNav button:hover{border-color:#b8c7d9;background:#f7faff}
+.topActions .primary,.primary{color:#fff;background:#2d6fd8;border-color:#2d6fd8}
+.topActions .primary:hover,.primary:hover{background:#225fbd;border-color:#225fbd}
 
-.executivePeriodControl{display:flex!important;align-items:center;justify-content:flex-end;gap:8px}
-.executivePeriodControl>span{display:none!important}
-.executivePeriodSelect{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-.executivePeriodTabs{display:flex;align-items:center;padding:3px;border:1px solid #d9e2ee;border-radius:12px;background:#fff;box-shadow:0 3px 10px rgba(30,55,90,.035)}
-.executivePeriodTabs button{min-width:70px;border:0;background:transparent;color:#62738a;padding:8px 13px;border-radius:9px;font-size:11px;font-weight:850;line-height:1;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
-.executivePeriodTabs button:hover{background:#f5f8fc;color:#29435f}
-.executivePeriodTabs button.active{background:#eef4ff;color:#1f5ecf;box-shadow:inset 0 0 0 1px #bfd3f7}
-.cockpitStatus{position:relative;overflow:hidden;background:#fff!important;border-color:#e1e8f0!important}
-.cockpitStatus:after{content:'';position:absolute;left:13px;right:13px;bottom:10px;height:3px;border-radius:99px;background:#dce4ef}
-.cockpitStatus:nth-child(1):after{background:#3b76e8}
-.cockpitStatus:nth-child(2):after{background:#26a66f}
-.cockpitStatus:nth-child(3):after{background:#e29835}
-.cockpitStatus:nth-child(4):after{background:#8b64d8}
-.cockpitStatus:nth-child(5):after{background:#35a8b1}
-.cockpitStatusText b{letter-spacing:-.2px}
-.cockpitStatusText p{padding-bottom:8px}
-.cockpitInsightHero{background:#fff!important;border-color:#dfe7f0!important;box-shadow:0 8px 24px rgba(30,55,90,.055)!important}
-.cockpitModule{background:#fff!important;border-color:#e1e8f0!important}
-.cockpitModuleHead b,.cockpitSummary b,.cockpitReview b,.cockpitSources b{color:#1d2d46}
-.cockpitMetric b{color:#172a45}
-.cockpitModule .mut,.cockpitSummary .mut,.cockpitReview .mut,.cockpitSources .mut{color:#6f8095}
+.card,.loginCard,.sheetPanel,.entryPanel{background:#fff;border-color:var(--line);color:var(--text);box-shadow:var(--shadow)}
+.card{padding:20px;border-radius:17px}.card.metric{min-height:124px}.cardHead b{color:#23344d;font-size:16px;line-height:1.35}.cardHead small{color:var(--mut);font-size:13px;line-height:1.5}.metric span{color:#53667e;font-size:13px}.metric strong{color:#142139}.metric em{color:var(--mut);font-size:13px;line-height:1.45}
+.row time,.historyRow time,.sessionHead time{font-size:12px}.row b,.historyRow b,.sessionHead b{font-size:14px}.row small,.historyRow small,.sessionHead small{font-size:12.5px;line-height:1.45}.historyRow>span{font-size:12px}
+.sectionHeading h2{color:#1b2a42;font-size:22px;letter-spacing:-.02em}.sectionHeading p{color:var(--mut);font-size:14px;line-height:1.55}.footerNote{color:var(--mut);font-size:12.5px;line-height:1.55}
+.cardHead select,.controls input,.controls select,.fullInput,.compareSelectors select,.uploadForm input,.uploadForm select,.loginCard input{background:#fff;color:var(--text);border-color:var(--line)}
+.row,.historyRow,.session,.timelineItem{border-color:#e9eef4}
+.exercise,.sourceCard,.recentMetrics span,.exerciseList button{background:#f8fafc;border-color:var(--line);color:var(--text)}
+.set{background:#f1f5f9;border-color:#d9e2ec;color:#4d6078}
+.barRow>div{background:#eaf0f6}.chart .gridline{stroke:#e4eaf1}
+.note,.empty,.loadingState{color:var(--mut);border-color:var(--line2);background:#fbfcfe}
+.errorState{background:#fff7f8}.sheet{background:rgba(15,29,48,.38)}
+.sheetPanel,.entryPanel{border-radius:22px 22px 0 0}.sheetHead b{font-size:17px}.sheetHead button{color:var(--mut)}
+.sheetGrid button{min-height:46px;font-size:14px;text-align:left}
 
-@media (min-width:721px){
-  .app{
-    display:grid;
-    grid-template-columns:206px minmax(0,1fr);
-    grid-template-rows:auto minmax(0,1fr);
-    min-height:100vh;
-  }
-  .topbar{grid-column:1/-1;grid-row:1;padding:13px 22px}
-  .primaryNav{
-    grid-column:1;grid-row:2;
-    width:206px;max-width:none;margin:0;padding:18px 12px 28px;
-    display:flex;flex-direction:column;flex-wrap:nowrap;gap:5px;
-    align-self:stretch;
-    border-right:1px solid var(--line);
-    background:#fff;
-    position:sticky;top:67px;height:calc(100vh - 67px);overflow:auto;
-  }
-  .primaryNav button{
-    width:100%;display:flex;align-items:center;justify-content:flex-start;
-    text-align:left;border-color:transparent;background:transparent;
-    color:#50627a;padding:10px 11px;border-radius:10px;font-size:12px;font-weight:800;
-  }
-  .primaryNav button:before{
-    width:19px;display:inline-grid;place-items:center;
-    color:#91a2b8;font-size:13px;margin-right:5px;
-  }
-  .primaryNav button[data-route="hoje"]:before{content:'⌂'}
-  .primaryNav button[data-route="treinos"]:before{content:'↗'}
-  .primaryNav button[data-route="nutricao"]:before{content:'◉'}
-  .primaryNav button[data-route="bio"]:before{content:'◇'}
-  .primaryNav button[data-route="analise"]:before{content:'◔'}
-  .primaryNav button[data-route="saude"]:before{content:'＋'}
-  .primaryNav button[data-route="tratamentos"]:before{content:'▣'}
-  .primaryNav button[data-route="evolucao"]:before{content:'⌁'}
-  .primaryNav button[data-route="timeline"]:before{content:'≡'}
-  .primaryNav button[data-route="dados"]:before{content:'▱'}
-  .primaryNav button[data-route="mais"]:before{content:'•••';font-size:9px}
-  .primaryNav button.active:before{color:#2766d9}
-  .primaryNav button.active{background:#eaf2ff;border-color:#dce8fa;color:#1d56bd}
-  .primaryNav .navDivider{height:1px;background:#edf1f5;margin:8px 8px}
-  .screenHost{
-    grid-column:2;grid-row:2;
-    width:100%;margin:0;padding:20px 24px 46px;
-    min-width:0;
-  }
-  .mobileNav{display:none!important}
-  .cockpitV3{margin:-20px -24px -46px;padding:26px 26px 48px;min-height:calc(100vh - 68px)}
-  .cockpitWelcome{position:relative;padding-right:4px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:22px}
-  .cockpitWelcome h1{font-size:28px}
-  .cockpitWelcome p{font-size:13px}
-  .cockpitWelcome .cockpitPeriod{grid-column:2;grid-row:1/3;align-self:start;margin-top:2px}
-  .cockpitStatusGrid{gap:12px}
-  .cockpitStatus{min-height:172px;padding:15px 13px 22px;box-shadow:0 7px 20px rgba(30,55,90,.045)}
-  .cockpitStatusText small{font-size:11px}
-  .cockpitStatusText b{font-size:18px}
-  .cockpitInsightHero{padding:15px 17px}
-  .cockpitModule,.cockpitSummary,.cockpitReview,.cockpitSources{box-shadow:0 7px 20px rgba(30,55,90,.045)}
+/* Authentication is a complete entry surface and never shares the app shell. */
+.login{min-height:100vh;padding:32px;display:grid;place-items:center;background:radial-gradient(circle at 15% 15%,rgba(74,137,232,.2),transparent 32%),radial-gradient(circle at 88% 82%,rgba(85,166,147,.15),transparent 30%),#eef3f9}
+.loginShell{width:min(1040px,100%);min-height:620px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(360px,.75fr);overflow:hidden;border:1px solid rgba(255,255,255,.8);border-radius:30px;background:#fff;box-shadow:0 32px 90px rgba(31,52,80,.16)}
+.loginStory{padding:64px;display:flex;flex-direction:column;justify-content:center;color:#fff;background:linear-gradient(145deg,rgba(27,50,83,.98),rgba(16,31,53,.98)),var(--rail)}
+.loginBrand{display:flex;align-items:center;gap:13px;margin-bottom:48px}.loginBrand .brandMark{width:46px;height:46px;border-radius:14px;font-size:21px}.loginBrand b{font-size:20px;letter-spacing:-.02em}
+.loginStory h1{max-width:560px;margin:0;font-size:44px;line-height:1.08;letter-spacing:-.045em}.loginStory>p{max-width:570px;margin:20px 0 34px;color:#bfccdd;font-size:17px;line-height:1.65}
+.loginStory ul{list-style:none;padding:0;margin:0;display:grid;gap:18px;max-width:570px}.loginStory li{display:grid;grid-template-columns:12px 1fr;column-gap:14px}.loginStory li:before{content:'';width:9px;height:9px;margin-top:7px;border-radius:50%;background:#69a9ff}
+.loginStory li b,.loginStory li span{grid-column:2;display:block}.loginStory li b{font-size:15px}.loginStory li span{margin-top:3px;color:#aebed2;font-size:14px;line-height:1.5}
+.loginCard{width:auto;margin:0;padding:58px 46px;border:0;border-radius:0;box-shadow:none;align-self:center}.loginEyebrow{display:block;color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.loginCard h2{margin:10px 0 8px;font-size:30px;line-height:1.15;letter-spacing:-.035em}.loginCard>p{margin:0 0 30px;color:var(--mut);font-size:15px}.loginCard label{display:block;margin-top:17px;color:var(--soft);font-size:14px;font-weight:750}
+.loginCard input{display:block;width:100%;min-height:48px;margin-top:7px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;font-size:16px;outline:0}.loginCard input:focus{border-color:#79a7ee;box-shadow:0 0 0 4px rgba(47,114,220,.11)}
+.loginCard .primary{width:100%;min-height:48px;margin-top:24px;border-radius:12px;font-size:15px}.loginCard .msg{min-height:22px;margin-top:12px;color:var(--danger);font-size:13px}
+
+@media (min-width:841px){
+  .app{display:grid;grid-template-columns:244px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .primaryNav{grid-column:1;grid-row:1/3;position:sticky;top:0;align-self:start;width:244px;height:100vh;margin:0;padding:22px 14px 20px;display:flex;flex-direction:column;flex-wrap:nowrap;gap:4px;overflow:auto;border:0;background:linear-gradient(180deg,var(--rail),#101a2a);color:#c6d1e0}
+  .railBrand{display:flex;align-items:center;gap:11px;padding:1px 7px 24px;margin-bottom:4px}.railBrand .brandMark.small{width:38px;height:38px;border-radius:12px;flex:0 0 auto}.railBrand b,.railBrand small{display:block}.railBrand b{color:#fff;font-size:17px;letter-spacing:-.025em}.railBrand small{margin-top:1px;color:#8596ad;font-size:11px}
+  .navGroupLabel{display:block;margin:14px 10px 5px;color:#71829a;font-size:10px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+  .primaryNav button{position:relative;width:100%;min-height:42px;padding:10px 11px;display:flex;align-items:center;justify-content:flex-start;gap:8px;border-color:transparent;border-radius:10px;background:transparent;color:#aebbcf;font-size:13px;font-weight:650;text-align:left}
+  .primaryNav button:before{width:20px;display:inline-grid;place-items:center;color:#778aa5;font-size:15px}.primaryNav button[data-route="hoje"]:before{content:'⌂'}.primaryNav button[data-route="timeline"]:before{content:'◷'}.primaryNav button[data-route="treinos"]:before{content:'↗'}.primaryNav button[data-route="bio"]:before{content:'◇'}.primaryNav button[data-route="nutricao"]:before{content:'◉'}.primaryNav button[data-route="saude"]:before{content:'＋'}.primaryNav button[data-route="analise"]:before{content:'◔'}.primaryNav button[data-route="tratamentos"]:before{content:'▣'}.primaryNav button[data-route="dados"]:before{content:'▱'}.primaryNav button[data-route="mais"]:before{content:'•••';font-size:10px}
+  .primaryNav button:hover{border-color:transparent;background:rgba(255,255,255,.055);color:#fff}.primaryNav button.active{border-color:rgba(108,157,235,.16);background:#243653;color:#fff;box-shadow:inset 3px 0 #5a95ef}.primaryNav button.active:before{color:#72a8fa}.primaryNav .moreButton{margin-top:6px}
+  .railStatus{margin:auto 7px 0;padding:14px 12px;display:grid;grid-template-columns:10px 1fr;column-gap:8px;border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.035)}.railStatus>span{width:8px;height:8px;margin-top:5px;border-radius:50%;background:#54bf8b}.railStatus b,.railStatus small{grid-column:2;display:block}.railStatus b{color:#d7e1ed;font-size:12px}.railStatus small{margin-top:2px;color:#8091a8;font-size:10px}
+  .topbar{grid-column:2;grid-row:1;position:sticky;top:0;z-index:40;min-height:64px;padding:10px 28px;display:flex;align-items:center;justify-content:flex-end;border:0;border-bottom:1px solid var(--line);background:rgba(255,255,255,.94);backdrop-filter:blur(16px)}.topbar .brand{display:none}.topActions{display:flex;align-items:center;gap:8px}.topActions span{font-size:12px}.topActions button{min-height:38px;padding:9px 12px;border-radius:10px;font-size:12px;font-weight:720}
+  .screenHost{grid-column:2;grid-row:2;width:100%;margin:0;padding:28px 30px 56px}.mobileNav{display:none!important}
 }
 
-@media (min-width:1400px){
-  .app{grid-template-columns:220px minmax(0,1fr)}
-  .primaryNav{width:220px}
-  .screenHost{padding-left:30px;padding-right:30px}
-  .cockpitV3{margin-left:-30px;margin-right:-30px;padding-left:30px;padding-right:30px}
+@media (min-width:1400px){.app{grid-template-columns:260px minmax(0,1fr)}.primaryNav{width:260px;padding-left:18px;padding-right:18px}.screenHost{padding-left:38px;padding-right:38px}}
+
+@media (max-width:840px){
+  .app{height:100dvh;min-height:100svh;padding:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}.primaryNav{display:none!important}
+  .topbar{position:relative;top:auto;z-index:40;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.97)}.topbar .brand{display:flex;gap:9px;min-width:0}.topbar .brandMark.small{width:36px;height:36px;border-radius:11px;font-size:17px;flex:0 0 auto}.topbar .brand b{font-size:16px;white-space:nowrap}.topbar .brand span{max-width:150px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topActions{display:flex;align-items:center;gap:5px;flex:0 0 auto}.topActions span,.topActions #refreshBtn{display:none}.topActions button{min-height:36px;padding:8px 9px;border-radius:9px;font-size:11px;white-space:nowrap}
+  .screenHost{min-height:0;height:100%;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding:20px 15px 30px;scroll-padding-bottom:30px}
+  .screenTitle.domainHeader{margin-bottom:19px;padding-bottom:16px;display:block}.screenTitle.domainHeader h1{font-size:29px}.screenTitle.domainHeader p{font-size:14px}.domainHomeAction{margin-top:15px;min-height:42px;font-size:13px}
+  .card{padding:17px}.cardHead b{font-size:15px}.cardHead small{font-size:12.5px}.metric span,.metric em{font-size:12.5px}.sectionHeading h2{font-size:20px}.sectionHeading p{font-size:13px}
+  .mobileNav{position:relative;left:auto;right:auto;bottom:auto;width:auto;margin:8px 10px max(8px,env(safe-area-inset-bottom));padding:5px;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;border:1px solid var(--line);border-radius:17px;background:#fff;box-shadow:0 10px 30px rgba(31,52,82,.12)}.mobileNav button{min-width:0;min-height:47px;padding:8px 3px;border:0;border-radius:12px;background:transparent;color:var(--mut);font-size:11px;font-weight:720}.mobileNav button.active{background:#eaf2ff;color:#215fbd}.sheetPanel,.entryPanel{background:#fff}
 }
 
 @media (max-width:720px){
-  html,body{background:#f4f7fb}
-  .topbar{background:rgba(255,255,255,.97)}
-  .mobileNav{
-    background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(30,55,90,.12)
-  }
-  .screenHost{background:#f4f7fb}
-  .cockpitV3{background:#f4f7fb}
-  .cockpitWelcome p{font-size:13px}
-  .executivePeriodControl{justify-content:flex-start;width:100%;overflow:auto;padding-bottom:2px}
-  .executivePeriodTabs{width:max-content;min-width:100%}
-  .executivePeriodTabs button{min-width:66px;flex:1;padding:8px 10px}
+  .login{padding:0;display:block;background:#fff}.loginShell{width:100%;min-height:100vh;display:block;border:0;border-radius:0;box-shadow:none}.loginStory{min-height:265px;padding:34px 24px 30px;justify-content:flex-start}.loginBrand{margin-bottom:25px}.loginBrand .brandMark{width:38px;height:38px;border-radius:12px;font-size:18px}.loginStory h1{font-size:32px;line-height:1.08}.loginStory>p{margin:14px 0 0;font-size:15px;line-height:1.5}.loginStory ul{display:none}.loginCard{padding:32px 24px 42px}.loginCard h2{font-size:27px}
 }
+
+@media (max-width:460px){.topbar{padding:9px 10px}.topbar .brand span{display:none}.topbar .brand b{font-size:15px}.topActions #routeAction{max-width:148px;overflow:hidden;text-overflow:ellipsis}.screenHost{padding-left:12px;padding-right:12px}.mobileNav{margin-left:7px;margin-right:7px}}

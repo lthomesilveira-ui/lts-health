@@ -10,7 +10,7 @@ const rows=[
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});const page=await browser.newPage({viewport});const errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-  await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForSelector('#app:not(.hidden)');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Saúde & exames');
+  await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForSelector('#app:not(.hidden)');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Exames');
   await page.evaluate(async injected=>{const {state}=await import('./src/core.js');state.data.labs=[...(state.data.labs||[]),...injected];state.ui.selectedBiomarker=null;},rows);
   await page.fill('#labQuery','x');await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.body.textContent.includes('Marcadores com série longitudinal'));
@@ -26,3 +26,4 @@ async function run(viewport,label){
   if(errors.length)throw new Error(`${label}: page errors: ${errors.join(' | ')}`);await browser.close();
 }
 await run({width:1280,height:900},'desktop');await run({width:390,height:844},'mobile');console.log('Lab series navigation smoke passed');
+

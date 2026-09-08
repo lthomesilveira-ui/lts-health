@@ -22,7 +22,7 @@ async function run(viewport,label){
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   await page.waitForSelector('#backupVerifyBtn');
   await page.waitForSelector('#backupVerifyFile',{state:'attached'});
 
@@ -89,3 +89,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health local backup verification UI smoke passed');
+

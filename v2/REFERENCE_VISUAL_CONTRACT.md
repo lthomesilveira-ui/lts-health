@@ -4,6 +4,14 @@ Status: referência obrigatória de produto para a Home do LTS Health.
 
 A imagem aprovada pelo usuário é a autoridade visual. Este documento apenas registra os elementos observáveis da referência para impedir regressões. Se houver conflito, a imagem prevalece.
 
+## Estado da fonte visual
+
+A imagem-fonte aprovada não está presente no repositório atual. O contrato textual continua válido, mas não é evidência suficiente para declarar paridade pixel a pixel. Até a fonte ser recuperada e versionada:
+
+- é obrigatório avançar em hierarquia, legibilidade, navegação, estados e consistência inequívocos;
+- inspeção desktop/mobile continua obrigatória;
+- nenhuma release pode usar “paridade exata” ou nota visual definitiva como estado comprovado.
+
 ## Linguagem visual aprovada
 
 - Sidebar fixa em azul-marinho escuro, separada visualmente do conteúdo principal.

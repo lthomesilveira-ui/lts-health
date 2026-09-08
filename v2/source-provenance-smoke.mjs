@@ -9,7 +9,7 @@ async function run(viewport,label){
 
   await page.goto('http://127.0.0.1:4173/?fixture=1#dados',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   const screen=(await page.locator('#screenHost').textContent())||'';
   if(!screen.includes('Detalhes por origem'))throw new Error(`${label}: readable provenance section missing`);
   if(!screen.includes('Métricas de saúde'))throw new Error(`${label}: health metrics availability missing from Data screen`);
@@ -69,7 +69,7 @@ async function run(viewport,label){
 
   await page.goto('http://127.0.0.1:4173/?fixture=1&fixtureError=sourceMetrics#dados',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   const failedPanel=page.locator('.provenancePanel');
   const failed=(await failedPanel.textContent())||'';
   if(!failed.includes('As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.'))throw new Error(`${label}: partial provenance state missing`);
@@ -94,3 +94,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health source provenance smoke passed');
+

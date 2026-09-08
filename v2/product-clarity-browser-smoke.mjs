@@ -32,7 +32,7 @@ async function run(viewport,label){
     state.domainStatus.labs='ready';
     location.hash='#saude';
   },labs);
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Saúde & exames');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Exames');
   await page.waitForSelector('[data-longitudinal-labs]');
   const labText=(await page.locator('[data-longitudinal-labs]').innerText())||'';
   if(!labText.includes('Evolução dos exames')||!labText.includes('Ferritina')||!labText.includes('Testosterona Total'))throw new Error(`${label}: longitudinal lab shortcuts missing`);
@@ -50,3 +50,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('Product clarity browser smoke passed');
+

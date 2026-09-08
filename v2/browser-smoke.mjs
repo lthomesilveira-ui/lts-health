@@ -80,8 +80,7 @@ async function run(viewport,label){
   await page.click('#closeEntry');
   await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden')===true);
 
-  await page.click(`${nav} [data-route="evolucao"]`);
-  await assertScreen(page,'Evolução',`${label}/evolucao`);
+  await openMoreRoute(page,nav,'evolucao','Evolução detalhada',`${label}/evolucao`);
   await page.click('[data-evolution-metric="skeletal_muscle_mass_kg"]');
   await page.waitForFunction(()=>document.querySelector('[data-evolution-metric="skeletal_muscle_mass_kg"]')?.classList.contains('active'));
   if((await page.locator('[data-segmental-date]').count())!==2) throw new Error(`${label}: segmental dates missing`);
@@ -103,7 +102,7 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.labs=[...(state.data.labs||[]),{source_record_id:'lab-history',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'}];
   });
-  await openMoreRoute(page,nav,'saude','Saúde & exames',`${label}/saude`);
+  await openMoreRoute(page,nav,'saude','Exames',`${label}/saude`);
   if((await page.locator('#collectionSelect option').count())!==2) throw new Error(`${label}: lab collection history missing`);
   if((await page.locator('.markerList button').count())!==2) throw new Error(`${label}: biomarker explorer missing`);
   await page.waitForSelector('.labHistoryChart svg');
@@ -122,7 +121,7 @@ async function run(viewport,label){
   const nutritionText=await page.textContent('#screenHost');
   if(!nutritionText.includes('Almoço')||!nutritionText.includes('Jantar')) throw new Error(`${label}: nutrition day drilldown missing meals`);
 
-  await openMoreRoute(page,nav,'dados','Dados',`${label}/dados`);
+  await openMoreRoute(page,nav,'dados','Dados & fontes',`${label}/dados`);
   await page.waitForSelector('#uploadForm');
   if((await page.locator('#uploadType option').count())<6) throw new Error(`${label}: import source options missing`);
   if((await page.locator('.sourceStatus').count())!==5) throw new Error(`${label}: source status cards missing`);
@@ -181,10 +180,10 @@ await runPartialTraining({width:390,height:844},'mobile');
 await runFailureState('body','bio','Bio',async(_page,text)=>{
   if(!text.includes('não carregaram agora')||/Peso\s*0(?:[,.]0)?\b/i.test(text)||/MME\s*0(?:[,.]0)?\b/i.test(text)) throw new Error('body failure rendered as zero or hid the failure');
 });
-await runFailureState('labs','saude','Saúde & exames',async(_page,text)=>{
+await runFailureState('labs','saude','Exames',async(_page,text)=>{
   if(!text.includes('não carregou agora')||/Coletas\s*0\b/i.test(text)||/Resultados\s*0\b/i.test(text)) throw new Error('lab failure rendered as zero or hid the failure');
 });
-await runFailureState('docs','saude','Saúde & exames',async(_page,text)=>{
+await runFailureState('docs','saude','Exames',async(_page,text)=>{
   if(!text.includes('documentos não carregaram agora')||/Documentos\s*0\b/i.test(text)) throw new Error('document failure rendered as zero or hid the failure');
 });
 await runFailureState('nutrition','nutricao','Nutrição',async(_page,text)=>{
@@ -203,7 +202,7 @@ await runFailureState('metrics','hoje','Hoje',async(_page,text)=>{
   for(const label of ['Energia ativa','Exercício','Horas em pé','Sono'])if(!text.includes(label))throw new Error(`Today metrics failure hid validated metric label: ${label}`);
   if(!text.includes('Indisponível agora')||text.includes('Sem dado importado')) throw new Error('Today metrics failure rendered as missing data instead of unavailable');
 });
-await runFailureState('previews','dados','Dados',async(_page,text)=>{
+await runFailureState('previews','dados','Dados & fontes',async(_page,text)=>{
   if(!text.includes('processamento está indisponível agora')) throw new Error('import preview failure is not explicit to the user');
 });
 console.log('LTS Health v2 browser smoke passed');

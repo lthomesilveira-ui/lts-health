@@ -87,8 +87,10 @@ async function run(viewport,label){
   await page.waitForSelector('.exerciseProgressUnit svg');
   if(!((await page.locator('.exerciseProgression').textContent())||'').includes('70 → 90 kg'))throw new Error(`${label}: deployed exercise progression chart missing`);
 
-  await page.click(`${nav} [data-route="evolucao"]`);
-  await assertScreen(page,'Evolução',`${label}/evolucao`);
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.click('#moreSheet [data-route="evolucao"]');
+  await assertScreen(page,'Evolução detalhada',`${label}/evolucao`);
   let evolution=(await page.textContent('#screenHost'))||'';
   for(const text of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições','Comparar com'])if(!evolution.includes(text))throw new Error(`${label}: evolution missing ${text}`);
   if((await page.locator('#segmentalCompareDate option').count())!==1)throw new Error(`${label}: deployed free segmental comparison selector missing`);
@@ -111,7 +113,7 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.labs=[...(state.data.labs||[]),{source_record_id:'live-lab-history',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'}];
   });
-  await more(page,nav,'saude','Saúde & exames',`${label}/saude`);
+  await more(page,nav,'saude','Exames',`${label}/saude`);
   await page.waitForSelector('.labHistoryChart svg');
   if(!((await page.locator('.exerciseDetail').textContent())||'').includes('Diferença +2,0 u'))throw new Error(`${label}: deployed compatible-unit lab chart missing`);
   await more(page,nav,'nutricao','Nutrição',`${label}/nutricao`);
@@ -120,7 +122,7 @@ async function run(viewport,label){
     state.data.uploads=[{id:'live-upload',created_at:'2026-02-03T12:00:00Z',original_filename:'export.zip',source_type:'apple_health',status:'uploaded'}];
     state.data.quality=[{status:'open',category:'metadata_only',entity_name:'DOC_TECHNICAL_NAME',description:'Há apenas metadados deste documento; o arquivo original ainda precisa ser disponibilizado.'}];
   });
-  await more(page,nav,'dados','Dados',`${label}/dados`);
+  await more(page,nav,'dados','Dados & fontes',`${label}/dados`);
   const data=(await page.textContent('#screenHost'))||'';
   for(const text of [
     'Sincronização automática parcial',

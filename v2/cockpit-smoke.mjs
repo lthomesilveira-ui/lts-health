@@ -41,7 +41,7 @@ async function run(viewport,label){
   if(!audit.topGroups.includes('Peito')||!audit.topGroups.includes('Quadríceps'))throw new Error(`${label}: structured training groups missing`);
   if(!audit.bodyAvailable)throw new Error(`${label}: comparable body pair not recognized`);
   await page.evaluate(()=>{location.hash='#analise'});
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
   const insightText=(await page.locator('#screenHost').textContent())||'';
   if(!insightText.includes('Resumo executivo')||!insightText.includes('Protocolos'))throw new Error(`${label}: Insights route regressed`);
   await noOverflow(page,label,'insights');

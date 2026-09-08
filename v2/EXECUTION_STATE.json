@@ -5,6 +5,8 @@
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
+    "product_architecture": "v2/PRODUCT_ARCHITECTURE.md",
+    "feedback_ledger": "v2/FEEDBACK_LEDGER.md",
     "continuity": "v2/CONTINUITY_PROTOCOL.md",
     "milestones": "v2/PROJECT_MASTER.md",
     "visual_contract": "v2/REFERENCE_VISUAL_CONTRACT.md",
@@ -42,12 +44,13 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-LONGITUDINAL-UX-RECONCILIATION",
-    "status": "done",
-    "goal": "Reconcile the delivered longitudinal product backlog and make the authenticated water handoff unambiguously notebook-first.",
+    "id": "PKG-PRODUCT-ARCHITECTURE-RESET",
+    "status": "in_progress",
+    "goal": "Replace the collection-of-features experience with a durable product architecture and a coherent decision-first interface.",
     "task_ids": [
-      "LTS-LONGITUDINAL-001",
-      "LTS-HYD-NOTEBOOK-UX-001"
+      "LTS-PRODUCT-ARCH-001",
+      "LTS-UX-P0-001",
+      "LTS-DOMAIN-JOURNEYS-001"
     ]
   },
   "tasks": [
@@ -250,6 +253,91 @@
       ],
       "next_action": null,
       "blocker": null
+    },
+    {
+      "id": "LTS-PRODUCT-ARCH-001",
+      "area": "product",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Consolidate the recovered objective, information architecture, feedbacks, debts, and acceptance rules into durable sources of truth.",
+      "acceptance": [
+        "The product thesis, user questions, navigation, screen hierarchy, states, and completion rules are explicit.",
+        "Recovered feedbacks and debts have stable IDs, state, evidence, and reconciliation rules.",
+        "Historical technical gates are not presented as current product acceptance after later user feedback."
+      ],
+      "evidence": [
+        "v2/PRODUCT_ARCHITECTURE.md",
+        "v2/FEEDBACK_LEDGER.md",
+        "v2/PROJECT_BRIEF.md",
+        "v2/PROJECT_MASTER.md",
+        "v2/product-architecture-contract-smoke.mjs"
+      ],
+      "next_action": "Complete static and browser validation, publish the package, and record the resulting evidence.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-UX-P0-001",
+      "area": "experience",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Rebuild the app shell, login, primary navigation, and overview around the decision-first product architecture.",
+      "acceptance": [
+        "Desktop uses a grouped dark rail and light canvas; mobile navigation does not cover content.",
+        "The overview presents five domains, then interpretation and at most three priorities before analytical detail.",
+        "Actions are specific, regular text is readable, and the login never leaks the authenticated shell.",
+        "Legacy dashboard postprocessors and presentation styles are not active."
+      ],
+      "evidence": [
+        "v2/index.html",
+        "v2/executive-shell.css",
+        "v2/cockpit.css",
+        "v2/src/today-screen.js",
+        "v2/src/main.js",
+        "v2/product-architecture-contract-smoke.mjs",
+        "v2/product-architecture-browser-smoke.mjs"
+      ],
+      "next_action": "Finish visual and functional browser gates in desktop and mobile viewports.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-DOMAIN-JOURNEYS-001",
+      "area": "experience",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Align domain destinations to the shared summary, change, trend, detail, and coverage progression without competing top-level areas.",
+      "acceptance": [
+        "Primary labels and destination titles use the same user-facing information architecture.",
+        "Evolution remains available for compatibility but is reached as domain detail, not as a competing primary area.",
+        "Every primary destination has a clear role and a direct return path to the overview or evidence source."
+      ],
+      "evidence": [
+        "v2/PRODUCT_ARCHITECTURE.md",
+        "v2/index.html",
+        "v2/src/main.js"
+      ],
+      "next_action": "Audit primary destinations, align titles and descriptions, and extend the browser contract across routes.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-VISUAL-SOURCE-001",
+      "area": "experience",
+      "priority": "P1",
+      "status": "blocked_external",
+      "owner": "system",
+      "summary": "Recover and version the original approved visual reference before making a pixel-parity claim.",
+      "acceptance": [
+        "The original approved image is stored as a versioned project reference.",
+        "Desktop and mobile comparisons can cite the exact source artifact."
+      ],
+      "evidence": [
+        "v2/REFERENCE_VISUAL_CONTRACT.md",
+        "v2/PRODUCT_ARCHITECTURE.md"
+      ],
+      "next_action": "Recover the approved source image from the prior conversation archive or a new attachment, then add an exact visual comparison gate.",
+      "blocker": "The original approved image is not present in the current repository or supplied files."
     },
     {
       "id": "LTS-HYD-IMPORT-001",

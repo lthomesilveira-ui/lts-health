@@ -3,16 +3,11 @@ import { chromium } from 'playwright';
 const base='http://127.0.0.1:4173/?fixture=1#evolucao';
 
 async function navigateToEvolution(page,viewport){
-  if(viewport.width<720){
-    await page.click('#mobileNav [data-route="bio"]');
-    await page.click('#mobileNav [data-route="mais"]');
-    await page.waitForSelector('#moreSheet:not(.hidden)');
-    await page.click('#moreSheet [data-route="evolucao"]');
-  }else{
-    await page.click('#primaryNav [data-route="bio"]');
-    await page.click('#primaryNav [data-route="evolucao"]');
-  }
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução');
+  const nav=viewport.width<720?'#mobileNav':'#primaryNav';
+  await page.click(`${nav} [data-route="mais"]`);
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.click('#moreSheet [data-route="evolucao"]');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução detalhada');
 }
 
 async function run(viewport,label){
@@ -23,7 +18,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução detalhada');
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
     state.data.workouts=[

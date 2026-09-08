@@ -21,7 +21,7 @@ for(const [viewport,label] of [[{width:1280,height:900},'desktop'],[{width:390,h
   await page.selectOption('#trainingPeriod','all');await page.click('[data-workout="workout-2"]');
   const session=await page.locator('.session.open').textContent();if(!session?.includes('Supino máquina')||!session.includes('Voador')||!session.includes('90 kg'))throw new Error(`${label}: workout session detail incomplete`);
 
-  await page.click(`${nav} [data-route="evolucao"]`);await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução');
+  await page.click(`${nav} [data-route="mais"]`);await page.waitForSelector('#moreSheet:not(.hidden)');await page.click('#moreSheet [data-route="evolucao"]');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução detalhada');
   if((await page.locator('[data-segmental-date]').count())<2)throw new Error(`${label}: segmental history incomplete`);
   if((await page.locator('.evolutionChangeTable .changeRow').count())<2)throw new Error(`${label}: body-to-body change history missing`);
   const evolution=await page.textContent('#screenHost');

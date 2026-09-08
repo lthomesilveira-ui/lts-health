@@ -9,7 +9,7 @@ async function run(viewport,label,fixtureError=''){
   const query=fixtureError?`?fixture=1&fixtureError=${encodeURIComponent(fixtureError)}#dados`:'?fixture=1#dados';
   await page.goto(`http://127.0.0.1:4173/${query}`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
 
   const body=(await page.locator('#screenHost').textContent())||'';
   if(fixtureError==='sourceMetrics'){
@@ -39,3 +39,4 @@ await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 await run({width:390,height:844},'mobile-failed-sourceMetrics','sourceMetrics');
 console.log('LTS Health data freshness smoke passed');
+

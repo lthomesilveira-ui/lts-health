@@ -1,9 +1,9 @@
 import {state,esc,fmtDate,norm} from './core.js';
 import {sourceStatusFor,sourceCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
+import {screenTitle as title} from './product-shell.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
 const failed=key=>state.domainStatus[key]==='error';
 const dateValue=value=>/^\d{4}-\d{2}-\d{2}$/.test(String(value||'').slice(0,10))?String(value).slice(0,10):null;
@@ -185,7 +185,7 @@ function waterSourceBridge(){
 
 export function renderDataHub(){
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
-  return `${title('Dados','Envie arquivos, acompanhe o que já entrou no histórico e veja apenas as conferências que realmente precisam de você.')}
+  return `${title('Dados & fontes','Conecte ou envie fontes, acompanhe a entrada no histórico e veja somente o que realmente exige atenção.','Sistema')}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
     ${waterSourceBridge()}

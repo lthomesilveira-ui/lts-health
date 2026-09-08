@@ -90,7 +90,7 @@ async function run(viewport,label){
   await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   const restoredHash=await page.evaluate(()=>location.hash);
   if(restoredHash!=='#dados')throw new Error(`${label}: saved route was not restored after reload (${restoredHash||'sem hash'})`);
 

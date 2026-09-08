@@ -51,6 +51,6 @@ assert.match(renderNutritionHub(),/Importar histórico do MFP/);
 assert.match(renderNutritionHub(),/Registrar um dia manualmente/);
 assert.match(renderTodayHub(),/2\.600 mL/);
 assert.match(renderTodayHub(),/data-entry="water-import"/);
-assert.match(renderTodayHub(),/Atualizar MFP/);
+assert.match(renderTodayHub(),/Atualizar água do MFP/);
 
 console.log('LTS Health hydration contract passed');
