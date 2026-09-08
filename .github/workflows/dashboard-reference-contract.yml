@@ -29,10 +29,13 @@ jobs:
           test -f v2/REFERENCE_VISUAL_CONTRACT.md
           test -f v2/executive-shell.css
           test -f v2/cockpit.css
+          test -f v2/UX_COHERENCE_CONTRACT.md
+          test -f v2/ux-coherence.css
           node --check v2/src/today-screen.js
           node --check v2/src/main.js
           node --check v2/src/product-shell.js
           node v2/product-architecture-contract-smoke.mjs
+          node v2/ux-coherence-contract-smoke.mjs
 
       - name: Reject superseded presentation layers
         run: |
@@ -69,6 +72,7 @@ jobs:
           node v2/cockpit-smoke.mjs
           node v2/navigation-resilience-smoke.mjs
           node v2/product-architecture-visual-qa.mjs
+          node v2/ux-coherence-browser-smoke.mjs
 
       - name: Upload visual inspection evidence
         if: always()
@@ -76,6 +80,15 @@ jobs:
         with:
           name: product-architecture-visual-qa
           path: artifacts/product-architecture
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload domain UX evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-coherence-visual-qa
+          path: artifacts/ux-coherence
           if-no-files-found: warn
           retention-days: 14
 

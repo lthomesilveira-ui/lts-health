@@ -23,7 +23,7 @@ export const state = {
     bioMetric: 'weight_kg',
     compareA: null,
     compareB: null,
-    trainingPeriod: '90',
+    trainingPeriod: '365',
     trainingQuery: '',
     openWorkout: null,
     exerciseQuery: '',
@@ -34,7 +34,7 @@ export const state = {
     timelineLimit: 250,
     timelineDomain: 'all',
     timelineQuery: '',
-    nutritionPeriod: '90',
+    nutritionPeriod: '365',
     nutritionYear: null,
     nutritionDate: null,
     treatmentQuery: '',
@@ -60,6 +60,15 @@ export const fmtNum = (value,digits=1) => num(value)==null?'—':Number(value).t
 export const fmtDate = value => { const s=day(value);if(!s)return'—';const[y,m,d]=s.split('-');return y&&m&&d?`${d}/${m}/${y}`:s; };
 export const unique = values => [...new Set((values||[]).filter(Boolean))];
 export const norm = value => String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+export const periodLabel = value => value==='30'?'últimos 30 dias':value==='90'?'últimos 90 dias':value==='365'?'último ano':'todo o histórico';
+export const countLabel = (count,singular,plural) => `${Number(count)||0} ${(Number(count)||0)===1?singular:(plural||`${singular}s`)}`;
+export function setGlobalPeriod(value){
+  const next=['30','90','365','all'].includes(String(value))?String(value):'365';
+  state.ui.analysisPeriod=next;
+  state.ui.trainingPeriod=next;
+  state.ui.nutritionPeriod=next;
+  return next;
+}
 export const since = days => { const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-Number(days)+1);return d.toISOString().slice(0,10); };
 export const within = (value,days) => day(value)>=since(days);
 export const neutralDelta = (a,b,digits=1,unit='') => { a=num(a);b=num(b);if(a==null||b==null)return'—';const x=a-b;return`${x>0?'+':''}${fmtNum(x,digits)}${unit?` ${unit}`:''}`; };
