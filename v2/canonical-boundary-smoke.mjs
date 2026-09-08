@@ -89,9 +89,9 @@ async function run(viewport,label){
   await page.waitForSelector('[data-executive-dashboard]');
   const todayText=(await page.textContent('#screenHost'))||'';
   if(todayText.includes('7.200 passos')||todayText.includes('90,1 kg')||todayText.includes('7,2 h'))throw new Error(`${label}: candidate-only Apple Health metric leaked into confirmed dashboard data`);
-  const sleepPanelText=(await page.locator('.cockpitSleepSources').textContent())||'';
-  for(const expected of ['Sono preservado por origem','Apple Watch','7,1 h','Polar Flow','7,4 h','sem média entre fontes'])if(!sleepPanelText.includes(expected))throw new Error(`${label}: preserved sleep evidence is not visibly source-separated: ${expected}`);
-  if((await page.locator('.cockpitSleepRow').count())!==2)throw new Error(`${label}: overlapping sleep evidence was merged in the cockpit`);
+  const recoverySummary=(await page.locator('.cockpitStatus').filter({hasText:'Recuperação'}).first().textContent())||'';
+  if(!recoverySummary.includes('2 origens na janela'))throw new Error(`${label}: dashboard did not disclose separated recovery origins`);
+  if(recoverySummary.includes('7,1 h')||recoverySummary.includes('7,4 h'))throw new Error(`${label}: source-level sleep values cluttered the executive summary`);
   if(todayText.includes('Sono consolidado'))throw new Error(`${label}: sleep evidence was presented as consolidated`);
   for(const forbidden of ['Em validação','Não consolidado','canônico','candidato','ActivitySummary','source_family','count/min'])if(todayText.includes(forbidden))throw new Error(`${label}: technical boundary language leaked into dashboard: ${forbidden}`);
 
@@ -99,8 +99,10 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
   await page.selectOption('#analysisPeriod','all');
   await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all');
+  await page.locator('details.uxDisclosure').filter({hasText:'Como cada área contribui'}).locator('summary').click();
+  await page.waitForFunction(()=>[...document.querySelectorAll('details.uxDisclosure')].some(node=>node.open&&(node.textContent||'').includes('Como cada área contribui')));
   const analysisText=(await page.textContent('#screenHost'))||'';
-  if(!analysisText.includes('Sono estruturado')||!analysisText.includes('2 origem(ns) preservada(s)')||!analysisText.includes('Origens diferentes permanecem separadas'))throw new Error(`${label}: sleep evidence is not visibly preserved without consolidation`);
+  if(!analysisText.includes('Sono estruturado')||!analysisText.includes('2 origens preservadas')||!analysisText.includes('Origens diferentes permanecem separadas'))throw new Error(`${label}: sleep evidence is not visibly preserved without consolidation`);
   if(analysisText.includes('7,1 h')||analysisText.includes('7,4 h')||analysisText.includes('Sono consolidado'))throw new Error(`${label}: overlapping sleep values leaked as a consolidated analysis`);
 
   await page.evaluate(()=>{location.hash='nutricao';});
@@ -118,4 +120,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 canonical boundary smoke passed');
-

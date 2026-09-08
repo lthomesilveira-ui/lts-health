@@ -65,6 +65,7 @@ async function run(viewport,label){
     state.data.exercises=[...(state.data.exercises||[]),{source_record_id:'ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',order_index:4,exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito',source:'Fixture de interface'}];
     state.data.sets=[...(state.data.sets||[]),{source_record_id:'set-progression',exercise_source_record_id:'ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',set_index:1,phase:'working',weight:70,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'}];
   });
+  await page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'}).locator('summary').click();
   await page.fill('#exerciseQuery','supino');
   await page.waitForFunction(()=>document.querySelectorAll('.exerciseList button').length===1);
   await page.waitForSelector('.exerciseProgressUnit svg');
@@ -103,6 +104,7 @@ async function run(viewport,label){
     state.data.labs=[...(state.data.labs||[]),{source_record_id:'lab-history',collection_date:'2026-01-03',report_date:'2026-01-03',laboratory:'Laboratório de teste',biomarker:'Marcador A',result_raw:'8',result_numeric:8,unit:'u',reference_range:'5–15',source:'Fixture de interface'}];
   });
   await openMoreRoute(page,nav,'saude','Exames',`${label}/saude`);
+  await page.locator('details.uxDisclosure').filter({hasText:'Coletas e resultados'}).locator('summary').click();
   if((await page.locator('#collectionSelect option').count())!==2) throw new Error(`${label}: lab collection history missing`);
   if((await page.locator('.markerList button').count())!==2) throw new Error(`${label}: biomarker explorer missing`);
   await page.waitForSelector('.labHistoryChart svg');

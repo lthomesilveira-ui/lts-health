@@ -1,5 +1,6 @@
-import {state,esc,day,num,fmtNum,fmtDate,unique,norm,since,workoutRows,exercisesFor,setsFor} from './core.js';
+import {state,esc,day,num,fmtNum,fmtDate,unique,norm,workoutRows,exercisesFor,setsFor,countLabel,periodLabel} from './core.js';
 import {screenTitle} from './product-shell.js';
+import {periodBounds,referenceDayFor} from './integrated-analysis.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
@@ -55,8 +56,8 @@ function sessionCard(workout,isLatest=false){
     : !exercises.length&&preservedSession
       ? 'detalhes preservados na fonte'
       : exercises.length&&setCount===0&&hasPreservedExerciseEvidence
-        ? `${exercises.length} exercício(s) · séries preservadas na fonte`
-        : `${exercises.length} exercício(s) · ${setCount==null?'séries indisponíveis':`${setCount} série(s)`}`;
+        ? `${countLabel(exercises.length,'exercício','exercícios')} · séries preservadas na fonte`
+        : `${countLabel(exercises.length,'exercício','exercícios')} · ${setCount==null?'séries indisponíveis':countLabel(setCount,'série','séries')}`;
   const source=workout.source?`<div class="trainingSource">Origem: ${esc(workout.source)}</div>`:'';
   const status=partial?'incompleto':isLatest?'mais recente':'registrado';
   const statusKind=partial?'warn':isLatest?'accent':'ok';
@@ -75,7 +76,7 @@ function trainingCalendar(rows){
   return `<div class="trainingCalendar">${entries.map(([key,list])=>{
     const dates=unique(list.map(w=>day(w.workout_date))).sort();
     const days=dates.map(d=>Number(d.slice(8,10))).filter(Number.isFinite);
-    return `<section><header><b>${esc(monthLabel(key))}</b><span>${list.length} sessão(ões)</span></header><div class="trainingDayDots">${days.map(d=>`<i title="${d}" aria-label="dia ${d}">${d}</i>`).join('')}</div></section>`;
+    return `<section><header><b>${esc(monthLabel(key))}</b><span>${countLabel(list.length,'sessão','sessões')}</span></header><div class="trainingDayDots">${days.map(d=>`<i title="${d}" aria-label="dia ${d}">${d}</i>`).join('')}</div></section>`;
   }).join('')}</div>`;
 }
 
@@ -100,8 +101,8 @@ function trainingRhythm(rows){
   return `<div class="barList">${entries.map(([start,info])=>{
     const end=new Date(`${start}T12:00:00`);end.setDate(end.getDate()+6);
     const endDay=end.toISOString().slice(0,10);
-    const typeText=info.types.size?`${info.types.size} tipo(s) de treino`:'tipo não informado';
-    return `<div class="barRow"><span>${fmtDate(start)}–${fmtDate(endDay)}</span><div><i style="width:${Math.max(6,info.sessions/max*100)}%"></i></div><b>${info.sessions}</b><small>${info.days.size} dia(s) com sessão · ${esc(typeText)}</small></div>`;
+    const typeText=info.types.size?countLabel(info.types.size,'tipo de treino','tipos de treino'):'tipo não informado';
+    return `<div class="barRow"><span>${fmtDate(start)}–${fmtDate(endDay)}</span><div><i style="width:${Math.max(6,info.sessions/max*100)}%"></i></div><b>${info.sessions}</b><small>${countLabel(info.days.size,'dia com sessão','dias com sessão')} · ${esc(typeText)}</small></div>`;
   }).join('')}</div><p class="footerNote">Mostra somente sessões estruturadas registradas. Semanas sem registro não são interpretadas como ausência de atividade física.</p>`;
 }
 
@@ -184,10 +185,10 @@ function exerciseProgression(group){
   if(!group)return empty('Selecione um exercício.');
   const {ambiguousDates}=comparableExerciseSessions(group),series=exerciseProgressionSeries(group);
   if(!series.length)return empty(ambiguousDates.size?'As sessões estão preservadas, mas não há datas inequívocas com carga comparável.':'Não há cargas com unidade registrada para comparar neste exercício.');
-  const ambiguityNote=ambiguousDates.size?`<div class="note warn">${ambiguousDates.size} data(s) têm mais de uma sessão deste exercício. Elas ficam fora da evolução até haver ordem inequívoca.</div>`:'';
+  const ambiguityNote=ambiguousDates.size?`<div class="note warn">${countLabel(ambiguousDates.size,'data','datas')} com mais de uma sessão deste exercício. Elas ficam fora da evolução até haver ordem inequívoca.</div>`:'';
   return `${ambiguityNote}<div class="exerciseProgression">${series.map(s=>{
     const points=s.points.slice(-24),first=points[0],last=points.at(-1),delta=last.value-first.value,unit=displayUnit(s.unit),digits=points.some(p=>!Number.isInteger(p.value))?1:0;
-    return `<section class="exerciseProgressUnit"><div class="exerciseProgressHead"><div><b>${esc(unit)}</b><small>${points.length} sessão(ões) com carga estruturada${s.points.length>points.length?' · últimas 24':''}</small></div><div><span>${fmtNum(first.value,digits)} → ${fmtNum(last.value,digits)} ${esc(unit)}</span><small>diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${esc(unit)}</small></div></div>${progressionSvg(points)}<div class="exerciseProgressAxis"><span>${fmtDate(first.date)}</span><span>${fmtDate(last.date)}</span></div></section>`;
+    return `<section class="exerciseProgressUnit"><div class="exerciseProgressHead"><div><b>${esc(unit)}</b><small>${countLabel(points.length,'sessão','sessões')} com carga estruturada${s.points.length>points.length?' · últimas 24':''}</small></div><div><span>${fmtNum(first.value,digits)} → ${fmtNum(last.value,digits)} ${esc(unit)}</span><small>diferença ${delta>0?'+':''}${fmtNum(delta,digits)} ${esc(unit)}</small></div></div>${progressionSvg(points)}<div class="exerciseProgressAxis"><span>${fmtDate(first.date)}</span><span>${fmtDate(last.date)}</span></div></section>`;
   }).join('')}<p class="footerNote">O gráfico usa somente a maior carga explicitamente registrada em cada sessão e mantém cada unidade separada. Cargas sem unidade ficam preservadas no histórico, mas não geram evolução. Duas sessões na mesma data não são ordenadas por suposição.</p></div>`;
 }
 
@@ -219,7 +220,7 @@ function sessionComparison(group){
     return `<div class="trainingComparisonRow"><b>${esc(displayUnit(unit))}</b><span>${esc(av)}</span><span>${esc(bv)}</span><small>${esc(change)}</small></div>`;
   }).join('');
   const ambiguityNote=ambiguousDates.size?`<div class="note warn">Sessões na mesma data ficam fora desta comparação.</div>`:'';
-  return `${ambiguityNote}<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade registrada, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas com unidade registrada comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${previous.sets.length} série(s)</span><span>${fmtDate(latest.date)} · ${latest.sets.length} série(s)</span></div></section>`;
+  return `${ambiguityNote}<section class="trainingComparison"><div class="trainingComparisonTitle"><div><b>Comparação entre sessões</b><small>Mesmo exercício, mesma máquina e mesma unidade registrada, sem conversão.</small></div><div><span>${fmtDate(previous.date)}</span><span>${fmtDate(latest.date)}</span></div></div>${rows||empty('Não há cargas com unidade registrada comparáveis entre as duas sessões.')}<div class="trainingComparisonSets"><span>${fmtDate(previous.date)} · ${countLabel(previous.sets.length,'série','séries')}</span><span>${fmtDate(latest.date)} · ${countLabel(latest.sets.length,'série','séries')}</span></div></section>`;
 }
 
 function exerciseSessionTrend(group){
@@ -231,13 +232,13 @@ function exerciseSessionTrend(group){
   const snapshots=sessions.map(comparisonSnapshot);
   const units=unique(snapshots.flatMap(s=>[...s.byUnit.keys()]));
   if(!units.length)return empty('Não há cargas com unidade registrada nas sessões recentes deste exercício.');
-  return `<section class="trainingRecent"><div class="trainingRecentHead"><div><b>Sessões recentes</b><small>Carga máxima registrada, repetições nessa carga e séries detalhadas.</small></div><span>${sessions.length} sessão(ões)</span></div>${units.map(unit=>{
+  return `<section class="trainingRecent"><div class="trainingRecentHead"><div><b>Sessões recentes</b><small>Carga máxima registrada, repetições nessa carga e séries detalhadas.</small></div><span>${countLabel(sessions.length,'sessão','sessões')}</span></div>${units.map(unit=>{
     const rows=snapshots.map(snapshot=>{
       const peak=snapshot.byUnit.get(unit);if(!peak)return'';
       const digits=Number.isInteger(peak.weight)?0:1;
       const reps=peak.reps==null?'reps não informadas':`${fmtNum(peak.reps,0)} reps`;
       const unitSets=snapshot.sets.filter(s=>s.weight_unit===unit);
-      return `<div class="trainingRecentRow"><time>${fmtDate(snapshot.date)}</time><b>${fmtNum(peak.weight,digits)} ${esc(displayUnit(unit))}</b><span>${esc(reps)}</span><small>${unitSets.length} série(s) nesta unidade</small></div>`;
+      return `<div class="trainingRecentRow"><time>${fmtDate(snapshot.date)}</time><b>${fmtNum(peak.weight,digits)} ${esc(displayUnit(unit))}</b><span>${esc(reps)}</span><small>${countLabel(unitSets.length,'série','séries')} nesta unidade</small></div>`;
     }).filter(Boolean).join('');
     return `<div class="trainingRecentUnit"><div class="trainingRecentUnitTitle">${esc(displayUnit(unit))}</div>${rows}</div>`;
   }).join('')}<p class="footerNote">Repetições são mostradas apenas quando registradas na série de maior carga daquela sessão. Unidades diferentes permanecem separadas; cargas sem unidade e sessões sem ordem inequívoca não entram na comparação.</p></section>`;
@@ -249,26 +250,26 @@ function exerciseHistory(group){
   if(!group)return empty('Selecione um exercício.');
   const {sessions,ambiguousDates}=comparableExerciseSessions(group),recent=sessions.slice(0,20);
   const machineNote=group.machine?` · ${esc(group.machine)}`:' · máquina não informada';
-  const ambiguityNote=ambiguousDates.size?`<div class="note warn">Há ${ambiguousDates.size} data(s) com mais de uma sessão deste exercício. As sessões permanecem separadas no histórico e não são ordenadas entre si.</div>`:'';
+  const ambiguityNote=ambiguousDates.size?`<div class="note warn">Há ${countLabel(ambiguousDates.size,'data','datas')} com mais de uma sessão deste exercício. As sessões permanecem separadas no histórico e não são ordenadas entre si.</div>`:'';
   return `<div class="exerciseHistoryHead"><b>${esc(group.label)}${machineNote}</b><small>Máquinas e unidades diferentes permanecem separadas para evitar comparações indevidas.</small></div>${ambiguityNote}${sessionComparison(group)}${exerciseSessionTrend(group)}${exerciseProgression(group)}<div class="exerciseHistoryRows list">${recent.map(session=>{
     const sets=session.rows.flatMap(setsFor),units=unique(sets.map(s=>s.weight_unit||'sem unidade'));
     const tops=units.map(unit=>{const values=sets.filter(s=>(s.weight_unit||'sem unidade')===unit).map(s=>num(s.weight)).filter(v=>v!=null);if(!values.length)return null;const top=Math.max(...values);return`${fmtNum(top,Number.isInteger(top)?0:1)} ${esc(displayUnit(unit))}`;}).filter(Boolean).join(' · ');
     const numericReps=sets.map(s=>num(s.reps_numeric)).filter(v=>v!=null);
     const repSummary=numericReps.length===sets.length&&sets.length?`${Math.min(...numericReps)}–${Math.max(...numericReps)} reps`:`${numericReps.length}/${sets.length} séries com reps numéricas`;
     const sameDay=ambiguousDates.has(session.date)?' · sessão mantida separada':'';
-    return `<div class="row"><time>${fmtDate(session.date)}</time><div><b>${tops||'carga não estruturada'}</b><small>${sets.length} série(s) registradas · ${esc(repSummary)}${sameDay}</small></div></div>`;
+    return `<div class="row"><time>${fmtDate(session.date)}</time><div><b>${tops||'carga não estruturada'}</b><small>${countLabel(sets.length,'série registrada','séries registradas')} · ${esc(repSummary)}${sameDay}</small></div></div>`;
   }).join('')||empty('Sem histórico estruturado.')}</div>`;
 }
 
 export function renderTrainingScreen(){
   const all=workoutRows();
   if(failed('workouts')&&!all.length) return title()+domainError('Os treinos não puderam ser carregados.');
-  const period=state.ui.trainingPeriod,cut=period==='all'?null:since(Number(period)),query=norm(state.ui.trainingQuery);
-  const periodRows=all.filter(w=>!cut||day(w.workout_date)>=cut);
+  const period=state.ui.analysisPeriod||state.ui.trainingPeriod||'365',bounds=periodBounds(period,referenceDayFor(state.data)),cut=bounds.start,query=norm(state.ui.trainingQuery);
+  const periodRows=all.filter(w=>(!cut||day(w.workout_date)>=cut)&&(!bounds.end||day(w.workout_date)<=bounds.end));
   const rows=periodRows.filter(w=>!query||norm(`${w.workout_type} ${w.location} ${(w.muscle_groups||[]).join(' ')}`).includes(query));
   const exercisesFailed=failed('exercises'),setsFailed=failed('sets');
-  const exercises=exercisesFailed?[]:(state.data.exercises||[]).filter(e=>!cut||day(e.workout_date)>=cut);
-  const sets=setsFailed?[]:(state.data.sets||[]).filter(s=>!cut||day(s.workout_date)>=cut);
+  const exercises=exercisesFailed?[]:(state.data.exercises||[]).filter(e=>(!cut||day(e.workout_date)>=cut)&&(!bounds.end||day(e.workout_date)<=bounds.end));
+  const sets=setsFailed?[]:(state.data.sets||[]).filter(s=>(!cut||day(s.workout_date)>=cut)&&(!bounds.end||day(s.workout_date)<=bounds.end));
   const volume={};
   if(!exercisesFailed&&!setsFailed){
     for(const e of exercises){const n=setsFor(e).length;if(e.muscle_group&&n)volume[e.muscle_group]=(volume[e.muscle_group]||0)+n;}
@@ -281,23 +282,23 @@ export function renderTrainingScreen(){
   const volumeHtml=setsFailed||exercisesFailed
     ? domainError('O volume por grupo não está disponível porque parte dos detalhes do treino não carregou.')
     : Object.entries(volume).sort((a,b)=>b[1]-a[1]).map(([group,count])=>`<div class="barRow"><span>${esc(group)}</span><div><i style="width:${Math.min(100,count/Math.max(1,...Object.values(volume))*100)}%"></i></div><b>${count}</b></div>`).join('')||empty('Sem séries estruturadas no período.');
+  const selector=`<label>Janela do produto<select id="trainingPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo o histórico</option></select></label>`;
+  if(!periodRows.length){
+    const hasHistory=all.length>0;
+    return `${title()}<section class="domainHero"><div><span>Treinos · ${esc(periodLabel(period))}</span><h2>Nenhuma sessão registrada nesta janela</h2><p>${hasHistory?'Há treinos fora deste período. Amplie a janela para reencontrar o histórico; dias sem registro não são tratados como inatividade.':'Ainda não há sessões estruturadas disponíveis.'}</p></div><div class="controls">${selector}${hasHistory?'<button type="button" class="primary" data-period="all">Ver todo o histórico</button>':''}</div></section>`;
+  }
+  const sessionDays=unique(rows.map(w=>day(w.workout_date))).length;
   return `${title()}
-    <div class="controls"><select id="trainingPeriod"><option value="28">28 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo histórico</option></select><input id="trainingQuery" type="search" placeholder="Buscar treino, local ou grupo" value="${esc(state.ui.trainingQuery)}"></div>
-    <div class="grid cols4 sectionGap">
-      ${metric('Sessões',String(rows.length),period==='all'?'todo histórico':`${period} dias`)}
-      ${metric('Exercícios',exerciseMetric,exercisesFailed?'não carregado':'registros estruturados')}
-      ${metric('Séries',setMetric,setsFailed?'não carregado':'séries detalhadas')}
-      ${metric('Último treino',rows[0]?fmtDate(rows[0].workout_date):'—')}
+    <section class="domainHero"><div><span>Treinos · ${esc(periodLabel(period))}</span><h2>${countLabel(rows.length,'sessão registrada','sessões registradas')}</h2><p>Ritmo primeiro; exercícios, máquinas e séries continuam disponíveis sob demanda.</p></div><div class="controls">${selector}<input id="trainingQuery" type="search" placeholder="Buscar treino, local ou grupo" value="${esc(state.ui.trainingQuery)}"></div></section>
+    <div class="domainStatStrip sectionGap">
+      ${metric('Sessões',String(rows.length),periodLabel(period))}
+      ${metric('Dias com treino',String(sessionDays),'somente registros confirmados')}
+      ${metric('Último treino',rows[0]?fmtDate(rows[0].workout_date):'—',rows[0]?.workout_type||'')}
     </div>
-    <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Calendário de treinos</b><small>Dias com sessões registradas no período. A ausência de marca não significa inatividade.</small></div></div>${trainingCalendar(periodRows)}</div>
-      <div class="card"><div class="cardHead"><div><b>Ritmo semanal</b><small>Sessões estruturadas por semana, sem inferir atividade nos dias sem registro.</small></div></div>${trainingRhythm(periodRows)}</div>
+    <div class="grid split sectionGap domainPrimaryGrid">
+      <div class="card"><div class="cardHead"><div><b>Ritmo semanal</b><small>Sessões estruturadas por semana. Lacunas continuam neutras.</small></div></div>${trainingRhythm(periodRows)}</div>
+      <div class="card"><div class="cardHead"><div><b>Sessões recentes</b><small>Abra uma sessão para ver o registro completo.</small></div><span class="pill">${countLabel(rows.length,'sessão','sessões')}</span></div><div class="list sessions">${rows.slice(0,8).map((workout,index)=>sessionCard(workout,index===0)).join('')}</div></div>
     </div>
-    <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Sessões</b><small>Abra uma sessão para ver exercícios, séries e dados registrados da sessão.</small></div></div><div class="list sessions">${rows.map((workout,index)=>sessionCard(workout,index===0)).join('')||empty('Nenhum treino encontrado.')}</div></div>
-      <div class="stack">
-        <div class="card"><div class="cardHead"><div><b>Séries por grupo</b><small>Contagem no período selecionado.</small></div></div><div class="barList">${volumeHtml}</div></div>
-        <div class="card"><div class="cardHead"><div><b>Evolução por exercício</b><small>Histórico do período selecionado, mantendo máquina e unidade separadas.</small></div></div><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício ou máquina" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${g.machine?`${esc(g.machine)} · `:''}${exerciseSessions(g).length} sessão(ões)</small></button>`).join('')||empty('Nenhum exercício encontrado no período.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div>
-      </div>
-    </div>`;
+    <details class="uxDisclosure sectionGap"><summary><span><b>Calendário e distribuição</b><small>Veja dias registrados e séries por grupo</small></span><i>Explorar</i></summary><div class="grid split disclosureBody"><div class="card"><div class="cardHead"><div><b>Calendário</b><small>Marcas indicam registros, não atividade total.</small></div></div>${trainingCalendar(periodRows)}</div><div class="card"><div class="cardHead"><div><b>Séries por grupo</b><small>Contagem da janela selecionada.</small></div></div><div class="barList">${volumeHtml}</div></div></div></details>
+    <details class="uxDisclosure sectionGap"><summary><span><b>Evolução por exercício</b><small>Compare sessões mantendo máquina e unidade separadas</small></span><i>Explorar</i></summary><div class="disclosureBody card"><input id="exerciseQuery" class="fullInput" type="search" placeholder="Buscar exercício ou máquina" value="${esc(state.ui.exerciseQuery)}"><div class="exerciseExplorer"><div class="exerciseList">${exercisesFailed?domainError('Os exercícios não puderam ser carregados.'):groups.slice(0,120).map(g=>`<button data-exercise="${esc(g.key)}" class="${g.key===state.ui.selectedExercise?'active':''}"><b>${esc(g.label)}</b><small>${g.machine?`${esc(g.machine)} · `:''}${countLabel(exerciseSessions(g).length,'sessão','sessões')}</small></button>`).join('')||empty('Nenhum exercício encontrado no período.')}</div><div class="exerciseDetail">${exerciseHistory(selected)}</div></div></div></details>`;
 }

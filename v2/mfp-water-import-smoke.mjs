@@ -21,7 +21,7 @@ async function run(viewport,label){
   const extractorHref=await page.locator('#mfpWaterImportForm a').getAttribute('href');
   if(extractorHref!=='./mfp-water-extractor.html')throw new Error(`${label}: extractor link missing`);
   await page.locator('#mfpWaterImportFile').setInputFiles({name:'lts-health-mfp-water.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exportDocument))});
-  await page.waitForFunction(()=>document.querySelector('#mfpWaterImportPreview')?.textContent?.includes('2 data(s) com água encontradas'));
+  await page.waitForFunction(()=>document.querySelector('#mfpWaterImportPreview')?.textContent?.includes('2 datas com água encontradas'));
   const preview=(await page.locator('#mfpWaterImportPreview').textContent())||'';
   if(!preview.includes('3 dias verificados')||!preview.includes('1 sem total positivo')||!preview.includes('não serão gravados como zero'))throw new Error(`${label}: import preview lost coverage semantics`);
   await page.evaluate(async()=>{
@@ -31,7 +31,7 @@ async function run(viewport,label){
   });
   await page.check('#mfpWaterImportConfirm');
   await page.click('#mfpWaterImportSubmit');
-  await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='2 data(s) importadas.');
+  await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='2 datas importadas.');
   await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden'));
   const waterRows=await page.evaluate(()=>(window.__capturedMfpWater||[]).map(row=>({id:row.source_record_id,value:row.value,confidence:row.confidence})));
   if(waterRows.length!==2||waterRows[0]?.confidence!=='account_authenticated_export')throw new Error(`${label}: imported rows or provenance are wrong (${JSON.stringify(waterRows)})`);

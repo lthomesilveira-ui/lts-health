@@ -38,7 +38,7 @@ async function run(viewport,label){
   await setBackupFile(page,'lts-health-backup-valid.json',backup);
   await page.waitForFunction(()=>document.querySelector('#backupVerifyMsg')?.textContent?.includes('Backup íntegro:'));
   let message=(await page.locator('#backupVerifyMsg').textContent())||'';
-  if(!message.includes(`${backup.record_total} registro(s) estruturado(s)`)||!message.includes('18 área(s)'))throw new Error(`${label}: valid backup summary is incomplete: ${message}`);
+  if(!message.includes(`${backup.record_total} registros estruturados`)||!message.includes('18 áreas'))throw new Error(`${label}: valid backup summary is incomplete: ${message}`);
 
   const dataTampered=structuredClone(backup);
   dataTampered.data.body[0].weight_kg=Number(dataTampered.data.body[0].weight_kg||0)+1;
@@ -89,4 +89,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health local backup verification UI smoke passed');
-

@@ -28,28 +28,33 @@ async function run(viewport,label){
     const {state}=await import('./src/core.js');
     state.data.workouts=[...(state.data.workouts||[]),
       {source_record_id:'legacy-workout-detail',workout_date:'2025-12-20',workout_type:'Treino legado detalhado',location:'Fonte histórica',raw_exercises:'Remada histórica 75×6 + drop 55×4',source:'Fixture de interface',record_status:'imported',is_canonical:true},
-      {source_record_id:'legacy-workout-summary',workout_date:'2025-12-19',workout_type:'Treino legado resumo',location:'Fonte histórica',raw_exercises:'Peito / Bíceps / Tríceps — sem detalhe',source:'Fixture de interface',record_status:'imported',is_canonical:true}
+      {source_record_id:'legacy-workout-summary',workout_date:'2025-12-19',workout_type:'Treino legado resumo',location:'Fonte histórica',raw_exercises:'Peito / Bíceps / Tríceps — sem detalhe',source:'Fixture de interface',record_status:'imported',is_canonical:true},
+      {source_record_id:'trend-workout-1',workout_date:'2026-01-20',workout_type:'Remada teste',source:'Fixture de interface',record_status:'validated',is_canonical:true},
+      {source_record_id:'trend-workout-2',workout_date:'2026-01-27',workout_type:'Remada teste',source:'Fixture de interface',record_status:'validated',is_canonical:true},
+      {source_record_id:'trend-workout-3',workout_date:'2026-02-03',workout_type:'Remada teste',source:'Fixture de interface',record_status:'validated',is_canonical:true},
+      {source_record_id:'workout-same-day-a',workout_date:'2026-02-10',workout_type:'Remada teste A',source:'Fixture de interface',record_status:'validated',is_canonical:true},
+      {source_record_id:'workout-same-day-b',workout_date:'2026-02-10',workout_type:'Remada teste B',source:'Fixture de interface',record_status:'validated',is_canonical:true}
     ];
     state.data.exercises=[...(state.data.exercises||[]),
       {source_record_id:'legacy-ex-detail',workout_source_record_id:'legacy-workout-detail',workout_date:'2025-12-20',order_index:1,exercise:'Remada histórica',machine:null,muscle_group:'Costas',source_text:'Remada histórica 75×6 + drop 55×4',source:'Fixture de interface'},
-      {source_record_id:'trend-ex-1',workout_source_record_id:'workout-1',workout_date:'2026-01-20',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
-      {source_record_id:'trend-ex-2',workout_source_record_id:'workout-1',workout_date:'2026-01-27',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
-      {source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
+      {source_record_id:'trend-ex-1',workout_source_record_id:'trend-workout-1',workout_date:'2026-01-20',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
+      {source_record_id:'trend-ex-2',workout_source_record_id:'trend-workout-2',workout_date:'2026-01-27',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
+      {source_record_id:'trend-ex-3',workout_source_record_id:'trend-workout-3',workout_date:'2026-02-03',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
       {source_record_id:'trend-ex-same-day-a',workout_source_record_id:'workout-same-day-a',workout_date:'2026-02-10',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
       {source_record_id:'trend-ex-same-day-b',workout_source_record_id:'workout-same-day-b',workout_date:'2026-02-10',order_index:10,exercise:'Remada teste',machine:'Máquina A',muscle_group:'Costas',source:'Fixture de interface'},
-      {source_record_id:'trend-ex-other-machine',workout_source_record_id:'workout-2',workout_date:'2026-02-03',order_index:11,exercise:'Remada teste',machine:'Máquina B',muscle_group:'Costas',source:'Fixture de interface'}
+      {source_record_id:'trend-ex-other-machine',workout_source_record_id:'trend-workout-3',workout_date:'2026-02-03',order_index:11,exercise:'Remada teste',machine:'Máquina B',muscle_group:'Costas',source:'Fixture de interface'}
     ];
     state.data.sets=[...(state.data.sets||[]),
-      {source_record_id:'trend-set-1',exercise_source_record_id:'trend-ex-1',workout_source_record_id:'workout-1',workout_date:'2026-01-20',set_index:1,phase:'working',weight:60,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'},
-      {source_record_id:'trend-set-2',exercise_source_record_id:'trend-ex-1',workout_source_record_id:'workout-1',workout_date:'2026-01-20',set_index:2,phase:'working',weight:60,weight_unit:'kg',reps_numeric:12,reps_raw:'12',source:'Fixture de interface'},
-      {source_record_id:'trend-set-3',exercise_source_record_id:'trend-ex-2',workout_source_record_id:'workout-1',workout_date:'2026-01-27',set_index:1,phase:'working',weight:65,weight_unit:'kg',reps_numeric:8,reps_raw:'8',source:'Fixture de interface'},
-      {source_record_id:'trend-set-no-unit-prev',exercise_source_record_id:'trend-ex-2',workout_source_record_id:'workout-1',workout_date:'2026-01-27',set_index:2,phase:'working',weight:80,weight_unit:null,reps_numeric:7,reps_raw:'7',source:'Fixture de interface'},
-      {source_record_id:'trend-set-4',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:1,phase:'working',weight:65,weight_unit:'kg',reps_numeric:11,reps_raw:'11',source:'Fixture de interface'},
-      {source_record_id:'trend-set-unit',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:2,phase:'working',weight:7,weight_unit:'plate_index',reps_numeric:9,reps_raw:'9',source:'Fixture de interface'},
-      {source_record_id:'trend-set-no-unit-latest',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:3,phase:'working',weight:90,weight_unit:null,reps_numeric:6,reps_raw:'6',source:'Fixture de interface'},
+      {source_record_id:'trend-set-1',exercise_source_record_id:'trend-ex-1',workout_source_record_id:'trend-workout-1',workout_date:'2026-01-20',set_index:1,phase:'working',weight:60,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'},
+      {source_record_id:'trend-set-2',exercise_source_record_id:'trend-ex-1',workout_source_record_id:'trend-workout-1',workout_date:'2026-01-20',set_index:2,phase:'working',weight:60,weight_unit:'kg',reps_numeric:12,reps_raw:'12',source:'Fixture de interface'},
+      {source_record_id:'trend-set-3',exercise_source_record_id:'trend-ex-2',workout_source_record_id:'trend-workout-2',workout_date:'2026-01-27',set_index:1,phase:'working',weight:65,weight_unit:'kg',reps_numeric:8,reps_raw:'8',source:'Fixture de interface'},
+      {source_record_id:'trend-set-no-unit-prev',exercise_source_record_id:'trend-ex-2',workout_source_record_id:'trend-workout-2',workout_date:'2026-01-27',set_index:2,phase:'working',weight:80,weight_unit:null,reps_numeric:7,reps_raw:'7',source:'Fixture de interface'},
+      {source_record_id:'trend-set-4',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'trend-workout-3',workout_date:'2026-02-03',set_index:1,phase:'working',weight:65,weight_unit:'kg',reps_numeric:11,reps_raw:'11',source:'Fixture de interface'},
+      {source_record_id:'trend-set-unit',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'trend-workout-3',workout_date:'2026-02-03',set_index:2,phase:'working',weight:7,weight_unit:'plate_index',reps_numeric:9,reps_raw:'9',source:'Fixture de interface'},
+      {source_record_id:'trend-set-no-unit-latest',exercise_source_record_id:'trend-ex-3',workout_source_record_id:'trend-workout-3',workout_date:'2026-02-03',set_index:3,phase:'working',weight:90,weight_unit:null,reps_numeric:6,reps_raw:'6',source:'Fixture de interface'},
       {source_record_id:'trend-set-same-day-a',exercise_source_record_id:'trend-ex-same-day-a',workout_source_record_id:'workout-same-day-a',workout_date:'2026-02-10',set_index:1,phase:'working',weight:70,weight_unit:'kg',reps_numeric:8,reps_raw:'8',source:'Fixture de interface'},
       {source_record_id:'trend-set-same-day-b',exercise_source_record_id:'trend-ex-same-day-b',workout_source_record_id:'workout-same-day-b',workout_date:'2026-02-10',set_index:1,phase:'working',weight:250,weight_unit:'kg',reps_numeric:2,reps_raw:'2',source:'Fixture de interface'},
-      {source_record_id:'trend-set-other-machine',exercise_source_record_id:'trend-ex-other-machine',workout_source_record_id:'workout-2',workout_date:'2026-02-03',set_index:1,phase:'working',weight:100,weight_unit:'kg',reps_numeric:20,reps_raw:'20',source:'Fixture de interface'}
+      {source_record_id:'trend-set-other-machine',exercise_source_record_id:'trend-ex-other-machine',workout_source_record_id:'trend-workout-3',workout_date:'2026-02-03',set_index:1,phase:'working',weight:100,weight_unit:'kg',reps_numeric:20,reps_raw:'20',source:'Fixture de interface'}
     ];
   });
 
@@ -70,6 +75,8 @@ async function run(viewport,label){
 
   await page.fill('#trainingQuery','');
   await page.waitForFunction(()=>document.querySelectorAll('.sessions .session').length>1);
+  const exerciseDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'});
+  await exerciseDisclosure.locator('summary').click();
   await page.fill('#exerciseQuery','remada teste');
   await page.waitForFunction(()=>{
     const buttons=[...document.querySelectorAll('.exerciseList button')];
@@ -78,7 +85,7 @@ async function run(viewport,label){
   await page.click('.exerciseList button:has-text("Máquina A")');
   await page.waitForSelector('.trainingRecent');
   const selectedButton=(await page.locator('.exerciseList button.active').textContent())||'';
-  if(!selectedButton.includes('5 sessão'))throw new Error(`${label}: same-day sessions were collapsed in the exercise session count`);
+  if(!selectedButton.includes('5 sessões'))throw new Error(`${label}: same-day sessions were collapsed in the exercise session count`);
   const text=(await page.locator('.exerciseDetail').textContent())||'';
   for(const expected of ['Sessões recentes','60 kg','12 reps','65 kg','11 reps','placa','Unidades diferentes permanecem separadas','mesma carga · +3 reps','90 sem unidade','70 kg','250 kg','sessão mantida separada','mais de uma sessão']){
     if(!text.includes(expected))throw new Error(`${label}: missing conservative training trend detail: ${expected}`);
@@ -98,18 +105,28 @@ async function run(viewport,label){
   const rows=await page.locator('.trainingRecentRow').count();
   if(rows<4)throw new Error(`${label}: recent-session trend did not render expected unit-separated rows`);
 
-  await page.selectOption('#trainingPeriod','28');
-  await page.waitForFunction(()=>document.querySelector('.exerciseList')?.textContent?.includes('Nenhum exercício encontrado no período.'));
+  await page.selectOption('#trainingPeriod','30');
+  await page.waitForFunction(()=>{
+    const screen=document.querySelector('#screenHost')?.textContent||'';
+    return document.querySelector('#trainingPeriod')?.value==='30'
+      && screen.includes('Remada teste')
+      && !screen.includes('Remada histórica');
+  });
   const scopedText=(await page.locator('#screenHost').textContent())||'';
-  if(scopedText.includes('Remada teste')||scopedText.includes('Remada histórica'))throw new Error(`${label}: exercise progression ignored the selected period`);
+  if(!scopedText.includes('Remada teste')||scopedText.includes('Remada histórica'))throw new Error(`${label}: exercise progression ignored the selected period`);
   await page.selectOption('#trainingPeriod','all');
-  await page.waitForFunction(()=>[...document.querySelectorAll('.exerciseList button')].some(button=>button.textContent?.toLowerCase().includes('remada teste')));
+  await page.waitForFunction(()=>document.querySelector('#trainingPeriod')?.value==='all'
+    && [...document.querySelectorAll('.exerciseList button')].some(button=>button.textContent?.toLowerCase().includes('remada teste'))
+    && (document.querySelector('.sessions .session .sessionHead')?.getBoundingClientRect().width??0)>0);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: training progression caused horizontal overflow ${overflow}px`);
   if(viewport.width<620){
-    const head=await page.locator('.sessions .session').first().locator('.sessionHead').evaluate(el=>({width:el.getBoundingClientRect().width,viewport:innerWidth}));
-    if(head.width>head.viewport-20)throw new Error(`${label}: workout header exceeds usable mobile width`);
+    const head=await page.locator('.sessions .session').first().locator('.sessionHead').evaluate(el=>{
+      const rect=el.getBoundingClientRect();
+      return {left:rect.left,right:rect.right,width:rect.width,viewport:innerWidth};
+    });
+    if(head.left<9||head.right>head.viewport-9)throw new Error(`${label}: workout header leaves the usable mobile width (${JSON.stringify(head)})`);
   }
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();

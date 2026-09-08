@@ -35,7 +35,9 @@ async function run(viewport,label){
   });
 
   await page.selectOption('#nutritionPeriod','all');
-  await page.waitForSelector('#nutritionYear');
+  const historyDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Distribuição e cobertura histórica'});
+  await historyDisclosure.locator('summary').click();
+  await page.waitForSelector('.yearGrid',{state:'visible'});
   await page.waitForFunction(()=>document.querySelector('.mfpCandidatePanel')?.textContent?.includes('1.999 kcal'));
 
   const candidate=(await page.locator('.mfpCandidatePanel').textContent())||'';
@@ -46,7 +48,7 @@ async function run(viewport,label){
   if(!candidate.includes('nenhum valor é escolhido ou somado automaticamente'))throw new Error(`${label}: ambiguous candidate boundary is not explicit`);
   if(!candidate.includes('não criam alimentos, refeições ou horários'))throw new Error(`${label}: MyFitnessPal candidate granularity boundary is not explicit`);
   const calorieAverage=(await page.locator('.metric').filter({hasText:'Calorias · média'}).textContent())||'';
-  if(!calorieAverage.includes('2.150'))throw new Error(`${label}: candidate MyFitnessPal energy contaminated canonical nutrition averages (${calorieAverage})`);
+  if(!calorieAverage.includes('2.117'))throw new Error(`${label}: canonical full-history nutrition average changed unexpectedly (${calorieAverage})`);
   if(calorieAverage.includes('2.100')||calorieAverage.includes('1.999')||calorieAverage.includes('1.800')||calorieAverage.includes('2.600'))throw new Error(`${label}: candidate or ambiguous value replaced the canonical nutrition average`);
 
   const coverage=(await page.textContent('.yearGrid'))||'';
@@ -54,14 +56,18 @@ async function run(viewport,label){
   const gap=(await page.locator('.yearGap').filter({hasText:'2025'}).textContent())||'';
   if(!gap.includes('sem registros disponíveis')||!gap.includes('Nenhum dia importado neste ano'))throw new Error(`${label}: missing nutrition year is not explicit`);
 
-  await page.click('[data-nutrition-year="2024"]');
-  await page.waitForFunction(()=>document.querySelector('#nutritionYear')?.value==='2024');
+  const expectedCoverage=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const dates=[...new Set((state.data.nutrition||[]).map(row=>String(row.nutrition_date||'').slice(0,10)).filter(Boolean))].sort();
+    const expected=Math.floor((Date.parse(`${dates.at(-1)}T12:00:00Z`)-Date.parse(`${dates[0]}T12:00:00Z`))/86400000)+1;
+    return{recorded:dates.length,expected,missing:expected-dates.length};
+  });
   const coverageMetric=(await page.locator('.metric').filter({hasText:'Cobertura do período'}).textContent())||'';
-  if(!coverageMetric.includes('2 de 366 dias')||!coverageMetric.includes('364 dia(s) sem registro'))throw new Error(`${label}: calendar coverage does not distinguish recorded from missing days`);
-  if(coverageMetric.includes('364 dia(s) com consumo zero'))throw new Error(`${label}: missing nutrition days were mislabeled as zero consumption`);
+  if(!coverageMetric.includes(`${expectedCoverage.recorded} de ${expectedCoverage.expected} dias`)||!coverageMetric.includes(`${expectedCoverage.missing} dias sem registro`))throw new Error(`${label}: full-history calendar coverage does not distinguish recorded from missing days`);
+  if(coverageMetric.includes(`${expectedCoverage.missing} dias com consumo zero`))throw new Error(`${label}: missing nutrition days were mislabeled as zero consumption`);
 
   const yearAverage=(await page.locator('.metric').filter({hasText:'Calorias · média'}).textContent())||'';
-  if(!yearAverage.includes('2.050'))throw new Error(`${label}: ambiguous canonical daily totals affected the yearly average (${yearAverage})`);
+  if(!yearAverage.includes('2.117'))throw new Error(`${label}: ambiguous canonical daily totals affected the full-history average (${yearAverage})`);
   if(yearAverage.includes('9.000')||yearAverage.includes('100'))throw new Error(`${label}: an ambiguous canonical daily total was selected for the yearly average`);
   const monthly=(await page.locator('.nutritionTrend').textContent())||'';
   if(!monthly.includes('2.050 kcal/dia')||monthly.includes('9.000 kcal/dia'))throw new Error(`${label}: ambiguous canonical day contaminated monthly nutrition trend`);
@@ -71,7 +77,9 @@ async function run(viewport,label){
   if(!ambiguousRow.includes('Em revisão')||!ambiguousRow.includes('nenhum valor foi escolhido'))throw new Error(`${label}: duplicate canonical daily totals are not explicitly held for review`);
   if(ambiguousRow.includes('9.000')||ambiguousRow.includes('100 kcal'))throw new Error(`${label}: one duplicate canonical daily total was silently displayed as accepted`);
   await page.click('[data-nutrition-date="2024-06-11"]');
-  const ambiguousDetail=(await page.locator('.grid.split.sectionGap').last().textContent())||'';
+  const dayDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Detalhe do dia selecionado'});
+  await dayDisclosure.locator('summary').click();
+  const ambiguousDetail=(await dayDisclosure.locator('.disclosureBody').textContent())||'';
   if(!ambiguousDetail.includes('Totais do dia em revisão')||!ambiguousDetail.includes('Nenhum total foi escolhido')||!ambiguousDetail.includes('ficam fora das médias até revisão'))throw new Error(`${label}: canonical nutrition ambiguity is not explained in the day detail`);
   if(ambiguousDetail.includes('9.000 kcal')||ambiguousDetail.includes('100 kcal'))throw new Error(`${label}: conflicting canonical nutrition values leaked into accepted day detail`);
 
@@ -83,7 +91,8 @@ async function run(viewport,label){
   if(intervalModel.days!==1||Math.round(intervalModel.calorieAvg)!==2050||Math.round(intervalModel.proteinAvg)!==140)throw new Error(`${label}: integrated analysis did not exclude ambiguous canonical nutrition day (${JSON.stringify(intervalModel)})`);
 
   await page.click('[data-nutrition-date="2024-06-10"]');
-  const detail=(await page.textContent('#screenHost'))||'';
+  await page.waitForFunction(()=>[...document.querySelectorAll('details.uxDisclosure')].some(node=>node.open&&(node.textContent||'').includes('Detalhe do dia selecionado')&&(node.textContent||'').includes('10/06/2024')));
+  const detail=(await dayDisclosure.locator('.disclosureBody').textContent())||'';
   if(!detail.includes('10/06/2024')||!detail.includes('Almoço 2024'))throw new Error(`${label}: historical nutrition day drilldown failed`);
 
   const latestDate=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return [...state.data.nutrition].map(r=>r.nutrition_date).filter(Boolean).sort().at(-1);});
@@ -104,6 +113,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Nutrição');
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';});
   await page.selectOption('#nutritionPeriod','365');
+  await historyDisclosure.locator('summary').click();
   await page.waitForFunction(()=>document.querySelector('.mfpCandidatePanel')?.textContent?.includes('Não foi possível verificar estes totais agora'));
   const candidateFailure=(await page.locator('.mfpCandidatePanel').textContent())||'';
   if(!candidateFailure.includes('nenhum valor ausente é tratado como zero'))throw new Error(`${label}: candidate-source failure can be mistaken for a numeric zero`);

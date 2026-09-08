@@ -83,6 +83,7 @@ async function run(viewport,label){
     state.data.exercises=[...(state.data.exercises||[]),{source_record_id:'live-ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',order_index:4,exercise:'Supino máquina',machine:'Máquina de teste',muscle_group:'Peito',source:'Fixture de interface'}];
     state.data.sets=[...(state.data.sets||[]),{source_record_id:'live-set-progression',exercise_source_record_id:'live-ex-progression',workout_source_record_id:'workout-1',workout_date:'2026-01-28',set_index:1,phase:'working',weight:70,weight_unit:'kg',reps_numeric:10,reps_raw:'10',source:'Fixture de interface'}];
   });
+  await page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'}).locator('summary').click();
   await page.fill('#exerciseQuery','supino');
   await page.waitForSelector('.exerciseProgressUnit svg');
   if(!((await page.locator('.exerciseProgression').textContent())||'').includes('70 → 90 kg'))throw new Error(`${label}: deployed exercise progression chart missing`);

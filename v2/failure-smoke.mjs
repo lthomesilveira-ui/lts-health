@@ -88,7 +88,8 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   const card=await ctx.page.locator('.cockpitStatus').filter({hasText:'Nutrição'}).first().textContent();
   if(!card?.includes('Indisponível agora')||card?.includes('Sem cobertura')||card?.match(/\b0\s*kcal\b/i))throw new Error('hoje/nutrition mobile: failed domain presented as absence or zero');
   if(!ctx.text.includes('Os dados de nutrição não carregaram agora.'))throw new Error('hoje/nutrition mobile: failed nutrition module is not explicit');
-  if(!ctx.text.includes('Ritmo e distribuição'))throw new Error('hoje/nutrition mobile: healthy training module disappeared');
+  const training=await ctx.page.locator('.cockpitStatus').filter({hasText:'Treinos'}).first().textContent();
+  if(!training?.includes('sessões'))throw new Error('hoje/nutrition mobile: healthy training module disappeared');
   await finish(ctx,'hoje/nutrition mobile');
 }
 {
@@ -96,9 +97,9 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   const card=await ctx.page.locator('.cockpitStatus').filter({hasText:'Exames'}).first().textContent();
   if(!card?.includes('Indisponível agora')||card?.includes('Nenhuma coleta')||card?.match(/\b0\b/))throw new Error('hoje/labs desktop: failed domain presented as absence or zero');
   if(!ctx.text.includes('Os dados de exames não carregaram agora.'))throw new Error('hoje/labs desktop: failed exam module is not explicit');
-  if(!ctx.text.includes('Ritmo e distribuição')||!ctx.text.includes('Composição corporal'))throw new Error('hoje/labs desktop: healthy cockpit domains disappeared');
+  const training=await ctx.page.locator('.cockpitStatus').filter({hasText:'Treinos'}).first().textContent();
+  if(!training?.includes('sessões')||!ctx.text.includes('Composição corporal'))throw new Error('hoje/labs desktop: healthy cockpit domains disappeared');
   await finish(ctx,'hoje/labs desktop');
 }
 
 console.log('LTS Health v2 failure-state smoke passed');
-

@@ -1,4 +1,4 @@
-import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile} from './core.js';
+import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData,downloadStructuredBackup} from './data-layer.js';
 import {renderBioHub} from './bio-screen.js';
 import {renderTrainingScreen} from './training-screen.js';
@@ -18,6 +18,7 @@ const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
+let renderedRoute=null;
 const mobileMoreRoutes=new Set(['bio','nutricao','saude','tratamentos','evolucao','dados']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
@@ -35,6 +36,19 @@ function syncNav(){
   else{action.classList.add('hidden');action.dataset.entry='';}
 }
 
+function resetRouteScroll(){
+  const host=$('screenHost');
+  window.scrollTo({top:0,left:0,behavior:'auto'});
+  host?.scrollTo({top:0,left:0,behavior:'auto'});
+  if(host){host.scrollTop=0;host.scrollLeft=0;}
+}
+
+function settleRouteScroll(route){
+  const reset=()=>{if(state.route===route)resetRouteScroll();};
+  reset();
+  requestAnimationFrame(()=>{reset();requestAnimationFrame(reset);});
+}
+
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
@@ -43,7 +57,7 @@ function setRoute(route,{replace=true}={}){
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
-  requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'auto'}));
+  settleRouteScroll(route);
 }
 
 function routeFromLocation(){
@@ -54,15 +68,46 @@ function routeFromLocation(){
 
 function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;}
 
+function disclosureKey(details){
+  const explicit=details?.dataset?.disclosure;
+  if(explicit)return explicit;
+  const summary=details?.querySelector(':scope > summary');
+  return String(summary?.querySelector('b')?.textContent||summary?.textContent||'').trim();
+}
+
+function captureRenderContext(host){
+  const openDisclosures=[...host.querySelectorAll('details[open]')].map(disclosureKey).filter(Boolean);
+  const active=host.contains(document.activeElement)?document.activeElement:null;
+  if(!active?.id)return{openDisclosures,focus:null};
+  let selectionStart=null,selectionEnd=null;
+  try{selectionStart=active.selectionStart;selectionEnd=active.selectionEnd;}catch{}
+  return{openDisclosures,focus:{id:active.id,selectionStart,selectionEnd}};
+}
+
+function restoreRenderContext(host,context){
+  const open=new Set(context.openDisclosures||[]);
+  for(const details of host.querySelectorAll('details'))if(open.has(disclosureKey(details)))details.open=true;
+  if(!context.focus?.id)return;
+  const active=$(context.focus.id);if(!active)return;
+  try{
+    active.focus({preventScroll:true});
+    if(context.focus.selectionStart!=null&&typeof active.setSelectionRange==='function')active.setSelectionRange(context.focus.selectionStart,context.focus.selectionEnd);
+  }catch{}
+}
+
 function render(){
   renderQueued=false;if(!$('app')||$('app').classList.contains('hidden'))return;
   const host=$('screenHost');
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
   if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
+  const routeChanged=renderedRoute!==state.route;
+  const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
-  applyControlState();mountEvidencePanels();syncNav();
+  applyControlState();mountEvidencePanels();restoreRenderContext(host,context);
+  if(routeChanged)settleRouteScroll(state.route);
+  syncNav();renderedRoute=state.route;
 }
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
@@ -110,9 +155,9 @@ async function doLogin(){
 
 function openTimelineTarget(button){
   const route=button.dataset.timelineRoute,kind=button.dataset.timelineKind,ref=button.dataset.timelineRef||'',date=button.dataset.timelineDate||'';
-  if(kind==='workout'){state.ui.trainingPeriod='all';state.ui.openWorkout=ref;}
+  if(kind==='workout'){setGlobalPeriod('all');state.ui.openWorkout=ref;}
   else if(kind==='body'){state.ui.selectedBodyDate=ref||date;}
-  else if(kind==='nutrition'){state.ui.nutritionPeriod='all';state.ui.nutritionYear=String(date).slice(0,4);state.ui.nutritionDate=date;}
+  else if(kind==='nutrition'){setGlobalPeriod('all');state.ui.nutritionYear=String(date).slice(0,4);state.ui.nutritionDate=date;}
   else if(kind==='labs'){state.ui.selectedCollection=ref;state.ui.labQuery='';}
   if(route)setRoute(route,{replace:false});
 }
@@ -133,7 +178,7 @@ function bindStaticEvents(){
     const timelineJump=event.target.closest('[data-timeline-jump]');if(timelineJump){openTimelineTarget(timelineJump);return;}
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
     const evidenceButton=event.target.closest('[data-evidence-route]');if(evidenceButton){event.preventDefault();setRoute(evidenceButton.dataset.evidenceRoute,{replace:false});return;}
-    const periodButton=event.target.closest('button[data-period]');if(periodButton){event.preventDefault();state.ui.analysisPeriod=periodButton.dataset.period;scheduleRender();return;}
+    const periodButton=event.target.closest('button[data-period]');if(periodButton){event.preventDefault();setGlobalPeriod(periodButton.dataset.period);scheduleRender();return;}
     const homeMetric=event.target.closest('[data-home-metric]');if(homeMetric){event.preventDefault();state.ui.homeMetric=homeMetric.dataset.homeMetric;render();return;}
     const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
@@ -141,7 +186,7 @@ function bindStaticEvents(){
     const evolutionMetric=event.target.closest('[data-evolution-metric]');if(evolutionMetric){state.ui.evolutionMetric=evolutionMetric.dataset.evolutionMetric;scheduleRender();return;}
     const segmentDate=event.target.closest('[data-segmental-date]');if(segmentDate){state.ui.segmentalDate=segmentDate.dataset.segmentalDate;scheduleRender();return;}
     const nutritionDate=event.target.closest('[data-nutrition-date]');if(nutritionDate){state.ui.nutritionDate=nutritionDate.dataset.nutritionDate;scheduleRender();return;}
-    const nutritionYear=event.target.closest('[data-nutrition-year]');if(nutritionYear){state.ui.nutritionPeriod='all';state.ui.nutritionYear=nutritionYear.dataset.nutritionYear;state.ui.nutritionDate=null;scheduleRender();return;}
+    const nutritionYear=event.target.closest('[data-nutrition-year]');if(nutritionYear){setGlobalPeriod('all');state.ui.nutritionYear=nutritionYear.dataset.nutritionYear;state.ui.nutritionDate=null;scheduleRender();return;}
     const workoutButton=event.target.closest('[data-workout]');if(workoutButton){const id=workoutButton.dataset.workout;state.ui.openWorkout=state.ui.openWorkout===id?null:id;scheduleRender();return;}
     const exerciseButton=event.target.closest('[data-exercise]');if(exerciseButton){state.ui.selectedExercise=exerciseButton.dataset.exercise;scheduleRender();return;}
     const markerButton=event.target.closest('[data-marker]');if(markerButton){state.ui.selectedBiomarker=markerButton.dataset.marker;scheduleRender();return;}
@@ -156,12 +201,12 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
-    if(event.target.id==='trainingPeriod'){state.ui.trainingPeriod=event.target.value;scheduleRender();}
-    if(event.target.id==='analysisPeriod'){state.ui.analysisPeriod=event.target.value;scheduleRender();}
+    if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
+    if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
     if(event.target.id==='timelinePeriod'){state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=250;if(event.target.value!=='all')state.ui.timelineYear=null;scheduleRender();}
     if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
     if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
-    if(event.target.id==='nutritionPeriod'){state.ui.nutritionPeriod=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
+    if(event.target.id==='nutritionPeriod'){setGlobalPeriod(event.target.value);state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='nutritionYear'){state.ui.nutritionYear=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='compareA'){state.ui.compareA=event.target.value;scheduleRender();}
     if(event.target.id==='compareB'){state.ui.compareB=event.target.value;scheduleRender();}

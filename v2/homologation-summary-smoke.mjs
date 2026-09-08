@@ -13,10 +13,10 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
-  await page.waitForSelector('.bioLatestLead');
-  const latestLead=(await page.locator('.bioLatestLead').textContent())||'';
+  await page.waitForSelector('.domainHero');
+  const latestLead=(await page.locator('.domainHero').textContent())||'';
   if(!latestLead.includes('Última medição')||!latestLead.includes('01/02/2026'))throw new Error(`${label}: latest body date is not explicit`);
-  if(!latestLead.includes('2 medição(ões) preservadas'))throw new Error(`${label}: body history count missing from latest summary`);
+  if(!latestLead.includes('2 medições preservadas'))throw new Error(`${label}: body history count missing from latest summary`);
 
   const mobile=viewport.width<720;
   const nav=mobile?'#mobileNav':'#primaryNav';
@@ -37,7 +37,7 @@ async function run(viewport,label){
   const latest=page.locator('.session.latest .sessionHead').first();
   if(await latest.count()!==1)throw new Error(`${label}: latest workout marker missing`);
   const latestText=(await latest.textContent())||'';
-  for(const expected of ['02/02/2026','Peito + ombros','2 exercício(s) · 3 série(s)','mais recente']){
+  for(const expected of ['02/02/2026','Peito + ombros','2 exercícios · 3 séries','mais recente']){
     if(!latestText.includes(expected))throw new Error(`${label}: latest workout summary missing ${expected}`);
   }
 

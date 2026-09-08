@@ -42,10 +42,14 @@ async function run(viewport,label){
     state.ui.selectedCollection=null;
     state.ui.selectedBiomarker='marcador a';
   },{rows:injected,docs:injectedDocs});
+  await page.locator('details.uxDisclosure').filter({hasText:'Coletas e resultados'}).locator('summary').click();
   await page.fill('#labQuery','x');
   await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=11);
   await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.querySelector('#labQuery')?.value==='');
+
+  const comparisonDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Comparar coletas'});
+  await comparisonDisclosure.locator('summary').click();
 
   const options=await page.locator('#collectionSelect option').allTextContents();
   if(!options.some(t=>t.includes('03/02/2026')&&t.includes('Fonte F preservada'))||!options.some(t=>t.includes('03/02/2026')&&t.includes('Fonte E preservada')))throw new Error(`${label}: distinct source-only collections merged`);
@@ -66,16 +70,18 @@ async function run(viewport,label){
   if(!compare.includes('Marcador sem unidade')||!compare.includes('unidade ausente'))throw new Error(`${label}: unitless result was compared`);
   if(!compare.includes('AAA marcador ambíguo')||!compare.includes('revisar registros'))throw new Error(`${label}: same-source duplicate marker was treated as a direct comparison`);
 
+  const documentsDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Documentos e rastreabilidade'});
+  await documentsDisclosure.locator('summary').click();
   const evidence=page.locator('[data-evidence-date="2026-01-03"]');
   await evidence.waitFor();
   const evidenceText=(await evidence.textContent())||'';
   if(!evidenceText.includes('Documento mesma origem · mesma origem'))throw new Error(`${label}: same-source document not identified as same source`);
   if(!evidenceText.includes('Documento outra origem · apenas mesma data'))throw new Error(`${label}: date-only document implied source equivalence`);
-  if(!evidenceText.includes('documento(s) da mesma origem'))throw new Error(`${label}: source-aware evidence summary missing`);
+  if(!evidenceText.includes('1 documento da mesma origem'))throw new Error(`${label}: source-aware evidence summary missing`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Terceira origem');
-  await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
-  const sourceGap=(await page.locator('.card.sectionGap').filter({hasText:'Comparação com histórico da mesma origem'}).textContent())||'';
+  await page.waitForFunction(()=>[...document.querySelectorAll('details.uxDisclosure .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
+  const sourceGap=(await comparisonDisclosure.locator('.disclosureBody').textContent())||'';
   if(!sourceGap.includes('Nenhuma diferença foi calculada automaticamente'))throw new Error(`${label}: source-gap guardrail missing`);
   if(await page.locator('.collectionCompareHead').count())throw new Error(`${label}: different-source history produced comparison`);
 
@@ -118,4 +124,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('Health longitudinal browser smoke passed');
-
