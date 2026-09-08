@@ -1,8 +1,10 @@
-import {saveBodyRecord,saveWorkout,saveMyFitnessPalWater} from './writes.js';
+import {saveBodyRecord,saveWorkout,saveMyFitnessPalWater,importMyFitnessPalWaterExport} from './writes.js';
+import {parseMyFitnessPalWaterExport} from './mfp-water-transfer.js';
 
 const $=id=>document.getElementById(id);
 let refreshCallback=async()=>{};
 let exerciseCounter=0;
+let pendingWaterImport=null;
 
 export function localDateValue(value=new Date()){
   const d=value instanceof Date?value:new Date(value);
@@ -75,7 +77,7 @@ function waterForm(){
   return `<form id="waterEntryForm" class="entryForm">
     <div class="waterEntryIntro">
       <span aria-hidden="true">◌</span>
-      <div><b>Traga o total diário do MyFitnessPal</b><p>Abra o diário do MFP, veja o total de água do dia e informe o mesmo valor aqui. O LTS salva a data e o volume em uma série própria.</p></div>
+      <div><b>Registro manual de um único dia</b><p>Use esta opção apenas para corrigir ou acrescentar uma data isolada. Para o histórico desde 2018, use a importação automática.</p></div>
     </div>
     <div class="entryGrid cols2">
       <label>Data no MyFitnessPal<input name="metric_date" type="date" value="${today()}" required></label>
@@ -84,6 +86,23 @@ function waterForm(){
     <label class="entryConfirm"><input name="confirmed" type="checkbox" required><span>Confirmei este total no diário do MyFitnessPal.</span></label>
     <p class="entryHint">Salvar novamente a mesma data substitui apenas esse total de água. Nenhum outro dado de nutrição é alterado.</p>
     <div class="entryFooter"><span id="entryMsg" class="msg" role="status"></span><button class="primary" type="submit">Salvar água</button></div>
+  </form>`;
+}
+
+function waterImportForm(){
+  return `<form id="mfpWaterImportForm" class="entryForm">
+    <div class="waterTransferIntro">
+      <div><span>Etapa 1</span><b>Extraia na sessão aberta do MyFitnessPal</b><p>O Safari consulta todas as datas automaticamente, com pausa e retomada. Você não precisa digitar os dias.</p></div>
+      <a class="primary" href="./mfp-water-extractor.html" target="_blank" rel="noopener">Preparar extrator</a>
+    </div>
+    <div class="waterTransferFile">
+      <label>Etapa 2 · Arquivo gerado pelo extrator<input id="mfpWaterImportFile" name="mfp_water_file" type="file" accept="application/json,.json" required></label>
+      <p>O arquivo é validado localmente. Somente data e total em mL entram no histórico; o JSON original não é enviado nem armazenado.</p>
+    </div>
+    <div id="mfpWaterImportPreview" class="waterImportPreview" role="status"><b>Aguardando arquivo</b><span>Selecione o JSON criado ao final da extração.</span></div>
+    <label class="entryConfirm"><input id="mfpWaterImportConfirm" name="confirmed" type="checkbox" required disabled><span>Confirmo a importação das datas e dos totais mostrados na prévia.</span></label>
+    <p class="entryHint">Reimportar o mesmo arquivo é seguro. A mesma data é atualizada, sem criar duplicata e sem alterar refeições ou outros dados de nutrição.</p>
+    <div class="waterImportFooter"><button type="button" class="ghostSmall" data-water-manual>Registrar apenas um dia</button><div class="entryFooter"><span id="entryMsg" class="msg" role="status"></span><button id="mfpWaterImportSubmit" class="primary" type="submit" disabled>Importar histórico</button></div></div>
   </form>`;
 }
 
@@ -96,17 +115,18 @@ export function shouldWarnEntryUnload(){
 
 export function openEntry(type){
   const modal=entryModal();
+  pendingWaterImport=null;
   modal.dataset.saving='false';modal.dataset.dirty='false';
   modal.classList.remove('hidden');
-  $('entryTitle').textContent=type==='workout'?'Registrar treino':type==='water'?'Trazer água do MyFitnessPal':'Registrar bio';
-  $('entryHost').innerHTML=type==='workout'?workoutForm():type==='water'?waterForm():bodyForm();
+  $('entryTitle').textContent=type==='workout'?'Registrar treino':type==='water-import'?'Importar água do MyFitnessPal':type==='water'?'Registrar água manualmente':'Registrar bio';
+  $('entryHost').innerHTML=type==='workout'?workoutForm():type==='water-import'?waterImportForm():type==='water'?waterForm():bodyForm();
 }
 
 function closeEntry(){
   const modal=entryModal();
   if(modal?.dataset.saving==='true')return false;
   if(modal?.dataset.dirty==='true'&&!window.confirm('Descartar alterações não salvas?'))return false;
-  modal.dataset.dirty='false';modal.classList.add('hidden');
+  pendingWaterImport=null;modal.dataset.dirty='false';modal.classList.add('hidden');
   $('entryHost').innerHTML='';
   document.dispatchEvent(new Event('lts-health-entry-closed'));
   return true;
@@ -140,9 +160,38 @@ const validationMessages={
   water_must_be_positive:'O total de água precisa ser maior que zero.',
   water_value_too_large:'O valor parece estar em outra unidade. Informe o total em mililitros.',
   water_confirmation_required:'Confirme que o valor foi conferido no diário do MyFitnessPal.',
+  water_import_confirmation_required:'Confirme a prévia antes de importar.',
+  mfp_export_invalid_json:'O arquivo não contém um JSON válido.',
+  mfp_export_invalid_document:'O arquivo não tem a estrutura esperada.',
+  mfp_export_wrong_schema:'Este não é um arquivo do extrator de água do LTS.',
+  mfp_export_wrong_method:'O método de extração do arquivo não é reconhecido.',
+  mfp_export_incomplete:'A extração ainda não terminou. Volte ao MyFitnessPal e execute o favorito para retomar.',
+  mfp_export_invalid_period:'O período do arquivo é inválido.',
+  mfp_export_period_too_large:'O arquivo ultrapassa o limite seguro de 10.000 dias.',
+  mfp_export_invalid_rows:'A lista de datas do arquivo é inválida.',
+  mfp_export_invalid_row_date:'Há uma data inválida ou fora do período no arquivo.',
+  mfp_export_invalid_row_value:'Há um total de água inválido no arquivo.',
+  mfp_export_conflicting_duplicate:'O arquivo contém dois totais diferentes para a mesma data.',
+  mfp_export_invalid_counts:'A contagem do arquivo não corresponde ao período extraído.',
   authentication_required:'Sua sessão terminou. Entre novamente para salvar.'
 };
-function entryErrorMessage(error){return validationMessages[error?.message]||'Não foi possível salvar. Confira os campos e tente novamente.';}
+function entryErrorMessage(error){
+  if(Number(error?.importedCount)>0)return`${error.importedCount} data(s) foram salvas antes da interrupção. Tente novamente o mesmo arquivo para concluir sem duplicar.`;
+  return validationMessages[error?.message]||'Não foi possível salvar. Confira os campos e tente novamente.';
+}
+
+function transferDate(value){const[y,m,d]=String(value||'').split('-');return y&&m&&d?`${d}/${m}/${y}`:String(value||'');}
+
+function showWaterImportPreview(parsed,error){
+  const preview=$('mfpWaterImportPreview'),confirm=$('mfpWaterImportConfirm'),submit=$('mfpWaterImportSubmit');
+  if(!preview||!confirm||!submit)return;
+  confirm.checked=false;
+  if(error){preview.className='waterImportPreview error';preview.innerHTML=`<b>Arquivo recusado</b><span>${entryErrorMessage(error)}</span>`;confirm.disabled=true;submit.disabled=true;return;}
+  const ready=parsed.rows.length>0;
+  preview.className=`waterImportPreview ${ready?'ready':'empty'}`;
+  preview.innerHTML=`<b>${ready?`${parsed.rows.length.toLocaleString('pt-BR')} data(s) com água encontradas`:'Nenhum total positivo encontrado'}</b><span>${transferDate(parsed.period.from)} a ${transferDate(parsed.period.to)} · ${parsed.days_scanned.toLocaleString('pt-BR')} dias verificados · ${parsed.days_without_positive_total.toLocaleString('pt-BR')} sem total positivo</span><small>Dias sem total positivo não serão gravados como zero.</small>`;
+  confirm.disabled=!ready;submit.disabled=!ready;
+}
 
 export function setupEntryController({onSaved}={}){
   refreshCallback=onSaved||refreshCallback;
@@ -150,12 +199,23 @@ export function setupEntryController({onSaved}={}){
   $('entryModal').addEventListener('click',e=>{ if(e.target===$('entryModal')) closeEntry(); });
   $('entryModal').addEventListener('input',e=>{if(e.target.closest('form'))markEntryDirty();});
   $('entryModal').addEventListener('change',e=>{if(e.target.closest('form'))markEntryDirty();});
+  $('entryModal').addEventListener('change',async e=>{
+    if(e.target.id!=='mfpWaterImportFile')return;
+    pendingWaterImport=null;
+    const file=e.target.files?.[0],preview=$('mfpWaterImportPreview');
+    if(!file){showWaterImportPreview(null,new Error('mfp_export_invalid_document'));return;}
+    if(preview){preview.className='waterImportPreview';preview.innerHTML='<b>Validando arquivo…</b><span>A prévia aparecerá antes de qualquer gravação.</span>';}
+    try{pendingWaterImport=parseMyFitnessPalWaterExport(await file.text());showWaterImportPreview(pendingWaterImport,null);}
+    catch(error){pendingWaterImport=null;showWaterImportPreview(null,error);}
+  });
   window.addEventListener('beforeunload',e=>{
     if(!shouldWarnEntryUnload())return;
     e.preventDefault();e.returnValue='';
   });
 
   document.addEventListener('click',e=>{
+    const manualWater=e.target.closest('[data-water-manual]');
+    if(manualWater){openEntry('water');return;}
     const addExercise=e.target.closest('[data-add-exercise]');
     if(addExercise){ $('exerciseEntries').insertAdjacentHTML('beforeend',exerciseCard());markEntryDirty();return; }
     const removeExercise=e.target.closest('[data-remove-exercise]');
@@ -167,15 +227,21 @@ export function setupEntryController({onSaved}={}){
   });
 
   document.addEventListener('submit',async e=>{
-    if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm'&&e.target.id!=='waterEntryForm') return;
+    if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm'&&e.target.id!=='waterEntryForm'&&e.target.id!=='mfpWaterImportForm') return;
     e.preventDefault();
     const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=entryModal();
     modal.dataset.saving='true';
     msg.textContent='Salvando…';button.disabled=true;
 
+    let importResult=null;
     try{
       if(form.id==='bodyEntryForm')await saveBodyRecord(formObject(form));
       else if(form.id==='waterEntryForm')await saveMyFitnessPalWater(formObject(form));
+      else if(form.id==='mfpWaterImportForm'){
+        if(!pendingWaterImport)throw new Error('mfp_export_invalid_document');
+        if(!form.querySelector('[name="confirmed"]')?.checked)throw new Error('water_import_confirmation_required');
+        importResult=await importMyFitnessPalWaterExport(pendingWaterImport,{onProgress:({imported,total})=>{msg.textContent=`Importando ${imported.toLocaleString('pt-BR')} de ${total.toLocaleString('pt-BR')} datas…`;}});
+      }
       else await saveWorkout(collectWorkout(form));
     }catch(error){
       modal.dataset.saving='false';
@@ -186,7 +252,7 @@ export function setupEntryController({onSaved}={}){
     }
 
     modal.dataset.dirty='false';
-    msg.textContent='Salvo.';
+    msg.textContent=importResult?`${importResult.imported.toLocaleString('pt-BR')} data(s) importadas.`:'Salvo.';
     try{
       await refreshCallback();
     }catch(error){
