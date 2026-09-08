@@ -11,10 +11,11 @@ async function run(viewport,label){
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto(`${base}#hoje`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('[data-executive-dashboard]');
+  await page.waitForSelector('.cockpitWindowBrief');
 
   if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: expected five domain summaries`);
   if((await page.locator('.cockpitReviewItem').count())>3)throw new Error(`${label}: overview exposes more than three priorities`);
-  const text=(await page.locator('#screenHost').innerText())||'';
+  const text=(await page.locator('#screenHost').textContent())||'';
   for(const expected of ['Visão geral da sua saúde','Peso corporal','Resumo da janela','O que mudou','Últimos acontecimentos','Dados a completar'])if(!text.includes(expected))throw new Error(`${label}: missing product hierarchy ${expected}`);
   for(const action of ['Abrir detalhes','Abrir análise integrada','Gerenciar fontes','Abrir Timeline'])if(!text.includes(action))throw new Error(`${label}: missing specific action ${action}`);
   if(text.includes('Ver mais'))throw new Error(`${label}: generic action copy returned`);

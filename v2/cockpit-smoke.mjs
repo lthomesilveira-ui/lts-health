@@ -17,7 +17,7 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');
   if((await page.locator('.cockpitChart svg').count())<1)throw new Error(`${label}: main filtered chart missing`);
   await page.locator('[data-home-metric="fat"]').click();
-  await page.waitForFunction(()=>document.querySelector('.cockpitTrend h2')?.textContent==='Gordura corporal');
+  await page.waitForFunction(()=>document.querySelector('[data-home-metric="fat"]')?.getAttribute('aria-selected')==='true'&&document.querySelector('.cockpitTrend h2')?.textContent==='Gordura corporal');
   await noOverflow(page,label,'hoje');
 
   const audit=await page.evaluate(async()=>{
