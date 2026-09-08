@@ -40,6 +40,9 @@ for(const legacyDark of ['#0a151e','rgba(10,21,30','.domainHero{display:flex;ali
 assert.match(css,/@media\(max-width:720px\)/);
 assert.match(css,/min-height:44px/);
 assert.match(css,/overflow-x:auto/);
+assert.match(css,/\.topbar\{position:relative;top:auto;grid-row:1/);
+assert.match(css,/\.screenHost\{grid-row:2;/);
+assert.match(css,/\.mobileNav\{position:relative;inset:auto;grid-row:3\}/);
 assert.match(contract,/Uma janela do produto/);
 assert.match(contract,/Um estado vazio/);
 assert.match(contract,/Mobile como produto/);
