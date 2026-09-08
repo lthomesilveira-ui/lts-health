@@ -36,6 +36,19 @@ function syncNav(){
   else{action.classList.add('hidden');action.dataset.entry='';}
 }
 
+function resetRouteScroll(){
+  const host=$('screenHost');
+  window.scrollTo({top:0,left:0,behavior:'auto'});
+  host?.scrollTo({top:0,left:0,behavior:'auto'});
+  if(host){host.scrollTop=0;host.scrollLeft=0;}
+}
+
+function settleRouteScroll(route){
+  const reset=()=>{if(state.route===route)resetRouteScroll();};
+  reset();
+  requestAnimationFrame(()=>{reset();requestAnimationFrame(reset);});
+}
+
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
@@ -44,10 +57,7 @@ function setRoute(route,{replace=true}={}){
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
-  requestAnimationFrame(()=>{
-    window.scrollTo({top:0,left:0,behavior:'auto'});
-    $('screenHost')?.scrollTo({top:0,left:0,behavior:'auto'});
-  });
+  settleRouteScroll(route);
 }
 
 function routeFromLocation(){
@@ -96,7 +106,7 @@ function render(){
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
   applyControlState();mountEvidencePanels();restoreRenderContext(host,context);
-  if(routeChanged)host.scrollTo({top:0,left:0,behavior:'auto'});
+  if(routeChanged)settleRouteScroll(state.route);
   syncNav();renderedRoute=state.route;
 }
 
