@@ -40,6 +40,7 @@ jobs:
           node --check v2/mfp-water-transfer-test.mjs
           node --check v2/continuity-contract-smoke.mjs
           node --check v2/public-payload-guard.mjs
+          bash -n v2/run-browser-gate.sh
           node v2/hydration-contract-test.mjs
           node v2/mfp-water-transfer-test.mjs
           node v2/continuity-contract-smoke.mjs
@@ -118,20 +119,23 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          node v2/failure-smoke.mjs
-          node v2/timeline-interaction-smoke.mjs
-          node v2/nutrition-history-smoke.mjs
-          node v2/analysis-history-smoke.mjs
-          node v2/analysis-period-consistency-smoke.mjs
-          node v2/evidence-priority-smoke.mjs
-          node v2/health-longitudinal-smoke.mjs
-          node v2/training-progression-smoke.mjs
-          node v2/canonical-boundary-smoke.mjs
-          node v2/source-status-smoke.mjs
-          node v2/provenance-alias-smoke.mjs
-          node v2/executive-dashboard-smoke.mjs
-          node v2/cockpit-smoke.mjs
-          node v2/product-finish-smoke.mjs
-          node v2/upload-outcome-smoke.mjs
-          node v2/mfp-water-import-smoke.mjs
-          node v2/source-continuity-unknown-smoke.mjs
+          for test_file in \
+            v2/failure-smoke.mjs \
+            v2/timeline-interaction-smoke.mjs \
+            v2/nutrition-history-smoke.mjs \
+            v2/analysis-history-smoke.mjs \
+            v2/analysis-period-consistency-smoke.mjs \
+            v2/evidence-priority-smoke.mjs \
+            v2/health-longitudinal-smoke.mjs \
+            v2/training-progression-smoke.mjs \
+            v2/canonical-boundary-smoke.mjs \
+            v2/source-status-smoke.mjs \
+            v2/provenance-alias-smoke.mjs \
+            v2/executive-dashboard-smoke.mjs \
+            v2/cockpit-smoke.mjs \
+            v2/product-finish-smoke.mjs \
+            v2/upload-outcome-smoke.mjs \
+            v2/mfp-water-import-smoke.mjs \
+            v2/source-continuity-unknown-smoke.mjs; do
+            bash v2/run-browser-gate.sh "$test_file"
+          done

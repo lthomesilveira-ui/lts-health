@@ -42,11 +42,12 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-PRIVACY-GATE-COMPATIBILITY",
+    "id": "PKG-CONTINUITY-CI-HARDENING",
     "status": "done",
-    "goal": "Keep the public payload guard strict while permitting the validated machine-readable continuity ledger.",
+    "goal": "Keep continuity metadata behind strict privacy gates and make browser validation resilient to proven transient navigation failures.",
     "task_ids": [
-      "LTS-PRIVACY-GATE-001"
+      "LTS-PRIVACY-GATE-001",
+      "LTS-CI-BROWSER-001"
     ]
   },
   "tasks": [
@@ -106,6 +107,27 @@
         ".github/workflows/smoke.yml",
         ".github/workflows/timeline-smoke.yml",
         ".github/workflows/architecture-v2.yml"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-CI-BROWSER-001",
+      "area": "delivery",
+      "priority": "P1",
+      "status": "done",
+      "owner": "system",
+      "summary": "Retry one proven transient local-navigation failure without masking deterministic browser contract failures.",
+      "acceptance": [
+        "Only navigation timeout or local connection-refused signatures are eligible for one retry.",
+        "Assertion and other deterministic failures exit without retry.",
+        "Every architecture browser smoke uses the same runner."
+      ],
+      "evidence": [
+        "v2/run-browser-gate.sh",
+        ".github/workflows/architecture-v2.yml",
+        "v2/continuity-contract-smoke.mjs",
+        "GitHub Actions log for the transient nutrition page navigation timeout"
       ],
       "next_action": null,
       "blocker": null
