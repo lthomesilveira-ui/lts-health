@@ -17,6 +17,7 @@ O LTS Health deve parecer um único aplicativo longitudinal, não uma coleção 
 7. **Integridade intacta.** Ausência não vira zero; origens incompatíveis não são combinadas; comparações continuam conservadoras e descritivas.
 8. **Mobile como produto.** Controles têm alvo mínimo de 44 px, cartões-resumo podem deslizar horizontalmente, não há overflow da página e cada rota abre no topo. Cabeçalho, conteúdo e navegação ocupam linhas próprias da grade, sem sobreposição.
 9. **Contraste verificável.** As superfícies canônicas das rotas usam o mesmo tema claro do Início. Títulos, textos de apoio, resumos e seções progressivas precisam atingir ao menos 4,5:1 nos testes de navegador; um teste estrutural impede a volta acidental dos fundos escuros legados.
+10. **Uma arquitetura ativa.** Camadas antigas de enriquecimento não podem injetar painéis depois do render canônico. O resumo, a evolução e o detalhe pertencem aos renderizadores atuais de cada rota.
 
 ## Jornadas por rota
 
