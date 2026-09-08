@@ -39,8 +39,10 @@ jobs:
           grep -q 'background:#f3f1fe' v2/dashboard-reference-contract.css
           grep -q 'background:#feeff4' v2/dashboard-reference-contract.css
           grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
-          grep -q 'Leitura principal da janela' v2/src/today-screen.js
-          grep -q 'Sem registro de ingestão de água' v2/src/today-screen.js
+          grep -q 'Leitura principal' v2/src/today-screen.js
+          grep -q 'Sem dado de ingestão de água' v2/src/today-screen.js
+          grep -q 'Trazer do MFP' v2/src/today-screen.js
+          grep -q 'model.water.length' v2/src/today-screen.js
           ! grep -q -- '--reference-bg:#0b1220' v2/dashboard-reference-contract.css
           ! grep -q 'font-family:var(--reference-serif)' v2/dashboard-reference-contract.css
           ! grep -R 'MutationObserver' v2/src v2/index.html
