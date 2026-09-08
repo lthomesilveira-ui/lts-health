@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08131d">
+  <title>Extrair água do MyFitnessPal · LTS Health</title>
+  <link rel="stylesheet" href="./mfp-water-extractor.css">
+</head>
+<body>
+  <main class="extractorPage">
+    <a class="backLink" href="./#nutricao">← Voltar ao LTS Health</a>
+    <header>
+      <span class="eyebrow">MyFitnessPal → LTS Health</span>
+      <h1>Extrair todo o histórico de água</h1>
+      <p>Você escolhe o período uma vez. O extrator consulta automaticamente cada data na sessão já aberta do MyFitnessPal, com pausa e retomada, e cria um único arquivo para importar no LTS.</p>
+    </header>
+
+    <section class="privacyNote">
+      <b>Privacidade preservada</b>
+      <p>O código não lê senha, alimentos, e-mail ou perfil. Ele guarda somente data e total de água em mililitros no seu navegador até você salvar o arquivo.</p>
+    </section>
+
+    <section class="steps" aria-label="Instalação no Safari">
+      <article><span>1</span><div><b>Crie um favorito desta página</b><p>No Safari, toque em Compartilhar e depois em “Adicionar Favorito”. Salve com o nome <strong>Extrair água MFP</strong>.</p></div></article>
+      <article><span>2</span><div><b>Copie o extrator</b><p>Toque no botão abaixo. Depois abra os Favoritos, escolha Editar e substitua o endereço do favorito pelo código copiado.</p></div></article>
+      <article><span>3</span><div><b>Execute dentro do MyFitnessPal</b><p>Abra o diário no site do MyFitnessPal, confirme que está conectado e toque no favorito “Extrair água MFP”. Aceite as datas sugeridas para começar em 01/01/2018.</p></div></article>
+      <article><span>4</span><div><b>Importe o arquivo no LTS</b><p>Mantenha a aba aberta. Se o Safari interromper, execute o mesmo favorito para retomar. Ao concluir, salve o JSON e volte à tela Nutrição do LTS.</p></div></article>
+    </section>
+
+    <div class="extractorActions">
+      <button id="copyBookmarklet" type="button">Copiar extrator</button>
+      <a href="https://www.myfitnesspal.com/food/diary" target="_blank" rel="noopener">Abrir MyFitnessPal</a>
+    </div>
+    <p id="copyStatus" class="copyStatus" role="status"></p>
+    <details>
+      <summary>Instalação no computador</summary>
+      <p>Arraste o botão abaixo para a barra de favoritos e execute-o em uma aba autenticada do MyFitnessPal.</p>
+      <a id="bookmarkletLink" class="bookmarkletLink" href="#">Extrair água MFP</a>
+    </details>
+    <details>
+      <summary>Ver o código copiado</summary>
+      <textarea id="bookmarkletCode" readonly aria-label="Código do extrator"></textarea>
+    </details>
+  </main>
+  <script type="module">
+    import {setupMfpWaterExtractorInstaller} from './src/mfp-water-extractor.js';
+    setupMfpWaterExtractorInstaller();
+  </script>
+</body>
+</html>

@@ -34,9 +34,12 @@ jobs:
             v2/cockpit-smoke.mjs \
             v2/product-finish-smoke.mjs \
             v2/upload-outcome-smoke.mjs \
+            v2/mfp-water-import-smoke.mjs \
             v2/source-continuity-unknown-smoke.mjs; do node --check "$file"; done
           node --check v2/hydration-contract-test.mjs
+          node --check v2/mfp-water-transfer-test.mjs
           node v2/hydration-contract-test.mjs
+          node v2/mfp-water-transfer-test.mjs
 
           test -f v2/index.html
           test -f v2/styles.css
@@ -69,8 +72,10 @@ jobs:
           grep -q "ensureRouteData" v2/src/data-layer.js
           grep -q "isRouteReady" v2/src/main.js
           grep -q "uploadOutcomeMessageFromState" v2/src/main.js
-          grep -q "Trazer água do MFP" v2/src/main.js
+          grep -q "Importar água do MFP" v2/src/main.js
           grep -q "mfp_water_total_v1" v2/src/writes.js
+          grep -q "mfp_authenticated_water_export_v1" v2/src/mfp-water-transfer.js
+          grep -q "/food/water?date=" v2/src/mfp-water-extractor.js
 
           grep -q "buildIntegratedAnalysis" v2/src/today-screen.js
           grep -q "canonicalWorkouts" v2/src/integrated-analysis.js
@@ -124,4 +129,5 @@ jobs:
           node v2/cockpit-smoke.mjs
           node v2/product-finish-smoke.mjs
           node v2/upload-outcome-smoke.mjs
+          node v2/mfp-water-import-smoke.mjs
           node v2/source-continuity-unknown-smoke.mjs

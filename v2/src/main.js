@@ -29,7 +29,7 @@ function syncNav(){
   const action=$('routeAction');
   if(state.route==='bio'){action.textContent='Registrar bio';action.dataset.entry='body';action.classList.remove('hidden');}
   else if(state.route==='treinos'){action.textContent='Registrar treino';action.dataset.entry='workout';action.classList.remove('hidden');}
-  else if(state.route==='nutricao'||state.route==='hoje'){action.textContent='Trazer água do MFP';action.dataset.entry='water';action.classList.remove('hidden');}
+  else if(state.route==='nutricao'||state.route==='hoje'){action.textContent='Importar água do MFP';action.dataset.entry='water-import';action.classList.remove('hidden');}
   else{action.classList.add('hidden');action.dataset.entry='';}
 }
 

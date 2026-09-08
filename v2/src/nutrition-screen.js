@@ -104,9 +104,9 @@ function hydrationPanel(){
   const model=hydrationModel(state.data),latest=model.rows.at(-1),recent=model.rows.slice(-14).reverse();
   const detail=latest?`Último total: ${fmtNum(latest.value,0)} mL em ${fmtDate(latest.date)}.`:'Nenhum total de água foi trazido ainda.';
   return `<div class="card sectionGap hydrationImportPanel">
-    <div class="hydrationImportHead"><div><span>MyFitnessPal → LTS Health</span><h2>Ingestão de água</h2><p>${esc(detail)} O valor é guardado separado de água corporal e pode ser corrigido salvando novamente a mesma data.</p></div><button type="button" class="primary" data-entry="water">Trazer total do MFP</button></div>
+    <div class="hydrationImportHead"><div><span>MyFitnessPal → LTS Health</span><h2>Ingestão de água</h2><p>${esc(detail)} A importação percorre o histórico automaticamente e mantém a água ingerida separada de água corporal.</p></div><div class="hydrationImportActions"><button type="button" class="primary" data-entry="water-import">Importar histórico do MFP</button><button type="button" data-entry="water">Registrar um dia manualmente</button></div></div>
     ${model.conflicts.length?`<div class="errorState"><b>${model.conflicts.length} data(s) com fontes divergentes.</b><span>Nenhum desses valores foi escolhido automaticamente.</span></div>`:''}
-    ${recent.length?`<div class="hydrationRecent">${recent.map(row=>`<div><time>${fmtDate(row.date)}</time><b>${fmtNum(row.value,0)} mL</b><small>${esc(row.source||'MyFitnessPal')}</small></div>`).join('')}</div>`:`<div class="empty">Abra o diário do MyFitnessPal, copie o total de água do dia e salve aqui.</div>`}
+    ${recent.length?`<div class="hydrationRecent">${recent.map(row=>`<div><time>${fmtDate(row.date)}</time><b>${fmtNum(row.value,0)} mL</b><small>${esc(row.source||'MyFitnessPal')}</small></div>`).join('')}</div>`:`<div class="empty">Extraia o período desejado no Safari e importe um único arquivo. Dias sem total positivo permanecem ausentes, nunca viram zero.</div>`}
   </div>`;
 }
 function daySummary(row){

@@ -43,7 +43,8 @@ const saved=state.data.sourceMetrics.filter(row=>row.source_record_id==='mfp-wat
 assert.equal(saved.length,1);
 assert.equal(saved[0].value,2600);
 assert.match(renderNutritionHub(),/2\.600 mL/);
-assert.match(renderNutritionHub(),/Trazer total do MFP/);
+assert.match(renderNutritionHub(),/Importar histórico do MFP/);
+assert.match(renderNutritionHub(),/Registrar um dia manualmente/);
 assert.match(renderTodayHub(),/2\.600 mL/);
 assert.match(renderTodayHub(),/Trazer do MFP/);
 

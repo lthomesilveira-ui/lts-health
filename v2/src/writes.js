@@ -1,5 +1,6 @@
 import {sb,state,fixtureMode} from './core.js';
 import {normalizeWaterMl,validLocalDate} from './hydration.js';
+import {myFitnessPalWaterRecords,parseMyFitnessPalWaterExport} from './mfp-water-transfer.js';
 
 function requiredSession(){
   if(fixtureMode) return {user:{id:'fixture-user'}};
@@ -109,4 +110,26 @@ export async function saveMyFitnessPalWater(payload){
   const{error}=await sb.from('health_source_daily_metrics').upsert(record,{onConflict:'user_id,source_record_id'});
   if(error)throw error;
   return record.source_record_id;
+}
+
+export async function importMyFitnessPalWaterExport(input,{batchSize=250,onProgress}={}){
+  const session=requiredSession(),parsed=parseMyFitnessPalWaterExport(input),records=myFitnessPalWaterRecords(parsed,session.user.id);
+  const size=Math.max(1,Math.min(500,Math.floor(Number(batchSize)||250)));
+  let imported=0;
+  if(fixtureMode){
+    const current=new Map((state.data.sourceMetrics||[]).map(row=>[row.source_record_id,row]));
+    for(const record of records)current.set(record.source_record_id,record);
+    state.data.sourceMetrics=[...current.values()];
+    imported=records.length;
+    onProgress?.({imported,total:records.length});
+    return{imported,total:records.length,period:parsed.period};
+  }
+  for(let offset=0;offset<records.length;offset+=size){
+    const batch=records.slice(offset,offset+size);
+    const{error}=await sb.from('health_source_daily_metrics').upsert(batch,{onConflict:'user_id,source_record_id'});
+    if(error){error.importedCount=imported;throw error;}
+    imported+=batch.length;
+    onProgress?.({imported,total:records.length});
+  }
+  return{imported,total:records.length,period:parsed.period};
 }
