@@ -27,7 +27,7 @@ for(const phrase of [
   'o que está documentado agora',
   'o que mudou no período',
   'quão completa e confiável é essa leitura',
-  'Leitura e prioridades',
+  'Tendência principal',
   'CI verde comprova regressões técnicas cobertas'
 ])assert.match(architecture,new RegExp(phrase,'i'),`architecture missing: ${phrase}`);
 
