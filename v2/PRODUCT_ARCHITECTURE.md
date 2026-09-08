@@ -57,11 +57,11 @@ A abertura deve ser uma superfície de decisão, nesta ordem:
 
 1. **Cabeçalho e janela:** título, explicação curta e filtro global.
 2. **Estado por domínio:** cinco resumos de Composição, Treinos, Nutrição, Recuperação e Exames.
-3. **Leitura e prioridades:** síntese da janela ao lado de até três pontos que merecem revisão.
-4. **Evidência para aprofundar:** módulos de tendência por domínio, com ações específicas.
-5. **Cobertura e fontes:** limitações e origens no fechamento, sem duplicar a síntese.
+3. **Tendência principal:** um único gráfico longitudinal, alternável entre métricas, ao lado da síntese da janela.
+4. **Acontecimentos recentes:** uma linha temporal curta que conecta os domínios sem repetir seus detalhes.
+5. **Cobertura:** somente lacunas que realmente limitam a leitura, com acesso à gestão de fontes.
 
-A primeira tela não deve apresentar todos os elementos com o mesmo peso. A leitura principal e as prioridades vêm antes dos gráficos.
+A primeira tela não deve apresentar todos os elementos com o mesmo peso nem empilhar mini-dashboards por domínio. O gráfico principal vem cedo; o detalhe fica nas áreas especializadas.
 
 ## Contrato de cada área
 

@@ -5,6 +5,7 @@ import {
 } from './integrated-analysis.js';
 import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource} from './source-status.js';
 import {hydrationRows} from './hydration.js';
+import {consolidatedWeightSeries} from './longitudinal-model.js';
 
 const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 const periodLabel=period=>period==='30'?'30 dias':period==='90'?'90 dias':period==='365'?'1 ano':'todo o histórico';
@@ -71,6 +72,12 @@ function labSnapshot(data,bounds=null){
   return{rows,dates,collections:dates.length,last:dates.at(-1)||null,markers:unique(rows.map(r=>String(r.biomarker||'').trim()).filter(Boolean)).length,totalResults:rows.length};
 }
 
+function labCollectionSeries(data,bounds){
+  const all=dateRows(data.labs||[],'collection_date').map(([date,items])=>({date,value:items.length}));
+  const window=all.filter(point=>inBounds(point.date,bounds));
+  return window.length>=2?window:all.slice(-12);
+}
+
 export function executiveCockpitModel(data={},status={},period='30'){
   const integrated=buildIntegratedAnalysis(data,status),bounds=periodBounds(period,integrated.referenceDay),previous=previousBounds(bounds);
   const training=trainingDistributionModel(data,status,bounds.start,bounds.end),trainingPrevious=previous?trainingDistributionModel(data,status,previous.start,previous.end):null;
@@ -81,6 +88,8 @@ export function executiveCockpitModel(data={},status={},period='30'){
   const activitySleep=activitySleepSnapshot(data,status);
   const labs=labSnapshot(data),labsWindow=labSnapshot(data,bounds);
   const water=hydrationRows(data).filter(r=>inBounds(r.date,bounds));
+  const allWeight=consolidatedWeightSeries(data.body||[],data.metrics||[]).points;
+  const windowWeight=allWeight.filter(point=>inBounds(point.date,bounds));
   const nutritionCoverage=nutrition?.available&&nutrition.intervalDays?Math.round(nutrition.days/nutrition.intervalDays*100):null;
   const prevNutritionCoverage=nutritionPrevious?.available&&nutritionPrevious.intervalDays?Math.round(nutritionPrevious.days/nutritionPrevious.intervalDays*100):null;
   const sleepSources=activitySleep.sleepSources.map(source=>({...source,periodPoints:source.points.filter(p=>inBounds(p.date,bounds))})).filter(s=>s.periodPoints.length);
@@ -95,8 +104,13 @@ export function executiveCockpitModel(data={},status={},period='30'){
     labs:{...labs,windowCollections:labsWindow.collections,windowMarkers:labsWindow.markers,windowLast:labsWindow.last},
     water,
     bodyFatSeries:historySeries(data.body||[],'measured_at','body_fat_pct',12),
+    muscleSeries:historySeries(data.body||[],'measured_at','skeletal_muscle_mass_kg',18),
+    weightSeries:windowWeight.length>=2?windowWeight:allWeight.slice(-18),
     calorieSeries:periodSeries(data.nutrition||[],'nutrition_date','calories_kcal',bounds),
-    trainingSeries:weeklySeries(data,bounds)
+    trainingSeries:weeklySeries(data,bounds),
+    sleepSeries:sleepSources[0]?.periodPoints?.length>=2?sleepSources[0].periodPoints:(activitySleep.sleepSources[0]?.points||[]).slice(-30),
+    labSeries:labCollectionSeries(data,bounds),
+    waterSeries:water.map(row=>({date:row.date,value:row.value}))
   };
 }
 
@@ -158,6 +172,47 @@ function sleepPanel(model){
   return`<div class="cockpitSleepSources"><div class="cockpitSleepTitle"><b>Sono preservado por origem</b><small>${model.sleep.sources.length} origem(ns) · sem média entre fontes</small></div>${model.sleep.sources.slice(0,4).map(source=>{const last=source.periodPoints.at(-1);return`<div class="cockpitSleepRow"><div><b>${esc(source.label)}</b><small>${source.periodPoints.length} dia(s) na janela</small></div><span>${last?`${fmtNum(last.value,1)} ${esc(source.unit)}`:'—'}<small>${last?fmtDate(last.date):'—'}</small></span></div>`;}).join('')}<p>Fontes permanecem separadas; o app não calcula média entre dispositivos.</p></div>`;
 }
 
+const trendTabs=[
+  ['weight','Peso'],['fat','Gordura'],['muscle','Massa muscular'],['training','Treinos'],
+  ['nutrition','Nutrição'],['sleep','Sono'],['labs','Exames'],['water','Água']
+];
+function lastPoint(points){return(points||[]).filter(point=>num(point?.value)!=null).at(-1)||null;}
+function firstPoint(points){return(points||[]).find(point=>num(point?.value)!=null)||null;}
+function trendModel(model,key){
+  const definitions={
+    weight:{label:'Peso corporal',route:'bio',points:model.weightSeries,unit:'kg',digits:1,description:'Série consolidada; bioimpedância prevalece quando há registro na mesma data.'},
+    fat:{label:'Gordura corporal',route:'bio',points:model.bodyFatSeries,unit:'%',digits:1,description:'Evolução das medições comparáveis de composição corporal.'},
+    muscle:{label:'Massa muscular',route:'bio',points:model.muscleSeries,unit:'kg',digits:1,description:'Histórico de massa muscular preservado por medição.'},
+    training:{label:'Treinos por semana',route:'treinos',points:model.trainingSeries,unit:' sessões',digits:0,bar:true,description:'Ritmo semanal dentro da janela selecionada.'},
+    nutrition:{label:'Energia registrada',route:'nutricao',points:model.calorieSeries,unit:' kcal',digits:0,description:'Somente dias com total diário inequívoco.'},
+    sleep:{label:'Sono registrado',route:'analise',points:model.sleepSeries,unit:' h',digits:1,description:'Uma origem por vez; fontes diferentes não são misturadas.'},
+    labs:{label:'Resultados por coleta',route:'saude',points:model.labSeries,unit:' resultados',digits:0,bar:true,description:'Quantidade de resultados estruturados em cada data de coleta.'},
+    water:{label:'Água registrada',route:'nutricao',points:model.waterSeries,unit:' mL',digits:0,description:'Ingestão diária registrada; água corporal não entra nesta série.'}
+  };
+  const selected=definitions[key]||definitions.weight,last=lastPoint(selected.points),first=firstPoint(selected.points),delta=last&&first&&last!==first?last.value-first.value:null;
+  return{...selected,key,last,first,delta};
+}
+function trendPanel(model){
+  const selectedKey=trendTabs.some(([key])=>key===state.ui.homeMetric)?state.ui.homeMetric:'weight',trend=trendModel(model,selectedKey);
+  const delta=trend.delta==null?'Sem comparação no período':`${trend.delta>0?'+':''}${fmtNum(trend.delta,trend.digits)}${trend.unit} desde ${fmtDate(trend.first.date)}`;
+  return`<article class="cockpitTrend">
+    <div class="cockpitTrendHead"><div><span>Evolução</span><h2>${esc(trend.label)}</h2><p>${esc(trend.description)}</p></div>${action(trend.route,'Abrir detalhes')}</div>
+    <div class="cockpitTrendTabs" role="tablist" aria-label="Métrica da evolução">${trendTabs.map(([key,label])=>`<button type="button" role="tab" data-home-metric="${key}" class="${selectedKey===key?'active':''}" aria-selected="${selectedKey===key?'true':'false'}">${label}</button>`).join('')}</div>
+    <div class="cockpitTrendValue"><b>${trend.last?`${fmtNum(trend.last.value,trend.digits)}${esc(trend.unit)}`:'Sem dados'}</b><span>${trend.last?`${fmtDate(trend.last.date)} · ${delta}`:'Não há pontos suficientes nesta janela.'}</span></div>
+    ${chart(trend.points,{unit:trend.unit,digits:trend.digits,label:trend.label,bar:trend.bar})}
+  </article>`;
+}
+function recentEvents(model){
+  const latestWorkout=canonicalWorkouts(state.data).sort((a,b)=>String(b.workout_date).localeCompare(String(a.workout_date)))[0];
+  const latestNutrition=dateRows(state.data.nutrition||[],'nutrition_date').at(-1);
+  const events=[];
+  if(model.body.latestOverall.date)events.push({date:model.body.latestOverall.date,route:'bio',domain:'Composição',title:'Medição corporal',detail:model.body.latestOverall.row&&num(model.body.latestOverall.row.weight_kg)!=null?`${fmtNum(model.body.latestOverall.row.weight_kg,1)} kg registrados`:'Medição preservada'});
+  if(latestWorkout)events.push({date:day(latestWorkout.workout_date),route:'treinos',domain:'Treino',title:latestWorkout.workout_type||'Sessão registrada',detail:latestWorkout.location||'Histórico de treino'});
+  if(latestNutrition)events.push({date:latestNutrition[0],route:'nutricao',domain:'Nutrição',title:'Dia alimentar registrado',detail:latestNutrition[1].length===1?'Total diário disponível':'Registro aguardando revisão'});
+  if(model.labs.last)events.push({date:model.labs.last,route:'saude',domain:'Exames',title:'Coleta laboratorial',detail:`${model.labs.totalResults} resultado(s) estruturado(s)`});
+  return events.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4).map(event=>`<button class="cockpitEvent" data-route="${event.route}"><time>${fmtDate(event.date)}</time><span><small>${event.domain}</small><b>${esc(event.title)}</b><em>${esc(event.detail)}</em></span><i aria-hidden="true">→</i></button>`).join('');
+}
+
 export function renderTodayHub(){
   const period=state.ui.analysisPeriod||'365',model=executiveCockpitModel(state.data,state.domainStatus,period),latestBody=model.body.latestOverall,bodyRow=latestBody.row;
   const bodyValue=failed('body')?'Indisponível':latestBody.ambiguous?'Em revisão':bodyRow&&num(bodyRow.weight_kg)!=null?`${fmtNum(bodyRow.weight_kg,1)} kg`:'Sem medição';
@@ -185,32 +240,19 @@ export function renderTodayHub(){
       ${domainCard({route:'saude',iconName:'labs',label:'Exames',value:labsValue,sub:labsSub,detail:labsDetail,tone:labsFailed?'partial':model.labs.totalResults?'neutral':'missing'})}
     </section>
 
-    <section class="cockpitDecisionGrid" aria-label="Leitura e prioridades da janela">
-      <article class="cockpitSummary">
-        <div class="cockpitInsightHero"><div class="cockpitInsightIcon">✦</div><div><span>Resumo executivo</span><h2>Leitura principal</h2><p>${esc(keyInsight(model)||'Ainda não há cobertura suficiente para uma leitura integrada.')}</p></div></div>
+    <section class="cockpitWorkspace" aria-label="Evolução e leitura da janela">
+      ${trendPanel(model)}
+      <aside class="cockpitWindowBrief">
+        <div class="cockpitInsightHero"><div class="cockpitInsightIcon">✦</div><div><span>Resumo da janela</span><h2>O que mudou</h2></div></div>
+        <p class="cockpitBriefText">${esc(keyInsight(model)||'Ainda não há cobertura suficiente para uma leitura integrada.')}</p>
         <ul class="cockpitSummaryList">${summaryList(model)||'<li><span>Sem cobertura suficiente para resumo nesta janela.</span></li>'}</ul>
         ${action('analise','Abrir análise integrada','primary')}
-      </article>
-      <article class="cockpitReview"><div class="cockpitModuleHead"><div><span>Prioridades</span><h2>Pontos a revisar</h2><p>As lacunas que mais limitam a leitura desta janela.</p></div></div><div class="cockpitReviewList">${nextReview(model)}</div></article>
+      </aside>
     </section>
 
-    <div class="cockpitSectionHeading"><div><span>Evidência por domínio</span><h2>Explore o histórico</h2></div><p>Os gráficos abaixo explicam a síntese. Abra uma área para chegar ao registro e à origem.</p></div>
-
-    <section class="cockpitAnalyticsGrid">
-      <article class="cockpitModule training"><div class="cockpitModuleHead"><div><span>Treino</span><h2>Ritmo e distribuição</h2></div>${action('treinos','Abrir treinos')}</div><div class="cockpitModuleFacts"><b>${model.training.totalSessions||0} sessões</b><span>${model.training.previousSessions==null?'sem período anterior comparável':`${model.training.previousSessions} no período anterior`}</span></div>${chart(model.trainingSeries,{digits:0,label:'Sessões de treino por semana',bar:true})}<div class="cockpitGroupBars">${model.training.topGroups.map(g=>`<div><span>${esc(g.label)}</span><i><u style="width:${Math.max(8,g.sessions/Math.max(1,model.training.topGroups[0]?.sessions||1)*100)}%"></u></i><b>${g.sessions}</b></div>`).join('')||'<p>Sem grupos estruturados nesta janela.</p>'}</div></article>
-      <article class="cockpitModule nutrition"><div class="cockpitModuleHead"><div><span>Nutrição</span><h2>Registro e médias</h2></div>${action('nutricao','Abrir nutrição')}</div>${nutritionFailed?'<div class="cockpitEmpty">Os dados de nutrição não carregaram agora.</div>':`<div class="cockpitModuleFacts"><b>${model.nutrition.coveragePct==null?`${model.nutrition.days||0} dias`:`${model.nutrition.coveragePct}% da janela`}</b><span>${model.nutrition.days||0} dia(s) com total inequívoco</span></div>${chart(model.calorieSeries,{unit:' kcal',digits:0,label:'Energia registrada por dia'})}<div class="cockpitMiniMetrics"><div><b>${model.nutrition.calorieAvg==null?'—':`${fmtNum(model.nutrition.calorieAvg,0)} kcal`}</b><span>média registrada</span></div><div><b>${model.nutrition.proteinAvg==null?'—':`${fmtNum(model.nutrition.proteinAvg,0)} g`}</b><span>proteína registrada</span></div><div><b>${model.water.length?model.water.length:'—'}</b><span>${model.water.length?'dias com ingestão de água':'ingestão sem dado'}</span></div></div>`}</article>
-      <article class="cockpitModule body"><div class="cockpitModuleHead"><div><span>Composição</span><h2>Histórico corporal</h2></div>${action('bio','Abrir composição')}</div><div class="cockpitModuleFacts"><b>${bodyRow&&num(bodyRow.body_fat_pct)!=null?`${fmtNum(bodyRow.body_fat_pct,1)}%`:'—'}</b><span>${latestBody.date?`última medição ${fmtDate(latestBody.date)}`:'sem medição'}</span></div>${chart(model.bodyFatSeries,{unit:'%',digits:1,label:'Últimas medições de composição corporal'})}<div class="cockpitMiniMetrics"><div><b>${bodyRow&&num(bodyRow.weight_kg)!=null?`${fmtNum(bodyRow.weight_kg,1)} kg`:'—'}</b><span>peso registrado</span></div><div><b>${bodyRow&&num(bodyRow.skeletal_muscle_mass_kg)!=null?`${fmtNum(bodyRow.skeletal_muscle_mass_kg,1)} kg`:'—'}</b><span>massa muscular registrada</span></div><div><b>${model.body.available?signed(model.body.delta.fatKg,1,'kg'):'—'}</b><span>${model.body.available?`mudança vs. ${fmtDate(model.body.previous.measured_at)}`:'comparação indisponível'}</span></div></div></article>
-    </section>
-
-    <section class="cockpitSecondaryGrid">
-      <article class="cockpitModule recovery"><div class="cockpitModuleHead"><div><span>Recuperação</span><h2>Sono por origem</h2></div>${action('analise','Abrir recuperação')}</div>${sleepPanel(model)}</article>
-      <article class="cockpitModule labs"><div class="cockpitModuleHead"><div><span>Exames</span><h2>Histórico laboratorial</h2></div>${action('saude','Abrir exames')}</div>${labsFailed?'<div class="cockpitEmpty">Os dados de exames não carregaram agora.</div>':model.labs.totalResults?`<div class="cockpitLabFacts"><div><b>${model.labs.totalResults}</b><span>resultados estruturados</span></div><div><b>${model.labs.collections}</b><span>datas de coleta</span></div><div><b>${fmtDate(model.labs.last)}</b><span>última coleta</span></div></div><p class="cockpitNote">Na janela recente: ${model.labs.windowCollections} coleta(s). O último histórico permanece visível quando a janela curta não contém exame.</p>`:`<div class="cockpitEmpty">Nenhum resultado estruturado foi encontrado no histórico.</div>`}</article>
-      <article class="cockpitModule hydration ${model.water.length?'':'missing'}"><div class="cockpitModuleHead"><div><span>Hidratação</span><h2>Ingestão de água</h2></div><button class="cockpitButton" data-entry="water-import">${model.water.length?'Atualizar água do MFP':'Trazer do MFP'}</button></div>${model.water.length?`<div class="cockpitHydrationValue"><b>${fmtNum(model.water.at(-1).value,0)} mL</b><span>último registro em ${fmtDate(model.water.at(-1).date)} · ${esc(model.water.at(-1).source||'MyFitnessPal')}</span></div>`:`<div class="cockpitHydrationMissing"><span aria-hidden="true">◇</span><b>Sem dado de ingestão de água</b><p>A importação histórica do MyFitnessPal traz o período em lote, sem digitar dia a dia. Água corporal da bioimpedância é outra medida e aparece em Composição.</p></div>`}</article>
-    </section>
-
-    <section class="cockpitTrustGrid">
-      <article class="cockpitSources"><div class="cockpitModuleHead"><div><span>Cobertura</span><h2>Dados conectados</h2></div>${action('dados','Gerenciar fontes')}</div><div class="cockpitSourceList"><span>Apple Saúde / Watch <i>atividade e sinais</i></span><span>Polar <i>evidência de treino</i></span><span>MyFitnessPal <i>nutrição e água</i></span><span>Bioimpedância <i>composição</i></span><span>Exames <i>laboratório</i></span></div></article>
-      <article class="cockpitMethod"><span>Como ler esta tela</span><h2>Limites preservados</h2><p>Composição e exames mostram o último registro disponível. Treino, nutrição e recuperação seguem a janela selecionada. Origens incompatíveis permanecem separadas e nenhuma proximidade temporal é tratada como causa.</p>${action('timeline','Abrir Timeline')}</article>
+    <section class="cockpitLowerGrid">
+      <article class="cockpitRecent"><div class="cockpitModuleHead"><div><span>Histórico recente</span><h2>Últimos acontecimentos</h2></div>${action('timeline','Abrir Timeline')}</div><div class="cockpitEventList">${recentEvents(model)||'<div class="cockpitEmpty">Nenhum acontecimento recente disponível.</div>'}</div></article>
+      <article class="cockpitReview"><div class="cockpitModuleHead"><div><span>Cobertura</span><h2>Dados a completar</h2><p>Somente lacunas que limitam esta leitura.</p></div>${action('dados','Gerenciar fontes')}</div><div class="cockpitReviewList">${nextReview(model)}</div>${!model.water.length?`<button class="cockpitWaterAction" data-entry="water-import" title="Importar em lote, sem digitar dia a dia">Trazer histórico de água do MFP</button>`:''}</article>
     </section>
     <p class="cockpitFooter">Janela analisada: ${periodLabel(period)} · leitura descritiva baseada apenas em registros disponíveis.</p>
   </div>`;

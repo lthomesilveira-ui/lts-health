@@ -44,20 +44,13 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-PRODUCT-ARCHITECTURE-RESET",
-    "status": "done",
-    "goal": "Replace the collection-of-features experience with a durable product architecture and a coherent decision-first interface.",
+    "id": "PKG-LONGITUDINAL-HOME-UX",
+    "status": "in_progress",
+    "goal": "Turn the overview into a true longitudinal product surface, especially on mobile, instead of stacking independent dashboard modules.",
     "task_ids": [
-      "LTS-PRODUCT-ARCH-001",
-      "LTS-UX-P0-001",
-      "LTS-DOMAIN-JOURNEYS-001"
+      "LTS-HOME-LONGITUDINAL-001"
     ],
-    "completed_evidence": [
-      "GitHub pull requests 212, 213, and 214",
-      "main commit 8aec988d669234473a703e4d52b707bd24339d0f",
-      "public build product-architecture-20260908.3",
-      "desktop public-browser inspection and desktop/mobile visual artifacts"
-    ]
+    "completed_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -348,6 +341,29 @@
         "LTS Health Dashboard Reference Contract run 34222490129"
       ],
       "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-HOME-LONGITUDINAL-001",
+      "area": "experience",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Replace the stacked mobile dashboard with a concise longitudinal overview and one navigable evolution surface.",
+      "acceptance": [
+        "The first viewport exposes a useful longitudinal graph and its period controls without requiring a long scroll.",
+        "Weight, body fat, muscle mass, training, nutrition, sleep, laboratory collections, and water are available from one metric selector.",
+        "Mobile uses a compact horizontal domain rail instead of stacking five full cards.",
+        "The overview keeps only a concise window summary, recent events, and actionable coverage gaps; detailed modules live in their domain routes.",
+        "Desktop and mobile browser gates pass, and the public deployment is inspected before completion."
+      ],
+      "evidence": [
+        "v2/src/today-screen.js",
+        "v2/cockpit.css",
+        "v2/product-architecture-browser-smoke.mjs",
+        "v2/product-architecture-visual-qa.mjs"
+      ],
+      "next_action": "Run the pull-request browser and visual gates, inspect their artifacts, then promote and verify the public build.",
       "blocker": null
     },
     {

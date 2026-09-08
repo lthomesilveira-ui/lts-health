@@ -11,22 +11,25 @@ async function run(viewport,label){
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto(`${base}#hoje`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('[data-executive-dashboard]');
+  await page.waitForSelector('.cockpitWindowBrief');
 
   if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: expected five domain summaries`);
   if((await page.locator('.cockpitReviewItem').count())>3)throw new Error(`${label}: overview exposes more than three priorities`);
-  const text=(await page.locator('#screenHost').innerText())||'';
-  for(const expected of ['Visão geral da sua saúde','Leitura principal','Pontos a revisar','Explore o histórico','Dados conectados'])if(!text.includes(expected))throw new Error(`${label}: missing product hierarchy ${expected}`);
-  for(const action of ['Abrir treinos','Abrir nutrição','Abrir composição','Abrir recuperação','Abrir exames','Gerenciar fontes','Abrir Timeline'])if(!text.includes(action))throw new Error(`${label}: missing specific action ${action}`);
+  const text=(await page.locator('#screenHost').textContent())||'';
+  for(const expected of ['Visão geral da sua saúde','Peso corporal','Resumo da janela','O que mudou','Últimos acontecimentos','Dados a completar'])if(!text.includes(expected))throw new Error(`${label}: missing product hierarchy ${expected}`);
+  for(const action of ['Abrir detalhes','Abrir análise integrada','Gerenciar fontes','Abrir Timeline'])if(!text.includes(action))throw new Error(`${label}: missing specific action ${action}`);
   if(text.includes('Ver mais'))throw new Error(`${label}: generic action copy returned`);
 
   const order=await page.evaluate(()=>{
     const top=selector=>document.querySelector(selector)?.getBoundingClientRect().top??Number.POSITIVE_INFINITY;
-    return{decision:top('.cockpitDecisionGrid'),analytics:top('.cockpitAnalyticsGrid')};
+    return{workspace:top('.cockpitWorkspace'),lower:top('.cockpitLowerGrid'),trend:top('.cockpitTrend')};
   });
-  if(!(order.decision<order.analytics))throw new Error(`${label}: evidence modules precede interpretation`);
+  if(!(order.workspace<order.lower))throw new Error(`${label}: secondary information precedes the longitudinal workspace`);
+  if(order.trend>760)throw new Error(`${label}: main longitudinal chart starts too low`);
   if(await number(page.locator('.cockpitStatusText small').first(),'fontSize')<14)throw new Error(`${label}: domain label is too small`);
-  if(await number(page.locator('.cockpitInsightHero p').first(),'fontSize')<15)throw new Error(`${label}: main interpretation is too small`);
-  if(await number(page.locator('.cockpitButton').first(),'fontSize')<12.5)throw new Error(`${label}: actions are too small`);
+  if(await number(page.locator('.cockpitBriefText').first(),'fontSize')<13.5)throw new Error(`${label}: main interpretation is too small`);
+  if(await number(page.locator('.cockpitButton').first(),'fontSize')<13)throw new Error(`${label}: actions are too small`);
+  if((await page.locator('[data-home-metric]').count())!==8)throw new Error(`${label}: longitudinal metric selector is incomplete`);
 
   if(label==='desktop'){
     for(const group of ['Acompanhar','Áreas','Contexto','Sistema'])if(!await page.locator('#primaryNav .navGroupLabel',{hasText:group}).isVisible())throw new Error(`desktop: navigation group missing ${group}`);
@@ -39,7 +42,13 @@ async function run(viewport,label){
       return Boolean(host&&nav&&host.bottom>nav.top+3);
     });
     if(overlap)throw new Error('mobile: navigation overlaps the content viewport');
+    const rail=await page.locator('.cockpitStatusGrid').evaluate(element=>({client:element.clientWidth,scroll:element.scrollWidth}));
+    if(rail.scroll<=rail.client)throw new Error('mobile: domain summaries are stacked instead of using the compact horizontal rail');
   }
+
+  await page.locator('[data-home-metric="training"]').click();
+  await page.waitForFunction(()=>document.querySelector('.cockpitTrend h2')?.textContent==='Treinos por semana');
+  if(await page.locator('[data-home-metric="training"]').getAttribute('aria-selected')!=='true')throw new Error(`${label}: trend metric control did not update`);
 
   await page.locator('[data-period="90"]').click();
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');

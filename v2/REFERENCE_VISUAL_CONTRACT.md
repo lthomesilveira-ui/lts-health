@@ -57,18 +57,18 @@ Cada cartão mostra dado atual, contexto/comparação segura e uma pequena indic
 
 1. Cabeçalho com título, texto curto e seletor 30 dias / 90 dias / 1 ano / Histórico.
 2. Cinco cartões executivos: Composição, Treinos, Nutrição, Recuperação e Exames.
-3. Bloco de Leitura principal da janela.
-4. Linha analítica: Treino, Nutrição e Composição.
-5. Segunda linha: Recuperação/Sono, Exames e Hidratação.
-6. Fechamento: Resumo executivo, Pontos a revisar e Fontes.
-7. Gráficos somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
+3. Um gráfico longitudinal principal com seletor de métrica: Peso, Gordura, Massa muscular, Treinos, Nutrição, Sono, Exames e Água.
+4. Resumo curto da janela ao lado do gráfico no desktop e abaixo dele no celular.
+5. Fechamento compacto: últimos acontecimentos e dados a completar.
+6. Gráficos somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
 
 ## Mobile
 
 - Preservar a linguagem clara do conteúdo; não transformar a Home em um produto escuro no celular.
 - Seletor de período sempre acessível.
-- Cards executivos podem quebrar para duas colunas e, em telas estreitas, uma coluna.
-- Módulos analíticos e fechamento passam para uma coluna vertical por scroll, sem overflow horizontal.
+- Cards executivos formam uma única faixa horizontal com gesto nativo e snap; não podem virar cinco blocos verticais.
+- O gráfico principal aparece antes do resumo, com seletor de métricas horizontal e legível.
+- Acontecimentos e lacunas passam para uma coluna; os dashboards detalhados permanecem nas áreas especializadas.
 - Navegação inferior pode permanecer desde que não cubra conteúdo.
 
 ## Gate de homologação
@@ -76,7 +76,7 @@ Cada cartão mostra dado atual, contexto/comparação segura e uma pequena indic
 Nenhuma versão é considerada pronta apenas por CI verde. Antes de promover ao `main` é obrigatório:
 
 - renderizar a Home em 1536 × 864 e em viewport mobile;
-- conferir sidebar, canvas claro, tipografia sans-serif, cinco cartões coloridos, leitura principal, duas linhas analíticas e fechamento;
+- conferir sidebar, canvas claro, tipografia sans-serif, cinco cartões coloridos, gráfico principal, resumo e fechamento compacto;
 - medir ausência de overflow horizontal;
 - verificar que a sidebar permanece dentro da faixa documentada e que o canvas continua dominante no desktop;
 - verificar que o fundo do canvas e as cinco famílias de cor dos cartões correspondem à referência;

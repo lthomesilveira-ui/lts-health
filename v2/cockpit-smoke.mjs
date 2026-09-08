@@ -9,13 +9,15 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Visão geral da sua saúde');
   const text=(await page.locator('#screenHost').textContent())||'';
-  for(const expected of ['assistente longitudinal','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Leitura principal','Ritmo e distribuição','Registro e médias','Histórico corporal','Resumo executivo','Pontos a revisar','Dados conectados'])if(!text.includes(expected))throw new Error(`${label}: cockpit v3 missing ${expected}`);
+  for(const expected of ['assistente longitudinal','Composição corporal','Treinos','Nutrição','Recuperação','Exames','Peso corporal','Resumo da janela','O que mudou','Últimos acontecimentos','Dados a completar'])if(!text.includes(expected))throw new Error(`${label}: longitudinal home missing ${expected}`);
   if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: cockpit should expose five executive domains`);
-  if(!text.includes('Sem dado de ingestão de água')||!text.includes('Água corporal da bioimpedância é outra medida e aparece em Composição.'))throw new Error(`${label}: hydration boundary is not explicit`);
+  if(!text.includes('Sem dado de ingestão de água')||!text.includes('Água corporal da bioimpedância é outra medida e não entra como consumo.'))throw new Error(`${label}: hydration boundary is not explicit`);
   if(!await page.locator('#analysisPeriod').isVisible())throw new Error(`${label}: period filter missing from cockpit`);
   await page.selectOption('#analysisPeriod','90');
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');
-  if((await page.locator('.cockpitChart svg').count())<2)throw new Error(`${label}: useful filtered charts missing`);
+  if((await page.locator('.cockpitChart svg').count())<1)throw new Error(`${label}: main filtered chart missing`);
+  await page.locator('[data-home-metric="fat"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-home-metric="fat"]')?.getAttribute('aria-selected')==='true'&&document.querySelector('.cockpitTrend h2')?.textContent==='Gordura corporal');
   await noOverflow(page,label,'hoje');
 
   const audit=await page.evaluate(async()=>{

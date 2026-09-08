@@ -27,11 +27,11 @@ for(const phrase of [
   'o que está documentado agora',
   'o que mudou no período',
   'quão completa e confiável é essa leitura',
-  'Leitura e prioridades',
+  'Tendência principal',
   'CI verde comprova regressões técnicas cobertas'
 ])assert.match(architecture,new RegExp(phrase,'i'),`architecture missing: ${phrase}`);
 
-for(const id of Array.from({length:14},(_,index)=>`FB-${String(index+1).padStart(3,'0')}`))assert.match(feedback,new RegExp(`\\| ${id} \\|`),`feedback missing: ${id}`);
+for(const id of Array.from({length:15},(_,index)=>`FB-${String(index+1).padStart(3,'0')}`))assert.match(feedback,new RegExp(`\\| ${id} \\|`),`feedback missing: ${id}`);
 for(const debt of ['D-001','D-002','D-003','D-004','D-005','D-006'])assert.match(feedback,new RegExp(`\\| ${debt} \\|`),`debt missing: ${debt}`);
 assert.match(feedback,/Nenhuma alegação antiga de “10\/10” substitui feedback posterior/);
 
@@ -40,16 +40,18 @@ for(const group of ['Acompanhar','Áreas','Contexto','Sistema'])assert.match(ind
 assert.ok(!index.includes('data-route="evolucao">Evolução</button>'),'Evolução remains a competing primary destination');
 assert.match(index,/data-route="evolucao">Evolução detalhada<\/button>/);
 
-for(const action of ['Abrir treinos','Abrir nutrição','Abrir composição','Abrir recuperação','Abrir exames','Gerenciar fontes','Abrir Timeline'])assert.match(today,new RegExp(action),`specific action missing: ${action}`);
+for(const action of ['Abrir detalhes','Abrir análise integrada','Gerenciar fontes','Abrir Timeline'])assert.match(today,new RegExp(action),`specific action missing: ${action}`);
 assert.ok(!today.includes("textContent='Ver mais"),'generic postprocessed actions returned');
-assert.match(today,/cockpitDecisionGrid/);
-assert.ok(today.indexOf('cockpitDecisionGrid')<today.indexOf('cockpitAnalyticsGrid'),'analytics appear before interpretation and priorities');
+for(const surface of ['cockpitStatusGrid','cockpitWorkspace','cockpitTrend','cockpitWindowBrief','cockpitLowerGrid','cockpitRecent'])assert.match(today,new RegExp(surface),`home product surface missing: ${surface}`);
+assert.match(today,/data-home-metric/,'interactive longitudinal metric selector is missing');
+assert.match(today,/\['weight','Peso'\].*\['water','Água'\]/s,'longitudinal domains are not represented in the main chart');
 assert.match(today,/slice\(0,3\)/,'review priorities are not bounded');
-assert.match(today,/sem digitar dia a dia/);
+assert.match(today,/Trazer histórico de água do MFP/);
 
-assert.match(homeCss,/\.cockpitWelcome p\{[^}]*font-size:16px/);
+assert.match(homeCss,/\.cockpitWelcome p\{[^}]*font-size:15px/);
 assert.match(homeCss,/\.cockpitStatusText small\{[^}]*font-size:14px/);
-assert.match(homeCss,/\.cockpitInsightHero p\{[^}]*font-size:16px/);
+assert.match(homeCss,/\.cockpitTrendTabs button\{[^}]*font-size:13px/);
+assert.match(homeCss,/scroll-snap-type:x proximity/,'mobile domain rail is not intentionally horizontal');
 assert.match(homeCss,/body:has\(\.cockpitV3\) \.topActions #routeAction\{display:none!important\}/);
 assert.match(shellCss,/grid-template-columns:244px minmax\(0,1fr\)/);
 assert.match(shellCss,/body:has\(#login:not\(\.hidden\)\) #app\{display:none!important\}/);

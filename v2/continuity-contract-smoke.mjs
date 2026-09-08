@@ -67,10 +67,12 @@ const productArchitecture=state.tasks.find(task=>task.id==='LTS-PRODUCT-ARCH-001
 const experience=state.tasks.find(task=>task.id==='LTS-UX-P0-001');
 const domainJourneys=state.tasks.find(task=>task.id==='LTS-DOMAIN-JOURNEYS-001');
 for(const task of [productArchitecture,experience,domainJourneys]){
-  assert.ok(['in_progress','ready','done'].includes(task?.status),`${task?.id||'product task'} has an invalid package state`);
-  assert.ok(state.current_package.task_ids.includes(task.id));
+  assert.equal(task?.status,'done',`${task?.id||'product task'} must remain completed`);
 }
-assert.equal(state.current_package.id,'PKG-PRODUCT-ARCHITECTURE-RESET');
+const longitudinalHome=state.tasks.find(task=>task.id==='LTS-HOME-LONGITUDINAL-001');
+assert.equal(longitudinalHome?.status,'in_progress');
+assert.equal(state.current_package.id,'PKG-LONGITUDINAL-HOME-UX');
+assert.deepEqual(state.current_package.task_ids,[longitudinalHome.id]);
 const visualSource=state.tasks.find(task=>task.id==='LTS-VISUAL-SOURCE-001');
 assert.equal(visualSource?.status,'blocked_external');
 assert.match(visualSource?.blocker||'',/original approved image/i);

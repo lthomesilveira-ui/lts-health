@@ -38,9 +38,9 @@ async function inspect(viewport,label){
       distinctStatusColors:new Set(colors).size,
       canvas,
       railColor,
-      decision:rect('.cockpitDecisionGrid'),
-      analytics:rect('.cockpitAnalyticsGrid'),
-      trust:rect('.cockpitTrustGrid'),
+      workspace:rect('.cockpitWorkspace'),
+      trend:rect('.cockpitTrend'),
+      lower:rect('.cockpitLowerGrid'),
       rail:rail?rect('#primaryNav'):null,
       desktopNav:visible('#primaryNav'),
       mobileNav:visible('#mobileNav'),
@@ -50,17 +50,18 @@ async function inspect(viewport,label){
 
   if(result.statusCount!==5)throw new Error(`${label}: expected five domain cards`);
   if(result.distinctStatusColors<4)throw new Error(`${label}: domain color system collapsed`);
-  if(!result.decision||!result.analytics||result.decision.top>=result.analytics.top)throw new Error(`${label}: interpretation does not precede analytics`);
-  if(!result.trust||result.trust.top<=result.analytics.top)throw new Error(`${label}: trust and sources do not close the overview`);
+  if(!result.workspace||!result.trend||!result.lower||result.workspace.top>=result.lower.top)throw new Error(`${label}: longitudinal workspace does not lead the secondary content`);
   if(result.overflow>3)throw new Error(`${label}: horizontal overflow ${result.overflow}px`);
 
   if(label==='desktop'){
     if(!result.desktopNav||result.mobileNav)throw new Error('desktop: navigation mode is incorrect');
     if(!result.rail||result.rail.width<208||result.rail.width>268)throw new Error(`desktop: rail width ${result.rail?.width??'missing'} is outside the documented range`);
-    if(result.statusMaxHeight>245)throw new Error(`desktop: domain cards lost executive density (${result.statusMaxHeight}px)`);
-    if(result.decision.top>520)throw new Error(`desktop: main interpretation starts too low (${result.decision.top}px)`);
+    if(result.statusMaxHeight>190)throw new Error(`desktop: domain cards lost executive density (${result.statusMaxHeight}px)`);
+    if(result.trend.top>460)throw new Error(`desktop: main longitudinal chart starts too low (${result.trend.top}px)`);
   }else{
     if(result.desktopNav||!result.mobileNav)throw new Error('mobile: navigation mode is incorrect');
+    const rail=await page.locator('.cockpitStatusGrid').evaluate(element=>({client:element.clientWidth,scroll:element.scrollWidth}));
+    if(rail.scroll<=rail.client)throw new Error('mobile: domain summaries are not a compact horizontal rail');
   }
 
   await page.screenshot({path:`${output}/${label}-overview.png`,fullPage:label==='desktop'});

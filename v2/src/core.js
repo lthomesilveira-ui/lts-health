@@ -41,6 +41,7 @@ export const state = {
     labQuery: '',
     selectedBiomarker: null,
     selectedCollection: null,
+    homeMetric: 'weight',
     dataUploadStatus: 'all',
     dataUploadSource: 'all'
   }

@@ -28,6 +28,7 @@ Status: fonte de verdade dos feedbacks de produto recuperados. O texto é públi
 | FB-012 | 08/09 | Briefing, pendências e implementação não podem depender da memória do chat. | Arquitetura, feedbacks e fila operacional ficam versionados. | Entregue neste pacote | `PRODUCT_ARCHITECTURE.md`; este ledger; `EXECUTION_STATE.json`. |
 | FB-013 | 08/09 | O link publicado ainda está longe do ideal. | Reabrir conclusão visual; testes antigos deixam de equivaler a homologação de produto. | Tratado tecnicamente | Build público identificado e inspecionado; densidade desktop, contraste e cache de ativos corrigidos. Aceite subjetivo não é presumido. |
 | FB-014 | 08/09 | A interface parece um apanhado de coisas já rejeitadas. | Organizar a experiência por perguntas e jornadas, remover redundâncias e peso visual uniforme. | Entregue neste pacote | Navegação por intenção; leitura/prioridades antes da evidência; destinos com cabeçalho e retorno compartilhados. |
+| FB-015 | 08/09 | No celular a Home continua parecendo módulos empilhados, não um aplicativo pensado para acompanhar evolução. | Substituir o dashboard longo por uma visão compacta com seletor único de evolução, resumo da janela, acontecimentos recentes e aprofundamento por área. | Em execução | `LTS-HOME-LONGITUDINAL-001`; build candidato `longitudinal-home-20260908.4`. |
 
 ## Dívidas identificadas pela auditoria
 
