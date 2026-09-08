@@ -3,6 +3,9 @@ import {chromium} from 'playwright';
 
 const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/?fixture=1';
 const output=process.env.LTS_HEALTH_UX_OUTPUT||'artifacts/ux-coherence';
+const ignoreExternalNetwork=process.env.LTS_IGNORE_EXTERNAL_NETWORK==='1';
+const visualEvidence=[];
+const launchOptions={headless:true,...(process.env.LTS_CHROMIUM_PATH?{executablePath:process.env.LTS_CHROMIUM_PATH}:{})};
 await fs.mkdir(output,{recursive:true});
 
 async function openRoute(page,route,title){
@@ -25,15 +28,36 @@ async function assertLayout(page,label){
     const screenTitle=document.querySelector('#screenHost .screenTitle')?.getBoundingClientRect();
     const eyebrowNode=document.querySelector('#screenHost .screenEyebrow');
     const eyebrow=eyebrowNode?.getBoundingClientRect();
-    return{overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1,hostTop:host?.top??9999,headerBottom:header?.bottom??0,titleTop:screenTitle?.top??9999,eyebrowTop:eyebrow?.top??9999,eyebrowHeight:eyebrow?.height??0,eyebrowText:String(eyebrowNode?.textContent||'').trim()};
+    const hit=eyebrow?document.elementFromPoint(eyebrow.left+Math.min(4,eyebrow.width/2),eyebrow.top+eyebrow.height/2):null;
+    return{overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,windowScroll:window.scrollY,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1,hostTop:host?.top??9999,headerBottom:header?.bottom??0,titleTop:screenTitle?.top??9999,eyebrowTop:eyebrow?.top??9999,eyebrowHeight:eyebrow?.height??0,eyebrowText:String(eyebrowNode?.textContent||'').trim(),eyebrowHit:Boolean(eyebrowNode&&(hit===eyebrowNode||eyebrowNode.contains(hit)))};
   });
   if(layout.overflow>3)throw new Error(`${label}: horizontal overflow ${layout.overflow}px`);
+  if(layout.windowScroll>1)throw new Error(`${label}: window retained ${layout.windowScroll}px of scroll`);
   if(layout.hostScroll>1)throw new Error(`${label}: route retained ${layout.hostScroll}px of scroll`);
   if(!layout.eyebrowText||layout.eyebrowHeight<10)throw new Error(`${label}: section eyebrow is not visible`);
+  if(label.startsWith('mobile/')&&Math.abs(layout.hostTop-layout.headerBottom)>1)throw new Error(`${label}: content starts at ${layout.hostTop.toFixed(1)}px but header ends at ${layout.headerBottom.toFixed(1)}px`);
+  if(label.startsWith('mobile/')&&!layout.eyebrowHit)throw new Error(`${label}: section eyebrow is covered by another layer`);
   if(label.startsWith('mobile/')&&layout.titleTop<layout.hostTop+8)throw new Error(`${label}: title starts above the content area by ${(layout.hostTop+8-layout.titleTop).toFixed(1)}px`);
   if(label.startsWith('mobile/')&&(layout.eyebrowTop<layout.hostTop+8||layout.eyebrowTop>layout.hostTop+34))throw new Error(`${label}: section eyebrow starts outside the expected route header band (${layout.eyebrowTop.toFixed(1)}px, host ${layout.hostTop.toFixed(1)}px)`);
   if(layout.heroTop>340)throw new Error(`${label}: primary answer starts too low (${layout.heroTop}px)`);
   return layout;
+}
+
+async function captureFreshRoute(viewport,label,route,title,file){
+  const browser=await chromium.launch(launchOptions);
+  const page=await browser.newPage({viewport,deviceScaleFactor:1});
+  try{
+    await page.goto(`${base}#hoje`,{waitUntil:'domcontentloaded'});
+    await page.waitForSelector('[data-executive-dashboard]');
+    await page.locator('button[data-period="90"]').click();
+    await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');
+    await openRoute(page,route,title);
+    const before=await assertLayout(page,`${label}/${route}/capture-before`);
+    await page.screenshot({path:`${output}/${file}`,fullPage:false});
+    await page.waitForTimeout(120);
+    const after=await assertLayout(page,`${label}/${route}/capture-after`);
+    visualEvidence.push({label,route,title,before,after});
+  }finally{await browser.close();}
 }
 async function assertClosedDetails(page,count,label){
   const details=page.locator('details.uxDisclosure');
@@ -87,11 +111,11 @@ async function assertReadableTheme(page,label){
 }
 
 async function run(viewport,label){
-  const browser=await chromium.launch({headless:true,...(process.env.LTS_CHROMIUM_PATH?{executablePath:process.env.LTS_CHROMIUM_PATH}:{})});
+  const browser=await chromium.launch(launchOptions);
   const page=await browser.newPage({viewport,deviceScaleFactor:1});
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
-  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+  page.on('console',message=>{const text=message.text();if(message.type()==='error'&&!(ignoreExternalNetwork&&text.includes('Failed to load resource')))errors.push(text);});
   await page.goto(`${base}#hoje`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('[data-executive-dashboard]');
   await page.locator('button[data-period="90"]').click();
@@ -114,7 +138,7 @@ async function run(viewport,label){
     if(shell.hostBottom>shell.navTop+1)throw new Error(`mobile/treinos: navigation overlaps content area by ${(shell.hostBottom-shell.navTop).toFixed(1)}px`);
     if(shell.navPosition==='fixed')throw new Error('mobile/treinos: navigation escaped the application grid');
   }
-  await page.screenshot({path:`${output}/${label}-training.png`,fullPage:false});
+  await captureFreshRoute(viewport,label,'treinos','Treinos',`${label}-training.png`);
   await page.locator('details.uxDisclosure summary').first().click();
   if(!await page.locator('details.uxDisclosure').first().evaluate(node=>node.open))throw new Error(`${label}/treinos: progressive section did not open`);
   const exerciseDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'});
@@ -135,17 +159,17 @@ async function run(viewport,label){
   if(await page.locator('#nutritionPeriod').inputValue()!=='90')throw new Error(`${label}/nutricao: global period was lost`);
   if(!(await page.locator('.domainHero h2').innerText()).includes('2 dias registrados'))throw new Error(`${label}/nutricao: expected fixture days in the shared window`);
   await assertClosedDetails(page,2,`${label}/nutricao`);await assertNoMechanicalCopy(page,`${label}/nutricao`);await assertLayout(page,`${label}/nutricao`);await assertReadableTheme(page,`${label}/nutricao`);
-  await page.screenshot({path:`${output}/${label}-nutrition.png`,fullPage:false});
+  await captureFreshRoute(viewport,label,'nutricao','Nutrição',`${label}-nutrition.png`);
 
   await openRoute(page,'bio','Composição corporal');
   await assertClosedDetails(page,2,`${label}/bio`);await assertNoMechanicalCopy(page,`${label}/bio`);await assertLayout(page,`${label}/bio`);await assertReadableTheme(page,`${label}/bio`);
   if(await page.locator('.domainChartCard').count()!==1)throw new Error(`${label}/bio: expected one primary chart surface`);
-  await page.screenshot({path:`${output}/${label}-composition.png`,fullPage:false});
+  await captureFreshRoute(viewport,label,'bio','Composição corporal',`${label}-composition.png`);
 
   await openRoute(page,'saude','Exames');
   await assertClosedDetails(page,3,`${label}/saude`);await assertNoMechanicalCopy(page,`${label}/saude`);await assertLayout(page,`${label}/saude`);await assertReadableTheme(page,`${label}/saude`);
   if(await page.locator('.domainChartCard').count()!==1)throw new Error(`${label}/saude: expected one primary explorer`);
-  await page.screenshot({path:`${output}/${label}-labs.png`,fullPage:false});
+  await captureFreshRoute(viewport,label,'saude','Exames',`${label}-labs.png`);
 
   await openRoute(page,'analise','Recuperação & análises');
   if(await page.locator('#analysisPeriod').inputValue()!=='90')throw new Error(`${label}/analise: global period was lost`);
@@ -160,4 +184,5 @@ async function run(viewport,label){
 
 await run({width:1440,height:1000},'desktop');
 await run({width:390,height:844},'mobile');
+await fs.writeFile(`${output}/layout-evidence.json`,JSON.stringify(visualEvidence,null,2));
 console.log('LTS Health UX coherence browser smoke passed');
