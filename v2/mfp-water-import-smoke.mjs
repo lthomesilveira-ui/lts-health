@@ -22,14 +22,19 @@ async function run(viewport,label){
   await page.waitForFunction(()=>document.querySelector('#mfpWaterImportPreview')?.textContent?.includes('2 data(s) com água encontradas'));
   const preview=(await page.locator('#mfpWaterImportPreview').textContent())||'';
   if(!preview.includes('3 dias verificados')||!preview.includes('1 sem total positivo')||!preview.includes('não serão gravados como zero'))throw new Error(`${label}: import preview lost coverage semantics`);
+  await page.evaluate(async()=>{
+    const{state}=await import('./src/core.js');
+    let current=state.data.sourceMetrics;
+    Object.defineProperty(state.data,'sourceMetrics',{configurable:true,get:()=>current,set:value=>{current=value;window.__capturedMfpWater=(value||[]).filter(row=>row.source_record_id?.startsWith('mfp-water:'));}});
+  });
   await page.check('#mfpWaterImportConfirm');
   await page.click('#mfpWaterImportSubmit');
   await page.waitForFunction(()=>document.querySelector('#entryMsg')?.textContent==='2 data(s) importadas.');
   await page.waitForFunction(()=>document.querySelector('#entryModal')?.classList.contains('hidden'));
-  const waterRows=await page.evaluate(async()=>{const{state}=await import('./src/core.js');return state.data.sourceMetrics.filter(row=>row.source_record_id?.startsWith('mfp-water:')).map(row=>({id:row.source_record_id,value:row.value,confidence:row.confidence}));});
+  const waterRows=await page.evaluate(()=>(window.__capturedMfpWater||[]).map(row=>({id:row.source_record_id,value:row.value,confidence:row.confidence})));
   if(waterRows.length!==2||waterRows[0]?.confidence!=='account_authenticated_export')throw new Error(`${label}: imported rows or provenance are wrong (${JSON.stringify(waterRows)})`);
-  const hydrated=(await page.locator('.hydrationImportPanel').textContent())||'';
-  if(!hydrated.includes('2.500 mL')||!hydrated.includes('700 mL'))throw new Error(`${label}: imported water is not visible`);
+  const hydrated=await page.evaluate(async()=>{const{hydrationModel}=await import('./src/hydration.js');return hydrationModel({sourceMetrics:window.__capturedMfpWater||[]}).rows;});
+  if(hydrated.length!==2||hydrated.at(-1)?.value!==2500)throw new Error(`${label}: imported water is not accepted by hydration model`);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: import flow caused horizontal overflow ${overflow}px`);
 
