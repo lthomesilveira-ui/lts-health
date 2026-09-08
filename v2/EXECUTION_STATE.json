@@ -45,24 +45,30 @@
   },
   "current_package": {
     "id": "PKG-LONGITUDINAL-HOME-UX",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Turn the overview into a true longitudinal product surface, especially on mobile, instead of stacking independent dashboard modules.",
     "task_ids": [
       "LTS-HOME-LONGITUDINAL-001"
     ],
-    "completed_evidence": []
+    "completed_evidence": [
+      "GitHub pull request 216",
+      "cockpit-smoke run 34228093456",
+      "LTS Health Dashboard Reference Contract run 34228093464",
+      "desktop 1536x864 and mobile 390x844 visual artifacts inspected",
+      "public build longitudinal-home-20260908.4 inspected after deployment"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "product-architecture-20260908.3",
-    "main_commit": "8aec988d669234473a703e4d52b707bd24339d0f",
+    "build_id": "longitudinal-home-20260908.4",
+    "main_commit": "5bf01ce6b8360c4d881e060ece13edcd8ad7944a",
     "verified_on": "2026-09-08",
     "evidence": [
-      "Deploy LTS Health run 34222640727",
-      "LTS Health Dashboard Reference Contract run 34222490129",
-      "public DOM build identifier and desktop layout inspection",
+      "cockpit-smoke run 34228093456",
+      "LTS Health Dashboard Reference Contract run 34228093464",
+      "public DOM and interaction inspection after PR 216 deployment",
       "desktop 1536x864 and mobile 390x844 visual QA artifacts",
-      "all primary routes exercised by product-architecture-browser-smoke.mjs"
+      "all primary routes and eight Home metrics exercised by product-architecture-browser-smoke.mjs"
     ],
     "acceptance_note": "Technical and visual package criteria passed; this record does not invent pixel parity or user acceptance."
   },
@@ -347,7 +353,7 @@
       "id": "LTS-HOME-LONGITUDINAL-001",
       "area": "experience",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Replace the stacked mobile dashboard with a concise longitudinal overview and one navigable evolution surface.",
       "acceptance": [
@@ -361,9 +367,13 @@
         "v2/src/today-screen.js",
         "v2/cockpit.css",
         "v2/product-architecture-browser-smoke.mjs",
-        "v2/product-architecture-visual-qa.mjs"
+        "v2/product-architecture-visual-qa.mjs",
+        "GitHub pull request 216",
+        "cockpit-smoke run 34228093456",
+        "LTS Health Dashboard Reference Contract run 34228093464",
+        "public build longitudinal-home-20260908.4"
       ],
-      "next_action": "Run the pull-request browser and visual gates, inspect their artifacts, then promote and verify the public build.",
+      "next_action": null,
       "blocker": null
     },
     {
