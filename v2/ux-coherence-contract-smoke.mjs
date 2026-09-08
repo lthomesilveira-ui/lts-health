@@ -13,6 +13,7 @@ assert.match(index,/lts-build" content="ux-coherence-/);
 assert.match(index,/ux-coherence\.css\?v=ux-coherence-/);
 assert.match(index,/main\.js\?v=ux-coherence-/);
 assert.match(core,/export function setGlobalPeriod/);
+assert.match(main,/\$\('screenHost'\)\?\.scrollTo\(\{top:0,left:0,behavior:'auto'\}\)/);
 for(const target of ['analysisPeriod','trainingPeriod','nutritionPeriod'])assert.match(core,new RegExp(`state\\.ui\\.${target}=next`));
 for(const id of ['trainingPeriod','analysisPeriod','nutritionPeriod'])assert.match(main,new RegExp(`id==='${id}'[^\n]+setGlobalPeriod`));
 
