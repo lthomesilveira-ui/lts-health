@@ -1,4 +1,4 @@
-import {state,esc,day,num,norm} from './core.js';
+import {state,esc,day,num,norm,countLabel} from './core.js';
 import {
   buildIntegratedAnalysis,bodyChangeModel,trainingDistributionModel,
   comparablePerformanceModel,nutritionPeriodModel,sleepCoverageModel,periodBounds
@@ -100,7 +100,7 @@ export function coveragePriorityModel(data={},status={},period='365'){
       addPriority(rows,'nutrition','limit','Cobertura nutricional parcial',`${nutrition.coveragePct}% dos dias possíveis têm total diário comparável nesta janela.`,'nutricao');
     }
     if(nutritionEvidenceModel.reviewDays){
-      addPriority(rows,'nutrition','limit','Dias de nutrição em revisão',`${nutritionEvidenceModel.reviewDays} dia(s) têm mais de um total preservado e ficam fora das médias.`,'nutricao');
+      addPriority(rows,'nutrition','limit','Dias de nutrição em revisão',`${countLabel(nutritionEvidenceModel.reviewDays,'dia','dias')} ${nutritionEvidenceModel.reviewDays===1?'tem':'têm'} mais de um total preservado e ${nutritionEvidenceModel.reviewDays===1?'fica':'ficam'} fora das médias.`,'nutricao');
     }
   }
 
@@ -129,7 +129,7 @@ export function coveragePriorityModel(data={},status={},period='365'){
   }
 
   if(sourceSeries!=null&&sourceSeries>0){
-    addPriority(rows,'sources','context','Séries complementares aguardam regra segura',`${sourceSeries} série(s) Apple, Polar ou de outras origens ficam preservadas e separadas até existir mapeamento validado.`,'dados');
+    addPriority(rows,'sources','context','Séries complementares aguardam regra segura',`${countLabel(sourceSeries,'série','séries')} Apple, Polar ou de outras origens ${sourceSeries===1?'fica preservada e separada':'ficam preservadas e separadas'} até existir mapeamento validado.`,'dados');
   }
 
   rows.sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title,'pt-BR'));
@@ -176,7 +176,7 @@ export function renderCoveragePriorityPanel(model){
   return `<section class="coveragePriority sectionGap" data-coverage-priority>
     <div class="coveragePriorityHead">
       <div><span>Cobertura da análise</span><h2>O que mais limita esta leitura agora</h2><p>A ordem mede apenas quanto uma lacuna impede análise ou comparação de dados. Não é classificação de saúde e não gera recomendação clínica.</p></div>
-      <small>${rows.length?`${rows.length} ponto(s) de cobertura`:'sem lacunas adicionais pelos critérios atuais'}</small>
+      <small>${rows.length?countLabel(rows.length,'ponto de cobertura','pontos de cobertura'):'sem lacunas adicionais pelos critérios atuais'}</small>
     </div>
     <div class="coveragePriorityList">${rows.length?rows.slice(0,6).map(priorityRow).join(''):'<div class="coveragePriorityEmpty">A janela atual tem cobertura suficiente para as leituras suportadas pelos critérios existentes.</div>'}</div>
   </section>`;
@@ -192,10 +192,10 @@ export function renderTraceabilityPanel(model){
       <div><span>Séries complementares preservadas</span><b>${metricValue(model?.preservedSeries)}</b></div>
     </div>
     <div class="evidenceTraceabilityFlow">
-      <div><i>1</i><span><b>Originais</b><small>${model?.uploads==null?'origem indisponível agora':`${model.uploads} arquivo(s) preservado(s)`}</small></span></div>
-      <div><i>2</i><span><b>Processamento</b><small>${model?.processed==null?'situação indisponível agora':`${model.processed} concluído(s) · ${model.inProgress} em andamento · ${model.uploadAttention} com atenção`}</small></span></div>
-      <div><i>3</i><span><b>Estrutura e origem</b><small>${model?.preservedSeries==null?'cobertura complementar indisponível agora':`${model.structuredDomains} domínio(s) com dados · ${model.preservedSeries} série(s) complementares mantidas separadas${model.workoutEvidence==null?'':` · ${model.workoutEvidence} vínculo(s) complementares de treino`}`}</small></span></div>
-      <div><i>4</i><span><b>Qualidade</b><small>${model?.qualityOpen==null?'qualidade indisponível agora':`${model.qualityOpen} aberto(s) · ${model.qualityKnown} limitação(ões) conhecida(s) · ${model.qualityResolved} resolvido(s)`}</small></span></div>
+      <div><i>1</i><span><b>Originais</b><small>${model?.uploads==null?'origem indisponível agora':countLabel(model.uploads,'arquivo preservado','arquivos preservados')}</small></span></div>
+      <div><i>2</i><span><b>Processamento</b><small>${model?.processed==null?'situação indisponível agora':`${countLabel(model.processed,'concluído','concluídos')} · ${model.inProgress} em andamento · ${countLabel(model.uploadAttention,'item com atenção','itens com atenção')}`}</small></span></div>
+      <div><i>3</i><span><b>Estrutura e origem</b><small>${model?.preservedSeries==null?'cobertura complementar indisponível agora':`${countLabel(model.structuredDomains,'domínio com dados','domínios com dados')} · ${countLabel(model.preservedSeries,'série complementar mantida separada','séries complementares mantidas separadas')}${model.workoutEvidence==null?'':` · ${countLabel(model.workoutEvidence,'vínculo complementar de treino','vínculos complementares de treino')}`}`}</small></span></div>
+      <div><i>4</i><span><b>Qualidade</b><small>${model?.qualityOpen==null?'qualidade indisponível agora':`${countLabel(model.qualityOpen,'item aberto','itens abertos')} · ${countLabel(model.qualityKnown,'limitação conhecida','limitações conhecidas')} · ${countLabel(model.qualityResolved,'item resolvido','itens resolvidos')}`}</small></span></div>
     </div>
     <div class="evidenceBoundary"><b>Separação de fontes preservada</b><span>Apple, Polar e outras origens complementares só avançam para uma leitura consolidada quando existir regra validada. Até lá, permanecem separadas e não geram registros duplicados no histórico principal.</span></div>
   </section>`;

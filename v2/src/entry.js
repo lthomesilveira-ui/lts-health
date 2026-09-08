@@ -1,5 +1,6 @@
 import {saveBodyRecord,saveWorkout,saveMyFitnessPalWater,importMyFitnessPalWaterExport} from './writes.js';
 import {parseMyFitnessPalWaterExport} from './mfp-water-transfer.js';
+import {countLabel} from './core.js';
 
 const $=id=>document.getElementById(id);
 let refreshCallback=async()=>{};
@@ -176,7 +177,7 @@ const validationMessages={
   authentication_required:'Sua sessão terminou. Entre novamente para salvar.'
 };
 function entryErrorMessage(error){
-  if(Number(error?.importedCount)>0)return`${error.importedCount} data(s) foram salvas antes da interrupção. Tente novamente o mesmo arquivo para concluir sem duplicar.`;
+  if(Number(error?.importedCount)>0){const count=Number(error.importedCount);return`${countLabel(count,'data','datas')} ${count===1?'foi salva':'foram salvas'} antes da interrupção. Tente novamente o mesmo arquivo para concluir sem duplicar.`;}
   return validationMessages[error?.message]||'Não foi possível salvar. Confira os campos e tente novamente.';
 }
 
@@ -189,7 +190,7 @@ function showWaterImportPreview(parsed,error){
   if(error){preview.className='waterImportPreview error';preview.innerHTML=`<b>Arquivo recusado</b><span>${entryErrorMessage(error)}</span>`;confirm.disabled=true;submit.disabled=true;return;}
   const ready=parsed.rows.length>0;
   preview.className=`waterImportPreview ${ready?'ready':'empty'}`;
-  preview.innerHTML=`<b>${ready?`${parsed.rows.length.toLocaleString('pt-BR')} data(s) com água encontradas`:'Nenhum total positivo encontrado'}</b><span>${transferDate(parsed.period.from)} a ${transferDate(parsed.period.to)} · ${parsed.days_scanned.toLocaleString('pt-BR')} dias verificados · ${parsed.days_without_positive_total.toLocaleString('pt-BR')} sem total positivo</span><small>Dias sem total positivo não serão gravados como zero.</small>`;
+  preview.innerHTML=`<b>${ready?countLabel(parsed.rows.length,'data com água encontrada','datas com água encontradas'):'Nenhum total positivo encontrado'}</b><span>${transferDate(parsed.period.from)} a ${transferDate(parsed.period.to)} · ${countLabel(parsed.days_scanned,'dia verificado','dias verificados')} · ${parsed.days_without_positive_total.toLocaleString('pt-BR')} sem total positivo</span><small>Dias sem total positivo não serão gravados como zero.</small>`;
   confirm.disabled=!ready;submit.disabled=!ready;
 }
 
@@ -252,7 +253,7 @@ export function setupEntryController({onSaved}={}){
     }
 
     modal.dataset.dirty='false';
-    msg.textContent=importResult?`${importResult.imported.toLocaleString('pt-BR')} data(s) importadas.`:'Salvo.';
+    msg.textContent=importResult?`${countLabel(importResult.imported,'data importada','datas importadas')}.`:'Salvo.';
     try{
       await refreshCallback();
     }catch(error){

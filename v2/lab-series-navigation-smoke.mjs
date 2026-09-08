@@ -12,6 +12,7 @@ async function run(viewport,label){
   page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForSelector('#app:not(.hidden)');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Exames');
   await page.evaluate(async injected=>{const {state}=await import('./src/core.js');state.data.labs=[...(state.data.labs||[]),...injected];state.ui.selectedBiomarker=null;},rows);
+  await page.locator('details.uxDisclosure').filter({hasText:'Coletas e resultados'}).locator('summary').click();
   await page.fill('#labQuery','x');await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.body.textContent.includes('Marcadores com série longitudinal'));
   const shortcut=page.locator('.labSeriesShortcuts [data-marker="marcador serie"]');await shortcut.waitFor();
@@ -26,4 +27,3 @@ async function run(viewport,label){
   if(errors.length)throw new Error(`${label}: page errors: ${errors.join(' | ')}`);await browser.close();
 }
 await run({width:1280,height:900},'desktop');await run({width:390,height:844},'mobile');console.log('Lab series navigation smoke passed');
-

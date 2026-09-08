@@ -1,4 +1,4 @@
-import {state,esc,fmtDate,norm,unique} from './core.js';
+import {state,esc,fmtDate,norm,unique,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
@@ -18,7 +18,7 @@ function monthLabel(key){if(!key)return' sem data';const[y,m]=key.split('-');ret
 function itemSummary(name,allEvents,regimen){
   const related=allEvents.filter(r=>r.medication===name).sort((a,b)=>String(a.event_date).localeCompare(String(b.event_date))),first=related[0]?.event_date||null,last=related.at(-1)?.event_date||null;
   const origins=unique([regimen?.source,regimen?.source_file,...related.map(r=>r.source)].filter(Boolean));
-  return `<article class="protocolSummaryCard"><div class="protocolSummaryHead"><div><span>Contexto registrado</span><h3>${esc(name)}</h3></div></div><div class="protocolSummaryFacts"><div><b>${related.length}</b><span>evento(s) histórico(s)</span></div><div><b>${first?fmtDate(first):'—'}</b><span>primeiro evento</span></div><div><b>${last?fmtDate(last):'—'}</b><span>último evento</span></div></div><p>${origins.length?`Origem: ${esc(origins.join(' · '))}`:'Origem não detalhada.'}</p><em>Situação atual não inferida.</em></article>`;
+  return `<article class="protocolSummaryCard"><div class="protocolSummaryHead"><div><span>Contexto registrado</span><h3>${esc(name)}</h3></div></div><div class="protocolSummaryFacts"><div><b>${related.length}</b><span>${related.length===1?'evento histórico':'eventos históricos'}</span></div><div><b>${first?fmtDate(first):'—'}</b><span>primeiro evento</span></div><div><b>${last?fmtDate(last):'—'}</b><span>último evento</span></div></div><p>${origins.length?`Origem: ${esc(origins.join(' · '))}`:'Origem não detalhada.'}</p><em>Situação atual não inferida.</em></article>`;
 }
 
 export function renderTreatmentHub(){
@@ -34,6 +34,6 @@ export function renderTreatmentHub(){
       <div class="card metric"><span>Último evento</span><strong>${dates.length?fmtDate(dates.at(-1)):'—'}</strong><em>não indica situação atual</em></div>
     </div>
     <section class="card sectionGap"><div class="cardHead"><div><b>Mapa de protocolos</b><small>Resumo por item, sem reconstruir orientação de uso ou situação atual.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar protocolo ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="protocolSummaryGrid">${filteredNames.map(name=>itemSummary(name,allEvents,regimenByName.get(name))).join('')||empty('Nenhum protocolo corresponde à busca.')}</div></section>
-    <section class="card sectionGap"><div class="cardHead"><div><b>Linha do tempo de eventos</b><small>Somente ocorrências históricas efetivamente registradas.</small></div></div><div class="timelineGroups">${[...groups.entries()].map(([month,items])=>`<section class="timelineDay"><div class="timelineDate"><b>${esc(monthLabel(month))}</b><span>${items.length} registro(s)</span></div><div class="card timelineDayCard">${items.map(r=>`<div class="timelineItem rich"><span>${fmtDate(r.event_date)}</span><div><b>${esc(r.medication||'Registro de protocolo')}</b><em>${esc(r.source||'origem registrada')}</em></div></div>`).join('')}</div></section>`).join('')||empty('Nenhum evento histórico corresponde à busca.')}</div></section>
+    <section class="card sectionGap"><div class="cardHead"><div><b>Linha do tempo de eventos</b><small>Somente ocorrências históricas efetivamente registradas.</small></div></div><div class="timelineGroups">${[...groups.entries()].map(([month,items])=>`<section class="timelineDay"><div class="timelineDate"><b>${esc(monthLabel(month))}</b><span>${countLabel(items.length,'registro','registros')}</span></div><div class="card timelineDayCard">${items.map(r=>`<div class="timelineItem rich"><span>${fmtDate(r.event_date)}</span><div><b>${esc(r.medication||'Registro de protocolo')}</b><em>${esc(r.source||'origem registrada')}</em></div></div>`).join('')}</div></section>`).join('')||empty('Nenhum evento histórico corresponde à busca.')}</div></section>
     <p class="footerNote">Protocolos são usados apenas como contexto temporal. Cadastro de contexto não significa uso atual, e o aplicativo não fornece instruções de uso ou mudança de tratamento.</p>`;
 }

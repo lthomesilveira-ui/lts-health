@@ -1,4 +1,4 @@
-import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows} from './core.js';
+import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
@@ -76,7 +76,7 @@ function sourceMetricEvents(rows=[]){
       const ai=sourceMetricOrder.indexOf(a.metric_type),bi=sourceMetricOrder.indexOf(b.metric_type),ar=ai<0?999:ai,br=bi<0?999:bi;
       return ar-br||String(a.metric_type).localeCompare(String(b.metric_type));
     });
-    const preview=ordered.slice(0,4).map(sourceMetricDetail),more=ordered.length>preview.length?` · + ${ordered.length-preview.length} outro(s) registro(s)`:'';
+    const preview=ordered.slice(0,4).map(sourceMetricDetail),more=ordered.length>preview.length?` · + ${countLabel(ordered.length-preview.length,'outro registro','outros registros')}`:'';
     return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more} · aguardando conferência; mantido separado dos dados confirmados`,source:group.source};
   });
 }
@@ -113,7 +113,7 @@ function events(){
       if(!collections.has(key))collections.set(key,{date:row.collection_date,lab,source,rows:[]});
       collections.get(key).rows.push(row);
     }
-    for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:`${c.rows.length} resultado(s)`,source:c.lab||sourceDisplay(c.source),route:'saude',kind:'labs',ref:key});
+    for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:countLabel(c.rows.length,'resultado','resultados'),source:c.lab||sourceDisplay(c.source),route:'saude',kind:'labs',ref:key});
   }
   if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
   if(!failed('nutrition')){
@@ -148,7 +148,7 @@ function contextRow(e){
 }
 function crossDomainCard(entry){
   const preview=[...entry.rows].sort((a,b)=>Number(!!b.route)-Number(!!a.route)||String(a.domain).localeCompare(String(b.domain),'pt-BR')).slice(0,4);
-  return `<article class="timelineContextCard"><div class="timelineContextHead"><div><b>${fmtDate(entry.date)}</b><span>${entry.domains.length} áreas com registros</span></div><div class="timelineDomainChips">${entry.domains.map(d=>`<span>${esc(d)}</span>`).join('')}</div></div><div class="timelineContextRows">${preview.map(contextRow).join('')}</div>${entry.rows.length>preview.length?`<small>+ ${entry.rows.length-preview.length} registro(s) neste dia</small>`:''}</article>`;
+  return `<article class="timelineContextCard"><div class="timelineContextHead"><div><b>${fmtDate(entry.date)}</b><span>${countLabel(entry.domains.length,'área com registros','áreas com registros')}</span></div><div class="timelineDomainChips">${entry.domains.map(d=>`<span>${esc(d)}</span>`).join('')}</div></div><div class="timelineContextRows">${preview.map(contextRow).join('')}</div>${entry.rows.length>preview.length?`<small>+ ${countLabel(entry.rows.length-preview.length,'registro neste dia','registros neste dia')}</small>`:''}</article>`;
 }
 
 function domainSummary(rows,missing){
@@ -170,7 +170,7 @@ export function renderTimelineHub(){
     ${domainSummary(periodRows,missing)}
     <section class="timelineContext sectionGap"><div class="sectionHeading"><div><h2>Visão cruzada por dia</h2><p>Dias em que existem registros confirmados de duas ou mais áreas de saúde. Documentos, tratamentos e itens em conferência continuam no histórico, mas não criam sozinhos uma relação cruzada. Toque em um registro para abrir o detalhe. A proximidade na data ajuda a consultar o contexto, mas não demonstra causa entre os registros.</p></div></div>${contextDays.length?`<div class="timelineContextGrid">${contextDays.map(crossDomainCard).join('')}</div>`:empty(missing.length?'Não há dias cruzados entre as áreas que foram carregadas.':'Ainda não há dias com registros confirmados em mais de uma área neste período.')}</section>
     <div class="controls sectionGap"><select id="timelinePeriod"><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Navegar por ano</option></select>${period==='all'?`<select id="timelineYear">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select>`:''}<select id="timelineDomain">${domains.map(d=>`<option value="${esc(d)}">${d==='all'?'Todas as áreas':esc(d)}</option>`).join('')}</select><input id="timelineQuery" type="search" placeholder="Buscar no histórico" value="${esc(state.ui.timelineQuery)}"></div>
-    <div class="timelineSummary"><b>${filtered.length}</b><span>de ${matching.length} registro(s) encontrados${period==='all'&&state.ui.timelineYear?` em ${esc(state.ui.timelineYear)}`:cut?' no período':''}${missing.length?' entre as áreas carregadas':''}</span></div>
-    <div class="timelineGroups sectionGap">${[...grouped.entries()].map(([date,rows])=>`<section class="timelineDay"><div class="timelineDate"><b>${fmtDate(date)}</b><span>${rows.length} registro(s)</span></div><div class="card timelineDayCard">${rows.map(item).join('')}</div></section>`).join('')||empty(missing.length?'Nenhum dos registros carregados corresponde aos filtros.':'Nenhum registro corresponde aos filtros.')}</div>
+    <div class="timelineSummary"><b>${filtered.length}</b><span>de ${countLabel(matching.length,'registro encontrado','registros encontrados')}${period==='all'&&state.ui.timelineYear?` em ${esc(state.ui.timelineYear)}`:cut?' no período':''}${missing.length?' entre as áreas carregadas':''}</span></div>
+    <div class="timelineGroups sectionGap">${[...grouped.entries()].map(([date,rows])=>`<section class="timelineDay"><div class="timelineDate"><b>${fmtDate(date)}</b><span>${countLabel(rows.length,'registro','registros')}</span></div><div class="card timelineDayCard">${rows.map(item).join('')}</div></section>`).join('')||empty(missing.length?'Nenhum dos registros carregados corresponde aos filtros.':'Nenhum registro corresponde aos filtros.')}</div>
     ${matching.length>filtered.length?`<div class="loadMore"><button type="button" data-timeline-more>Mostrar mais ${Math.min(250,matching.length-filtered.length)} registros</button></div>`:''}`;
 }

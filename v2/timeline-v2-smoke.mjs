@@ -79,7 +79,7 @@ async function run(viewport,label){
   if(await labItems.count()!==2)throw new Error(`${label}: same-day lab sources were not preserved as two Timeline collections`);
   for(let i=0;i<2;i++){
     const labText=(await labItems.nth(i).textContent())||'';
-    if(!labText.includes('1 resultado(s)'))throw new Error(`${label}: a lab source was merged with another source on the same date`);
+    if(!labText.includes('1 resultado'))throw new Error(`${label}: a lab source was merged with another source on the same date`);
   }
   if(text.includes('Origem sem status')||text.includes('8,2 h')||text.includes('Apple ambíguo')||text.includes('42 ms'))throw new Error(`${label}: ambiguous source metric status leaked into Timeline evidence`);
   if(text.includes('Fonte técnica indevida')||text.includes('9.999'))throw new Error(`${label}: confirmed sourceMetrics row leaked into review evidence`);

@@ -27,7 +27,7 @@ async function run(viewport,label){
   for(const expected of [
     'O histórico não desaparece quando a janela recente não tem coleta.',
     'Comparações detalhadas continuam em Exames quando nome, origem e unidade permitem.',
-    '2 resultado(s) estruturado(s) em 2 data(s) de coleta no histórico.'
+    '2 resultados estruturados em 2 datas de coleta no histórico.'
   ])if(!html.includes(expected))throw new Error(`${label}: missing P0 lab boundary copy: ${expected}`);
 
   for(const forbidden of [
@@ -47,4 +47,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health Insights lab source-boundary smoke passed');
-

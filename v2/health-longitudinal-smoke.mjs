@@ -42,6 +42,7 @@ async function run(viewport,label){
     state.ui.selectedCollection=null;
     state.ui.selectedBiomarker='marcador a';
   },{rows:injected,docs:injectedDocs});
+  await page.locator('details.uxDisclosure').filter({hasText:'Coletas e resultados'}).locator('summary').click();
   await page.fill('#labQuery','x');
   await page.waitForFunction(()=>document.querySelectorAll('#collectionSelect option').length>=11);
   await page.fill('#labQuery','');
@@ -71,7 +72,7 @@ async function run(viewport,label){
   const evidenceText=(await evidence.textContent())||'';
   if(!evidenceText.includes('Documento mesma origem · mesma origem'))throw new Error(`${label}: same-source document not identified as same source`);
   if(!evidenceText.includes('Documento outra origem · apenas mesma data'))throw new Error(`${label}: date-only document implied source equivalence`);
-  if(!evidenceText.includes('documento(s) da mesma origem'))throw new Error(`${label}: source-aware evidence summary missing`);
+  if(!evidenceText.includes('1 documento da mesma origem'))throw new Error(`${label}: source-aware evidence summary missing`);
 
   await page.selectOption('#collectionSelect','2026-01-03__Terceira origem');
   await page.waitForFunction(()=>[...document.querySelectorAll('.card.sectionGap .note')].some(n=>(n.textContent||'').includes('nenhuma da mesma origem')));
@@ -118,4 +119,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('Health longitudinal browser smoke passed');
-
