@@ -34,6 +34,7 @@ async function inspect(viewport,label){
     return{
       label,
       statusCount:status.length,
+      statusMaxHeight:Math.max(0,...status.map(card=>card.getBoundingClientRect().height)),
       distinctStatusColors:new Set(colors).size,
       canvas,
       railColor,
@@ -56,6 +57,8 @@ async function inspect(viewport,label){
   if(label==='desktop'){
     if(!result.desktopNav||result.mobileNav)throw new Error('desktop: navigation mode is incorrect');
     if(!result.rail||result.rail.width<208||result.rail.width>268)throw new Error(`desktop: rail width ${result.rail?.width??'missing'} is outside the documented range`);
+    if(result.statusMaxHeight>245)throw new Error(`desktop: domain cards lost executive density (${result.statusMaxHeight}px)`);
+    if(result.decision.top>520)throw new Error(`desktop: main interpretation starts too low (${result.decision.top}px)`);
   }else{
     if(result.desktopNav||!result.mobileNav)throw new Error('mobile: navigation mode is incorrect');
   }

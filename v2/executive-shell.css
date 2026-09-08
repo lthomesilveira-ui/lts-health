@@ -22,6 +22,7 @@ body:has(#login:not(.hidden)) #app{display:none!important}
 .topActions button:hover,.primaryNav button:hover{border-color:#b8c7d9;background:#f7faff}
 .topActions .primary,.primary{color:#fff;background:#2d6fd8;border-color:#2d6fd8}
 .topActions .primary:hover,.primary:hover{background:#225fbd;border-color:#225fbd}
+#syncText{padding:6px 9px;border:1px solid #d8e1ec;border-radius:999px;background:#f3f6fa;color:#53667e;font-size:12px;font-weight:700}
 
 .card,.loginCard,.sheetPanel,.entryPanel{background:#fff;border-color:var(--line);color:var(--text);box-shadow:var(--shadow)}
 .card{padding:20px;border-radius:17px}.card.metric{min-height:124px}.cardHead b{color:#23344d;font-size:16px;line-height:1.35}.cardHead small{color:var(--mut);font-size:13px;line-height:1.5}.metric span{color:#53667e;font-size:13px}.metric strong{color:#142139}.metric em{color:var(--mut);font-size:13px;line-height:1.45}
