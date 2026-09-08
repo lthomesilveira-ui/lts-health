@@ -92,7 +92,7 @@ function waterForm(){
 function waterImportForm(){
   return `<form id="mfpWaterImportForm" class="entryForm">
     <div class="waterTransferIntro">
-      <div><span>Etapa 1 · notebook</span><b>Extraia na sessão aberta do MyFitnessPal</b><p>No notebook, o Chrome, Edge ou Safari consulta todas as datas automaticamente, com pausa e retomada. Você não precisa digitar os dias nem instalar um aplicativo.</p></div>
+      <div><span>Etapa 1 · notebook</span><b>Extraia na sessão aberta do MyFitnessPal</b><p>No notebook, o Chrome, Edge ou Safari consulta todas as datas automaticamente, com pausa e retomada. Você não precisa digitar os dias. Também não precisa instalar um aplicativo.</p></div>
       <a class="primary" href="./mfp-water-extractor.html" target="_blank" rel="noopener">Ver passo a passo no notebook</a>
     </div>
     <div class="waterTransferFile">

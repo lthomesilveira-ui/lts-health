@@ -17,7 +17,7 @@ async function run(viewport,label){
   await page.click('[data-entry="water-import"]');
   await page.waitForSelector('#mfpWaterImportForm');
   const importCopy=(await page.locator('#mfpWaterImportForm').textContent())||'';
-  if(!importCopy.includes('Etapa 1 · notebook')||!importCopy.includes('não instalar um aplicativo'))throw new Error(`${label}: notebook-first handoff is unclear`);
+  if(!importCopy.includes('Etapa 1 · notebook')||!importCopy.includes('não precisa instalar um aplicativo'))throw new Error(`${label}: notebook-first handoff is unclear`);
   const extractorHref=await page.locator('#mfpWaterImportForm a').getAttribute('href');
   if(extractorHref!=='./mfp-water-extractor.html')throw new Error(`${label}: extractor link missing`);
   await page.locator('#mfpWaterImportFile').setInputFiles({name:'lts-health-mfp-water.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exportDocument))});
