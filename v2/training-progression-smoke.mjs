@@ -116,7 +116,8 @@ async function run(viewport,label){
   if(!scopedText.includes('Remada teste')||scopedText.includes('Remada histórica'))throw new Error(`${label}: exercise progression ignored the selected period`);
   await page.selectOption('#trainingPeriod','all');
   await page.waitForFunction(()=>document.querySelector('#trainingPeriod')?.value==='all'
-    && [...document.querySelectorAll('.exerciseList button')].some(button=>button.textContent?.toLowerCase().includes('remada teste')));
+    && [...document.querySelectorAll('.exerciseList button')].some(button=>button.textContent?.toLowerCase().includes('remada teste'))
+    && (document.querySelector('.sessions .session .sessionHead')?.getBoundingClientRect().width??0)>0);
 
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: training progression caused horizontal overflow ${overflow}px`);
