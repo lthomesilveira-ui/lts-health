@@ -33,12 +33,16 @@ for(const forbidden of ['sessão(ões)','dia(s)','resultado(s)','origem(ns)','me
 assert.match(css,/\.domainHero/);
 assert.match(css,/\.domainStatStrip/);
 assert.match(css,/\.uxDisclosure/);
+assert.match(css,/--surface:#fff/);
+assert.match(css,/\.uxDisclosure\{[^}]*background:#fff/);
+for(const legacyDark of ['#0a151e','rgba(10,21,30','.domainHero{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;padding:24px 26px;border:1px solid rgba(36,199,217'])assert.ok(!css.includes(legacyDark),`legacy dark surface returned: ${legacyDark}`);
 assert.match(css,/@media\(max-width:720px\)/);
 assert.match(css,/min-height:44px/);
 assert.match(css,/overflow-x:auto/);
 assert.match(contract,/Uma janela do produto/);
 assert.match(contract,/Um estado vazio/);
 assert.match(contract,/Mobile como produto/);
+assert.match(contract,/Contraste verificável/);
 
 const task=state.tasks.find(item=>item.id==='LTS-UX-COHERENCE-001');
 assert.ok(task);
