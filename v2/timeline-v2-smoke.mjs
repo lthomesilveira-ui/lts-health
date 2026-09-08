@@ -2,6 +2,14 @@ import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1#timeline';
 
+async function clickRoute(page,nav,route){
+  const direct=page.locator(`${nav} [data-route="${route}"]`);
+  if(await direct.count()){await direct.click();return;}
+  await page.locator(`${nav} [data-route="mais"]`).click();
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.locator(`#moreSheet [data-route="${route}"]`).click();
+}
+
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport});
@@ -50,9 +58,8 @@ async function run(viewport,label){
     state.ui.timelinePeriod='all';state.ui.timelineYear='2026';state.ui.timelineQuery='';state.ui.timelineDomain='all';
   });
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
-  await page.click(`${nav} [data-route="bio"]`);
-  await page.click(`${nav} [data-route="mais"]`);
-  await page.click('#moreSheet [data-route="timeline"]');
+  await clickRoute(page,nav,'bio');
+  await clickRoute(page,nav,'timeline');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Timeline');
   text=(await page.textContent('#screenHost'))||'';
   if(!text.includes('Composição corporal registrada'))throw new Error(`${label}: missing body fields were not rendered neutrally`);

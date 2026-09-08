@@ -147,7 +147,7 @@ function reviewItems(model){
   if(!model.body.available)items.push(['Composição',model.body.reason==='source_changed'?'Sem comparação entre origens diferentes.':'Ainda não há duas medições comparáveis no histórico.','bio']);
   if(failed('labs'))items.push(['Exames','Os dados não carregaram agora.','saude']);
   else if(!model.labs.totalResults)items.push(['Exames','Nenhum resultado estruturado foi encontrado no histórico.','saude']);
-  if(!items.length)items.push(['Dados','Cobertura suficiente para os resumos atuais; abra Insights para aprofundar.','analise']);
+  if(!items.length)items.push(['Dados','Cobertura suficiente para os resumos atuais; abra Análises para aprofundar.','analise']);
   return items.slice(0,3);
 }
 function nextReview(model){return reviewItems(model).map(([title,body,route])=>`<button class="cockpitReviewItem" data-route="${route}"><b>${esc(title)}</b><span>${esc(body)}</span><i aria-hidden="true">→</i></button>`).join('');}

@@ -33,6 +33,7 @@ async function run(viewport,label){
   await navigateToEvolution(page,viewport);
   const card=page.locator('.card:has-text("Ritmo semanal de treinos")');
   await card.waitFor();
+  await page.waitForFunction(()=>document.querySelector('.weeklyRhythm')?.textContent?.includes('3d'));
   const text=(await card.textContent())||'';
   for(const expected of ['Dias com sessão estruturada','3d','4 sessões','1d','1 sessão','Atividade geral de outras fontes não entra nessa contagem']){
     if(!text.includes(expected))throw new Error(`${label}: missing weekly rhythm copy/count ${expected}`);
