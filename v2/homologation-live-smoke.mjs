@@ -13,7 +13,8 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
-  const latestBody=(await page.locator('.bioLatestLead').textContent())||'';
+  await page.waitForSelector('.domainHero');
+  const latestBody=(await page.locator('.domainHero').textContent())||'';
   if(!latestBody.includes('Última medição')||!latestBody.includes('01/02/2026'))throw new Error(`${label}: deployed latest body date is not explicit`);
   if(!latestBody.includes('2 medições preservadas'))throw new Error(`${label}: deployed body history count is missing`);
   if(!text.includes('Massa muscular'))throw new Error(`${label}: readable muscle-mass label missing`);
