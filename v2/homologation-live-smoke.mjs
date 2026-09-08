@@ -13,8 +13,10 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
-  const latestBodyHeader=((await page.locator('#screenHost .note b').filter({hasText:'Última medição'}).first().textContent().catch(()=>''))||'').trim();
-  if(!/^Última medição(?: comparável)? · 01\/02\/2026$/.test(latestBodyHeader))throw new Error(`${label}: deployed latest body header incorrect: ${latestBodyHeader||'missing'}`);
+  await page.waitForSelector('.bioLatestLead');
+  const latestLead=(await page.locator('.bioLatestLead').textContent())||'';
+  if(!latestLead.includes('Última medição')||!latestLead.includes('01/02/2026'))throw new Error(`${label}: deployed latest body date is not explicit`);
+  if(!latestLead.includes('2 medição(ões) preservadas'))throw new Error(`${label}: deployed body history count missing from latest summary`);
   if(!text.includes('Massa muscular'))throw new Error(`${label}: readable muscle-mass label missing`);
   if(text.includes('MME')||text.includes('source_file')||text.includes('confidence'))throw new Error(`${label}: technical body-composition language leaked into deployed UI`);
 
