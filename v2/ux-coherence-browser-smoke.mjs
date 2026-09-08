@@ -21,12 +21,17 @@ async function assertNoMechanicalCopy(page,label){
 async function assertLayout(page,label){
   const layout=await page.evaluate(()=>{
     const header=document.querySelector('.topbar')?.getBoundingClientRect();
+    const host=document.querySelector('#screenHost')?.getBoundingClientRect();
     const screenTitle=document.querySelector('#screenHost .screenTitle')?.getBoundingClientRect();
-    return{overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1,headerBottom:header?.bottom??0,titleTop:screenTitle?.top??9999};
+    const eyebrowNode=document.querySelector('#screenHost .screenEyebrow');
+    const eyebrow=eyebrowNode?.getBoundingClientRect();
+    return{overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1,hostTop:host?.top??9999,headerBottom:header?.bottom??0,titleTop:screenTitle?.top??9999,eyebrowTop:eyebrow?.top??9999,eyebrowHeight:eyebrow?.height??0,eyebrowText:String(eyebrowNode?.textContent||'').trim()};
   });
   if(layout.overflow>3)throw new Error(`${label}: horizontal overflow ${layout.overflow}px`);
   if(layout.hostScroll>1)throw new Error(`${label}: route retained ${layout.hostScroll}px of scroll`);
-  if(label==='mobile'&&layout.titleTop<layout.headerBottom+10)throw new Error(`${label}: title overlaps header by ${(layout.headerBottom+10-layout.titleTop).toFixed(1)}px`);
+  if(!layout.eyebrowText||layout.eyebrowHeight<10)throw new Error(`${label}: section eyebrow is not visible`);
+  if(label.startsWith('mobile/')&&layout.titleTop<layout.hostTop+8)throw new Error(`${label}: title starts above the content area by ${(layout.hostTop+8-layout.titleTop).toFixed(1)}px`);
+  if(label.startsWith('mobile/')&&(layout.eyebrowTop<layout.hostTop+8||layout.eyebrowTop>layout.hostTop+34))throw new Error(`${label}: section eyebrow starts outside the expected route header band (${layout.eyebrowTop.toFixed(1)}px, host ${layout.hostTop.toFixed(1)}px)`);
   if(layout.heroTop>340)throw new Error(`${label}: primary answer starts too low (${layout.heroTop}px)`);
   return layout;
 }
