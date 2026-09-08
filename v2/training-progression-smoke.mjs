@@ -80,7 +80,7 @@ async function run(viewport,label){
   await page.click('.exerciseList button:has-text("Máquina A")');
   await page.waitForSelector('.trainingRecent');
   const selectedButton=(await page.locator('.exerciseList button.active').textContent())||'';
-  if(!selectedButton.includes('5 sessão'))throw new Error(`${label}: same-day sessions were collapsed in the exercise session count`);
+  if(!selectedButton.includes('5 sessões'))throw new Error(`${label}: same-day sessions were collapsed in the exercise session count`);
   const text=(await page.locator('.exerciseDetail').textContent())||'';
   for(const expected of ['Sessões recentes','60 kg','12 reps','65 kg','11 reps','placa','Unidades diferentes permanecem separadas','mesma carga · +3 reps','90 sem unidade','70 kg','250 kg','sessão mantida separada','mais de uma sessão']){
     if(!text.includes(expected))throw new Error(`${label}: missing conservative training trend detail: ${expected}`);

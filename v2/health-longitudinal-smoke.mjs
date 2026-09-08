@@ -48,6 +48,9 @@ async function run(viewport,label){
   await page.fill('#labQuery','');
   await page.waitForFunction(()=>document.querySelector('#labQuery')?.value==='');
 
+  const comparisonDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Comparar coletas'});
+  await comparisonDisclosure.locator('summary').click();
+
   const options=await page.locator('#collectionSelect option').allTextContents();
   if(!options.some(t=>t.includes('03/02/2026')&&t.includes('Fonte F preservada'))||!options.some(t=>t.includes('03/02/2026')&&t.includes('Fonte E preservada')))throw new Error(`${label}: distinct source-only collections merged`);
 
@@ -67,6 +70,8 @@ async function run(viewport,label){
   if(!compare.includes('Marcador sem unidade')||!compare.includes('unidade ausente'))throw new Error(`${label}: unitless result was compared`);
   if(!compare.includes('AAA marcador ambíguo')||!compare.includes('revisar registros'))throw new Error(`${label}: same-source duplicate marker was treated as a direct comparison`);
 
+  const documentsDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Documentos e rastreabilidade'});
+  await documentsDisclosure.locator('summary').click();
   const evidence=page.locator('[data-evidence-date="2026-01-03"]');
   await evidence.waitFor();
   const evidenceText=(await evidence.textContent())||'';

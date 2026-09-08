@@ -14,7 +14,7 @@ async function run(viewport,label){
   await page.evaluate(async injected=>{const {state}=await import('./src/core.js');state.data.labs=[...(state.data.labs||[]),...injected];state.ui.selectedBiomarker=null;},rows);
   await page.locator('details.uxDisclosure').filter({hasText:'Coletas e resultados'}).locator('summary').click();
   await page.fill('#labQuery','x');await page.fill('#labQuery','');
-  await page.waitForFunction(()=>document.body.textContent.includes('Marcadores com série longitudinal'));
+  await page.waitForSelector('.labSeriesShortcuts',{state:'visible'});
   const shortcut=page.locator('.labSeriesShortcuts [data-marker="marcador serie"]');await shortcut.waitFor();
   const shortcutText=(await shortcut.textContent())||'';if(!shortcutText.includes('3 pontos'))throw new Error(`${label}: foreign source or unit changed comparable series length`);
   await shortcut.click();await page.waitForFunction(()=>document.querySelector('.markerHead')?.textContent?.includes('Marcador série'));

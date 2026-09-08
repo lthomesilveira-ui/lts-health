@@ -37,7 +37,7 @@ async function run(viewport,label){
   const latest=page.locator('.session.latest .sessionHead').first();
   if(await latest.count()!==1)throw new Error(`${label}: latest workout marker missing`);
   const latestText=(await latest.textContent())||'';
-  for(const expected of ['02/02/2026','Peito + ombros','2 exercício(s) · 3 série(s)','mais recente']){
+  for(const expected of ['02/02/2026','Peito + ombros','2 exercícios · 3 séries','mais recente']){
     if(!latestText.includes(expected))throw new Error(`${label}: latest workout summary missing ${expected}`);
   }
 
