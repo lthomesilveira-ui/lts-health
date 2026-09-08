@@ -1,1 +1,94 @@
-aW1wb3J0IHtjaHJvbWl1bX0gZnJvbSAncGxheXdyaWdodCc7Cgpjb25zdCBiYXNlPXByb2Nlc3MuZW52LkxUU19IRUFMVEhfQkFTRV9VUkx8fCdodHRwOi8vMTI3LjAuMC4xOjQxNzMvP2ZpeHR1cmU9MSc7CmNvbnN0IG51bWJlcj1hc3luYyhsb2NhdG9yLHByb3BlcnR5KT0+TnVtYmVyKGF3YWl0IGxvY2F0b3IuZXZhbHVhdGUoKGVsZW1lbnQsa2V5KT0+cGFyc2VGbG9hdChnZXRDb21wdXRlZFN0eWxlKGVsZW1lbnQpW2tleV0pfHwwLHByb3BlcnR5KSk7Cgphc3luYyBmdW5jdGlvbiBydW4odmlld3BvcnQsbGFiZWwpewogIGNvbnN0IGJyb3dzZXI9YXdhaXQgY2hyb21pdW0ubGF1bmNoKHtoZWFkbGVzczp0cnVlfSk7CiAgY29uc3QgcGFnZT1hd2FpdCBicm93c2VyLm5ld1BhZ2Uoe3ZpZXdwb3J0fSk7CiAgY29uc3QgZXJyb3JzPVtdOwogIHBhZ2Uub24oJ3BhZ2VlcnJvcicsZXJyb3I9PmVycm9ycy5wdXNoKGVycm9yLm1lc3NhZ2UpKTsKICBwYWdlLm9uKCdjb25zb2xlJyxtZXNzYWdlPT57aWYobWVzc2FnZS50eXBlKCk9PT0nZXJyb3InKWVycm9ycy5wdXNoKG1lc3NhZ2UudGV4dCgpKTt9KTsKICBhd2FpdCBwYWdlLmdvdG8oYCR7YmFzZX0jaG9qZWAse3dhaXRVbnRpbDonZG9tY29udGVudGxvYWRlZCd9KTsKICBhd2FpdCBwYWdlLndhaXRGb3JTZWxlY3RvcignW2RhdGEtZXhlY3V0aXZlLWRhc2hib2FyZF0nKTsKCiAgaWYoKGF3YWl0IHBhZ2UubG9jYXRvcignLmNvY2twaXRTdGF0dXMnKS5jb3VudCgpKSE9PTUpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogZXhwZWN0ZWQgZml2ZSBkb21haW4gc3VtbWFyaWVzYCk7CiAgaWYoKGF3YWl0IHBhZ2UubG9jYXRvcignLmNvY2twaXRSZXZpZXdJdGVtJykuY291bnQoKSk+Myl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiBvdmVydmlldyBleHBvc2VzIG1vcmUgdGhhbiB0aHJlZSBwcmlvcml0aWVzYCk7CiAgY29uc3QgdGV4dD0oYXdhaXQgcGFnZS5sb2NhdG9yKCcjc2NyZWVuSG9zdCcpLmlubmVyVGV4dCgpKXx8Jyc7CiAgZm9yKGNvbnN0IGV4cGVjdGVkIG9mIFsnVmlzw6NvIGdlcmFsIGRhIHN1YSBzYcO6ZGUnLCdFdm9sdcOnw6NvJywnUGVzbyBjb3Jwb3JhbCcsJ1Jlc3VtbyBkYSBqYW5lbGEnLCdPIHF1ZSBtdWRvdScsJ8OabHRpbW9zIGFjb250ZWNpbWVudG9zJywnRGFkb3MgYSBjb21wbGV0YXInXSlpZighdGV4dC5pbmNsdWRlcyhleHBlY3RlZCkpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogbWlzc2luZyBwcm9kdWN0IGhpZXJhcmNoeSAke2V4cGVjdGVkfWApOwogIGZvcihjb25zdCBhY3Rpb24gb2YgWydBYnJpciBkZXRhbGhlcycsJ0FicmlyIGFuw6FsaXNlIGludGVncmFkYScsJ0dlcmVuY2lhciBmb250ZXMnLCdBYnJpciBUaW1lbGluZSddKWlmKCF0ZXh0LmluY2x1ZGVzKGFjdGlvbikpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogbWlzc2luZyBzcGVjaWZpYyBhY3Rpb24gJHthY3Rpb259YCk7CiAgaWYodGV4dC5pbmNsdWRlcygnVmVyIG1haXMnKSl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiBnZW5lcmljIGFjdGlvbiBjb3B5IHJldHVybmVkYCk7CgogIGNvbnN0IG9yZGVyPWF3YWl0IHBhZ2UuZXZhbHVhdGUoKCk9PnsKICAgIGNvbnN0IHRvcD1zZWxlY3Rvcj0+ZG9jdW1lbnQucXVlcnlTZWxlY3RvcihzZWxlY3Rvcik/LmdldEJvdW5kaW5nQ2xpZW50UmVjdCgpLnRvcD8/TnVtYmVyLlBPU0lUSVZFX0lORklOSVRZOwogICAgcmV0dXJue3dvcmtzcGFjZTp0b3AoJy5jb2NrcGl0V29ya3NwYWNlJyksbG93ZXI6dG9wKCcuY29ja3BpdExvd2VyR3JpZCcpLHRyZW5kOnRvcCgnLmNvY2twaXRUcmVuZCcpfTsKICB9KTsKICBpZighKG9yZGVyLndvcmtzcGFjZTxvcmRlci5sb3dlcikpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogc2Vjb25kYXJ5IGluZm9ybWF0aW9uIHByZWNlZGVzIHRoZSBsb25naXR1ZGluYWwgd29ya3NwYWNlYCk7CiAgaWYob3JkZXIudHJlbmQ+NzYwKXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IG1haW4gbG9uZ2l0dWRpbmFsIGNoYXJ0IHN0YXJ0cyB0b28gbG93YCk7CiAgaWYoYXdhaXQgbnVtYmVyKHBhZ2UubG9jYXRvcignLmNvY2twaXRTdGF0dXNUZXh0IHNtYWxsJykuZmlyc3QoKSwnZm9udFNpemUnKTwxNCl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiBkb21haW4gbGFiZWwgaXMgdG9vIHNtYWxsYCk7CiAgaWYoYXdhaXQgbnVtYmVyKHBhZ2UubG9jYXRvcignLmNvY2twaXRCcmllZlRleHQnKS5maXJzdCgpLCdmb250U2l6ZScpPDEzLjUpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogbWFpbiBpbnRlcnByZXRhdGlvbiBpcyB0b28gc21hbGxgKTsKICBpZihhd2FpdCBudW1iZXIocGFnZS5sb2NhdG9yKCcuY29ja3BpdEJ1dHRvbicpLmZpcnN0KCksJ2ZvbnRTaXplJyk8MTMpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogYWN0aW9ucyBhcmUgdG9vIHNtYWxsYCk7CiAgaWYoKGF3YWl0IHBhZ2UubG9jYXRvcignW2RhdGEtaG9tZS1tZXRyaWNdJykuY291bnQoKSkhPT04KXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IGxvbmdpdHVkaW5hbCBtZXRyaWMgc2VsZWN0b3IgaXMgaW5jb21wbGV0ZWApOwoKICBpZihsYWJlbD09PSdkZXNrdG9wJyl7CiAgICBmb3IoY29uc3QgZ3JvdXAgb2YgWydBY29tcGFuaGFyJywnw4FyZWFzJywnQ29udGV4dG8nLCdTaXN0ZW1hJ10paWYoIWF3YWl0IHBhZ2UubG9jYXRvcignI3ByaW1hcnlOYXYgLm5hdkdyb3VwTGFiZWwnLHtoYXNUZXh0Omdyb3VwfSkuaXNWaXNpYmxlKCkpdGhyb3cgbmV3IEVycm9yKGBkZXNrdG9wOiBuYXZpZ2F0aW9uIGdyb3VwIG1pc3NpbmcgJHtncm91cH1gKTsKICAgIGlmKGF3YWl0IHBhZ2UubG9jYXRvcignI3ByaW1hcnlOYXYgPiBbZGF0YS1yb3V0ZT0iZXZvbHVjYW8iXScpLmNvdW50KCkpdGhyb3cgbmV3IEVycm9yKCdkZXNrdG9wOiBFdm9sdcOnw6NvIHN0aWxsIGNvbXBldGVzIGluIHByaW1hcnkgbmF2aWdhdGlvbicpOwogICAgaWYoYXdhaXQgcGFnZS5sb2NhdG9yKCcjcm91dGVBY3Rpb24nKS5pc1Zpc2libGUoKSl0aHJvdyBuZXcgRXJyb3IoJ2Rlc2t0b3A6IGR1cGxpY2F0ZSBvdmVydmlldyBhY3Rpb24gdmlzaWJsZSBpbiB0b3AgYmFyJyk7CiAgfWVsc2V7CiAgICBpZighYXdhaXQgcGFnZS5sb2NhdG9yKCcjbW9iaWxlTmF2JykuaXNWaXNpYmxlKCkpdGhyb3cgbmV3IEVycm9yKCdtb2JpbGU6IHByaW1hcnkgbW9iaWxlIG5hdmlnYXRpb24gaXMgbWlzc2luZycpOwogICAgY29uc3Qgb3ZlcmxhcD1hd2FpdCBwYWdlLmV2YWx1YXRlKCgpPT57CiAgICAgIGNvbnN0IGhvc3Q9ZG9jdW1lbnQucXVlcnlTZWxlY3RvcignI3NjcmVlbkhvc3QnKT8uZ2V0Qm91bmRpbmdDbGllbnRSZWN0KCksbmF2PWRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJyNtb2JpbGVOYXYnKT8uZ2V0Qm91bmRpbmdDbGllbnRSZWN0KCk7CiAgICAgIHJldHVybiBCb29sZWFuKGhvc3QmJm5hdiYmaG9zdC5ib3R0b20+bmF2LnRvcCszKTsKICAgIH0pOwogICAgaWYob3ZlcmxhcCl0aHJvdyBuZXcgRXJyb3IoJ21vYmlsZTogbmF2aWdhdGlvbiBvdmVybGFwcyB0aGUgY29udGVudCB2aWV3cG9ydCcpOwogICAgY29uc3QgcmFpbD1hd2FpdCBwYWdlLmxvY2F0b3IoJy5jb2NrcGl0U3RhdHVzR3JpZCcpLmV2YWx1YXRlKGVsZW1lbnQ9Pih7Y2xpZW50OmVsZW1lbnQuY2xpZW50V2lkdGgsc2Nyb2xsOmVsZW1lbnQuc2Nyb2xsV2lkdGh9KSk7CiAgICBpZihyYWlsLnNjcm9sbDw9cmFpbC5jbGllbnQpdGhyb3cgbmV3IEVycm9yKCdtb2JpbGU6IGRvbWFpbiBzdW1tYXJpZXMgYXJlIHN0YWNrZWQgaW5zdGVhZCBvZiB1c2luZyB0aGUgY29tcGFjdCBob3Jpem9udGFsIHJhaWwnKTsKICB9CgogIGF3YWl0IHBhZ2UubG9jYXRvcignW2RhdGEtaG9tZS1tZXRyaWM9InRyYWluaW5nIl0nKS5jbGljaygpOwogIGF3YWl0IHBhZ2Uud2FpdEZvckZ1bmN0aW9uKCgpPT5kb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcuY29ja3BpdFRyZW5kIGgyJyk/LnRleHRDb250ZW50PT09J1RyZWlub3MgcG9yIHNlbWFuYScpOwogIGlmKGF3YWl0IHBhZ2UubG9jYXRvcignW2RhdGEtaG9tZS1tZXRyaWM9InRyYWluaW5nIl0nKS5nZXRBdHRyaWJ1dGUoJ2FyaWEtc2VsZWN0ZWQnKSE9PSd0cnVlJyl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiB0cmVuZCBtZXRyaWMgY29udHJvbCBkaWQgbm90IHVwZGF0ZWApOwoKICBhd2FpdCBwYWdlLmxvY2F0b3IoJ1tkYXRhLXBlcmlvZD0iOTAiXScpLmNsaWNrKCk7CiAgYXdhaXQgcGFnZS53YWl0Rm9yRnVuY3Rpb24oKCk9PmRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJ1tkYXRhLWV4ZWN1dGl2ZS1kYXNoYm9hcmRdJyk/LmRhdGFzZXQucGVyaW9kPT09JzkwJyk7CiAgaWYoYXdhaXQgcGFnZS5sb2NhdG9yKCdidXR0b25bZGF0YS1wZXJpb2Q9IjkwIl0nKS5nZXRBdHRyaWJ1dGUoJ2FyaWEtcHJlc3NlZCcpIT09J3RydWUnKXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IHBlcmlvZCBjb250cm9sIHN0YXRlIGRpZCBub3QgdXBkYXRlYCk7CgogIGNvbnN0IGRlc3RpbmF0aW9ucz1bCiAgICBbJ3RpbWVsaW5lJywnVGltZWxpbmUnXSwKICAgIFsndHJlaW5vcycsJ1RyZWlub3MnXSwKICAgIFsnYmlvJywnQ29tcG9zacOnw6NvIGNvcnBvcmFsJ10sCiAgICBbJ251dHJpY2FvJywnTnV0cmnDp8OjbyddLAogICAgWydzYXVkZScsJ0V4YW1lcyddLAogICAgWydhbmFsaXNlJywnUmVjdXBlcmHDp8OjbyAmIGFuw6FsaXNlcyddLAogICAgWyd0cmF0YW1lbnRvcycsJ1Byb3RvY29sb3MnXSwKICAgIFsnZGFkb3MnLCdEYWRvcyAmIGZvbnRlcyddLAogICAgWydldm9sdWNhbycsJ0V2b2x1w6fDo28gZGV0YWxoYWRhJ10KICBdOwogIGZvcihjb25zdFtyb3V0ZSx0aXRsZV1vZiBkZXN0aW5hdGlvbnMpewogICAgYXdhaXQgcGFnZS5ldmFsdWF0ZSh2YWx1ZT0+e2xvY2F0aW9uLmhhc2g9dmFsdWU7fSxyb3V0ZSk7CiAgICBhd2FpdCBwYWdlLndhaXRGb3JGdW5jdGlvbihleHBlY3RlZD0+ZG9jdW1lbnQucXVlcnlTZWxlY3RvcignI3NjcmVlbkhvc3QgaDEnKT8udGV4dENvbnRlbnQ9PT1leHBlY3RlZCx0aXRsZSk7CiAgICBpZighYXdhaXQgcGFnZS5sb2NhdG9yKCcuZG9tYWluSGVhZGVyJykuaXNWaXNpYmxlKCkpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfS8ke3JvdXRlfTogc2hhcmVkIGRlc3RpbmF0aW9uIGhlYWRlciBtaXNzaW5nYCk7CiAgICBpZighYXdhaXQgcGFnZS5sb2NhdG9yKCcuZG9tYWluSG9tZUFjdGlvbicpLmlzVmlzaWJsZSgpKXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH0vJHtyb3V0ZX06IHJldHVybiB0byBvdmVydmlldyBpcyBtaXNzaW5nYCk7CiAgICBpZihsYWJlbD09PSdkZXNrdG9wJyYmYXdhaXQgcGFnZS5sb2NhdG9yKCcjcHJpbWFyeU5hdiBbZGF0YS1yb3V0ZV0uYWN0aXZlJykuY291bnQoKSE9PTEpdGhyb3cgbmV3IEVycm9yKGBkZXNrdG9wLyR7cm91dGV9OiBwcmltYXJ5IG5hdmlnYXRpb24gaGFzIGNvbXBldGluZyBhY3RpdmUgZGVzdGluYXRpb25zYCk7CiAgICBjb25zdCByb3V0ZU92ZXJmbG93PWF3YWl0IHBhZ2UuZXZhbHVhdGUoKCk9PmRvY3VtZW50LmRvY3VtZW50RWxlbWVudC5zY3JvbGxXaWR0aC13aW5kb3cuaW5uZXJXaWR0aCk7CiAgICBpZihyb3V0ZU92ZXJmbG93PjMpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfS8ke3JvdXRlfTogaG9yaXpvbnRhbCBvdmVyZmxvdyAke3JvdXRlT3ZlcmZsb3d9cHhgKTsKICB9CiAgYXdhaXQgcGFnZS5sb2NhdG9yKCcuZG9tYWluSG9tZUFjdGlvbicpLmNsaWNrKCk7CiAgYXdhaXQgcGFnZS53YWl0Rm9yU2VsZWN0b3IoJ1tkYXRhLWV4ZWN1dGl2ZS1kYXNoYm9hcmRdJyk7CiAgY29uc3Qgb3ZlcmZsb3c9YXdhaXQgcGFnZS5ldmFsdWF0ZSgoKT0+ZG9jdW1lbnQuZG9jdW1lbnRFbGVtZW50LnNjcm9sbFdpZHRoLXdpbmRvdy5pbm5lcldpZHRoKTsKICBpZihvdmVyZmxvdz4zKXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IGhvcml6b250YWwgb3ZlcmZsb3cgJHtvdmVyZmxvd31weGApOwoKICBhd2FpdCBwYWdlLmxvY2F0b3IoJyNsb2dvdXRCdG4nKS5jbGljaygpOwogIGF3YWl0IHBhZ2Uud2FpdEZvclNlbGVjdG9yKCcjbG9naW46bm90KC5oaWRkZW4pJyk7CiAgY29uc3QgaXNvbGF0aW9uPWF3YWl0IHBhZ2UuZXZhbHVhdGUoKCk9Pih7YXBwRGlzcGxheTpnZXRDb21wdXRlZFN0eWxlKGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJyNhcHAnKSkuZGlzcGxheSxsb2dpblZpc2libGU6ZG9jdW1lbnQucXVlcnlTZWxlY3RvcignI2xvZ2luJyk/LmNsYXNzTGlzdC5jb250YWlucygnaGlkZGVuJyk9PT1mYWxzZX0pKTsKICBpZihpc29sYXRpb24uYXBwRGlzcGxheSE9PSdub25lJ3x8IWlzb2xhdGlvbi5sb2dpblZpc2libGUpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogYXV0aGVudGljYXRlZCBzaGVsbCBsZWFrcyBpbnRvIGxvZ2luYCk7CiAgY29uc3QgbG9naW5UZXh0PShhd2FpdCBwYWdlLmxvY2F0b3IoJyNsb2dpbicpLmlubmVyVGV4dCgpKXx8Jyc7CiAgZm9yKGNvbnN0IGV4cGVjdGVkIG9mIFsnU2V1IGhpc3TDs3JpY28gZGUgc2HDumRlLCBmaW5hbG1lbnRlIGVtIGNvbnRleHRvLicsJ1VtYSBsaW5oYSBkbyB0ZW1wbycsJ0xlaXR1cmEgY29tIGV2aWTDqm5jaWEnLCdBY2Vzc2Ugc2V1IGNvY2twaXQnXSlpZighbG9naW5UZXh0LmluY2x1ZGVzKGV4cGVjdGVkKSl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiBsb2dpbiBkb2VzIG5vdCBleHBsYWluIHRoZSBwcm9kdWN0OiAke2V4cGVjdGVkfWApOwoKICBpZihlcnJvcnMubGVuZ3RoKXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IGJyb3dzZXIgZXJyb3JzICR7ZXJyb3JzLmpvaW4oJyB8ICcpfWApOwogIGF3YWl0IGJyb3dzZXIuY2xvc2UoKTsKfQoKYXdhaXQgcnVuKHt3aWR0aDoxNDQwLGhlaWdodDoxMDAwfSwnZGVza3RvcCcpOwphd2FpdCBydW4oe3dpZHRoOjM5MCxoZWlnaHQ6ODQ0fSwnbW9iaWxlJyk7CmNvbnNvbGUubG9nKCdMVFMgSGVhbHRoIHByb2R1Y3QgYXJjaGl0ZWN0dXJlIGJyb3dzZXIgc21va2UgcGFzc2VkJyk7Cg==
+import {chromium} from 'playwright';
+
+const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/?fixture=1';
+const number=async(locator,property)=>Number(await locator.evaluate((element,key)=>parseFloat(getComputedStyle(element)[key])||0,property));
+
+async function run(viewport,label){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport});
+  const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+  await page.goto(`${base}#hoje`,{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('[data-executive-dashboard]');
+
+  if((await page.locator('.cockpitStatus').count())!==5)throw new Error(`${label}: expected five domain summaries`);
+  if((await page.locator('.cockpitReviewItem').count())>3)throw new Error(`${label}: overview exposes more than three priorities`);
+  const text=(await page.locator('#screenHost').innerText())||'';
+  for(const expected of ['Visão geral da sua saúde','Evolução','Peso corporal','Resumo da janela','O que mudou','Últimos acontecimentos','Dados a completar'])if(!text.includes(expected))throw new Error(`${label}: missing product hierarchy ${expected}`);
+  for(const action of ['Abrir detalhes','Abrir análise integrada','Gerenciar fontes','Abrir Timeline'])if(!text.includes(action))throw new Error(`${label}: missing specific action ${action}`);
+  if(text.includes('Ver mais'))throw new Error(`${label}: generic action copy returned`);
+
+  const order=await page.evaluate(()=>{
+    const top=selector=>document.querySelector(selector)?.getBoundingClientRect().top??Number.POSITIVE_INFINITY;
+    return{workspace:top('.cockpitWorkspace'),lower:top('.cockpitLowerGrid'),trend:top('.cockpitTrend')};
+  });
+  if(!(order.workspace<order.lower))throw new Error(`${label}: secondary information precedes the longitudinal workspace`);
+  if(order.trend>760)throw new Error(`${label}: main longitudinal chart starts too low`);
+  if(await number(page.locator('.cockpitStatusText small').first(),'fontSize')<14)throw new Error(`${label}: domain label is too small`);
+  if(await number(page.locator('.cockpitBriefText').first(),'fontSize')<13.5)throw new Error(`${label}: main interpretation is too small`);
+  if(await number(page.locator('.cockpitButton').first(),'fontSize')<13)throw new Error(`${label}: actions are too small`);
+  if((await page.locator('[data-home-metric]').count())!==8)throw new Error(`${label}: longitudinal metric selector is incomplete`);
+
+  if(label==='desktop'){
+    for(const group of ['Acompanhar','Áreas','Contexto','Sistema'])if(!await page.locator('#primaryNav .navGroupLabel',{hasText:group}).isVisible())throw new Error(`desktop: navigation group missing ${group}`);
+    if(await page.locator('#primaryNav > [data-route="evolucao"]').count())throw new Error('desktop: Evolução still competes in primary navigation');
+    if(await page.locator('#routeAction').isVisible())throw new Error('desktop: duplicate overview action visible in top bar');
+  }else{
+    if(!await page.locator('#mobileNav').isVisible())throw new Error('mobile: primary mobile navigation is missing');
+    const overlap=await page.evaluate(()=>{
+      const host=document.querySelector('#screenHost')?.getBoundingClientRect(),nav=document.querySelector('#mobileNav')?.getBoundingClientRect();
+      return Boolean(host&&nav&&host.bottom>nav.top+3);
+    });
+    if(overlap)throw new Error('mobile: navigation overlaps the content viewport');
+    const rail=await page.locator('.cockpitStatusGrid').evaluate(element=>({client:element.clientWidth,scroll:element.scrollWidth}));
+    if(rail.scroll<=rail.client)throw new Error('mobile: domain summaries are stacked instead of using the compact horizontal rail');
+  }
+
+  await page.locator('[data-home-metric="training"]').click();
+  await page.waitForFunction(()=>document.querySelector('.cockpitTrend h2')?.textContent==='Treinos por semana');
+  if(await page.locator('[data-home-metric="training"]').getAttribute('aria-selected')!=='true')throw new Error(`${label}: trend metric control did not update`);
+
+  await page.locator('[data-period="90"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');
+  if(await page.locator('button[data-period="90"]').getAttribute('aria-pressed')!=='true')throw new Error(`${label}: period control state did not update`);
+
+  const destinations=[
+    ['timeline','Timeline'],
+    ['treinos','Treinos'],
+    ['bio','Composição corporal'],
+    ['nutricao','Nutrição'],
+    ['saude','Exames'],
+    ['analise','Recuperação & análises'],
+    ['tratamentos','Protocolos'],
+    ['dados','Dados & fontes'],
+    ['evolucao','Evolução detalhada']
+  ];
+  for(const[route,title]of destinations){
+    await page.evaluate(value=>{location.hash=value;},route);
+    await page.waitForFunction(expected=>document.querySelector('#screenHost h1')?.textContent===expected,title);
+    if(!await page.locator('.domainHeader').isVisible())throw new Error(`${label}/${route}: shared destination header missing`);
+    if(!await page.locator('.domainHomeAction').isVisible())throw new Error(`${label}/${route}: return to overview is missing`);
+    if(label==='desktop'&&await page.locator('#primaryNav [data-route].active').count()!==1)throw new Error(`desktop/${route}: primary navigation has competing active destinations`);
+    const routeOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+    if(routeOverflow>3)throw new Error(`${label}/${route}: horizontal overflow ${routeOverflow}px`);
+  }
+  await page.locator('.domainHomeAction').click();
+  await page.waitForSelector('[data-executive-dashboard]');
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  if(overflow>3)throw new Error(`${label}: horizontal overflow ${overflow}px`);
+
+  await page.locator('#logoutBtn').click();
+  await page.waitForSelector('#login:not(.hidden)');
+  const isolation=await page.evaluate(()=>({appDisplay:getComputedStyle(document.querySelector('#app')).display,loginVisible:document.querySelector('#login')?.classList.contains('hidden')===false}));
+  if(isolation.appDisplay!=='none'||!isolation.loginVisible)throw new Error(`${label}: authenticated shell leaks into login`);
+  const loginText=(await page.locator('#login').innerText())||'';
+  for(const expected of ['Seu histórico de saúde, finalmente em contexto.','Uma linha do tempo','Leitura com evidência','Acesse seu cockpit'])if(!loginText.includes(expected))throw new Error(`${label}: login does not explain the product: ${expected}`);
+
+  if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+  await browser.close();
+}
+
+await run({width:1440,height:1000},'desktop');
+await run({width:390,height:844},'mobile');
+console.log('LTS Health product architecture browser smoke passed');

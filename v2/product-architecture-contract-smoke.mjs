@@ -1,1 +1,63 @@
-aW1wb3J0IGFzc2VydCBmcm9tICdub2RlOmFzc2VydC9zdHJpY3QnOwppbXBvcnQgZnMgZnJvbSAnbm9kZTpmcy9wcm9taXNlcyc7Cgpjb25zdCByb290PW5ldyBVUkwoJy4uLycsaW1wb3J0Lm1ldGEudXJsKTsKY29uc3QgcmVhZD1wYXRoPT5mcy5yZWFkRmlsZShuZXcgVVJMKHBhdGgscm9vdCksJ3V0ZjgnKTsKY29uc3QgW2FyY2hpdGVjdHVyZSxmZWVkYmFjayxpbmRleCx0b2RheSxob21lQ3NzLHNoZWxsQ3NzLHByb2R1Y3RTaGVsbCxhbmFseXNpc1NjcmVlbixoZWFsdGhTY3JlZW4sZGF0YVNjcmVlbixldm9sdXRpb25TY3JlZW4sc3RhdGVSYXddPWF3YWl0IFByb21pc2UuYWxsKFsKICByZWFkKCd2Mi9QUk9EVUNUX0FSQ0hJVEVDVFVSRS5tZCcpLAogIHJlYWQoJ3YyL0ZFRURCQUNLX0xFREdFUi5tZCcpLAogIHJlYWQoJ3YyL2luZGV4Lmh0bWwnKSwKICByZWFkKCd2Mi9zcmMvdG9kYXktc2NyZWVuLmpzJyksCiAgcmVhZCgndjIvY29ja3BpdC5jc3MnKSwKICByZWFkKCd2Mi9leGVjdXRpdmUtc2hlbGwuY3NzJyksCiAgcmVhZCgndjIvc3JjL3Byb2R1Y3Qtc2hlbGwuanMnKSwKICByZWFkKCd2Mi9zcmMvYW5hbHlzaXMtc2NyZWVuLmpzJyksCiAgcmVhZCgndjIvc3JjL2hlYWx0aC1zY3JlZW4uanMnKSwKICByZWFkKCd2Mi9zcmMvZGF0YS1zY3JlZW4uanMnKSwKICByZWFkKCd2Mi9zcmMvZXZvbHV0aW9uLXNjcmVlbi5qcycpLAogIHJlYWQoJ3YyL0VYRUNVVElPTl9TVEFURS5qc29uJykKXSk7CmNvbnN0IHN0YXRlPUpTT04ucGFyc2Uoc3RhdGVSYXcpOwpjb25zdCBidWlsZD1pbmRleC5tYXRjaCgvPG1ldGEgbmFtZT0ibHRzLWJ1aWxkIiBjb250ZW50PSIoW14iXSspIj4vKT8uWzFdOwphc3NlcnQub2soYnVpbGQsJ3B1YmxpYyBidWlsZCBpZGVudGlmaWVyIGlzIG1pc3NpbmcnKTsKZm9yKGNvbnN0IGFzc2V0IG9mIFsnZXhlY3V0aXZlLXNoZWxsLmNzcycsJ2NvY2twaXQuY3NzJ10pYXNzZXJ0Lm9rKGluZGV4LmluY2x1ZGVzKGAuLyR7YXNzZXR9P3Y9JHtidWlsZH1gKSxgY2Fub25pY2FsIGFzc2V0IGlzIG5vdCB0aWVkIHRvIGJ1aWxkICR7YnVpbGR9OiAke2Fzc2V0fWApOwoKZm9yKGNvbnN0IHBocmFzZSBvZiBbCiAgJ2Fzc2lzdGVudGUgbG9uZ2l0dWRpbmFsIHByaXZhZG8gZGUgc2HDumRlJywKICAnbyBxdWUgZXN0w6EgZG9jdW1lbnRhZG8gYWdvcmEnLAogICdvIHF1ZSBtdWRvdSBubyBwZXLDrW9kbycsCiAgJ3F1w6NvIGNvbXBsZXRhIGUgY29uZmnDoXZlbCDDqSBlc3NhIGxlaXR1cmEnLAogICdMZWl0dXJhIGUgcHJpb3JpZGFkZXMnLAogICdDSSB2ZXJkZSBjb21wcm92YSByZWdyZXNzw7VlcyB0w6ljbmljYXMgY29iZXJ0YXMnCl0pYXNzZXJ0Lm1hdGNoKGFyY2hpdGVjdHVyZSxuZXcgUmVnRXhwKHBocmFzZSwnaScpLGBhcmNoaXRlY3R1cmUgbWlzc2luZzogJHtwaHJhc2V9YCk7Cgpmb3IoY29uc3QgaWQgb2YgQXJyYXkuZnJvbSh7bGVuZ3RoOjE1fSwoXyxpbmRleCk9PmBGQi0ke1N0cmluZyhpbmRleCsxKS5wYWRTdGFydCgzLCcwJyl9YCkpYXNzZXJ0Lm1hdGNoKGZlZWRiYWNrLG5ldyBSZWdFeHAoYFxcfCAke2lkfSBcXHxgKSxgZmVlZGJhY2sgbWlzc2luZzogJHtpZH1gKTsKZm9yKGNvbnN0IGRlYnQgb2YgWydELTAwMScsJ0QtMDAyJywnRC0wMDMnLCdELTAwNCcsJ0QtMDA1JywnRC0wMDYnXSlhc3NlcnQubWF0Y2goZmVlZGJhY2ssbmV3IFJlZ0V4cChgXFx8ICR7ZGVidH0gXFx8YCksYGRlYnQgbWlzc2luZzogJHtkZWJ0fWApOwphc3NlcnQubWF0Y2goZmVlZGJhY2ssL05lbmh1bWEgYWxlZ2HDp8OjbyBhbnRpZ2EgZGUg4oCcMTBcLzEw4oCdIHN1YnN0aXR1aSBmZWVkYmFjayBwb3N0ZXJpb3IvKTsKCmZvcihjb25zdCBsZWdhY3kgb2YgWydkYXNoYm9hcmQtcGFyaXR5LmNzcycsJ2Rhc2hib2FyZC1yZWZlcmVuY2UtY29udHJhY3QuY3NzJywnZXhlY3V0aXZlLWNvY2twaXQuanMnLCdkYXNoYm9hcmQtcmVmZXJlbmNlLXJ1bnRpbWUuanMnXSlhc3NlcnQub2soIWluZGV4LmluY2x1ZGVzKGxlZ2FjeSksYGxlZ2FjeSBwcmVzZW50YXRpb24gbGF5ZXIgc3RpbGwgYWN0aXZlOiAke2xlZ2FjeX1gKTsKZm9yKGNvbnN0IGdyb3VwIG9mIFsnQWNvbXBhbmhhcicsJ8OBcmVhcycsJ0NvbnRleHRvJywnU2lzdGVtYSddKWFzc2VydC5tYXRjaChpbmRleCxuZXcgUmVnRXhwKGBuYXZHcm91cExhYmVsW14+XSo+JHtncm91cH08YCksYG5hdmlnYXRpb24gZ3JvdXAgbWlzc2luZzogJHtncm91cH1gKTsKYXNzZXJ0Lm9rKCFpbmRleC5pbmNsdWRlcygnZGF0YS1yb3V0ZT0iZXZvbHVjYW8iPkV2b2x1w6fDo288L2J1dHRvbj4nKSwnRXZvbHXDp8OjbyByZW1haW5zIGEgY29tcGV0aW5nIHByaW1hcnkgZGVzdGluYXRpb24nKTsKYXNzZXJ0Lm1hdGNoKGluZGV4LC9kYXRhLXJvdXRlPSJldm9sdWNhbyI+RXZvbHXDp8OjbyBkZXRhbGhhZGE8XC9idXR0b24+Lyk7Cgpmb3IoY29uc3QgYWN0aW9uIG9mIFsnQWJyaXIgZGV0YWxoZXMnLCdBYnJpciBhbsOhbGlzZSBpbnRlZ3JhZGEnLCdHZXJlbmNpYXIgZm9udGVzJywnQWJyaXIgVGltZWxpbmUnXSlhc3NlcnQubWF0Y2godG9kYXksbmV3IFJlZ0V4cChhY3Rpb24pLGBzcGVjaWZpYyBhY3Rpb24gbWlzc2luZzogJHthY3Rpb259YCk7CmFzc2VydC5vayghdG9kYXkuaW5jbHVkZXMoInRleHRDb250ZW50PSdWZXIgbWFpcyIpLCdnZW5lcmljIHBvc3Rwcm9jZXNzZWQgYWN0aW9ucyByZXR1cm5lZCcpOwpmb3IoY29uc3Qgc3VyZmFjZSBvZiBbJ2NvY2twaXRTdGF0dXNHcmlkJywnY29ja3BpdFdvcmtzcGFjZScsJ2NvY2twaXRUcmVuZCcsJ2NvY2twaXRXaW5kb3dCcmllZicsJ2NvY2twaXRMb3dlckdyaWQnLCdjb2NrcGl0UmVjZW50J10pYXNzZXJ0Lm1hdGNoKHRvZGF5LG5ldyBSZWdFeHAoc3VyZmFjZSksYGhvbWUgcHJvZHVjdCBzdXJmYWNlIG1pc3Npbmc6ICR7c3VyZmFjZX1gKTsKYXNzZXJ0Lm1hdGNoKHRvZGF5LC9kYXRhLWhvbWUtbWV0cmljLywnaW50ZXJhY3RpdmUgbG9uZ2l0dWRpbmFsIG1ldHJpYyBzZWxlY3RvciBpcyBtaXNzaW5nJyk7CmFzc2VydC5tYXRjaCh0b2RheSwvXFsnd2VpZ2h0JywnUGVzbydcXS4qXFsnd2F0ZXInLCfDgWd1YSdcXS9zLCdsb25naXR1ZGluYWwgZG9tYWlucyBhcmUgbm90IHJlcHJlc2VudGVkIGluIHRoZSBtYWluIGNoYXJ0Jyk7CmFzc2VydC5tYXRjaCh0b2RheSwvc2xpY2VcKDAsM1wpLywncmV2aWV3IHByaW9yaXRpZXMgYXJlIG5vdCBib3VuZGVkJyk7CmFzc2VydC5tYXRjaCh0b2RheSwvVHJhemVyIGhpc3TDs3JpY28gZGUgw6FndWEgZG8gTUZQLyk7Cgphc3NlcnQubWF0Y2goaG9tZUNzcywvXC5jb2NrcGl0V2VsY29tZSBwXHtbXn1dKmZvbnQtc2l6ZToxNXB4Lyk7CmFzc2VydC5tYXRjaChob21lQ3NzLC9cLmNvY2twaXRTdGF0dXNUZXh0IHNtYWxsXHtbXn1dKmZvbnQtc2l6ZToxNHB4Lyk7CmFzc2VydC5tYXRjaChob21lQ3NzLC9cLmNvY2twaXRUcmVuZFRhYnMgYnV0dG9uXHtbXn1dKmZvbnQtc2l6ZToxM3B4Lyk7CmFzc2VydC5tYXRjaChob21lQ3NzLC9zY3JvbGwtc25hcC10eXBlOnggcHJveGltaXR5LywnbW9iaWxlIGRvbWFpbiByYWlsIGlzIG5vdCBpbnRlbnRpb25hbGx5IGhvcml6b250YWwnKTsKYXNzZXJ0Lm1hdGNoKGhvbWVDc3MsL2JvZHk6aGFzXChcLmNvY2twaXRWM1wpIFwudG9wQWN0aW9ucyAjcm91dGVBY3Rpb25ce2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnRcfS8pOwphc3NlcnQubWF0Y2goc2hlbGxDc3MsL2dyaWQtdGVtcGxhdGUtY29sdW1uczoyNDRweCBtaW5tYXhcKDAsMWZyXCkvKTsKYXNzZXJ0Lm1hdGNoKHNoZWxsQ3NzLC9ib2R5Omhhc1woI2xvZ2luOm5vdFwoXC5oaWRkZW5cKVwpICNhcHBce2Rpc3BsYXk6bm9uZSFpbXBvcnRhbnRcfS8pOwphc3NlcnQubWF0Y2gocHJvZHVjdFNoZWxsLC9kb21haW5Ib21lQWN0aW9uLyk7CmFzc2VydC5tYXRjaChwcm9kdWN0U2hlbGwsL1ZvbHRhciDDoCB2aXPDo28gZ2VyYWwvKTsKZm9yKGNvbnN0IFtzY3JlZW4sdGl0bGVdb2YgW1thbmFseXNpc1NjcmVlbiwnUmVjdXBlcmHDp8OjbyAmIGFuw6FsaXNlcyddLFtoZWFsdGhTY3JlZW4sJ0V4YW1lcyddLFtkYXRhU2NyZWVuLCdEYWRvcyAmIGZvbnRlcyddLFtldm9sdXRpb25TY3JlZW4sJ0V2b2x1w6fDo28gZGV0YWxoYWRhJ11dKWFzc2VydC5tYXRjaChzY3JlZW4sbmV3IFJlZ0V4cCh0aXRsZS5yZXBsYWNlKCcmJywnJicpKSxgZGVzdGluYXRpb24gdGl0bGUgaXMgbm90IGFsaWduZWQ6ICR7dGl0bGV9YCk7Cgpmb3IoY29uc3QgZG9jdW1lbnQgb2YgWydwcm9kdWN0X2FyY2hpdGVjdHVyZScsJ2ZlZWRiYWNrX2xlZGdlciddKWFzc2VydC5vayhzdGF0ZS5hdXRob3JpdGF0aXZlX2RvY3VtZW50cz8uW2RvY3VtZW50XSxgZXhlY3V0aW9uIHN0YXRlIGRvZXMgbm90IHBvaW50IHRvICR7ZG9jdW1lbnR9YCk7CmNvbnNvbGUubG9nKCdMVFMgSGVhbHRoIHByb2R1Y3QgYXJjaGl0ZWN0dXJlIGNvbnRyYWN0IHBhc3NlZCcpOwo=
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+
+const root=new URL('../',import.meta.url);
+const read=path=>fs.readFile(new URL(path,root),'utf8');
+const [architecture,feedback,index,today,homeCss,shellCss,productShell,analysisScreen,healthScreen,dataScreen,evolutionScreen,stateRaw]=await Promise.all([
+  read('v2/PRODUCT_ARCHITECTURE.md'),
+  read('v2/FEEDBACK_LEDGER.md'),
+  read('v2/index.html'),
+  read('v2/src/today-screen.js'),
+  read('v2/cockpit.css'),
+  read('v2/executive-shell.css'),
+  read('v2/src/product-shell.js'),
+  read('v2/src/analysis-screen.js'),
+  read('v2/src/health-screen.js'),
+  read('v2/src/data-screen.js'),
+  read('v2/src/evolution-screen.js'),
+  read('v2/EXECUTION_STATE.json')
+]);
+const state=JSON.parse(stateRaw);
+const build=index.match(/<meta name="lts-build" content="([^"]+)">/)?.[1];
+assert.ok(build,'public build identifier is missing');
+for(const asset of ['executive-shell.css','cockpit.css'])assert.ok(index.includes(`./${asset}?v=${build}`),`canonical asset is not tied to build ${build}: ${asset}`);
+
+for(const phrase of [
+  'assistente longitudinal privado de saúde',
+  'o que está documentado agora',
+  'o que mudou no período',
+  'quão completa e confiável é essa leitura',
+  'Leitura e prioridades',
+  'CI verde comprova regressões técnicas cobertas'
+])assert.match(architecture,new RegExp(phrase,'i'),`architecture missing: ${phrase}`);
+
+for(const id of Array.from({length:15},(_,index)=>`FB-${String(index+1).padStart(3,'0')}`))assert.match(feedback,new RegExp(`\\| ${id} \\|`),`feedback missing: ${id}`);
+for(const debt of ['D-001','D-002','D-003','D-004','D-005','D-006'])assert.match(feedback,new RegExp(`\\| ${debt} \\|`),`debt missing: ${debt}`);
+assert.match(feedback,/Nenhuma alegação antiga de “10\/10” substitui feedback posterior/);
+
+for(const legacy of ['dashboard-parity.css','dashboard-reference-contract.css','executive-cockpit.js','dashboard-reference-runtime.js'])assert.ok(!index.includes(legacy),`legacy presentation layer still active: ${legacy}`);
+for(const group of ['Acompanhar','Áreas','Contexto','Sistema'])assert.match(index,new RegExp(`navGroupLabel[^>]*>${group}<`),`navigation group missing: ${group}`);
+assert.ok(!index.includes('data-route="evolucao">Evolução</button>'),'Evolução remains a competing primary destination');
+assert.match(index,/data-route="evolucao">Evolução detalhada<\/button>/);
+
+for(const action of ['Abrir detalhes','Abrir análise integrada','Gerenciar fontes','Abrir Timeline'])assert.match(today,new RegExp(action),`specific action missing: ${action}`);
+assert.ok(!today.includes("textContent='Ver mais"),'generic postprocessed actions returned');
+for(const surface of ['cockpitStatusGrid','cockpitWorkspace','cockpitTrend','cockpitWindowBrief','cockpitLowerGrid','cockpitRecent'])assert.match(today,new RegExp(surface),`home product surface missing: ${surface}`);
+assert.match(today,/data-home-metric/,'interactive longitudinal metric selector is missing');
+assert.match(today,/\['weight','Peso'\].*\['water','Água'\]/s,'longitudinal domains are not represented in the main chart');
+assert.match(today,/slice\(0,3\)/,'review priorities are not bounded');
+assert.match(today,/Trazer histórico de água do MFP/);
+
+assert.match(homeCss,/\.cockpitWelcome p\{[^}]*font-size:15px/);
+assert.match(homeCss,/\.cockpitStatusText small\{[^}]*font-size:14px/);
+assert.match(homeCss,/\.cockpitTrendTabs button\{[^}]*font-size:13px/);
+assert.match(homeCss,/scroll-snap-type:x proximity/,'mobile domain rail is not intentionally horizontal');
+assert.match(homeCss,/body:has\(\.cockpitV3\) \.topActions #routeAction\{display:none!important\}/);
+assert.match(shellCss,/grid-template-columns:244px minmax\(0,1fr\)/);
+assert.match(shellCss,/body:has\(#login:not\(\.hidden\)\) #app\{display:none!important\}/);
+assert.match(productShell,/domainHomeAction/);
+assert.match(productShell,/Voltar à visão geral/);
+for(const [screen,title]of [[analysisScreen,'Recuperação & análises'],[healthScreen,'Exames'],[dataScreen,'Dados & fontes'],[evolutionScreen,'Evolução detalhada']])assert.match(screen,new RegExp(title.replace('&','&')),`destination title is not aligned: ${title}`);
+
+for(const document of ['product_architecture','feedback_ledger'])assert.ok(state.authoritative_documents?.[document],`execution state does not point to ${document}`);
+console.log('LTS Health product architecture contract passed');

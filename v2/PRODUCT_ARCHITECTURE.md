@@ -1,1 +1,138 @@
-IyBMVFMgSGVhbHRoIOKAlCBhcnF1aXRldHVyYSBjYW7DtG5pY2EgZGUgcHJvZHV0bwoKU3RhdHVzOiBmb250ZSBkZSB2ZXJkYWRlIGRlIHByb2R1dG8uIEVzdGUgZG9jdW1lbnRvIHJlZ2lzdHJhIG8gcXVlIG8gTFRTIEhlYWx0aCBwcmVjaXNhIHJlc29sdmVyLCBjb21vIGFzIMOhcmVhcyBzZSByZWxhY2lvbmFtIGUgcXVhaXMgcGVyZ3VudGFzIGNhZGEgdGVsYSBkZXZlIHJlc3BvbmRlci4gTsOjbyBjb250w6ltIGRhZG9zIHBlc3NvYWlzIGRlIHNhw7pkZS4KCiMjIFRlc2UgZG8gcHJvZHV0bwoKTyBMVFMgSGVhbHRoIMOpIHVtICoqYXNzaXN0ZW50ZSBsb25naXR1ZGluYWwgcHJpdmFkbyBkZSBzYcO6ZGUqKiwgYXBvaWFkbyBwb3IgZXZpZMOqbmNpYXMgcmVnaXN0cmFkYXMuIEVsZSByZcO6bmUgZm9udGVzIGZyYWdtZW50YWRhcywgcHJlc2VydmEgYSBvcmlnZW0gZGUgY2FkYSBkYWRvIGUgdHJhbnNmb3JtYSBvIGhpc3TDs3JpY28gZW0gdW1hIGxlaXR1cmEgc2ltcGxlczoKCjEuIG8gcXVlIGVzdMOhIGRvY3VtZW50YWRvIGFnb3JhOwoyLiBvIHF1ZSBtdWRvdSBubyBwZXLDrW9kbzsKMy4gcXXDo28gY29tcGxldGEgZSBjb25macOhdmVsIMOpIGVzc2EgbGVpdHVyYTsKNC4gb25kZSBhcHJvZnVuZGFyIG91IGNvbXBsZXRhciBkYWRvcy4KCk8gdXN1w6FyaW8gbsOjbyBkZXZlIHByZWNpc2FyIGNvbmhlY2VyIGFycXVpdm9zLCBwYXJzZXJzLCB0YWJlbGFzIG91IHJlZ3JhcyBpbnRlcm5hcyBwYXJhIG9idGVyIGVzc2EgcmVzcG9zdGEuIE51dHJpY2lvbmlzdGEsIHRyZWluYWRvciBlIHByb2Zpc3Npb25hbCBkZSBzYcO6ZGUgYXV0b3JpemFkbyBkZXZlbSBjb25zZWd1aXIgY2hlZ2FyIMOgIGV2aWTDqm5jaWEgb3JpZ2luYWwgc2VtIHBlcmRlciBvIGNvbnRleHRvIGxvbmdpdHVkaW5hbC4KCiMjIE8gcXVlIG8gcHJvZHV0byBuw6NvIMOpCgotIHVtYSBjb2xlw6fDo28gZGUgY2FyZHMgaW5kZXBlbmRlbnRlczsKLSB1bSByZXBvc2l0w7NyaW8gZGUgYXJxdWl2b3MgYXByZXNlbnRhZG8gY29tbyBkYXNoYm9hcmQ7Ci0gdW1hIHBsYW5pbGhhIHF1ZSB0cmFuc2ZlcmUgYW8gdXN1w6FyaW8gYSByZXZpc8OjbyB0w6ljbmljYSBkZSBkYWRvczsKLSB1bSBzaXN0ZW1hIHF1ZSBwcmVlbmNoZSBsYWN1bmFzLCBjb21iaW5hIG9yaWdlbnMgb3UgYXRyaWJ1aSBjYXVzYWxpZGFkZSBwb3Igc3Vwb3Npw6fDo287Ci0gdW1hIGZlcnJhbWVudGEgZGUgZGlhZ27Ds3N0aWNvLCBwcmVzY3Jpw6fDo28sIG1ldGEgY29ycG9yYWwgb3UganVsZ2FtZW50byBlc3TDqXRpY28uCgojIyBQZXJndW50YXMgcXVlIG9yaWVudGFtIGEgZXhwZXJpw6puY2lhCgpUb2RhIGluZm9ybWHDp8OjbyB2aXPDrXZlbCBkZXZlIHJlc3BvbmRlciBwZWxvIG1lbm9zIHVtYSBkZXN0YXMgcGVyZ3VudGFzOgoKfCBQZXJndW50YSB8IFJlc3Bvc3RhIGVzcGVyYWRhIHwKfCAtLS0gfCAtLS0gfAp8IENvbW8gZXN0w6EgbyBoaXN0w7NyaWNvIGNvbmhlY2lkbz8gfCDDmmx0aW1vIGVzdGFkbyBkb2N1bWVudGFkbyBwb3IgZG9tw61uaW8sIGNvbSBkYXRhIGUgb3JpZ2VtIHF1YW5kbyByZWxldmFudGVzLiB8CnwgTyBxdWUgbXVkb3U/IHwgQ29tcGFyYcOnw6NvIGVudHJlIHBvbnRvcyBjb21wYXTDrXZlaXMgb3UgaW5kaWNhw6fDo28gY2xhcmEgZGUgcXVlIG7Do28gaMOhIGNvbXBhcmHDp8OjbyBzZWd1cmEuIHwKfCBFc3NhIGxlaXR1cmEgw6kgY29tcGxldGE/IHwgQ29iZXJ0dXJhLCBhbWJpZ3VpZGFkZSwgZmFsaGEgb3UgYXVzw6puY2lhIHNlbSB0cmFuc2Zvcm1hciBsYWN1bmEgZW0gemVyby4gfAp8IE8gcXVlIG1lcmVjZSByZXZpc8Ojbz8gfCBQb3VjYXMgcHJpb3JpZGFkZXMgZXhwbGljYWRhcyBlbSBsaW5ndWFnZW0gY29tdW0sIGNvbSBhw6fDo28gZGlyZXRhLiB8CnwgRGUgb25kZSB2ZWlvPyB8IENhbWluaG8gY3VydG8gYXTDqSBmb250ZSwgcmVnaXN0cm8gZSBldmlkw6puY2lhIHByZXNlcnZhZGEuIHwKCiMjIEFycXVpdGV0dXJhIGRlIGluZm9ybWHDp8OjbwoKIyMjIE5hdmVnYcOnw6NvIHByaW3DoXJpYQoKfCBHcnVwbyB8IMOBcmVhIHwgVHJhYmFsaG8gcHJpbmNpcGFsIHwKfCAtLS0gfCAtLS0gfCAtLS0gfAp8IEFjb21wYW5oYXIgfCBWaXPDo28gZ2VyYWwgfCBFbnRlbmRlciBlc3RhZG8sIG11ZGFuw6dhLCBjb2JlcnR1cmEgZSBwcmlvcmlkYWRlcyBkYSBqYW5lbGEuIHwKfCBBY29tcGFuaGFyIHwgVGltZWxpbmUgfCBQZXJjb3JyZXIgZXZlbnRvcyBkZSB0b2RvcyBvcyBkb23DrW5pb3MgZW0gb3JkZW0gdGVtcG9yYWwuIHwKfCDDgXJlYXMgfCBUcmVpbm9zIHwgSXIgZGUgcml0bW8gZSBwcm9ncmVzc8OjbyBwYXJhIHNlc3PDo28sIGV4ZXJjw61jaW8gZSBzw6lyaWUuIHwKfCDDgXJlYXMgfCBDb21wb3Npw6fDo28gfCBDb21wYXJhciBtZWRpw6fDtWVzIGNvbXBhdMOtdmVpcyBlIGFicmlyIGRldGFsaGUgY29ycG9yYWwvc2VnbWVudGFyLiB8Cnwgw4FyZWFzIHwgTnV0cmnDp8OjbyB8IFZlciBjb2JlcnR1cmEgZSBoaXN0w7NyaWNvIHJlZ2lzdHJhZG8sIGluY2x1aW5kbyBoaWRyYXRhw6fDo28uIHwKfCDDgXJlYXMgfCBFeGFtZXMgfCBFeHBsb3JhciBjb2xldGFzIGUgc8OpcmllcyBjb21wYXLDoXZlaXMgcG9yIG1hcmNhZG9yLCBvcmlnZW0gZSB1bmlkYWRlLiB8CnwgQ29udGV4dG8gfCBSZWN1cGVyYcOnw6NvIGUgYW7DoWxpc2VzIHwgTGVyIHNvbm8sIGF0aXZpZGFkZSBlIHJlbGHDp8O1ZXMgdGVtcG9yYWlzIHNlbSBjb25mdW5kaXIgYXNzb2NpYcOnw6NvIGNvbSBjYXVzYS4gfAp8IENvbnRleHRvIHwgUHJvdG9jb2xvcyB8IENvbnN1bHRhciBjb250ZXh0byBoaXN0w7NyaWNvIHNlbSBpbmZlcmlyIHNpdHVhw6fDo28gYXR1YWwgb3Ugb3JpZW50YXIgdXNvLiB8CnwgU2lzdGVtYSB8IERhZG9zIGUgZm9udGVzIHwgQ29uZWN0YXIsIGltcG9ydGFyLCBhY29tcGFuaGFyIHByb2Nlc3NhbWVudG8sIHF1YWxpZGFkZSBlIGJhY2t1cC4gfAoKYEV2b2x1w6fDo29gIGRlaXhhIGRlIHNlciB1bWEgc2XDp8OjbyBwcmltw6FyaWEgY29uY29ycmVudGUuIFN1YXMgY2FwYWNpZGFkZXMgcGVydGVuY2VtIGEgQ29tcG9zacOnw6NvIGUgVHJlaW5vczsgYSByb3RhIGFudGlnYSBjb250aW51YSBmdW5jaW9uYWwgZHVyYW50ZSBhIHRyYW5zacOnw6NvIHBhcmEgcHJlc2VydmFyIGxpbmtzLgoKIyMjIEhpZXJhcnF1aWEgZGEgVmlzw6NvIGdlcmFsCgpBIGFiZXJ0dXJhIGRldmUgc2VyIHVtYSBzdXBlcmbDrWNpZSBkZSBkZWNpc8OjbywgbmVzdGEgb3JkZW06CgoxLiAqKkNhYmXDp2FsaG8gZSBqYW5lbGE6KiogdMOtdHVsbywgZXhwbGljYcOnw6NvIGN1cnRhIGUgZmlsdHJvIGdsb2JhbC4KMi4gKipFc3RhZG8gcG9yIGRvbcOtbmlvOioqIGNpbmNvIHJlc3Vtb3MgZGUgQ29tcG9zacOnw6NvLCBUcmVpbm9zLCBOdXRyacOnw6NvLCBSZWN1cGVyYcOnw6NvIGUgRXhhbWVzLgozLiAqKlRlbmTDqm5jaWEgcHJpbmNpcGFsOioqIHVtIMO6bmljbyBncsOhZmljbyBsb25naXR1ZGluYWwsIGFsdGVybsOhdmVsIGVudHJlIG3DqXRyaWNhcywgYW8gbGFkbyBkYSBzw61udGVzZSBkYSBqYW5lbGEuCjQuICoqQWNvbnRlY2ltZW50b3MgcmVjZW50ZXM6KiogdW1hIGxpbmhhIHRlbXBvcmFsIGN1cnRhIHF1ZSBjb25lY3RhIG9zIGRvbcOtbmlvcyBzZW0gcmVwZXRpciBzZXVzIGRldGFsaGVzLgo1LiAqKkNvYmVydHVyYToqKiBzb21lbnRlIGxhY3VuYXMgcXVlIHJlYWxtZW50ZSBsaW1pdGFtIGEgbGVpdHVyYSwgY29tIGFjZXNzbyDDoCBnZXN0w6NvIGRlIGZvbnRlcy4KCkEgcHJpbWVpcmEgdGVsYSBuw6NvIGRldmUgYXByZXNlbnRhciB0b2RvcyBvcyBlbGVtZW50b3MgY29tIG8gbWVzbW8gcGVzbyBuZW0gZW1waWxoYXIgbWluaS1kYXNoYm9hcmRzIHBvciBkb23DrW5pby4gTyBncsOhZmljbyBwcmluY2lwYWwgdmVtIGNlZG87IG8gZGV0YWxoZSBmaWNhIG5hcyDDoXJlYXMgZXNwZWNpYWxpemFkYXMuCgojIyBDb250cmF0byBkZSBjYWRhIMOhcmVhCgpDYWRhIHRlbGEgZXNwZWNpYWxpemFkYSBzZWd1ZSBhIG1lc21hIHByb2dyZXNzw6NvOgoKMS4gKipSZXN1bW86KiogZXN0YWRvIGNvbmhlY2lkbyBlIHBlcsOtb2RvIGFwbGljYWRvLgoyLiAqKk11ZGFuw6dhOioqIGRpZmVyZW7Dp2Egc2VndXJhLCBvdSBtb3Rpdm8gb2JqZXRpdm8gcGFyYSBuw6NvIGNvbXBhcmFyLgozLiAqKlRlbmTDqm5jaWE6Kiogc8OpcmllIHRlbXBvcmFsIGFwZW5hcyBxdWFuZG8gZGF0YXMsIHVuaWRhZGVzIGUgb3JpZ2VucyBmb3JlbSBjb21wYXTDrXZlaXMuCjQuICoqRGV0YWxoZToqKiByZWdpc3RybyBlIHByb3ZlbmnDqm5jaWEuCjUuICoqQ29iZXJ0dXJhOioqIGF1c8OqbmNpYXMsIGNvbmZsaXRvcyBlIGZhbGhhcyBzZXBhcmFkb3MgZGUgdmFsb3JlcyByZWFpcy4KCiMjIE1vZGVsbyBtZW50YWwgZG9zIGRhZG9zCgpgYGBtZXJtYWlkCmZsb3djaGFydCBURAogICAgQVsiRm9udGVzIHByaXZhZGFzIl0gLS0+IEJbIlByZXNlcnZhw6fDo28gb3JpZ2luYWwiXQogICAgQiAtLT4gQ1siRXN0cnV0dXJhw6fDo28gcG9yIGRvbcOtbmlvIl0KICAgIEMgLS0+IERbIlJlZ3JhcyBkZSBjb21wYXJhw6fDo28iXQogICAgRCAtLT4gRVsiTGVpdHVyYSBsb25naXR1ZGluYWwiXQogICAgRSAtLT4gRlsiRGV0YWxoZSBlIHByb3ZlbmnDqm5jaWEiXQpgYGAKCi0gQSBmb250ZSBvcmlnaW5hbCBudW5jYSDDqSBzdWJzdGl0dcOtZGEgcGVsbyByZXN1bW8uCi0gVW1hIGxpbmhhIGVzdHJ1dHVyYWRhIHPDsyBwYXJ0aWNpcGEgZGUgY29tcGFyYcOnw6NvIHF1YW5kbyBwYXNzYSBwZWxhcyByZWdyYXMgZG8gZG9tw61uaW8uCi0gRXZpZMOqbmNpYSBjb21wbGVtZW50YXIgcG9kZSBlbnJpcXVlY2VyIHVtIGV2ZW50bywgbWFzIG7Do28gY3JpYSBkdXBsaWNhw6fDo28gYXV0b23DoXRpY2EuCi0gQW1iaWd1aWRhZGUsIGF1c8OqbmNpYSBlIGZhbGhhIHPDo28gZXN0YWRvcyBkaWZlcmVudGVzIGUgcGVybWFuZWNlbSB2aXPDrXZlaXMuCgojIyBFc3RhZG9zIGRlIGludGVyZmFjZQoKfCBFc3RhZG8gfCBMaW5ndWFnZW0gZG8gcHJvZHV0byB8IFJlZ3JhIHwKfCAtLS0gfCAtLS0gfCAtLS0gfAp8IENhcnJlZ2FuZG8gfCDigJxDYXJyZWdhbmRvIGVzdGEgw6FyZWHigJ0gfCBOw6NvIGFwYWdhciBkYWRvcyBqw6EgZGlzcG9uw612ZWlzLiB8CnwgRGlzcG9uw612ZWwgfCBWYWxvciArIGRhdGEvY29udGV4dG8gfCBNb3N0cmFyIHNvbWVudGUgZXZpZMOqbmNpYSBhdXRvcml6YWRhLiB8CnwgUGFyY2lhbCB8IOKAnFBhcnRlIGRvcyBkYWRvcyBuw6NvIGNhcnJlZ2914oCdIHwgUHJlc2VydmFyIG8gcmVzdGFudGUgZGEgw6FyZWEuIHwKfCBBdXNlbnRlIHwg4oCcU2VtIHJlZ2lzdHJv4oCdIHwgTnVuY2EgcmVuZGVyaXphciB6ZXJvIGltcGzDrWNpdG8uIHwKfCBBbWLDrWd1byB8IOKAnFJldmlzw6NvIG5lY2Vzc8Ohcmlh4oCdIHwgTsOjbyBlc2NvbGhlciBhdXRvbWF0aWNhbWVudGUgdW0gY2FuZGlkYXRvLiB8CnwgQmxvcXVlYWRvIHwgUHLDs3hpbWEgYcOnw6NvIGUgbW90aXZvIHwgRGlzdGluZ3VpciBhw6fDo28gaHVtYW5hIGRlIGRlcGVuZMOqbmNpYSBleHRlcm5hLiB8CgojIyBQcmluY8OtcGlvcyBkZSBVWAoKLSBsaW5ndWFnZW0gZGUgdXN1w6FyaW8sIHNlbSBqYXJnw6NvIGRlIGltcGxlbWVudGHDp8OjbzsKLSB0ZXh0byBwcmluY2lwYWwgY29tIHBlbG8gbWVub3MgMTYgcHggZSByw7N0dWxvcyByZWd1bGFyZXMgY29tIHBlbG8gbWVub3MgMTQgcHg7Ci0gYcOnw7VlcyBlc3BlY8OtZmljYXMsIGNvbW8g4oCcQWJyaXIgdHJlaW5vc+KAnSBvdSDigJxSZXZpc2FyIGNvYmVydHVyYeKAnSwgZXZpdGFuZG8gcmVwZXRpw6fDo28gZGUg4oCcVmVyIG1haXPigJ07Ci0gbmF2ZWdhw6fDo28gYWdydXBhZGEgcG9yIGludGVuw6fDo28sIHNlbSDDoXJlYXMgcmVkdW5kYW50ZXMgY29tcGV0aW5kbyBwZWxvIG1lc21vIHRyYWJhbGhvOwotIGRlc2t0b3AgY29tIHJhaWwgZXNjdXJvIGUgY2FudmFzIGNsYXJvOyBtb2JpbGUgY29tIGNvbnRlw7pkbyBjbGFybyBlIG5hdmVnYcOnw6NvIHF1ZSBuw6NvIGNvYnJlIGEgcMOhZ2luYTsKLSBjb3IgY29tdW5pY2EgZG9tw61uaW8gb3UgZXN0YWRvLCBuw6NvIGRlY29yYcOnw6NvOwotIHZhemlvcyBleHBsaWNhbSBvIHF1ZSBmYWx0YSBlIG9mZXJlY2VtIHVtYSBhw6fDo28gc29tZW50ZSBxdWFuZG8gZWxhIGV4aXN0ZTsKLSBuZW5odW0gZmx1eG8gaGlzdMOzcmljbyBleGlnZSBkaWdpdGHDp8OjbyBkaWEgYSBkaWEgcXVhbmRvIHVtYSB0cmFuc2ZlcsOqbmNpYSBlbSBsb3RlIMOpIHRlY25pY2FtZW50ZSBwb3Nzw612ZWwuCgojIyBDcml0w6lyaW8gZGUgcHJvZHV0byBjb25jbHXDrWRvCgpVbSBwYWNvdGUgc8OzIHBvZGUgc2VyIGNoYW1hZG8gZGUgY29uY2x1w61kbyBxdWFuZG8gcmXDum5lIHF1YXRybyBldmlkw6puY2lhcyBkaWZlcmVudGVzOgoKMS4gYWRlcsOqbmNpYSBhIGVzdGEgYXJxdWl0ZXR1cmEgZSBhbyBgRkVFREJBQ0tfTEVER0VSLm1kYDsKMi4gY29tcG9ydGFtZW50byBlIGRhZG9zIHByb3RlZ2lkb3MgcG9yIGNvbnRyYXRvcyBhdXRvbWF0aXphZG9zOwozLiBpbnNwZcOnw6NvIHZpc3VhbCByZWFsIGVtIGRlc2t0b3AgZSBjZWx1bGFyOwo0LiBjb25maXJtYcOnw6NvIGRlIGRlcGxveSBww7pibGljbyBxdWFuZG8gYSBpbnRlcmZhY2UgcHVibGljYWRhIG11ZGEuCgpDSSB2ZXJkZSBjb21wcm92YSByZWdyZXNzw7VlcyB0w6ljbmljYXMgY29iZXJ0YXMuIEVsZSBuw6NvIGNvbXByb3ZhLCBpc29sYWRhbWVudGUsIHF1ZSBvIHByb2R1dG8gY29ycmVzcG9uZGUgYW8gYnJpZWZpbmcgb3Ugw6AgcmVmZXLDqm5jaWEgdmlzdWFsLgoKIyMgUmVmZXLDqm5jaWEgdmlzdWFsIGUgbGltaXRhw6fDo28gYXR1YWwKCk8gaGlzdMOzcmljbyByZWdpc3RyYSB1bWEgaW1hZ2VtIGFwcm92YWRhIGVtIDA0LzA5LzIwMjYgZSBvIGNvbnRyYXRvIHRleHR1YWwgY29ycmVzcG9uZGVudGUgZW0gYFJFRkVSRU5DRV9WSVNVQUxfQ09OVFJBQ1QubWRgLiBBIGltYWdlbS1mb250ZSBvcmlnaW5hbCBuw6NvIGVzdMOhIHByZXNlcnZhZGEgbm8gcmVwb3NpdMOzcmlvIGF0dWFsLiBQb3IgaXNzbzoKCi0gbyBjb250cmF0byB0ZXh0dWFsIGNvbnRpbnVhIG9yaWVudGFuZG8gYSBsaW5ndWFnZW0gdmlzdWFsOwotIG5lbmh1bSBwYWNvdGUgcG9kZSBkZWNsYXJhciBwYXJpZGFkZSBwaXhlbCBhIHBpeGVsIHNlbSByZWN1cGVyYXIgZSB2ZXJzaW9uYXIgYSBpbWFnZW0tZm9udGU7Ci0gbWVsaG9yaWFzIGluZXF1w612b2NhcyBkZSBoaWVyYXJxdWlhLCBsZWl0dXJhLCBuYXZlZ2HDp8OjbywgYWNlc3NpYmlsaWRhZGUgZSBlc3RhZG9zIGNvbnRpbnVhbSBleGVjdXTDoXZlaXMgc2VtIGVzc2UgYXJxdWl2by4KCiMjIEZvbnRlcyB1c2FkYXMgbmVzdGEgY29uc29saWRhw6fDo28KCi0gaGlzdMOzcmljbyBkZSBkZWNpc8O1ZXMgZSBmZWVkYmFja3MgcmVjdXBlcmFkbyBkbyBwcm9qZXRvOwotIGBIQU5ET0ZGX0xUU19IRUFMVEgubWRgLCBgTUlHUkFUSU9OX01BTklGRVNULm1kYCBlIGEgaW1wbGVtZW50YcOnw6NvIG9yaWdpbmFsIGZvcm5lY2lkYTsKLSBjw7NkaWdvLCB0ZXN0ZXMsIG1pZ3JhdGlvbnMsIGlzc3VlcyBlIHB1bGwgcmVxdWVzdHMgZXhpc3RlbnRlczsKLSBgUFJPSkVDVF9CUklFRi5tZGAsIGBQUk9EVUNUX1ZJU0lPTl9DT0NLUElULm1kYCwgYFJFRkVSRU5DRV9WSVNVQUxfQ09OVFJBQ1QubWRgIGUgYERBVEFfQVVESVQubWRgLgo=
+# LTS Health — arquitetura canônica de produto
+
+Status: fonte de verdade de produto. Este documento registra o que o LTS Health precisa resolver, como as áreas se relacionam e quais perguntas cada tela deve responder. Não contém dados pessoais de saúde.
+
+## Tese do produto
+
+O LTS Health é um **assistente longitudinal privado de saúde**, apoiado por evidências registradas. Ele reúne fontes fragmentadas, preserva a origem de cada dado e transforma o histórico em uma leitura simples:
+
+1. o que está documentado agora;
+2. o que mudou no período;
+3. quão completa e confiável é essa leitura;
+4. onde aprofundar ou completar dados.
+
+O usuário não deve precisar conhecer arquivos, parsers, tabelas ou regras internas para obter essa resposta. Nutricionista, treinador e profissional de saúde autorizado devem conseguir chegar à evidência original sem perder o contexto longitudinal.
+
+## O que o produto não é
+
+- uma coleção de cards independentes;
+- um repositório de arquivos apresentado como dashboard;
+- uma planilha que transfere ao usuário a revisão técnica de dados;
+- um sistema que preenche lacunas, combina origens ou atribui causalidade por suposição;
+- uma ferramenta de diagnóstico, prescrição, meta corporal ou julgamento estético.
+
+## Perguntas que orientam a experiência
+
+Toda informação visível deve responder pelo menos uma destas perguntas:
+
+| Pergunta | Resposta esperada |
+| --- | --- |
+| Como está o histórico conhecido? | Último estado documentado por domínio, com data e origem quando relevantes. |
+| O que mudou? | Comparação entre pontos compatíveis ou indicação clara de que não há comparação segura. |
+| Essa leitura é completa? | Cobertura, ambiguidade, falha ou ausência sem transformar lacuna em zero. |
+| O que merece revisão? | Poucas prioridades explicadas em linguagem comum, com ação direta. |
+| De onde veio? | Caminho curto até fonte, registro e evidência preservada. |
+
+## Arquitetura de informação
+
+### Navegação primária
+
+| Grupo | Área | Trabalho principal |
+| --- | --- | --- |
+| Acompanhar | Visão geral | Entender estado, mudança, cobertura e prioridades da janela. |
+| Acompanhar | Timeline | Percorrer eventos de todos os domínios em ordem temporal. |
+| Áreas | Treinos | Ir de ritmo e progressão para sessão, exercício e série. |
+| Áreas | Composição | Comparar medições compatíveis e abrir detalhe corporal/segmentar. |
+| Áreas | Nutrição | Ver cobertura e histórico registrado, incluindo hidratação. |
+| Áreas | Exames | Explorar coletas e séries comparáveis por marcador, origem e unidade. |
+| Contexto | Recuperação e análises | Ler sono, atividade e relações temporais sem confundir associação com causa. |
+| Contexto | Protocolos | Consultar contexto histórico sem inferir situação atual ou orientar uso. |
+| Sistema | Dados e fontes | Conectar, importar, acompanhar processamento, qualidade e backup. |
+
+`Evolução` deixa de ser uma seção primária concorrente. Suas capacidades pertencem a Composição e Treinos; a rota antiga continua funcional durante a transição para preservar links.
+
+### Hierarquia da Visão geral
+
+A abertura deve ser uma superfície de decisão, nesta ordem:
+
+1. **Cabeçalho e janela:** título, explicação curta e filtro global.
+2. **Estado por domínio:** cinco resumos de Composição, Treinos, Nutrição, Recuperação e Exames.
+3. **Tendência principal:** um único gráfico longitudinal, alternável entre métricas, ao lado da síntese da janela.
+4. **Acontecimentos recentes:** uma linha temporal curta que conecta os domínios sem repetir seus detalhes.
+5. **Cobertura:** somente lacunas que realmente limitam a leitura, com acesso à gestão de fontes.
+
+A primeira tela não deve apresentar todos os elementos com o mesmo peso nem empilhar mini-dashboards por domínio. O gráfico principal vem cedo; o detalhe fica nas áreas especializadas.
+
+## Contrato de cada área
+
+Cada tela especializada segue a mesma progressão:
+
+1. **Resumo:** estado conhecido e período aplicado.
+2. **Mudança:** diferença segura, ou motivo objetivo para não comparar.
+3. **Tendência:** série temporal apenas quando datas, unidades e origens forem compatíveis.
+4. **Detalhe:** registro e proveniência.
+5. **Cobertura:** ausências, conflitos e falhas separados de valores reais.
+
+## Modelo mental dos dados
+
+```mermaid
+flowchart TD
+    A["Fontes privadas"] --> B["Preservação original"]
+    B --> C["Estruturação por domínio"]
+    C --> D["Regras de comparação"]
+    D --> E["Leitura longitudinal"]
+    E --> F["Detalhe e proveniência"]
+```
+
+- A fonte original nunca é substituída pelo resumo.
+- Uma linha estruturada só participa de comparação quando passa pelas regras do domínio.
+- Evidência complementar pode enriquecer um evento, mas não cria duplicação automática.
+- Ambiguidade, ausência e falha são estados diferentes e permanecem visíveis.
+
+## Estados de interface
+
+| Estado | Linguagem do produto | Regra |
+| --- | --- | --- |
+| Carregando | “Carregando esta área” | Não apagar dados já disponíveis. |
+| Disponível | Valor + data/contexto | Mostrar somente evidência autorizada. |
+| Parcial | “Parte dos dados não carregou” | Preservar o restante da área. |
+| Ausente | “Sem registro” | Nunca renderizar zero implícito. |
+| Ambíguo | “Revisão necessária” | Não escolher automaticamente um candidato. |
+| Bloqueado | Próxima ação e motivo | Distinguir ação humana de dependência externa. |
+
+## Princípios de UX
+
+- linguagem de usuário, sem jargão de implementação;
+- texto principal com pelo menos 16 px e rótulos regulares com pelo menos 14 px;
+- ações específicas, como “Abrir treinos” ou “Revisar cobertura”, evitando repetição de “Ver mais”;
+- navegação agrupada por intenção, sem áreas redundantes competindo pelo mesmo trabalho;
+- desktop com rail escuro e canvas claro; mobile com conteúdo claro e navegação que não cobre a página;
+- cor comunica domínio ou estado, não decoração;
+- vazios explicam o que falta e oferecem uma ação somente quando ela existe;
+- nenhum fluxo histórico exige digitação dia a dia quando uma transferência em lote é tecnicamente possível.
+
+## Critério de produto concluído
+
+Um pacote só pode ser chamado de concluído quando reúne quatro evidências diferentes:
+
+1. aderência a esta arquitetura e ao `FEEDBACK_LEDGER.md`;
+2. comportamento e dados protegidos por contratos automatizados;
+3. inspeção visual real em desktop e celular;
+4. confirmação de deploy público quando a interface publicada muda.
+
+CI verde comprova regressões técnicas cobertas. Ele não comprova, isoladamente, que o produto corresponde ao briefing ou à referência visual.
+
+## Referência visual e limitação atual
+
+O histórico registra uma imagem aprovada em 04/09/2026 e o contrato textual correspondente em `REFERENCE_VISUAL_CONTRACT.md`. A imagem-fonte original não está preservada no repositório atual. Por isso:
+
+- o contrato textual continua orientando a linguagem visual;
+- nenhum pacote pode declarar paridade pixel a pixel sem recuperar e versionar a imagem-fonte;
+- melhorias inequívocas de hierarquia, leitura, navegação, acessibilidade e estados continuam executáveis sem esse arquivo.
+
+## Fontes usadas nesta consolidação
+
+- histórico de decisões e feedbacks recuperado do projeto;
+- `HANDOFF_LTS_HEALTH.md`, `MIGRATION_MANIFEST.md` e a implementação original fornecida;
+- código, testes, migrations, issues e pull requests existentes;
+- `PROJECT_BRIEF.md`, `PRODUCT_VISION_COCKPIT.md`, `REFERENCE_VISUAL_CONTRACT.md` e `DATA_AUDIT.md`.

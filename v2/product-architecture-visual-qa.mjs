@@ -1,1 +1,80 @@
-aW1wb3J0IGZzIGZyb20gJ25vZGU6ZnMvcHJvbWlzZXMnOwppbXBvcnQge2Nocm9taXVtfSBmcm9tICdwbGF5d3JpZ2h0JzsKCmNvbnN0IGJhc2U9cHJvY2Vzcy5lbnYuTFRTX0hFQUxUSF9CQVNFX1VSTHx8J2h0dHA6Ly8xMjcuMC4wLjE6NDE3My8/Zml4dHVyZT0xJzsKY29uc3Qgb3V0cHV0PXByb2Nlc3MuZW52LkxUU19IRUFMVEhfVklTVUFMX09VVFBVVHx8J2FydGlmYWN0cy9wcm9kdWN0LWFyY2hpdGVjdHVyZSc7Cgphd2FpdCBmcy5ta2RpcihvdXRwdXQse3JlY3Vyc2l2ZTp0cnVlfSk7Cgphc3luYyBmdW5jdGlvbiBpbnNwZWN0KHZpZXdwb3J0LGxhYmVsKXsKICBjb25zdCBicm93c2VyPWF3YWl0IGNocm9taXVtLmxhdW5jaCh7aGVhZGxlc3M6dHJ1ZX0pOwogIGNvbnN0IHBhZ2U9YXdhaXQgYnJvd3Nlci5uZXdQYWdlKHt2aWV3cG9ydCxkZXZpY2VTY2FsZUZhY3RvcjoxfSk7CiAgY29uc3QgZXJyb3JzPVtdOwogIHBhZ2Uub24oJ3BhZ2VlcnJvcicsZXJyb3I9PmVycm9ycy5wdXNoKGVycm9yLm1lc3NhZ2UpKTsKICBwYWdlLm9uKCdjb25zb2xlJyxtZXNzYWdlPT57aWYobWVzc2FnZS50eXBlKCk9PT0nZXJyb3InKWVycm9ycy5wdXNoKG1lc3NhZ2UudGV4dCgpKTt9KTsKCiAgYXdhaXQgcGFnZS5nb3RvKGAke2Jhc2V9I2hvamVgLHt3YWl0VW50aWw6J2RvbWNvbnRlbnRsb2FkZWQnfSk7CiAgYXdhaXQgcGFnZS53YWl0Rm9yU2VsZWN0b3IoJ1tkYXRhLWV4ZWN1dGl2ZS1kYXNoYm9hcmRdJyk7CiAgYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKT0+ZG9jdW1lbnQuZm9udHM/LnJlYWR5KTsKCiAgY29uc3QgcmVzdWx0PWF3YWl0IHBhZ2UuZXZhbHVhdGUobGFiZWw9PnsKICAgIGNvbnN0IHJlY3Q9c2VsZWN0b3I9PnsKICAgICAgY29uc3QgdmFsdWU9ZG9jdW1lbnQucXVlcnlTZWxlY3RvcihzZWxlY3Rvcik/LmdldEJvdW5kaW5nQ2xpZW50UmVjdCgpOwogICAgICByZXR1cm4gdmFsdWU/e3RvcDp2YWx1ZS50b3AsYm90dG9tOnZhbHVlLmJvdHRvbSxsZWZ0OnZhbHVlLmxlZnQscmlnaHQ6dmFsdWUucmlnaHQsd2lkdGg6dmFsdWUud2lkdGgsaGVpZ2h0OnZhbHVlLmhlaWdodH06bnVsbDsKICAgIH07CiAgICBjb25zdCB2aXNpYmxlPXNlbGVjdG9yPT57CiAgICAgIGNvbnN0IGVsZW1lbnQ9ZG9jdW1lbnQucXVlcnlTZWxlY3RvcihzZWxlY3Rvcik7CiAgICAgIHJldHVybiBCb29sZWFuKGVsZW1lbnQmJmdldENvbXB1dGVkU3R5bGUoZWxlbWVudCkuZGlzcGxheSE9PSdub25lJyYmZWxlbWVudC5nZXRCb3VuZGluZ0NsaWVudFJlY3QoKS53aWR0aD4wKTsKICAgIH07CiAgICBjb25zdCBzdGF0dXM9Wy4uLmRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJy5jb2NrcGl0U3RhdHVzJyldOwogICAgY29uc3QgY29sb3JzPXN0YXR1cy5tYXAoY2FyZD0+Z2V0Q29tcHV0ZWRTdHlsZShjYXJkKS5iYWNrZ3JvdW5kQ29sb3IpOwogICAgY29uc3QgY2FudmFzPWdldENvbXB1dGVkU3R5bGUoZG9jdW1lbnQucXVlcnlTZWxlY3RvcignI3NjcmVlbkhvc3QnKSkuYmFja2dyb3VuZENvbG9yOwogICAgY29uc3QgcmFpbD1kb2N1bWVudC5xdWVyeVNlbGVjdG9yKCcjcHJpbWFyeU5hdicpOwogICAgY29uc3QgcmFpbENvbG9yPXJhaWw/Z2V0Q29tcHV0ZWRTdHlsZShyYWlsKS5iYWNrZ3JvdW5kQ29sb3I6bnVsbDsKICAgIHJldHVybnsKICAgICAgbGFiZWwsCiAgICAgIHN0YXR1c0NvdW50OnN0YXR1cy5sZW5ndGgsCiAgICAgIHN0YXR1c01heEhlaWdodDpNYXRoLm1heCgwLC4uLnN0YXR1cy5tYXAoY2FyZD0+Y2FyZC5nZXRCb3VuZGluZ0NsaWVudFJlY3QoKS5oZWlnaHQpKSwKICAgICAgZGlzdGluY3RTdGF0dXNDb2xvcnM6bmV3IFNldChjb2xvcnMpLnNpemUsCiAgICAgIGNhbnZhcywKICAgICAgcmFpbENvbG9yLAogICAgICB3b3Jrc3BhY2U6cmVjdCgnLmNvY2twaXRXb3Jrc3BhY2UnKSwKICAgICAgdHJlbmQ6cmVjdCgnLmNvY2twaXRUcmVuZCcpLAogICAgICBsb3dlcjpyZWN0KCcuY29ja3BpdExvd2VyR3JpZCcpLAogICAgICByYWlsOnJhaWw/cmVjdCgnI3ByaW1hcnlOYXYnKTpudWxsLAogICAgICBkZXNrdG9wTmF2OnZpc2libGUoJyNwcmltYXJ5TmF2JyksCiAgICAgIG1vYmlsZU5hdjp2aXNpYmxlKCcjbW9iaWxlTmF2JyksCiAgICAgIG92ZXJmbG93OmRvY3VtZW50LmRvY3VtZW50RWxlbWVudC5zY3JvbGxXaWR0aC13aW5kb3cuaW5uZXJXaWR0aAogICAgfTsKICB9LGxhYmVsKTsKCiAgaWYocmVzdWx0LnN0YXR1c0NvdW50IT09NSl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiBleHBlY3RlZCBmaXZlIGRvbWFpbiBjYXJkc2ApOwogIGlmKHJlc3VsdC5kaXN0aW5jdFN0YXR1c0NvbG9yczw0KXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IGRvbWFpbiBjb2xvciBzeXN0ZW0gY29sbGFwc2VkYCk7CiAgaWYoIXJlc3VsdC53b3Jrc3BhY2V8fCFyZXN1bHQudHJlbmR8fCFyZXN1bHQubG93ZXJ8fHJlc3VsdC53b3Jrc3BhY2UudG9wPj1yZXN1bHQubG93ZXIudG9wKXRocm93IG5ldyBFcnJvcihgJHtsYWJlbH06IGxvbmdpdHVkaW5hbCB3b3Jrc3BhY2UgZG9lcyBub3QgbGVhZCB0aGUgc2Vjb25kYXJ5IGNvbnRlbnRgKTsKICBpZihyZXN1bHQub3ZlcmZsb3c+Myl0aHJvdyBuZXcgRXJyb3IoYCR7bGFiZWx9OiBob3Jpem9udGFsIG92ZXJmbG93ICR7cmVzdWx0Lm92ZXJmbG93fXB4YCk7CgogIGlmKGxhYmVsPT09J2Rlc2t0b3AnKXsKICAgIGlmKCFyZXN1bHQuZGVza3RvcE5hdnx8cmVzdWx0Lm1vYmlsZU5hdil0aHJvdyBuZXcgRXJyb3IoJ2Rlc2t0b3A6IG5hdmlnYXRpb24gbW9kZSBpcyBpbmNvcnJlY3QnKTsKICAgIGlmKCFyZXN1bHQucmFpbHx8cmVzdWx0LnJhaWwud2lkdGg8MjA4fHxyZXN1bHQucmFpbC53aWR0aD4yNjgpdGhyb3cgbmV3IEVycm9yKGBkZXNrdG9wOiByYWlsIHdpZHRoICR7cmVzdWx0LnJhaWw/LndpZHRoPz8nbWlzc2luZyd9IGlzIG91dHNpZGUgdGhlIGRvY3VtZW50ZWQgcmFuZ2VgKTsKICAgIGlmKHJlc3VsdC5zdGF0dXNNYXhIZWlnaHQ+MTkwKXRocm93IG5ldyBFcnJvcihgZGVza3RvcDogZG9tYWluIGNhcmRzIGxvc3QgZXhlY3V0aXZlIGRlbnNpdHkgKCR7cmVzdWx0LnN0YXR1c01heEhlaWdodH1weClgKTsKICAgIGlmKHJlc3VsdC50cmVuZC50b3A+NDYwKXRocm93IG5ldyBFcnJvcihgZGVza3RvcDogbWFpbiBsb25naXR1ZGluYWwgY2hhcnQgc3RhcnRzIHRvbyBsb3cgKCR7cmVzdWx0LnRyZW5kLnRvcH1weClgKTsKICB9ZWxzZXsKICAgIGlmKHJlc3VsdC5kZXNrdG9wTmF2fHwhcmVzdWx0Lm1vYmlsZU5hdil0aHJvdyBuZXcgRXJyb3IoJ21vYmlsZTogbmF2aWdhdGlvbiBtb2RlIGlzIGluY29ycmVjdCcpOwogICAgY29uc3QgcmFpbD1hd2FpdCBwYWdlLmxvY2F0b3IoJy5jb2NrcGl0U3RhdHVzR3JpZCcpLmV2YWx1YXRlKGVsZW1lbnQ9Pih7Y2xpZW50OmVsZW1lbnQuY2xpZW50V2lkdGgsc2Nyb2xsOmVsZW1lbnQuc2Nyb2xsV2lkdGh9KSk7CiAgICBpZihyYWlsLnNjcm9sbDw9cmFpbC5jbGllbnQpdGhyb3cgbmV3IEVycm9yKCdtb2JpbGU6IGRvbWFpbiBzdW1tYXJpZXMgYXJlIG5vdCBhIGNvbXBhY3QgaG9yaXpvbnRhbCByYWlsJyk7CiAgfQoKICBhd2FpdCBwYWdlLnNjcmVlbnNob3Qoe3BhdGg6YCR7b3V0cHV0fS8ke2xhYmVsfS1vdmVydmlldy5wbmdgLGZ1bGxQYWdlOmxhYmVsPT09J2Rlc2t0b3AnfSk7CiAgaWYobGFiZWw9PT0nbW9iaWxlJyl7CiAgICBhd2FpdCBwYWdlLmxvY2F0b3IoJyNzY3JlZW5Ib3N0JykuZXZhbHVhdGUoZWxlbWVudD0+e2VsZW1lbnQuc2Nyb2xsVG9wPWVsZW1lbnQuc2Nyb2xsSGVpZ2h0O30pOwogICAgYXdhaXQgcGFnZS5zY3JlZW5zaG90KHtwYXRoOmAke291dHB1dH0vJHtsYWJlbH0tb3ZlcnZpZXctZW5kLnBuZ2B9KTsKICB9CgogIGlmKGVycm9ycy5sZW5ndGgpdGhyb3cgbmV3IEVycm9yKGAke2xhYmVsfTogYnJvd3NlciBlcnJvcnMgJHtlcnJvcnMuam9pbignIHwgJyl9YCk7CiAgYXdhaXQgZnMud3JpdGVGaWxlKGAke291dHB1dH0vJHtsYWJlbH0taW5zcGVjdGlvbi5qc29uYCxgJHtKU09OLnN0cmluZ2lmeShyZXN1bHQsbnVsbCwyKX1cbmApOwogIGF3YWl0IGJyb3dzZXIuY2xvc2UoKTsKfQoKYXdhaXQgaW5zcGVjdCh7d2lkdGg6MTUzNixoZWlnaHQ6ODY0fSwnZGVza3RvcCcpOwphd2FpdCBpbnNwZWN0KHt3aWR0aDozOTAsaGVpZ2h0Ojg0NH0sJ21vYmlsZScpOwpjb25zb2xlLmxvZygnTFRTIEhlYWx0aCBwcm9kdWN0IGFyY2hpdGVjdHVyZSB2aXN1YWwgUUEgcGFzc2VkJyk7Cg==
+import fs from 'node:fs/promises';
+import {chromium} from 'playwright';
+
+const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/?fixture=1';
+const output=process.env.LTS_HEALTH_VISUAL_OUTPUT||'artifacts/product-architecture';
+
+await fs.mkdir(output,{recursive:true});
+
+async function inspect(viewport,label){
+  const browser=await chromium.launch({headless:true});
+  const page=await browser.newPage({viewport,deviceScaleFactor:1});
+  const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+
+  await page.goto(`${base}#hoje`,{waitUntil:'domcontentloaded'});
+  await page.waitForSelector('[data-executive-dashboard]');
+  await page.evaluate(()=>document.fonts?.ready);
+
+  const result=await page.evaluate(label=>{
+    const rect=selector=>{
+      const value=document.querySelector(selector)?.getBoundingClientRect();
+      return value?{top:value.top,bottom:value.bottom,left:value.left,right:value.right,width:value.width,height:value.height}:null;
+    };
+    const visible=selector=>{
+      const element=document.querySelector(selector);
+      return Boolean(element&&getComputedStyle(element).display!=='none'&&element.getBoundingClientRect().width>0);
+    };
+    const status=[...document.querySelectorAll('.cockpitStatus')];
+    const colors=status.map(card=>getComputedStyle(card).backgroundColor);
+    const canvas=getComputedStyle(document.querySelector('#screenHost')).backgroundColor;
+    const rail=document.querySelector('#primaryNav');
+    const railColor=rail?getComputedStyle(rail).backgroundColor:null;
+    return{
+      label,
+      statusCount:status.length,
+      statusMaxHeight:Math.max(0,...status.map(card=>card.getBoundingClientRect().height)),
+      distinctStatusColors:new Set(colors).size,
+      canvas,
+      railColor,
+      workspace:rect('.cockpitWorkspace'),
+      trend:rect('.cockpitTrend'),
+      lower:rect('.cockpitLowerGrid'),
+      rail:rail?rect('#primaryNav'):null,
+      desktopNav:visible('#primaryNav'),
+      mobileNav:visible('#mobileNav'),
+      overflow:document.documentElement.scrollWidth-window.innerWidth
+    };
+  },label);
+
+  if(result.statusCount!==5)throw new Error(`${label}: expected five domain cards`);
+  if(result.distinctStatusColors<4)throw new Error(`${label}: domain color system collapsed`);
+  if(!result.workspace||!result.trend||!result.lower||result.workspace.top>=result.lower.top)throw new Error(`${label}: longitudinal workspace does not lead the secondary content`);
+  if(result.overflow>3)throw new Error(`${label}: horizontal overflow ${result.overflow}px`);
+
+  if(label==='desktop'){
+    if(!result.desktopNav||result.mobileNav)throw new Error('desktop: navigation mode is incorrect');
+    if(!result.rail||result.rail.width<208||result.rail.width>268)throw new Error(`desktop: rail width ${result.rail?.width??'missing'} is outside the documented range`);
+    if(result.statusMaxHeight>190)throw new Error(`desktop: domain cards lost executive density (${result.statusMaxHeight}px)`);
+    if(result.trend.top>460)throw new Error(`desktop: main longitudinal chart starts too low (${result.trend.top}px)`);
+  }else{
+    if(result.desktopNav||!result.mobileNav)throw new Error('mobile: navigation mode is incorrect');
+    const rail=await page.locator('.cockpitStatusGrid').evaluate(element=>({client:element.clientWidth,scroll:element.scrollWidth}));
+    if(rail.scroll<=rail.client)throw new Error('mobile: domain summaries are not a compact horizontal rail');
+  }
+
+  await page.screenshot({path:`${output}/${label}-overview.png`,fullPage:label==='desktop'});
+  if(label==='mobile'){
+    await page.locator('#screenHost').evaluate(element=>{element.scrollTop=element.scrollHeight;});
+    await page.screenshot({path:`${output}/${label}-overview-end.png`});
+  }
+
+  if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
+  await fs.writeFile(`${output}/${label}-inspection.json`,`${JSON.stringify(result,null,2)}\n`);
+  await browser.close();
+}
+
+await inspect({width:1536,height:864},'desktop');
+await inspect({width:390,height:844},'mobile');
+console.log('LTS Health product architecture visual QA passed');
