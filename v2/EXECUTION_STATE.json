@@ -46,26 +46,44 @@
   },
   "current_package": {
     "id": "PKG-UX-COHERENCE-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Turn the complete product into one coherent longitudinal application with a shared time window, progressive disclosure, natural language, and mobile-first domain journeys.",
     "task_ids": [
       "LTS-UX-COHERENCE-001"
     ],
-    "completed_evidence": []
+    "completed_evidence": [
+      "GitHub pull request 228",
+      "cockpit-smoke run 34283995722",
+      "LTS Health Dashboard Reference Contract run 34283995660",
+      "GitHub pull request 238",
+      "Deploy LTS Health run 34285969357",
+      "LTS Health v2 Pages Smoke run 34285996157",
+      "LTS Health v2 Homologation Pages Smoke run 34285996131",
+      "GitHub pull request 239",
+      "LTS Health architecture v2 run 34286399549",
+      "public build ux-coherence-20260908.14",
+      "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "longitudinal-home-20260908.4",
-    "main_commit": "5bf01ce6b8360c4d881e060ece13edcd8ad7944a",
+    "build_id": "ux-coherence-20260908.14",
+    "main_commit": "4b0e9757525346f1362688abafa9577adeb29fe9",
     "verified_on": "2026-09-08",
     "evidence": [
-      "cockpit-smoke run 34228093456",
-      "LTS Health Dashboard Reference Contract run 34228093464",
-      "public DOM and interaction inspection after PR 216 deployment",
-      "desktop 1536x864 and mobile 390x844 visual QA artifacts",
-      "all primary routes and eight Home metrics exercised by product-architecture-browser-smoke.mjs"
+      "GitHub pull request 228",
+      "cockpit-smoke run 34283995722",
+      "LTS Health Dashboard Reference Contract run 34283995660",
+      "GitHub pull request 238",
+      "Deploy LTS Health run 34285969357",
+      "LTS Health v2 Pages Smoke run 34285996157",
+      "LTS Health v2 Homologation Pages Smoke run 34285996131",
+      "GitHub pull request 239",
+      "LTS Health architecture v2 run 34286399549",
+      "public build ux-coherence-20260908.14",
+      "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9"
     ],
-    "acceptance_note": "Technical and visual package criteria passed; this record does not invent pixel parity or user acceptance."
+    "acceptance_note": "The unified UX package and public technical/visual gates passed; this record does not presume user acceptance or pixel parity to the unavailable original reference."
   },
   "tasks": [
     {
@@ -375,7 +393,7 @@
       "id": "LTS-UX-COHERENCE-001",
       "area": "experience",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Apply one coherent UX architecture across Home, Training, Nutrition, Body Composition, Labs, and Integrated Analysis.",
       "acceptance": [
@@ -388,9 +406,28 @@
       ],
       "evidence": [
         "v2/UX_COHERENCE_CONTRACT.md",
-        "v2/ux-coherence-contract-smoke.mjs"
+        "v2/ux-coherence-contract-smoke.mjs",
+        "v2/ux-coherence-browser-smoke.mjs",
+        "v2/ux-coherence.css",
+        "v2/src/main.js",
+        "v2/src/training-screen.js",
+        "v2/src/nutrition-screen.js",
+        "v2/src/bio-screen.js",
+        "v2/src/health-screen.js",
+        "v2/src/analysis-screen.js",
+        "GitHub pull request 228",
+        "cockpit-smoke run 34283995722",
+        "LTS Health Dashboard Reference Contract run 34283995660",
+        "GitHub pull request 238",
+        "Deploy LTS Health run 34285969357",
+        "LTS Health v2 Pages Smoke run 34285996157",
+        "LTS Health v2 Homologation Pages Smoke run 34285996131",
+        "GitHub pull request 239",
+        "LTS Health architecture v2 run 34286399549",
+        "public build ux-coherence-20260908.14",
+        "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9"
       ],
-      "next_action": "Finish implementation, run desktop and mobile gates, publish through a normal pull request, and inspect the public build.",
+      "next_action": null,
       "blocker": null
     },
     {
