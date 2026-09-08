@@ -90,7 +90,7 @@ async function run(viewport,label){
   if(audit.annualQuad!==15||audit.recentQuad!==7)throw new Error(`${label}: period counts inconsistent annual=${audit.annualQuad} recent=${audit.recentQuad}`);
   if(audit.annualAbdomen!==0)throw new Error(`${label}: adductor leaked into abdomen`);
   if(audit.renderedQuad!==15||audit.renderedTotal!=='15')throw new Error(`${label}: rendered selected-period workout counts do not match confirmed model`);
-  if(!audit.text.includes('Mesma janela para os sinais de maior frequência'))throw new Error(`${label}: selected-period scope contract missing`);
+  if(!audit.text.includes('Treino, nutrição e recuperação seguem a mesma janela'))throw new Error(`${label}: selected-period scope contract missing`);
   if(!audit.text.includes('Últimas duas medições comparáveis, independentemente da janela recente'))throw new Error(`${label}: body history disappeared behind the recent-window contract`);
   if(!audit.text.includes('O histórico não desaparece quando a janela recente não tem coleta'))throw new Error(`${label}: lab history disappeared behind the recent-window contract`);
   if(!audit.text.includes('Resumo executivo'))throw new Error(`${label}: executive Insights digest missing`);
@@ -111,4 +111,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 Insights period consistency smoke passed');
-
