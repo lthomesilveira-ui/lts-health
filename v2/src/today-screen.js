@@ -4,6 +4,7 @@ import {
   comparablePerformanceModel,nutritionPeriodModel,sleepCoverageModel,periodBounds
 } from './integrated-analysis.js';
 import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource} from './source-status.js';
+import {hydrationRows} from './hydration.js';
 
 const failed=key=>state.domainStatus?.[key]==='error'||!!state.errors?.[key];
 const periodLabel=period=>period==='30'?'30 dias':period==='90'?'90 dias':period==='365'?'1 ano':'todo o histórico';
@@ -21,8 +22,6 @@ function latestSingle(rows,dateKey){
   const [date,items]=groups.at(-1);return{date,row:items.length===1?items[0]:null,ambiguous:items.length>1};
 }
 function canonicalWorkouts(data=state.data){return(data.workouts||[]).filter(r=>r?.is_canonical===true&&r?.record_status!=='quarantined');}
-function nutritionSafeRows(data=state.data){return dateRows(data.nutrition||[],'nutrition_date').filter(([,items])=>items.length===1).map(([,items])=>items[0]);}
-function hydrationRows(data=state.data){return nutritionSafeRows(data).map(r=>({date:day(r.nutrition_date),value:num(r.water_ml)})).filter(r=>r.date&&r.value!=null&&r.value>0).sort((a,b)=>a.date.localeCompare(b.date));}
 function inBounds(value,bounds){const d=day(value);return Boolean(d&&(!bounds.start||d>=bounds.start)&&(!bounds.end||d<=bounds.end));}
 function previousBounds(bounds){
   if(!bounds?.start||!bounds?.end||!bounds?.days)return null;
@@ -137,7 +136,7 @@ function nextReview(model){
   else if(model.nutrition.coveragePct!=null&&model.nutrition.coveragePct<70)items.push(['Nutrição',`Cobertura de ${model.nutrition.coveragePct}% da janela.`,'nutricao']);
   else if(!model.nutrition.days)items.push(['Nutrição','Sem cobertura comparável nesta janela.','nutricao']);
   if(!model.water.length)items.push(['Hidratação','Ingestão de água ainda não está estruturada; nenhum zero foi inferido.','dados']);
-  if(!model.body.available)items.push(['Composição',model.body.reason==='source_changed'?'As duas últimas medições comparáveis têm origens diferentes.':'Ainda não há duas medições comparáveis no histórico.','bio']);
+  if(!model.body.available)items.push(['Composição',model.body.reason==='source_changed'?'Sem comparação entre origens diferentes.':'Ainda não há duas medições comparáveis no histórico.','bio']);
   if(failed('labs'))items.push(['Exames','Os dados não carregaram agora.','saude']);
   else if(!model.labs.totalResults)items.push(['Exames','Nenhum resultado estruturado foi encontrado no histórico.','saude']);
   if(!items.length)items.push(['Dados','Cobertura suficiente para os resumos atuais; abra Insights para aprofundar.','analise']);
@@ -187,7 +186,7 @@ export function renderTodayHub(){
     <section class="cockpitSecondaryGrid">
       <article class="cockpitModule recovery"><div class="cockpitModuleHead"><div><span>Recuperação</span><h2>Sono por origem</h2></div>${action('analise','Insights')}</div>${sleepPanel(model)}</article>
       <article class="cockpitModule labs"><div class="cockpitModuleHead"><div><span>Saúde & exames</span><h2>Histórico laboratorial</h2></div>${action('saude','Abrir exames')}</div>${labsFailed?'<div class="cockpitEmpty">Os dados de exames não carregaram agora.</div>':model.labs.totalResults?`<div class="cockpitLabFacts"><div><b>${model.labs.totalResults}</b><span>resultados estruturados</span></div><div><b>${model.labs.collections}</b><span>datas de coleta</span></div><div><b>${fmtDate(model.labs.last)}</b><span>última coleta</span></div></div><p class="cockpitNote">Na janela recente: ${model.labs.windowCollections} coleta(s). O histórico não desaparece quando a janela curta não contém exame.</p>`:`<div class="cockpitEmpty">Nenhum resultado estruturado foi encontrado no histórico.</div>`}</article>
-      <article class="cockpitModule hydration missing"><div class="cockpitModuleHead"><div><span>Hidratação</span><h2>Ingestão de água</h2></div>${action('dados','Fontes')}</div>${model.water.length?`<div class="cockpitHydrationValue"><b>${fmtNum(model.water.at(-1).value,0)} mL</b><span>último registro em ${fmtDate(model.water.at(-1).date)}</span></div>`:`<div class="cockpitHydrationMissing"><span>◌</span><b>Sem dado de ingestão de água</b><p>Não existe volume de água ingerida estruturado nas fontes atuais. Água corporal da bioimpedância é outra medida e aparece em Composição.</p></div>`}</article>
+      <article class="cockpitModule hydration ${model.water.length?'':'missing'}"><div class="cockpitModuleHead"><div><span>Hidratação</span><h2>Ingestão de água</h2></div><button class="cockpitButton" data-entry="water">Trazer do MFP</button></div>${model.water.length?`<div class="cockpitHydrationValue"><b>${fmtNum(model.water.at(-1).value,0)} mL</b><span>último registro em ${fmtDate(model.water.at(-1).date)} · ${esc(model.water.at(-1).source||'MyFitnessPal')}</span></div>`:`<div class="cockpitHydrationMissing"><span>◌</span><b>Sem dado de ingestão de água</b><p>Informe o total exibido no diário do MyFitnessPal. Água corporal da bioimpedância é outra medida e aparece em Composição.</p></div>`}</article>
     </section>
 
     <section class="cockpitBottomGrid">

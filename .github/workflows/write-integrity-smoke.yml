@@ -6,6 +6,14 @@ on:
       - 'v2/src/writes.js'
       - 'v2/src/entry.js'
       - 'v2/src/core.js'
+      - 'v2/src/hydration.js'
+      - 'v2/src/main.js'
+      - 'v2/src/nutrition-screen.js'
+      - 'v2/src/today-screen.js'
+      - 'v2/src/data-screen.js'
+      - 'v2/hydration-contract-test.mjs'
+      - 'v2/water.css'
+      - 'supabase/migrations/20260908100000_allow_user_confirmed_mfp_water.sql'
       - 'v2/write-integrity-smoke.mjs'
       - '.github/workflows/write-integrity-smoke.yml'
   workflow_dispatch:
@@ -20,7 +28,9 @@ jobs:
         run: |
           node --check v2/src/writes.js
           node --check v2/src/entry.js
+          node --check v2/src/hydration.js
           node --check v2/write-integrity-smoke.mjs
+          node v2/hydration-contract-test.mjs
           grep -q 'negative_number_not_allowed' v2/src/writes.js
           grep -q 'localDateValue' v2/src/entry.js
           grep -q 'Use apenas valores iguais ou maiores que zero.' v2/src/entry.js

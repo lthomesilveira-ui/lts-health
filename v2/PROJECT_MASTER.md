@@ -30,6 +30,7 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 - Exames estruturados existentes aparecem no cockpit com cobertura e acesso ao histórico, sem interpretação clínica automática.
 - Explorador longitudinal de Exames promovido: marcadores com pelo menos dois pontos inequívocos da mesma origem e unidade ganham atalhos, escala vertical explícita e datas de série; origens, unidades e datas ambíguas permanecem separadas.
 - Hidratação é uma dimensão explícita e fail-closed: como a importação estruturada atual do MyFitnessPal não contém volume real de água, o app mostra a lacuna e não estima nem preenche valores.
+- O LTS Health passou a oferecer um caminho seguro para água do MyFitnessPal no iPhone: o usuário confirma data e total diário em mL visto no diário do MFP, sem compartilhar senha ou sessão. O registro fica em série própria com identificador determinístico por data, atualização idempotente, proveniência `user_confirmed` e promoção canônica limitada por constraint ao contrato `mfp_water_total_v1`. Nutrição/Hoje consolidam apenas valores inequívocos; divergência entre fontes permanece fora da leitura.
 - Conflitos no total nutricional mais recente permanecem fail-closed: quando há mais de um total para a mesma data, nenhum é escolhido automaticamente como atual.
 - O `health-inspect-upload` roteia sono do export Apple diretamente para `health_source_daily_metrics` como candidato, enquanto apenas as três métricas ActivitySummary autorizadas seguem para o caminho canônico; o gatilho de banco permanece como defesa secundária.
 - O cockpit ganhou `Atividade & sono`: atividade diária usa somente `active_energy_kcal`, `exercise_minutes` e `stand_hours` de Apple ActivitySummary já autorizadas; sono candidato/held aparece apenas como evidência separada por origem, sem média, soma ou série consolidada entre Apple Watch, Polar ou outras fontes. Estados sem evidência permanecem explícitos e os limites são cobertos por smoke desktop/mobile e canonical-boundary.
@@ -64,7 +65,7 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 
 ## Pendências abertas confirmadas
 
-1. Validar `dietary_water_ml` em iPhone físico e, somente após existir dado real e uma regra explícita de seleção de origem, decidir se pode alimentar hidratação consolidada; valores ausentes continuam ausentes e fontes diferentes não são somadas por suposição.
+1. Acompanhar a possibilidade de OAuth oficial do MyFitnessPal para substituir a confirmação diária quando o fornecedor voltar a aceitar novos acessos de API; até lá, o fluxo confirmado no LTS é o caminho operacional. `dietary_water_ml` vindo de outras fontes do Apple Saúde permanece separado e depende de validação física/origem antes de qualquer promoção; fontes diferentes nunca são somadas por suposição.
 2. Continuar consolidando Apple/Polar complementar sem duplicar eventos canônicos e ampliar a camada de evidência somente quando houver mapeamento comprovado.
 3. Continuar análises integradas descritivas, priorização de cobertura e navegação de Insights sem transformar associação temporal em causalidade.
 4. Continuar ampliando qualidade automática a partir de sinais comprovados e reduzir backlog operacional interno sem transferir QA técnico ao usuário; rastreabilidade, Inbox fail-closed e backup verificável permanecem obrigatórios.
@@ -79,7 +80,8 @@ Este arquivo é a referência pública de engenharia/produto para continuidade d
 
 ## Bloqueios externos
 
-- HealthKit em iPhone físico ainda precisa ser testado, inclusive a presença e origem real de `dietaryWater`.
+- O MyFitnessPal instalado no iPhone testado não expõe Água entre as permissões do Apple Saúde; `dietaryWater` de outras fontes ainda depende de teste físico e identificação de origem.
+- O acesso OAuth oficial do MyFitnessPal depende de aprovação externa; o fornecedor informa que não está aceitando novas solicitações de API no momento.
 - TestFlight/assinatura Apple dependem de setup externo.
 - Integração direta Fleury depende de caminho autenticado/API tecnicamente e legalmente viável ainda não confirmado.
 - Parsers Fleury/Einstein específicos dependem de arquivos originais reais.

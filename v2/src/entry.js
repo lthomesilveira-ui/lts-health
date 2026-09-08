@@ -1,4 +1,4 @@
-import {saveBodyRecord,saveWorkout} from './writes.js';
+import {saveBodyRecord,saveWorkout,saveMyFitnessPalWater} from './writes.js';
 
 const $=id=>document.getElementById(id);
 let refreshCallback=async()=>{};
@@ -71,6 +71,22 @@ function workoutForm(){
   </form>`;
 }
 
+function waterForm(){
+  return `<form id="waterEntryForm" class="entryForm">
+    <div class="waterEntryIntro">
+      <span aria-hidden="true">◌</span>
+      <div><b>Traga o total diário do MyFitnessPal</b><p>Abra o diário do MFP, veja o total de água do dia e informe o mesmo valor aqui. O LTS salva a data e o volume em uma série própria.</p></div>
+    </div>
+    <div class="entryGrid cols2">
+      <label>Data no MyFitnessPal<input name="metric_date" type="date" value="${today()}" required></label>
+      <label>Total de água (mL)<input name="water_ml" inputmode="decimal" autocomplete="off" placeholder="ex.: 2500" required></label>
+    </div>
+    <label class="entryConfirm"><input name="confirmed" type="checkbox" required><span>Confirmei este total no diário do MyFitnessPal.</span></label>
+    <p class="entryHint">Salvar novamente a mesma data substitui apenas esse total de água. Nenhum outro dado de nutrição é alterado.</p>
+    <div class="entryFooter"><span id="entryMsg" class="msg" role="status"></span><button class="primary" type="submit">Salvar água</button></div>
+  </form>`;
+}
+
 function entryModal(){return $('entryModal');}
 function markEntryDirty(){const modal=entryModal();if(modal&&!modal.classList.contains('hidden')&&modal.dataset.saving!=='true')modal.dataset.dirty='true';}
 export function shouldWarnEntryUnload(){
@@ -82,8 +98,8 @@ export function openEntry(type){
   const modal=entryModal();
   modal.dataset.saving='false';modal.dataset.dirty='false';
   modal.classList.remove('hidden');
-  $('entryTitle').textContent=type==='workout'?'Registrar treino':'Registrar bio';
-  $('entryHost').innerHTML=type==='workout'?workoutForm():bodyForm();
+  $('entryTitle').textContent=type==='workout'?'Registrar treino':type==='water'?'Trazer água do MyFitnessPal':'Registrar bio';
+  $('entryHost').innerHTML=type==='workout'?workoutForm():type==='water'?waterForm():bodyForm();
 }
 
 function closeEntry(){
@@ -120,6 +136,10 @@ const validationMessages={
   date_required:'Informe a data da medição.',
   metric_required:'Informe pelo menos uma medida corporal.',
   workout_fields_required:'Informe data, tipo de treino e pelo menos um exercício com série.',
+  water_required:'Informe o total de água mostrado no MyFitnessPal.',
+  water_must_be_positive:'O total de água precisa ser maior que zero.',
+  water_value_too_large:'O valor parece estar em outra unidade. Informe o total em mililitros.',
+  water_confirmation_required:'Confirme que o valor foi conferido no diário do MyFitnessPal.',
   authentication_required:'Sua sessão terminou. Entre novamente para salvar.'
 };
 function entryErrorMessage(error){return validationMessages[error?.message]||'Não foi possível salvar. Confira os campos e tente novamente.';}
@@ -147,7 +167,7 @@ export function setupEntryController({onSaved}={}){
   });
 
   document.addEventListener('submit',async e=>{
-    if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm') return;
+    if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm'&&e.target.id!=='waterEntryForm') return;
     e.preventDefault();
     const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=entryModal();
     modal.dataset.saving='true';
@@ -155,6 +175,7 @@ export function setupEntryController({onSaved}={}){
 
     try{
       if(form.id==='bodyEntryForm')await saveBodyRecord(formObject(form));
+      else if(form.id==='waterEntryForm')await saveMyFitnessPalWater(formObject(form));
       else await saveWorkout(collectWorkout(form));
     }catch(error){
       modal.dataset.saving='false';
