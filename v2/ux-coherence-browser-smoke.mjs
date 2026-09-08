@@ -9,14 +9,16 @@ async function openRoute(page,route,title){
   await page.evaluate(value=>{location.hash=value;},route);
   await page.waitForFunction(expected=>document.querySelector('#screenHost h1')?.textContent===expected,title);
   await page.waitForSelector('.domainHero');
+  await page.waitForFunction(()=>window.scrollY<=1&&(document.querySelector('#screenHost')?.scrollTop??999)>-1&&(document.querySelector('#screenHost')?.scrollTop??999)<=1);
 }
 async function assertNoMechanicalCopy(page,label){
   const text=await page.locator('#screenHost').innerText();
   for(const token of ['sessão(ões)','dia(s)','resultado(s)','origem(ns)','medição(ões)','registro(s)','item(ns)'])if(text.includes(token))throw new Error(`${label}: mechanical copy ${token}`);
 }
 async function assertLayout(page,label){
-  const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999}));
+  const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1}));
   if(layout.overflow>3)throw new Error(`${label}: horizontal overflow ${layout.overflow}px`);
+  if(layout.hostScroll>1)throw new Error(`${label}: route retained ${layout.hostScroll}px of scroll`);
   if(layout.heroTop>340)throw new Error(`${label}: primary answer starts too low (${layout.heroTop}px)`);
   return layout;
 }
@@ -91,6 +93,13 @@ async function run(viewport,label){
     if(strip.scroll<=strip.client)throw new Error('mobile/treinos: summary does not use a horizontal rail');
     const controlHeight=await page.locator('#trainingPeriod').evaluate(node=>node.getBoundingClientRect().height);
     if(controlHeight<44)throw new Error(`mobile/treinos: period control is ${controlHeight}px high`);
+    const shell=await page.evaluate(()=>{
+      const host=document.querySelector('#screenHost'),nav=document.querySelector('#mobileNav'),style=host?getComputedStyle(host):null;
+      return{hostOverflowY:style?.overflowY,hostBottom:host?.getBoundingClientRect().bottom??0,navTop:nav?.getBoundingClientRect().top??0,navPosition:nav?getComputedStyle(nav).position:''};
+    });
+    if(!['auto','scroll'].includes(shell.hostOverflowY))throw new Error(`mobile/treinos: content area is not scrollable (${shell.hostOverflowY})`);
+    if(shell.hostBottom>shell.navTop+1)throw new Error(`mobile/treinos: navigation overlaps content area by ${(shell.hostBottom-shell.navTop).toFixed(1)}px`);
+    if(shell.navPosition==='fixed')throw new Error('mobile/treinos: navigation escaped the application grid');
   }
   await page.screenshot({path:`${output}/${label}-training.png`,fullPage:false});
   await page.locator('details.uxDisclosure summary').first().click();
