@@ -16,9 +16,14 @@ async function assertNoMechanicalCopy(page,label){
   for(const token of ['sessão(ões)','dia(s)','resultado(s)','origem(ns)','medição(ões)','registro(s)','item(ns)'])if(text.includes(token))throw new Error(`${label}: mechanical copy ${token}`);
 }
 async function assertLayout(page,label){
-  const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1}));
+  const layout=await page.evaluate(()=>{
+    const header=document.querySelector('.topbar')?.getBoundingClientRect();
+    const screenTitle=document.querySelector('#screenHost .screenTitle')?.getBoundingClientRect();
+    return{overflow:document.documentElement.scrollWidth-window.innerWidth,height:document.documentElement.scrollHeight,heroTop:document.querySelector('.domainHero')?.getBoundingClientRect().top??9999,hostScroll:document.querySelector('#screenHost')?.scrollTop??-1,headerBottom:header?.bottom??0,titleTop:screenTitle?.top??9999};
+  });
   if(layout.overflow>3)throw new Error(`${label}: horizontal overflow ${layout.overflow}px`);
   if(layout.hostScroll>1)throw new Error(`${label}: route retained ${layout.hostScroll}px of scroll`);
+  if(label==='mobile'&&layout.titleTop<layout.headerBottom+10)throw new Error(`${label}: title overlaps header by ${(layout.headerBottom+10-layout.titleTop).toFixed(1)}px`);
   if(layout.heroTop>340)throw new Error(`${label}: primary answer starts too low (${layout.heroTop}px)`);
   return layout;
 }
