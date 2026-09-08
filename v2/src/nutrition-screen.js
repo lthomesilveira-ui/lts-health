@@ -1,6 +1,7 @@
-import {state,esc,fmtDate,fmtNum,num,since,day,unique} from './core.js';
+import {state,esc,fmtDate,fmtNum,num,day,unique,countLabel,periodLabel} from './core.js';
 import {hydrationModel} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
+import {periodBounds,referenceDayFor} from './integrated-analysis.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const avg=(rows,key)=>{const vals=rows.map(r=>num(r[key])).filter(v=>v!=null);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;};
@@ -31,22 +32,16 @@ function coverageByYear(all){
   return Object.fromEntries(Object.entries(map).map(([year,item])=>[year,{count:item.dates.size,first:item.first,last:item.last}]));
 }
 function periodRows(all){
-  const p=state.ui.nutritionPeriod||'90';
-  if(p==='all'){
-    const years=availableYears(all);if(!state.ui.nutritionYear||!years.includes(state.ui.nutritionYear))state.ui.nutritionYear=years[0]||null;
-    return state.ui.nutritionYear?all.filter(r=>yearOf(r.nutrition_date)===state.ui.nutritionYear):all;
-  }
-  const cut=since(Number(p));return all.filter(r=>day(r.nutrition_date)>=cut);
+  const p=state.ui.analysisPeriod||state.ui.nutritionPeriod||'365';
+  const bounds=periodBounds(p,referenceDayFor(state.data));
+  return all.filter(r=>(!bounds.start||day(r.nutrition_date)>=bounds.start)&&(!bounds.end||day(r.nutrition_date)<=bounds.end));
 }
 function calendarCoverage(rows,period){
   const dates=new Set(rows.map(r=>day(r.nutrition_date)).filter(Boolean));
   let expected=0;
   if(period==='all'){
-    const year=Number(state.ui.nutritionYear),now=new Date(),currentYear=now.getFullYear();
-    if(Number.isFinite(year)){
-      const start=new Date(year,0,1,12),end=year===currentYear?new Date(now.getFullYear(),now.getMonth(),now.getDate(),12):new Date(year,11,31,12);
-      if(year<=currentYear)expected=Math.floor((end-start)/86400000)+1;
-    }
+    const ordered=[...dates].sort();
+    if(ordered.length>1)expected=Math.floor((Date.parse(`${ordered.at(-1)}T12:00:00Z`)-Date.parse(`${ordered[0]}T12:00:00Z`))/86400000)+1;
   }else expected=Math.max(0,Number(period)||0);
   const recorded=expected?Math.min(dates.size,expected):dates.size,missing=Math.max(0,expected-recorded),pct=expected?Math.round(recorded/expected*100):null;
   return{recorded,expected,missing,pct};
@@ -66,13 +61,13 @@ function mealDistribution(rows){
 function monthlyPanel(rows){
   const months=monthlySummary(rows);if(!months.length)return empty('Não há meses com dados comparáveis neste período.');
   const maxDays=Math.max(1,...months.map(m=>m.count));
-  return `<div class="nutritionTrend">${months.slice(-18).map(m=>`<div class="nutritionMonth"><div class="nutritionMonthHead"><b>${esc(monthLabel(m.key))}</b><span>${m.count} dia(s)</span></div><div class="nutritionMonthTrack"><i style="width:${Math.max(4,Math.round(m.count/maxDays*100))}%"></i></div><div class="nutritionMonthStats"><span>${m.calories==null?'kcal —':`${fmtNum(m.calories,0)} kcal/dia`}</span><span>${m.protein==null?'proteína —':`${fmtNum(m.protein,0)} g proteína/dia`}</span></div></div>`).join('')}</div><p class="footerNote">Cada linha usa somente dias com um único total diário. Datas com totais repetidos ficam fora das médias até revisão.</p>`;
+  return `<div class="nutritionTrend">${months.slice(-18).map(m=>`<div class="nutritionMonth"><div class="nutritionMonthHead"><b>${esc(monthLabel(m.key))}</b><span>${countLabel(m.count,'dia','dias')}</span></div><div class="nutritionMonthTrack"><i style="width:${Math.max(4,Math.round(m.count/maxDays*100))}%"></i></div><div class="nutritionMonthStats"><span>${m.calories==null?'kcal —':`${fmtNum(m.calories,0)} kcal/dia`}</span><span>${m.protein==null?'proteína —':`${fmtNum(m.protein,0)} g proteína/dia`}</span></div></div>`).join('')}</div><p class="footerNote">Cada linha usa somente dias com um único total diário. Datas com totais repetidos ficam fora das médias até revisão.</p>`;
 }
 function distributionPanel(rows){
   const distribution=mealDistribution(rows);if(distribution===null)return `<div class="errorState"><b>Os detalhes das refeições estão indisponíveis agora.</b><span>Os totais diários continuam disponíveis.</span></div>`;
   if(!distribution.length)return empty('Não há refeições estruturadas neste período.');
   const max=Math.max(1,...distribution.map(x=>x.count));
-  return `<div class="mealDistribution">${distribution.map(x=>`<div class="mealDistributionRow"><div><b>${esc(x.label)}</b><small>${x.count} registro(s)${x.withCalories?` · média ${fmtNum(x.calories/x.withCalories,0)} kcal nos itens com valor`:''}</small></div><div class="mealDistributionTrack"><i style="width:${Math.max(4,Math.round(x.count/max*100))}%"></i></div></div>`).join('')}</div><p class="footerNote">A frequência mostra quantas entradas existem no histórico importado. Ela não mede qualidade da alimentação nem regularidade de refeições.</p>`;
+  return `<div class="mealDistribution">${distribution.map(x=>`<div class="mealDistributionRow"><div><b>${esc(x.label)}</b><small>${countLabel(x.count,'registro','registros')}${x.withCalories?` · média ${fmtNum(x.calories/x.withCalories,0)} kcal nos itens com valor`:''}</small></div><div class="mealDistributionTrack"><i style="width:${Math.max(4,Math.round(x.count/max*100))}%"></i></div></div>`).join('')}</div><p class="footerNote">A frequência mostra quantas entradas existem no histórico importado. Ela não mede qualidade da alimentação nem regularidade de refeições.</p>`;
 }
 function mfpCandidateGroups(){
   if(failed('sourceMetrics'))return null;
@@ -103,10 +98,10 @@ function hydrationPanel(){
   if(failed('sourceMetrics'))return `<div class="card sectionGap hydrationImportPanel"><div class="cardHead"><div><b>Água do MyFitnessPal</b><small>Os registros não carregaram agora.</small></div><span class="pill warn">indisponível</span></div><div class="errorState"><b>Não foi possível verificar a hidratação.</b><span>Atualize para tentar novamente; nenhum valor ausente foi tratado como zero.</span></div></div>`;
   const model=hydrationModel(state.data),latest=model.rows.at(-1),recent=model.rows.slice(-14).reverse();
   const detail=latest?`Último total: ${fmtNum(latest.value,0)} mL em ${fmtDate(latest.date)}.`:'Nenhum total de água foi trazido ainda.';
-  return `<div class="card sectionGap hydrationImportPanel">
-    <div class="hydrationImportHead"><div><span>MyFitnessPal → LTS Health</span><h2>Ingestão de água</h2><p>${esc(detail)} A importação percorre o histórico automaticamente e mantém a água ingerida separada de água corporal.</p></div><div class="hydrationImportActions"><button type="button" class="primary" data-entry="water-import">Importar histórico do MFP</button><button type="button" data-entry="water">Registrar um dia manualmente</button></div></div>
-    ${model.conflicts.length?`<div class="errorState"><b>${model.conflicts.length} data(s) com fontes divergentes.</b><span>Nenhum desses valores foi escolhido automaticamente.</span></div>`:''}
-    ${recent.length?`<div class="hydrationRecent">${recent.map(row=>`<div><time>${fmtDate(row.date)}</time><b>${fmtNum(row.value,0)} mL</b><small>${esc(row.source||'MyFitnessPal')}</small></div>`).join('')}</div>`:`<div class="empty">No notebook, extraia o período desejado e importe um único arquivo. Dias sem total positivo permanecem ausentes, nunca viram zero.</div>`}
+  return `<div class="card sectionGap hydrationImportPanel domainActionCard">
+    <div class="hydrationImportHead"><div><span>MyFitnessPal → LTS Health</span><h2>Água ingerida</h2><p>${esc(detail)} A importação percorre o histórico em lote e mantém ingestão e água corporal separadas.</p></div><div class="hydrationImportActions"><button type="button" class="primary" data-entry="water-import">Importar histórico do MFP</button><button type="button" data-entry="water">Registrar um dia manualmente</button></div></div>
+    ${model.conflicts.length?`<div class="errorState"><b>${countLabel(model.conflicts.length,'data','datas')} com fontes divergentes.</b><span>Nenhum desses valores foi escolhido automaticamente.</span></div>`:''}
+    ${recent.length?`<details class="inlineDisclosure"><summary>Ver totais recentes</summary><div class="hydrationRecent">${recent.slice(0,7).map(row=>`<div><time>${fmtDate(row.date)}</time><b>${fmtNum(row.value,0)} mL</b><small>${esc(row.source||'MyFitnessPal')}</small></div>`).join('')}</div></details>`:`<div class="empty compactEmpty">Faça a extração no notebook e importe um único arquivo. Dias sem total positivo permanecem ausentes.</div>`}
   </div>`;
 }
 function daySummary(row){
@@ -120,7 +115,7 @@ function daySummary(row){
       <div><span>Gorduras</span><b>${num(row.fat_g)!=null?`${fmtNum(row.fat_g,0)} g`:'—'}</b></div>
       <div><span>Fibras</span><b>${num(row.fiber_g)!=null?`${fmtNum(row.fiber_g,0)} g`:'—'}</b></div>
     </div>
-    <div class="mealList"><div class="cardHead"><div><b>Refeições registradas</b><small>${meals.length} item(ns) encontrado(s) para o dia.</small></div></div>${meals.map(m=>`<div class="mealRow"><div><b>${esc(m.meal_name||'Refeição')}</b><small>${esc(m.source||'origem registrada')}</small></div><span>${num(m.calories_kcal)!=null?`${fmtNum(m.calories_kcal,0)} kcal`:'—'}</span><em>${[num(m.protein_g)!=null?`${fmtNum(m.protein_g,0)}g P`:null,num(m.carbs_g)!=null?`${fmtNum(m.carbs_g,0)}g C`:null,num(m.fat_g)!=null?`${fmtNum(m.fat_g,0)}g G`:null].filter(Boolean).join(' · ')}</em></div>`).join('')||empty('Não há refeições estruturadas para este dia.')}</div>
+    <div class="mealList"><div class="cardHead"><div><b>Refeições registradas</b><small>${countLabel(meals.length,'item encontrado','itens encontrados')} para o dia.</small></div></div>${meals.map(m=>`<div class="mealRow"><div><b>${esc(m.meal_name||'Refeição')}</b><small>${esc(m.source||'origem registrada')}</small></div><span>${num(m.calories_kcal)!=null?`${fmtNum(m.calories_kcal,0)} kcal`:'—'}</span><em>${[num(m.protein_g)!=null?`${fmtNum(m.protein_g,0)}g P`:null,num(m.carbs_g)!=null?`${fmtNum(m.carbs_g,0)}g C`:null,num(m.fat_g)!=null?`${fmtNum(m.fat_g,0)}g G`:null].filter(Boolean).join(' · ')}</em></div>`).join('')||empty('Não há refeições estruturadas para este dia.')}</div>
     ${meals.length&&num(row.calories_kcal)!=null?`<p class="footerNote">A soma das refeições estruturadas é ${fmtNum(mealCalories,0)} kcal; ela pode diferir do total diário quando o export contém registros incompletos ou agregações diferentes.</p>`:''}`;
 }
 function daySummaryGroup(group){
@@ -132,27 +127,25 @@ function daySummaryGroup(group){
 
 export function renderNutritionHub(){
   if(failed('nutrition'))return `${title('Nutrição','Histórico de alimentação registrado.')}<div class="errorState"><b>Os dados de alimentação não carregaram agora.</b><span>O app não substitui essa falha por dias ou valores zerados. Tente atualizar.</span></div>`;
-  const all=allNutrition(),years=availableYears(all),spanYears=historyYears(all),coverage=coverageByYear(all),p=state.ui.nutritionPeriod||'90',rawRows=periodRows(all),dayGroups=nutritionDayGroups(rawRows),rows=unambiguousNutrition(rawRows),calendar=calendarCoverage(rawRows,p);
+  const all=allNutrition(),spanYears=historyYears(all),coverage=coverageByYear(all),p=state.ui.analysisPeriod||state.ui.nutritionPeriod||'365',rawRows=periodRows(all),dayGroups=nutritionDayGroups(rawRows),rows=unambiguousNutrition(rawRows),calendar=calendarCoverage(rawRows,p);
   if(!state.ui.nutritionDate||!dayGroups.some(group=>group.date===state.ui.nutritionDate))state.ui.nutritionDate=dayGroups[0]?.date||null;
   const selected=dayGroups.find(group=>group.date===state.ui.nutritionDate),range=dayGroups.length?`${fmtDate(dayGroups.at(-1).date)} → ${fmtDate(dayGroups[0].date)}`:'sem registros';
-  const visible=dayGroups.slice(0,370),coverageText=calendar.expected?`${calendar.recorded} de ${calendar.expected} dias`:calendar.recorded?`${calendar.recorded} dias registrados`:'sem dias registrados',coverageSub=calendar.expected?`${calendar.pct}% coberto · ${calendar.missing} dia(s) sem registro`:'Sem período comparável';
-  return `${title('Nutrição','Histórico de alimentação registrado. Médias usam somente dias com um total diário inequívoco; dias ausentes ou em revisão não viram zero.')}
-    <div class="controls"><select id="nutritionPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Navegar por ano</option></select>${p==='all'?`<select id="nutritionYear">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select>`:''}</div>
-    <div class="grid cols4 sectionGap">
+  const visible=dayGroups.slice(0,120),coverageText=calendar.expected?`${calendar.recorded} de ${calendar.expected} dias`:calendar.recorded?countLabel(calendar.recorded,'dia registrado','dias registrados'):'sem dias registrados',coverageSub=calendar.expected?`${calendar.pct}% da janela com registro · ${countLabel(calendar.missing,'dia sem registro','dias sem registro')}`:'Sem período comparável';
+  const selector=`<label>Janela do produto<select id="nutritionPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo o histórico</option></select></label>`;
+  if(!dayGroups.length){return `${title('Nutrição','Histórico de alimentação e água, com lacunas mantidas explícitas.')}<section class="domainHero"><div><span>Nutrição · ${esc(periodLabel(p))}</span><h2>Nenhum total diário nesta janela</h2><p>${all.length?'Há registros fora deste período. Amplie a janela para acessar o histórico; ausência não significa consumo zero.':'Ainda não há totais diários estruturados.'}</p></div><div class="controls">${selector}${all.length?'<button type="button" class="primary" data-period="all">Ver todo o histórico</button>':''}</div></section>${hydrationPanel()}`;}
+  return `${title('Nutrição','Histórico de alimentação e água. Médias usam somente dias com um total diário inequívoco.')}
+    <section class="domainHero"><div><span>Nutrição · ${esc(periodLabel(p))}</span><h2>${countLabel(dayGroups.length,'dia registrado','dias registrados')}</h2><p>Veja a cobertura primeiro e abra refeições ou históricos somente quando precisar.</p></div><div class="controls">${selector}</div></section>
+    <div class="domainStatStrip sectionGap">
       <div class="card metric"><span>Dias registrados</span><strong>${dayGroups.length}</strong><em>${esc(range)}</em></div>
       <div class="card metric"><span>Cobertura do período</span><strong>${esc(coverageText)}</strong><em>${esc(coverageSub)}</em></div>
       <div class="card metric"><span>Calorias · média</span><strong>${avg(rows,'calories_kcal')==null?'—':fmtNum(avg(rows,'calories_kcal'),0)}</strong><em>kcal nos dias comparáveis</em></div>
       <div class="card metric"><span>Proteína · média</span><strong>${avg(rows,'protein_g')==null?'—':fmtNum(avg(rows,'protein_g'),0)}</strong><em>g nos dias comparáveis</em></div>
     </div>
     ${hydrationPanel()}
-    ${mfpCandidatePanel()}
-    <div class="grid split sectionGap">
+    <div class="grid split sectionGap domainPrimaryGrid">
       <div class="card"><div class="cardHead"><div><b>Evolução por mês</b><small>Cobertura e médias dos registros disponíveis.</small></div></div>${monthlyPanel(rows)}</div>
-      <div class="card"><div class="cardHead"><div><b>Refeições mais registradas</b><small>Distribuição descritiva das entradas importadas.</small></div></div>${distributionPanel(rawRows)}</div>
+      <div class="card"><div class="cardHead"><div><b>Dias recentes</b><small>Selecione um dia para ver o registro preservado.</small></div><span class="pill">${countLabel(dayGroups.length,'dia','dias')}</span></div><div class="nutritionDays">${visible.slice(0,14).map(group=>group.ambiguous?`<button type="button" data-nutrition-date="${esc(group.date)}" class="${group.date===state.ui.nutritionDate?'active':''}"><time>${fmtDate(group.date)}</time><div><b>Em revisão</b><small>Mais de um total diário; nenhum valor foi escolhido.</small></div></button>`:`<button type="button" data-nutrition-date="${esc(group.date)}" class="${group.date===state.ui.nutritionDate?'active':''}"><time>${fmtDate(group.date)}</time><div><b>${num(group.row.calories_kcal)!=null?`${fmtNum(group.row.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${[num(group.row.protein_g)!=null?`${fmtNum(group.row.protein_g,0)}g proteína`:null,num(group.row.carbs_g)!=null?`${fmtNum(group.row.carbs_g,0)}g carboidratos`:null,num(group.row.fat_g)!=null?`${fmtNum(group.row.fat_g,0)}g gordura`:null].filter(Boolean).join(' · ')}</small></div></button>`).join('')}</div></div>
     </div>
-    <div class="grid split sectionGap">
-      <div class="card"><div class="cardHead"><div><b>Dias com registro</b><small>${p==='all'?`Ano ${esc(state.ui.nutritionYear||'')}.`:'Mais recente primeiro.'}</small></div><span class="pill">${visible.length}${dayGroups.length>visible.length?' de '+dayGroups.length:''}</span></div><div class="nutritionDays">${visible.map(group=>group.ambiguous?`<button type="button" data-nutrition-date="${esc(group.date)}" class="${group.date===state.ui.nutritionDate?'active':''}"><time>${fmtDate(group.date)}</time><div><b>Em revisão</b><small>Mais de um total diário; nenhum valor foi escolhido.</small></div></button>`:`<button type="button" data-nutrition-date="${esc(group.date)}" class="${group.date===state.ui.nutritionDate?'active':''}"><time>${fmtDate(group.date)}</time><div><b>${num(group.row.calories_kcal)!=null?`${fmtNum(group.row.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${[num(group.row.protein_g)!=null?`${fmtNum(group.row.protein_g,0)}g proteína`:null,num(group.row.carbs_g)!=null?`${fmtNum(group.row.carbs_g,0)}g carbo`:null,num(group.row.fat_g)!=null?`${fmtNum(group.row.fat_g,0)}g gordura`:null].filter(Boolean).join(' · ')}</small></div></button>`).join('')||empty('Nenhum dia registrado neste período.')}</div></div>
-      <div class="card"><div class="cardHead"><div><b>Detalhe do dia</b><small>Valores preservados do histórico importado.</small></div></div>${daySummaryGroup(selected)}</div>
-    </div>
-    <div class="card sectionGap"><div class="cardHead"><div><b>Cobertura do histórico</b><small>Os anos sem registros ficam visíveis como lacunas; ausência de registro não significa consumo zero.</small></div></div><div class="yearGrid">${spanYears.map(y=>{const c=coverage[y];return c?`<button type="button" data-nutrition-year="${esc(y)}" class="${p==='all'&&state.ui.nutritionYear===y?'active':''}"><b>${esc(y)}</b><span>${c.count} dias registrados</span><small>${fmtDate(c.first)} → ${fmtDate(c.last)}</small></button>`:`<div class="yearGap"><b>${esc(y)}</b><span>sem registros disponíveis</span><small>Nenhum dia importado neste ano.</small></div>`;}).join('')||empty('Sem histórico anual.')}</div></div>`;
+    <details class="uxDisclosure sectionGap"><summary><span><b>Detalhe do dia selecionado</b><small>Macronutrientes e refeições preservadas</small></span><i>Explorar</i></summary><div class="disclosureBody card">${daySummaryGroup(selected)}</div></details>
+    <details class="uxDisclosure sectionGap"><summary><span><b>Distribuição e cobertura histórica</b><small>Refeições registradas e anos com dados</small></span><i>Explorar</i></summary><div class="disclosureBody"><div class="grid split"><div class="card"><div class="cardHead"><div><b>Refeições mais registradas</b><small>Distribuição descritiva das entradas importadas.</small></div></div>${distributionPanel(rawRows)}</div><div class="card"><div class="cardHead"><div><b>Cobertura por ano</b><small>Anos sem registro continuam explícitos.</small></div></div><div class="yearGrid">${spanYears.map(y=>{const c=coverage[y];return c?`<div><b>${esc(y)}</b><span>${countLabel(c.count,'dia registrado','dias registrados')}</span><small>${fmtDate(c.first)} → ${fmtDate(c.last)}</small></div>`:`<div class="yearGap"><b>${esc(y)}</b><span>sem registros disponíveis</span><small>Nenhum dia importado neste ano.</small></div>`;}).join('')||empty('Sem histórico anual.')}</div></div></div>${mfpCandidatePanel()}</div></details>`;
 }

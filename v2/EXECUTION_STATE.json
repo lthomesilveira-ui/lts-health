@@ -10,6 +10,7 @@
     "continuity": "v2/CONTINUITY_PROTOCOL.md",
     "milestones": "v2/PROJECT_MASTER.md",
     "visual_contract": "v2/REFERENCE_VISUAL_CONTRACT.md",
+    "ux_coherence": "v2/UX_COHERENCE_CONTRACT.md",
     "data_contract": "v2/DATA_AUDIT.md"
   },
   "status_definitions": {
@@ -44,19 +45,13 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-LONGITUDINAL-HOME-UX",
-    "status": "done",
-    "goal": "Turn the overview into a true longitudinal product surface, especially on mobile, instead of stacking independent dashboard modules.",
+    "id": "PKG-UX-COHERENCE-001",
+    "status": "in_progress",
+    "goal": "Turn the complete product into one coherent longitudinal application with a shared time window, progressive disclosure, natural language, and mobile-first domain journeys.",
     "task_ids": [
-      "LTS-HOME-LONGITUDINAL-001"
+      "LTS-UX-COHERENCE-001"
     ],
-    "completed_evidence": [
-      "GitHub pull request 216",
-      "cockpit-smoke run 34228093456",
-      "LTS Health Dashboard Reference Contract run 34228093464",
-      "desktop 1536x864 and mobile 390x844 visual artifacts inspected",
-      "public build longitudinal-home-20260908.4 inspected after deployment"
-    ]
+    "completed_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -374,6 +369,28 @@
         "public build longitudinal-home-20260908.4"
       ],
       "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-UX-COHERENCE-001",
+      "area": "experience",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Apply one coherent UX architecture across Home, Training, Nutrition, Body Composition, Labs, and Integrated Analysis.",
+      "acceptance": [
+        "One canonical period selection persists across Home, Training, Nutrition, and Integrated Analysis and uses the same latest-data reference day.",
+        "Primary domain screens lead with a clear answer, one useful visual or focused list, and progressive disclosure for detailed evidence.",
+        "A short-window data gap produces one actionable empty state instead of a stack of empty modules.",
+        "Primary product copy uses natural Portuguese plurals and never exposes mechanical parenthetical variants.",
+        "Desktop and mobile browser gates cover navigation, period continuity, disclosure interactions, overflow, and public build identity.",
+        "The public deployment is inspected before the task is marked done."
+      ],
+      "evidence": [
+        "v2/UX_COHERENCE_CONTRACT.md",
+        "v2/ux-coherence-contract-smoke.mjs"
+      ],
+      "next_action": "Finish implementation, run desktop and mobile gates, publish through a normal pull request, and inspect the public build.",
       "blocker": null
     },
     {
