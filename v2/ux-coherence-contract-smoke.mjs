@@ -12,6 +12,7 @@ const state=JSON.parse(rawState),screenText=screens.join('\n');
 assert.match(index,/lts-build" content="ux-coherence-/);
 assert.match(index,/ux-coherence\.css\?v=ux-coherence-/);
 assert.match(index,/main\.js\?v=ux-coherence-/);
+assert.doesNotMatch(index,/longitudinal-story/);
 assert.match(core,/export function setGlobalPeriod/);
 assert.match(main,/\$\('screenHost'\)\?\.scrollTo\(\{top:0,left:0,behavior:'auto'\}\)/);
 for(const target of ['analysisPeriod','trainingPeriod','nutritionPeriod'])assert.match(core,new RegExp(`state\\.ui\\.${target}=next`));
@@ -49,6 +50,7 @@ assert.match(contract,/Uma janela do produto/);
 assert.match(contract,/Um estado vazio/);
 assert.match(contract,/Mobile como produto/);
 assert.match(contract,/Contraste verificável/);
+assert.match(contract,/Uma arquitetura ativa/);
 
 const task=state.tasks.find(item=>item.id==='LTS-UX-COHERENCE-001');
 assert.ok(task);
