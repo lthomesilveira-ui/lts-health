@@ -16,6 +16,8 @@ async function run(viewport,label){
   if(!panel.includes('Importar histórico do MFP')||!panel.includes('Registrar um dia manualmente'))throw new Error(`${label}: hydration actions are unclear`);
   await page.click('[data-entry="water-import"]');
   await page.waitForSelector('#mfpWaterImportForm');
+  const importCopy=(await page.locator('#mfpWaterImportForm').textContent())||'';
+  if(!importCopy.includes('Etapa 1 · notebook')||!importCopy.includes('não precisa instalar um aplicativo'))throw new Error(`${label}: notebook-first handoff is unclear`);
   const extractorHref=await page.locator('#mfpWaterImportForm a').getAttribute('href');
   if(extractorHref!=='./mfp-water-extractor.html')throw new Error(`${label}: extractor link missing`);
   await page.locator('#mfpWaterImportFile').setInputFiles({name:'lts-health-mfp-water.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(exportDocument))});
@@ -39,9 +41,12 @@ async function run(viewport,label){
   if(overflow>3)throw new Error(`${label}: import flow caused horizontal overflow ${overflow}px`);
 
   await page.goto('http://127.0.0.1:4173/mfp-water-extractor.html',{waitUntil:'domcontentloaded'});
-  await page.waitForSelector('#copyBookmarklet');
+  await page.waitForSelector('#copyBookmarklet',{state:'attached'});
+  const helperCopy=(await page.locator('.extractorPage').textContent())||'';
+  for(const expected of ['Use o notebook','Não tente executar o histórico completo pelo celular','não instala aplicativo nem extensão','não repete o processo dia por dia'])if(!helperCopy.includes(expected))throw new Error(`${label}: extractor helper missing ${expected}`);
   const code=await page.locator('#bookmarkletCode').inputValue();
   if(!code.startsWith('javascript:')||!code.includes('/food/water?date='))throw new Error(`${label}: installer did not render the extractor`);
+  if(!(await page.locator('#bookmarkletLink').getAttribute('href'))?.startsWith('javascript:')||!(await page.locator('#bookmarkletLink').isVisible()))throw new Error(`${label}: draggable notebook favorite is not ready`);
   const helperOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(helperOverflow>3)throw new Error(`${label}: extractor helper caused horizontal overflow ${helperOverflow}px`);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);

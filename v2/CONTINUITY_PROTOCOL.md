@@ -40,9 +40,16 @@ Antes de cada escrita, reler os heads de `main`, `architecture-v2` e `product-cl
 - Uma limitação de dados aceita não vira tarefa interna até existir uma ação concreta e segura.
 - O ledger não armazena valores pessoais, credenciais, payloads privados ou detalhes de tratamento.
 
+## Reconciliação de rastreadores externos
+
+- Todo issue aberto do GitHub precisa corresponder a uma tarefa do `EXECUTION_STATE.json` ou ser classificado imediatamente como duplicado/inválido.
+- Quando todos os critérios de um issue estiverem comprovados, a tarefa fica `done`, preserva o URL em `external_references` e o issue é fechado com um resumo das evidências.
+- Uma parte ainda dependente do usuário ou de terceiro vira tarefa bloqueada separada; ela não mantém artificialmente aberto o pacote que já foi entregue.
+- Branches de referência sem commits exclusivos podem ser alinhados por fast-forward depois da promoção, sempre sem force.
+
 ## Hidratação pendente
 
-`LTS-HYD-IMPORT-001` permanece `blocked_user` enquanto o banco não contiver uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. O app exibe o atalho de importação; o ledger privado registra a solicitação; e uma trigger muda a solicitação para concluída quando o primeiro lote válido chegar.
+`LTS-HYD-IMPORT-001` permanece `blocked_user` enquanto o banco não contiver uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. O app exibe um caminho explícito para continuar no notebook, sem sugerir digitação diária ou instalação de aplicativo; o ledger privado registra a solicitação; e uma trigger muda a solicitação para concluída quando o primeiro lote válido chegar.
 
 Sem data e horário escolhidos, não existe notificação agendada. A pendência deve ser citada em cada checkpoint do projeto até ser concluída. Se o usuário definir quando deseja ser lembrado, criar uma automação separada e registrar sua existência no ledger.
 

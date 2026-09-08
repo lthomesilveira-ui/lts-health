@@ -132,7 +132,7 @@ await new Promise(resolve=>setTimeout(resolve,10));
 assert.match(nodes.get('lts-mfp-water-extractor')?.querySelector('#lts-mfp-status')?.textContent||'',/já concluída/);
 
 const installer=await fs.readFile(new URL('./mfp-water-extractor.html',import.meta.url),'utf8');
-for(const contract of ['Copiar extrator','01/01/2018','pausa e retomada','não lê senha','mfp-water-extractor.js'])assert.ok(installer.includes(contract),`installer missing ${contract}`);
+for(const contract of ['Use o notebook','Copiar link para o notebook','Copiar código do extrator','01/01/2018','pausa e retomada','não lê senha','não instala aplicativo nem extensão','mfp-water-extractor.js'])assert.ok(installer.includes(contract),`installer missing ${contract}`);
 const migration=await fs.readFile(new URL('../supabase/migrations/20260908223000_allow_authenticated_mfp_water_export.sql',import.meta.url),'utf8');
 for(const contract of ["confidence = 'account_authenticated_export'","source_payload ->> 'entry_method' = 'mfp_authenticated_water_export_v1'","source_payload ->> 'export_schema' = 'lts-health-mfp-water-export'","confidence = 'user_confirmed'"])assert.ok(migration.includes(contract),`migration missing ${contract}`);
 
