@@ -83,7 +83,7 @@ async function run(viewport,label){
 
   await page.selectOption('#analysisPeriod','all');
   const text=(await page.textContent('#screenHost'))||'';
-  for(const expected of ['Resumo executivo','Janela recente','Mesma janela para os sinais de maior frequência','Composição global','Últimas duas medições comparáveis, independentemente da janela recente','Exames','O histórico não desaparece quando a janela recente não tem coleta','Recuperação','Nutrição e hidratação','Treino','Distribuição dos treinos na janela recente','O que ainda limita a leitura','Leitura descritiva'])if(!text.includes(expected))throw new Error(`${label}: missing analysis section ${expected}`);
+  for(const expected of ['Resumo executivo','Janela recente','Treino, nutrição e recuperação seguem a mesma janela','Composição global','Últimas duas medições comparáveis, independentemente da janela recente','Exames','O histórico não desaparece quando a janela recente não tem coleta','Recuperação','Nutrição e hidratação','Treino','Distribuição dos treinos na janela recente','O que ainda limita a leitura','Leitura descritiva'])if(!text.includes(expected))throw new Error(`${label}: missing analysis section ${expected}`);
   for(const forbidden of ['ActivitySummary','source_family','readiness score','candidate/held','sessões canônicas'])if(text.includes(forbidden))throw new Error(`${label}: technical language leaked ${forbidden}`);
   if(/\b(causou|provou|garante|piorou)\b/i.test(text))throw new Error(`${label}: causal/value judgment language leaked`);
 
@@ -116,4 +116,3 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 integrated Insights smoke passed');
-

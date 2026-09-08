@@ -104,7 +104,7 @@ function limitations(body,labs,nutrition,sleep){
   if(!labs.total)rows.push('Exames: nenhum resultado estruturado está disponível no histórico carregado.');
   if(!nutrition.available)rows.push('Nutrição: a janela selecionada não tem cobertura diária suficiente para médias.');
   if(!nutrition.waterDays)rows.push('Hidratação: ingestão de água não está estruturada; ausência de dado não é tratada como zero.');
-  if(!sleep.available)rows.push('Recuperação: não há sono estruturado na janela selecionada.');
+  if(!sleep.available)rows.push('Sono: não há registros estruturados na janela selecionada.');
   if(!rows.length)rows.push('Os domínios principais têm cobertura para esta leitura. Limitações específicas de origem permanecem nas telas de detalhe.');
   return`<div class="card"><div class="cardHead"><div><b>O que ainda limita a leitura</b><small>Lacunas reais, sem transformar ausência em valor.</small></div></div><div class="limitationList sectionGap">${rows.map(r=>`<div>${esc(r)}</div>`).join('')}</div></div>`;
 }
