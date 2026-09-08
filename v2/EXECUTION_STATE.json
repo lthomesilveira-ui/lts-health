@@ -45,13 +45,33 @@
   },
   "current_package": {
     "id": "PKG-PRODUCT-ARCHITECTURE-RESET",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Replace the collection-of-features experience with a durable product architecture and a coherent decision-first interface.",
     "task_ids": [
       "LTS-PRODUCT-ARCH-001",
       "LTS-UX-P0-001",
       "LTS-DOMAIN-JOURNEYS-001"
+    ],
+    "completed_evidence": [
+      "GitHub pull requests 212, 213, and 214",
+      "main commit 8aec988d669234473a703e4d52b707bd24339d0f",
+      "public build product-architecture-20260908.3",
+      "desktop public-browser inspection and desktop/mobile visual artifacts"
     ]
+  },
+  "last_verified_release": {
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+    "build_id": "product-architecture-20260908.3",
+    "main_commit": "8aec988d669234473a703e4d52b707bd24339d0f",
+    "verified_on": "2026-09-08",
+    "evidence": [
+      "Deploy LTS Health run 34222640727",
+      "LTS Health Dashboard Reference Contract run 34222490129",
+      "public DOM build identifier and desktop layout inspection",
+      "desktop 1536x864 and mobile 390x844 visual QA artifacts",
+      "all primary routes exercised by product-architecture-browser-smoke.mjs"
+    ],
+    "acceptance_note": "Technical and visual package criteria passed; this record does not invent pixel parity or user acceptance."
   },
   "tasks": [
     {
@@ -258,7 +278,7 @@
       "id": "LTS-PRODUCT-ARCH-001",
       "area": "product",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Consolidate the recovered objective, information architecture, feedbacks, debts, and acceptance rules into durable sources of truth.",
       "acceptance": [
@@ -271,16 +291,18 @@
         "v2/FEEDBACK_LEDGER.md",
         "v2/PROJECT_BRIEF.md",
         "v2/PROJECT_MASTER.md",
-        "v2/product-architecture-contract-smoke.mjs"
+        "v2/product-architecture-contract-smoke.mjs",
+        "GitHub pull request 212",
+        "LTS Health Dashboard Reference Contract run 34221031804"
       ],
-      "next_action": "Complete static and browser validation, publish the package, and record the resulting evidence.",
+      "next_action": null,
       "blocker": null
     },
     {
       "id": "LTS-UX-P0-001",
       "area": "experience",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Rebuild the app shell, login, primary navigation, and overview around the decision-first product architecture.",
       "acceptance": [
@@ -296,16 +318,19 @@
         "v2/src/today-screen.js",
         "v2/src/main.js",
         "v2/product-architecture-contract-smoke.mjs",
-        "v2/product-architecture-browser-smoke.mjs"
+        "v2/product-architecture-browser-smoke.mjs",
+        "v2/product-architecture-visual-qa.mjs",
+        "GitHub pull requests 212, 213, and 214",
+        "public build product-architecture-20260908.3"
       ],
-      "next_action": "Finish visual and functional browser gates in desktop and mobile viewports.",
+      "next_action": null,
       "blocker": null
     },
     {
       "id": "LTS-DOMAIN-JOURNEYS-001",
       "area": "experience",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Align domain destinations to the shared summary, change, trend, detail, and coverage progression without competing top-level areas.",
       "acceptance": [
@@ -316,9 +341,13 @@
       "evidence": [
         "v2/PRODUCT_ARCHITECTURE.md",
         "v2/index.html",
-        "v2/src/main.js"
+        "v2/src/main.js",
+        "v2/src/product-shell.js",
+        "v2/product-architecture-browser-smoke.mjs",
+        "v2/navigation-resilience-smoke.mjs",
+        "LTS Health Dashboard Reference Contract run 34222490129"
       ],
-      "next_action": "Audit primary destinations, align titles and descriptions, and extend the browser contract across routes.",
+      "next_action": null,
       "blocker": null
     },
     {

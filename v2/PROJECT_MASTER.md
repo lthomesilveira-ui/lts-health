@@ -17,6 +17,19 @@ O feedback posterior do usuário reabriu a aceitação do produto: a entrada pú
 
 O pacote `PKG-PRODUCT-ARCHITECTURE-RESET` passa a ser a referência de correção: briefing e feedbacks consolidados, navegação por intenção, visão geral orientada primeiro a leitura/prioridades, experiência autenticada isolada e contratos que verificam hierarquia, legibilidade e deploy real. A imagem visual aprovada continua autoridade, mas sua fonte original ainda precisa ser recuperada antes de qualquer nova alegação de paridade pixel a pixel.
 
+## Fechamento do reset de arquitetura — 08/09/2026
+
+O pacote `PKG-PRODUCT-ARCHITECTURE-RESET` foi promovido ao `main` pelos PRs #212, #213 e #214. O resultado público deixa de organizar o produto como uma lista de funcionalidades e passa a seguir as perguntas definidas em `PRODUCT_ARCHITECTURE.md`: estado conhecido, mudança, cobertura, prioridades e acesso à evidência.
+
+- A Home usa rail escuro e canvas claro, apresenta cinco domínios, coloca Leitura principal e até três prioridades antes dos módulos analíticos e fecha com cobertura/fontes.
+- A navegação foi agrupada em Acompanhar, Áreas, Contexto e Sistema. `Evolução` continua funcional apenas como detalhe compatível.
+- Login, destinos e retorno à visão geral usam uma casca compartilhada; as camadas CSS e os pós-processadores antigos do Dashboard não são carregados.
+- A inspeção pública inicial revelou cartões excessivamente altos e contraste insuficiente no estado de sincronização. O PR #213 corrigiu ambos e transformou densidade em gate visual.
+- O navegador ainda combinou HTML novo com CSS antigo. O PR #214 adicionou o build verificável `product-architecture-20260908.3` e versionou os ativos canônicos; a inspeção pública posterior confirmou a versão correta.
+- O Dashboard Reference Contract do PR #214 (run 34222490129) gerou evidências em 1536 × 864 e 390 × 844, percorreu as rotas e validou ausência de overflow. O deploy do commit `8aec988d669234473a703e4d52b707bd24339d0f` concluiu no run 34222640727.
+
+Esse marco comprova o pacote técnico e visual definido; não presume aceite subjetivo do usuário e não declara paridade pixel a pixel. A fonte visual original continua em `LTS-VISUAL-SOURCE-001`. A importação histórica de água continua em `LTS-HYD-IMPORT-001`, bloqueada apenas até a execução autenticada no notebook.
+
 ## Regras permanentes
 
 - Em 04/09/2026 houve autorização explícita para promover o cockpit aprovado à entrada pública principal. A versão pública anterior deve permanecer preservada em `legacy.html` como fallback auditável, sem ser sobrescrita ou perdida.
