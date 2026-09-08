@@ -43,7 +43,7 @@ async function run(viewport,label){
 
   await page.locator('[data-period="90"]').click();
   await page.waitForFunction(()=>document.querySelector('[data-executive-dashboard]')?.dataset.period==='90');
-  if(await page.locator('[data-period="90"]').getAttribute('aria-pressed')!=='true')throw new Error(`${label}: period control state did not update`);
+  if(await page.locator('button[data-period="90"]').getAttribute('aria-pressed')!=='true')throw new Error(`${label}: period control state did not update`);
 
   const destinations=[
     ['timeline','Timeline'],
