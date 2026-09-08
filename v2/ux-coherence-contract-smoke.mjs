@@ -4,8 +4,8 @@ import fs from 'node:fs/promises';
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFile(new URL(path,root),'utf8');
 const files=['today-screen','training-screen','nutrition-screen','bio-screen','health-screen','analysis-screen'];
-const [index,core,main,css,contract,rawState,...screens]=await Promise.all([
-  read('v2/index.html'),read('v2/src/core.js'),read('v2/src/main.js'),read('v2/ux-coherence.css'),read('v2/UX_COHERENCE_CONTRACT.md'),read('v2/EXECUTION_STATE.json'),...files.map(file=>read(`v2/src/${file}.js`))
+const [index,core,main,css,contract,browserGate,rawState,...screens]=await Promise.all([
+  read('v2/index.html'),read('v2/src/core.js'),read('v2/src/main.js'),read('v2/ux-coherence.css'),read('v2/UX_COHERENCE_CONTRACT.md'),read('v2/ux-coherence-browser-smoke.mjs'),read('v2/EXECUTION_STATE.json'),...files.map(file=>read(`v2/src/${file}.js`))
 ]);
 const state=JSON.parse(rawState),screenText=screens.join('\n');
 
@@ -48,6 +48,10 @@ assert.match(css,/\.screenHost\{grid-row:2;/);
 assert.match(css,/overflow-anchor:none/);
 assert.match(css,/\.mobileNav\{position:relative;inset:auto;grid-row:3\}/);
 assert.match(main,/if\(routeChanged\)settleRouteScroll\(state\.route\)/);
+assert.match(browserGate,/async function captureFreshRoute/);
+assert.match(browserGate,/const browser=await chromium\.launch\(launchOptions\)/);
+assert.match(browserGate,/layout-evidence\.json/);
+assert.match(browserGate,/eyebrowHit/);
 assert.match(contract,/Uma janela do produto/);
 assert.match(contract,/Um estado vazio/);
 assert.match(contract,/Mobile como produto/);
