@@ -42,15 +42,11 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CONTINUITY-AND-HYDRATION",
+    "id": "PKG-PRIVACY-GATE-COMPATIBILITY",
     "status": "done",
-    "goal": "Make project continuity durable, align the historical water flow, and reconcile stale quality records.",
+    "goal": "Keep the public payload guard strict while permitting the validated machine-readable continuity ledger.",
     "task_ids": [
-      "LTS-BRIEF-001",
-      "LTS-CONT-001",
-      "LTS-HYD-UX-001",
-      "LTS-DATA-LEDGER-001",
-      "LTS-PARITY-001"
+      "LTS-PRIVACY-GATE-001"
     ]
   },
   "tasks": [
@@ -87,6 +83,28 @@
         "v2/EXECUTION_STATE.json",
         "v2/CONTINUITY_PROTOCOL.md",
         "v2/continuity-contract-smoke.mjs",
+        ".github/workflows/architecture-v2.yml"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-PRIVACY-GATE-001",
+      "area": "security",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Allow the validated execution ledger through legacy privacy workflows without weakening their payload block.",
+      "acceptance": [
+        "The only permitted payload-like public metadata file is v2/EXECUTION_STATE.json.",
+        "The allowlisted file is parsed and must declare public metadata scope with public health payloads disabled.",
+        "Both legacy main-branch workflows and the architecture workflow run the shared guard."
+      ],
+      "evidence": [
+        "v2/public-payload-guard.mjs",
+        "v2/continuity-contract-smoke.mjs",
+        ".github/workflows/smoke.yml",
+        ".github/workflows/timeline-smoke.yml",
         ".github/workflows/architecture-v2.yml"
       ],
       "next_action": null,

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFile(new URL(path,root),'utf8');
-const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,hardeningMigration,workflow]=await Promise.all([
+const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,hardeningMigration,workflow,publicPayloadGuard,legacySmoke,timelineSmoke]=await Promise.all([
   read('v2/EXECUTION_STATE.json'),
   read('v2/PROJECT_BRIEF.md'),
   read('v2/CONTINUITY_PROTOCOL.md'),
@@ -13,7 +13,10 @@ const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,ha
   read('v2/src/today-screen.js'),
   read('supabase/migrations/20260908234500_reconcile_quality_ledger_and_hydration_request.sql'),
   read('supabase/migrations/20260908235500_restrict_mfp_water_request_trigger.sql'),
-  read('.github/workflows/architecture-v2.yml')
+  read('.github/workflows/architecture-v2.yml'),
+  read('v2/public-payload-guard.mjs'),
+  read('.github/workflows/smoke.yml'),
+  read('.github/workflows/timeline-smoke.yml')
 ]);
 
 const state=JSON.parse(rawState),allowed=new Set(['done','in_progress','ready','blocked_user','blocked_external','accepted_gap']);
@@ -61,6 +64,15 @@ for(const role of ['public','anon','authenticated','service_role'])assert.ok(har
 assert.match(master,/PROJECT_BRIEF\.md/);
 assert.match(master,/EXECUTION_STATE\.json/);
 assert.match(workflow,/node v2\/continuity-contract-smoke\.mjs/);
+assert.match(workflow,/node v2\/public-payload-guard\.mjs/);
+for(const legacyWorkflow of [legacySmoke,timelineSmoke]){
+  assert.match(legacyWorkflow,/node v2\/public-payload-guard\.mjs/);
+  assert.match(legacyWorkflow,/node v2\/continuity-contract-smoke\.mjs/);
+  assert.ok(!legacyWorkflow.includes("-name '*.json'"),'legacy workflow still rejects all JSON metadata');
+}
+assert.match(publicPayloadGuard,/allowedMetadataFiles=new Set\(\['v2\/EXECUTION_STATE\.json'\]\)/);
+assert.match(publicPayloadGuard,/public_project_metadata_only/);
+assert.match(publicPayloadGuard,/public_health_data_allowed/);
 
 const publicContinuity=[brief,protocol,rawState,master,parity].join('\n');
 for(const privateLiteral of ['700 mL','2.289','4.901','3.794','1.096'])assert.ok(!publicContinuity.includes(privateLiteral),`private operational value leaked: ${privateLiteral}`);
