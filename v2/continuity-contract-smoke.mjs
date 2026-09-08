@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFile(new URL(path,root),'utf8');
-const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,hardeningMigration,workflow,publicPayloadGuard,legacySmoke,timelineSmoke]=await Promise.all([
+const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,hardeningMigration,workflow,publicPayloadGuard,browserGateRunner,legacySmoke,timelineSmoke]=await Promise.all([
   read('v2/EXECUTION_STATE.json'),
   read('v2/PROJECT_BRIEF.md'),
   read('v2/CONTINUITY_PROTOCOL.md'),
@@ -15,6 +15,7 @@ const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,ha
   read('supabase/migrations/20260908235500_restrict_mfp_water_request_trigger.sql'),
   read('.github/workflows/architecture-v2.yml'),
   read('v2/public-payload-guard.mjs'),
+  read('v2/run-browser-gate.sh'),
   read('.github/workflows/smoke.yml'),
   read('.github/workflows/timeline-smoke.yml')
 ]);
@@ -73,6 +74,10 @@ for(const legacyWorkflow of [legacySmoke,timelineSmoke]){
 assert.match(publicPayloadGuard,/allowedMetadataFiles=new Set\(\['v2\/EXECUTION_STATE\.json'\]\)/);
 assert.match(publicPayloadGuard,/public_project_metadata_only/);
 assert.match(publicPayloadGuard,/public_health_data_allowed/);
+assert.match(workflow,/bash v2\/run-browser-gate\.sh "\$test_file"/);
+assert.match(browserGateRunner,/TimeoutError\|ERR_CONNECTION_REFUSED\|page\\\.goto: Timeout/);
+assert.match(browserGateRunner,/retrying once/);
+assert.match(browserGateRunner,/if ! grep/,'deterministic failures must not be retried');
 
 const publicContinuity=[brief,protocol,rawState,master,parity].join('\n');
 for(const privateLiteral of ['700 mL','2.289','4.901','3.794','1.096'])assert.ok(!publicContinuity.includes(privateLiteral),`private operational value leaked: ${privateLiteral}`);
