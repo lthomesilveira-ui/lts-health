@@ -59,11 +59,12 @@ async function run(viewport,label){
     'O arquivo está guardado e ainda não entrou nas análises. Você não precisa revisar linha por linha.',
     'O processamento não foi concluído. O arquivo original continua guardado.',
     'Passos, frequência cardíaca em repouso, variabilidade da frequência cardíaca, frequência respiratória, peso, volume de água e sono ficam separados até conferência',
-    'Fontes diferentes de sono e hidratação continuam separadas','O arquivo direto do MyFitnessPal é a fonte preferida','Detalhes por origem','Ação necessária · interna','ação interna'
+    'Fontes diferentes de sono e hidratação continuam separadas','O arquivo direto do MyFitnessPal é a fonte preferida','Detalhes por origem','Ação necessária · interna','ação interna',
+    'MyFitnessPal · pendente no notebook','Importar o histórico de água','não é necessário digitar dia a dia','Importar histórico do MFP'
   ]){
     if(!text.includes(expected))throw new Error(`${label}: missing user-facing status ${expected}`);
   }
-  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação','RAW_PARSER_WARNING','STACK_TRACE','RAW_FAILURE_DIAGNOSTIC','INTERNAL_ERROR_PAYLOAD','RAW_INTERNAL_ENTITY','RAW_INTERNAL_DESCRIPTION','backend_table=row','ActivitySummary','source_family','source_payload','storage_path','canônico','candidato','dietary_water_ml','dietary_fiber_g']){
+  for(const forbidden of ['review_required','rejected','uploaded','INTERNAL_ENTITY','workout_parsing','SECRET_TREATMENT_ENTITY','SENSITIVE_OPERATIONAL_DETAIL','SENSITIVE_RESOLUTION_DETAIL','999 mg','frequência aplicação','RAW_PARSER_WARNING','STACK_TRACE','RAW_FAILURE_DIAGNOSTIC','INTERNAL_ERROR_PAYLOAD','RAW_INTERNAL_ENTITY','RAW_INTERNAL_DESCRIPTION','backend_table=row','ActivitySummary','source_family','source_payload','storage_path','canônico','candidato','dietary_water_ml','dietary_fiber_g','informe no LTS o total diário']){
     if(text.includes(forbidden))throw new Error(`${label}: raw internal or operational value visible: ${forbidden}`);
   }
 

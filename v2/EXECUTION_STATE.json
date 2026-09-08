@@ -1,0 +1,304 @@
+{
+  "format": "lts-health-execution-state",
+  "schema_version": 1,
+  "updated_on": "2026-09-08",
+  "scope": "public_project_metadata_only",
+  "authoritative_documents": {
+    "brief": "v2/PROJECT_BRIEF.md",
+    "continuity": "v2/CONTINUITY_PROTOCOL.md",
+    "milestones": "v2/PROJECT_MASTER.md",
+    "visual_contract": "v2/REFERENCE_VISUAL_CONTRACT.md",
+    "data_contract": "v2/DATA_AUDIT.md"
+  },
+  "status_definitions": {
+    "done": "Critério de aceite comprovado por evidência registrada.",
+    "in_progress": "Execução iniciada e ainda não validada.",
+    "ready": "Executável autonomamente com as evidências atuais.",
+    "blocked_user": "Exige uma ação explícita do usuário que o sistema não pode executar.",
+    "blocked_external": "Exige aprovação, dispositivo, arquivo original ou capacidade de terceiro ainda indisponível.",
+    "accepted_gap": "Limitação conhecida e contida, sem ação segura disponível agora."
+  },
+  "execution_policy": {
+    "development_branch": "architecture-v2",
+    "public_branch": "main",
+    "parallel_reference_branch": "product-clarity-p0",
+    "force_updates_allowed": false,
+    "continue_until_no_executable_tasks": true,
+    "completion_requires_evidence": true,
+    "public_health_data_allowed": false
+  },
+  "release_gates": [
+    "static and contract tests",
+    "desktop and mobile browser tests for affected UI",
+    "fail-closed behavior for partial data failures",
+    "privacy and provenance checks",
+    "authenticated runtime check when real data behavior changes",
+    "public deploy smoke when the public app changes"
+  ],
+  "reminder": {
+    "task_id": "LTS-HYD-IMPORT-001",
+    "surface_on_each_project_checkpoint": true,
+    "scheduled_notification": false,
+    "reason": "A date and time were not selected."
+  },
+  "current_package": {
+    "id": "PKG-CONTINUITY-AND-HYDRATION",
+    "status": "done",
+    "goal": "Make project continuity durable, align the historical water flow, and reconcile stale quality records.",
+    "task_ids": [
+      "LTS-BRIEF-001",
+      "LTS-CONT-001",
+      "LTS-HYD-UX-001",
+      "LTS-DATA-LEDGER-001",
+      "LTS-PARITY-001"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "LTS-BRIEF-001",
+      "area": "product",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Consolidate the recovered product brief without private health data.",
+      "acceptance": [
+        "Product outcome, scope, source rules, trust rules, UX, privacy, and done criteria are documented.",
+        "The brief points to the operational ledger and specialized contracts."
+      ],
+      "evidence": [
+        "v2/PROJECT_BRIEF.md",
+        "v2/continuity-contract-smoke.mjs"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-CONT-001",
+      "area": "continuity",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Create a durable, machine-readable execution ledger and restart protocol.",
+      "acceptance": [
+        "Tasks have stable IDs, status, owner, acceptance criteria, evidence, next action, and blocker.",
+        "CI rejects missing required fields, duplicate IDs, invalid states, or executable work left behind."
+      ],
+      "evidence": [
+        "v2/EXECUTION_STATE.json",
+        "v2/CONTINUITY_PROTOCOL.md",
+        "v2/continuity-contract-smoke.mjs",
+        ".github/workflows/architecture-v2.yml"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-HYD-UX-001",
+      "area": "hydration",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Make every primary water action open the historical batch import instead of the single-day form.",
+      "acceptance": [
+        "Today, Nutrition, and Data direct the user to the historical importer.",
+        "The UI explicitly says that daily manual entry is unnecessary.",
+        "The single-day form remains available only as a secondary correction path."
+      ],
+      "evidence": [
+        "v2/src/data-screen.js",
+        "v2/src/today-screen.js",
+        "v2/src/nutrition-screen.js",
+        "v2/hydration-contract-test.mjs",
+        "v2/data-copy-smoke.mjs",
+        "v2/mfp-water-import-smoke.mjs"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-DATA-LEDGER-001",
+      "area": "data-quality",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Reconcile legacy quality and source-request statements that contradict current structured evidence.",
+      "acceptance": [
+        "Nutrition, workout normalization, and laboratory coverage issues are resolved only when same-owner evidence exists.",
+        "The laboratory request reflects partial structured coverage.",
+        "The historical water request is persisted and automatically completed by a valid authenticated import."
+      ],
+      "evidence": [
+        "supabase/migrations/20260908234500_reconcile_quality_ledger_and_hydration_request.sql",
+        "supabase/migrations/20260908235500_restrict_mfp_water_request_trigger.sql",
+        "Supabase post-migration verification and rolled-back trigger probe"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-PARITY-001",
+      "area": "documentation",
+      "priority": "P1",
+      "status": "done",
+      "owner": "system",
+      "summary": "Remove obsolete pre-promotion gates from the parity matrix.",
+      "acceptance": [
+        "The matrix reflects the already promoted cockpit and authenticated desktop/mobile validation.",
+        "Future releases retain the current gates without claiming old work is pending."
+      ],
+      "evidence": [
+        "v2/PARITY_MATRIX.md",
+        "v2/continuity-contract-smoke.mjs"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-HYD-IMPORT-001",
+      "area": "hydration",
+      "priority": "P0",
+      "status": "blocked_user",
+      "owner": "user",
+      "summary": "Run the authenticated MyFitnessPal historical water export on a notebook and import the JSON into LTS Health.",
+      "acceptance": [
+        "The extractor finishes the selected historical interval.",
+        "The LTS preview is confirmed and imports the generated JSON.",
+        "The private ledger changes to completed after a canonical MyFitnessPal water row with authenticated-export provenance is written."
+      ],
+      "evidence": [
+        "v2/mfp-water-extractor.html",
+        "v2/src/mfp-water-extractor.js",
+        "v2/src/mfp-water-transfer.js",
+        "v2/mfp-water-transfer-test.mjs",
+        "v2/mfp-water-import-smoke.mjs"
+      ],
+      "next_action": "On a notebook, open the public extractor helper while signed in to MyFitnessPal, install/run it, then import the generated JSON in LTS Health.",
+      "blocker": "The authenticated MyFitnessPal session and local browser action belong to the user; credentials and cookies must not be transferred."
+    },
+    {
+      "id": "LTS-MFP-OAUTH-001",
+      "area": "integrations",
+      "priority": "P1",
+      "status": "blocked_external",
+      "owner": "external",
+      "summary": "Replace the user-triggered MyFitnessPal transfer with an official continuous connection if provider access becomes available.",
+      "acceptance": [
+        "Official authorization is approved for the application.",
+        "Tokens remain server-side and sync is idempotent, observable, and revocable.",
+        "Water and nutrition provenance rules remain unchanged."
+      ],
+      "evidence": [
+        "v2/PROJECT_MASTER.md"
+      ],
+      "next_action": "Reassess only when an official application credential and supported API scope are available.",
+      "blocker": "Provider approval and supported API access are not available to this project."
+    },
+    {
+      "id": "LTS-IOS-HEALTH-001",
+      "area": "integrations",
+      "priority": "P1",
+      "status": "blocked_external",
+      "owner": "external",
+      "summary": "Validate the iOS HealthKit companion and water-source identity on a physical device.",
+      "acceptance": [
+        "Signed build runs on a physical iPhone.",
+        "HealthKit permissions and source attribution are observed with real records.",
+        "No overlapping source is promoted or summed without a validated rule."
+      ],
+      "evidence": [
+        "ios/LTSHealthCompanion",
+        "v2/apple-bridge-contract-smoke.mjs"
+      ],
+      "next_action": "Run the physical-device gate after Apple signing and device setup exist.",
+      "blocker": "Apple signing, TestFlight/device setup, and real source evidence are external to the current environment."
+    },
+    {
+      "id": "LTS-POLAR-HISTORY-001",
+      "area": "integrations",
+      "priority": "P2",
+      "status": "blocked_external",
+      "owner": "external",
+      "summary": "Expand Polar history and telemetry only from an original export or proven event mapping.",
+      "acceptance": [
+        "Original source evidence covers the intended historical period.",
+        "Telemetry attaches to the correct canonical workout without creating a duplicate session.",
+        "Ambiguous mappings remain held."
+      ],
+      "evidence": [
+        "v2/DATA_AUDIT.md",
+        "v2/src/workout-evidence.js"
+      ],
+      "next_action": "Audit a real Polar export when it is available.",
+      "blocker": "The required original export and event-level evidence are not present."
+    },
+    {
+      "id": "LTS-LABS-SOURCES-001",
+      "area": "labs",
+      "priority": "P2",
+      "status": "blocked_external",
+      "owner": "external",
+      "summary": "Expand laboratory coverage and specialized parsing from original Fleury/Einstein files.",
+      "acceptance": [
+        "Original files are preserved privately.",
+        "Parser output is validated against real samples without inventing marker, unit, reference, or date.",
+        "Direct integration, if pursued, uses an authorized and technically supported path."
+      ],
+      "evidence": [
+        "v2/DATA_AUDIT.md",
+        "v2/src/health-screen.js"
+      ],
+      "next_action": "Validate a specialized parser only after representative original files are available.",
+      "blocker": "Representative originals and a confirmed direct integration path are unavailable."
+    },
+    {
+      "id": "LTS-DOCUMENTS-001",
+      "area": "documents",
+      "priority": "P3",
+      "status": "accepted_gap",
+      "owner": "external",
+      "summary": "Preserve the distinction between document inventory metadata and original files that have not been supplied.",
+      "acceptance": [
+        "Metadata is never presented as an openable original.",
+        "A parser or reconciliation task is created only when the corresponding original exists."
+      ],
+      "evidence": [
+        "v2/DATA_AUDIT.md"
+      ],
+      "next_action": "Create a concrete task when an original document is supplied and needed.",
+      "blocker": "There is no safe executable change without the original bytes."
+    },
+    {
+      "id": "LTS-MEASUREMENTS-001",
+      "area": "composition",
+      "priority": "P3",
+      "status": "accepted_gap",
+      "owner": "external",
+      "summary": "Add historical measurements only from dated, consented source evidence.",
+      "acceptance": [
+        "Every new record has a dated source and provenance.",
+        "Missing measurements are not reconstructed from targets or nearby dates."
+      ],
+      "evidence": [
+        "v2/DATA_AUDIT.md"
+      ],
+      "next_action": "Create an import task when a dated source is supplied.",
+      "blocker": "No additional dated source is currently available."
+    },
+    {
+      "id": "LTS-AUTH-SECURITY-001",
+      "area": "security",
+      "priority": "P1",
+      "status": "blocked_user",
+      "owner": "user",
+      "summary": "Enable leaked-password protection in the Supabase Auth settings.",
+      "acceptance": [
+        "The Supabase security advisor no longer reports leaked-password protection as disabled."
+      ],
+      "evidence": [
+        "Supabase security advisor"
+      ],
+      "next_action": "Enable leaked-password protection in the Supabase Auth dashboard, then rerun the security advisor.",
+      "blocker": "The connected project tools do not expose this Auth dashboard setting."
+    }
+  ]
+}
