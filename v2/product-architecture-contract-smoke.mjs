@@ -18,6 +18,9 @@ const [architecture,feedback,index,today,homeCss,shellCss,productShell,analysisS
   read('v2/EXECUTION_STATE.json')
 ]);
 const state=JSON.parse(stateRaw);
+const build=index.match(/<meta name="lts-build" content="([^"]+)">/)?.[1];
+assert.ok(build,'public build identifier is missing');
+for(const asset of ['executive-shell.css','cockpit.css'])assert.ok(index.includes(`./${asset}?v=${build}`),`canonical asset is not tied to build ${build}: ${asset}`);
 
 for(const phrase of [
   'assistente longitudinal privado de saúde',
