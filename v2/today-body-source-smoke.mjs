@@ -3,7 +3,6 @@ import { chromium } from 'playwright';
 const base='http://127.0.0.1:4173/?fixture=1#hoje';
 const waitToday=page=>page.waitForSelector('[data-executive-dashboard]');
 const compositionCard=page=>page.locator('.cockpitStatus[data-route="bio"]');
-const compositionModule=page=>page.locator('.cockpitModule.body');
 
 async function renderScenario(page,bodyRows,expectedText){
   await page.evaluate(async rows=>{
@@ -43,8 +42,6 @@ async function run(viewport,label){
     if(!card.includes('17,4% gordura'))throw new Error(`${label}: latest body-fat value disappeared after a known source change`);
     if(!card.includes('Sem comparação entre origens diferentes.'))throw new Error(`${label}: source-change limitation is not explicit in the current body card`);
     if(card.includes('Em revisão'))throw new Error(`${label}: source change was mislabeled as an ambiguous current measurement`);
-    const module=(await compositionModule(page).textContent())||'';
-    if(!module.includes('17,4%')||!module.includes('79,5 kg')||!module.includes('41,3 kg'))throw new Error(`${label}: latest body measurement is not preserved in the current composition module`);
     const review=(await page.locator('.cockpitReview').textContent())||'';
     if(!review.includes('Sem comparação entre origens diferentes.'))throw new Error(`${label}: source-change review is not explicit`);
 

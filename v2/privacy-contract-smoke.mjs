@@ -65,7 +65,7 @@ if(sourceMetricProjection.includes('source_payload')||regimenLoader.includes('so
 const provenance=dataScreen.match(/function provenanceOverview\(metricRows,workoutEvidenceRows\)\{[\s\S]*?\n\}/)?.[0]||'';
 if(!provenance)throw new Error('safe provenance summary missing');
 if(/row\.value\b|source_payload|source_record_id|storage_path/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
-for(const token of ['Não foi possível carregar as origens agora.','As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.','aguardando conferência','preservado(s) sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
+for(const token of ['Não foi possível carregar as origens agora.','As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.','aguardando conferência',"countLabel(group.preserved,'preservado','preservados')",'sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
 for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas','canônico(s)','candidato(s)'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
 
 const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\s*(?=function )/)?.[0]||'';

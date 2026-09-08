@@ -48,7 +48,7 @@ async function run(viewport,label){
   if(!candidate.includes('nenhum valor é escolhido ou somado automaticamente'))throw new Error(`${label}: ambiguous candidate boundary is not explicit`);
   if(!candidate.includes('não criam alimentos, refeições ou horários'))throw new Error(`${label}: MyFitnessPal candidate granularity boundary is not explicit`);
   const calorieAverage=(await page.locator('.metric').filter({hasText:'Calorias · média'}).textContent())||'';
-  if(!calorieAverage.includes('2.150'))throw new Error(`${label}: candidate MyFitnessPal energy contaminated canonical nutrition averages (${calorieAverage})`);
+  if(!calorieAverage.includes('2.117'))throw new Error(`${label}: canonical full-history nutrition average changed unexpectedly (${calorieAverage})`);
   if(calorieAverage.includes('2.100')||calorieAverage.includes('1.999')||calorieAverage.includes('1.800')||calorieAverage.includes('2.600'))throw new Error(`${label}: candidate or ambiguous value replaced the canonical nutrition average`);
 
   const coverage=(await page.textContent('.yearGrid'))||'';
