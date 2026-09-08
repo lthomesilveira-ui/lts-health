@@ -10,6 +10,9 @@ async function openRoute(page,route,title){
   await page.waitForFunction(expected=>document.querySelector('#screenHost h1')?.textContent===expected,title);
   await page.waitForSelector('.domainHero');
   await page.waitForFunction(()=>window.scrollY<=1&&(document.querySelector('#screenHost')?.scrollTop??999)>-1&&(document.querySelector('#screenHost')?.scrollTop??999)<=1);
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await page.waitForTimeout(260);
+  await page.waitForFunction(expected=>document.querySelector('#screenHost h1')?.textContent===expected&&window.scrollY<=1&&(document.querySelector('#screenHost')?.scrollTop??999)<=1,title);
 }
 async function assertNoMechanicalCopy(page,label){
   const text=await page.locator('#screenHost').innerText();
