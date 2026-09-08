@@ -26,6 +26,7 @@ assert.equal(state.schema_version,1);
 assert.equal(state.scope,'public_project_metadata_only');
 assert.ok(Array.isArray(state.tasks)&&state.tasks.length>0);
 assert.equal(new Set(state.tasks.map(task=>task.id)).size,state.tasks.length,'task IDs must be unique');
+assert.equal([...rawState.matchAll(/"owner"\s*:/g)].length,state.tasks.length,'task owner keys must not be duplicated');
 
 for(const task of state.tasks){
   for(const key of ['id','area','priority','status','owner','summary','acceptance','evidence','next_action','blocker'])assert.ok(Object.hasOwn(task,key),`${task.id||'unknown'} missing ${key}`);
@@ -33,6 +34,10 @@ for(const task of state.tasks){
   assert.ok(allowed.has(task.status),`${task.id} has invalid status ${task.status}`);
   assert.ok(Array.isArray(task.acceptance)&&task.acceptance.length>0,`${task.id} needs acceptance criteria`);
   assert.ok(Array.isArray(task.evidence)&&task.evidence.length>0,`${task.id} needs evidence`);
+  if(Object.hasOwn(task,'external_references')){
+    assert.ok(Array.isArray(task.external_references)&&task.external_references.length>0,`${task.id} external references must be a non-empty array`);
+    for(const reference of task.external_references)assert.match(reference,/^https:\/\/github\.com\/lthomesilveira-ui\/lts-health\/issues\/\d+$/);
+  }
   if(task.status==='done')assert.equal(task.blocker,null,`${task.id} done but blocked`);
   if(task.status.startsWith('blocked_')||task.status==='accepted_gap'){
     assert.ok(task.blocker,`${task.id} needs a blocker`);
@@ -47,6 +52,14 @@ assert.equal(water?.priority,'P0');
 assert.match(water?.next_action||'',/notebook/i);
 assert.equal(state.reminder.task_id,water.id);
 assert.equal(state.reminder.surface_on_each_project_checkpoint,true);
+const longitudinal=state.tasks.find(task=>task.id==='LTS-LONGITUDINAL-001');
+assert.equal(longitudinal?.status,'done');
+assert.equal(longitudinal?.acceptance?.length,6);
+assert.deepEqual(longitudinal?.external_references,['https://github.com/lthomesilveira-ui/lts-health/issues/200']);
+const notebookUx=state.tasks.find(task=>task.id==='LTS-HYD-NOTEBOOK-UX-001');
+assert.equal(notebookUx?.status,'done');
+assert.ok(state.current_package.task_ids.includes(longitudinal.id));
+assert.ok(state.current_package.task_ids.includes(notebookUx.id));
 
 for(const text of [brief,protocol]){
   assert.match(text,/EXECUTION_STATE\.json/);
@@ -59,6 +72,8 @@ assert.match(dataScreen,/não é necessário digitar dia a dia/);
 assert.ok(!dataScreen.includes('informe no LTS o total diário'), 'stale manual-water instruction remains');
 assert.match(todayScreen,/data-entry="water-import"/);
 assert.match(todayScreen,/sem digitar dia a dia/);
+assert.match(protocol,/Reconciliação de rastreadores externos/);
+assert.match(protocol,/external_references/);
 
 for(const code of ['DQ-NUTRITION-EMPTY-001','DQ-WORKOUT-NORMALIZATION-002','DQ-LABS-COVERAGE-001','health_complete_mfp_water_request','account_authenticated_export'])assert.ok(migration.includes(code),`migration missing ${code}`);
 for(const role of ['public','anon','authenticated','service_role'])assert.ok(hardeningMigration.includes(role),`trigger hardening missing ${role}`);

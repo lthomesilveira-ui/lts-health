@@ -42,12 +42,12 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CONTINUITY-CI-HARDENING",
+    "id": "PKG-LONGITUDINAL-UX-RECONCILIATION",
     "status": "done",
-    "goal": "Keep continuity metadata behind strict privacy gates and make browser validation resilient to proven transient navigation failures.",
+    "goal": "Reconcile the delivered longitudinal product backlog and make the authenticated water handoff unambiguously notebook-first.",
     "task_ids": [
-      "LTS-PRIVACY-GATE-001",
-      "LTS-CI-BROWSER-001"
+      "LTS-LONGITUDINAL-001",
+      "LTS-HYD-NOTEBOOK-UX-001"
     ]
   },
   "tasks": [
@@ -194,6 +194,64 @@
       "blocker": null
     },
     {
+      "id": "LTS-LONGITUDINAL-001",
+      "area": "product",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Reconcile the delivered cross-source longitudinal narrative with its external product backlog.",
+      "acceptance": [
+        "Equivalent metrics are consolidated only by explicit per-metric rules without unsafe addition or duplication.",
+        "The weight series gives same-day priority to body composition and uses direct MyFitnessPal values only on other safe dates.",
+        "MyFitnessPal water absence in the old structured export is distinguished from the authenticated source, with audited batch transfer and import.",
+        "Laboratory trends require compatible marker, origin, unit, and unambiguous dates.",
+        "The UX follows summary, relevant change, trend, and detail with direct routes for deeper inspection.",
+        "Continuous and sparse domains use appropriate windows and every ambiguous path remains fail-closed."
+      ],
+      "evidence": [
+        "v2/src/longitudinal-model.js",
+        "v2/src/longitudinal-story.js",
+        "v2/src/integrated-analysis.js",
+        "v2/product-clarity-p0-smoke.mjs",
+        "v2/product-clarity-browser-smoke.mjs",
+        "v2/analysis-history-smoke.mjs",
+        "v2/lab-series-navigation-smoke.mjs",
+        "v2/mfp-water-audit-auth.mjs",
+        "v2/mfp-water-import-smoke.mjs",
+        ".github/workflows/health-longitudinal-smoke.yml"
+      ],
+      "external_references": [
+        "https://github.com/lthomesilveira-ui/lts-health/issues/200"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-HYD-NOTEBOOK-UX-001",
+      "area": "hydration",
+      "priority": "P0",
+      "status": "done",
+      "owner": "system",
+      "summary": "Make the MyFitnessPal historical-water handoff notebook-first and remove the misleading app-install interpretation.",
+      "acceptance": [
+        "The helper leads with a notebook flow for Chrome, Edge, or Safari and explains that no app or extension is installed.",
+        "A phone user is told that nothing was started or lost and can copy the helper link for later.",
+        "Nutrition and the import modal consistently describe one automatic batch extraction rather than daily typing.",
+        "Extraction privacy, checkpoint, retry, and idempotent import contracts remain unchanged."
+      ],
+      "evidence": [
+        "v2/mfp-water-extractor.html",
+        "v2/mfp-water-extractor.css",
+        "v2/src/mfp-water-extractor.js",
+        "v2/src/entry.js",
+        "v2/src/nutrition-screen.js",
+        "v2/mfp-water-transfer-test.mjs",
+        "v2/mfp-water-import-smoke.mjs"
+      ],
+      "next_action": null,
+      "blocker": null
+    },
+    {
       "id": "LTS-HYD-IMPORT-001",
       "area": "hydration",
       "priority": "P0",
@@ -212,7 +270,7 @@
         "v2/mfp-water-transfer-test.mjs",
         "v2/mfp-water-import-smoke.mjs"
       ],
-      "next_action": "On a notebook, open the public extractor helper while signed in to MyFitnessPal, install/run it, then import the generated JSON in LTS Health.",
+      "next_action": "On a notebook, open the public helper while signed in to MyFitnessPal, add/run the favorite, then import the generated JSON in LTS Health.",
       "blocker": "The authenticated MyFitnessPal session and local browser action belong to the user; credentials and cookies must not be transferred."
     },
     {

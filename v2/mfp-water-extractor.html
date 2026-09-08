@@ -4,39 +4,50 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#08131d">
-  <title>Extrair água do MyFitnessPal · LTS Health</title>
+  <title>Trazer água do MyFitnessPal · LTS Health</title>
   <link rel="stylesheet" href="./mfp-water-extractor.css">
 </head>
 <body>
   <main class="extractorPage">
     <a class="backLink" href="./#nutricao">← Voltar ao LTS Health</a>
     <header>
-      <span class="eyebrow">MyFitnessPal → LTS Health</span>
-      <h1>Extrair todo o histórico de água</h1>
-      <p>Você escolhe o período uma vez. O extrator consulta automaticamente cada data na sessão já aberta do MyFitnessPal, com pausa e retomada, e cria um único arquivo para importar no LTS.</p>
+      <span class="eyebrow">Etapa no notebook · MyFitnessPal → LTS Health</span>
+      <h1>Trazer todo o histórico de água</h1>
+      <p>Faça esta etapa uma vez no notebook. Você escolhe o período e o extrator consulta automaticamente cada data na sessão já aberta do MyFitnessPal, com pausa e retomada, sem digitar dia por dia.</p>
     </header>
+
+    <section class="notebookNote" role="note">
+      <div>
+        <span>Use o notebook</span>
+        <b>Não tente executar o histórico completo pelo celular</b>
+        <p>Se abriu esta página no telefone, está tudo certo: nada foi iniciado nem perdido. Copie o link e continue no Chrome, Edge ou Safari do notebook quando puder.</p>
+      </div>
+      <button id="copyPageLink" type="button">Copiar link para o notebook</button>
+      <p id="pageLinkStatus" class="pageLinkStatus" role="status"></p>
+    </section>
 
     <section class="privacyNote">
       <b>Privacidade preservada</b>
       <p>O código não lê senha, alimentos, e-mail ou perfil. Ele guarda somente data e total de água em mililitros no seu navegador até você salvar o arquivo.</p>
     </section>
 
-    <section class="steps" aria-label="Instalação no Safari">
-      <article><span>1</span><div><b>Crie um favorito desta página</b><p>No Safari, toque em Compartilhar e depois em “Adicionar Favorito”. Salve com o nome <strong>Extrair água MFP</strong>.</p></div></article>
-      <article><span>2</span><div><b>Copie o extrator</b><p>Toque no botão abaixo. Depois abra os Favoritos, escolha Editar e substitua o endereço do favorito pelo código copiado.</p></div></article>
-      <article><span>3</span><div><b>Execute dentro do MyFitnessPal</b><p>Abra o diário no site do MyFitnessPal, confirme que está conectado e toque no favorito “Extrair água MFP”. Aceite as datas sugeridas para começar em 01/01/2018.</p></div></article>
-      <article><span>4</span><div><b>Importe o arquivo no LTS</b><p>Mantenha a aba aberta. Se o Safari interromper, execute o mesmo favorito para retomar. Ao concluir, salve o JSON e volte à tela Nutrição do LTS.</p></div></article>
+    <section class="steps" aria-label="Passo a passo no notebook">
+      <article><span>1</span><div><b>Entre no MyFitnessPal pelo notebook</b><p>Abra o diário no Chrome, Edge ou Safari e confirme que sua conta está conectada.</p></div></article>
+      <article><span>2</span><div><b>Adicione o extrator à barra de favoritos</b><p>Mostre a barra de favoritos e arraste o botão “Extrair água MFP” abaixo para ela. Isso cria o atalho; não instala aplicativo nem extensão.</p></div></article>
+      <article><span>3</span><div><b>Execute dentro do MyFitnessPal</b><p>Na aba do diário, clique no favorito “Extrair água MFP”. Confirme as datas sugeridas para começar em 01/01/2018. A leitura segue automaticamente e pode ser retomada.</p></div></article>
+      <article><span>4</span><div><b>Importe um único arquivo no LTS</b><p>Ao concluir, salve o JSON e volte à tela Nutrição do LTS. O arquivo reúne todas as datas encontradas; você não repete o processo dia por dia.</p></div></article>
     </section>
 
     <div class="extractorActions">
-      <button id="copyBookmarklet" type="button">Copiar extrator</button>
-      <a href="https://www.myfitnesspal.com/food/diary" target="_blank" rel="noopener">Abrir MyFitnessPal</a>
+      <a id="bookmarkletLink" class="bookmarkletLink" href="#">Arraste para os favoritos: Extrair água MFP</a>
+      <a href="https://www.myfitnesspal.com/food/diary" target="_blank" rel="noopener">Abrir MyFitnessPal no notebook</a>
     </div>
-    <p id="copyStatus" class="copyStatus" role="status"></p>
+    <p class="dragHint">Se arrastar não funcionar no seu navegador, use a alternativa manual abaixo.</p>
     <details>
-      <summary>Instalação no computador</summary>
-      <p>Arraste o botão abaixo para a barra de favoritos e execute-o em uma aba autenticada do MyFitnessPal.</p>
-      <a id="bookmarkletLink" class="bookmarkletLink" href="#">Extrair água MFP</a>
+      <summary>Alternativa: criar o favorito manualmente</summary>
+      <p>Crie um favorito qualquer no notebook, edite o endereço e substitua-o pelo código do extrator.</p>
+      <button id="copyBookmarklet" class="copyCodeButton" type="button">Copiar código do extrator</button>
+      <p id="copyStatus" class="copyStatus" role="status"></p>
     </details>
     <details>
       <summary>Ver o código copiado</summary>

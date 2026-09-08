@@ -87,11 +87,16 @@ export function buildMyFitnessPalWaterBookmarklet(){
 }
 
 export function setupMfpWaterExtractorInstaller(root=document){
-  const code=buildMyFitnessPalWaterBookmarklet(),field=root.getElementById('bookmarkletCode'),copy=root.getElementById('copyBookmarklet'),link=root.getElementById('bookmarkletLink'),message=root.getElementById('copyStatus');
+  const code=buildMyFitnessPalWaterBookmarklet(),field=root.getElementById('bookmarkletCode'),copy=root.getElementById('copyBookmarklet'),link=root.getElementById('bookmarkletLink'),message=root.getElementById('copyStatus'),copyPageLink=root.getElementById('copyPageLink'),pageMessage=root.getElementById('pageLinkStatus');
   if(field)field.value=code;
   if(link)link.href=code;
   copy?.addEventListener('click',async()=>{
-    try{await navigator.clipboard.writeText(code);message.textContent='Código copiado. Agora substitua o endereço do favorito no Safari.';}
+    try{await navigator.clipboard.writeText(code);message.textContent='Código copiado. No notebook, cole-o no endereço do favorito.';}
     catch{field?.focus();field?.select();message.textContent='Selecione e copie o código exibido abaixo.';}
+  });
+  copyPageLink?.addEventListener('click',async()=>{
+    const pageUrl=String(location.href||'').split('#')[0];
+    try{await navigator.clipboard.writeText(pageUrl);pageMessage.textContent='Link copiado. Abra-o no notebook quando puder.';}
+    catch{pageMessage.textContent='Use a opção Compartilhar do navegador para enviar esta página ao notebook.';}
   });
 }
