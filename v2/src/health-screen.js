@@ -1,6 +1,6 @@
 import {state,esc,fmtDate,fmtNum,num,norm,unique} from './core.js';
+import {screenTitle as title} from './product-shell.js';
 
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const unavailable=text=>`<div class="errorState"><b>Esta parte não carregou agora.</b><span>${esc(text)}</span></div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
@@ -176,7 +176,7 @@ export function renderHealthHub(){
   if(!state.ui.selectedBiomarker||!groups.some(g=>g.key===state.ui.selectedBiomarker))state.ui.selectedBiomarker=seriesItems[0]?.group.key||groups[0]?.key||null;
   const collection=cols.find(c=>c.key===state.ui.selectedCollection),filteredGroups=groups.filter(g=>!q||norm(g.label).includes(q)),marker=groups.find(g=>g.key===state.ui.selectedBiomarker);
   const labDates=unique(labs.map(r=>r.collection_date)),numericCount=labs.filter(isNumericResult).length,textCount=labs.filter(isTextResult).length,pendingDocs=docs.filter(d=>{const s=norm(d.extraction_status);return s.includes('specialized')||s.includes('pending')||s.includes('await')||s.includes('review');}).length;
-  return `${title('Saúde & exames','Resultados, coletas e documentos organizados para consulta longitudinal.')}
+  return `${title('Exames','Coletas, marcadores, séries comparáveis e documentos preservados.','Área do histórico')}
     ${labFailed?unavailable('Os exames continuam preservados; tente atualizar para carregar os resultados.') : ''}
     <div class="grid cols4">
       <div class="card metric"><span>Datas de coleta</span><strong>${labFailed?'—':labDates.length}</strong><em>${labFailed?'não carregado':labDates.length?`${fmtDate([...labDates].sort().at(0))} → ${fmtDate([...labDates].sort().at(-1))} · ${cols.length} conjunto(s)`:'sem datas'}</em></div>

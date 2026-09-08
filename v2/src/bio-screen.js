@@ -1,6 +1,6 @@
 import {state,esc,num,fmtNum,fmtDate,neutralDelta,bodyRows,norm,day} from './core.js';
+import {screenTitle as title} from './product-shell.js';
 
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1>${description?`<p>${esc(description)}</p>`:''}</div></div>`;
 const metric=(label,value,unit='',sub='')=>`<div class="card metric"><span>${esc(label)}</span><strong>${esc(value)}${unit?` <small>${esc(unit)}</small>`:''}</strong>${sub?`<em>${esc(sub)}</em>`:''}</div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const bodyFailed=()=>state.domainStatus.body==='error';

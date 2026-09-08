@@ -1,6 +1,6 @@
 import {state,esc,fmtDate,fmtNum,num,bodyRows,workoutRows,neutralDelta,day,norm} from './core.js';
+import {screenTitle as title} from './product-shell.js';
 
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const metric=(label,value,sub='')=>`<div class="card metric"><span>${esc(label)}</span><strong>${esc(value)}</strong>${sub?`<em>${esc(sub)}</em>`:''}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
@@ -127,7 +127,7 @@ export function renderEvolutionHub(){
   const firstLastSourceMismatch=bodyHasSafeInterval&&knownSourceMismatch(first,last);
   const bodySub=bodyFailed?'indisponíveis agora':ambiguousBodyDates.size?`${ambiguousBodyDates.size} ${ambiguousBodyDates.size===1?'data em revisão':'datas em revisão'}${body.length?` · última comparável ${fmtDate(last?.measured_at)}`:''}`:body.length?`${fmtDate(first?.measured_at)} → ${fmtDate(last?.measured_at)}`:'sem registros';
   const segmentalSub=segFailed?'indisponíveis agora':ambiguousDates.size?`${ambiguousDates.size} ${ambiguousDates.size===1?'data em revisão':'datas em revisão'}${segmental.length?` · última comparável ${fmtDate(segmental.at(-1).measured_at)}`:''}`:segmental.length?`última ${fmtDate(segmental.at(-1).measured_at)}`:'sem registros';
-  return `${title('Evolução','Composição corporal, análise segmentar e ritmo de treinos ao longo do tempo.')}
+  return `${title('Evolução detalhada','Composição, análise segmentar e ritmo de treinos em uma rota preservada de aprofundamento.','Detalhe de Composição e Treinos')}
     ${failures.length?`<div class="errorState"><b>Parte da evolução está indisponível agora.</b><span>Não foi possível carregar: ${esc(failures.join(', '))}. O restante continua visível.</span></div>`:''}
     <div class="grid cols4 sectionGap">
       ${metric('Medições corporais',bodyFailed?'—':String(rawBody.length),bodySub)}

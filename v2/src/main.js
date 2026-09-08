@@ -18,14 +18,16 @@ const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
-const secondaryRoutes=new Set(['timeline','saude','nutricao','dados']);
+const mobileMoreRoutes=new Set(['bio','nutricao','saude','tratamentos','evolucao','dados']);
 
-function setSync(text){const el=$('syncText');if(el)el.textContent=text;}
+function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
 function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
 function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden');}
 
 function syncNav(){
-  document.querySelectorAll('[data-route]').forEach(b=>{const r=b.dataset.route;b.classList.toggle('active',r===state.route||(r==='mais'&&secondaryRoutes.has(state.route)));});
+  document.querySelectorAll('#primaryNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&state.route==='evolucao'));});
+  document.querySelectorAll('#moreSheet [data-route]').forEach(button=>button.classList.toggle('active',button.dataset.route===state.route));
+  document.querySelectorAll('#mobileNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&mobileMoreRoutes.has(state.route)));});
   const action=$('routeAction');
   if(state.route==='bio'){action.textContent='Registrar bio';action.dataset.entry='body';action.classList.remove('hidden');}
   else if(state.route==='treinos'){action.textContent='Registrar treino';action.dataset.entry='workout';action.classList.remove('hidden');}
@@ -35,7 +37,7 @@ function syncNav(){
 
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
-  if(!routes.has(route))route='bio';
+  if(!routes.has(route))route='hoje';
   state.route=route;$('moreSheet').classList.add('hidden');
   try{localStorage.setItem('lts-health-v2-route',route);}catch{}
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
@@ -47,7 +49,7 @@ function setRoute(route,{replace=true}={}){
 function routeFromLocation(){
   const hash=location.hash.replace(/^#/,'');if(routes.has(hash))return hash;
   try{const saved=localStorage.getItem('lts-health-v2-route');if(routes.has(saved))return saved;}catch{}
-  return'bio';
+  return'hoje';
 }
 
 function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;}
@@ -57,7 +59,7 @@ function render(){
   const host=$('screenHost');
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
   if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
-  const renderer=screenRenderers[state.route]||screenRenderers.bio;
+  const renderer=screenRenderers[state.route]||screenRenderers.hoje;
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
   applyControlState();mountEvidencePanels();syncNav();
@@ -131,6 +133,7 @@ function bindStaticEvents(){
     const timelineJump=event.target.closest('[data-timeline-jump]');if(timelineJump){openTimelineTarget(timelineJump);return;}
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
     const evidenceButton=event.target.closest('[data-evidence-route]');if(evidenceButton){event.preventDefault();setRoute(evidenceButton.dataset.evidenceRoute,{replace:false});return;}
+    const periodButton=event.target.closest('[data-period]');if(periodButton){event.preventDefault();state.ui.analysisPeriod=periodButton.dataset.period;scheduleRender();return;}
     const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
     const bodyDate=event.target.closest('[data-body-date]');if(bodyDate){state.ui.selectedBodyDate=bodyDate.dataset.bodyDate;scheduleRender();return;}

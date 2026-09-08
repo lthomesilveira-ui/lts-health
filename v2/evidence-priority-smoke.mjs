@@ -9,7 +9,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
   await page.waitForSelector('[data-coverage-priority]');
 
   const priorityText=(await page.textContent('[data-coverage-priority]'))||'';
@@ -84,7 +84,7 @@ async function run(viewport,label){
   const waterRow=page.locator('[data-coverage-priority] .coveragePriorityRow').filter({hasText:'Sem registro de ingestão de água'}).first();
   if(await waterRow.count()!==1)throw new Error(`${label}: hydration coverage row missing`);
   await waterRow.locator('button').click();
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   await page.waitForSelector('[data-evidence-traceability]');
   const traceText=(await page.textContent('[data-evidence-traceability]'))||'';
   for(const expected of ['Rastreabilidade','Do arquivo recebido ao dado analisável','Separação de fontes preservada','não geram registros duplicados no histórico principal']){
@@ -95,7 +95,7 @@ async function run(viewport,label){
   }
 
   await page.evaluate(()=>{location.hash='#analise';});
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
   await page.waitForSelector('[data-coverage-priority]');
 
   await page.evaluate(async()=>{
@@ -134,3 +134,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health evidence priority and traceability smoke passed');
+

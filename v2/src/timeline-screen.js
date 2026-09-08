@@ -1,6 +1,6 @@
 import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows} from './core.js';
+import {screenTitle as title} from './product-shell.js';
 
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
 const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Tempo na cama',sleep_awake_h:'Tempo acordado',sleep_core_h:'Sono leve/Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio informado',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Calorias',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibras',dietary_water_ml:'Água'};

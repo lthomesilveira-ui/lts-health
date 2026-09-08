@@ -13,7 +13,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   await page.waitForSelector('#backupExportBtn');
 
   const localDateCheck=await page.evaluate(async()=>{
@@ -86,3 +86,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 verifiable structured backup smoke passed');
+

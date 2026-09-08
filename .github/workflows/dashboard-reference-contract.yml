@@ -1,15 +1,10 @@
 name: LTS Health Dashboard Reference Contract
 
 on:
-  push:
-    branches: [dashboard-approved-image-parity-v3, dashboard-reference-contract-v2]
   pull_request:
     branches: [main]
     paths:
-      - 'v2/dashboard-reference-contract.css'
-      - 'v2/REFERENCE_VISUAL_CONTRACT.md'
-      - 'v2/src/today-screen.js'
-      - 'v2/src/executive-cockpit.js'
+      - 'v2/**'
       - '.github/workflows/dashboard-reference-contract.yml'
   workflow_dispatch:
 
@@ -17,156 +12,73 @@ permissions:
   contents: read
 
 jobs:
-  reference-contract:
+  product-architecture-contract:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Static approved-image contract
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate canonical product contract
         run: |
-          set -euo pipefail
+          test -f v2/PRODUCT_ARCHITECTURE.md
+          test -f v2/FEEDBACK_LEDGER.md
           test -f v2/REFERENCE_VISUAL_CONTRACT.md
-          test -f v2/dashboard-reference-contract.css
-          grep -q './dashboard-reference-contract.css' v2/index.html
-          grep -q -- '--reference-canvas:#f6fafe' v2/dashboard-reference-contract.css
-          grep -q -- '--reference-sidebar:#17202f' v2/dashboard-reference-contract.css
-          grep -q 'grid-template-columns:211px' v2/dashboard-reference-contract.css
-          grep -q 'repeat(5,minmax(0,1fr))' v2/dashboard-reference-contract.css
-          grep -q 'repeat(3,minmax(0,1fr))' v2/dashboard-reference-contract.css
-          grep -q 'background:#eff6fe' v2/dashboard-reference-contract.css
-          grep -q 'background:#edfaf4' v2/dashboard-reference-contract.css
-          grep -q 'background:#fef5ee' v2/dashboard-reference-contract.css
-          grep -q 'background:#f3f1fe' v2/dashboard-reference-contract.css
-          grep -q 'background:#feeff4' v2/dashboard-reference-contract.css
-          grep -q 'Visão geral da sua saúde' v2/src/today-screen.js
-          grep -q 'Leitura principal' v2/src/today-screen.js
-          grep -q 'Sem dado de ingestão de água' v2/src/today-screen.js
-          grep -q 'Trazer do MFP' v2/src/today-screen.js
-          grep -q 'model.water.length' v2/src/today-screen.js
-          ! grep -q -- '--reference-bg:#0b1220' v2/dashboard-reference-contract.css
-          ! grep -q 'font-family:var(--reference-serif)' v2/dashboard-reference-contract.css
-          ! grep -R 'MutationObserver' v2/src v2/index.html
-          for file in v2/src/*.js; do node --check "$file"; done
+          test -f v2/executive-shell.css
+          test -f v2/cockpit.css
+          node --check v2/src/today-screen.js
+          node --check v2/src/main.js
+          node --check v2/src/product-shell.js
+          node v2/product-architecture-contract-smoke.mjs
+
+      - name: Reject superseded presentation layers
+        run: |
+          ! grep -q 'dashboard-parity.css' v2/index.html
+          ! grep -q 'dashboard-reference-contract.css' v2/index.html
+          ! grep -q 'executive-cockpit.js' v2/index.html
+          ! grep -q 'dashboard-reference-runtime.js' v2/index.html
+          ! grep -R "MutationObserver" v2/src v2/index.html
+          grep -q 'executive-shell.css' v2/index.html
+          grep -q 'cockpit.css' v2/index.html
 
       - name: Install browser runtime
         run: |
-          npm init -y >/dev/null 2>&1
-          npm install --no-save playwright@1.55.0
-          npx playwright install chromium
+          npm init -y
+          npm install --no-save playwright@1.58.2
+          npx playwright install --with-deps chromium
 
-      - name: Render and measure approved reference viewport
+      - name: Start local application
         run: |
-          set -euo pipefail
-          mkdir -p artifacts
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-reference.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          cat > dashboard-reference-run.mjs <<'EOF'
-          import {chromium} from 'playwright';
-          const browser=await chromium.launch({headless:true});
-          const base='http://127.0.0.1:4173/?fixture=1#hoje';
+          python3 -m http.server 4173 --directory v2 > /tmp/lts-health-http.log 2>&1 &
+          echo $! > /tmp/lts-health-http.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/lts-health-http.log
+          exit 1
 
-          const near=(value,target,tolerance,label)=>{
-            if(value==null||Math.abs(value-target)>tolerance)throw new Error(`${label}: ${value} outside ${target}±${tolerance}`);
-          };
-
-          async function inspect(viewport,label,path){
-            const page=await browser.newPage({viewport});
-            const errors=[];
-            page.on('pageerror',e=>errors.push(e.message));
-            page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
-            await page.goto(base,{waitUntil:'domcontentloaded'});
-            await page.waitForSelector('#app:not(.hidden)');
-            await page.waitForSelector('[data-executive-dashboard]');
-            await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
-            await page.waitForTimeout(350);
-
-            const metrics=await page.evaluate(()=>{
-              const one=s=>document.querySelector(s);
-              const rect=s=>one(s)?.getBoundingClientRect();
-              const style=s=>one(s)?getComputedStyle(one(s)):null;
-              const cards=[...document.querySelectorAll('.cockpitStatus')];
-              const analytics=[...document.querySelectorAll('.cockpitAnalyticsGrid .cockpitModule')];
-              const secondary=[...document.querySelectorAll('.cockpitSecondaryGrid .cockpitModule')];
-              const bottom=[...document.querySelectorAll('.cockpitBottomGrid > article')];
-              return{
-                overflow:document.documentElement.scrollWidth-window.innerWidth,
-                nav:rect('.primaryNav'),
-                canvas:style('.cockpitV3'),
-                title:style('.cockpitWelcome h1'),
-                cards:cards.map(el=>({rect:el.getBoundingClientRect(),style:getComputedStyle(el)})),
-                insight:rect('.cockpitInsightHero'),
-                analytics:analytics.map(el=>el.getBoundingClientRect()),
-                secondary:secondary.map(el=>el.getBoundingClientRect()),
-                bottom:bottom.map(el=>el.getBoundingClientRect())
-              };
-            });
-
-            if(metrics.overflow>3)throw new Error(`${label}: horizontal overflow ${metrics.overflow}px`);
-            if(metrics.cards.length!==5)throw new Error(`${label}: expected 5 executive cards`);
-            if(metrics.analytics.length!==3)throw new Error(`${label}: expected 3 analytical modules`);
-            if(metrics.secondary.length!==3)throw new Error(`${label}: expected 3 secondary modules`);
-            if(metrics.bottom.length!==3)throw new Error(`${label}: expected 3 closing modules`);
-            if(!metrics.insight)throw new Error(`${label}: main reading block missing`);
-
-            if(viewport.width===1536){
-              near(metrics.nav?.width,211,2,'sidebar width');
-              if(metrics.canvas?.backgroundColor!=='rgb(246, 250, 254)')throw new Error(`canvas must be light reference color, got ${metrics.canvas?.backgroundColor}`);
-              if(!metrics.title?.fontFamily||/georgia|palatino|iowan/i.test(metrics.title.fontFamily))throw new Error(`title must use sans-serif interface family, got ${metrics.title?.fontFamily}`);
-              const expected=['rgb(239, 246, 254)','rgb(237, 250, 244)','rgb(254, 245, 238)','rgb(243, 241, 254)','rgb(254, 239, 244)'];
-              metrics.cards.forEach((card,index)=>{
-                if(card.style.backgroundColor!==expected[index])throw new Error(`card ${index+1} background ${card.style.backgroundColor} != ${expected[index]}`);
-              });
-              const cardTops=new Set(metrics.cards.map(c=>Math.round(c.rect.top/2)*2));
-              if(cardTops.size!==1)throw new Error('five executive cards are not aligned in one row');
-              const analyticsTops=new Set(metrics.analytics.map(r=>Math.round(r.top/2)*2));
-              if(analyticsTops.size!==1)throw new Error('analytical modules are not aligned in one row');
-              near(metrics.cards[0].rect.height,146,4,'executive card height');
-              near(metrics.insight.height,86,5,'main reading height');
-              near(metrics.analytics[0].height,230,5,'analytical row height');
-              near(metrics.secondary[0].height,157,5,'secondary row height');
-              near(metrics.bottom[0].height,104,5,'closing row height');
-              await page.screenshot({path,fullPage:true});
-            }else{
-              await page.screenshot({path});
-              const analyticsGrid=page.locator('.cockpitAnalyticsGrid');
-              await analyticsGrid.scrollIntoViewIfNeeded();
-              await page.waitForTimeout(120);
-              await page.screenshot({path:'artifacts/reference-mobile-analytics.png'});
-              const bottomGrid=page.locator('.cockpitBottomGrid');
-              await bottomGrid.scrollIntoViewIfNeeded();
-              await page.waitForTimeout(120);
-              await page.screenshot({path:'artifacts/reference-mobile-bottom.png'});
-            }
-            if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
-            await page.close();
-          }
-
-          await inspect({width:1536,height:864},'approved-desktop','artifacts/reference-desktop-1536x864.png');
-          await inspect({width:390,height:844},'mobile','artifacts/reference-mobile.png');
-          await browser.close();
-          console.log('Approved-image dashboard reference gate passed');
-          EOF
-          node dashboard-reference-run.mjs
-
-      - name: Run existing dashboard regressions
+      - name: Validate product hierarchy and responsive journeys
         run: |
-          set -euo pipefail
-          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-regression.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          node v2/executive-dashboard-smoke.mjs
+          node v2/product-architecture-browser-smoke.mjs
           node v2/cockpit-smoke.mjs
-          node v2/product-finish-smoke.mjs
           node v2/navigation-resilience-smoke.mjs
-          node v2/source-continuity-unknown-smoke.mjs
+          node v2/product-architecture-visual-qa.mjs
 
-      - name: Upload autonomous visual QA
+      - name: Upload visual inspection evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dashboard-approved-image-reference
-          path: artifacts/*.png
+          name: product-architecture-visual-qa
+          path: artifacts/product-architecture
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Show server log on failure
+        if: failure()
+        run: cat /tmp/lts-health-http.log || true

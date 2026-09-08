@@ -1,6 +1,6 @@
 import {state,esc,fmtDate,norm,unique} from './core.js';
+import {screenTitle as title} from './product-shell.js';
 
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus?.[key]==='error';
 

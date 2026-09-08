@@ -9,7 +9,7 @@ async function run(viewport,label){
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto(base,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Insights');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
 
   const boundary=await page.evaluate(async()=>{
     const {buildIntegratedAnalysis}=await import('./src/integrated-analysis.js');
@@ -116,3 +116,4 @@ async function run(viewport,label){
 await run({width:1280,height:900},'desktop');
 await run({width:390,height:844},'mobile');
 console.log('LTS Health v2 integrated Insights smoke passed');
+

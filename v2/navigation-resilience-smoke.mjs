@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 
 const base='http://127.0.0.1:4173/?fixture=1';
-const routeTitles={bio:'Composição corporal',treinos:'Treinos',evolucao:'Evolução',analise:'Insights',tratamentos:'Protocolos',timeline:'Timeline',saude:'Saúde',nutricao:'Nutrição',dados:'Dados'};
+const routeTitles={bio:'Composição corporal',treinos:'Treinos',evolucao:'Evolução detalhada',analise:'Recuperação & análises',tratamentos:'Protocolos',timeline:'Timeline',saude:'Exames',nutricao:'Nutrição',dados:'Dados & fontes'};
 const focusableSelector='button:not([disabled]),a[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 async function waitRoute(page,route){
@@ -90,7 +90,7 @@ async function run(viewport,label){
   await page.evaluate(()=>history.replaceState(null,'',location.pathname+location.search));
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
   const restoredHash=await page.evaluate(()=>location.hash);
   if(restoredHash!=='#dados')throw new Error(`${label}: saved route was not restored after reload (${restoredHash||'sem hash'})`);
 

@@ -32,20 +32,20 @@ async function openToday(kind,viewport){
 async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}: page errors ${ctx.errors.join(' | ')}`);await ctx.browser.close();}
 
 {
-  const ctx=await open('segmental','evolucao','Evolução');
+  const ctx=await open('segmental','evolucao','Evolução detalhada');
   const metric=await ctx.page.locator('.metric').filter({hasText:'Análises segmentares'}).first().textContent();
   if(!metric?.includes('—')||!ctx.text.includes('medições segmentares não carregaram'))throw new Error('evolucao/segmental: failure hidden or rendered as zero');
   if(await ctx.page.locator('[data-segmental-date]').count())throw new Error('evolucao/segmental: stale date controls visible');
   await finish(ctx,'evolucao/segmental');
 }
 {
-  const ctx=await open('workouts','evolucao','Evolução');
+  const ctx=await open('workouts','evolucao','Evolução detalhada');
   const metric=await ctx.page.locator('.metric').filter({hasText:'Treinos'}).first().textContent();
   if(!metric?.includes('—')||!ctx.text.includes('ritmo semanal não pode ser calculado'))throw new Error('evolucao/workouts: failure hidden or rendered as zero');
   await finish(ctx,'evolucao/workouts');
 }
 {
-  const ctx=await open('nutrition','analise','Insights');
+  const ctx=await open('nutrition','analise','Recuperação & análises');
   const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Nutrição'}).first().textContent();
   const nutritionBlock=await ctx.page.locator('.card').filter({hasText:'Nutrição e hidratação'}).first().textContent();
   if(!metric?.includes('—')||!nutritionBlock?.includes('Nutrição indisponível')||!nutritionBlock?.includes('Os totais diários não carregaram agora.')||!ctx.text.includes('nenhum valor ausente foi substituído por zero'))throw new Error('analise/nutrition: failure hidden or rendered as zero');
@@ -53,7 +53,7 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   await finish(ctx,'analise/nutrition');
 }
 {
-  const ctx=await open('sourceMetrics','analise','Insights');
+  const ctx=await open('sourceMetrics','analise','Recuperação & análises');
   const metric=await ctx.page.locator('.analysisLead .metric').filter({hasText:'Sono'}).first().textContent();
   const recoveryBlock=await ctx.page.locator('.card').filter({hasText:'Recuperação'}).first().textContent();
   if(!metric?.includes('—')||!recoveryBlock?.includes('Recuperação indisponível')||!recoveryBlock?.includes('registros complementares não carregaram agora'))throw new Error('analise/sourceMetrics: failure hidden or rendered as zero');
@@ -66,13 +66,13 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
   await finish(ctx,'timeline/labs');
 }
 {
-  const ctx=await open('uploads','dados','Dados');
+  const ctx=await open('uploads','dados','Dados & fontes');
   if(!ctx.text.includes('Não foi possível verificar os arquivos agora'))throw new Error('dados/uploads: upload failure is not explicit');
   if(/Arquivos recebidos[\s\S]{0,80}\b0\b/i.test(ctx.text))throw new Error('dados/uploads: upload failure rendered as zero');
   await finish(ctx,'dados/uploads');
 }
 {
-  const ctx=await open('labs','dados','Dados');
+  const ctx=await open('labs','dados','Dados & fontes');
   const exams=await ctx.page.locator('.sourceCard').filter({hasText:'Exames'}).first().textContent();
   if(!exams?.includes('—')||!exams?.includes('não carregou agora'))throw new Error('dados/labs: failed exam area was presented as zero or absent');
   await finish(ctx,'dados/labs');
@@ -101,3 +101,4 @@ async function finish(ctx,label){if(ctx.errors.length)throw new Error(`${label}:
 }
 
 console.log('LTS Health v2 failure-state smoke passed');
+

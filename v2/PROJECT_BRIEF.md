@@ -17,15 +17,16 @@ Não é um repositório de cartões independentes, uma planilha de arquivos ou u
 | Área | Papel no produto |
 | --- | --- |
 | Início | Cockpit executivo com composição, treinos, nutrição/hidratação, recuperação e exames. |
+| Timeline | Linha do tempo pesquisável e filtrável entre os domínios. |
 | Composição | Histórico de medições, comparação segura entre datas e detalhe segmentar quando existir. |
 | Treinos | Sessão → exercício → série, calendário, grupos trabalhados, evolução e evidência complementar. |
-| Evolução | Mudanças longitudinais de composição e ritmo de treino, sem classificar o corpo como ideal ou inadequado. |
-| Insights | Leitura multidomínio descritiva, cobertura por janela e caminhos para aprofundamento. |
+| Recuperação e análises | Leitura multidomínio descritiva, sono por origem, cobertura por janela e caminhos para aprofundamento. |
 | Protocolos | Contexto temporal de registros preservados, sem inferir situação atual, causa ou orientação de uso. |
-| Timeline | Linha do tempo pesquisável e filtrável entre os domínios. |
 | Exames | Coletas, marcadores, unidades, referências, método, documentos e séries comparáveis. |
 | Nutrição | Totais diários, refeições, cobertura histórica e hidratação. |
 | Dados | Fontes, Inbox, processamento, limitações, proveniência e backup verificável. |
+
+`Evolução` permanece como rota de compatibilidade, mas suas capacidades pertencem a Composição e Treinos e não concorrem na navegação principal.
 
 ## Fontes que o produto precisa reconciliar
 
@@ -107,6 +108,8 @@ Uma entrega só está concluída quando:
 
 ## Documentos complementares
 
+- `PRODUCT_ARCHITECTURE.md`: tese, arquitetura de informação, hierarquia e contrato das jornadas.
+- `FEEDBACK_LEDGER.md`: feedbacks e dívidas com IDs estáveis, estado e evidência.
 - `EXECUTION_STATE.json`: fila operacional e bloqueios atuais.
 - `CONTINUITY_PROTOCOL.md`: procedimento obrigatório para retomar o projeto sem depender do chat.
 - `PROJECT_MASTER.md`: histórico de marcos e decisões técnicas.

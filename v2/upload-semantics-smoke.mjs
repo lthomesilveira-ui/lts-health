@@ -7,7 +7,7 @@ page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 await page.goto('http://127.0.0.1:4173/?fixture=1#dados',{waitUntil:'domcontentloaded'});
 await page.waitForSelector('#app:not(.hidden)');
-await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados');
+await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Dados & fontes');
 
 const result=await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');

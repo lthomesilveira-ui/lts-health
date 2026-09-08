@@ -4,34 +4,42 @@ const base='http://127.0.0.1:4173/?fixture=1';
 const forbidden=/\b(canonical|parity|backend|provenance[- ]first|readiness|PWA)\b/i;
 const browser=await chromium.launch({headless:true});
 
+async function clickRoute(page,nav,route){
+  const direct=page.locator(`${nav} [data-route="${route}"]`);
+  if(await direct.count()){await direct.click();return;}
+  await page.locator(`${nav} [data-route="mais"]`).click();
+  await page.waitForSelector('#moreSheet:not(.hidden)');
+  await page.locator(`#moreSheet [data-route="${route}"]`).click();
+}
+
 for(const [viewport,label] of [[{width:1280,height:900},'desktop'],[{width:390,height:844},'mobile']]){
   const page=await browser.newPage({viewport});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
   await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForSelector('#app:not(.hidden)');
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
 
-  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Bio');
+  await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   if((await page.locator('[data-body-date]').count())!==2)throw new Error(`${label}: Bio history is not interactive`);
   await page.click('[data-body-date="2026-01-01"]');
   await page.waitForFunction(()=>document.querySelector('[data-body-date="2026-01-01"]')?.classList.contains('active'));
   const detail=await page.locator('.bioDetail').textContent();
   if(!detail?.includes('01/01/2026')||!detail.includes('Detalhe da medição')||!detail.includes('Peso')||!detail.includes('MME'))throw new Error(`${label}: Bio measurement detail incomplete`);
 
-  await page.click(`${nav} [data-route="treinos"]`);await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
+  await clickRoute(page,nav,'treinos');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   await page.selectOption('#trainingPeriod','all');await page.click('[data-workout="workout-2"]');
   const session=await page.locator('.session.open').textContent();if(!session?.includes('Supino máquina')||!session.includes('Voador')||!session.includes('90 kg'))throw new Error(`${label}: workout session detail incomplete`);
 
-  await page.click(`${nav} [data-route="evolucao"]`);await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução');
+  await clickRoute(page,nav,'evolucao');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Evolução detalhada');
   if((await page.locator('[data-segmental-date]').count())<2)throw new Error(`${label}: segmental history incomplete`);
   if((await page.locator('.evolutionChangeTable .changeRow').count())<2)throw new Error(`${label}: body-to-body change history missing`);
   const evolution=await page.textContent('#screenHost');
   for(const expected of ['Análise segmentar','Gordura segmentar','Diferença entre lados','Mudança entre medições','Ritmo semanal de treinos'])if(!evolution.includes(expected))throw new Error(`${label}: evolution surface missing: ${expected}`);
   if(evolution.match(/\b(recomp|bulk|cut|ideal)\b/i))throw new Error(`${label}: evolution contains qualitative body classification`);
 
-  await page.click(`${nav} [data-route="analise"]`);await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Análise');
+  await clickRoute(page,nav,'analise');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Recuperação & análises');
   const analysis=await page.textContent('#screenHost');if(!analysis.includes('Treino × alimentação')||!analysis.includes('Sono antes do treino')||!analysis.includes('Entre as duas últimas bios'))throw new Error(`${label}: analysis evidence surfaces missing`);
 
-  await page.click(`${nav} [data-route="mais"]`);await page.click('#moreSheet [data-route="tratamentos"]');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Tratamentos');
+  await clickRoute(page,nav,'tratamentos');await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Protocolos');
   const treatment=await page.textContent('#screenHost');
   if(!treatment.includes('Histórico')||!treatment.includes('somente data, nome e origem'))throw new Error(`${label}: treatment history contract copy missing`);
   if(treatment.match(/\b(taken|dose|dosagem|ciclo|aplica[cç][aã]o|inje[cç][aã]o|administra[cç][aã]o)\b/i))throw new Error(`${label}: treatment history exposes operational treatment detail`);

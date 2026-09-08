@@ -3,9 +3,11 @@ import fs from 'node:fs/promises';
 
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFile(new URL(path,root),'utf8');
-const [rawState,brief,protocol,master,parity,dataScreen,todayScreen,migration,hardeningMigration,workflow,publicPayloadGuard,browserGateRunner,legacySmoke,timelineSmoke]=await Promise.all([
+const [rawState,brief,architecture,feedback,protocol,master,parity,dataScreen,todayScreen,migration,hardeningMigration,workflow,publicPayloadGuard,browserGateRunner,legacySmoke,timelineSmoke]=await Promise.all([
   read('v2/EXECUTION_STATE.json'),
   read('v2/PROJECT_BRIEF.md'),
+  read('v2/PRODUCT_ARCHITECTURE.md'),
+  read('v2/FEEDBACK_LEDGER.md'),
   read('v2/CONTINUITY_PROTOCOL.md'),
   read('v2/PROJECT_MASTER.md'),
   read('v2/PARITY_MATRIX.md'),
@@ -45,7 +47,10 @@ for(const task of state.tasks){
   }
 }
 
-assert.deepEqual(state.tasks.filter(task=>['ready','in_progress'].includes(task.status)).map(task=>task.id),[],'executable tasks remain');
+const executable=state.tasks.filter(task=>['ready','in_progress'].includes(task.status));
+for(const task of executable)assert.ok(state.current_package.task_ids.includes(task.id),`${task.id} is executable but not owned by the current package`);
+if(executable.length)assert.equal(state.current_package.status,'in_progress','executable work requires an in-progress package');
+else assert.equal(state.current_package.status,'done','a package without executable work must be done');
 const water=state.tasks.find(task=>task.id==='LTS-HYD-IMPORT-001');
 assert.equal(water?.status,'blocked_user');
 assert.equal(water?.priority,'P0');
@@ -58,13 +63,26 @@ assert.equal(longitudinal?.acceptance?.length,6);
 assert.deepEqual(longitudinal?.external_references,['https://github.com/lthomesilveira-ui/lts-health/issues/200']);
 const notebookUx=state.tasks.find(task=>task.id==='LTS-HYD-NOTEBOOK-UX-001');
 assert.equal(notebookUx?.status,'done');
-assert.ok(state.current_package.task_ids.includes(longitudinal.id));
-assert.ok(state.current_package.task_ids.includes(notebookUx.id));
-
-for(const text of [brief,protocol]){
-  assert.match(text,/EXECUTION_STATE\.json/);
-  assert.match(text,/não depend|sem depender/i);
+const productArchitecture=state.tasks.find(task=>task.id==='LTS-PRODUCT-ARCH-001');
+const experience=state.tasks.find(task=>task.id==='LTS-UX-P0-001');
+const domainJourneys=state.tasks.find(task=>task.id==='LTS-DOMAIN-JOURNEYS-001');
+for(const task of [productArchitecture,experience,domainJourneys]){
+  assert.ok(['in_progress','ready','done'].includes(task?.status),`${task?.id||'product task'} has an invalid package state`);
+  assert.ok(state.current_package.task_ids.includes(task.id));
 }
+assert.equal(state.current_package.id,'PKG-PRODUCT-ARCHITECTURE-RESET');
+const visualSource=state.tasks.find(task=>task.id==='LTS-VISUAL-SOURCE-001');
+assert.equal(visualSource?.status,'blocked_external');
+assert.match(visualSource?.blocker||'',/original approved image/i);
+assert.equal(state.authoritative_documents.product_architecture,'v2/PRODUCT_ARCHITECTURE.md');
+assert.equal(state.authoritative_documents.feedback_ledger,'v2/FEEDBACK_LEDGER.md');
+
+for(const text of [brief,feedback,protocol]){
+  assert.match(text,/EXECUTION_STATE\.json/);
+}
+for(const text of [brief,protocol])assert.match(text,/não depend|sem depender/i);
+assert.match(architecture,/assistente longitudinal privado de saúde/i);
+assert.match(feedback,/FB-014/);
 for(const phrase of ['falta desktop','Somente então promover','validar sessão autenticada com o treino mais recente'])assert.ok(!parity.includes(phrase),`stale parity phrase: ${phrase}`);
 assert.match(dataScreen,/data-water-import-pending/);
 assert.match(dataScreen,/data-entry="water-import"/);
@@ -80,6 +98,8 @@ for(const role of ['public','anon','authenticated','service_role'])assert.ok(har
 assert.match(master,/PROJECT_BRIEF\.md/);
 assert.match(master,/EXECUTION_STATE\.json/);
 assert.match(workflow,/node v2\/continuity-contract-smoke\.mjs/);
+assert.match(workflow,/node v2\/product-architecture-contract-smoke\.mjs/);
+assert.match(workflow,/product-architecture-browser-smoke\.mjs/);
 assert.match(workflow,/node v2\/public-payload-guard\.mjs/);
 for(const legacyWorkflow of [legacySmoke,timelineSmoke]){
   assert.match(legacyWorkflow,/node v2\/public-payload-guard\.mjs/);
@@ -94,7 +114,7 @@ assert.match(browserGateRunner,/TimeoutError\|ERR_CONNECTION_REFUSED\|page\\\.go
 assert.match(browserGateRunner,/retrying once/);
 assert.match(browserGateRunner,/if ! grep/,'deterministic failures must not be retried');
 
-const publicContinuity=[brief,protocol,rawState,master,parity].join('\n');
+const publicContinuity=[brief,architecture,feedback,protocol,rawState,master,parity].join('\n');
 for(const privateLiteral of ['700 mL','2.289','4.901','3.794','1.096'])assert.ok(!publicContinuity.includes(privateLiteral),`private operational value leaked: ${privateLiteral}`);
 
 console.log('LTS Health continuity contract passed');

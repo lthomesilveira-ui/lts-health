@@ -1,10 +1,10 @@
 import {state,esc,day,fmtDate,fmtNum,num,norm,unique} from './core.js';
+import {screenTitle as title} from './product-shell.js';
 import {
   bodyChangeModel,trainingDistributionModel,comparablePerformanceModel,
   nutritionPeriodModel,sleepCoverageModel,periodBounds,referenceDayFor
 } from './integrated-analysis.js';
 
-const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1>${description?`<p>${esc(description)}</p>`:''}</div></div>`;
 const failed=key=>state.domainStatus?.[key]==='error';
 const metric=(label,value,sub='')=>`<div class="card metric"><span>${esc(label)}</span><strong>${esc(value)}</strong>${sub?`<em>${esc(sub)}</em>`:''}</div>`;
 const deltaText=(value,digits=1,unit='')=>{const n=num(value);return n==null?'—':`${n>0?'+':''}${fmtNum(n,digits)}${unit?` ${unit}`:''}`;};
@@ -119,7 +119,7 @@ export function renderAnalysisHub(){
   const controls=`<div class="controls sectionGap"><label>Janela recente<select id="analysisPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo histórico</option></select></label></div>`;
   const failure=['body','workouts','nutrition','labs','sourceMetrics'].filter(failed);
   const failureNote=failure.length?`<div class="note sectionGap"><b>Leitura parcial</b><span>${failure.length} domínio(s) não carregaram agora. Os demais continuam visíveis e nenhum valor ausente foi substituído por zero.</span></div>`:'';
-  return`${title('Insights','Uma leitura organizada: o que mudou, o que aconteceu na janela recente e o que ainda falta de dado.')}${controls}${failureNote}
+  return`${title('Recuperação & análises','Sono por origem e leitura multidomínio: mudança, janela recente e limites de cobertura.','Contexto longitudinal')}${controls}${failureNote}
     <div class="note"><b>Como ler esta tela</b><span>Treino, nutrição e recuperação seguem a janela escolhida. Composição e exames usam o último histórico disponível porque têm cadência diferente.</span></div>
     ${digest(body,labs,training,nutrition,sleep,period)}
     ${windowLead({period,bounds,training,nutrition,sleep,protocols})}

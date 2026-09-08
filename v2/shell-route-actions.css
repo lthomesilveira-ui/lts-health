@@ -1,6 +1,5 @@
-/* Restore contextual registration actions outside the approved Dashboard shell.
-   dashboard-parity.css intentionally hides routeAction in the cockpit rail,
-   but Bio and Treinos still need their route-scoped actions on desktop. */
+/* Keep contextual registration actions on domain screens. The overview owns
+   its actions inside the relevant modules, so its top-bar action stays hidden. */
 @media (min-width:900px){
   body:not(:has(.cockpitV3)) .topActions{
     grid-template-columns:1fr 1fr!important;

@@ -1,12 +1,12 @@
 # LTS Health v2 — matriz objetiva de entrega
 
-Este arquivo é público e não contém dados pessoais de saúde. A entrada principal já foi promovida ao cockpit v2 e validada em sessão autenticada real; esta matriz registra o piso que futuras releases não podem perder. A fila atual fica em `EXECUTION_STATE.json`.
+Este arquivo é público e não contém dados pessoais de saúde. A entrada principal já foi promovida ao cockpit v2 e teve capacidades técnicas validadas em sessão autenticada real; esta matriz registra o piso que futuras releases não podem perder. O feedback de produto de 08/09/2026 reabriu a aceitação de UX, portanto “implementado” abaixo não significa “homologado como experiência final”. A fila atual fica em `EXECUTION_STATE.json`.
 
 ## Piso funcional vigente
 
 | Área | Capacidade preservada | Estado | Gate de regressão |
 | --- | --- | --- | --- |
-| Início | cockpit multidomínio, janelas recentes, último histórico esparso, leitura principal e rotas de aprofundamento | publicado e homologado | desktop/mobile, dados reais quando afetados, sem overflow |
+| Início | cockpit multidomínio, janelas recentes, último histórico esparso, leitura principal e rotas de aprofundamento | capacidade publicada; UX reaberta e em correção | desktop/mobile, hierarquia, legibilidade, dados reais quando afetados, sem overflow |
 | Composição | histórico, gráfico por métrica, comparação segura, detalhe de medição e segmentar quando disponível | implementado | não comparar origens incompatíveis; ausência não vira zero |
 | Treinos | sessão → exercício → série, calendário, grupos, evolução e evidência complementar | implementado e validado no estado autenticado | zero órfãos; unidade preservada; nenhuma sessão duplicada por telemetria |
 | Evolução | composição longitudinal, segmentar e ritmo de treino | implementado | comparações descritivas e somente entre pontos compatíveis |
@@ -38,5 +38,6 @@ Este arquivo é público e não contém dados pessoais de saúde. A entrada prin
 ## Estado de promoção
 
 - O cockpit v2 é a entrada pública principal.
+- A entrada pública atual é uma base funcional, não uma homologação vigente do produto final; o aceite depende dos gates de `PRODUCT_ARCHITECTURE.md` e do feedback registrado em `FEEDBACK_LEDGER.md`.
 - A versão anterior permanece preservada em `legacy.html` como fallback auditável.
 - Desenvolvimento continua em `architecture-v2` e chega a `main` por pull request e merge normal, nunca por force.

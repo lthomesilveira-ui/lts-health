@@ -1,9 +1,10 @@
 import {state,esc,day,num,fmtNum,fmtDate,unique,norm,since,workoutRows,exercisesFor,setsFor} from './core.js';
+import {screenTitle} from './product-shell.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
 const metric=(label,value,sub='')=>`<div class="card metric"><span>${esc(label)}</span><strong>${esc(value)}</strong>${sub?`<em>${esc(sub)}</em>`:''}</div>`;
-const title=()=>`<div class="screenTitle"><div><h1>Treinos</h1><p>Sessões, exercícios, séries e evolução por exercício.</p></div></div>`;
+const title=()=>screenTitle('Treinos','Ritmo, sessões e progressão até o detalhe de exercício e série.');
 const failed=key=>state.domainStatus[key]==='error';
 const domainError=text=>`<div class="errorState"><b>${esc(text)}</b><span>Os demais dados continuam disponíveis. Tente atualizar para carregar esta parte novamente.</span></div>`;
 const monthKey=value=>day(value).slice(0,7);

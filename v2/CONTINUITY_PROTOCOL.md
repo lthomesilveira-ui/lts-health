@@ -6,16 +6,17 @@ Objetivo: qualquer nova sessão deve conseguir retomar o projeto com o estado re
 
 1. Código, migrations, banco privado e evidência autenticada executada.
 2. `EXECUTION_STATE.json`, que contém a fila operacional atual.
-3. `PROJECT_BRIEF.md` e contratos específicos de produto/dados/visual.
-4. `PROJECT_MASTER.md`, usado como histórico de marcos, não como fila.
-5. Issues e pull requests do GitHub.
-6. Arquivos de passagem e histórico de conversa, usados para recuperar contexto ainda não formalizado.
+3. `PRODUCT_ARCHITECTURE.md` e `FEEDBACK_LEDGER.md`, que registram intenção, hierarquia, feedbacks e dívidas.
+4. `PROJECT_BRIEF.md` e contratos específicos de produto/dados/visual.
+5. `PROJECT_MASTER.md`, usado como histórico de marcos, não como fila.
+6. Issues e pull requests do GitHub.
+7. Arquivos de passagem e histórico de conversa, usados para recuperar contexto ainda não formalizado.
 
-Se duas fontes divergirem, a evidência executada mais recente prevalece. A divergência deve ser corrigida na documentação no mesmo pacote; não pode continuar como ambiguidade silenciosa.
+Se duas fontes divergirem, a evidência executada mais recente prevalece, exceto quando um feedback posterior do usuário reabre explicitamente a aceitação do produto. A divergência deve ser corrigida na documentação no mesmo pacote; não pode continuar como ambiguidade silenciosa.
 
 ## Ritual obrigatório ao retomar
 
-1. Rebuscar imediatamente `main`, `architecture-v2`, `product-clarity-p0`, `v2/PROJECT_MASTER.md`, `v2/PROJECT_BRIEF.md` e `v2/EXECUTION_STATE.json`.
+1. Rebuscar imediatamente `main`, `architecture-v2`, `product-clarity-p0`, `v2/PROJECT_MASTER.md`, `v2/PROJECT_BRIEF.md`, `v2/PRODUCT_ARCHITECTURE.md`, `v2/FEEDBACK_LEDGER.md` e `v2/EXECUTION_STATE.json`.
 2. Conferir pull requests, workflows e issues posteriores à última evidência registrada.
 3. Auditar somente metadados agregados/operacionais no banco; dados pessoais não entram no repositório público.
 4. Recalcular a fila:
@@ -35,6 +36,7 @@ Antes de cada escrita, reler os heads de `main`, `architecture-v2` e `product-cl
 
 - Todo item tem ID estável, prioridade, responsável, critério de aceite, evidência, próximo passo e bloqueio quando houver.
 - `done` exige evidência executada; intenção, código não publicado ou CI pendente não bastam.
+- Um gate técnico anterior não prevalece sobre feedback posterior que rejeite a experiência publicada; nesse caso, a tarefa de produto precisa ser reaberta com novo critério de aceite.
 - Item bloqueado não conta como executável.
 - Trabalho contínuo de QA é regra de release, não pendência infinita.
 - Uma limitação de dados aceita não vira tarefa interna até existir uma ação concreta e segura.

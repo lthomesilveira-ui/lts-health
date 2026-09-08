@@ -201,15 +201,11 @@ export function renderTraceabilityPanel(model){
   </section>`;
 }
 
-function routeTitle(){
-  return document.querySelector('#screenHost h1')?.textContent?.trim()||'';
-}
 export function mountEvidencePanels(){
   if(typeof document==='undefined')return;
   const host=document.querySelector('#screenHost');
   if(!host)return;
-  const heading=routeTitle();
-  if(heading==='Insights'&&!host.querySelector('[data-coverage-priority]')){
+  if(state.route==='analise'&&!host.querySelector('[data-coverage-priority]')){
     const period=state.ui.analysisPeriod||'365';
     const holder=document.createElement('div');
     holder.innerHTML=renderCoveragePriorityPanel(coveragePriorityModel(state.data,state.domainStatus,period));
@@ -217,7 +213,7 @@ export function mountEvidencePanels(){
     const anchor=host.querySelector('.analysisDigest');
     if(anchor&&panel)anchor.after(panel);
   }
-  if(heading==='Dados'&&!host.querySelector('[data-evidence-traceability]')){
+  if(state.route==='dados'&&!host.querySelector('[data-evidence-traceability]')){
     const holder=document.createElement('div');
     holder.innerHTML=renderTraceabilityPanel(traceabilityModel(state.data,state.domainStatus));
     const panel=holder.firstElementChild;
