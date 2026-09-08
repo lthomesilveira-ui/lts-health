@@ -39,4 +39,5 @@ jobs:
           ! grep -R "tadhkamnwtsbdozwkyut" --exclude-dir=.git --exclude='*.yml' --include='*.js' --include='*.html' --include='*.css' .
       - name: No private health payloads
         run: |
-          ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
+          node v2/public-payload-guard.mjs
+          node v2/continuity-contract-smoke.mjs

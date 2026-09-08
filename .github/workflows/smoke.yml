@@ -82,4 +82,5 @@ jobs:
           grep -q "activateTab" search-product.js
       - name: No private payload files
         run: |
-          ! find . -type f \( -name '*.zip' -o -name '*.pdf' -o -name '*.csv' -o -name '*.json' \) -not -path './.git/*' | grep .
+          node v2/public-payload-guard.mjs
+          node v2/continuity-contract-smoke.mjs
