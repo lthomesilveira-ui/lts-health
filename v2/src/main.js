@@ -91,10 +91,13 @@ function render(){
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
   if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
-  const context=renderedRoute===state.route?captureRenderContext(host):{openDisclosures:[],focus:null};
+  const routeChanged=renderedRoute!==state.route;
+  const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
-  applyControlState();mountEvidencePanels();restoreRenderContext(host,context);syncNav();renderedRoute=state.route;
+  applyControlState();mountEvidencePanels();restoreRenderContext(host,context);
+  if(routeChanged)host.scrollTo({top:0,left:0,behavior:'auto'});
+  syncNav();renderedRoute=state.route;
 }
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
