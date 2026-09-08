@@ -1,4 +1,4 @@
-import {state,esc,fmtDate,norm} from './core.js';
+import {state,esc,fmtDate,norm,countLabel} from './core.js';
 import {sourceStatusFor,sourceCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
@@ -64,7 +64,7 @@ function previewNotice(preview){
 }
 function previewDetail(preview){
   if(!preview)return'<span class="processingMuted">Sem detalhe adicional do processamento.</span>';
-  const facts=[preview.detected_format?`Formato: ${String(preview.detected_format).toUpperCase()}`:null,preview.row_count!=null?`${preview.row_count} registro(s)`:null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean),notice=previewNotice(preview);
+  const facts=[preview.detected_format?`Formato: ${String(preview.detected_format).toUpperCase()}`:null,preview.row_count!=null?countLabel(preview.row_count,'registro','registros'):null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean),notice=previewNotice(preview);
   return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='inspected'?'ok':'')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${notice?`<small>${esc(notice)}</small>`:''}</div>`;
 }
 function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
@@ -118,7 +118,7 @@ function complementaryCoverageGroups(rows){
 function complementaryCoverage(rows){
   const groups=complementaryCoverageGroups(rows);
   if(!groups.length)return '<div class="complementaryCoverage" data-complementary-coverage><div class="coverageHead"><div><h3>Cobertura complementar preservada</h3><p>Nenhuma série complementar está aguardando uma regra segura agora.</p></div></div></div>';
-  return `<div class="complementaryCoverage" data-complementary-coverage><div class="coverageHead"><div><h3>Cobertura complementar preservada</h3><p>Uma linha por origem, métrica e unidade. As séries continuam separadas: esta visão não calcula média, tendência nem combina fontes.</p></div>${pill(`${groups.length} série(s)`)}</div><div class="coverageList">${groups.map(group=>`<div class="coverageRow"><div class="coverageIdentity"><b>${esc(sourceFamilyLabel(group.family))}</b><small>${esc(metricCoverageLabels[group.metric]||'Outra métrica')}</small></div><div class="coveragePeriod"><span>Período</span><b>${group.first&&group.last?`${esc(fmtDate(group.first))} → ${esc(fmtDate(group.last))}`:'data não informada'}</b></div><div class="coverageUnit"><span>Unidade</span><b>${esc(group.unit)}</b></div><div class="coverageCount"><strong>${group.count}</strong><span>${group.count===1?'registro':'registros'}</span></div></div>`).join('')}</div><p class="footerNote">Contagens e períodos descrevem apenas cobertura da fonte. Valores individuais e payloads brutos não aparecem aqui.</p></div>`;
+  return `<div class="complementaryCoverage" data-complementary-coverage><div class="coverageHead"><div><h3>Cobertura complementar preservada</h3><p>Uma linha por origem, métrica e unidade. As séries continuam separadas: esta visão não calcula média, tendência nem combina fontes.</p></div>${pill(countLabel(groups.length,'série','séries'))}</div><div class="coverageList">${groups.map(group=>`<div class="coverageRow"><div class="coverageIdentity"><b>${esc(sourceFamilyLabel(group.family))}</b><small>${esc(metricCoverageLabels[group.metric]||'Outra métrica')}</small></div><div class="coveragePeriod"><span>Período</span><b>${group.first&&group.last?`${esc(fmtDate(group.first))} → ${esc(fmtDate(group.last))}`:'data não informada'}</b></div><div class="coverageUnit"><span>Unidade</span><b>${esc(group.unit)}</b></div><div class="coverageCount"><strong>${group.count}</strong><span>${group.count===1?'registro':'registros'}</span></div></div>`).join('')}</div><p class="footerNote">Contagens e períodos descrevem apenas cobertura da fonte. Valores individuais e payloads brutos não aparecem aqui.</p></div>`;
 }
 
 function reviewInbox(uploads,previews,issues,sourceMetrics){
@@ -140,7 +140,7 @@ function reviewInbox(uploads,previews,issues,sourceMetrics){
     </div>
     ${userActionBlock}
     ${internalBlock}
-    <div class="reviewQueue"><div class="reviewQueueHead"><div><h3>O que está guardado aguardando uma regra segura</h3><p>Resumo por assunto. Fontes sobrepostas continuam separadas e não são somadas.</p></div>${heldRows?pill(`${heldRows.length} registro(s)`):''}</div>${reviewTopicCards(sourceMetrics)}</div>
+    <div class="reviewQueue"><div class="reviewQueueHead"><div><h3>O que está guardado aguardando uma regra segura</h3><p>Resumo por assunto. Fontes sobrepostas continuam separadas e não são somadas.</p></div>${heldRows?pill(countLabel(heldRows.length,'registro','registros')):''}</div>${reviewTopicCards(sourceMetrics)}</div>
   </section>`;
 }
 
@@ -158,7 +158,7 @@ function provenanceOverview(metricRows,workoutEvidenceRows){
   };
   if(!metricsFailed)for(const row of metricRows||[])add(row.source_family,row.canonical_status,row.metric_date,'métricas');
   if(!evidenceFailed)for(const row of workoutEvidenceRows||[])add(row.source_family,row.evidence_status,row.workout_date,'telemetria de treino');
-  const cards=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total||sourceFamilyLabel(a[0]).localeCompare(sourceFamilyLabel(b[0]),'pt-BR')).map(([family,group])=>`<div class="sourceCard provenanceCard"><div><b>${esc(sourceFamilyLabel(family))}</b><small>${group.latest?`dados até ${esc(fmtDate(group.latest))} · `:''}${group.confirmed} confirmado(s) · ${group.review} aguardando conferência${group.preserved?` · ${group.preserved} preservado(s) sem uso automático`:''} · ${esc([...group.kinds].join(' + '))}</small></div><span>${group.total}</span></div>`).join('');
+  const cards=[...groups.entries()].sort((a,b)=>b[1].total-a[1].total||sourceFamilyLabel(a[0]).localeCompare(sourceFamilyLabel(b[0]),'pt-BR')).map(([family,group])=>`<div class="sourceCard provenanceCard"><div><b>${esc(sourceFamilyLabel(family))}</b><small>${group.latest?`dados até ${esc(fmtDate(group.latest))} · `:''}${countLabel(group.confirmed,'confirmado','confirmados')} · ${group.review} aguardando conferência${group.preserved?` · ${countLabel(group.preserved,'preservado','preservados')} sem uso automático`:''} · ${esc([...group.kinds].join(' + '))}</small></div><span>${group.total}</span></div>`).join('');
   const partial=metricsFailed?'<p class="footerNote">As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.</p>':evidenceFailed?'<p class="footerNote">As evidências complementares de treino não carregaram agora; as origens das métricas continuam exibidas.</p>':'';
   const coverage=metricsFailed?'':complementaryCoverage(metricRows);
   return `${partial}<div class="sourceGrid provenanceGrid">${cards||'<div class="sourceCard"><div><b>Sem registros separados por origem</b><small>Nenhum registro desse tipo foi carregado.</small></div><span>0</span></div>'}</div>${coverage}<p class="footerNote">Registros aguardando conferência permanecem separados dos dados confirmados. Uma fonte não é somada a outra automaticamente.</p>`;

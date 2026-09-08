@@ -1,4 +1,4 @@
-import {state,day,num,fmtNum} from './core.js';
+import {state,day,num,fmtNum,countLabel} from './core.js';
 import {executiveCockpitModel} from './today-screen.js';
 
 const periodOptions=[
@@ -85,9 +85,9 @@ function insightHeadline(model){
     const muscle=signedShort(model.body.delta?.muscleKg),fat=signedShort(model.body.delta?.fatKg);
     if(muscle||fat)parts.push(`composição: ${muscle?`músculo ${muscle}`:''}${muscle&&fat?' e ':''}${fat?`gordura ${fat}`:''}`);
   }
-  if(model?.training?.available)parts.push(`${model.training.totalSessions||0} sessão(ões) de treino`);
+  if(model?.training?.available)parts.push(countLabel(model.training.totalSessions||0,'sessão de treino','sessões de treino'));
   if(model?.nutrition?.coveragePct!=null)parts.push(`${model.nutrition.coveragePct}% de cobertura nutricional`);
-  if(!parts.length&&model?.labs?.collections)parts.push(`${model.labs.collections} coleta(s) de exames na janela`);
+  if(!parts.length&&model?.labs?.collections)parts.push(`${countLabel(model.labs.collections,'coleta de exames','coletas de exames')} na janela`);
   if(!parts.length)return'Ainda não há cobertura suficiente para uma leitura integrada desta janela.';
   const sentence=`Na janela, ${parts.join(', com ')}.`;
   return sentence.charAt(0).toUpperCase()+sentence.slice(1);

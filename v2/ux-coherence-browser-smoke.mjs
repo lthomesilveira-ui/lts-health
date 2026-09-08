@@ -50,6 +50,12 @@ async function run(viewport,label){
   await page.screenshot({path:`${output}/${label}-training.png`,fullPage:false});
   await page.locator('details.uxDisclosure summary').first().click();
   if(!await page.locator('details.uxDisclosure').first().evaluate(node=>node.open))throw new Error(`${label}/treinos: progressive section did not open`);
+  const exerciseDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'});
+  await exerciseDisclosure.locator('summary').click();
+  await page.fill('#exerciseQuery','supino');
+  await page.waitForFunction(()=>document.querySelector('#exerciseQuery')?.value==='supino');
+  if(!await exerciseDisclosure.evaluate(node=>node.open))throw new Error(`${label}/treinos: progressive section closed while filtering`);
+  if(await page.locator('#exerciseQuery').evaluate(node=>document.activeElement!==node))throw new Error(`${label}/treinos: search focus was lost while filtering`);
 
   await openRoute(page,'nutricao','Nutrição');
   if(await page.locator('#nutritionPeriod').inputValue()!=='90')throw new Error(`${label}/nutricao: global period was lost`);

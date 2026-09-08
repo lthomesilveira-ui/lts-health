@@ -16,7 +16,7 @@ async function run(viewport,label){
   await page.waitForSelector('.bioLatestLead');
   const latestLead=(await page.locator('.bioLatestLead').textContent())||'';
   if(!latestLead.includes('Última medição')||!latestLead.includes('01/02/2026'))throw new Error(`${label}: latest body date is not explicit`);
-  if(!latestLead.includes('2 medição(ões) preservadas'))throw new Error(`${label}: body history count missing from latest summary`);
+  if(!latestLead.includes('2 medições preservadas'))throw new Error(`${label}: body history count missing from latest summary`);
 
   const mobile=viewport.width<720;
   const nav=mobile?'#mobileNav':'#primaryNav';

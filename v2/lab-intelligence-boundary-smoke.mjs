@@ -27,7 +27,7 @@ async function run(viewport,label){
   if(result.missingKind!=='coverage')throw new Error(`${label}: unitless lab values were promoted as longitudinal change (${result.missingKind})`);
   if(!result.missingSummary.includes('unidade presente'))throw new Error(`${label}: missing-unit boundary is not explicit (${result.missingSummary})`);
   if(result.splitKind!=='change')throw new Error(`${label}: valid same-source comparison was lost (${result.splitKind})`);
-  if(!result.splitSummary.includes('1 biomarcador(es)'))throw new Error(`${label}: same-day laboratories were merged into one comparison (${result.splitSummary})`);
+  if(!result.splitSummary.includes('1 biomarcador comparável'))throw new Error(`${label}: same-day laboratories were merged into one comparison (${result.splitSummary})`);
   await browser.close();
 }
 

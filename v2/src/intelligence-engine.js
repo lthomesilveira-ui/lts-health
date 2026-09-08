@@ -1,4 +1,4 @@
-import {day,num,norm,unique} from './core.js';
+import {day,num,norm,unique,countLabel} from './core.js';
 import {stableAppleMetricTypes} from './source-status.js';
 
 const loaded=(status,key)=>status?.[key]!=='error';
@@ -43,7 +43,7 @@ function workoutRhythm(data,status,ref){
   const previous=rows.filter(r=>inRange(r.workout_date,previousStart,previousEnd)).length;
   const delta=recent-previous;
   const direction=delta===0?'permaneceu igual':delta>0?'aumentou':'diminuiu';
-  return{kind:'change',title:'Ritmo de treino em períodos equivalentes',summary:`A frequência registrada ${direction}: ${previous} sessão(ões) nos 28 dias anteriores e ${recent} nos 28 dias mais recentes.`,route:'treinos',priority:delta===0?68:82,meta:{recent,previous,delta}};
+  return{kind:'change',title:'Ritmo de treino em períodos equivalentes',summary:`A frequência registrada ${direction}: ${countLabel(previous,'sessão','sessões')} nos 28 dias anteriores e ${countLabel(recent,'sessão','sessões')} nos 28 dias mais recentes.`,route:'treinos',priority:delta===0?68:82,meta:{recent,previous,delta}};
 }
 
 function bestComparablePerformance(data,status){
@@ -71,7 +71,7 @@ function bodyIntervalContext(data,status){
   const previous=body.at(-2),latest=body.at(-1),start=day(previous.measured_at),end=day(latest.measured_at);
   const workouts=structuredWorkouts(data.workouts).filter(w=>day(w.workout_date)>start&&day(w.workout_date)<=end);
   const nutritionDays=uniqueDays((data.nutrition||[]).filter(n=>day(n.nutrition_date)>start&&day(n.nutrition_date)<=end),'nutrition_date');
-  return{kind:'cross',title:'Contexto entre as duas últimas medições',summary:`No intervalo de ${prettyDate(start)} a ${prettyDate(end)}, há ${workouts.length} treino(s) e ${nutritionDays.length} dia(s) com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,route:'analise',priority:91};
+  return{kind:'cross',title:'Contexto entre as duas últimas medições',summary:`No intervalo de ${prettyDate(start)} a ${prettyDate(end)}, há ${countLabel(workouts.length,'treino','treinos')} e ${countLabel(nutritionDays.length,'dia','dias')} com alimentação registrada. Esses dados ficam juntos como contexto, sem atribuir causa às mudanças corporais.`,route:'analise',priority:91};
 }
 
 function workoutNutritionContext(data,status,ref){
@@ -79,7 +79,7 @@ function workoutNutritionContext(data,status,ref){
   const start=addDays(ref,-55),workouts=structuredWorkouts(data.workouts).filter(w=>inRange(w.workout_date,start,ref));if(!workouts.length)return null;
   const nutritionDays=new Set(uniqueDays((data.nutrition||[]).filter(n=>inRange(n.nutrition_date,start,ref)),'nutrition_date'));
   const paired=workouts.filter(w=>nutritionDays.has(day(w.workout_date))).length,coverage=pct(paired,workouts.length);
-  return{kind:coverage>=70?'cross':'coverage',title:coverage>=70?'Treino × alimentação tem boa cobertura':'Alimentação limita o cruzamento com treinos',summary:`${paired} de ${workouts.length} sessão(ões) nas últimas 8 semanas têm alimentação registrada no mesmo dia (${coverage}%). Isso mede cobertura de dados, não efeito sobre performance.`,route:'analise',priority:coverage>=70?84:88};
+  return{kind:coverage>=70?'cross':'coverage',title:coverage>=70?'Treino × alimentação tem boa cobertura':'Alimentação limita o cruzamento com treinos',summary:`${paired} de ${countLabel(workouts.length,'sessão','sessões')} nas últimas 8 semanas ${workouts.length===1?'tem':'têm'} alimentação registrada no mesmo dia (${coverage}%). Isso mede cobertura de dados, não efeito sobre performance.`,route:'analise',priority:coverage>=70?84:88};
 }
 
 function labCollections(rows){
@@ -107,21 +107,21 @@ function labContext(data,status){
   pairs.sort((a,b)=>b.count-a.count||b.overlap-a.overlap||b.sameLab-a.sameLab||String(a.current.lab).localeCompare(String(b.current.lab),'pt-BR')||String(a.prior.lab).localeCompare(String(b.prior.lab),'pt-BR'));
   const best=pairs[0];
   if(!best?.count)return{kind:'coverage',title:'Exames ainda sem comparação direta segura',summary:`Há coletas em ${prettyDate(previous)} e ${prettyDate(latest)}, mas ainda não há biomarcadores com valor numérico, unidade presente e exatamente igual em duas coletas comparáveis.`,route:'saude',priority:89};
-  return{kind:'change',title:'Exames têm nova comparação disponível',summary:`As coletas de ${prettyDate(previous)} e ${prettyDate(latest)} têm ${best.count} biomarcador(es) comparável(is) com unidade registrada e igual.`,route:'saude',priority:88};
+  return{kind:'change',title:'Exames têm nova comparação disponível',summary:`As coletas de ${prettyDate(previous)} e ${prettyDate(latest)} têm ${countLabel(best.count,'biomarcador comparável','biomarcadores comparáveis')} com unidade registrada e igual.`,route:'saude',priority:88};
 }
 
 function metricCoverage(data,status,ref){
   if(!loaded(status,'metrics'))return{kind:'unavailable',title:'Atividade indisponível',summary:'As métricas de atividade não carregaram nesta atualização.',route:'timeline',priority:92};
   const start=addDays(ref,-13),rows=canonicalActivityRows(data.metrics).filter(m=>inRange(m.measured_at,start,ref));
   const activity=uniqueDays(rows,'measured_at').length;
-  return{kind:activity>=7?'cross':'coverage',title:'Cobertura recente de atividade',summary:`Nos 14 dias mais recentes com dados, há atividade confirmada em ${activity} dia(s). Sono permanece fora desta leitura até a política de sobreposição entre fontes ser validada.`,route:'timeline',priority:74};
+  return{kind:activity>=7?'cross':'coverage',title:'Cobertura recente de atividade',summary:`Nos 14 dias mais recentes com dados, há atividade confirmada em ${countLabel(activity,'dia','dias')}. Sono permanece fora desta leitura até a política de sobreposição entre fontes ser validada.`,route:'timeline',priority:74};
 }
 
 function pendingData(data){
   const uploads=(data.uploads||[]).filter(u=>['review_required','failed','uploaded','processing'].includes(String(u.status||'')));
   const candidates=(data.sourceMetrics||[]).filter(r=>['candidate','held'].includes(String(r.canonical_status||'').toLowerCase()));
   if(!uploads.length&&!candidates.length)return null;
-  const parts=[];if(uploads.length)parts.push(`${uploads.length} arquivo(s) ainda em processamento ou revisão`);if(candidates.length)parts.push(`${candidates.length} registro(s) por origem aguardando conferência`);
+  const parts=[];if(uploads.length)parts.push(`${countLabel(uploads.length,'arquivo','arquivos')} ainda em processamento ou revisão`);if(candidates.length)parts.push(`${countLabel(candidates.length,'registro','registros')} por origem aguardando conferência`);
   return{kind:'coverage',title:'Há dados recebidos ainda fora da visão principal',summary:`${parts.join(' · ')}. Eles só entram nas análises quando estiverem prontos para comparação.`,route:'dados',priority:90};
 }
 
@@ -129,11 +129,11 @@ function coverageRows(data,status,ref){
   const body=loaded(status,'body')?(data.body||[]):null,workouts=loaded(status,'workouts')?structuredWorkouts(data.workouts):null,nutrition=loaded(status,'nutrition')?(data.nutrition||[]):null,metrics=loaded(status,'metrics')?canonicalActivityRows(data.metrics):null,labs=loaded(status,'labs')?(data.labs||[]):null;
   const start56=addDays(ref,-55),start28=addDays(ref,-27);
   return[
-    {key:'body',label:'Composição',route:'evolucao',state:body==null?'unavailable':body.length>=2?'strong':body.length?'partial':'limited',detail:body==null?'indisponível':`${body.length} medição(ões) no histórico`},
-    {key:'workouts',label:'Treinos',route:'treinos',state:workouts==null?'unavailable':workouts.filter(w=>inRange(w.workout_date,start56,ref)).length>=4?'strong':workouts.length?'partial':'limited',detail:workouts==null?'indisponível':`${workouts.filter(w=>inRange(w.workout_date,start56,ref)).length} sessão(ões) nas últimas 8 semanas`},
-    {key:'nutrition',label:'Alimentação',route:'nutricao',state:nutrition==null?'unavailable':uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length>=14?'strong':nutrition.length?'partial':'limited',detail:nutrition==null?'indisponível':`${uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length} dia(s) nos últimos 28 dias`},
-    {key:'metrics',label:'Atividade',route:'timeline',state:metrics==null?'unavailable':uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length>=14?'strong':metrics.length?'partial':'limited',detail:metrics==null?'indisponível':`${uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length} dia(s) com atividade confirmada nos últimos 28 dias`},
-    {key:'labs',label:'Exames',route:'saude',state:labs==null?'unavailable':uniqueDays(labs,'collection_date').length>=2?'strong':labs.length?'partial':'limited',detail:labs==null?'indisponíveis':`${uniqueDays(labs,'collection_date').length} data(s) de coleta estruturada(s)`}
+    {key:'body',label:'Composição',route:'evolucao',state:body==null?'unavailable':body.length>=2?'strong':body.length?'partial':'limited',detail:body==null?'indisponível':`${countLabel(body.length,'medição','medições')} no histórico`},
+    {key:'workouts',label:'Treinos',route:'treinos',state:workouts==null?'unavailable':workouts.filter(w=>inRange(w.workout_date,start56,ref)).length>=4?'strong':workouts.length?'partial':'limited',detail:workouts==null?'indisponível':`${countLabel(workouts.filter(w=>inRange(w.workout_date,start56,ref)).length,'sessão','sessões')} nas últimas 8 semanas`},
+    {key:'nutrition',label:'Alimentação',route:'nutricao',state:nutrition==null?'unavailable':uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length>=14?'strong':nutrition.length?'partial':'limited',detail:nutrition==null?'indisponível':`${countLabel(uniqueDays(nutrition.filter(n=>inRange(n.nutrition_date,start28,ref)),'nutrition_date').length,'dia','dias')} nos últimos 28 dias`},
+    {key:'metrics',label:'Atividade',route:'timeline',state:metrics==null?'unavailable':uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length>=14?'strong':metrics.length?'partial':'limited',detail:metrics==null?'indisponível':`${countLabel(uniqueDays(metrics.filter(m=>inRange(m.measured_at,start28,ref)),'measured_at').length,'dia','dias')} com atividade confirmada nos últimos 28 dias`},
+    {key:'labs',label:'Exames',route:'saude',state:labs==null?'unavailable':uniqueDays(labs,'collection_date').length>=2?'strong':labs.length?'partial':'limited',detail:labs==null?'indisponíveis':countLabel(uniqueDays(labs,'collection_date').length,'data de coleta estruturada','datas de coleta estruturadas')}
   ];
 }
 

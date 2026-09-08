@@ -18,6 +18,7 @@ const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
+let renderedRoute=null;
 const mobileMoreRoutes=new Set(['bio','nutricao','saude','tratamentos','evolucao','dados']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
@@ -54,15 +55,43 @@ function routeFromLocation(){
 
 function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;}
 
+function disclosureKey(details){
+  const explicit=details?.dataset?.disclosure;
+  if(explicit)return explicit;
+  const summary=details?.querySelector(':scope > summary');
+  return String(summary?.querySelector('b')?.textContent||summary?.textContent||'').trim();
+}
+
+function captureRenderContext(host){
+  const openDisclosures=[...host.querySelectorAll('details[open]')].map(disclosureKey).filter(Boolean);
+  const active=host.contains(document.activeElement)?document.activeElement:null;
+  if(!active?.id)return{openDisclosures,focus:null};
+  let selectionStart=null,selectionEnd=null;
+  try{selectionStart=active.selectionStart;selectionEnd=active.selectionEnd;}catch{}
+  return{openDisclosures,focus:{id:active.id,selectionStart,selectionEnd}};
+}
+
+function restoreRenderContext(host,context){
+  const open=new Set(context.openDisclosures||[]);
+  for(const details of host.querySelectorAll('details'))if(open.has(disclosureKey(details)))details.open=true;
+  if(!context.focus?.id)return;
+  const active=$(context.focus.id);if(!active)return;
+  try{
+    active.focus({preventScroll:true});
+    if(context.focus.selectionStart!=null&&typeof active.setSelectionRange==='function')active.setSelectionRange(context.focus.selectionStart,context.focus.selectionEnd);
+  }catch{}
+}
+
 function render(){
   renderQueued=false;if(!$('app')||$('app').classList.contains('hidden'))return;
   const host=$('screenHost');
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
   if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
+  const context=renderedRoute===state.route?captureRenderContext(host):{openDisclosures:[],focus:null};
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
-  applyControlState();mountEvidencePanels();syncNav();
+  applyControlState();mountEvidencePanels();restoreRenderContext(host,context);syncNav();renderedRoute=state.route;
 }
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}

@@ -70,6 +70,8 @@ async function run(viewport,label){
 
   await page.fill('#trainingQuery','');
   await page.waitForFunction(()=>document.querySelectorAll('.sessions .session').length>1);
+  const exerciseDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'});
+  await exerciseDisclosure.locator('summary').click();
   await page.fill('#exerciseQuery','remada teste');
   await page.waitForFunction(()=>{
     const buttons=[...document.querySelectorAll('.exerciseList button')];
@@ -98,10 +100,10 @@ async function run(viewport,label){
   const rows=await page.locator('.trainingRecentRow').count();
   if(rows<4)throw new Error(`${label}: recent-session trend did not render expected unit-separated rows`);
 
-  await page.selectOption('#trainingPeriod','28');
-  await page.waitForFunction(()=>document.querySelector('.exerciseList')?.textContent?.includes('Nenhum exercício encontrado no período.'));
+  await page.selectOption('#trainingPeriod','30');
+  await page.waitForFunction(()=>document.querySelector('.exerciseList')?.textContent?.toLowerCase().includes('remada teste'));
   const scopedText=(await page.locator('#screenHost').textContent())||'';
-  if(scopedText.includes('Remada teste')||scopedText.includes('Remada histórica'))throw new Error(`${label}: exercise progression ignored the selected period`);
+  if(!scopedText.includes('Remada teste')||scopedText.includes('Remada histórica'))throw new Error(`${label}: exercise progression ignored the selected period`);
   await page.selectOption('#trainingPeriod','all');
   await page.waitForFunction(()=>[...document.querySelectorAll('.exerciseList button')].some(button=>button.textContent?.toLowerCase().includes('remada teste')));
 

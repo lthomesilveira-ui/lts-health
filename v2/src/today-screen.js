@@ -153,13 +153,13 @@ function summaryList(model){
 }
 function reviewItems(model){
   const items=[];
-  if(failed('nutrition'))items.push(['Nutrição','Os dados não carregaram agora.','nutricao']);
+  if(failed('nutrition'))items.push(['Nutrição','Os dados de nutrição não carregaram agora.','nutricao']);
   else if(model.nutrition.latestAmbiguous)items.push(['Nutrição',`O dia mais recente (${fmtDate(model.nutrition.latestDate)}) tem totais conflitantes e nenhum foi escolhido como atual.`,'nutricao']);
   else if(model.nutrition.coveragePct!=null&&model.nutrition.coveragePct<70)items.push(['Nutrição',`Cobertura de ${model.nutrition.coveragePct}% da janela.`,'nutricao']);
   else if(!model.nutrition.days)items.push(['Nutrição','Sem cobertura comparável nesta janela.','nutricao']);
   if(!model.water.length)items.push(['Hidratação','Ingestão de água ainda não está estruturada; nenhum zero foi inferido.','dados']);
   if(!model.body.available)items.push(['Composição',model.body.reason==='source_changed'?'Sem comparação entre origens diferentes.':'Ainda não há duas medições comparáveis no histórico.','bio']);
-  if(failed('labs'))items.push(['Exames','Os dados não carregaram agora.','saude']);
+  if(failed('labs'))items.push(['Exames','Os dados de exames não carregaram agora.','saude']);
   else if(!model.labs.totalResults)items.push(['Exames','Nenhum resultado estruturado foi encontrado no histórico.','saude']);
   if(!items.length)items.push(['Dados','Cobertura suficiente para os resumos atuais; abra Análises para aprofundar.','analise']);
   return items.slice(0,3);

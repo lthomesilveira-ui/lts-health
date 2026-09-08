@@ -5,6 +5,7 @@ const hex=buffer=>[...new Uint8Array(buffer)].map(byte=>byte.toString(16).padSta
 const sha256=async value=>hex(await crypto.subtle.digest('SHA-256',encoder.encode(String(value))));
 const stableFields=rows=>[...new Set((rows||[]).flatMap(row=>row&&typeof row==='object'&&!Array.isArray(row)?Object.keys(row):[]))].sort();
 const recordTotal=counts=>Object.values(counts||{}).reduce((sum,value)=>sum+(Number(value)||0),0);
+const countLabel=(count,singular,plural)=>`${Number(count)||0} ${(Number(count)||0)===1?singular:plural}`;
 const sameStrings=(left,right)=>JSON.stringify([...(left||[])].map(String).sort())===JSON.stringify([...(right||[])].map(String).sort());
 const uniqueStrings=values=>new Set((values||[]).map(String)).size===(values||[]).length;
 
@@ -170,7 +171,7 @@ async function handleBackupVerifyChange(event){
     const backup=JSON.parse(await file.text()),verification=await verifyTraceableBackup(backup);
     if(verification.valid){
       const records=Number(backup.record_total||0),domains=Number(backup.domain_count||0);
-      if(msg)msg.textContent=`Backup íntegro: ${records} registro(s) estruturado(s) em ${domains} área(s).`;
+      if(msg)msg.textContent=`Backup íntegro: ${countLabel(records,'registro estruturado','registros estruturados')} em ${countLabel(domains,'área','áreas')}.`;
     }else if(msg)msg.textContent='Backup não passou na verificação de integridade. Não use este arquivo como cópia confiável.';
   }catch(error){
     if(msg)msg.textContent='Não foi possível verificar este arquivo como backup estruturado do LTS Health.';
