@@ -44,7 +44,10 @@ function setRoute(route,{replace=true}={}){
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
-  requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'auto'}));
+  requestAnimationFrame(()=>{
+    window.scrollTo({top:0,left:0,behavior:'auto'});
+    $('screenHost')?.scrollTo({top:0,left:0,behavior:'auto'});
+  });
 }
 
 function routeFromLocation(){
