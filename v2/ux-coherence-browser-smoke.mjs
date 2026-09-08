@@ -53,7 +53,14 @@ async function run(viewport,label){
   const exerciseDisclosure=page.locator('details.uxDisclosure').filter({hasText:'Evolução por exercício'});
   await exerciseDisclosure.locator('summary').click();
   await page.fill('#exerciseQuery','supino');
-  await page.waitForFunction(()=>document.querySelector('#exerciseQuery')?.value==='supino');
+  await page.waitForFunction(()=>{
+    const input=document.querySelector('#exerciseQuery');
+    const buttons=[...document.querySelectorAll('.exerciseList button')];
+    return input?.value==='supino'
+      && document.activeElement===input
+      && buttons.length>0
+      && buttons.every(button=>button.textContent?.toLowerCase().includes('supino'));
+  });
   if(!await exerciseDisclosure.evaluate(node=>node.open))throw new Error(`${label}/treinos: progressive section closed while filtering`);
   if(await page.locator('#exerciseQuery').evaluate(node=>document.activeElement!==node))throw new Error(`${label}/treinos: search focus was lost while filtering`);
 
