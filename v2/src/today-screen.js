@@ -255,6 +255,6 @@ export function renderTodayHub(){
       <article class="cockpitRecent"><div class="cockpitModuleHead"><div><span>Histórico recente</span><h2>Últimos acontecimentos</h2></div>${action('timeline','Abrir Timeline')}</div><div class="cockpitEventList">${recentEvents(model)||'<div class="cockpitEmpty">Nenhum acontecimento recente disponível.</div>'}</div></article>
       <article class="cockpitReview"><div class="cockpitModuleHead"><div><span>Cobertura</span><h2>Dados a completar</h2><p>Somente lacunas que limitam esta leitura.</p></div>${action('dados','Gerenciar fontes')}</div><div class="cockpitReviewList">${nextReview(model)}</div><button class="cockpitWaterAction" data-entry="water-import" title="Importar em lote, sem digitar dia a dia">${latestWater?'Atualizar água do MFP':'Trazer histórico de água do MFP'}</button></article>
     </section>
-    <p class="cockpitFooter">Janela analisada: ${periodLabel(period)} · leitura descritiva baseada apenas em registros disponíveis.</p>
+    <p class="cockpitFooter">Janela analisada: ${periodLabel(period)} · leitura descritiva baseada apenas em registros disponíveis; nenhuma proximidade temporal é tratada como causa.</p>
   </div>`;
 }
