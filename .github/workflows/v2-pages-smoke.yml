@@ -36,10 +36,11 @@ jobs:
           req v2-dashboard-css './today.css' "$TMP/v2.html"
           req v2-analysis-css './analysis.css' "$TMP/v2.html"
           req v2-bio-css './bio.css' "$TMP/v2.html"
-          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css dashboard-pixel-parity.css dashboard-final-polish.css src/dashboard-reference-runtime.js; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
+          for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css dashboard-pixel-parity.css dashboard-final-polish.css ux-coherence.css src/dashboard-reference-runtime.js; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
           req dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
           req dashboard-copy 'Visão geral da sua saúde' "$TMP/today-screen.js-src_today-screen.js"
-          req dashboard-insight 'Leitura principal' "$TMP/today-screen.js-src_today-screen.js"
+          req dashboard-insight 'Resumo da janela' "$TMP/today-screen.js-src_today-screen.js"
+          req dashboard-change 'O que mudou' "$TMP/today-screen.js-src_today-screen.js"
           req hydration-copy 'Sem dado de ingestão de água' "$TMP/today-screen.js-src_today-screen.js"
           req exams-copy 'Exames' "$TMP/today-screen.js-src_today-screen.js"
           req workout-boundary 'canonicalWorkouts' "$TMP/integrated-analysis.js-src_integrated-analysis.js"
@@ -99,4 +100,5 @@ jobs:
           node v2/homologation-live-smoke.mjs
           node v2/executive-dashboard-smoke.mjs
           node v2/product-finish-smoke.mjs
+          LTS_HEALTH_UX_OUTPUT=artifacts/deployed-ux-coherence node v2/ux-coherence-browser-smoke.mjs
           node v2/upload-outcome-smoke.mjs
