@@ -11,11 +11,12 @@ await page.waitForSelector('#app:not(.hidden)');
 
 const result=await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');
-  const {saveBodyRecord,saveWorkout}=await import('./src/writes.js');
+  const {saveBodyRecord,saveWorkout,saveMyFitnessPalWater}=await import('./src/writes.js');
   const {localDateValue}=await import('./src/entry.js');
   const initialBody=state.data.body.length;
   const failures=[];
   async function expectReject(name,fn){try{await fn();failures.push(`${name}:accepted`);}catch(error){if(error?.message!=='negative_number_not_allowed')failures.push(`${name}:${error?.message||error}`);}}
+  async function expectMessage(name,message,fn){try{await fn();failures.push(`${name}:accepted`);}catch(error){if(error?.message!==message)failures.push(`${name}:${error?.message||error}`);}}
 
   if(localDateValue(new Date('2026-08-30T02:30:00Z'))!=='2026-08-29')failures.push('local date drifted to UTC next day');
 
@@ -25,6 +26,8 @@ const result=await page.evaluate(async()=>{
   await expectReject('negative duration',()=>saveWorkout({workout_date:'2026-02-10',workout_type:'Teste',duration_minutes:'-5',exercises:[{name:'Exercício',sets:[{weight:'10',weight_unit:'kg',reps:'8'}]}]}));
   await expectReject('negative weight',()=>saveWorkout({workout_date:'2026-02-10',workout_type:'Teste',exercises:[{name:'Exercício',sets:[{weight:'-10',weight_unit:'kg',reps:'8'}]}]}));
   await expectReject('negative reps',()=>saveWorkout({workout_date:'2026-02-10',workout_type:'Teste',exercises:[{name:'Exercício',sets:[{weight:'10',weight_unit:'kg',reps:'-1'}]}]}));
+  await expectMessage('water without confirmation','water_confirmation_required',()=>saveMyFitnessPalWater({metric_date:'2026-02-10',water_ml:'2500'}));
+  await expectMessage('zero water','water_must_be_positive',()=>saveMyFitnessPalWater({metric_date:'2026-02-10',water_ml:'0',confirmed:true}));
 
   const bodyId=await saveBodyRecord({measured_at:'2026-02-10',weight_kg:'92,3',skeletal_muscle_mass_kg:'',body_fat_pct:'',notes:''});
   const saved=state.data.body.find(row=>row.source_record_id===bodyId);
@@ -34,6 +37,11 @@ const result=await page.evaluate(async()=>{
 
   const workout=await saveWorkout({workout_date:'2026-02-10',workout_type:'Teste',duration_minutes:'',calories_kcal:'',exercises:[{name:'Exercício',muscle_group:'Teste',sets:[{phase:'working',weight:'',weight_unit:'kg',reps:''}]}]});
   if(!workout?.ok)failures.push('blank optional workout values were rejected');
+  await saveMyFitnessPalWater({metric_date:'2026-02-10',water_ml:'2.500',confirmed:true});
+  await saveMyFitnessPalWater({metric_date:'2026-02-10',water_ml:'2600',confirmed:true});
+  const waterRows=state.data.sourceMetrics.filter(row=>row.source_record_id==='mfp-water:2026-02-10');
+  if(waterRows.length!==1||waterRows[0].value!==2600)failures.push('water upsert was not idempotent');
+  if(waterRows[0]?.canonical_status!=='canonical'||waterRows[0]?.confidence!=='user_confirmed')failures.push('water provenance contract missing');
   return {failures};
 });
 

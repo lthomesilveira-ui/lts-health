@@ -180,6 +180,11 @@ export function renderDataHub(){
   return `${title('Dados','Envie arquivos, acompanhe o que já entrou no histórico e veja apenas as conferências que realmente precisam de você.')}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
+    <section class="card sectionGap waterSourceBridge">
+      <div><span>MyFitnessPal</span><h2>Água com confirmação simples</h2><p>O MyFitnessPal do iPhone não oferece Água ao Apple Saúde. Enquanto o acesso oficial de API não está disponível, informe no LTS o total diário exibido no MFP; não é necessário compartilhar senha ou sessão.</p></div>
+      <button type="button" class="primary" data-entry="water">Trazer água do MFP</button>
+    </section>
+
     <section class="grid cols2 sectionGap dataActions">
       <div class="card"><div class="cardHead"><div><b>Adicionar arquivo</b><small>O original fica em uma área privada. O que puder ser lido com segurança entra no histórico; o restante fica guardado sem inventar informação.</small></div></div><form id="uploadForm" class="uploadForm"><label>Origem<select id="uploadType"><option value="apple_health">Apple Saúde</option><option value="polar_flow">Polar Flow</option><option value="myfitnesspal">MyFitnessPal</option><option value="fleury">Fleury</option><option value="einstein">Einstein</option><option value="other">Outra origem</option></select></label><label>Arquivo<input id="uploadFile" type="file" required></label><button type="submit">Enviar arquivo</button><p id="uploadMsg" class="footerNote" aria-live="polite"></p></form></div>
       <div class="card"><div class="cardHead"><div><b>Backup dos dados</b><small>Cria um arquivo com os registros estruturados que a sua sessão consegue acessar. Arquivos privados originais e credenciais ficam de fora.</small></div></div><button type="button" id="backupExportBtn">Criar backup</button><p id="backupExportMsg" class="footerNote" aria-live="polite"></p><p class="footerNote">Se qualquer área falhar durante a leitura, o backup não é criado como se estivesse completo.</p></div>

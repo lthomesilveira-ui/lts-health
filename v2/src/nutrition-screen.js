@@ -1,4 +1,5 @@
 import {state,esc,fmtDate,fmtNum,num,since,day,unique} from './core.js';
+import {hydrationModel} from './hydration.js';
 
 const title=(name,description='')=>`<div class="screenTitle"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></div>`;
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
@@ -98,6 +99,16 @@ function mfpCandidatePanel(){
   }).join('');
   return `<div class="card sectionGap mfpCandidatePanel"><div class="cardHead"><div><b>MyFitnessPal via Apple Saúde</b><small>Totais diários preservados por origem. Não entram nas médias nem no histórico principal até validação.</small></div><span class="pill">em validação</span></div>${rows?`<div class="mealList">${rows}</div><p class="footerNote">Estes dados não criam alimentos, refeições ou horários. Quando há mais de um candidato para a mesma métrica no mesmo dia, nenhum valor é escolhido ou somado automaticamente. O export direto do MyFitnessPal continua sendo a fonte preferida para histórico detalhado.</p>`:empty('Nenhum total diário do MyFitnessPal via Apple Saúde aguardando validação.')}</div>`;
 }
+function hydrationPanel(){
+  if(failed('sourceMetrics'))return `<div class="card sectionGap hydrationImportPanel"><div class="cardHead"><div><b>Água do MyFitnessPal</b><small>Os registros não carregaram agora.</small></div><span class="pill warn">indisponível</span></div><div class="errorState"><b>Não foi possível verificar a hidratação.</b><span>Atualize para tentar novamente; nenhum valor ausente foi tratado como zero.</span></div></div>`;
+  const model=hydrationModel(state.data),latest=model.rows.at(-1),recent=model.rows.slice(-14).reverse();
+  const detail=latest?`Último total: ${fmtNum(latest.value,0)} mL em ${fmtDate(latest.date)}.`:'Nenhum total de água foi trazido ainda.';
+  return `<div class="card sectionGap hydrationImportPanel">
+    <div class="hydrationImportHead"><div><span>MyFitnessPal → LTS Health</span><h2>Ingestão de água</h2><p>${esc(detail)} O valor é guardado separado de água corporal e pode ser corrigido salvando novamente a mesma data.</p></div><button type="button" class="primary" data-entry="water">Trazer total do MFP</button></div>
+    ${model.conflicts.length?`<div class="errorState"><b>${model.conflicts.length} data(s) com fontes divergentes.</b><span>Nenhum desses valores foi escolhido automaticamente.</span></div>`:''}
+    ${recent.length?`<div class="hydrationRecent">${recent.map(row=>`<div><time>${fmtDate(row.date)}</time><b>${fmtNum(row.value,0)} mL</b><small>${esc(row.source||'MyFitnessPal')}</small></div>`).join('')}</div>`:`<div class="empty">Abra o diário do MyFitnessPal, copie o total de água do dia e salve aqui.</div>`}
+  </div>`;
+}
 function daySummary(row){
   if(!row)return empty('Selecione um dia com registro.');
   if(failed('meals'))return `<div class="nutritionDayHead"><div><span>${fmtDate(row.nutrition_date)}</span><b>${num(row.calories_kcal)!=null?`${fmtNum(row.calories_kcal,0)} kcal`:'calorias não registradas'}</b><small>${esc(row.source||'origem registrada')}</small></div></div><div class="macroGrid"><div><span>Proteína</span><b>${num(row.protein_g)!=null?`${fmtNum(row.protein_g,0)} g`:'—'}</b></div><div><span>Carboidratos</span><b>${num(row.carbs_g)!=null?`${fmtNum(row.carbs_g,0)} g`:'—'}</b></div><div><span>Gorduras</span><b>${num(row.fat_g)!=null?`${fmtNum(row.fat_g,0)} g`:'—'}</b></div><div><span>Fibras</span><b>${num(row.fiber_g)!=null?`${fmtNum(row.fiber_g,0)} g`:'—'}</b></div></div><div class="errorState"><b>Os detalhes das refeições estão indisponíveis agora.</b><span>O total diário continua visível; tente atualizar para carregar as refeições.</span></div>`;
@@ -133,6 +144,7 @@ export function renderNutritionHub(){
       <div class="card metric"><span>Calorias · média</span><strong>${avg(rows,'calories_kcal')==null?'—':fmtNum(avg(rows,'calories_kcal'),0)}</strong><em>kcal nos dias comparáveis</em></div>
       <div class="card metric"><span>Proteína · média</span><strong>${avg(rows,'protein_g')==null?'—':fmtNum(avg(rows,'protein_g'),0)}</strong><em>g nos dias comparáveis</em></div>
     </div>
+    ${hydrationPanel()}
     ${mfpCandidatePanel()}
     <div class="grid split sectionGap">
       <div class="card"><div class="cardHead"><div><b>Evolução por mês</b><small>Cobertura e médias dos registros disponíveis.</small></div></div>${monthlyPanel(rows)}</div>

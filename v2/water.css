@@ -1,0 +1,12 @@
+.waterEntryIntro{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid rgba(36,199,217,.25);border-radius:14px;background:rgba(36,199,217,.06)}
+.waterEntryIntro>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(36,199,217,.12);color:var(--accent);font-size:20px;flex:0 0 auto}
+.waterEntryIntro b,.waterEntryIntro p{display:block}.waterEntryIntro b{font-size:13px}.waterEntryIntro p{margin:5px 0 0;color:var(--mut);font-size:11px;line-height:1.5}
+.entryConfirm{display:flex!important;align-items:flex-start;gap:9px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#08121a;font-size:11px!important;color:var(--soft)!important;line-height:1.4}
+.entryConfirm input{width:auto!important;margin:2px 0 0!important;flex:0 0 auto}.entryHint{margin:0;color:var(--mut);font-size:10px;line-height:1.5}
+.hydrationImportPanel{border-color:rgba(36,199,217,.25);background:radial-gradient(circle at 95% 0,rgba(36,199,217,.09),transparent 34%),var(--card)}
+.hydrationImportHead,.waterSourceBridge{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.hydrationImportHead>div,.waterSourceBridge>div{max-width:760px}
+.hydrationImportHead span,.waterSourceBridge>div>span{display:block;color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.hydrationImportHead h2,.waterSourceBridge h2{font-size:18px;margin:4px 0 0}.hydrationImportHead p,.waterSourceBridge p{color:var(--mut);font-size:11px;line-height:1.5;margin:6px 0 0}
+.hydrationImportHead button,.waterSourceBridge>button{white-space:nowrap}.hydrationRecent{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:15px}.hydrationRecent>div{border:1px solid var(--line);border-radius:12px;padding:11px;background:#0a151e}.hydrationRecent time,.hydrationRecent b,.hydrationRecent small{display:block}.hydrationRecent time{color:var(--mut);font-size:9px}.hydrationRecent b{font-size:16px;margin-top:5px}.hydrationRecent small{color:var(--mut);font-size:9px;margin-top:4px;overflow-wrap:anywhere}
+.waterSourceBridge{background:linear-gradient(135deg,rgba(36,199,217,.07),rgba(10,20,29,.98));border-color:rgba(36,199,217,.22)}
+@media(max-width:760px){.hydrationImportHead,.waterSourceBridge{display:grid}.hydrationImportHead button,.waterSourceBridge>button{width:100%}.hydrationRecent{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.hydrationRecent{grid-template-columns:1fr}}

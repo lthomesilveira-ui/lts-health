@@ -1,4 +1,5 @@
 import {sb,state,fixtureMode} from './core.js';
+import {normalizeWaterMl,validLocalDate} from './hydration.js';
 
 function requiredSession(){
   if(fixtureMode) return {user:{id:'fixture-user'}};
@@ -78,4 +79,34 @@ export async function saveWorkout(payload){
   const {data,error}=await sb.rpc('health_log_structured_workout',{p_payload:body});
   if(error) throw error;
   return data;
+}
+
+export async function saveMyFitnessPalWater(payload){
+  const session=requiredSession();
+  const metricDate=String(payload.metric_date||'').trim();
+  if(!validLocalDate(metricDate))throw new Error('date_required');
+  if(payload.confirmed!=='on'&&payload.confirmed!==true)throw new Error('water_confirmation_required');
+  const value=normalizeWaterMl(payload.water_ml);
+  const record={
+    user_id:session.user.id,
+    source_record_id:`mfp-water:${metricDate}`,
+    metric_date:metricDate,
+    metric_type:'dietary_water_ml',
+    value,
+    unit:'mL',
+    source_name:'MyFitnessPal',
+    source_family:'myfitnesspal',
+    canonical_status:'canonical',
+    confidence:'user_confirmed',
+    source_file:null,
+    source_payload:{entry_method:'mfp_water_total_v1'}
+  };
+  if(fixtureMode){
+    state.data.sourceMetrics=(state.data.sourceMetrics||[]).filter(row=>row.source_record_id!==record.source_record_id);
+    state.data.sourceMetrics.push(record);
+    return record.source_record_id;
+  }
+  const{error}=await sb.from('health_source_daily_metrics').upsert(record,{onConflict:'user_id,source_record_id'});
+  if(error)throw error;
+  return record.source_record_id;
 }
