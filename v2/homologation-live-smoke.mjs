@@ -13,21 +13,27 @@ async function run(viewport,label){
   await page.waitForSelector('#app:not(.hidden)');
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Composição corporal');
   let text=(await page.textContent('#screenHost'))||'';
-  await page.waitForSelector('.bioLatestLead');
-  const latestLead=(await page.locator('.bioLatestLead').textContent())||'';
-  if(!latestLead.includes('Última medição')||!latestLead.includes('01/02/2026'))throw new Error(`${label}: deployed latest body date is not explicit`);
-  if(!latestLead.includes('2 medição(ões) preservadas'))throw new Error(`${label}: deployed body history count missing from latest summary`);
+  const latestBody=(await page.locator('.bioLatestLead').textContent())||'';
+  if(!latestBody.includes('Última medição')||!latestBody.includes('01/02/2026'))throw new Error(`${label}: deployed latest body date is not explicit`);
+  if(!latestBody.includes('2 medições preservadas'))throw new Error(`${label}: deployed body history count is missing`);
   if(!text.includes('Massa muscular'))throw new Error(`${label}: readable muscle-mass label missing`);
   if(text.includes('MME')||text.includes('source_file')||text.includes('confidence'))throw new Error(`${label}: technical body-composition language leaked into deployed UI`);
+  if(await page.locator('.domainChartCard').count()!==1)throw new Error(`${label}: body composition lost its single primary chart`);
+  if(await page.locator('details.uxDisclosure[open]').count())throw new Error(`${label}: secondary body sections start expanded`);
 
   const nav=viewport.width<720?'#mobileNav':'#primaryNav';
   await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.ui.trainingPeriod='all';});
   await page.click(`${nav} [data-route="treinos"]`);
   await page.waitForFunction(()=>document.querySelector('#screenHost h1')?.textContent==='Treinos');
   const latestText=(await page.locator('.session.latest .sessionHead').first().textContent())||'';
-  for(const expected of ['02/02/2026','2 exercício(s) · 3 série(s)','mais recente']){
+  for(const expected of ['02/02/2026','Peito + ombros','2 exercícios · 3 séries','mais recente']){
     if(!latestText.includes(expected))throw new Error(`${label}: deployed latest workout summary missing ${expected}`);
   }
+  if(await page.locator('details.uxDisclosure[open]').count())throw new Error(`${label}: secondary training sections start expanded`);
+  text=(await page.textContent('#screenHost'))||'';
+  for(const stale of ['exercício(s)','série(s)','sessão(ões)'])if(text.includes(stale))throw new Error(`${label}: mechanical copy is visible: ${stale}`);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  if(overflow>3)throw new Error(`${label}: deployed interface has horizontal overflow ${overflow}px`);
   const overlap=viewport.width<720?await page.evaluate(()=>{
     const host=document.querySelector('#screenHost'),nav=document.querySelector('#mobileNav');
     if(!host||!nav)return 999;
