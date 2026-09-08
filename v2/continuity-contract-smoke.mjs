@@ -70,7 +70,7 @@ for(const task of [productArchitecture,experience,domainJourneys]){
   assert.equal(task?.status,'done',`${task?.id||'product task'} must remain completed`);
 }
 const longitudinalHome=state.tasks.find(task=>task.id==='LTS-HOME-LONGITUDINAL-001');
-assert.equal(longitudinalHome?.status,'in_progress');
+assert.equal(longitudinalHome?.status,'done');
 assert.equal(state.current_package.id,'PKG-LONGITUDINAL-HOME-UX');
 assert.deepEqual(state.current_package.task_ids,[longitudinalHome.id]);
 const visualSource=state.tasks.find(task=>task.id==='LTS-VISUAL-SOURCE-001');
