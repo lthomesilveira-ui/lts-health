@@ -25,7 +25,7 @@ A imagem-fonte aprovada não está presente no repositório atual. O contrato te
 
 Referência de inspeção: 1536 × 864 px.
 
-- Sidebar: aproximadamente 211 px de largura.
+- Sidebar: aproximadamente 211 px na referência histórica. Enquanto a imagem-fonte não estiver versionada, a implementação pode usar de 208 a 268 px para preservar rótulos agrupados e legibilidade, sem alterar a proporção dominante do canvas.
 - Conteúdo principal: padding horizontal aproximado de 20–22 px.
 - Cabeçalho: título no topo esquerdo; seletor de período no topo direito.
 - Cinco cartões executivos na mesma linha, aproximadamente 146 px de altura, com cerca de 12 px entre eles.
@@ -78,7 +78,7 @@ Nenhuma versão é considerada pronta apenas por CI verde. Antes de promover ao 
 - renderizar a Home em 1536 × 864 e em viewport mobile;
 - conferir sidebar, canvas claro, tipografia sans-serif, cinco cartões coloridos, leitura principal, duas linhas analíticas e fechamento;
 - medir ausência de overflow horizontal;
-- verificar que a sidebar permanece próxima de 211 px no desktop de referência;
+- verificar que a sidebar permanece dentro da faixa documentada e que o canvas continua dominante no desktop;
 - verificar que o fundo do canvas e as cinco famílias de cor dos cartões correspondem à referência;
 - validar funcionamento e dados reais sem degradar a composição;
 - preservar os testes funcionais e de proveniência existentes.
