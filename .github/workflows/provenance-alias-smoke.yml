@@ -22,6 +22,6 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-save playwright@1.55.0
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
       - run: python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2.log 2>&1 &
       - run: node v2/provenance-alias-smoke.mjs
