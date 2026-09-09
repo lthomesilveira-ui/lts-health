@@ -51,7 +51,7 @@ jobs:
         run: |
           npm init -y
           npm install --no-save playwright@1.58.2
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
 
       - name: Start local application
         run: |

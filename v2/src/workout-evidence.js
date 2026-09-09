@@ -23,7 +23,7 @@ export function visibleWorkoutEvidence(workouts=[],evidence=[]){
 function baseSourceLabel(workout){
   const raw=String(workout?.source||'').trim();
   const normalizedSource=normalized(raw);
-  if(!raw||normalizedSource.includes('workout log')||normalizedSource.includes('user-reported completed workout'))return'Registro LTS';
+  if(!raw||normalizedSource==='teste'||normalizedSource.includes('workout log')||normalizedSource.includes('user-reported completed workout')||normalizedSource.includes('registro detalhado fornecido pelo usuario'))return'Registro LTS';
   return raw;
 }
 

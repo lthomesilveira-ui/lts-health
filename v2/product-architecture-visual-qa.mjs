@@ -38,6 +38,7 @@ async function inspect(viewport,label){
       distinctStatusColors:new Set(colors).size,
       canvas,
       railColor,
+      topbar:rect('.topbar'),
       workspace:rect('.cockpitWorkspace'),
       trend:rect('.cockpitTrend'),
       lower:rect('.cockpitLowerGrid'),
@@ -56,8 +57,11 @@ async function inspect(viewport,label){
   if(label==='desktop'){
     if(!result.desktopNav||result.mobileNav)throw new Error('desktop: navigation mode is incorrect');
     if(!result.rail||result.rail.width<208||result.rail.width>268)throw new Error(`desktop: rail width ${result.rail?.width??'missing'} is outside the documented range`);
-    if(result.statusMaxHeight>190)throw new Error(`desktop: domain cards lost executive density (${result.statusMaxHeight}px)`);
-    if(result.trend.top>460)throw new Error(`desktop: main longitudinal chart starts too low (${result.trend.top}px)`);
+    if(!result.topbar||result.topbar.height>50)throw new Error(`desktop: utility bar is too tall (${result.topbar?.height??'missing'}px)`);
+    if(result.statusMaxHeight>120)throw new Error(`desktop: domain cards lost executive density (${result.statusMaxHeight}px)`);
+    if(result.trend.top>350)throw new Error(`desktop: main longitudinal chart starts too low (${result.trend.top}px)`);
+    if(result.workspace.height>350)throw new Error(`desktop: primary workspace is too tall (${result.workspace.height}px)`);
+    if(result.lower.top>720)throw new Error(`desktop: recent context fell below the first screen (${result.lower.top}px)`);
   }else{
     if(result.desktopNav||!result.mobileNav)throw new Error('mobile: navigation mode is incorrect');
     const rail=await page.locator('.cockpitStatusGrid').evaluate(element=>({client:element.clientWidth,scroll:element.scrollWidth}));

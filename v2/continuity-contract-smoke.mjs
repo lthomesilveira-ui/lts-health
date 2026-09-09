@@ -72,9 +72,11 @@ for(const task of [productArchitecture,experience,domainJourneys]){
 const longitudinalHome=state.tasks.find(task=>task.id==='LTS-HOME-LONGITUDINAL-001');
 assert.equal(longitudinalHome?.status,'done');
 const uxCoherence=state.tasks.find(task=>task.id==='LTS-UX-COHERENCE-001');
-assert.ok(['in_progress','done'].includes(uxCoherence?.status));
-assert.equal(state.current_package.id,'PKG-UX-COHERENCE-001');
-assert.deepEqual(state.current_package.task_ids,[uxCoherence.id]);
+assert.equal(uxCoherence?.status,'done');
+const executiveDensity=state.tasks.find(task=>task.id==='LTS-UX-DENSITY-002');
+assert.ok(['in_progress','done'].includes(executiveDensity?.status));
+assert.equal(state.current_package.id,'PKG-EXECUTIVE-DENSITY-002');
+assert.deepEqual(state.current_package.task_ids,[executiveDensity.id]);
 assert.equal(state.authoritative_documents.ux_coherence,'v2/UX_COHERENCE_CONTRACT.md');
 const visualSource=state.tasks.find(task=>task.id==='LTS-VISUAL-SOURCE-001');
 assert.equal(visualSource?.status,'blocked_external');
@@ -89,6 +91,7 @@ for(const text of [brief,protocol])assert.match(text,/não depend|sem depender/i
 assert.match(architecture,/assistente longitudinal privado de saúde/i);
 assert.match(feedback,/FB-014/);
 assert.match(feedback,/FB-016/);
+assert.match(feedback,/FB-017/);
 for(const phrase of ['falta desktop','Somente então promover','validar sessão autenticada com o treino mais recente'])assert.ok(!parity.includes(phrase),`stale parity phrase: ${phrase}`);
 assert.match(dataScreen,/data-water-import-pending/);
 assert.match(dataScreen,/data-entry="water-import"/);

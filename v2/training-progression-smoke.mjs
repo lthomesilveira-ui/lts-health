@@ -122,11 +122,14 @@ async function run(viewport,label){
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   if(overflow>3)throw new Error(`${label}: training progression caused horizontal overflow ${overflow}px`);
   if(viewport.width<620){
-    const head=await page.locator('.sessions .session').first().locator('.sessionHead').evaluate(el=>{
-      const rect=el.getBoundingClientRect();
+    const head=await page.evaluate(()=>{
+      const element=[...document.querySelectorAll('.sessions .session .sessionHead')]
+        .find(candidate=>candidate.getBoundingClientRect().width>0);
+      if(!element)return null;
+      const rect=element.getBoundingClientRect();
       return {left:rect.left,right:rect.right,width:rect.width,viewport:innerWidth};
     });
-    if(head.left<9||head.right>head.viewport-9)throw new Error(`${label}: workout header leaves the usable mobile width (${JSON.stringify(head)})`);
+    if(!head||head.left<9||head.right>head.viewport-9)throw new Error(`${label}: workout header leaves the usable mobile width (${JSON.stringify(head)})`);
   }
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();

@@ -17,6 +17,10 @@ O feedback posterior do usuário reabriu a aceitação do produto: a entrada pú
 
 O pacote `PKG-PRODUCT-ARCHITECTURE-RESET` passa a ser a referência de correção: briefing e feedbacks consolidados, navegação por intenção, visão geral orientada primeiro a leitura/prioridades, experiência autenticada isolada e contratos que verificam hierarquia, legibilidade e deploy real. A imagem visual aprovada continua autoridade, mas sua fonte original ainda precisa ser recuperada antes de qualquer nova alegação de paridade pixel a pixel.
 
+## Reabertura de densidade executiva — 09/09/2026
+
+O feedback real de 09/09 confirmou que coerência estrutural não bastou: a aplicação ainda parecia um dashboard web genérico, com barra superior concorrente, gráfico alto, resumo repetitivo e módulos internos excessivamente espaçosos. O pacote `PKG-EXECUTIVE-DENSITY-002` foi aberto para compactar a primeira tela, trazer acontecimentos recentes para o viewport de referência, eliminar a coluna vazia de Treinos e aplicar a mesma escala às rotas internas. Nenhuma alegação de aceite ou paridade visual será feita antes dos gates e da inspeção pública.
+
 ## Fechamento do reset de arquitetura — 08/09/2026
 
 O pacote `PKG-PRODUCT-ARCHITECTURE-RESET` foi promovido ao `main` pelos PRs #212, #213 e #214. O resultado público deixa de organizar o produto como uma lista de funcionalidades e passa a seguir as perguntas definidas em `PRODUCT_ARCHITECTURE.md`: estado conhecido, mudança, cobertura, prioridades e acesso à evidência.

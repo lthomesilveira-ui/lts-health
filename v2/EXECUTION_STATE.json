@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-09-08",
+  "updated_on": "2026-09-09",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -45,25 +45,13 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-UX-COHERENCE-001",
-    "status": "done",
-    "goal": "Turn the complete product into one coherent longitudinal application with a shared time window, progressive disclosure, natural language, and mobile-first domain journeys.",
+    "id": "PKG-EXECUTIVE-DENSITY-002",
+    "status": "in_progress",
+    "goal": "Make the public product feel like a compact longitudinal health application instead of a generic web dashboard, without changing data semantics.",
     "task_ids": [
-      "LTS-UX-COHERENCE-001"
+      "LTS-UX-DENSITY-002"
     ],
-    "completed_evidence": [
-      "GitHub pull request 228",
-      "cockpit-smoke run 34283995722",
-      "LTS Health Dashboard Reference Contract run 34283995660",
-      "GitHub pull request 238",
-      "Deploy LTS Health run 34285969357",
-      "LTS Health v2 Pages Smoke run 34285996157",
-      "LTS Health v2 Homologation Pages Smoke run 34285996131",
-      "GitHub pull request 239",
-      "LTS Health architecture v2 run 34286399549",
-      "public build ux-coherence-20260908.14",
-      "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9"
-    ]
+    "completed_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -428,6 +416,34 @@
         "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9"
       ],
       "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-UX-DENSITY-002",
+      "area": "experience",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Increase first-screen executive density and make the shared shell and domain routes feel like one compact application.",
+      "acceptance": [
+        "The desktop utility bar occupies no more than 50 px and visually shares the page canvas.",
+        "The five Home domain cards stay in one row at the reference viewport and each remains at most 120 px tall.",
+        "The primary trend starts before 350 px and recent context starts before 720 px at 1536 × 864.",
+        "The Home summary contains one main reading and at most three supporting facts.",
+        "Training uses a complete three-column fact strip and domain heroes, facts, and primary charts use a compact shared scale.",
+        "Mobile keeps the horizontal domain rail, shortens the primary chart, avoids horizontal overflow, and preserves non-overlapping navigation.",
+        "Static, browser, visual, privacy, provenance, deployment, and public build checks pass before completion."
+      ],
+      "evidence": [
+        "v2/executive-shell.css",
+        "v2/cockpit.css",
+        "v2/ux-coherence.css",
+        "v2/src/today-screen.js",
+        "v2/src/training-screen.js",
+        "v2/product-architecture-visual-qa.mjs",
+        "v2/UX_COHERENCE_CONTRACT.md"
+      ],
+      "next_action": "Run architecture, desktop/mobile, and visual gates; then promote by pull request and inspect the public build.",
       "blocker": null
     },
     {

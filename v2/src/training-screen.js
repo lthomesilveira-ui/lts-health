@@ -290,7 +290,7 @@ export function renderTrainingScreen(){
   const sessionDays=unique(rows.map(w=>day(w.workout_date))).length;
   return `${title()}
     <section class="domainHero"><div><span>Treinos · ${esc(periodLabel(period))}</span><h2>${countLabel(rows.length,'sessão registrada','sessões registradas')}</h2><p>Ritmo primeiro; exercícios, máquinas e séries continuam disponíveis sob demanda.</p></div><div class="controls">${selector}<input id="trainingQuery" type="search" placeholder="Buscar treino, local ou grupo" value="${esc(state.ui.trainingQuery)}"></div></section>
-    <div class="domainStatStrip sectionGap">
+    <div class="domainStatStrip trainingStatStrip sectionGap">
       ${metric('Sessões',String(rows.length),periodLabel(period))}
       ${metric('Dias com treino',String(sessionDays),'somente registros confirmados')}
       ${metric('Último treino',rows[0]?fmtDate(rows[0].workout_date):'—',rows[0]?.workout_type||'')}
