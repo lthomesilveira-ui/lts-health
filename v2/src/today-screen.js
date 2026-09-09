@@ -139,7 +139,7 @@ function keyInsight(model){
   if(model.training.available)rows.push(`Treino: ${countLabel(model.training.totalSessions,'sessão','sessões')} em ${periodLabel(model.period)}${model.training.previousSessions!=null?`, versus ${model.training.previousSessions} no período anterior equivalente`:''}.`);
   if(model.nutrition.available)rows.push(`Nutrição: ${countLabel(model.nutrition.days,'dia','dias')} com total diário inequívoco${model.nutrition.intervalDays?` em ${model.nutrition.intervalDays} dias possíveis`:''}${model.nutrition.coveragePct!=null?` (${model.nutrition.coveragePct}% de cobertura)`:''}.`);
   if(model.water.length===0)rows.push('Hidratação: não existe ingestão de água estruturada nesta janela; nenhum valor é estimado.');
-  return rows.slice(0,3).join(' ');
+  return rows.slice(0,1).join(' ');
 }
 function summaryList(model){
   const rows=[];
@@ -149,7 +149,7 @@ function summaryList(model){
   if(model.sleep.available&&model.sleep.days)rows.push(`<li><b>Recuperação</b><span>${countLabel(model.sleep.days,'dia','dias')} com sono preservado; valores permanecem separados por origem e não são promediados entre dispositivos.</span></li>`);
   if(model.labs.totalResults)rows.push(`<li><b>Exames</b><span>${countLabel(model.labs.totalResults,'resultado estruturado','resultados estruturados')} em ${countLabel(model.labs.collections,'data de coleta','datas de coleta')}; última coleta ${fmtDate(model.labs.last)}.</span></li>`);
   if(!model.water.length)rows.push('<li class="missing"><b>Hidratação</b><span>Sem dado de ingestão de água. Água corporal da bioimpedância é outra medida e não entra como consumo.</span></li>');
-  return rows.join('');
+  return rows.slice(0,3).join('');
 }
 function reviewItems(model){
   const items=[];
@@ -229,7 +229,7 @@ export function renderTodayHub(){
   const labsDetail=labsFailed?'tente novamente depois':model.labs.windowCollections?`${countLabel(model.labs.windowCollections,'coleta','coletas')} em ${periodLabel(period)}`:`nenhuma coleta em ${periodLabel(period)} · último histórico acima`;
   return`<div class="dashboardScreen cockpitScreen cockpitV3" data-executive-dashboard data-period="${esc(period)}">
     <section class="cockpitWelcome">
-      <div><span class="cockpitKicker">LTS Health · assistente longitudinal</span><h1>Visão geral da sua saúde</h1><p>Uma leitura do histórico conhecido: o que mudou, quanta cobertura existe e onde vale aprofundar.</p></div>
+      <div><span class="cockpitKicker">LTS Health · histórico longitudinal</span><h1>Visão geral da sua saúde</h1><p>Estado atual, evolução e cobertura dos registros em uma única leitura.</p></div>
       ${periodPicker(period)}
     </section>
 

@@ -1,6 +1,6 @@
 # LTS Health — contrato de coerência de UX
 
-Status: contrato operacional do pacote `PKG-UX-COHERENCE-001`. Este documento é público e não contém dados pessoais de saúde.
+Status: contrato permanente de UX. O pacote atual `PKG-EXECUTIVE-DENSITY-002` reforça sua densidade e hierarquia sem alterar dados. Este documento é público e não contém dados pessoais de saúde.
 
 ## Resultado esperado
 
@@ -33,3 +33,13 @@ O LTS Health deve parecer um único aplicativo longitudinal, não uma coleção 
 ## Evidência de conclusão
 
 O pacote só pode ser encerrado quando testes estáticos, navegação desktop/mobile, persistência de janela, abertura dos detalhes, contraste mínimo, ausência de overflow e inspeção do build público estiverem registrados em `EXECUTION_STATE.json`.
+
+
+## Adendo de densidade executiva — 09/09/2026
+
+- No desktop, a barra utilitária deixa de formar um cabeçalho visual concorrente e ocupa no máximo 50 px sobre o mesmo canvas da página.
+- Os cinco cartões da Home permanecem em uma linha, com até 120 px de altura, e a evolução principal começa antes de 350 px no viewport de referência.
+- Acontecimentos recentes e lacunas começam dentro da primeira tela de 1536 × 864; o gráfico principal não monopoliza a abertura.
+- O resumo da janela mostra uma leitura principal e até três fatos, eliminando parágrafos repetidos.
+- Treinos usa exatamente três fatos em uma faixa completa, sem a quarta coluna vazia; heróis, métricas e gráficos das áreas usam a mesma escala compacta.
+- No celular, os cartões continuam em trilho horizontal, o gráfico é mais curto e a navegação permanece fora da área rolável.
