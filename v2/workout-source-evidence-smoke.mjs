@@ -26,6 +26,11 @@ page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
 await page.goto('http://127.0.0.1:4173/?fixture=1#treinos',{waitUntil:'domcontentloaded'});
 await page.waitForSelector('#app:not(.hidden)');
 await page.waitForFunction(()=>document.querySelector('.screenTitle h1')?.textContent?.trim()==='Treinos');
+await page.waitForFunction(()=>{
+  const text=document.querySelector('#screenHost')?.textContent||'';
+  return text.includes('Registro LTS · telemetria: Polar Flow')
+    && text.includes('Registro LTS · telemetria: origem não explicitada no registro histórico');
+});
 
 const trainingText=(await page.locator('#screenHost').textContent())||'';
 if(!trainingText.includes('Registro LTS · telemetria: Polar Flow'))throw new Error('confirmed Polar telemetry provenance is not readable in Training');

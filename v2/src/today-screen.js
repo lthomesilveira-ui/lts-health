@@ -229,7 +229,7 @@ export function renderTodayHub(){
   const labsDetail=labsFailed?'tente novamente depois':model.labs.windowCollections?`${countLabel(model.labs.windowCollections,'coleta','coletas')} em ${periodLabel(period)}`:`nenhuma coleta em ${periodLabel(period)} · último histórico acima`;
   return`<div class="dashboardScreen cockpitScreen cockpitV3" data-executive-dashboard data-period="${esc(period)}">
     <section class="cockpitWelcome">
-      <div><span class="cockpitKicker">LTS Health · histórico longitudinal</span><h1>Visão geral da sua saúde</h1><p>Estado atual, evolução e cobertura dos registros em uma única leitura.</p></div>
+      <div><span class="cockpitKicker">LTS Health · assistente longitudinal</span><h1>Visão geral da sua saúde</h1><p>Estado atual, evolução e cobertura dos registros em uma única leitura.</p></div>
       ${periodPicker(period)}
     </section>
 
