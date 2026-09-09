@@ -46,18 +46,24 @@
   },
   "current_package": {
     "id": "PKG-EXECUTIVE-DENSITY-002",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Make the public product feel like a compact longitudinal health application instead of a generic web dashboard, without changing data semantics.",
     "task_ids": [
       "LTS-UX-DENSITY-002"
     ],
-    "completed_evidence": []
+    "completed_evidence": [
+      "GitHub pull request 241",
+      "cockpit-smoke run 34405719991",
+      "LTS Health Dashboard Reference Contract run 34405720062",
+      "public build ux-coherence-20260909.16",
+      "verified public app commit 12a7cf07beba20347590baa11eba2cc6561c4145"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "ux-coherence-20260908.14",
-    "main_commit": "4b0e9757525346f1362688abafa9577adeb29fe9",
-    "verified_on": "2026-09-08",
+    "build_id": "ux-coherence-20260909.16",
+    "main_commit": "12a7cf07beba20347590baa11eba2cc6561c4145",
+    "verified_on": "2026-09-09",
     "evidence": [
       "GitHub pull request 228",
       "cockpit-smoke run 34283995722",
@@ -69,9 +75,15 @@
       "GitHub pull request 239",
       "LTS Health architecture v2 run 34286399549",
       "public build ux-coherence-20260908.14",
-      "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9"
+      "verified public app commit 4b0e9757525346f1362688abafa9577adeb29fe9",
+      "GitHub pull request 241",
+      "cockpit-smoke run 34405719991",
+      "LTS Health Dashboard Reference Contract run 34405720062",
+      "public build ux-coherence-20260909.16",
+      "verified public app commit 12a7cf07beba20347590baa11eba2cc6561c4145",
+      "public browser inspection: 46 px utility bar, first context at 652 px, three-column Training strip, no horizontal overflow"
     ],
-    "acceptance_note": "The unified UX package and public technical/visual gates passed; this record does not presume user acceptance or pixel parity to the unavailable original reference."
+    "acceptance_note": "The executive-density package and public technical/visual gates passed; this record does not presume user acceptance or pixel parity to the unavailable original reference."
   },
   "tasks": [
     {
@@ -422,7 +434,7 @@
       "id": "LTS-UX-DENSITY-002",
       "area": "experience",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Increase first-screen executive density and make the shared shell and domain routes feel like one compact application.",
       "acceptance": [
@@ -441,9 +453,14 @@
         "v2/src/today-screen.js",
         "v2/src/training-screen.js",
         "v2/product-architecture-visual-qa.mjs",
-        "v2/UX_COHERENCE_CONTRACT.md"
+        "v2/UX_COHERENCE_CONTRACT.md",
+        "GitHub pull request 241",
+        "cockpit-smoke run 34405719991",
+        "LTS Health Dashboard Reference Contract run 34405720062",
+        "public build ux-coherence-20260909.16",
+        "verified public app commit 12a7cf07beba20347590baa11eba2cc6561c4145"
       ],
-      "next_action": "Run architecture, desktop/mobile, and visual gates; then promote by pull request and inspect the public build.",
+      "next_action": null,
       "blocker": null
     },
     {
