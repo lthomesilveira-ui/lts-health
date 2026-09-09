@@ -149,7 +149,7 @@ function summaryList(model){
   if(model.sleep.available&&model.sleep.days)rows.push(`<li><b>Recuperação</b><span>${countLabel(model.sleep.days,'dia','dias')} com sono preservado; valores permanecem separados por origem e não são promediados entre dispositivos.</span></li>`);
   if(model.labs.totalResults)rows.push(`<li><b>Exames</b><span>${countLabel(model.labs.totalResults,'resultado estruturado','resultados estruturados')} em ${countLabel(model.labs.collections,'data de coleta','datas de coleta')}; última coleta ${fmtDate(model.labs.last)}.</span></li>`);
   if(!model.water.length)rows.push('<li class="missing"><b>Hidratação</b><span>Sem dado de ingestão de água. Água corporal da bioimpedância é outra medida e não entra como consumo.</span></li>');
-  return rows.slice(0,3).join('');
+  return rows.slice(0,2).join('');
 }
 function reviewItems(model){
   const items=[];
