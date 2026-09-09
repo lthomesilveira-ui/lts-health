@@ -60,8 +60,11 @@ assert.match(contract,/Uma arquitetura ativa/);
 
 const task=state.tasks.find(item=>item.id==='LTS-UX-COHERENCE-001');
 assert.ok(task);
-assert.ok(['in_progress','done'].includes(task.status));
-assert.equal(state.current_package.id,'PKG-UX-COHERENCE-001');
-assert.deepEqual(state.current_package.task_ids,[task.id]);
+assert.equal(task.status,'done');
+const executiveDensity=state.tasks.find(item=>item.id==='LTS-UX-DENSITY-002');
+assert.ok(executiveDensity);
+assert.ok(['in_progress','done'].includes(executiveDensity.status));
+assert.equal(state.current_package.id,'PKG-EXECUTIVE-DENSITY-002');
+assert.deepEqual(state.current_package.task_ids,[executiveDensity.id]);
 
 console.log('LTS Health UX coherence contract passed');
