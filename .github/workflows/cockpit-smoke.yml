@@ -11,6 +11,8 @@ on:
       - 'v2/cockpit.css'
       - 'v2/analysis.css'
       - 'v2/secondary.css'
+      - 'v2/shell-route-actions.css'
+      - 'v2/product-delivery.css'
       - 'v2/cockpit-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   pull_request:
@@ -23,6 +25,8 @@ on:
       - 'v2/cockpit.css'
       - 'v2/analysis.css'
       - 'v2/secondary.css'
+      - 'v2/shell-route-actions.css'
+      - 'v2/product-delivery.css'
       - 'v2/cockpit-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   workflow_dispatch:

@@ -1,0 +1,155 @@
+/* LTS Health product delivery — 2026-09-11
+   Canonical finishing layer for application feel. This does not change data semantics. */
+:root{
+  --app-canvas:#f5f7fa;
+  --app-surface:#ffffff;
+  --app-line:#e2e8f0;
+  --app-muted:#66768c;
+  --app-ink:#152239;
+  --app-blue:#2f72dc;
+  --app-blue-soft:#eaf2ff;
+  --app-radius:16px;
+  --app-shadow:0 8px 24px rgba(29,50,80,.06);
+}
+
+/* Keep the app visually quiet: content first, chrome second. */
+body{background:var(--app-canvas)}
+.screenHost{background:var(--app-canvas)}
+.screenHost>.grid{gap:14px}
+.card{box-shadow:var(--app-shadow)}
+.screenTitle.domainHeader{max-width:1180px}
+.domainHero{box-shadow:var(--app-shadow)}
+
+/* Desktop: compact workspace, clearer hierarchy, less dashboard sprawl. */
+@media (min-width:841px){
+  .screenHost{padding:10px 28px 52px}
+  .screenHost>*{max-width:1320px;margin-left:auto;margin-right:auto}
+  .cockpitV3{width:min(1320px,100%)}
+  .cockpitWelcome{padding-top:2px}
+  .cockpitWelcome h1{font-size:32px}
+  .cockpitStatusGrid{gap:9px}
+  .cockpitStatus{min-height:100px}
+  .cockpitTrend,.cockpitWindowBrief,.cockpitRecent,.cockpitReview{box-shadow:var(--app-shadow)}
+  .domainHero{padding:16px 18px;border-radius:15px}
+  .domainStatStrip{gap:9px}
+  .domainStatStrip>.metric{min-height:88px;padding:13px 15px;border-radius:14px}
+  .uxDisclosure{box-shadow:var(--app-shadow)}
+}
+
+/* Mobile application shell. The bottom navigation is persistent and safe-area aware. */
+@media (max-width:840px){
+  html,body{height:100%;overflow:hidden}
+  body{overscroll-behavior:none;background:var(--app-canvas)}
+  .app{height:100dvh;min-height:100svh;grid-template-rows:52px minmax(0,1fr) 68px;background:var(--app-canvas)}
+
+  .topbar{
+    grid-row:1;min-height:52px;height:52px;padding:7px 12px;
+    position:relative;border-bottom:1px solid rgba(210,220,232,.9);
+    background:rgba(255,255,255,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+  }
+  .topbar .brand{gap:8px;align-items:center}
+  .topbar .brandMark.small{width:32px;height:32px;border-radius:10px;font-size:15px;box-shadow:none}
+  .topbar .brand>div:last-child{min-width:0}
+  .topbar .brand b{display:block;font-size:15px;line-height:1.1;letter-spacing:-.015em}
+  .topbar .brand span{display:none}
+  .topActions{gap:4px}
+  .topActions #syncText,.topActions #refreshBtn{display:none!important}
+  .topActions #logoutBtn{min-width:36px;width:36px;height:36px;padding:0;font-size:0;border-color:transparent;background:transparent;color:#6b7b91}
+  .topActions #logoutBtn::before{content:'↗';display:block;font-size:18px;transform:rotate(45deg)}
+  .topActions #routeAction{min-height:36px;max-width:150px;padding:7px 10px;border-radius:10px;font-size:11.5px}
+
+  .screenHost{
+    grid-row:2;height:100%;min-height:0;width:100%;padding:14px 14px 26px;
+    overflow-x:hidden;overflow-y:auto;scroll-padding-bottom:24px;
+    overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch
+  }
+  .screenHost>*{max-width:100%;min-width:0}
+
+  .mobileNav{
+    grid-row:3;position:relative;z-index:80;left:auto;right:auto;bottom:auto;
+    width:100%;height:68px;margin:0;padding:5px 6px max(5px,env(safe-area-inset-bottom));
+    display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;
+    border:0;border-top:1px solid rgba(210,220,232,.95);border-radius:0;
+    background:rgba(255,255,255,.97);box-shadow:0 -6px 24px rgba(29,50,80,.07);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+  }
+  .mobileNav button{
+    position:relative;min-width:0;min-height:54px;padding:5px 2px 3px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    border:0;border-radius:12px;background:transparent;color:#718198;
+    font-size:10.5px;font-weight:720;line-height:1.1
+  }
+  .mobileNav button .mobileNavIcon{width:22px;height:22px;display:grid;place-items:center;color:currentColor}
+  .mobileNav button .mobileNavIcon svg{width:21px;height:21px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mobileNav button.active{background:transparent;color:#2468c7}
+  .mobileNav button.active::after{content:'';position:absolute;top:1px;width:22px;height:3px;border-radius:999px;background:#2f72dc}
+
+  /* Page headers should read as app pages, not hero cards. */
+  .screenTitle.domainHeader{margin:0 0 12px;padding:2px 1px 12px;border-bottom:1px solid var(--app-line)}
+  .screenTitle.domainHeader h1{font-size:25px;letter-spacing:-.035em}
+  .screenTitle.domainHeader p{margin-top:5px;font-size:13px;line-height:1.4}
+  .screenEyebrow{margin-bottom:4px;font-size:10px}
+  .domainHomeAction{margin-top:10px;min-height:38px;padding:7px 10px}
+  .domainHero{
+    padding:8px 1px 12px;border:0;border-bottom:1px solid var(--app-line);border-radius:0;
+    background:transparent;box-shadow:none
+  }
+  .domainHero h2{font-size:20px}.domainHero p{font-size:13px}
+  .domainHero .controls{margin-top:12px}
+
+  /* Reduce card-within-card appearance on domain screens. */
+  .domainPrimaryGrid{gap:10px}
+  .domainPrimaryGrid>.card,.analysisLead,.analysisDigest,.uxDisclosure{
+    border-radius:14px;box-shadow:0 4px 16px rgba(29,50,80,.045)
+  }
+  .card{padding:14px;border-radius:14px;box-shadow:0 4px 16px rgba(29,50,80,.045)}
+  .sectionHeading{margin-top:4px}
+  .sectionHeading h2{font-size:18px}.sectionHeading p{font-size:12.5px}
+  .domainStatStrip{margin-top:0}
+  .domainStatStrip>.metric{flex-basis:178px;min-height:88px;padding:12px 13px;border-radius:13px;box-shadow:none}
+  .domainStatStrip>.metric strong{font-size:22px}
+  .domainStatStrip>.metric em{font-size:11.5px}
+
+  /* Home becomes one compact narrative: overview -> trend -> recent context. */
+  .cockpitV3{gap:11px;padding:0 0 8px;background:transparent}
+  .cockpitWelcome{gap:9px;padding:2px 1px 0}
+  .cockpitKicker{font-size:9.5px;letter-spacing:.07em}
+  .cockpitWelcome h1{font-size:25px;letter-spacing:-.04em}
+  .cockpitWelcome p{max-width:38ch;margin-top:4px;font-size:12.8px;line-height:1.38}
+  .cockpitPeriodTabs{border-radius:11px;box-shadow:none}
+  .cockpitPeriodTabs button{min-height:36px;font-size:11px}
+  .cockpitStatusGrid{gap:7px;margin-right:-14px;padding-right:14px}
+  .cockpitStatus{flex:0 0 190px;min-height:94px;padding:10px;border-radius:13px;box-shadow:none}
+  .cockpitIcon{width:29px;height:29px;border-radius:9px}.cockpitIcon svg{width:16px;height:16px}
+  .cockpitStatusText small{font-size:14px}.cockpitStatusText b{font-size:17px}.cockpitStatusText em{font-size:11px}
+  .cockpitTrend,.cockpitWindowBrief,.cockpitRecent,.cockpitReview{padding:13px;border-radius:14px;box-shadow:0 4px 16px rgba(29,50,80,.045)}
+  .cockpitTrendHead h2,.cockpitModuleHead h2,.cockpitInsightHero h2{font-size:17px}
+  .cockpitTrendHead p,.cockpitModuleHead p{font-size:11.8px}
+  .cockpitTrendValue{margin-top:8px}.cockpitTrendValue b{font-size:23px}
+  .cockpitChart{border-radius:11px}.cockpitChart svg{height:148px}
+  .cockpitWindowBrief{border-top-width:3px}
+  .cockpitBriefText{font-size:13.5px}
+  .cockpitSummaryList li{grid-template-columns:65px minmax(0,1fr);padding:7px 0}
+  .cockpitEvent{grid-template-columns:70px minmax(0,1fr) 12px;gap:8px;padding:8px 1px}
+  .cockpitEvent time,.cockpitEvent span em{font-size:10.8px}.cockpitEvent span b{font-size:12.5px}
+  .cockpitFooter{font-size:10.5px}
+
+  /* Large internal lists are content surfaces, not decorative panels. */
+  .sessions,.nutritionDays,.labHistory{border-radius:12px}
+  .session,.historyRow,.row{border-radius:0}
+  .uxDisclosure>summary{min-height:58px;padding:11px 13px}
+  .uxDisclosure>summary b{font-size:13.5px}.uxDisclosure>summary small{font-size:11px}
+  .disclosureBody{padding:10px}
+}
+
+@media (max-width:390px){
+  .screenHost{padding-left:12px;padding-right:12px}
+  .topActions #routeAction{max-width:126px}
+  .cockpitStatusGrid{margin-right:-12px;padding-right:12px}
+  .cockpitStatus{flex-basis:182px}
+  .domainStatStrip>.metric{flex-basis:168px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .mobileNav button,.cockpitStatus{transition:none!important}
+}
