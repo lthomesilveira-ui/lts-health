@@ -81,7 +81,7 @@ body,.screenHost{background:var(--lts-bg)}
   .cockpitStatusGrid{gap:9px;margin:0 -14px;padding:0 14px 4px;scroll-snap-type:x proximity}
   .cockpitStatus{flex:0 0 154px;min-height:112px;padding:13px;border-radius:16px;scroll-snap-align:start;box-shadow:0 6px 18px rgba(15,23,38,.045)}
   .cockpitIcon{width:34px;height:34px}
-  .cockpitStatusText small{font-size:11px!important;text-transform:none;letter-spacing:0;color:#76869a}
+  .cockpitStatusText small{font-size:14px!important;text-transform:none;letter-spacing:0;color:#76869a}
   .cockpitStatusText b{font-size:20px;line-height:1.08}
   .cockpitStatusText em{font-size:10.5px;line-height:1.3}
 
