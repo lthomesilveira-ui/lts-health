@@ -1,3 +1,5 @@
+@import url('./product-delivery.css?v=product-delivery-20260911.1');
+
 /* Keep contextual registration actions on domain screens. The overview owns
    its actions inside the relevant modules, so its top-bar action stays hidden. */
 @media (min-width:900px){
