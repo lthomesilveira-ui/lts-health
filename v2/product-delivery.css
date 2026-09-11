@@ -121,14 +121,14 @@ body{background:var(--app-canvas)}
   .cockpitStatusGrid{gap:7px;margin-right:-14px;padding-right:14px}
   .cockpitStatus{flex:0 0 190px;min-height:94px;padding:10px;border-radius:13px;box-shadow:none}
   .cockpitIcon{width:29px;height:29px;border-radius:9px}.cockpitIcon svg{width:16px;height:16px}
-  .cockpitStatusText small{font-size:12.5px}.cockpitStatusText b{font-size:17px}.cockpitStatusText em{font-size:11px}
+  .cockpitStatusText small{font-size:14px}.cockpitStatusText b{font-size:17px}.cockpitStatusText em{font-size:11px}
   .cockpitTrend,.cockpitWindowBrief,.cockpitRecent,.cockpitReview{padding:13px;border-radius:14px;box-shadow:0 4px 16px rgba(29,50,80,.045)}
   .cockpitTrendHead h2,.cockpitModuleHead h2,.cockpitInsightHero h2{font-size:17px}
   .cockpitTrendHead p,.cockpitModuleHead p{font-size:11.8px}
   .cockpitTrendValue{margin-top:8px}.cockpitTrendValue b{font-size:23px}
   .cockpitChart{border-radius:11px}.cockpitChart svg{height:148px}
   .cockpitWindowBrief{border-top-width:3px}
-  .cockpitBriefText{font-size:12.8px}
+  .cockpitBriefText{font-size:13.5px}
   .cockpitSummaryList li{grid-template-columns:65px minmax(0,1fr);padding:7px 0}
   .cockpitEvent{grid-template-columns:70px minmax(0,1fr) 12px;gap:8px;padding:8px 1px}
   .cockpitEvent time,.cockpitEvent span em{font-size:10.8px}.cockpitEvent span b{font-size:12.5px}
