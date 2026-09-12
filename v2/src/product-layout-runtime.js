@@ -7,30 +7,34 @@ if(!fixtureMode){
   let scheduled=false;
 
   function route(){return location.hash.replace(/^#/,'')||state.route||'hoje';}
-  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;apply();});}
   function apply(){
-    if(applying||!state.loaded)return;
+    if(applying||!state.loaded)return false;
     const key=route(),renderer=renderers[key];
-    if(!renderer)return;
+    if(!renderer)return false;
     const host=document.getElementById('screenHost');
-    if(!host)return;
+    if(!host)return false;
     const marker=key==='hoje'?'.ltsHomeV2':'.ltsTrainingV2';
-    if(host.querySelector(marker))return;
+    if(host.querySelector(marker))return true;
     applying=true;
-    try{host.innerHTML=renderer();host.dataset.productLayout='v2';host.dataset.productLayoutRoute=key;}
-    catch(error){console.error('product-layout-v2',error);}
+    try{host.innerHTML=renderer();host.dataset.productLayout='v2';host.dataset.productLayoutRoute=key;return true;}
+    catch(error){console.error('product-layout-v2',error);return false;}
     finally{applying=false;}
   }
+  function schedule(delay=0){
+    if(delay){setTimeout(()=>schedule(),delay);return;}
+    if(scheduled)return;
+    scheduled=true;
+    requestAnimationFrame(()=>{scheduled=false;apply();});
+  }
+  function settle(){schedule();schedule(120);schedule(360);schedule(900);schedule(1800);}
 
   const boot=()=>{
-    const host=document.getElementById('screenHost');
-    if(!host){setTimeout(boot,80);return;}
-    new MutationObserver(schedule).observe(host,{childList:true,subtree:true});
-    window.addEventListener('hashchange',schedule);
-    document.addEventListener('click',event=>{if(event.target.closest('[data-workout],[data-route]'))setTimeout(schedule,0);});
-    schedule();
-    setTimeout(schedule,250);
-    setTimeout(schedule,900);
+    if(!document.getElementById('screenHost')){setTimeout(boot,80);return;}
+    window.addEventListener('hashchange',settle);
+    document.addEventListener('click',event=>{
+      if(event.target.closest('[data-workout],[data-route],[data-entry],#refreshBtn'))settle();
+    });
+    settle();
   };
   boot();
 }
