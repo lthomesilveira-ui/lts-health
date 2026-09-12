@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
@@ -9,6 +9,8 @@ const supabaseKey=/key:\s*'([^']+)'/.exec(coreSource)?.[1];
 if(!supabaseUrl||!supabaseKey)throw new Error('public Supabase configuration not resolved');
 
 const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
+const evidenceDir='v2/real-auth-evidence';
+mkdirSync(evidenceDir,{recursive:true});
 let runtimeErrorCount=0;
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
@@ -19,7 +21,7 @@ page.on('console',m=>{if(m.type()==='error')runtimeErrorCount++;});
 async function waitForRoute(route){
   await page.evaluate(value=>{location.hash=`#${value}`;},route);
   await page.waitForFunction(value=>location.hash===`#${value}`&&Boolean(document.querySelector('#screenHost h1')),route,{timeout:30000});
-  await page.waitForTimeout(220);
+  await page.waitForTimeout(300);
 }
 async function assertNoHorizontalOverflow(){
   const ok=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1);
@@ -105,6 +107,7 @@ try{
   if(!homeState.trainingValue||homeState.trainingValue==='0'||homeState.trainingValue==='—')throw new Error('real-data training state is contradictory');
   if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
   await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/desktop-home.png`,fullPage:true});
 
   await waitForRoute('treinos');
   await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
@@ -131,7 +134,16 @@ try{
   if(integrity.internalQualityCount>0&&!dataText.includes('Tratamento interno'))throw new Error('real Data Inbox internal-quality state is contradictory');
 
   await page.setViewportSize({width:390,height:844});
-  for(const route of ['hoje','treinos','nutricao','bio','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
+  await waitForRoute('hoje');
+  await page.waitForSelector('.ltsHomeV2',{timeout:30000});
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
+  await waitForRoute('treinos');
+  await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-training.png`,fullPage:true});
+  for(const route of ['nutricao','bio','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
+
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
   if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
   console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify(integrity)}`);
