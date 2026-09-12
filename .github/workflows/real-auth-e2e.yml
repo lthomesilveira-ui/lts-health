@@ -1,10 +1,14 @@
 name: LTS Health Real Auth E2E
 on:
   push:
-    branches: [architecture-v2]
+    branches: [main, architecture-v2]
     paths:
       - 'v2/real-auth-e2e.mjs'
       - 'v2/mfp-water-audit-auth.mjs'
+      - 'v2/src/product-layout-v2.js'
+      - 'v2/src/product-layout-runtime.js'
+      - 'v2/product-layout-v2.css'
+      - 'v2/index.html'
       - '.github/workflows/real-auth-e2e.yml'
   schedule:
     - cron: '17 12 * * *'
@@ -66,3 +70,11 @@ jobs:
           printf '%s' "$TOKEN_HASH" > /tmp/lts-health-token-hash
       - name: Exercise public app with real authenticated data
         run: node v2/real-auth-e2e.mjs
+      - name: Upload real-auth visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-auth-visual-evidence
+          path: v2/real-auth-evidence
+          if-no-files-found: warn
+          retention-days: 14
