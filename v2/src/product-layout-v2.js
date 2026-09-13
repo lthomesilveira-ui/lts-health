@@ -1,4 +1,6 @@
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
+import {renderTrainingHistory,renderExerciseHistory} from './training-history.js';
+import {failed,errorCard} from './history-tools.js';
 
 const latest=(rows,key)=>[...(rows||[])].filter(r=>r?.[key]).sort((a,b)=>String(a[key]).localeCompare(String(b[key]))).at(-1)||null;
 const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
@@ -69,8 +71,8 @@ export function renderProductHome(){
     </section>
 
     <section class="ltsSection ltsHomeSection">
-      <div class="ltsSectionHead"><div><span>Mais recente</span><h2>Último treino</h2></div><button data-route="treinos">Ver treinos</button></div>
-      ${workout?`<button class="ltsHealthTile training ltsWorkoutFeature" data-route="treinos">
+      <div class="ltsSectionHead"><div><span>Mais recente</span><h2>Último treino</h2></div><button data-route="treinos" data-depth-training-view="history">Ver treinos</button></div>
+      ${workout?`<button class="ltsHealthTile training ltsWorkoutFeature" data-route="treinos" data-depth-workout="${esc(workout.source_record_id)}">
         <div class="ltsWorkoutFeatureHead"><div><span class="ltsActivityIcon">↗</span><div><small>${fmtDate(workout.workout_date)}</small><b>${esc(safe(workout.workout_type,'Treino'))}</b><em>${esc(workout.location||'')}</em></div></div><span class="ltsChevron">›</span></div>
         <div class="ltsWorkoutMetrics">
           ${workoutMetric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min','duração')}
@@ -115,29 +117,35 @@ function setText(set){
 }
 
 function workoutDetail(workout){
-  const exercises=exercisesFor(workout);
-  const setCount=exercises.reduce((sum,e)=>sum+setsFor(e).length,0);
+  const exercises=failed(state,'exercises')?[]:exercisesFor(workout);
+  const setCount=failed(state,'sets')?null:exercises.reduce((sum,e)=>sum+setsFor(e).length,0);
   return `<div class="ltsWorkoutDetail">
     <div class="ltsWorkoutStats">
       ${stat('Duração',num(workout.duration_minutes)!=null?`${fmtNum(workout.duration_minutes,0)} min`:'—')}
       ${stat('Energia',num(workout.calories_kcal)!=null?`${fmtNum(workout.calories_kcal,0)} kcal`:'—')}
       ${stat('FC média',num(workout.heart_rate_avg)!=null?`${fmtNum(workout.heart_rate_avg,0)} bpm`:'—')}
-      ${stat('Séries',String(setCount||'—'))}
+      ${stat('Séries',setCount==null?'Indisponível':String(setCount))}
     </div>
-    <div class="ltsExerciseList">${exercises.length?exercises.map((e,index)=>{
-      const sets=setsFor(e);
-      return `<article class="ltsExerciseCard"><div class="ltsExerciseIndex">${String(index+1).padStart(2,'0')}</div><div class="ltsExerciseContent"><header><div><b>${esc(e.exercise||'Exercício')}</b><small>${esc([e.machine,e.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${sets.length} séries</span></header><div class="ltsSetList">${sets.length?sets.map((s,i)=>{const t=setText(s);return `<div><span>S${i+1}</span><b>${t.missing?'<strong class="ltsSetMissing">Dados não informados</strong>':`<strong>${esc(t.load)}</strong><i>×</i><strong>${esc(t.reps)}</strong><small> reps</small>`}${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</b></div>`;}).join(''):'<div class="ltsMuted">Séries ainda não estruturadas.</div>'}</div></div></article>`;
-    }).join(''):'<div class="ltsEmptyCard">Exercícios ainda não estruturados para esta sessão.</div>'}</div>
+    ${num(workout.heart_rate_min)!=null||num(workout.heart_rate_max)!=null?`<p class="ltsDepthNote">FC mínima ${num(workout.heart_rate_min)!=null?`${fmtNum(workout.heart_rate_min,0)} bpm`:'não informada'} · FC máxima ${num(workout.heart_rate_max)!=null?`${fmtNum(workout.heart_rate_max,0)} bpm`:'não informada'} · Origem: ${esc(workout.source||'não informada')}</p>`:''}
+    <div class="ltsExerciseList">${failed(state,'exercises')?errorCard('Os exercícios não carregaram agora.'):exercises.length?exercises.map((e,index)=>{
+      const sets=failed(state,'sets')?[]:setsFor(e);
+      return `<article class="ltsExerciseCard"><div class="ltsExerciseIndex">${String(index+1).padStart(2,'0')}</div><div class="ltsExerciseContent"><header><div><b>${esc(e.exercise||'Exercício')}</b><small>${esc([e.machine,e.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'Séries indisponíveis':`${sets.length} séries`}</span></header><button type="button" class="ltsDepthLink" data-depth-exercise="${esc(e.source_record_id)}" aria-label="Histórico de ${esc(e.exercise||'exercício')}">Histórico deste exercício ›</button><div class="ltsSetList">${sets.length?sets.map((s,i)=>{const t=setText(s);return `<div><span>S${i+1}</span><b>${t.missing?'<strong class="ltsSetMissing">Dados não informados</strong>':`<strong>${esc(t.load)}</strong><i>×</i><strong>${esc(t.reps)}</strong><small> reps</small>`}${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</b></div>`;}).join(''):`<div class="ltsMuted">${failed(state,'sets')?'As séries não carregaram agora.':esc(e.source_text||'Séries ainda não estruturadas.')}</div>`}</div></div></article>`;
+    }).join(''):`<div class="ltsEmptyCard">${esc(workout.raw_exercises||'Exercícios ainda não estruturados para esta sessão.')}</div>`}</div>
   </div>`;
 }
 
 export function renderProductTraining(){
   const rows=workoutRows();
   const selected=rows.find(w=>w.source_record_id===state.ui.openWorkout)||rows[0]||null;
-  const list=rows.slice(0,14);
-  return `<section class="ltsTrainingV2">
-    <header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Treino</span><h1>${selected?esc(safe(selected.workout_type,'Sessão')):'Histórico de treinos'}</h1><p>${selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${esc(selected.location)}`:''}`:'Selecione uma sessão para abrir o detalhe.'}</p></div><button class="ltsRoundAction" data-entry="workout" aria-label="Registrar treino">+</button></header>
-    ${selected?`<section class="ltsWorkoutHero"><div class="ltsWorkoutHeroCopy"><span>Sessão concluída</span><strong>${esc(safe(selected.workout_type,'Treino'))}</strong><small>${fmtDate(selected.workout_date)}${selected.location?` · ${esc(selected.location)}`:''}</small></div><div class="ltsPulse" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div></section>${workoutDetail(selected)}`:'<div class="ltsEmptyCard">Nenhum treino estruturado disponível.</div>'}
-    <section class="ltsSection ltsTrainingHistory"><div class="ltsSectionHead"><div><span>Histórico</span><h2>Outras sessões</h2></div></div><div class="ltsWorkoutList">${list.map(w=>`<button data-workout="${esc(w.source_record_id)}" class="${selected?.source_record_id===w.source_record_id?'active':''}"><time>${fmtDate(w.workout_date)}</time><span><b>${esc(safe(w.workout_type,'Treino'))}</b><small>${esc(w.location||'Local não informado')}</small></span><em>›</em></button>`).join('')}</div></section>
+  const view=['history','exercise'].includes(state.ui.productTrainingView)?state.ui.productTrainingView:'session';
+  const tabs=`<div class="ltsDepthTabs" role="group" aria-label="Explorar treinos"><button type="button" data-depth-training-view="session" class="${view==='session'?'active':''}" aria-pressed="${view==='session'}">Resumo e séries</button><button type="button" data-depth-training-view="history" class="${view==='history'?'active':''}" aria-pressed="${view==='history'}">Histórico completo</button></div>`;
+  const heading=view==='history'?'Treinos':view==='exercise'?'Histórico do exercício':selected?safe(selected.workout_type,'Sessão'):'Histórico de treinos';
+  const subtitle=view==='history'?'Encontre qualquer sessão por ano, exercício ou local.':view==='exercise'?'Ocorrências, equipamento e cargas registradas.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão para abrir o detalhe.';
+  return `<section class="ltsTrainingV2" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
+    <header class="ltsPageHeader"><button class="ltsBack" ${view==='exercise'?'data-depth-training-view="session"':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRoundAction" data-entry="workout" aria-label="Registrar treino">+</button></header>
+    ${tabs}
+    ${failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?`
+    <section class="ltsWorkoutHero"><div class="ltsWorkoutHeroCopy"><span>Sessão registrada</span><strong>${esc(safe(selected.workout_type,'Treino'))}</strong><small>${fmtDate(selected.workout_date)}${selected.location?` · ${esc(selected.location)}`:''}</small></div><div class="ltsPulse" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div></section>${workoutDetail(selected)}
+    <button type="button" class="ltsDepthLink" data-depth-training-view="history">Abrir as ${rows.length} sessões do histórico ›</button>`:'<div class="ltsEmptyCard">Nenhum treino estruturado disponível.</div>'}
   </section>`;
 }

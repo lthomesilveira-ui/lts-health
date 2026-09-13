@@ -1,0 +1,52 @@
+name: LTS Health Functional Depth
+on:
+  pull_request:
+    branches: [main, architecture-v2]
+    paths: ['v2/**', '.github/workflows/history-depth.yml']
+  push:
+    branches: [main]
+    paths: ['v2/**', '.github/workflows/history-depth.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lts-health-depth-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  functional-depth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source and provenance boundaries
+        run: |
+          node --check v2/src/history-tools.js
+          node --check v2/src/training-history.js
+          node --check v2/src/labs-layout-v2.js
+          node --check v2/src/composition-layout-v2.js
+          node --check v2/src/product-layout-runtime.js
+          node v2/history-depth-contract.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start application
+        run: |
+          python3 -m http.server 4173 >/tmp/lts-depth-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/v2/ >/dev/null && break; sleep 1; done
+      - name: Exercise production renderers with synthetic service at desktop and mobile sizes
+        run: node v2/history-depth-browser.mjs
+      - name: Upload synthetic UI inspection evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-depth-synthetic-visual
+          path: v2/history-depth-evidence
+          if-no-files-found: warn
+          retention-days: 14

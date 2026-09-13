@@ -1,16 +1,18 @@
-# LTS Health — contrato visual canônico do Dashboard
+# LTS Health — referência visual e histórico dos contratos
 
 Status: referência obrigatória de produto para a Home do LTS Health.
 
 A imagem aprovada pelo usuário é a autoridade visual. Este documento apenas registra os elementos observáveis da referência para impedir regressões. Se houver conflito, a imagem prevalece.
 
-## Estado da fonte visual
+## Fonte recuperada e precedência — 13/09/2026
 
-A imagem-fonte aprovada não está presente no repositório atual. O contrato textual continua válido, mas não é evidência suficiente para declarar paridade pixel a pixel. Até a fonte ser recuperada e versionada:
+A imagem mobile aprovada foi recuperada, inspecionada e preservada em Drive privado sob o nome `LTS Health - referencia visual aprovada.png`. SHA256: `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`.
 
-- é obrigatório avançar em hierarquia, legibilidade, navegação, estados e consistência inequívocos;
-- inspeção desktop/mobile continua obrigatória;
-- nenhuma release pode usar “paridade exata” ou nota visual definitiva como estado comprovado.
+O arquivo contém detalhes pessoais e exemplos ilustrativos; não deve ser copiado para o repositório público. Um agente autorizado deve obter o original no Drive privado do proprietário. Os valores, metas e exemplos da imagem não são dados de produção nem instruções de saúde a implementar.
+
+A imagem reúne três telas mobile: resumo pessoal com hierarquia compacta; detalhe de sessão com métricas e abas; exercícios com séries legíveis. A aceitação mais recente do usuário preserva a direção atual de Home/Treinos/Composição/Exames e pede mais profundidade funcional. Portanto, não reiniciar cores ou arquitetura neste pacote.
+
+Os parágrafos desktop abaixo preservam a referência histórica anterior, não podem anular a direção mobile posterior nem justificar uma volta ao dashboard rejeitado. Precedência: imagem privada aprovada + feedback mais recente > implementação publicada aceita direcionalmente > contrato histórico. Não declarar paridade exata sem comparação visual e aceite explícito.
 
 ## Linguagem visual aprovada
 

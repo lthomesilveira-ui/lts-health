@@ -3,15 +3,11 @@ on:
   push:
     branches: [main, architecture-v2]
     paths:
-      - 'v2/real-auth-e2e.mjs'
-      - 'v2/real-auth-labs-visual.mjs'
-      - 'v2/mfp-water-audit-auth.mjs'
-      - 'v2/src/product-layout-v2.js'
-      - 'v2/src/product-layout-runtime.js'
-      - 'v2/src/labs-layout-v2.js'
-      - 'v2/product-layout-v2.css'
-      - 'v2/labs-model-v2.css'
-      - 'v2/model-convergence-shell.css'
+      - 'v2/src/**'
+      - 'v2/*auth*.mjs'
+      - 'v2/*visual*.mjs'
+      - 'v2/qa-visual-public.pem'
+      - 'v2/*.css'
       - 'v2/index.html'
       - '.github/workflows/real-auth-e2e.yml'
   schedule:
@@ -26,19 +22,24 @@ concurrency:
 jobs:
   real-auth-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Static validation
         run: |
           node --check v2/real-auth-e2e.mjs
+          node --check v2/real-auth-depth-checks.mjs
           node --check v2/real-auth-labs-visual.mjs
+          node --check v2/seal-visual-evidence.mjs
           node --check v2/mfp-water-audit-auth.mjs
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
-          npm install --no-save playwright@1.55.0
-          npx playwright install chromium
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
       - name: Obtain one-time audit token hash
         shell: bash
         run: |
@@ -47,14 +48,11 @@ jobs:
           OIDC_RESPONSE="$(curl "${CURL_RETRY[@]}" -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
           echo "::add-mask::$OIDC_TOKEN"
-          curl "${CURL_RETRY[@]}" -fsS -X POST \
-            -H "Authorization: Bearer $OIDC_TOKEN" \
-            'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
-            -o /tmp/lts-health-audit-token.json
-          AUDIT_TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-audit-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
-          echo "::add-mask::$AUDIT_TOKEN_HASH"
+          curl "${CURL_RETRY[@]}" -fsS -X POST -H "Authorization: Bearer $OIDC_TOKEN" 'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' -o /tmp/lts-health-audit-token.json
+          TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-audit-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          echo "::add-mask::$TOKEN_HASH"
           umask 077
-          printf '%s' "$AUDIT_TOKEN_HASH" > /tmp/lts-health-audit-token-hash
+          printf '%s' "$TOKEN_HASH" > /tmp/lts-health-audit-token-hash
       - name: Audit preserved MyFitnessPal water source
         run: node v2/mfp-water-audit-auth.mjs
       - name: Obtain fresh one-time E2E token hash
@@ -65,15 +63,12 @@ jobs:
           OIDC_RESPONSE="$(curl "${CURL_RETRY[@]}" -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
           echo "::add-mask::$OIDC_TOKEN"
-          curl "${CURL_RETRY[@]}" -fsS -X POST \
-            -H "Authorization: Bearer $OIDC_TOKEN" \
-            'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
-            -o /tmp/lts-health-e2e-token.json
-          TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-e2e-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          curl "${CURL_RETRY[@]}" -fsS -X POST -H "Authorization: Bearer $OIDC_TOKEN" 'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' -o /tmp/lts-health-token.json
+          TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
           echo "::add-mask::$TOKEN_HASH"
           umask 077
           printf '%s' "$TOKEN_HASH" > /tmp/lts-health-token-hash
-      - name: Exercise public app with real authenticated data
+      - name: Exercise public app and full histories with real authenticated data
         run: node v2/real-auth-e2e.mjs
       - name: Obtain one-time Labs visual token hash
         shell: bash
@@ -83,21 +78,25 @@ jobs:
           OIDC_RESPONSE="$(curl "${CURL_RETRY[@]}" -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
           echo "::add-mask::$OIDC_TOKEN"
-          curl "${CURL_RETRY[@]}" -fsS -X POST \
-            -H "Authorization: Bearer $OIDC_TOKEN" \
-            'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
-            -o /tmp/lts-health-labs-token.json
-          LABS_TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-labs-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
-          echo "::add-mask::$LABS_TOKEN_HASH"
+          curl "${CURL_RETRY[@]}" -fsS -X POST -H "Authorization: Bearer $OIDC_TOKEN" 'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' -o /tmp/lts-health-labs-token.json
+          TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-labs-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          echo "::add-mask::$TOKEN_HASH"
           umask 077
-          printf '%s' "$LABS_TOKEN_HASH" > /tmp/lts-health-labs-token-hash
+          printf '%s' "$TOKEN_HASH" > /tmp/lts-health-labs-token-hash
       - name: Capture real authenticated Labs experience
         run: node v2/real-auth-labs-visual.mjs
-      - name: Upload real-auth visual evidence
+      - name: Encrypt private screenshots before artifact upload
+        id: seal
         if: always()
+        run: node v2/seal-visual-evidence.mjs
+      - name: Upload encrypted real-auth visual evidence
+        if: always() && steps.seal.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: real-auth-visual-evidence
-          path: v2/real-auth-evidence
+          name: real-auth-visual-evidence-encrypted
+          path: v2/real-auth-encrypted/*.sealed.json
           if-no-files-found: warn
           retention-days: 14
+      - name: Remove plaintext evidence and one-time material
+        if: always()
+        run: rm -rf v2/real-auth-evidence /tmp/lts-health*token*
