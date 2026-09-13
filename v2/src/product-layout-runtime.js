@@ -1,10 +1,11 @@
 import {state,fixtureMode} from './core.js';
 import {renderProductHome,renderProductTraining} from './product-layout-v2.js';
 import {renderProductComposition} from './composition-layout-v2.js';
+import {renderProductLabs} from './labs-layout-v2.js';
 
 if(!fixtureMode){
-  const renderers={hoje:renderProductHome,treinos:renderProductTraining,bio:renderProductComposition};
-  const markers={hoje:'.ltsHomeV2',treinos:'.ltsTrainingV2',bio:'.ltsCompositionV2'};
+  const renderers={hoje:renderProductHome,treinos:renderProductTraining,bio:renderProductComposition,saude:renderProductLabs};
+  const markers={hoje:'.ltsHomeV2',treinos:'.ltsTrainingV2',bio:'.ltsCompositionV2',saude:'.ltsLabsV2'};
   let applying=false;
   let pollTimer=null;
   let pollStarted=0;
@@ -62,6 +63,12 @@ if(!fixtureMode){
       if(metric&&route()==='bio'){
         state.ui.productCompositionMetric=metric.dataset.compositionMetric;
         renderIntoHost('bio',{force:true});
+        return;
+      }
+      const marker=event.target.closest('[data-lab-marker]');
+      if(marker&&route()==='saude'){
+        state.ui.productLabMarker=marker.dataset.labMarker;
+        renderIntoHost('saude',{force:true});
         return;
       }
       if(event.target.closest('[data-workout],[data-route],[data-entry],#refreshBtn'))settle();
