@@ -106,14 +106,16 @@ try{
   if(!integrity.latestWorkoutId||integrity.latestExpectedExercises<1||integrity.latestExpectedSets<1)throw new Error('latest canonical workout has no structured linkage');
 
   await waitForRoute('hoje');
-  await page.waitForSelector('.ltsHomeV2',{timeout:30000});
+  await page.waitForSelector('.ltsHomeReference',{timeout:30000});
   const homeState=await page.evaluate(()=>({
-    title:document.querySelector('.ltsHomeV2 h1')?.textContent?.trim()||'',
-    trainingValue:document.querySelector('.ltsHealthTile.training b')?.textContent?.trim()||'',
+    greeting:document.querySelector('.ltsHomeReference h1')?.textContent?.trim()||'',
+    metrics:document.querySelectorAll('.ltsRefMetrics .ltsRefMetric').length,
+    today:Boolean(document.querySelector('.ltsRefToday')),
+    progress:document.querySelectorAll('.ltsRefProgressItem').length,
+    trainingRow:Boolean(document.querySelector('.ltsRefTodayIcon.training')),
     legacyVisible:Boolean(document.querySelector('[data-executive-dashboard]'))
   }));
-  if(homeState.title!=='Seu panorama')throw new Error('structural Home missing');
-  if(!homeState.trainingValue||homeState.trainingValue==='0'||homeState.trainingValue==='—')throw new Error('real-data training state is contradictory');
+  if(!homeState.greeting||homeState.metrics!==3||!homeState.today||homeState.progress!==4||!homeState.trainingRow)throw new Error(`reference Home missing: ${JSON.stringify(homeState)}`);
   if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/desktop-home.png`,fullPage:true});
@@ -159,7 +161,7 @@ try{
 
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
-  await page.waitForSelector('.ltsHomeV2',{timeout:30000});
+  await page.waitForSelector('.ltsHomeReference',{timeout:30000});
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
   await waitForRoute('treinos');
