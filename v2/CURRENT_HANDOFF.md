@@ -1,6 +1,6 @@
 # LTS Health — CURRENT HANDOFF
 
-Updated: 2026-09-12 22:31 BRT
+Updated: 2026-09-13 08:28 BRT
 
 This file is the first document any new agent/assistant should read before changing the product. It contains only public project metadata; private health payloads and credentials must remain outside the repository.
 
@@ -22,7 +22,7 @@ Operational hierarchy:
 
 The user rejected the legacy dashboard/web-BI feel. The approved direction is a mobile-first personal longitudinal health application with immediate comprehension, closer in product language to Apple Health / Whoop than to a corporate BI dashboard.
 
-The user explicitly approved the generated visual direction and asked to converge the real app toward that model. The goal is not superficial CSS. It requires structural screens, strong hierarchy, restrained density, useful charts, and clear drill-down.
+The goal is structural convergence, not superficial CSS: strong hierarchy, restrained density, useful real-data trends, short journeys and drill-down only when it adds value.
 
 Core UX questions:
 - Home: how am I now, what changed, what matters today?
@@ -33,127 +33,122 @@ Core UX questions:
 
 ## Current verified release
 
-Public main commit: `fc6566fcecbc451ba0911cbdea7b0acd0cf61c15`
-Build id: `ux-coherence-model-convergence-20260913.2`
-Primary release PRs: #255, #256, #257.
+Public main commit: `2c4f90ff7925c11dc0f2e8a4c5f07d72330384b7`
+Build id: `ux-coherence-model-convergence-20260913.5`
+Current P0 release line: PRs #255–#261.
 
-The public release completed:
-- deploy success;
-- main smoke success;
-- Timeline smoke success;
-- deployed homologation success;
-- real authenticated E2E success.
+The latest public release completed successfully:
+- deploy;
+- main smoke;
+- Timeline smoke;
+- staging smoke;
+- deployed homologation;
+- real authenticated E2E.
 
 Latest authenticated real-data visual proof:
 - workflow: `LTS Health Real Auth E2E`;
-- run: `34730635619`;
+- run: `34754370788`;
 - artifact: `real-auth-visual-evidence`;
-- artifact id: `10308869813`;
-- files: `desktop-home.png`, `mobile-home.png`, `mobile-training.png`.
+- artifact id: `10316970169`;
+- files include authenticated desktop/mobile evidence for Home, Training and Composition.
 
-These screenshots were generated from the real authenticated public app, not fixture mode, and were inspected before this handoff was updated.
+The evidence was produced from the real authenticated public app, not fixture mode, and inspected before this handoff was updated.
 
-## Current real implementation
+## Structural product routes released
 
-Structural product screens exist in:
-- `v2/src/product-layout-v2.js`
-- `v2/product-layout-v2.css`
-- `v2/model-convergence-shell.css`
-- `v2/src/product-layout-runtime.js`
+### Home
 
-Current authenticated Home now contains:
+The authenticated Home is structural and app-like rather than a legacy dashboard:
 - `Seu panorama`;
 - current composition as the primary hero;
-- real weight trend rendered from comparable body-composition records only;
-- current weight, body-fat percentage and skeletal-muscle mass when present;
+- real weight trend from comparable body-composition records only;
 - latest training as the primary recent event;
-- duration, energy and average heart rate from the latest canonical workout;
 - nutrition and labs as quieter secondary signals;
 - mobile bottom navigation;
-- compact structural-route shell without duplicate contextual route action.
+- duplicate generic shell actions suppressed on structural routes.
 
-Composition trend safety rule:
-- the Home trend is not a decorative chart;
-- it uses real `health_body_composition` data already loaded by the app;
-- when the latest record has a source, the sparkline is restricted to that same source;
-- ambiguous sources are not silently merged;
-- insufficient comparable history falls back explicitly instead of inventing a trend.
+### Training
 
-Current Training now contains:
+The authenticated Training route contains:
 - session hero;
 - duration / energy / average HR / set count;
 - exercise cards;
 - structured set rows with load × repetitions;
 - technique/failure metadata as compact badges;
 - duplicated technique labels normalized/deduplicated;
-- missing historical load/reps shown as `Dados não informados`, never fabricated;
+- missing historical load/reps shown explicitly as not informed, never fabricated;
 - recent session list.
 
-The authenticated screenshot for the latest canonical workout shows the real 11/09/2026 session with 59 min, 524 kcal, average HR 105 bpm and 35 structured sets. Private health payloads remain in the private database and are not copied into repository metadata beyond this high-level release evidence.
+### Composition
+
+Composition P0 is released and visually verified. The route now contains:
+- latest-measurement hero;
+- clear weight / body-fat / skeletal-muscle hierarchy;
+- `O que mudou` using the 12 most recent comparable measurements from the current source;
+- real longitudinal trend tabs for body-fat percentage, skeletal-muscle mass, weight and fat mass;
+- recent history;
+- provenance/ambiguity note kept secondary to the primary reading.
+
+Composition safety rules:
+- only unique measurement dates enter automatic comparison;
+- the active trend/delta stays within the same origin as the current measurement;
+- ambiguous dates and other origins remain preserved but are excluded from automatic trend/delta;
+- insufficient comparable history produces an explicit fallback instead of a fabricated trend;
+- full same-source history remains preserved even though the primary change narrative is intentionally recent.
+
+A first authenticated Composition pass revealed that an all-history delta was technically valid but not useful as the primary current answer; it was changed to the most recent 12 comparable measurements. A second inspection revealed a duplicated generic `Registrar bio` shell action on desktop. The structural runtime now deterministically owns/hides the generic shell action, and the final authenticated evidence confirms the duplicate is gone.
 
 ## Important lessons / failures already diagnosed
 
 Do not repeat these:
 - CI green does not equal good UX.
 - Fixture mode previously showed a different surface than the user's authenticated app.
-- The structural runtime previously stopped polling before real authenticated data finished loading; it was extended to tolerate real load timing.
-- Cache/versioning previously allowed Safari to retain old presentation assets.
-- Tests previously searched for legacy Home selectors and therefore could not prove the new Home existed.
-- The user repeatedly saw a legacy dashboard despite claims of redesign. Never call a CSS patch a redesign.
+- Never call a CSS-only patch a redesign.
 - Never claim visual parity without inspecting real authenticated screenshots from the deployed version.
-- The real-auth contract itself can become stale when an intentionally changed product title/selector is promoted; update the contract in the same release line rather than treating a stale literal as product failure.
-- Mobile shell track dimensions must match the actual header height; a previous 52 px reserved track with a 50 px header created a visible 2 px layout gap and was corrected without weakening the geometry gate.
+- Cache/versioning must be bumped whenever presentation assets change.
+- Real-auth contracts can become stale when intentional product literals change; update the contract in the same release line.
+- Structural route chrome must be owned deterministically by runtime when CSS-only hiding is not sufficient across environments.
+- Longitudinal math may be technically valid but still be poor product UX; the primary answer should emphasize a recent, relevant comparable window and keep full history available as context.
 
 ## Current user acceptance
 
-On 2026-09-12, after viewing the first structural authenticated version, the user said: `Está em uma direção melhor sim` and authorized continued evolution toward the approved model.
+The user previously said the structural direction was better and authorized continued convergence toward the approved model.
 
-The Home/Training model-convergence package released after that comment is materially more app-like and has been visually inspected by the executing assistant, but it has not yet received a new explicit user acceptance statement.
-
-This remains directional acceptance, not final UX acceptance.
+Home, Training and Composition are now materially more app-like and have passed real authenticated release gates, but this is still directional acceptance. Do not label final UX acceptance or exact visual parity until the user explicitly accepts it.
 
 ## P0 UX model convergence — status
 
 Home mobile refinement: RELEASED / awaiting product-level feedback.
 Training session/detail refinement: RELEASED / awaiting product-level feedback.
-
-Delivered in the current P0 line:
-- composition made visually primary;
-- decorative trend bars replaced with a real, source-safe longitudinal weight chart;
-- latest workout made a protagonist rather than one of three equal dashboard tiles;
-- secondary nutrition/lab signals reduced in visual weight;
-- structural Training made denser and easier to scan;
-- shell chrome reduced on the structural routes;
-- real authenticated screenshots became the release evidence rather than fixture screenshots.
+Composition experience: RELEASED / awaiting product-level feedback.
 
 Remaining execution order:
-1. Composition experience.
-2. Labs longitudinal experience.
-3. Timeline.
-4. Analyses / remaining domains.
-5. Cross-product visual consistency and final acceptance pass.
+1. Labs longitudinal experience.
+2. Timeline.
+3. Analyses / remaining domains.
+4. Cross-product visual consistency and final acceptance pass.
 
-## Next P0 — Composition experience
+## Next P0 — Labs longitudinal experience
 
-Goal: extend the same app language from Home/Training into Composition without reverting to the old generic domain/dashboard surface.
+Goal: extend the same structural app language into Labs without reverting to the generic explorer/report surface.
 
 Requirements:
-- make latest measurement immediately understandable;
-- show weight, body-fat and lean/muscle dimensions with clear hierarchy;
-- preserve source boundaries and never compare incompatible body-composition origins as if equivalent;
-- support longitudinal trend and period comparison only where source/date semantics allow;
-- reduce explanatory chrome and giant generic cards;
-- make the mobile first viewport useful on its own;
-- use real data, not decorative chart geometry;
-- preserve access to historical detail and provenance without making them dominate the primary view.
+- make the latest/relevant lab context immediately understandable;
+- expose a marker trend only when biomarker, origin, unit and dates are safely comparable;
+- preserve source, collection date, unit and reference-range context;
+- keep ambiguous same-date results out of automatic trend calculation;
+- make the mobile first viewport useful without requiring the user to parse a long laboratory list;
+- use a single primary longitudinal visualization instead of multiple equal-weight dashboard cards;
+- preserve drill-down to result history and provenance;
+- do not diagnose, classify a result medically or attribute causality automatically.
 
 ## Data / trust rules
 
 - Never put private health payloads or credentials in this repository handoff.
-- The database, not chat memory, is authoritative for private health records.
+- The private database, not chat memory, is authoritative for health records.
 - Do not invent missing values.
 - Preserve source/provenance boundaries.
-- Do not combine ambiguous sources.
+- Do not combine ambiguous sources or units.
 - Protocol/treatment data is temporal context only; no causal medical claims.
 - Real authenticated E2E must validate changed real-data behavior.
 
@@ -164,10 +159,10 @@ A UX package is not ready merely because static/smoke tests are green. Before te
 2. deploy the exact commit;
 3. run public smoke;
 4. run real authenticated E2E on `main`;
-5. save real authenticated mobile screenshots;
+5. save real authenticated mobile screenshots for the changed structural route;
 6. inspect those screenshots against the approved direction;
-7. reject internally if the screen still looks like the old dashboard, clips, overflows, or is materially unlike the intended hierarchy.
+7. reject internally if the screen still looks like the old dashboard, clips, overflows, duplicates chrome or weakens provenance rules.
 
 ## Next autonomous action
 
-Continue from the verified Home/Training P0 release, not from the legacy cockpit. Start the Composition experience as the next coherent package. Re-fetch current `main` and this handoff before any write. Use normal branches/PRs, never force. Preserve private data in the database, use source-safe longitudinal logic, and require real authenticated visual proof before asking for the next user product review.
+Start the Labs longitudinal structural package from current `main`. Re-fetch the required operational documents before any write, inspect the existing lab data contract and legacy screen only to preserve safe semantics, then implement a dedicated structural Labs route with real-data visual proof. Use normal branches/PRs and never force.
