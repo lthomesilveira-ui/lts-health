@@ -1,12 +1,12 @@
 /* Final shell alignment for the model-convergence package.
    Keep fixture/legacy route actions available for safety contracts, but remove
    duplicate shell actions when structural product routes own the journey. */
+body:has(.ltsHomeV2) .topbar #routeAction,
+body:has(.ltsTrainingV2) .topbar #routeAction,
+body:has(.ltsCompositionV2) .topbar #routeAction{display:none!important}
 @media(max-width:840px){
   .app{grid-template-rows:50px minmax(0,1fr) 68px!important}
   .topbar .brand b{color:#101827!important}
-  body:has(.ltsHomeV2) .topbar #routeAction,
-  body:has(.ltsTrainingV2) .topbar #routeAction,
-  body:has(.ltsCompositionV2) .topbar #routeAction{display:none!important}
   body:has(.ltsHomeV2) .topbar .topActions,
   body:has(.ltsTrainingV2) .topbar .topActions,
   body:has(.ltsCompositionV2) .topbar .topActions{margin-left:auto!important}
