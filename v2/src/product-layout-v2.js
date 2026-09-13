@@ -94,11 +94,24 @@ export function renderProductHome(){
   </section>`;
 }
 
+function normalizeSetFlag(value){
+  const text=String(value||'').trim();
+  if(!text)return '';
+  const lower=text.toLowerCase();
+  if(lower.includes('aquec'))return 'aquec.';
+  if(lower==='drop set'||lower==='dropset')return 'drop';
+  if(lower==='near failure'||lower==='near-failure')return 'quase falha';
+  return text;
+}
+
 function setText(set){
-  const load=num(set.weight)!=null?`${fmtNum(set.weight,Number.isInteger(num(set.weight))?0:1)} ${set.weight_unit==='kg'?'kg':esc(set.weight_unit||'')}`:'—';
-  const reps=set.reps_raw??set.reps_numeric??'—';
-  const flags=[set.phase==='warmup'?'aquec.':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',set.technique||''].filter(Boolean);
-  return {load,reps:String(reps),flags};
+  const weight=num(set.weight);
+  const repsValue=set.reps_raw??set.reps_numeric??null;
+  const load=weight!=null?`${fmtNum(weight,Number.isInteger(weight)?0:1)} ${set.weight_unit==='kg'?'kg':esc(set.weight_unit||'')}`:'—';
+  const reps=repsValue==null||repsValue===''?'—':String(repsValue);
+  const rawFlags=[set.phase==='warmup'?'aquec.':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',set.technique||''];
+  const flags=[...new Set(rawFlags.map(normalizeSetFlag).filter(Boolean))];
+  return {load,reps,flags,missing:load==='—'&&reps==='—'};
 }
 
 function workoutDetail(workout){
@@ -113,7 +126,7 @@ function workoutDetail(workout){
     </div>
     <div class="ltsExerciseList">${exercises.length?exercises.map((e,index)=>{
       const sets=setsFor(e);
-      return `<article class="ltsExerciseCard"><div class="ltsExerciseIndex">${String(index+1).padStart(2,'0')}</div><div class="ltsExerciseContent"><header><div><b>${esc(e.exercise||'Exercício')}</b><small>${esc([e.machine,e.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${sets.length} séries</span></header><div class="ltsSetList">${sets.length?sets.map((s,i)=>{const t=setText(s);return `<div><span>S${i+1}</span><b><strong>${esc(t.load)}</strong><i>×</i><strong>${esc(t.reps)}</strong><small> reps</small>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</b></div>`;}).join(''):'<div class="ltsMuted">Séries ainda não estruturadas.</div>'}</div></div></article>`;
+      return `<article class="ltsExerciseCard"><div class="ltsExerciseIndex">${String(index+1).padStart(2,'0')}</div><div class="ltsExerciseContent"><header><div><b>${esc(e.exercise||'Exercício')}</b><small>${esc([e.machine,e.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${sets.length} séries</span></header><div class="ltsSetList">${sets.length?sets.map((s,i)=>{const t=setText(s);return `<div><span>S${i+1}</span><b>${t.missing?'<strong class="ltsSetMissing">Dados não informados</strong>':`<strong>${esc(t.load)}</strong><i>×</i><strong>${esc(t.reps)}</strong><small> reps</small>`}${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</b></div>`;}).join(''):'<div class="ltsMuted">Séries ainda não estruturadas.</div>'}</div></div></article>`;
     }).join(''):'<div class="ltsEmptyCard">Exercícios ainda não estruturados para esta sessão.</div>'}</div>
   </div>`;
 }
