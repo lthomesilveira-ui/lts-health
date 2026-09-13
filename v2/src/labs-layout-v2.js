@@ -1,99 +1,87 @@
 import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
+import {validDay,pageOf,pager,searchField,periodControl,seriesWindow,pointChart,emptyCard,errorCard,failed,differenceText} from './history-tools.js';
 
-const day=value=>String(value||'').slice(0,10);
-const origin=row=>String(row?.laboratory||row?.source||row?.source_file||row?.source_record_id||row?.id||'').trim();
+const origin=row=>String(row?.laboratory||row?.source||row?.source_file||'').trim();
 const unit=row=>String(row?.unit||'').trim();
-const numeric=row=>num(row?.result_numeric)!=null;
-const resultText=row=>{
-  const raw=String(row?.result_raw||'').trim();
-  if(raw)return raw;
-  if(numeric(row))return `${fmtNum(row.result_numeric)}${unit(row)?` ${unit(row)}`:''}`;
+const method=row=>String(row?.method||'').trim();
+const exactNumeric=row=>num(row?.result_numeric)!=null&&!/[<>≤≥]|menor que|maior que|inferior a|superior a/i.test(String(row?.result_raw||''));
+export function labResultText(row){
+  const raw=String(row?.result_raw??'').trim(),u=unit(row);
+  if(raw)return `${raw}${u&&!norm(raw).includes(norm(u))?` ${u}`:''}`;
+  if(num(row?.result_numeric)!=null)return `${fmtNum(row.result_numeric,2)}${u?` ${u}`:''}`;
   return 'Resultado não estruturado';
-};
-
-function labRows(){return [...(state.data.labs||[])].filter(row=>row?.collection_date&&row?.biomarker).sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date)));}
-function markerGroups(rows){
+}
+export function labGroups(rows){
   const map=new Map();
-  for(const row of rows){const key=norm(row.biomarker);if(!key)continue;if(!map.has(key))map.set(key,{key,label:String(row.biomarker).trim(),rows:[]});map.get(key).rows.push(row);}
-  return [...map.values()];
-}
-function cohortSeries(group){
-  const cohorts=new Map();
-  for(const row of group?.rows||[]){
-    if(!numeric(row)||!origin(row)||!unit(row))continue;
-    const key=`${norm(origin(row))}__${unit(row)}`;
-    if(!cohorts.has(key))cohorts.set(key,{key,origin:origin(row),unit:unit(row),rows:[]});
-    cohorts.get(key).rows.push(row);
+  for(const [index,row] of rows.entries()){
+    const key=norm(row.biomarker)||`sem-marcador-${index}`;
+    if(!map.has(key))map.set(key,{key,label:String(row.biomarker||'Marcador não informado').trim(),rows:[]});
+    map.get(key).rows.push(row);
   }
-  return [...cohorts.values()].map(cohort=>{
+  return [...map.values()].map(group=>({...group,rows:group.rows.slice().sort((a,b)=>String(a.collection_date||'').localeCompare(String(b.collection_date||'')))})).sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'));
+}
+export function labCohorts(group){
+  const map=new Map();
+  for(const row of group?.rows||[]){
+    // Unknown metadata stays available to read, but is never considered comparable.
+    const o=origin(row),u=unit(row),m=method(row),key=JSON.stringify([norm(o),u,norm(m)]);
+    if(!map.has(key))map.set(key,{key,origin:o,unit:u,method:m,all:[]});
+    map.get(key).all.push(row);
+  }
+  return [...map.values()].map(c=>{
     const byDate=new Map();
-    for(const row of cohort.rows){const key=day(row.collection_date);if(!key)continue;if(!byDate.has(key))byDate.set(key,[]);byDate.get(key).push(row);}
-    const ambiguousDates=[...byDate.entries()].filter(([,items])=>items.length>1).map(([date])=>date);
-    const rows=[...byDate.entries()].filter(([,items])=>items.length===1).map(([,items])=>items[0]).sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date)));
-    return {...cohort,rows,ambiguousDates};
-  }).filter(cohort=>cohort.rows.length>=2).sort((a,b)=>String(b.rows.at(-1)?.collection_date||'').localeCompare(String(a.rows.at(-1)?.collection_date||''))||b.rows.length-a.rows.length);
+    for(const row of c.all){const d=validDay(row.collection_date);if(!d)continue;if(!byDate.has(d))byDate.set(d,[]);byDate.get(d).push(row);}
+    const ambiguousDates=[...byDate].filter(([,list])=>list.length>1).map(([d])=>d);
+    const rows=c.origin&&c.unit&&norm(group?.label)&&!String(group?.key||'').startsWith('sem-marcador-')?[...byDate].filter(([,list])=>list.length===1&&exactNumeric(list[0])).map(([,list])=>list[0]).sort((a,b)=>validDay(a.collection_date).localeCompare(validDay(b.collection_date))):[];
+    return{...c,rows,ambiguousDates};
+  }).sort((a,b)=>String(b.all.at(-1)?.collection_date||'').localeCompare(String(a.all.at(-1)?.collection_date||''))||b.rows.length-a.rows.length||a.key.localeCompare(b.key));
 }
-function rankedGroups(groups){
-  return groups.map(group=>{const series=cohortSeries(group),best=series[0]||null;return{group,series,best,latestDate:best?.rows.at(-1)?.collection_date||group.rows.at(-1)?.collection_date||'',points:best?.rows.length||0};})
-    .sort((a,b)=>String(b.latestDate).localeCompare(String(a.latestDate))||b.points-a.points||a.group.label.localeCompare(b.group.label,'pt-BR'));
+export function labsModel(){
+  const rows=state.data.labs||[],groups=labGroups(rows);
+  const ranked=groups.map(group=>({group,cohorts:labCohorts(group)})).sort((a,b)=>String(b.group.rows.at(-1)?.collection_date||'').localeCompare(String(a.group.rows.at(-1)?.collection_date||''))||a.group.label.localeCompare(b.group.label,'pt-BR'));
+  const item=ranked.find(i=>i.group.key===state.ui.productLabMarker)||ranked.find(i=>i.cohorts.some(c=>c.rows.length>=2))||ranked[0]||null;
+  if(!item)return{rows,groups,ranked,item:null};
+  const cohort=item.cohorts.find(c=>c.key===state.ui.productLabCohort)||item.cohorts.find(c=>c.rows.length>=2)||item.cohorts[0];
+  const lastDate=validDay(cohort?.all.at(-1)?.collection_date);
+  const latestRows=lastDate?cohort.all.filter(row=>validDay(row.collection_date)===lastDate):cohort?.all||[];
+  const latest=latestRows.length===1?latestRows[0]:null;
+  const period=['recent','90','365','all'].includes(state.ui.productLabPeriod)?state.ui.productLabPeriod:'recent';
+  const recent=seriesWindow(cohort?.rows||[],'collection_date',period);
+  const history=pageOf([...item.group.rows].reverse(),state.ui.productLabPage,10);
+  const query=norm(state.ui.productLabQuery),matches=groups.filter(g=>!query||norm(g.label).includes(query));
+  return{rows,groups,ranked,item,cohort,latestRows,latest,lastDate,period,recent,history,matches};
 }
-function selectedGroup(groups){
-  const ranked=rankedGroups(groups),requested=state.ui.productLabMarker;
-  const explicit=requested&&ranked.find(item=>item.group.key===requested);
-  return explicit||ranked.find(item=>item.best)||ranked[0]||null;
-}
-function latestCollection(rows){
-  const latestDate=rows.at(-1)?.collection_date;if(!latestDate)return null;
-  const sameDate=rows.filter(row=>day(row.collection_date)===day(latestDate));
-  return{date:latestDate,count:sameDate.length,origins:[...new Set(sameDate.map(origin).filter(Boolean))]};
-}
-function chart(series){
-  const rows=(series?.rows||[]).slice(-12);
-  if(rows.length<2)return `<div class="ltsLabsEmptyChart"><b>Série ainda insuficiente</b><span>São necessários pelo menos dois pontos inequívocos da mesma origem e unidade.</span></div>`;
-  const values=rows.map(row=>num(row.result_numeric)),width=660,height=190,padX=28,padY=24;
-  const rawMin=Math.min(...values),rawMax=Math.max(...values),span=Math.max(rawMax-rawMin,Math.max(Math.abs(rawMax)*.06,.1));
-  const min=rawMin-span*.16,max=rawMax+span*.16;
-  const x=index=>padX+(index*(width-padX*2))/Math.max(rows.length-1,1);
-  const y=value=>padY+((max-value)*(height-padY*2))/(max-min||1);
-  const path=rows.map((row,index)=>`${index?'L':'M'} ${x(index).toFixed(1)} ${y(num(row.result_numeric)).toFixed(1)}`).join(' ');
-  const dots=rows.map((row,index)=>`<circle cx="${x(index).toFixed(1)}" cy="${y(num(row.result_numeric)).toFixed(1)}" r="${index===rows.length-1?5:3}"><title>${esc(fmtDate(row.collection_date))}: ${esc(fmtNum(row.result_numeric))} ${esc(series.unit)}</title></circle>`).join('');
-  return `<div class="ltsLabsChartBody"><div class="ltsLabsScale"><span>${esc(fmtNum(rawMax))}</span><span>${esc(fmtNum((rawMax+rawMin)/2))}</span><span>${esc(fmtNum(rawMin))}</span></div><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="Evolução longitudinal do marcador"><path class="ltsLabsGrid" d="M28 48H632 M28 95H632 M28 142H632"/><path class="ltsLabsLine" d="${path}"/>${dots}</svg></div><div class="ltsLabsAxis"><span>${esc(fmtDate(rows[0].collection_date))}</span><b>${esc(series.unit)}</b><span>${esc(fmtDate(rows.at(-1).collection_date))}</span></div>`;
-}
-function resultMeta(row){
-  const pieces=[origin(row)||'Origem não informada'];
-  if(row?.reference_range)pieces.push(`referência ${row.reference_range}`);
-  if(row?.method)pieces.push(`método ${row.method}`);
-  return pieces.join(' · ');
-}
-function markerHistory(group){
-  return [...(group?.rows||[])].sort((a,b)=>String(b.collection_date).localeCompare(String(a.collection_date))).slice(0,10).map(row=>`<article class="ltsLabsHistoryRow"><time>${esc(fmtDate(row.collection_date))}</time><div><b>${esc(resultText(row))}</b><small>${esc(resultMeta(row))}</small></div>${row.flag?`<span title="Sinalização registrada pela fonte">${esc(row.flag)}</span>`:''}</article>`).join('');
-}
+const header=()=>`<header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1 tabindex="-1" id="productLabsTitle">Exames</h1><p>Resultados e histórico, com origem preservada.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>`;
+function resultMeta(row){return [origin(row)||'Origem não informada',unit(row)||'Unidade não informada',row.reference_range?`Referência: ${row.reference_range}`:'Referência não informada',method(row)?`Método: ${method(row)}`:''].filter(Boolean).join(' · ');}
 
 export function renderProductLabs(){
-  if(state.domainStatus?.labs==='error'||state.errors?.labs)return `<section class="ltsLabsV2"><header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1>Exames</h1><p>Histórico longitudinal por marcador.</p></div></header><div class="ltsEmptyCard">Os resultados laboratoriais não carregaram agora. Nenhum valor foi substituído ou inferido.</div></section>`;
-  const rows=labRows(),groups=markerGroups(rows),selected=selectedGroup(groups),collection=latestCollection(rows);
-  if(!rows.length||!selected)return `<section class="ltsLabsV2"><header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1>Exames</h1><p>Histórico longitudinal por marcador.</p></div></header><div class="ltsEmptyCard">Nenhum resultado laboratorial estruturado foi encontrado.</div></section>`;
-  const group=selected.group,series=selected.best,recent=(series?.rows||[]).slice(-12),latest=series?.rows.at(-1)||[...group.rows].sort((a,b)=>String(a.collection_date).localeCompare(String(b.collection_date))).at(-1);
-  const first=recent.length>1?recent[0]:null,delta=first&&numeric(latest)?num(latest.result_numeric)-num(first.result_numeric):null;
-  const ranked=rankedGroups(groups),longitudinal=ranked.filter(item=>item.best).slice(0,14);
-  const ambiguous=series?.ambiguousDates?.length||0;
-  const unitLabel=series?.unit||unit(latest)||'';
-  const sourceLabel=series?.origin||origin(latest)||'Origem registrada';
-  const changeText=first&&delta!=null?`De ${fmtDate(first.collection_date)} a ${fmtDate(latest.collection_date)}: ${delta>0?'+':''}${fmtNum(delta)}${unitLabel?` ${unitLabel}`:''}.`:'Ainda não há dois pontos comparáveis para calcular diferença.';
+  if(failed(state,'labs'))return `<section class="ltsLabsV2">${header()}${errorCard('Os resultados laboratoriais não carregaram agora.')}</section>`;
+  const m=labsModel();
+  if(!m.item)return `<section class="ltsLabsV2">${header()}${emptyCard('Nenhum resultado laboratorial foi encontrado no histórico carregado.')}</section>`;
+  const group=m.item.group,c=m.cohort,first=m.recent[0],last=m.recent.at(-1);
+  const change=m.recent.length>=2?`${fmtDate(first.collection_date)} → ${fmtDate(last.collection_date)}: ${differenceText(last.result_numeric,first.result_numeric,c.unit,2)}`:'Não há dois pontos comparáveis no período.';
+  const shortcuts=(state.ui.productLabQuery?m.matches:m.ranked.map(i=>i.group)).slice(0,8);
+  const latestValue=m.latest?labResultText(m.latest):`${m.latestRows.length} resultados na mesma data`;
   return `<section class="ltsLabsV2">
-    <header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1>Exames</h1><p>Resultado, mudança e histórico sem misturar origem ou unidade.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>
+    ${header()}
+    <section class="ltsLabsHero"><div class="ltsLabsHeroTop"><div><span>${esc(group.label)}</span><strong>${esc(latestValue)}</strong><small>${esc(m.lastDate?fmtDate(m.lastDate):'Data não informada')} · ${esc(c.origin||'Origem não informada')}</small></div><span class="ltsLabsGlyph" aria-hidden="true">✦</span></div><div class="ltsLabsHeroContext"><div><span>Último registro da origem selecionada</span><b>${m.latest?'Valor transcrito da fonte.':'Nenhum resultado foi escolhido automaticamente.'}</b></div><div><span>Referência registrada</span><b>${esc(m.latest?.reference_range||'Consulte o contexto de cada resultado no histórico.')}</b></div></div></section>
 
-    <section class="ltsLabsHero">
-      <div class="ltsLabsHeroTop"><div><span>${esc(group.label)}</span><strong>${esc(resultText(latest))}</strong><small>${esc(fmtDate(latest.collection_date))} · ${esc(sourceLabel)}</small></div><span class="ltsLabsGlyph">✦</span></div>
-      <div class="ltsLabsHeroContext"><div><span>Comparação recente</span><b>${esc(changeText)}</b></div><div><span>Referência registrada</span><b>${esc(latest.reference_range||'Não informada na fonte')}</b></div></div>
+    <section class="ltsSection ltsLabsMarkers"><div class="ltsSectionHead"><div><span>Explorar</span><h2>Todos os marcadores</h2></div><small>${m.groups.length} marcadores · ${m.rows.length} resultados</small></div>
+      ${searchField('productLabQuery',state.ui.productLabQuery,'Nome do marcador','Buscar em todos os marcadores')}
+      <label class="ltsField ltsSourceSelect">Marcador · ${m.matches.length} encontrados<select id="productLabMarkerSelect" data-depth-field="productLabMarkerSelect"><option value="">Selecione um marcador</option>${m.matches.map(g=>`<option value="${esc(g.key)}" ${g.key===group.key?'selected':''}>${esc(g.label)} (${g.rows.length})</option>`).join('')}</select></label>
+      <div class="ltsLabsMarkerRail">${shortcuts.map(g=>`<button type="button" data-lab-marker="${esc(g.key)}" class="${g.key===group.key?'active':''}" aria-pressed="${g.key===group.key}"><b>${esc(g.label)}</b><small>${g.rows.length} ${g.rows.length===1?'resultado':'resultados'}</small></button>`).join('')||emptyCard('Nenhum marcador corresponde à busca. Apague a busca para ver todos.')}</div>
+      <p class="ltsDepthNote">Os atalhos são recentes; o seletor inclui todo o histórico, inclusive resultados textuais e marcadores com uma única coleta.</p>
     </section>
 
-    <section class="ltsSection ltsLabsMarkers"><div class="ltsSectionHead"><div><span>Acompanhar</span><h2>Marcadores com série</h2></div>${collection?`<small>Última coleta ${esc(fmtDate(collection.date))} · ${collection.count} resultados</small>`:''}</div><div class="ltsLabsMarkerRail">${longitudinal.map(item=>`<button type="button" data-lab-marker="${esc(item.group.key)}" class="${item.group.key===group.key?'active':''}"><b>${esc(item.group.label)}</b><small>${item.best.rows.length} pontos · ${esc(item.best.unit)}</small></button>`).join('')||'<span class="ltsLabsNoSeries">Ainda não há outros marcadores com série comparável.</span>'}</div></section>
+    <section class="ltsSection ltsLabsTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2>${esc(group.label)}</h2></div></div>
+      <label class="ltsField ltsSourceSelect">Origem, unidade e método da série<select id="productLabCohort" data-depth-field="productLabCohort">${m.item.cohorts.map(co=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} · ${esc(co.method||'Método não informado')} (${co.all.length})</option>`).join('')}</select></label>
+      ${periodControl('productLabPeriod',m.period)}
+      <div class="ltsHistoryContext"><b>Diferença na série selecionada</b>${esc(change)}</div>
+      <div class="ltsLabsChart">${pointChart(m.recent.map(r=>({date:r.collection_date,value:r.result_numeric,context:r.reference_range?`Referência da coleta: ${r.reference_range}`:'Referência não informada'})),{unit:c.unit,label:group.label,scope:'productLab',selected:state.ui.productLabPoint})}</div>
+      <p class="ltsDepthNote">${m.recent.length} pontos exibidos de ${c.rows.length} inequívocos. A janela termina na última coleta comparável desta série; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>
+    </section>
 
-    <section class="ltsSection ltsLabsTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2>${esc(group.label)}</h2></div><small>${esc(`${recent.length} pontos recentes · ${sourceLabel}${unitLabel?` · ${unitLabel}`:''}${ambiguous?` · ${ambiguous} data(s) ambígua(s) fora da linha`:''}`)}</small></div><div class="ltsLabsChart">${chart(series)}</div></section>
-
-    <section class="ltsSection ltsLabsHistory"><div class="ltsSectionHead"><div><span>Resultados</span><h2>Histórico do marcador</h2></div></div><div class="ltsLabsHistoryList">${markerHistory(group)}</div></section>
-
-    <section class="ltsLabsTrust"><span>i</span><p>A tendência só combina resultados numéricos do mesmo marcador, origem e unidade, em datas inequívocas. Faixas de referência e sinalizações são exibidas como contexto registrado pela fonte; o app não diagnostica nem classifica o resultado automaticamente.</p></section>
+    <section class="ltsSection ltsLabsHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2>Histórico completo do marcador</h2></div><small>Todas as origens e unidades</small></div><div class="ltsLabsHistoryList" data-lab-history-total="${m.history.total}">${m.history.rows.map(row=>`<article class="ltsLabsHistoryRow"><time>${esc(fmtDate(row.collection_date))}</time><div><b>${esc(labResultText(row))}</b><small>${esc(resultMeta(row))}</small></div>${row.flag?`<span class="ltsRecordFlag" title="Sinalização transcrita da fonte">${esc(row.flag)}</span>`:''}</article>`).join('')}</div>${pager(m.history,'productLabPage')}</section>
+    <section class="ltsLabsTrust"><span>i</span><p>O histórico preserva cada resultado. Curvas e diferenças usam somente números exatos, na mesma origem, unidade e método registrado, em datas inequívocas. Sem conversão automática, diagnóstico ou interpretação clínica.</p></section>
   </section>`;
 }

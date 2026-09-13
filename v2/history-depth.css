@@ -1,0 +1,45 @@
+/* Functional depth inside the existing structural design. No legacy overrides. */
+.ltsTrainingV2,.ltsLabsV2,.ltsCompositionV2{min-width:0}
+.ltsDepthTabs,.ltsPeriodControl{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.ltsDepthTabs button,.ltsPeriodControl button{border:1px solid #dce3ed;border-radius:12px;background:#fff;color:#46586e;min-height:44px;padding:9px 13px;font-family:inherit;font-size:13px;font-weight:600;line-height:1.3;cursor:pointer}
+.ltsDepthTabs button.active,.ltsPeriodControl button.active{background:#122139;border-color:#122139;color:#fff}
+.ltsPeriodControl button{min-height:40px;font-size:12px;padding:7px 11px}
+.ltsFilters{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.42fr);gap:10px;margin:14px 0}
+.ltsField{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;font-weight:600;color:#526378}
+.ltsField input,.ltsField select{box-sizing:border-box;min-width:0;width:100%;max-width:100%;min-height:44px;border:1px solid #d7e0eb;border-radius:11px;background:#fff;padding:10px 11px;color:#17283e;font-family:inherit;font-size:16px;line-height:1.3}
+.ltsField input:focus-visible,.ltsField select:focus-visible,.ltsPager button:focus-visible,.ltsDepthTabs button:focus-visible{outline:3px solid #658fcb;outline-offset:2px}
+.ltsPager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0}
+.ltsPager button{background:#fff;border:1px solid #d9e2ed;border-radius:11px;min-height:44px;padding:8px 13px;color:#243b59;font-family:inherit;font-size:12px;font-weight:600;line-height:1.3;cursor:pointer}
+.ltsPager button:disabled{opacity:.42;cursor:default}
+.ltsPager span{text-align:center;color:#35475d;font-size:13px}.ltsPager small{display:block;color:#69798d;font-size:11px;margin-top:2px}
+.ltsDepthNote{color:#5c6f84;font-size:12px;line-height:1.5;margin:10px 0}.ltsDepthNote b{color:#253d59}
+.ltsDepthError{border:1px solid #deb3b6;background:#fff5f5;border-radius:16px;padding:16px;margin:14px 0;color:#632e36;font-size:14px;line-height:1.5}.ltsDepthError span{display:block;margin-top:4px;color:#654f56}
+.ltsDepthLink{background:transparent;border:0;padding:10px 0;min-height:44px;color:#325d91;font-family:inherit;font-size:12px;font-weight:600;line-height:1.4;cursor:pointer;text-align:left}
+.ltsDepthSummary{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:12px 0;color:#4a5c71;font-size:13px}.ltsDepthSummary strong{color:#152a44;font-size:20px}
+.ltsDepthChart{--chart-color:#557fbd;background:#fff;border:1px solid #e3e9f1;border-radius:17px;padding:14px 12px;margin:8px 0}
+.ltsLabsV2 .ltsDepthChart{--chart-color:#ab4364}.ltsTrainingV2 .ltsDepthChart{--chart-color:#338066}
+.ltsDepthPlot{display:grid;grid-template-columns:58px minmax(0,1fr);gap:4px;height:190px;min-width:0}
+.ltsDepthScale{display:flex;flex-direction:column;justify-content:space-between;padding:6px 0;color:#5b708b;text-align:right;font-size:11px;line-height:12px;font-variant-numeric:tabular-nums}
+.ltsDepthPlot svg{width:100%;height:190px;overflow:visible}.ltsDepthGrid{stroke:#e4eaf2;stroke-width:1;fill:none;vector-effect:non-scaling-stroke}.ltsDepthLine{fill:none;stroke:var(--chart-color);stroke-width:2.4;vector-effect:non-scaling-stroke}.ltsDepthPlot circle{fill:var(--chart-color);stroke:#fff;stroke-width:1.6;vector-effect:non-scaling-stroke}.ltsDepthPlot circle.selected{stroke:var(--chart-color);fill:#fff;stroke-width:2}
+.ltsDepthAxis{display:flex;justify-content:space-between;gap:8px;margin:9px 0 12px 60px;font-size:11px;color:#60728b}.ltsDepthAxis b{color:#364f70;overflow-wrap:anywhere}
+.ltsPointReadout{display:grid;grid-template-columns:minmax(125px,.5fr) minmax(0,1fr);gap:14px;align-items:end;border-top:1px solid #edf0f5;padding-top:12px}
+.ltsPointReadout p{margin:0;line-height:1.4;min-width:0}.ltsPointReadout p b{display:block;font-size:17px;color:#19324e}.ltsPointReadout p span{display:block;font-size:11px;color:#61748c;margin-top:5px;overflow-wrap:anywhere}
+.ltsRecordDetails{background:#fff;border:1px solid #e0e7f0;border-radius:17px;padding:16px;margin:14px 0}.ltsRecordDetails h2{font-size:18px;margin:0 0 14px;color:#192c45}.ltsRecordDetails h3{font-size:14px;color:#304964}
+.ltsDetailGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.ltsDetailGrid div{min-width:0;padding:10px 0;border-bottom:1px solid #eef1f5}.ltsDetailGrid span{display:block;font-size:12px;color:#63778e}.ltsDetailGrid b{display:block;font-size:17px;color:#172e48;margin-top:5px;overflow-wrap:anywhere}
+.ltsSegmentTable{width:100%;border-collapse:collapse;font-size:13px;color:#243950}.ltsSegmentTable th,.ltsSegmentTable td{border-bottom:1px solid #e9eef4;padding:10px 6px;text-align:right}.ltsSegmentTable th:first-child,.ltsSegmentTable td:first-child{text-align:left}.ltsSegmentTable th{color:#596e86;font-size:11px;font-weight:650}.ltsSegmentTable td:first-child{font-weight:650}
+.ltsLabsHistoryRow{min-width:0}.ltsLabsHistoryRow>div{min-width:0}.ltsLabsHistoryRow small{overflow-wrap:anywhere}.ltsRecordUnit{font-size:.65em;font-weight:650;margin-left:5px}.ltsSourceSelect{margin:12px 0}
+.ltsCompositionHistoryList button.ltsCompositionHistoryRow{width:100%;text-align:left;cursor:pointer;background:#fff;border:1px solid #e1e7f0}.ltsCompositionHistoryRow small{overflow-wrap:anywhere}
+.ltsHistoryContext{padding:12px 14px;border-radius:14px;background:#f0f4f9;color:#486078;line-height:1.45;font-size:12px;margin-bottom:12px}.ltsHistoryContext b{color:#19314e;display:block;margin-bottom:4px}
+.ltsExerciseSessions{display:grid;gap:10px}.ltsExerciseSession{background:#fff;border:1px solid #e0e7ef;border-radius:16px;padding:14px}.ltsExerciseSession header{display:flex;justify-content:space-between;align-items:center;gap:10px}.ltsExerciseSession time{font-size:13px;font-weight:700;color:#243b54}.ltsExerciseSession p{font-size:13px;line-height:1.7;color:#314c6a;margin:8px 0}.ltsExerciseSession small{font-size:12px;color:#697c92}
+.ltsPreservedText{font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;color:#4f6074;margin:8px 0}.ltsRecordFlag{background:#fff0f2;color:#854350;font-size:11px;border-radius:8px;padding:5px;align-self:start;overflow-wrap:anywhere}
+.ltsCompareDisclosure{background:#fff;border:1px solid #e0e7f0;border-radius:16px;padding:14px;margin:16px 0}.ltsCompareDisclosure summary{cursor:pointer;font-size:14px;font-weight:700;color:#223d5b;min-height:24px}
+@media(max-width:840px){
+ .ltsFilters{grid-template-columns:minmax(0,1fr) 130px}.ltsDepthTabs button{flex:1}.ltsDepthPlot{grid-template-columns:46px minmax(0,1fr);height:175px}.ltsDepthPlot svg{height:175px}.ltsDepthAxis{margin-left:48px;font-size:10px}.ltsDetailGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ltsSegmentTable{font-size:12px}.ltsSegmentTable th,.ltsSegmentTable td{padding:10px 4px}.ltsPager button{padding:8px 10px;font-size:12px}.ltsLabsHeroTop strong{overflow-wrap:anywhere}.ltsPeriodControl{gap:5px}.ltsPeriodControl button{flex:1;padding:8px 6px;font-size:11px}
+ .ltsCompositionHistoryRow>span{font-size:10px;overflow-wrap:anywhere}.ltsLabsHistoryRow{grid-template-columns:78px minmax(0,1fr)!important}.ltsLabsHistoryRow>.ltsRecordFlag{grid-column:2}
+}
+@media(max-width:360px){.ltsFilters{grid-template-columns:minmax(0,1fr)}.ltsPointReadout{grid-template-columns:120px minmax(0,1fr)}.ltsDepthTabs button{font-size:12px}.ltsPager span{font-size:12px}}
+.ltsCompositionHero .ltsDepthLink{color:#fff;background:rgba(255,255,255,.12);border-radius:10px;padding:9px 12px;margin-top:12px}
+.ltsDepthHeading{color:#243e5b;font-size:18px;margin:20px 0 8px}.ltsRecordDetails th[scope="row"]{font-size:12px;font-weight:600;color:#35516b}
+.ltsPager button,.ltsDepthTabs button,.ltsPeriodControl button,.ltsDepthLink{font-family:inherit;font-weight:650}
+.ltsCompositionHistoryList .ltsCompositionHistoryRow{min-height:72px}
+.ltsCompositionHistoryRow time{font-size:12px}.ltsCompositionHistoryRow b{font-size:15px}.ltsCompositionHistoryRow small{font-size:12px}

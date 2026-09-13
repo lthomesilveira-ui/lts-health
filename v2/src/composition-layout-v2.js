@@ -1,127 +1,72 @@
-import {state,esc,fmtDate,fmtNum,num} from './core.js';
+import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
+import {validDay,rowKey,pageOf,pager,years,yearFilter,seriesWindow,periodControl,pointChart,emptyCard,errorCard,failed,valueText,differenceText} from './history-tools.js';
 
-const metricMeta={
-  body_fat_pct:{label:'Gordura corporal',short:'Gordura',unit:'%',digits:1},
-  skeletal_muscle_mass_kg:{label:'Massa muscular',short:'Músculo',unit:'kg',digits:1},
-  weight_kg:{label:'Peso',short:'Peso',unit:'kg',digits:1},
-  fat_mass_kg:{label:'Massa de gordura',short:'Gordura kg',unit:'kg',digits:1}
+export const compositionMetrics={
+  body_fat_pct:{label:'Gordura corporal',short:'Gordura',unit:'%',deltaUnit:'p.p.'},
+  skeletal_muscle_mass_kg:{label:'Massa muscular',short:'Músculo',unit:'kg'},
+  weight_kg:{label:'Peso',short:'Peso',unit:'kg'},
+  fat_mass_kg:{label:'Massa de gordura',short:'Gordura kg',unit:'kg'}
 };
-const day=value=>String(value||'').slice(0,10);
-const sourceIdentity=row=>String(row?.source_family||row?.source_name||row?.source||'').trim().toLowerCase();
+const identity=row=>norm(row?.source_family||row?.source_name||row?.source||'');
 const sourceDisplay=row=>{
   const raw=String(row?.source_name||row?.source||row?.source_family||'').trim();
-  const normalized=raw.toLowerCase();
-  if(normalized.includes('inbody'))return 'InBody';
-  if(normalized.includes('bioimpedance'))return 'Bioimpedância';
-  return raw||'Origem registrada';
+  return norm(raw).includes('inbody')?'InBody':norm(raw).includes('bioimpedance')?'Bioimpedância':raw||'Origem não informada';
 };
-const formatValue=(value,meta)=>num(value)==null?'—':`${fmtNum(value,meta.digits)} ${meta.unit}`;
-const signed=(value,meta)=>num(value)==null?'—':`${Number(value)>0?'+':''}${fmtNum(value,meta.digits)} ${meta.unit}`;
-
-function allBodyRows(){
-  return [...(state.data.body||[])].filter(row=>row?.measured_at).sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
+export function compositionModel(){
+  const all=(state.data.body||[]).map((r,i)=>({...r,__key:rowKey(r,i)})).sort((a,b)=>String(a.measured_at||'').localeCompare(String(b.measured_at||'')));
+  const counts=new Map();for(const row of all){const d=validDay(row.measured_at);if(d)counts.set(d,(counts.get(d)||0)+1);}
+  const unique=all.filter(row=>validDay(row.measured_at)&&counts.get(validDay(row.measured_at))===1);
+  const latest=unique.at(-1)||null,origins=[...new Map(all.map(r=>[identity(r),sourceDisplay(r)])).entries()];
+  const requested=state.ui.productCompositionSource;
+  const source=origins.some(([id])=>id===requested)?requested:identity(latest)||origins[0]?.[0]||'';
+  const series=source?unique.filter(r=>identity(r)===source):[];
+  const period=['recent','90','365','all'].includes(state.ui.productCompositionPeriod)?state.ui.productCompositionPeriod:'recent';
+  const recent=seriesWindow(series,'measured_at',period);
+  const year=state.ui.productCompositionYear||'all',visible=all.filter(r=>year==='all'||validDay(r.measured_at).slice(0,4)===year).reverse();
+  const history=pageOf(visible,state.ui.productCompositionPage,8);
+  const record=all.find(r=>r.__key===state.ui.productCompositionRecord)||null;
+  return{all,counts,unique,latest,origins,source,series,period,recent,year,history,record};
 }
-function groupedByDay(rows){
-  const groups=new Map();
-  for(const row of rows){const key=day(row.measured_at);if(!key)continue;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
-  return groups;
+const metricTile=(label,value,unit)=>`<div class="ltsCompositionMetric"><span>${esc(label)}</span><b>${num(value)==null?'—':fmtNum(value,1)}${num(value)==null?'':` <small>${esc(unit)}</small>`}</b></div>`;
+function header(detail=false){return `<header class="ltsPageHeader"><button class="ltsBack" ${detail?'data-depth-composition-back':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1 tabindex="-1" id="productCompositionTitle">${detail?'Detalhes da medição':'Composição corporal'}</h1><p>${detail?'Valores registrados e análise segmentar.':'Medições e evolução, com origem preservada.'}</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header>`;}
+function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${esc(valueText(value,unit))}</b></div>`;}
+export function linkedSegmental(record,bodyRows,segmentalRows){
+  const date=validDay(record?.measured_at),source=identity(record);
+  if(!date||!source)return{row:null,reason:'A data ou origem não permite vincular um registro segmentar.'};
+  let candidates=segmentalRows.filter(r=>validDay(r.measured_at)===date&&identity(r)===source);
+  if(record.source_file)candidates=candidates.filter(r=>!r.source_file||r.source_file===record.source_file);
+  const bodySameDay=bodyRows.filter(r=>validDay(r.measured_at)===date&&identity(r)===source);
+  if(bodySameDay.length>1&&(!record.source_file||!candidates.every(r=>r.source_file===record.source_file)))return{row:null,reason:'Há múltiplas medições nesta data; a vinculação segmentar não é inequívoca.'};
+  return candidates.length===1?{row:candidates[0],reason:''}:{row:null,reason:candidates.length?'Há mais de um registro segmentar compatível; nenhum foi escolhido automaticamente.':'Não há análise segmentar vinculável a esta data e origem.'};
 }
-function comparableRows(rows){
-  return [...groupedByDay(rows).entries()].filter(([,items])=>items.length===1).sort((a,b)=>a[0].localeCompare(b[0])).map(([,items])=>items[0]);
+function renderRecordDetail(model){
+  const r=model.record,seg=linkedSegmental(r,model.all,state.data.segmental||[]);
+  const parts=[['Braço direito','right_arm'],['Braço esquerdo','left_arm'],['Tronco','trunk'],['Perna direita','right_leg'],['Perna esquerda','left_leg']];
+  const ambiguous=model.counts.get(validDay(r.measured_at))>1;
+  return `<section class="ltsCompositionV2" data-composition-view="detail">${header(true)}<div class="ltsHistoryContext"><b>${esc(fmtDate(r.measured_at))} · ${esc(sourceDisplay(r))}</b>${r.source_file?esc(r.source_file):'Arquivo de origem não informado'}${ambiguous?'<br>Data com múltiplos registros: leitura individual, fora das comparações automáticas.':''}</div><section class="ltsRecordDetails"><h2>Valores da medição</h2><div class="ltsDetailGrid">${detailValue('Peso',r.weight_kg,'kg')}${detailValue('Massa muscular esquelética',r.skeletal_muscle_mass_kg,'kg')}${detailValue('Massa de gordura',r.fat_mass_kg,'kg')}${detailValue('Gordura corporal',r.body_fat_pct,'%')}${detailValue('Água corporal',r.body_water_l,'L')}${detailValue('Nível de gordura visceral',r.visceral_fat_level)}${detailValue('Relação cintura/quadril',r.waist_hip_ratio)}</div></section><section class="ltsRecordDetails"><h2>Análise segmentar</h2>${failed(state,'segmental')?errorCard('Os dados segmentares não carregaram agora.'):seg.row?`<p class="ltsDepthNote">Massa magra e massa de gordura, em kg. Valores da mesma data e origem; massa magra segmentar não é sinônimo de músculo esquelético.</p><table class="ltsSegmentTable"><thead><tr><th scope="col">Segmento</th><th scope="col">Magra · kg</th><th scope="col">Gordura · kg</th></tr></thead><tbody>${parts.map(([name,key])=>`<tr><th scope="row">${esc(name)}</th><td>${num(seg.row[`lean_${key}_kg`])==null?'—':fmtNum(seg.row[`lean_${key}_kg`],2)}</td><td>${num(seg.row[`fat_${key}_kg`])==null?'—':fmtNum(seg.row[`fat_${key}_kg`],2)}</td></tr>`).join('')}</tbody></table>`:emptyCard(seg.reason)}</section><button class="ltsDepthLink" data-depth-composition-back>Voltar ao histórico de medições</button></section>`;
 }
-function ambiguityCount(rows){return [...groupedByDay(rows).values()].filter(items=>items.length>1).length;}
-function coherentSeries(rows,anchor){
-  if(!anchor)return[];
-  const identity=sourceIdentity(anchor);
-  if(!identity)return rows.length===1?rows:[];
-  return rows.filter(row=>sourceIdentity(row)===identity);
-}
-function delta(last,first,key){
-  const a=num(last?.[key]),b=num(first?.[key]);
-  return a==null||b==null?null:a-b;
-}
-
-function lineChart(rows,key){
-  const meta=metricMeta[key]||metricMeta.body_fat_pct;
-  const pts=rows.map(row=>({date:row.measured_at,value:num(row[key])})).filter(point=>point.value!=null);
-  if(pts.length<2)return `<div class="ltsCompositionEmptyChart"><b>${esc(meta.label)}</b><span>Histórico comparável ainda insuficiente para uma tendência.</span></div>`;
-  const width=640,height=190,padX=24,padY=24;
-  const values=pts.map(point=>point.value),rawMin=Math.min(...values),rawMax=Math.max(...values),span=Math.max(rawMax-rawMin,meta.unit==='%'?1:.5);
-  const min=rawMin-span*.14,max=rawMax+span*.14;
-  const x=index=>padX+(index*(width-padX*2))/Math.max(pts.length-1,1);
-  const y=value=>padY+((max-value)*(height-padY*2))/(max-min||1);
-  const path=pts.map((point,index)=>`${index?'L':'M'} ${x(index).toFixed(1)} ${y(point.value).toFixed(1)}`).join(' ');
-  const dots=pts.map((point,index)=>`<circle cx="${x(index).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="${index===pts.length-1?5:3}"><title>${esc(fmtDate(point.date))}: ${esc(formatValue(point.value,meta))}</title></circle>`).join('');
-  const first=pts[0],last=pts.at(-1);
-  return `<div class="ltsCompositionChartBody">
-    <div class="ltsCompositionScale"><span>${esc(formatValue(rawMax,meta))}</span><span>${esc(formatValue((rawMax+rawMin)/2,meta))}</span><span>${esc(formatValue(rawMin,meta))}</span></div>
-    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="${esc(meta.label)} ao longo do tempo"><path class="ltsCompositionGrid" d="M24 47H616 M24 95H616 M24 143H616"/><path class="ltsCompositionLine" d="${path}"/>${dots}</svg>
-  </div><div class="ltsCompositionAxis"><span>${esc(fmtDate(first.date))}</span><b>${esc(meta.label)}</b><span>${esc(fmtDate(last.date))}</span></div>`;
-}
-
-function latestMetric(label,value,unit,accent=''){
-  return `<div class="ltsCompositionMetric ${esc(accent)}"><span>${esc(label)}</span><b>${num(value)==null?'—':fmtNum(value,1)}${num(value)==null?'':` <small>${esc(unit)}</small>`}</b></div>`;
-}
-function changeMetric(label,value,meta){
-  const available=num(value)!=null;
-  return `<div><span>${esc(label)}</span><b>${available?esc(signed(value,meta)):'—'}</b></div>`;
-}
-function historyRow(row){
-  const parts=[];
-  if(num(row.body_fat_pct)!=null)parts.push(`${fmtNum(row.body_fat_pct,1)}% gordura`);
-  if(num(row.skeletal_muscle_mass_kg)!=null)parts.push(`${fmtNum(row.skeletal_muscle_mass_kg,1)} kg músculo`);
-  return `<article class="ltsCompositionHistoryRow"><time>${esc(fmtDate(row.measured_at))}</time><div><b>${num(row.weight_kg)!=null?`${fmtNum(row.weight_kg,1)} kg`:'Medição corporal'}</b><small>${esc(parts.join(' · ')||'Detalhes preservados')}</small></div><span>${esc(sourceDisplay(row))}</span></article>`;
+function comparison(model){
+  if(model.series.length<2)return '';
+  const a=model.series.find(r=>r.__key===state.ui.productCompareA)||model.series.at(-2),b=model.series.find(r=>r.__key===state.ui.productCompareB)||model.series.at(-1);
+  const select=(key,label,chosen)=>`<label class="ltsField">${label}<select id="${key}" data-depth-field="${key}">${model.series.map(r=>`<option value="${esc(r.__key)}" ${chosen.__key===r.__key?'selected':''}>${esc(fmtDate(r.measured_at))}</option>`).join('')}</select></label>`;
+  return `<details class="ltsCompareDisclosure" data-disclosure="product-composition-compare"><summary>Comparar duas medições desta origem</summary><div class="ltsFilters">${select('productCompareA','De',a)}${select('productCompareB','Até',b)}</div>${a.__key===b.__key?emptyCard('Escolha duas medições diferentes.'):validDay(a.measured_at)>validDay(b.measured_at)?emptyCard('A data inicial precisa vir antes da data final.'):`<div class="ltsDetailGrid">${Object.entries(compositionMetrics).map(([key,meta])=>`<div><span>${esc(meta.label)}</span><b>${esc(differenceText(b[key],a[key],meta.deltaUnit||meta.unit))}</b></div>`).join('')}</div>`}</details>`;
 }
 
 export function renderProductComposition(){
-  const all=allBodyRows();
-  const unique=comparableRows(all);
-  const latest=unique.at(-1)||null;
-  if(!latest){
-    return `<section class="ltsCompositionV2"><header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1>Composição corporal</h1><p>Histórico corporal com origem preservada.</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header><div class="ltsEmptyCard">Ainda não há uma medição corporal inequívoca para mostrar como atual.</div></section>`;
-  }
-  const series=coherentSeries(unique,latest);
-  const recentSeries=series.slice(-12);
-  const firstComparable=recentSeries.length>1?recentSeries[0]:null;
-  const selected=metricMeta[state.ui.productCompositionMetric]?state.ui.productCompositionMetric:'body_fat_pct';
-  const fatDelta=firstComparable?delta(latest,firstComparable,'body_fat_pct'):null;
-  const muscleDelta=firstComparable?delta(latest,firstComparable,'skeletal_muscle_mass_kg'):null;
-  const weightDelta=firstComparable?delta(latest,firstComparable,'weight_kg'):null;
-  const ambiguous=ambiguityCount(all);
-  const excludedOtherSources=Math.max(0,unique.length-series.length);
-  const source=sourceDisplay(latest);
-  const contextBits=[`${recentSeries.length} ${recentSeries.length===1?'medição recente comparável':'medições recentes comparáveis'}`,source];
-  if(series.length>recentSeries.length)contextBits.push(`${series.length} no histórico da mesma origem`);
-  if(ambiguous)contextBits.push(`${ambiguous} ${ambiguous===1?'data ambígua preservada':'datas ambíguas preservadas'}`);
-  if(excludedOtherSources)contextBits.push(`${excludedOtherSources} ${excludedOtherSources===1?'registro de outra origem fora da tendência':'registros de outras origens fora da tendência'}`);
-  const changeCopy=firstComparable
-    ?`De ${fmtDate(firstComparable.measured_at)} a ${fmtDate(latest.measured_at)}, nas 12 medições comparáveis mais recentes: gordura ${fatDelta==null?'sem comparação':signed(fatDelta,metricMeta.body_fat_pct)}, massa muscular ${muscleDelta==null?'sem comparação':signed(muscleDelta,metricMeta.skeletal_muscle_mass_kg)} e peso ${weightDelta==null?'sem comparação':signed(weightDelta,metricMeta.weight_kg)}.`
-    :'Ainda não há duas medições da mesma origem para calcular mudança.';
-  return `<section class="ltsCompositionV2">
-    <header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1>Composição corporal</h1><p>O que mudou no corpo, sem misturar origens incompatíveis.</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header>
+  if(failed(state,'body'))return `<section class="ltsCompositionV2">${header()}${errorCard('As medições corporais não carregaram agora.')}</section>`;
+  const m=compositionModel();
+  if(m.record)return renderRecordDetail(m);
+  if(!m.all.length)return `<section class="ltsCompositionV2">${header()}${emptyCard('Nenhuma medição foi encontrada no histórico carregado.')}</section>`;
+  const last=m.latest,metric=compositionMetrics[state.ui.productCompositionMetric]?state.ui.productCompositionMetric:'body_fat_pct',meta=compositionMetrics[metric];
+  const first=m.recent[0],end=m.recent.at(-1),originName=m.origins.find(([key])=>key===m.source)?.[1]||'Origem não informada';
+  return `<section class="ltsCompositionV2" data-composition-view="overview">${header()}
+    ${last?`<section class="ltsCompositionHero"><div class="ltsCompositionHeroTop"><div><span>Última medição inequívoca · ${esc(sourceDisplay(last))}</span><strong>${num(last.body_fat_pct)!=null?`${fmtNum(last.body_fat_pct,1)}%`:'Medição registrada'}</strong><small>${esc(fmtDate(last.measured_at))}</small></div><span class="ltsCompositionGlyph" aria-hidden="true">◒</span></div><div class="ltsCompositionMetrics">${metricTile('Peso',last.weight_kg,'kg')}${metricTile('Gordura',last.body_fat_pct,'%')}${metricTile('Massa muscular',last.skeletal_muscle_mass_kg,'kg')}</div><button class="ltsDepthLink" data-depth-composition-record="${esc(last.__key)}">Detalhes e análise segmentar ›</button></section>`:emptyCard('As datas têm múltiplos registros. Todas as medições continuam abaixo; nenhuma é escolhida automaticamente como atual.')}
 
-    <section class="ltsCompositionHero">
-      <div class="ltsCompositionHeroTop"><div><span>Última medição · ${esc(source)}</span><strong>${num(latest.body_fat_pct)!=null?`${fmtNum(latest.body_fat_pct,1)}%`:'Composição registrada'}</strong><small>${esc(fmtDate(latest.measured_at))}</small></div><span class="ltsCompositionGlyph">◒</span></div>
-      <div class="ltsCompositionMetrics">
-        ${latestMetric('Peso',latest.weight_kg,'kg','weight')}
-        ${latestMetric('Gordura',latest.body_fat_pct,'%','fat')}
-        ${latestMetric('Massa muscular',latest.skeletal_muscle_mass_kg,'kg','muscle')}
-      </div>
-    </section>
+    <section class="ltsSection ltsCompositionTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2>Tendência por métrica</h2></div></div><label class="ltsField ltsSourceSelect">Origem da série<select id="productCompositionSource" data-depth-field="productCompositionSource">${m.origins.map(([key,label])=>`<option value="${esc(key)}" ${key===m.source?'selected':''}>${esc(label)}</option>`).join('')}</select></label>${periodControl('productCompositionPeriod',m.period)}<div class="ltsCompositionTabs" role="group" aria-label="Métrica de composição">${Object.entries(compositionMetrics).map(([key,v])=>`<button type="button" data-composition-metric="${key}" class="${key===metric?'active':''}" aria-pressed="${key===metric}">${esc(v.short)}</button>`).join('')}</div><div class="ltsCompositionChart">${pointChart(m.recent.map(r=>({date:r.measured_at,value:r[metric]})),{unit:meta.unit,label:meta.label,scope:'productComposition',selected:state.ui.productCompositionPoint})}</div><p class="ltsDepthNote">${m.recent.length} de ${m.series.length} medições inequívocas · ${esc(originName)}. A janela termina na última medição desta origem; o último registro permanece visível mesmo quando não há uma medição de hoje.</p></section>
 
-    <section class="ltsSection ltsCompositionChange">
-      <div class="ltsSectionHead"><div><span>Período comparável</span><h2>O que mudou</h2></div></div>
-      <div class="ltsCompositionChangeCard"><p>${esc(changeCopy)}</p><div class="ltsCompositionChangeGrid">${changeMetric('Gordura',fatDelta,metricMeta.body_fat_pct)}${changeMetric('Massa muscular',muscleDelta,metricMeta.skeletal_muscle_mass_kg)}${changeMetric('Peso',weightDelta,metricMeta.weight_kg)}</div></div>
-    </section>
+    <section class="ltsSection ltsCompositionChange"><div class="ltsSectionHead"><div><span>Período selecionado</span><h2>O que mudou</h2></div></div><div class="ltsCompositionChangeCard">${m.recent.length>1?`<p>${esc(fmtDate(first.measured_at))} → ${esc(fmtDate(end.measured_at))} · ${esc(originName)}</p><div class="ltsCompositionChangeGrid">${['body_fat_pct','skeletal_muscle_mass_kg','weight_kg'].map(key=>`<div><span>${esc(compositionMetrics[key].label)}</span><b>${esc(differenceText(end[key],first[key],compositionMetrics[key].deltaUnit||compositionMetrics[key].unit))}</b></div>`).join('')}</div>`:'<p>Não há duas medições inequívocas desta origem no período para calcular diferenças.</p>'}</div>${comparison(m)}</section>
 
-    <section class="ltsSection ltsCompositionTrend">
-      <div class="ltsSectionHead"><div><span>Evolução</span><h2>Tendência por métrica</h2></div><small>${esc(contextBits.join(' · '))}</small></div>
-      <div class="ltsCompositionTabs" role="tablist" aria-label="Métrica de composição">${Object.entries(metricMeta).map(([key,meta])=>`<button type="button" data-composition-metric="${esc(key)}" class="${selected===key?'active':''}" aria-pressed="${selected===key?'true':'false'}">${esc(meta.short)}</button>`).join('')}</div>
-      <div class="ltsCompositionChart">${lineChart(recentSeries,selected)}</div>
-    </section>
-
-    <section class="ltsSection ltsCompositionHistory"><div class="ltsSectionHead"><div><span>Histórico</span><h2>Medições recentes</h2></div><button data-route="evolucao">Ver evolução detalhada</button></div><div class="ltsCompositionHistoryList">${unique.slice(-8).reverse().map(historyRow).join('')}</div></section>
-
-    <section class="ltsCompositionTrust"><span>i</span><p>Gráficos e diferenças usam somente datas inequívocas da mesma origem da medição atual. Registros ambíguos ou de outra origem permanecem preservados, mas não são combinados automaticamente.</p></section>
+    <section class="ltsSection ltsCompositionHistory" id="productCompositionHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2>Histórico completo</h2></div><small>${m.all.length} medições preservadas</small></div>${yearFilter('productCompositionYear',m.year,years(m.all,'measured_at'))}<div class="ltsCompositionHistoryList" data-composition-history-total="${m.history.total}">${m.history.rows.map(r=>`<button type="button" class="ltsCompositionHistoryRow" data-depth-composition-record="${esc(r.__key)}"><time>${esc(fmtDate(r.measured_at))}</time><div><b>${num(r.weight_kg)==null?'Medição corporal':`${fmtNum(r.weight_kg,1)} kg`}</b><small>${num(r.body_fat_pct)!=null?`${fmtNum(r.body_fat_pct,1)}% gordura`:'Gordura não informada'}${m.counts.get(validDay(r.measured_at))>1?' · data com múltiplos registros':''}</small></div><span>${esc(sourceDisplay(r))} ›</span></button>`).join('')||emptyCard('Nenhuma medição corresponde ao ano escolhido.')}</div>${pager(m.history,'productCompositionPage')}</section>
+    <section class="ltsCompositionTrust"><span>i</span><p>Os detalhes incluem todas as medições, mesmo quando não podem formar uma curva. Comparações usam somente datas inequívocas da mesma origem. Registros segmentares precisam de vínculo seguro; nenhuma medida é estimada ou classificada esteticamente.</p></section>
   </section>`;
 }

@@ -46,3 +46,12 @@ Status: fonte de verdade dos feedbacks de produto recuperados. O texto é públi
 ## Regra de reconciliação
 
 Ao fim de cada pacote, os IDs afetados são atualizados aqui e vinculados a tarefas/evidências de `EXECUTION_STATE.json`. Nenhuma alegação antiga de “10/10” substitui feedback posterior do usuário ou inspeção visual real.
+
+## Continuidade e profundidade funcional — 13/09/2026
+
+- FB-018: layout atual parece adequado, mas há pouco histórico e funcionalidade acessível. Issue #265. Estado: em execução em `PKG-FUNCTIONAL-DEPTH-001`; preservar o visual e remover os limites silenciosos por meio de busca, paginação e detalhe progressivo.
+- FB-019: continuar ao máximo e permitir retomada por qualquer agente sem depender do chat. Estado: pacote, fila e fonte visual reconciliados; evidência final depende da promoção verificada.
+- D-001 permanece dívida técnica reaberta para as rotas estruturais: o runtime ainda coordena a renderização assíncrona legada. O pacote protege prontidão de domínio e dados atualizados, sem alegar que o pós-processador foi removido.
+- D-006 resolvida quanto à recuperação da fonte: original guardado em Drive privado, com hash em `REFERENCE_VISUAL_CONTRACT.md`. Isso não equivale a paridade ou aceitação final.
+
+Home/Treinos/Composição/Exames foram promovidos tecnicamente até os PRs #263/#264. Os estados antigos de “Entregue” acima são históricos e não encerram as novas lacunas da issue #265. Histórico de água, integrações e segurança de conta preservam os bloqueios do ledger.

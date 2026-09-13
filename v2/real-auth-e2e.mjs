@@ -1,5 +1,6 @@
 import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
+import {runDepthChecks} from './real-auth-depth-checks.mjs';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
 if(!tokenHash)throw new Error('authenticated token hash missing');
@@ -76,6 +77,14 @@ async function readIntegritySnapshot(){
 }
 
 try{
+  const expectedBuild=/name="lts-build" content="([^"]+)"/.exec(readFileSync('v2/index.html','utf8'))?.[1];
+  if(!expectedBuild)throw new Error('Release build is not identified');
+  let published=false;
+  for(let attempt=0;attempt<45;attempt++){
+    try{const response=await fetch(`${appUrl}?release-check=${Date.now()}`,{signal:AbortSignal.timeout(15000)});if(response.ok&&(await response.text()).includes(`name="lts-build" content="${expectedBuild}"`)){published=true;break;}}catch{}
+    await new Promise(resolve=>setTimeout(resolve,4000));
+  }
+  if(!published)throw new Error('Public deployment did not reach the exact build within the release window');
   await page.goto(`${appUrl}#hoje`,{waitUntil:'domcontentloaded',timeout:45000});
   await page.waitForFunction(()=>Boolean(window.supabase?.createClient),null,{timeout:20000});
   const sessionResult=await page.evaluate(async ({url,key,tokenHash})=>{
@@ -92,7 +101,7 @@ try{
   const integrity=await readIntegritySnapshot();
   if(integrity.error)throw new Error(`real-data integrity snapshot failed: ${integrity.error}`);
   const linkageFailures=integrity.orphanExercises+integrity.orphanSetsByWorkout+integrity.orphanSetsByExercise+integrity.orphanEvidence;
-  if(linkageFailures)throw new Error(`real-data linkage integrity failed: ${JSON.stringify(integrity)}`);
+  if(linkageFailures)throw new Error(`real-data linkage integrity failed: ${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
   if(integrity.canonicalBoundaryViolations)throw new Error(`real-data canonical boundary failed: ${integrity.canonicalBoundaryViolations}`);
   if(!integrity.latestWorkoutId||integrity.latestExpectedExercises<1||integrity.latestExpectedSets<1)throw new Error('latest canonical workout has no structured linkage');
 
@@ -103,7 +112,7 @@ try{
     trainingValue:document.querySelector('.ltsHealthTile.training b')?.textContent?.trim()||'',
     legacyVisible:Boolean(document.querySelector('[data-executive-dashboard]'))
   }));
-  if(homeState.title!=='Seu panorama')throw new Error(`structural Home missing: ${JSON.stringify(homeState)}`);
+  if(homeState.title!=='Seu panorama')throw new Error('structural Home missing');
   if(!homeState.trainingValue||homeState.trainingValue==='0'||homeState.trainingValue==='—')throw new Error('real-data training state is contradictory');
   if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
   await assertNoHorizontalOverflow();
@@ -163,7 +172,9 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-composition.png`,fullPage:true});
   for(const route of ['nutricao','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
 
+  await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir});
+
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
   if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
-  console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify(integrity)}`);
+  console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
 }finally{await browser.close();}
