@@ -97,7 +97,7 @@ export function renderProductHome(){
 function setText(set){
   const load=num(set.weight)!=null?`${fmtNum(set.weight,Number.isInteger(num(set.weight))?0:1)} ${set.weight_unit==='kg'?'kg':esc(set.weight_unit||'')}`:'—';
   const reps=set.reps_raw??set.reps_numeric??'—';
-  const flags=[set.phase==='warmup'?'aquec.',set.phase==='drop'?'drop',set.failure?'falha',set.near_failure?'quase falha',set.technique||''].filter(Boolean);
+  const flags=[set.phase==='warmup'?'aquec.':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',set.technique||''].filter(Boolean);
   return {load,reps:String(reps),flags};
 }
 
