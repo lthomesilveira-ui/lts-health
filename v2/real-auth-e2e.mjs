@@ -122,6 +122,21 @@ try{
   }
   if(integrity.latestWorkoutDate&&!trainingState.text.includes(String(integrity.latestWorkoutDate).split('-').reverse().join('/')))throw new Error('latest workout date missing from structural Training');
 
+  await waitForRoute('bio');
+  await page.waitForSelector('.ltsCompositionV2',{timeout:30000});
+  const compositionState=await page.evaluate(()=>({
+    title:document.querySelector('.ltsCompositionV2 h1')?.textContent?.trim()||'',
+    metrics:document.querySelectorAll('.ltsCompositionMetrics .ltsCompositionMetric').length,
+    tabs:document.querySelectorAll('[data-composition-metric]').length,
+    chart:Boolean(document.querySelector('.ltsCompositionChart')),
+    trust:Boolean(document.querySelector('.ltsCompositionTrust'))
+  }));
+  if(compositionState.title!=='Composição corporal'||compositionState.metrics!==3||compositionState.tabs<3||!compositionState.chart||!compositionState.trust)throw new Error(`structural Composition missing: ${JSON.stringify(compositionState)}`);
+  await page.locator('[data-composition-metric="weight_kg"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-composition-metric="weight_kg"]')?.classList.contains('active'));
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/desktop-composition.png`,fullPage:true});
+
   await waitForRoute('tratamentos');
   if(await page.locator('.timelineItem').count()<1)throw new Error('real protocol history missing');
   await waitForRoute('dados');
@@ -142,7 +157,11 @@ try{
   await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-training.png`,fullPage:true});
-  for(const route of ['nutricao','bio','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
+  await waitForRoute('bio');
+  await page.waitForSelector('.ltsCompositionV2',{timeout:30000});
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-composition.png`,fullPage:true});
+  for(const route of ['nutricao','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
 
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
   if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
