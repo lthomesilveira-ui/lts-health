@@ -1,0 +1,5 @@
+/* Final shell alignment for the model-convergence package.
+   Product-delivery reserves a 52px mobile track; the refined header is 50px. */
+@media(max-width:840px){
+  .app{grid-template-rows:50px minmax(0,1fr) 68px!important}
+}
