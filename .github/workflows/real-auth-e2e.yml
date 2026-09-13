@@ -4,10 +4,14 @@ on:
     branches: [main, architecture-v2]
     paths:
       - 'v2/real-auth-e2e.mjs'
+      - 'v2/real-auth-labs-visual.mjs'
       - 'v2/mfp-water-audit-auth.mjs'
       - 'v2/src/product-layout-v2.js'
       - 'v2/src/product-layout-runtime.js'
+      - 'v2/src/labs-layout-v2.js'
       - 'v2/product-layout-v2.css'
+      - 'v2/labs-model-v2.css'
+      - 'v2/model-convergence-shell.css'
       - 'v2/index.html'
       - '.github/workflows/real-auth-e2e.yml'
   schedule:
@@ -28,6 +32,7 @@ jobs:
       - name: Static validation
         run: |
           node --check v2/real-auth-e2e.mjs
+          node --check v2/real-auth-labs-visual.mjs
           node --check v2/mfp-water-audit-auth.mjs
       - name: Install browser runtime
         run: |
@@ -70,6 +75,24 @@ jobs:
           printf '%s' "$TOKEN_HASH" > /tmp/lts-health-token-hash
       - name: Exercise public app with real authenticated data
         run: node v2/real-auth-e2e.mjs
+      - name: Obtain one-time Labs visual token hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURL_RETRY=(--retry 4 --retry-delay 2 --retry-all-errors --connect-timeout 10 --max-time 45)
+          OIDC_RESPONSE="$(curl "${CURL_RETRY[@]}" -fsS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
+          echo "::add-mask::$OIDC_TOKEN"
+          curl "${CURL_RETRY[@]}" -fsS -X POST \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' \
+            -o /tmp/lts-health-labs-token.json
+          LABS_TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-labs-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          echo "::add-mask::$LABS_TOKEN_HASH"
+          umask 077
+          printf '%s' "$LABS_TOKEN_HASH" > /tmp/lts-health-labs-token-hash
+      - name: Capture real authenticated Labs experience
+        run: node v2/real-auth-labs-visual.mjs
       - name: Upload real-auth visual evidence
         if: always()
         uses: actions/upload-artifact@v4
