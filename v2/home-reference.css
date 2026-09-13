@@ -11,7 +11,7 @@
 
 @media(max-width:840px){
   .mobileNav{min-height:72px!important;height:72px!important;padding:6px 8px calc(5px + env(safe-area-inset-bottom))!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:start!important}
-  .mobileNav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-width:0!important;height:56px!important;padding:3px 1px!important;border:0!important;background:transparent!important;color:#1f2a38!important;font-size:9px!important;line-height:1!important;font-weight:600!important}
+  .mobileNav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-width:0!important;height:56px!important;padding:3px 1px!important;border:0!important;background:transparent!important;color:#1f2a38!important;font-size:10.5px!important;line-height:1!important;font-weight:600!important}
   .mobileNav .mobileNavIcon{display:block;font-size:21px;line-height:1;color:#0e1826;font-weight:500}
   .mobileNav button.active,.mobileNav button.active .mobileNavIcon{color:#ef2749!important}
   body[data-product-route="bio"] .mobileNav button[data-route="mais"],body[data-product-route="saude"] .mobileNav button[data-route="mais"]{color:#1f2a38!important}
