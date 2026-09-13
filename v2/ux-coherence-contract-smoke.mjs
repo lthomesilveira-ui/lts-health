@@ -64,7 +64,11 @@ assert.equal(task.status,'done');
 const executiveDensity=state.tasks.find(item=>item.id==='LTS-UX-DENSITY-002');
 assert.ok(executiveDensity);
 assert.ok(['in_progress','done'].includes(executiveDensity.status));
-assert.equal(state.current_package.id,'PKG-EXECUTIVE-DENSITY-002');
-assert.deepEqual(state.current_package.task_ids,[executiveDensity.id]);
+const densityPackage=state.current_package.id==='PKG-EXECUTIVE-DENSITY-002'?state.current_package:state.package_history?.find(item=>item.id==='PKG-EXECUTIVE-DENSITY-002');
+assert.ok(densityPackage,'completed density package must remain recorded');
+assert.deepEqual(densityPackage.task_ids,[executiveDensity.id]);
+assert.match(state.current_package.id,/^PKG-[A-Z0-9-]+$/);
+assert.ok(state.current_package.task_ids.length>0);
+for(const id of state.current_package.task_ids)assert.ok(state.tasks.some(task=>task.id===id),'current package references an unknown task');
 
 console.log('LTS Health UX coherence contract passed');

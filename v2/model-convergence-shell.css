@@ -18,3 +18,9 @@ body:has(.ltsLabsV2) .topbar #routeAction{display:none!important}
   body:has(.ltsLabsV2) .topbar{background:rgba(255,255,255,.98)!important}
   .ltsSetMissing{color:#7a8798!important;font-weight:650!important}
 }
+/* A retry action must be reachable on a phone as well as on desktop. */
+@media(max-width:840px){
+ body:has(.ltsHomeV2,.ltsTrainingV2,.ltsCompositionV2,.ltsLabsV2) .topbar{padding:3px 13px!important}
+ body:has(.ltsHomeV2,.ltsTrainingV2,.ltsCompositionV2,.ltsLabsV2) .topbar #refreshBtn,
+ body:has(.ltsHomeV2,.ltsTrainingV2,.ltsCompositionV2,.ltsLabsV2) .topbar #logoutBtn{display:inline-flex!important;align-items:center;justify-content:center;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important}
+}
