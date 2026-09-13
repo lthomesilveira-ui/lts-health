@@ -10,17 +10,27 @@ if(!fixtureMode){
   let pollStarted=0;
 
   function route(){return location.hash.replace(/^#/,'')||state.route||'hoje';}
+  function ownRouteAction(key){
+    if(!renderers[key])return;
+    const action=document.getElementById('routeAction');
+    if(!action)return;
+    action.classList.add('hidden');
+    action.setAttribute('aria-hidden','true');
+    action.tabIndex=-1;
+  }
   function renderIntoHost(key,{force=false}={}){
     const renderer=renderers[key];
     if(!renderer)return true;
     const host=document.getElementById('screenHost');
     if(!host)return false;
+    ownRouteAction(key);
     if(!force&&host.querySelector(markers[key]))return true;
     applying=true;
     try{
       host.innerHTML=renderer();
       host.dataset.productLayout='v2';
       host.dataset.productLayoutRoute=key;
+      ownRouteAction(key);
       if(!force)host.scrollTo({top:0,left:0,behavior:'auto'});
       return true;
     }catch(error){console.error('product-layout-v2',error);return false;}
