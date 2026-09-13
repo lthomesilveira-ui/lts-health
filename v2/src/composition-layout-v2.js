@@ -81,20 +81,21 @@ export function renderProductComposition(){
     return `<section class="ltsCompositionV2"><header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1>Composição corporal</h1><p>Histórico corporal com origem preservada.</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header><div class="ltsEmptyCard">Ainda não há uma medição corporal inequívoca para mostrar como atual.</div></section>`;
   }
   const series=coherentSeries(unique,latest);
-  const firstComparable=series.length>1?series[0]:null;
+  const recentSeries=series.slice(-12);
+  const firstComparable=recentSeries.length>1?recentSeries[0]:null;
   const selected=metricMeta[state.ui.productCompositionMetric]?state.ui.productCompositionMetric:'body_fat_pct';
-  const selectedMeta=metricMeta[selected];
   const fatDelta=firstComparable?delta(latest,firstComparable,'body_fat_pct'):null;
   const muscleDelta=firstComparable?delta(latest,firstComparable,'skeletal_muscle_mass_kg'):null;
   const weightDelta=firstComparable?delta(latest,firstComparable,'weight_kg'):null;
   const ambiguous=ambiguityCount(all);
   const excludedOtherSources=Math.max(0,unique.length-series.length);
   const source=sourceDisplay(latest);
-  const contextBits=[`${series.length} ${series.length===1?'medição comparável':'medições comparáveis'}`,source];
+  const contextBits=[`${recentSeries.length} ${recentSeries.length===1?'medição recente comparável':'medições recentes comparáveis'}`,source];
+  if(series.length>recentSeries.length)contextBits.push(`${series.length} no histórico da mesma origem`);
   if(ambiguous)contextBits.push(`${ambiguous} ${ambiguous===1?'data ambígua preservada':'datas ambíguas preservadas'}`);
   if(excludedOtherSources)contextBits.push(`${excludedOtherSources} ${excludedOtherSources===1?'registro de outra origem fora da tendência':'registros de outras origens fora da tendência'}`);
   const changeCopy=firstComparable
-    ?`De ${fmtDate(firstComparable.measured_at)} a ${fmtDate(latest.measured_at)}, com a mesma origem: gordura ${fatDelta==null?'sem comparação':signed(fatDelta,metricMeta.body_fat_pct)}, massa muscular ${muscleDelta==null?'sem comparação':signed(muscleDelta,metricMeta.skeletal_muscle_mass_kg)} e peso ${weightDelta==null?'sem comparação':signed(weightDelta,metricMeta.weight_kg)}.`
+    ?`De ${fmtDate(firstComparable.measured_at)} a ${fmtDate(latest.measured_at)}, nas 12 medições comparáveis mais recentes: gordura ${fatDelta==null?'sem comparação':signed(fatDelta,metricMeta.body_fat_pct)}, massa muscular ${muscleDelta==null?'sem comparação':signed(muscleDelta,metricMeta.skeletal_muscle_mass_kg)} e peso ${weightDelta==null?'sem comparação':signed(weightDelta,metricMeta.weight_kg)}.`
     :'Ainda não há duas medições da mesma origem para calcular mudança.';
   return `<section class="ltsCompositionV2">
     <header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1>Composição corporal</h1><p>O que mudou no corpo, sem misturar origens incompatíveis.</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header>
@@ -116,7 +117,7 @@ export function renderProductComposition(){
     <section class="ltsSection ltsCompositionTrend">
       <div class="ltsSectionHead"><div><span>Evolução</span><h2>Tendência por métrica</h2></div><small>${esc(contextBits.join(' · '))}</small></div>
       <div class="ltsCompositionTabs" role="tablist" aria-label="Métrica de composição">${Object.entries(metricMeta).map(([key,meta])=>`<button type="button" data-composition-metric="${esc(key)}" class="${selected===key?'active':''}" aria-pressed="${selected===key?'true':'false'}">${esc(meta.short)}</button>`).join('')}</div>
-      <div class="ltsCompositionChart">${lineChart(series.slice(-16),selected)}</div>
+      <div class="ltsCompositionChart">${lineChart(recentSeries,selected)}</div>
     </section>
 
     <section class="ltsSection ltsCompositionHistory"><div class="ltsSectionHead"><div><span>Histórico</span><h2>Medições recentes</h2></div><button data-route="evolucao">Ver evolução detalhada</button></div><div class="ltsCompositionHistoryList">${unique.slice(-8).reverse().map(historyRow).join('')}</div></section>
