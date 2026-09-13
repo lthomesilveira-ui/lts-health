@@ -1,5 +1,14 @@
 /* Final shell alignment for the model-convergence package.
-   Product-delivery reserves a 52px mobile track; the refined header is 50px. */
+   Keep fixture/legacy route actions available for safety contracts, but remove
+   duplicate shell actions when the structural Home/Training owns the journey. */
 @media(max-width:840px){
   .app{grid-template-rows:50px minmax(0,1fr) 68px!important}
+  .topbar .brand b{color:#101827!important}
+  body:has(.ltsHomeV2) .topbar #routeAction,
+  body:has(.ltsTrainingV2) .topbar #routeAction{display:none!important}
+  body:has(.ltsHomeV2) .topbar .topActions,
+  body:has(.ltsTrainingV2) .topbar .topActions{margin-left:auto!important}
+  body:has(.ltsHomeV2) .topbar,
+  body:has(.ltsTrainingV2) .topbar{background:rgba(255,255,255,.98)!important}
+  .ltsSetMissing{color:#7a8798!important;font-weight:650!important}
 }
