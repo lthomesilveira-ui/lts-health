@@ -1,12 +1,13 @@
 import {state,fixtureMode} from './core.js';
 import {isRouteReady} from './data-layer.js';
-import {renderProductHome,renderProductTraining} from './product-layout-v2.js';
+import {renderProductTraining} from './product-layout-v2.js';
+import {renderProductHomeReference} from './home-reference.js';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
 
 if(!fixtureMode){
-  const renderers={hoje:renderProductHome,treinos:renderProductTraining,bio:renderProductComposition,saude:renderProductLabs};
-  const markers={hoje:'.ltsHomeV2',treinos:'.ltsTrainingV2',bio:'.ltsCompositionV2',saude:'.ltsLabsV2'};
+  const renderers={hoje:renderProductHomeReference,treinos:renderProductTraining,bio:renderProductComposition,saude:renderProductLabs};
+  const markers={hoje:'.ltsHomeReference',treinos:'.ltsTrainingV2',bio:'.ltsCompositionV2',saude:'.ltsLabsV2'};
   let applying=false,pollTimer=null,pollStarted=0,hostObserver=null,lastData=null,lastRoute=null;
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
   const pageFields=new Set(['productTrainingPage','productLabPage','productCompositionPage','productExercisePage']);
@@ -29,15 +30,17 @@ if(!fixtureMode){
   }
   function dataInputs(key){return[key,...Object.entries(state.data).flatMap(([k,v])=>[k,v]),JSON.stringify(state.domainStatus),JSON.stringify(state.errors)];}
   function dataChanged(next){return !lastData||next.length!==lastData.length||next.some((v,i)=>v!==lastData[i]);}
+  function syncRouteChrome(key){document.body.dataset.productRoute=key;ownRouteAction(key);}
   function renderIntoHost(key,{force=false,scroll='preserve'}={}){
+    syncRouteChrome(key);
     const renderer=renderers[key];if(!renderer)return true;
     const host=document.getElementById('screenHost');if(!host||!state.loaded||!isRouteReady(key))return false;
-    const next=dataInputs(key);ownRouteAction(key);
+    const next=dataInputs(key);
     if(!force&&host.querySelector(markers[key])&&!dataChanged(next))return true;
     const context=lastRoute===key?capture(host):{top:0,id:null,disclosures:[]};
     applying=true;
     try{
-      host.innerHTML=renderer();host.dataset.productLayout='v2';host.dataset.productLayoutRoute=key;ownRouteAction(key);
+      host.innerHTML=renderer();host.dataset.productLayout='v2';host.dataset.productLayoutRoute=key;syncRouteChrome(key);
       lastData=next;lastRoute=key;restore(host,context);
       if(scroll==='top'){
         host.scrollTo({top:0,left:0,behavior:'auto'});
@@ -49,6 +52,7 @@ if(!fixtureMode){
   }
   const apply=()=>applying||!state.loaded?false:renderIntoHost(route());
   function settle(){
+    const key=route();syncRouteChrome(key);
     if(pollTimer)clearInterval(pollTimer);pollStarted=Date.now();apply();
     pollTimer=setInterval(()=>{apply();if(Date.now()-pollStarted>30000){clearInterval(pollTimer);pollTimer=null;}},250);
   }
