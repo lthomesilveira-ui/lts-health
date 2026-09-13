@@ -49,9 +49,11 @@ function latestWater(){return[...(state.data.nutrition||[])].filter(row=>num(row
 function treatmentRows(){return[...(state.data.treatments||[])].filter(row=>row?.event_date&&row?.medication).sort((a,b)=>String(b.event_date).localeCompare(String(a.event_date))).slice(0,2);}
 
 function statusIcon(kind){return `<span class="ltsRefTodayIcon ${kind}" aria-hidden="true">${kind==='training'?'↔':kind==='medication'?'✦':kind==='water'?'◌':'⌁'}</span>`;}
-function statusRow({kind,title,subtitle,route,entry=false}){
+function statusRow({kind,title,subtitle,route,entry=false,current=false}){
   const attrs=entry?`data-entry="${entry}"`:`data-route="${route}"`;
-  return `<button class="ltsRefTodayRow" ${attrs}>${statusIcon(kind)}<span class="ltsRefTodayCopy"><b>${esc(title)}</b><small>${esc(subtitle)}</small></span><span class="ltsRefTodayState" aria-hidden="true">${entry?'+':'✓'}</span></button>`;
+  const stateClass=entry?'entry':current?'current':'historical';
+  const stateMark=entry?'+':current?'✓':'›';
+  return `<button class="ltsRefTodayRow" ${attrs}>${statusIcon(kind)}<span class="ltsRefTodayCopy"><b>${esc(title)}</b><small>${esc(subtitle)}</small></span><span class="ltsRefTodayState ${stateClass}" aria-hidden="true">${stateMark}</span></button>`;
 }
 
 function uniqueDays(rows,key,predicate=()=>true,anchor=new Date()){
@@ -81,7 +83,7 @@ export function renderProductHomeReference(){
   const weightDelta=metricDelta(bodyRows,'weight_kg',1,' kg');
   const fatDelta=metricDelta(bodyRows,'body_fat_pct',1,' p.p.');
   const muscleDelta=metricDelta(bodyRows,'skeletal_muscle_mass_kg',1,' kg');
-  const today=new Date();
+  const today=new Date(),todayKey=dateKey(today.toISOString());
   const todayLabel=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(today);
   const workoutSubtitle=workout?`${fmtDate(workout.workout_date)} · ${num(workout.duration_minutes)!=null?`${fmtNum(workout.duration_minutes,0)} min`:safe(workout.location,'registro')} ${num(workout.calories_kcal)!=null?`· ${fmtNum(workout.calories_kcal,0)} kcal`:''}`:'Nenhum treino estruturado recente';
   const nutritionSubtitle=nutrition?`${fmtDate(nutrition.nutrition_date)} · ${num(nutrition.calories_kcal)!=null?`${fmtNum(nutrition.calories_kcal,0)} kcal`:''}${num(nutrition.protein_g)!=null?` · ${fmtNum(nutrition.protein_g,0)} g proteína`:''}`:'Sem total nutricional recente';
@@ -91,7 +93,7 @@ export function renderProductHomeReference(){
   const weeklyWater=uniqueDays(state.data.nutrition,'nutrition_date',row=>num(row.water_ml)>0,today);
   const weeklySleep=uniqueDays(state.data.metrics,'measured_at',row=>String(row?.metric_type||'').includes('sleep'),today);
 
-  const medicationRows=treatments.map(row=>statusRow({kind:'medication',title:safe(row.medication,'Medicação registrada'),subtitle:`${fmtDate(row.event_date)}${row.source?` · ${row.source}`:''}`,route:'tratamentos'})).join('');
+  const medicationRows=treatments.map(row=>statusRow({kind:'medication',title:safe(row.medication,'Medicação registrada'),subtitle:`${fmtDate(row.event_date)}${row.source?` · ${row.source}`:''}`,route:'tratamentos',current:dateKey(row.event_date)===todayKey})).join('');
 
   return `<section class="ltsHomeV2 ltsHomeReference">
     <header class="ltsRefHeader">
@@ -113,10 +115,10 @@ export function renderProductHomeReference(){
 
     <section class="ltsRefCard ltsRefToday">
       <header><div><h2>Hoje</h2><span>${esc(todayLabel)}</span></div><button data-route="timeline">Ver dia completo ›</button></header>
-      ${workout?statusRow({kind:'training',title:safe(workout.workout_type,'Treino de força'),subtitle:workoutSubtitle,route:'treinos'}):statusRow({kind:'training',title:'Treino',subtitle:'Nenhum treino estruturado recente',route:'treinos'})}
+      ${workout?statusRow({kind:'training',title:safe(workout.workout_type,'Treino de força'),subtitle:workoutSubtitle,route:'treinos',current:dateKey(workout.workout_date)===todayKey}):statusRow({kind:'training',title:'Treino',subtitle:'Nenhum treino estruturado recente',route:'treinos'})}
       ${medicationRows}
-      ${statusRow({kind:'water',title:'Água',subtitle:waterSubtitle,route:'nutricao',entry:water?false:'water-import'})}
-      ${statusRow({kind:'nutrition',title:'Dieta',subtitle:nutritionSubtitle,route:'nutricao'})}
+      ${statusRow({kind:'water',title:'Água',subtitle:waterSubtitle,route:'nutricao',entry:water?false:'water-import',current:dateKey(water?.nutrition_date)===todayKey})}
+      ${statusRow({kind:'nutrition',title:'Dieta',subtitle:nutritionSubtitle,route:'nutricao',current:dateKey(nutrition?.nutrition_date)===todayKey})}
     </section>
 
     <section class="ltsRefCard ltsRefProgress">
