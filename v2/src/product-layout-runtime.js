@@ -9,6 +9,7 @@ if(!fixtureMode){
   let applying=false;
   let pollTimer=null;
   let pollStarted=0;
+  let hostObserver=null;
 
   function route(){return location.hash.replace(/^#/,'')||state.route||'hoje';}
   function ownRouteAction(key){
@@ -48,14 +49,25 @@ if(!fixtureMode){
     pollStarted=Date.now();
     apply();
     pollTimer=setInterval(()=>{
-      const done=apply();
-      if(done||Date.now()-pollStarted>30000)stopPolling();
+      apply();
+      if(Date.now()-pollStarted>30000)stopPolling();
     },250);
   }
   function settle(){startPolling();setTimeout(startPolling,1200);setTimeout(startPolling,3200);}
+  function observeHost(){
+    const host=document.getElementById('screenHost');
+    if(!host||hostObserver)return;
+    hostObserver=new MutationObserver(()=>{
+      const key=route();
+      if(applying||!state.loaded||!renderers[key]||host.querySelector(markers[key]))return;
+      queueMicrotask(()=>apply());
+    });
+    hostObserver.observe(host,{childList:true});
+  }
 
   const boot=()=>{
     if(!document.getElementById('screenHost')){setTimeout(boot,80);return;}
+    observeHost();
     window.addEventListener('hashchange',settle);
     window.addEventListener('online',settle);
     document.addEventListener('click',event=>{
