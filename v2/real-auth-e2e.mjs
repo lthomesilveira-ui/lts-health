@@ -103,7 +103,7 @@ try{
     trainingValue:document.querySelector('.ltsHealthTile.training b')?.textContent?.trim()||'',
     legacyVisible:Boolean(document.querySelector('[data-executive-dashboard]'))
   }));
-  if(homeState.title!=='Seu panorama de saúde')throw new Error(`structural Home missing: ${JSON.stringify(homeState)}`);
+  if(homeState.title!=='Seu panorama')throw new Error(`structural Home missing: ${JSON.stringify(homeState)}`);
   if(!homeState.trainingValue||homeState.trainingValue==='0'||homeState.trainingValue==='—')throw new Error('real-data training state is contradictory');
   if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
   await assertNoHorizontalOverflow();
