@@ -1,4 +1,4 @@
-/* Functional depth inside the existing structural design. No legacy overrides. */
+/* Functional depth inside the existing structural design. */
 .ltsTrainingV2,.ltsLabsV2,.ltsCompositionV2{min-width:0}
 .ltsDepthTabs,.ltsPeriodControl{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
 .ltsDepthTabs button,.ltsPeriodControl button{border:1px solid #dce3ed;border-radius:12px;background:#fff;color:#46586e;min-height:44px;padding:9px 13px;font-family:inherit;font-size:13px;font-weight:600;line-height:1.3;cursor:pointer}
@@ -43,3 +43,11 @@
 .ltsPager button,.ltsDepthTabs button,.ltsPeriodControl button,.ltsDepthLink{font-family:inherit;font-weight:650}
 .ltsCompositionHistoryList .ltsCompositionHistoryRow{min-height:72px}
 .ltsCompositionHistoryRow time{font-size:12px}.ltsCompositionHistoryRow b{font-size:15px}.ltsCompositionHistoryRow small{font-size:12px}
+/* The inherited negative margins leaked outside the host on narrow screens. */
+.ltsLabsMarkerRail,.ltsCompositionTabs{margin-right:0;padding-right:2px;max-width:100%;box-sizing:border-box}
+.ltsLabsHeroTop>div,.ltsPageHeader>div{min-width:0;flex:1}
+.ltsLabsChart>.ltsDepthChart,.ltsCompositionChart>.ltsDepthChart{border:0;border-radius:0;padding:0;margin:0}
+.ltsWorkoutList time,.ltsWorkoutList small{font-size:12px}
+.ltsLabsHistoryRow time,.ltsLabsHistoryRow small{font-size:12px}
+.ltsLabsHistoryRow>.ltsRecordFlag{white-space:normal;max-width:100%;overflow-wrap:anywhere}
+.ltsCompositionHistoryRow>span{white-space:normal}
