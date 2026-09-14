@@ -1,84 +1,117 @@
 # LTS Health — CURRENT HANDOFF
 
-Updated: 2026-09-13 after verified Home semantic correction and Training reference convergence. Public engineering metadata only; health data and credentials stay private.
+Updated: 2026-09-14 after physical-iPhone reference-parity correction and permanent Training visual guard. Public engineering metadata only; health data, credentials and private screenshots stay private.
+
+## Restart phrase
+
+`LTSH-CONTINUE`
+
+If a new chat/agent receives only that phrase, recover the real repository state first and continue from this document. Chat memory is not a source of truth.
 
 ## Read first
 
 Repository `lthomesilveira-ui/lts-health`; public app `https://lthomesilveira-ui.github.io/lts-health/v2/`; public branch `main`.
 
-Before any write re-fetch main, active branch, `architecture-v2`, `CURRENT_HANDOFF.md`, `PROJECT_MASTER.md`, `EXECUTION_STATE.json`, `FEEDBACK_LEDGER.md` and `REFERENCE_VISUAL_CONTRACT.md`. Audit parallel changes, preserve compatible work, use normal PR/merge and never force.
+Before any write re-fetch `main`, active branch, `architecture-v2`, `CURRENT_HANDOFF.md`, `PROJECT_MASTER.md`, `EXECUTION_STATE.json`, `FEEDBACK_LEDGER.md` and `REFERENCE_VISUAL_CONTRACT.md`. Audit parallel changes, preserve compatible work, use normal PR/merge and never force.
 
-Current code/deploy evidence outranks documentation. `EXECUTION_STATE.json` owns task states. `PROJECT_MASTER.md` and `FEEDBACK_LEDGER.md` preserve historical decisions. Chat memory is not a source of truth.
+Current code/deploy evidence outranks stale documentation. `EXECUTION_STATE.json` is the structured queue but may lag a newly verified release until its reconciliation package lands; do not undo delivered work because an older task still says ready/in_progress.
 
-## User direction and visual authority
+## Visual authority and current acceptance
 
-The user wants the mobile product to converge toward the recovered approved reference image, not a web dashboard compressed into a phone. The original approved mobile image is saved in PRIVATE Drive as `LTS Health - referencia visual aprovada.png`; SHA256 `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`. Do not copy the image into the public repository. Example values/targets/treatment text in the reference are illustrative and must never manufacture production health data.
+The owner expects the mobile product to converge toward the recovered approved reference image, not merely share its colors. The private original is stored in Drive as `LTS Health - referencia visual aprovada.png`; SHA256 `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`. Never copy it into this public repository.
 
-Physical-iPhone screenshots from the user are valid rejection evidence and should outrank fixture-only visual confidence. There is still no final pixel-parity or product-completeness approval.
+The reference contains the intended mobile Home/Início plus Training summary and exercise/set screens. Home/Início should be recognizable as the first reference screen using real data; Training should be recognizable as the session/detail reference while never inventing unavailable telemetry.
 
-## Current verified release
+Physical-iPhone screenshots from the owner outrank fixture-only visual confidence. The owner explicitly reported on 14/09 that the product had improved but remained far from the approved mockup. There is **no final pixel parity or product acceptance** yet.
 
-Latest merged product commit: `f6968be347b8573f898dafd241c75ebeda30db7e`.
-Build: `ux-coherence-training-reference-20260913.11`.
-PR #272.
+## Current verified product release
 
-Post-merge deploy, smoke, Timeline smoke, deployed homologation, staging smoke and real authenticated E2E all succeeded. The authenticated flow exercised the public app and full histories with real authorized data. This validates delivery/integrity, not complete ingestion of every historical external source and not physical-iPhone rendering.
+Reference-parity product package:
+- PR #279
+- build `ux-coherence-reference-parity-20260914.16`
+- product merge commit `2393213b2824812a5f463d947b3f6be53246e4a7`
+- checkpoint `v2/releases/REFERENCE_PARITY_IPHONE_20260914.md`
 
-Checkpoint for this Training package: `releases/TRAINING_REFERENCE_20260913.md`.
-Earlier functional-depth checkpoint: `releases/HISTORY_DEPTH_20260913.md`.
+PR #279 fixed the exact physical-iPhone defects observed in Training and refined Home hierarchy/readability. Post-merge deploy, smoke, Timeline, functional depth, deployed homologation, staging and real authenticated E2E succeeded.
 
-## Home state
+Permanent regression guard:
+- PR #280
+- guard merge commit `f1b1779c385aadcae167ba2165186c10e28b762e`
+- `v2/cockpit-smoke.mjs` now rejects low-contrast Training metric/telemetry/structure values and overlapping/collapsed first-exercise preview geometry at the mobile reference viewport.
 
-The Home was rebuilt from the approved mobile reference family and then corrected using the user's physical-iPhone screenshot.
+The guard itself was tested after an initial route-fixture attempt proved insufficient; the final version renders the canonical Training reference component with fixture data and passed its cockpit browser gate before merge.
 
-Current rules:
-- dark mobile shell, compact composition metrics, Today, recent records, weekly progress and bottom navigation;
-- `Hoje` means the current calendar day only. Do not show an older workout, nutrition record or treatment as if it happened today;
-- older records belong under `Últimos registros` or another explicitly historical surface;
-- do not expose internal provenance strings such as `user report in LTS Health conversation` in consumer-facing cards;
-- empty current-day states must be explicit rather than silently substituted with the latest historical value;
-- preserve safe area so bottom navigation does not cover content.
+## Home/Início state
 
-The Home semantic/density correction was merged through PR #271 and fully passed deploy/staging/homologation/authenticated checks before Training work began.
+Home is in the approved mobile reference family but is **not accepted as finished**.
+
+Current non-negotiable semantics:
+- `Hoje` means the current calendar day only;
+- historical workout/nutrition/treatment records must not masquerade as today;
+- older items belong in explicitly historical surfaces such as `Últimos registros`;
+- no internal provenance/debug strings in consumer-facing cards;
+- empty current-day states are explicit;
+- bottom navigation cannot cover content.
+
+Current reference-oriented mobile order is:
+1. brand/header + greeting;
+2. compact composition metrics;
+3. Today;
+4. weekly progress;
+5. older recent records.
+
+The owner still considers Home materially far from the original reference, so continue direct reference-to-implementation comparison rather than generic dashboard polishing.
 
 ## Training state
 
-Training functional depth was already delivered before the visual convergence: complete pagination, query/year filter, historical session/exercise/set detail, read-only exercise occurrences and source-safe descriptive load history.
+Functional depth already includes complete history, session/exercise/set detail and source-safe descriptive exercise history.
 
-The current Training mobile visual package now:
-- uses the same dark-shell family as the approved reference;
-- uses a compact app-like session header;
-- styles existing Summary/History navigation as a compact segmented control;
-- makes the current session a red protagonist surface;
-- presents duration, energy, average heart rate and set count as compact first-glance metrics;
-- renders exercise/set cards with denser phone-first hierarchy;
-- preserves full historical drill-down and bottom safe area.
+The current mobile reference package has:
+- compact session header and segmented `Resumo / Exercícios / Histórico` navigation;
+- red session protagonist surface;
+- duration, energy, average HR and set count as first-glance metrics;
+- HR min/avg/max only when source data exists;
+- exercise/set detail and complete history.
 
-Do **not** fabricate heart-rate zones, graphs or missing telemetry merely to mimic the reference. Add such tabs only when backed by actual source data; otherwise show explicit unavailable/insufficient-data states.
+The 14/09 physical iPhone screenshots exposed a CSS regression despite green CI: real values existed but were almost white on light cards, and the first-exercise preview collapsed. PR #279 explicitly fixes those surfaces. PR #280 makes the same defect a permanent CI gate.
+
+Do **not** fabricate heart-rate zones, time series, graphs or other telemetry solely to mimic the mockup. Add them only when backed by actual source data; otherwise show an explicit unavailable/insufficient-data state.
 
 ## Functional depth already delivered
 
-- Training: complete history, session/exercise/set detail and exercise progression where comparison is source-safe.
-- Labs: every marker selectable including single/textual results; search; source/unit/method selector; periods; accessible point lookup; complete result pagination. Unknown metadata, duplicate dates and censored values cannot manufacture trends.
-- Composition: all measurements available; source/period/year filtering; safe two-date comparison; record detail; segmental values only with a safe link.
-- Runtime: route-domain readiness, data-change refresh, focus/scroll/disclosure preservation.
+Do not reimplement older caps or lose these capabilities:
+- Training: complete history, session/exercise/set detail, exercise occurrences and source-safe progression.
+- Labs: all markers selectable, search, origin/unit/method separation, periods, point lookup and complete result pagination; ambiguous dates/units/censored values cannot manufacture trends.
+- Composition: all measurements, source/period/year filters, safe two-date comparison, record detail, segmental values only with a safe link.
+- Timeline: year → month → exact-day navigation with contextual drill-down.
+- Nutrition: complete available daily history by year, daily detail and explicit missing/duplicate handling.
+- Recovery/analyses: source-separated descriptive evidence; no unsafe device merging or causal medical conclusions.
+- Runtime: route readiness, refresh/data-change handling and history drill-down preservation.
 
-Do not reimplement these because older documents still mention old caps.
+## Remaining execution order
 
-## Evidence and privacy outside chat
+Visual convergence is now the dominant workstream:
+1. Home/Início — direct comparison against the approved first reference screen.
+2. Training — confirm the newly corrected physical-device result, then refine only evidence-backed gaps.
+3. Composition — bring geometry, typography, graphs and detail into the same reference language.
+4. Exams/Labs.
+5. Timeline.
+6. Nutrition/hydration.
+7. Recovery/analyses.
+8. Cross-product visual consistency and final physical-iPhone acceptance.
 
-The original reference and durable encrypted real-auth evidence are stored privately in Drive. The private decryption key is also in PRIVATE Drive as `LTS Health - chave privada das evidencias visuais.pem`; only the public key belongs in the repository. Follow `FUNCTIONAL_DEPTH.md` for authorized retrieval/decryption. Never publish plaintext health screenshots or private keys.
+Do not trade away existing history/provenance depth to obtain visual similarity.
 
-## Remaining work and execution order
+## Pending user/external items
 
-1. Continue Training convergence only where real data supports the approved reference (e.g. richer summary/exercise separation; graphs/zones only when evidenced).
-2. Timeline: meaningful day/month navigation and direct contextual entry into detailed records, preserving provenance and duplicate boundaries.
-3. Nutrition/hydration: deeper available history, useful period/day detail, clear source freshness and missing/ambiguous states.
-4. Recovery/analyses: descriptive source-separated trends and navigation without causal medical conclusions.
-5. Cross-product visual consistency and final user acceptance against the recovered reference.
+Historical MyFitnessPal water remains pending by explicit owner decision. The extraction helper exists, but the actual historical water payload requires an authenticated MyFitnessPal notebook session. The owner will do that later; keep it visible as a pending source item but do not block app development.
 
-Preserve all historical integration/security blockers. The MyFitnessPal historical water import still requires the user's authenticated notebook export/import action; credentials and cookies must not be transferred. Do not infer missing health records or treat route existence as completion.
+Preserve all other integration/security blockers from the structured ledger. Never infer missing health records.
+
+## Evidence and privacy
+
+The original visual reference and encrypted authenticated visual evidence are private. Never publish plaintext health screenshots, private keys, credentials, cookies or personal health payloads in the public repository.
 
 ## Next autonomous action
 
-Start from current `main` and verify the real public app before the next write. Continue visual convergence without undoing Home semantics or delivered historical depth. For any new visual claim, prefer authenticated public evidence and physical-iPhone feedback over fixture-only checks. Persist each coherent package in a release checkpoint and update this handoff after verified promotion.
+Start from current `main`, confirm the latest guard/package checks, then continue direct reference convergence with **Composition next unless Home/Training public evidence reveals a remaining P0 regression**. Before asking the owner to test again, produce a substantive visible jump and validate the public authenticated build. When physical-iPhone feedback conflicts with CI, the physical device wins.
