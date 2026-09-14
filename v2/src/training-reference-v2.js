@@ -58,6 +58,12 @@ function hrPanel(workout){
   </section>`;
 }
 
+function summaryExercisePreview(exercises){
+  if(!exercises.length)return'';
+  const exercise=exercises[0],sets=failed(state,'sets')?[]:setsFor(exercise);
+  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${sets.length?`${sets.length} séries registradas`:'Séries ainda não estruturadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
+}
+
 function summaryView(workout){
   const{exercises,setCount}=workoutCounts(workout);
   return `${sessionHero(workout)}
@@ -71,6 +77,7 @@ function summaryView(workout){
     <section class="ltsRefTrainPanel ltsRefSessionOverview">
       <header><div><span>Estrutura</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
       <div class="ltsRefOverviewGrid"><div><b>${exercises.length}</b><span>exercícios estruturados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
+      ${summaryExercisePreview(exercises)}
     </section>`;
 }
 
@@ -80,7 +87,7 @@ function exerciseCards(workout){
   if(!exercises.length)return `<div class="ltsRefTrainEmpty">Exercícios ainda não estruturados para esta sessão.</div>`;
   return `<div class="ltsRefExerciseList">${exercises.map((exercise,index)=>{
     const sets=failed(state,'sets')?[]:setsFor(exercise);
-    return `<article class="ltsRefExerciseCard">
+    return `<article class="ltsExerciseCard ltsRefExerciseCard">
       <header><div class="ltsRefExerciseNumber">${String(index+1).padStart(2,'0')}</div><div><b>${esc(exercise.exercise||'Exercício')}</b><small>${esc([exercise.machine,exercise.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'—':`${sets.length} séries`}</span></header>
       <div class="ltsRefSetTable">${sets.length?sets.map((set,setIndex)=>{const t=setText(set);return `<div><span>S${setIndex+1}</span><b>${t.missing?'Dados não informados':esc(t.load)}</b><i>${t.missing?'':`× ${esc(t.reps)} reps`}</i>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</div>`;}).join(''):`<div class="ltsRefSetEmpty">${failed(state,'sets')?'As séries não carregaram agora.':esc(exercise.source_text||'Séries ainda não estruturadas.')}</div>`}</div>
       <button type="button" class="ltsRefExerciseHistory" data-depth-exercise="${esc(exercise.source_record_id)}">Histórico deste exercício ›</button>
