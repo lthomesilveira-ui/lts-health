@@ -37,8 +37,9 @@ if(!fixtureMode){
     const renderer=renderers[key];if(!renderer)return true;
     const host=document.getElementById('screenHost');if(!host||!state.loaded||!isRouteReady(key))return false;
     const next=dataInputs(key);
-    if(!force&&host.querySelector(markers[key])&&!dataChanged(next))return true;
-    const context=lastRoute===key?capture(host):{top:0,id:null,disclosures:[]};
+    const alreadyOwned=Boolean(host.querySelector(markers[key]));
+    if(!force&&alreadyOwned&&!dataChanged(next))return true;
+    const context=lastRoute===key&&alreadyOwned?capture(host):{top:0,id:null,disclosures:[]};
     applying=true;
     try{
       host.innerHTML=renderer();host.dataset.productLayout='v2';host.dataset.productLayoutRoute=key;syncRouteChrome(key);
