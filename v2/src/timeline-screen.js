@@ -8,7 +8,9 @@ const domainMap={workouts:'Treinos',body:'Composição corporal',labs:'Exames',d
 const preservedStatuses=new Set(['candidate','held']);
 const contextualDomains=new Set(['Documentos','Tratamentos']);
 const sourceMetricOrder=['sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','steps','resting_heart_rate_bpm','hrv_sdnn_ms','respiratory_rate_bpm','weight_kg','dietary_water_ml','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g'];
+const monthNames=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const yearOf=value=>String(value||'').slice(0,4);
+const monthOf=value=>String(value||'').slice(5,7);
 function unavailable(){return Object.entries(domainMap).filter(([key])=>failed(key)).map(([,label])=>label);}
 function sourceDisplay(source='',family=''){
   const text=norm(`${source} ${family}`);
@@ -95,7 +97,6 @@ function ambiguousDateSet(rows=[],dateKey){
   }
   return new Set([...counts.entries()].filter(([,count])=>count>1).map(([date])=>date));
 }
-
 function events(){
   const out=[];
   if(!failed('workouts'))for(const w of workoutRows())out.push({date:w.workout_date,domain:'Treinos',title:w.workout_type||'Treino',sub:w.location||'',source:sourceDisplay(w.source),route:'treinos',kind:'workout',ref:w.source_record_id});
@@ -129,19 +130,16 @@ function events(){
   if(!failed('treatments'))for(const t of state.data.treatments||[])out.push({date:t.event_date,domain:'Tratamentos',title:t.medication||'Tratamento registrado',source:sourceDisplay(t.source),route:'tratamentos',kind:'treatment',ref:t.source_record_id||''});
   return out.filter(e=>e.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(a.domain).localeCompare(String(b.domain),'pt-BR'));
 }
-
 function item(e){
   const body=`<span>${esc(e.domain)}</span><div><b>${esc(e.title)}</b>${e.sub?`<small>${esc(e.sub)}</small>`:''}${e.source?`<em>${esc(e.source)}</em>`:''}</div>`;
   return e.route?`<button type="button" class="timelineItem rich timelineLink" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}">${body}</button>`:`<div class="timelineItem rich">${body}</div>`;
 }
-
 function crossDomainDays(rows){
   const evidenceRows=rows.filter(e=>!String(e.domain||'').endsWith(' em conferência')&&!contextualDomains.has(e.domain));
   const byDate=new Map();
   for(const e of evidenceRows){if(!byDate.has(e.date))byDate.set(e.date,[]);byDate.get(e.date).push(e);}
   return [...byDate.entries()].map(([date,dayRows])=>({date,rows:dayRows,domains:unique(dayRows.map(r=>r.domain)).sort((a,b)=>a.localeCompare(b,'pt-BR'))})).filter(x=>x.domains.length>=2).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
 }
-
 function contextRow(e){
   const body=`<strong>${esc(e.domain)}</strong><span>${esc(e.title)}</span>`;
   return e.route?`<button type="button" class="timelineContextJump" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" aria-label="Abrir ${esc(e.domain)} de ${esc(fmtDate(e.date))}">${body}</button>`:`<div>${body}</div>`;
@@ -150,27 +148,40 @@ function crossDomainCard(entry){
   const preview=[...entry.rows].sort((a,b)=>Number(!!b.route)-Number(!!a.route)||String(a.domain).localeCompare(String(b.domain),'pt-BR')).slice(0,4);
   return `<article class="timelineContextCard"><div class="timelineContextHead"><div><b>${fmtDate(entry.date)}</b><span>${countLabel(entry.domains.length,'área com registros','áreas com registros')}</span></div><div class="timelineDomainChips">${entry.domains.map(d=>`<span>${esc(d)}</span>`).join('')}</div></div><div class="timelineContextRows">${preview.map(contextRow).join('')}</div>${entry.rows.length>preview.length?`<small>+ ${countLabel(entry.rows.length-preview.length,'registro neste dia','registros neste dia')}</small>`:''}</article>`;
 }
-
 function domainSummary(rows,missing){
   const counts=new Map();for(const row of rows)counts.set(row.domain,(counts.get(row.domain)||0)+1);
   const cards=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'pt-BR')).map(([domain,count])=>`<div class="timelineStat"><b>${count}</b><span>${esc(domain)}</span></div>`).join('');
   return `<div class="timelineStats">${cards||'<div class="timelineStat muted"><b>—</b><span>Nenhum registro carregado neste período</span></div>'}${missing.length?'<div class="timelineStat muted"><b>—</b><span>Resumo parcial</span></div>':''}</div>`;
 }
-
+function monthLabel(value){const index=Number(value)-1;return monthNames[index]||value;}
 export function renderTimelineHub(){
   const all=events(),missing=unavailable(),domain=state.ui.timelineDomain||'all',q=norm(state.ui.timelineQuery),period=state.ui.timelinePeriod||'365',limit=Number(state.ui.timelineLimit||250),cut=period==='all'?null:since(Number(period));
   const domains=['all',...unique(all.map(e=>e.domain)).sort((a,b)=>a.localeCompare(b,'pt-BR'))],years=unique(all.map(e=>yearOf(e.date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));
   if(period==='all'&&(!state.ui.timelineYear||!years.includes(state.ui.timelineYear)))state.ui.timelineYear=years[0]||null;
-  const periodRows=all.filter(e=>(!cut||e.date>=cut)&&(period!=='all'||!state.ui.timelineYear||yearOf(e.date)===state.ui.timelineYear));
+  const yearRows=all.filter(e=>(!cut||e.date>=cut)&&(period!=='all'||!state.ui.timelineYear||yearOf(e.date)===state.ui.timelineYear));
+  const months=period==='all'?unique(yearRows.map(e=>monthOf(e.date))).filter(Boolean).sort((a,b)=>b.localeCompare(a)):[];
+  if(period!=='all'){
+    state.ui.timelineMonth=null;state.ui.timelineDate=null;
+  }else if(state.ui.timelineMonth&&state.ui.timelineMonth!=='all'&&!months.includes(state.ui.timelineMonth)){
+    state.ui.timelineMonth='all';state.ui.timelineDate=null;
+  }
+  const month=period==='all'?(state.ui.timelineMonth||'all'):'all';
+  const monthRows=yearRows.filter(e=>month==='all'||monthOf(e.date)===month);
+  const dates=month==='all'?[]:unique(monthRows.map(e=>String(e.date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));
+  if(state.ui.timelineDate&&!dates.includes(state.ui.timelineDate))state.ui.timelineDate=null;
+  const selectedDate=state.ui.timelineDate||'';
+  const periodRows=monthRows.filter(e=>!selectedDate||String(e.date)===selectedDate);
   const matching=periodRows.filter(e=>(domain==='all'||e.domain===domain)&&(!q||norm(`${e.domain} ${e.title} ${e.sub} ${e.source}`).includes(q)));
   const filtered=matching.slice(0,limit),grouped=new Map();for(const e of filtered){if(!grouped.has(e.date))grouped.set(e.date,[]);grouped.get(e.date).push(e);}
   const contextDays=crossDomainDays(periodRows).slice(0,6);
+  const historicalControls=period==='all'?`<select id="timelineYear" aria-label="Ano da Timeline">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select><select id="timelineMonth" aria-label="Mês da Timeline"><option value="all">Todos os meses</option>${months.map(m=>`<option value="${esc(m)}">${esc(monthLabel(m))}</option>`).join('')}</select>${month!=='all'?`<select id="timelineDate" aria-label="Dia da Timeline"><option value="">Todos os dias</option>${dates.map(d=>`<option value="${esc(d)}">${esc(fmtDate(d))}</option>`).join('')}</select>`:''}`:'';
+  const scopeLabel=selectedDate?` em ${fmtDate(selectedDate)}`:period==='all'&&state.ui.timelineYear?` em ${esc(month!=='all'?`${monthLabel(month)} de ${state.ui.timelineYear}`:state.ui.timelineYear)}`:cut?' no período':'';
   return `${title('Timeline','Seu histórico em ordem de data. Registros que ainda precisam de conferência aparecem como existentes, mas ficam separados dos dados já confirmados.')}
     ${missing.length?`<div class="errorState"><b>Parte da Timeline está indisponível agora.</b><span>Não foi possível carregar: ${esc(missing.join(', '))}. Os registros das outras áreas continuam visíveis; atualize para tentar completar a Timeline.</span></div>`:''}
     ${domainSummary(periodRows,missing)}
     <section class="timelineContext sectionGap"><div class="sectionHeading"><div><h2>Visão cruzada por dia</h2><p>Dias em que existem registros confirmados de duas ou mais áreas de saúde. Documentos, tratamentos e itens em conferência continuam no histórico, mas não criam sozinhos uma relação cruzada. Toque em um registro para abrir o detalhe. A proximidade na data ajuda a consultar o contexto, mas não demonstra causa entre os registros.</p></div></div>${contextDays.length?`<div class="timelineContextGrid">${contextDays.map(crossDomainCard).join('')}</div>`:empty(missing.length?'Não há dias cruzados entre as áreas que foram carregadas.':'Ainda não há dias com registros confirmados em mais de uma área neste período.')}</section>
-    <div class="controls sectionGap"><select id="timelinePeriod"><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Navegar por ano</option></select>${period==='all'?`<select id="timelineYear">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select>`:''}<select id="timelineDomain">${domains.map(d=>`<option value="${esc(d)}">${d==='all'?'Todas as áreas':esc(d)}</option>`).join('')}</select><input id="timelineQuery" type="search" placeholder="Buscar no histórico" value="${esc(state.ui.timelineQuery)}"></div>
-    <div class="timelineSummary"><b>${filtered.length}</b><span>de ${countLabel(matching.length,'registro encontrado','registros encontrados')}${period==='all'&&state.ui.timelineYear?` em ${esc(state.ui.timelineYear)}`:cut?' no período':''}${missing.length?' entre as áreas carregadas':''}</span></div>
+    <div class="controls sectionGap"><select id="timelinePeriod"><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Histórico</option></select>${historicalControls}<select id="timelineDomain">${domains.map(d=>`<option value="${esc(d)}">${d==='all'?'Todas as áreas':esc(d)}</option>`).join('')}</select><input id="timelineQuery" type="search" placeholder="Buscar no histórico" value="${esc(state.ui.timelineQuery)}"></div>
+    <div class="timelineSummary"><b>${filtered.length}</b><span>de ${countLabel(matching.length,'registro encontrado','registros encontrados')}${scopeLabel}${missing.length?' entre as áreas carregadas':''}</span></div>
     <div class="timelineGroups sectionGap">${[...grouped.entries()].map(([date,rows])=>`<section class="timelineDay"><div class="timelineDate"><b>${fmtDate(date)}</b><span>${countLabel(rows.length,'registro','registros')}</span></div><div class="card timelineDayCard">${rows.map(item).join('')}</div></section>`).join('')||empty(missing.length?'Nenhum dos registros carregados corresponde aos filtros.':'Nenhum registro corresponde aos filtros.')}</div>
     ${matching.length>filtered.length?`<div class="loadMore"><button type="button" data-timeline-more>Mostrar mais ${Math.min(250,matching.length-filtered.length)} registros</button></div>`:''}`;
 }
