@@ -1,21 +1,32 @@
-import {state,fixtureMode} from './core.js';
+import {state,fixtureMode,exercisesFor,workoutRows} from './core.js';
 import {isRouteReady} from './data-layer.js';
 import {renderProductTraining} from './training-reference-v2.js?v=ux-coherence-training-tabs-20260913.12';
 
 if(!fixtureMode){
   let applying=false;
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
+  function wirePreview(host){
+    const preview=host.querySelector('.ltsRefExercisePreview button');
+    if(!preview)return;
+    const selected=workoutRows().find(w=>w.source_record_id===state.ui.openWorkout)||workoutRows()[0]||null;
+    const exercise=selected?exercisesFor(selected)[0]:null;
+    if(!exercise?.source_record_id)return;
+    preview.removeAttribute('data-depth-training-view');
+    preview.dataset.depthExercise=exercise.source_record_id;
+    preview.textContent='Abrir histórico ›';
+  }
   function apply(){
     if(applying||route()!=='treinos'||!state.loaded||!isRouteReady('treinos'))return false;
     const host=document.getElementById('screenHost');
     if(!host)return false;
-    if(host.querySelector('.ltsTrainingReference'))return true;
+    if(host.querySelector('.ltsTrainingReference')){wirePreview(host);return true;}
     applying=true;
     try{
       const top=host.scrollTop;
       host.innerHTML=renderProductTraining();
       host.dataset.productLayout='training-reference-v2';
       host.dataset.productLayoutRoute='treinos';
+      wirePreview(host);
       host.scrollTop=top;
       return true;
     }catch(error){console.error('training-reference-v2 render failed',error?.name||'Error');return false;}
@@ -31,7 +42,7 @@ if(!fixtureMode){
   function boot(){
     const host=document.getElementById('screenHost');
     if(!host){setTimeout(boot,80);return;}
-    new MutationObserver(()=>{if(!applying&&route()==='treinos'&&!host.querySelector('.ltsTrainingReference'))queueMicrotask(apply);}).observe(host,{childList:true});
+    new MutationObserver(()=>{if(!applying&&route()==='treinos'&&!host.querySelector('.ltsTrainingReference'))queueMicrotask(apply);else if(route()==='treinos')wirePreview(host);}).observe(host,{childList:true});
     window.addEventListener('hashchange',settle);
     document.addEventListener('click',event=>{
       const target=event.target instanceof Element?event.target:null;
