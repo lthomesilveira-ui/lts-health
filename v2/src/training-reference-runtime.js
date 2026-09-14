@@ -7,13 +7,17 @@ if(!fixtureMode){
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
   function wirePreview(host){
     const preview=host.querySelector('.ltsRefExercisePreview button');
-    if(!preview)return;
-    const selected=workoutRows().find(w=>w.source_record_id===state.ui.openWorkout)||workoutRows()[0]||null;
-    const exercise=selected?exercisesFor(selected)[0]:null;
-    if(!exercise?.source_record_id)return;
-    preview.removeAttribute('data-depth-training-view');
-    preview.dataset.depthExercise=exercise.source_record_id;
-    preview.textContent='Abrir histórico ›';
+    if(preview){
+      const selected=workoutRows().find(w=>w.source_record_id===state.ui.openWorkout)||workoutRows()[0]||null;
+      const exercise=selected?exercisesFor(selected)[0]:null;
+      if(exercise?.source_record_id){
+        preview.removeAttribute('data-depth-training-view');
+        preview.dataset.depthExercise=exercise.source_record_id;
+        preview.textContent='Abrir histórico ›';
+      }
+    }
+    const exerciseNav=host.querySelector('.ltsRefExerciseNav');
+    if(exerciseNav){exerciseNav.style.display='grid';exerciseNav.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';}
   }
   function apply(){
     if(applying||route()!=='treinos'||!state.loaded||!isRouteReady('treinos'))return false;
