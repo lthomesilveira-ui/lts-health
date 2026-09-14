@@ -104,6 +104,8 @@ function tabs(view){
   return `<div class="ltsRefTrainTabs" role="tablist" aria-label="Detalhes do treino">${options.map(([key,label])=>`<button type="button" data-depth-training-view="${key}" role="tab" aria-selected="${view===key}" class="${view===key?'active':''}">${label}</button>`).join('')}</div>`;
 }
 
+function exerciseNav(){return `<div class="ltsRefTrainTabs ltsRefExerciseNav" role="navigation" aria-label="Retorno do histórico do exercício"><button type="button" data-depth-training-view="exercises">Exercícios</button><button type="button" data-depth-training-view="history">Histórico completo</button></div>`;}
+
 export function renderProductTraining(){
   const rows=workoutRows();
   const selected=rows.find(w=>w.source_record_id===state.ui.openWorkout)||rows[0]||null;
@@ -113,7 +115,7 @@ export function renderProductTraining(){
   const subtitle=view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Ocorrências e cargas preservadas por contexto comparável.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
   return `<section class="ltsTrainingV2 ltsTrainingReference" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
     <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino">+</button></header>
-    ${view==='exercise'?'':tabs(view)}
+    ${view==='exercise'?exerciseNav():tabs(view)}
     ${failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Nenhum treino estruturado disponível.</div>'}
   </section>`;
 }
