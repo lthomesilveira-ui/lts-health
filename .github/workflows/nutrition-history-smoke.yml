@@ -1,7 +1,9 @@
 name: LTS Health v2 Nutrition History Smoke
 on:
   push:
-    branches: [architecture-v2]
+    branches: [main, architecture-v2, 'nutrition-*']
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,6 +18,9 @@ jobs:
           node --check v2/nutrition-history-smoke.mjs
           grep -q "sem registros disponíveis" v2/src/nutrition-screen.js
           grep -q "Nenhum dia importado neste ano" v2/src/nutrition-screen.js
+          grep -q 'id="nutritionYear"' v2/src/nutrition-screen.js
+          grep -q 'data-nutrition-year' v2/src/nutrition-screen.js
+          grep -q "Histórico diário" v2/src/nutrition-screen.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
