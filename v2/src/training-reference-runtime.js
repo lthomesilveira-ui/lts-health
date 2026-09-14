@@ -5,6 +5,22 @@ import {renderProductTraining} from './training-reference-v2.js?v=ux-coherence-t
 if(!fixtureMode){
   let applying=false;
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
+  function captureContext(host){
+    const focused=host.contains(document.activeElement)?document.activeElement:null;
+    let start=null,end=null;
+    try{start=focused?.selectionStart;end=focused?.selectionEnd;}catch{}
+    return{top:host.scrollTop,id:focused?.id||null,start,end};
+  }
+  function restoreContext(host,context){
+    host.scrollTop=context.top;
+    if(!context.id)return;
+    const el=document.getElementById(context.id);
+    if(!el)return;
+    try{
+      el.focus({preventScroll:true});
+      if(context.start!=null&&typeof el.setSelectionRange==='function')el.setSelectionRange(context.start,context.end);
+    }catch{}
+  }
   function wirePreview(host){
     const preview=host.querySelector('.ltsRefExercisePreview button');
     if(preview){
@@ -24,14 +40,14 @@ if(!fixtureMode){
     const host=document.getElementById('screenHost');
     if(!host)return false;
     if(host.querySelector('.ltsTrainingReference')){wirePreview(host);return true;}
+    const context=captureContext(host);
     applying=true;
     try{
-      const top=host.scrollTop;
       host.innerHTML=renderProductTraining();
       host.dataset.productLayout='training-reference-v2';
       host.dataset.productLayoutRoute='treinos';
       wirePreview(host);
-      host.scrollTop=top;
+      restoreContext(host,context);
       return true;
     }catch(error){console.error('training-reference-v2 render failed',error?.name||'Error');return false;}
     finally{applying=false;}
