@@ -1,0 +1,33 @@
+name: LTS Health Recovery Depth Smoke
+on:
+  push:
+    branches: [main, 'recovery-*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recovery-depth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static checks
+        run: |
+          node --check v2/src/recovery-layout-v2.js
+          node --check v2/src/product-layout-runtime.js
+          node --check v2/recovery-depth-smoke.mjs
+          grep -q "renderRecoveryDepth" v2/src/product-layout-runtime.js
+          grep -q "não são combinadas nem comparadas automaticamente" v2/src/recovery-layout-v2.js
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Test source-separated recovery evidence
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node v2/recovery-depth-smoke.mjs
