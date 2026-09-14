@@ -2,6 +2,14 @@
 
 Objetivo: qualquer nova sessão deve conseguir retomar o projeto com o estado real, sem depender da memória do chat e sem reabrir decisões já comprovadas.
 
+## Frase curta de retomada
+
+A frase canônica é **`LTSH-CONTINUE`**.
+
+Se o usuário abrir um novo chat e enviar apenas `LTSH-CONTINUE` (ou incluir essa expressão numa mensagem), a sessão deve interpretar isso como: **retomar exatamente o LTS Health do último checkpoint real e continuar executando autonomamente**.
+
+A frase não carrega estado por si só e não autoriza confiar na memória da conversa anterior. Ela obriga a executar o ritual abaixo: recuperar o repositório e as fontes duráveis, reconciliar trabalho paralelo, terminar `in_progress`, executar `ready` por prioridade e só pedir ação do usuário quando houver um bloqueio humano real. Se documentação e evidência divergirem, prevalece a evidência mais recente conforme as regras deste protocolo.
+
 ## Fontes de verdade, em ordem
 
 1. Código, migrations, banco privado e evidência autenticada executada.

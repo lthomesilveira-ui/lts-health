@@ -121,17 +121,35 @@ try{
   await page.screenshot({path:`${evidenceDir}/desktop-home.png`,fullPage:true});
 
   await waitForRoute('treinos');
-  await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
-  await page.waitForSelector('.ltsExerciseCard',{timeout:30000});
-  const trainingState=await page.evaluate(()=>({
-    exercises:document.querySelectorAll('.ltsExerciseCard').length,
-    sets:document.querySelectorAll('.ltsExerciseCard .ltsSetList>div:not(.ltsMuted)').length,
-    text:document.querySelector('.ltsTrainingV2')?.innerText||''
+  await page.waitForSelector('.ltsTrainingV2[data-training-view="summary"]',{timeout:30000});
+  const trainingSummary=await page.evaluate(()=>({
+    text:document.querySelector('.ltsTrainingV2')?.innerText||'',
+    summaryExercises:document.querySelector('.ltsRefOverviewGrid div:first-child b')?.textContent?.trim()||'',
+    summarySets:document.querySelector('.ltsRefOverviewGrid div:nth-child(2) b')?.textContent?.trim()||''
   }));
-  if(trainingState.exercises!==integrity.latestExpectedExercises||trainingState.sets!==integrity.latestExpectedSets){
-    throw new Error(`latest real workout linkage mismatch: ui=${trainingState.exercises}/${trainingState.sets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
+  if(Number(trainingSummary.summaryExercises)!==integrity.latestExpectedExercises||Number(trainingSummary.summarySets)!==integrity.latestExpectedSets){
+    throw new Error(`latest workout summary mismatch: ui=${trainingSummary.summaryExercises}/${trainingSummary.summarySets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
   }
-  if(integrity.latestWorkoutDate&&!trainingState.text.includes(String(integrity.latestWorkoutDate).split('-').reverse().join('/')))throw new Error('latest workout date missing from structural Training');
+  if(integrity.latestWorkoutDate&&!trainingSummary.text.includes(String(integrity.latestWorkoutDate).split('-').reverse().join('/')))throw new Error('latest workout date missing from structural Training');
+  await page.locator('.ltsRefTrainTabs [data-depth-training-view="exercises"]').click();
+  await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='exercises',{timeout:30000});
+  await page.waitForSelector('.ltsRefExerciseCard',{timeout:30000});
+  const trainingDetail=await page.evaluate(()=>({
+    exercises:document.querySelectorAll('.ltsRefExerciseCard').length,
+    sets:document.querySelectorAll('.ltsRefExerciseCard .ltsRefSetTable>div:not(.ltsRefSetEmpty)').length
+  }));
+  if(trainingDetail.exercises!==integrity.latestExpectedExercises||trainingDetail.sets!==integrity.latestExpectedSets){
+    throw new Error(`latest real workout linkage mismatch after opening Exercises: ui=${trainingDetail.exercises}/${trainingDetail.sets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
+  }
+  const firstExerciseHistory=page.locator('.ltsRefExerciseCard [data-depth-exercise]').first();
+  if(await firstExerciseHistory.count()){
+    await firstExerciseHistory.click();
+    await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='exercise',{timeout:30000});
+    if(await page.locator('.ltsRefExerciseNav').count()<1)throw new Error('exercise history did not expose return navigation');
+    await page.locator('.ltsRefExerciseNav [data-depth-training-view="exercises"]').click();
+    await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='exercises',{timeout:30000});
+  }
+  await assertNoHorizontalOverflow();
 
   await waitForRoute('bio');
   await page.waitForSelector('.ltsCompositionV2',{timeout:30000});
