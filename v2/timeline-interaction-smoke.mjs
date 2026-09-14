@@ -31,6 +31,7 @@ async function run(viewport,label){
   await page.selectOption('#timelinePeriod','all');
   await page.waitForSelector('#timelineYear');
   if(await page.inputValue('#timelineYear')!=='2026')throw new Error(`${label}: timeline year navigation did not select available year`);
+  if(!await page.locator('#timelineMonth').count())throw new Error(`${label}: historical Timeline has no month navigation`);
 
   await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
@@ -49,6 +50,18 @@ async function run(viewport,label){
 
   await page.selectOption('#timelineDomain','Atividade');
   await page.waitForTimeout(80);
+  await page.selectOption('#timelineMonth','04');
+  await page.waitForSelector('#timelineDate');
+  if(!await page.locator('#timelineDate option[value="2026-04-04"]').count())throw new Error(`${label}: day navigation did not expose a known April date`);
+  await page.selectOption('#timelineDate','2026-04-04');
+  await page.waitForFunction(()=>document.querySelector('.timelineSummary span')?.textContent.includes('04/04/2026'));
+  const selectedDayDates=await page.locator('.timelineGroups .timelineDate b').allTextContents();
+  if(!selectedDayDates.length||selectedDayDates.some(text=>text.trim()!=='04/04/2026'))throw new Error(`${label}: day filter leaked records from other dates`);
+  await page.selectOption('#timelineDate','');
+  await page.waitForFunction(()=>document.querySelector('.timelineSummary span')?.textContent.includes('Abril de 2026'));
+  await page.selectOption('#timelineMonth','all');
+  await page.waitForFunction(()=>!document.querySelector('#timelineDate'));
+
   await page.fill('#timelineQuery','Teste carga timeline');
   await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='250');
   await page.waitForFunction(()=>document.querySelector('.timelineSummary span')?.textContent.includes('de 300'));
