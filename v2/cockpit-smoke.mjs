@@ -1,6 +1,37 @@
 import { chromium } from 'playwright';
 
 async function noOverflow(page,label,route){const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`${label}/${route}: horizontal overflow ${overflow}px`);}
+async function trainingPhysicalDeviceGuard(page,label){
+  await page.evaluate(async()=>{
+    const core=await import('./src/core.js');
+    const training=await import('./src/training-reference-v2.js');
+    core.state.data=core.fixtureData();
+    core.state.domainStatus={workouts:'ready',exercises:'ready',sets:'ready'};
+    core.state.ui.openWorkout=null;
+    core.state.ui.productTrainingView='summary';
+    document.body.dataset.productRoute='treinos';
+    document.querySelector('#screenHost').innerHTML=training.renderProductTraining();
+  });
+  await page.waitForSelector('.ltsTrainingReference',{timeout:5000});
+  const result=await page.evaluate(()=>{
+    const rgb=s=>{const m=String(s||'').match(/rgba?\((\d+)[, ]+(\d+)[, ]+(\d+)/);return m?[+m[1],+m[2],+m[3]]:null;};
+    const lum=v=>{const c=v/255;return c<=.03928?c/12.92:((c+.055)/1.055)**2.4;};
+    const contrast=(a,b)=>{const x=rgb(a),y=rgb(b);if(!x||!y)return 0;const l1=.2126*lum(x[0])+.7152*lum(x[1])+.0722*lum(x[2]),l2=.2126*lum(y[0])+.7152*lum(y[1])+.0722*lum(y[2]);return(Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);};
+    const samples=[...document.querySelectorAll('.ltsRefTrainMetric strong,.ltsRefHrNumbers b,.ltsRefOverviewGrid b')].map(el=>({text:(el.textContent||'').trim(),ratio:contrast(getComputedStyle(el).color,getComputedStyle(el.parentElement).backgroundColor),color:getComputedStyle(el).color,bg:getComputedStyle(el.parentElement).backgroundColor}));
+    const preview=document.querySelector('.ltsRefExercisePreview');
+    const copy=preview?.querySelector(':scope > div');
+    const button=preview?.querySelector(':scope > button');
+    const rect=e=>e?e.getBoundingClientRect():null;
+    const p=rect(preview),c=rect(copy),b=rect(button);
+    const overlap=Boolean(c&&b&&!(c.right<=b.left||b.right<=c.left||c.bottom<=b.top||b.bottom<=c.top));
+    return{samples,preview:Boolean(preview),previewContained:Boolean(p&&c&&b&&c.left>=p.left-1&&b.right<=p.right+1),overlap};
+  });
+  if(result.samples.length<6)throw new Error(`${label}/treinos: expected mobile metric values are missing`);
+  const bad=result.samples.filter(x=>!x.text||x.ratio<4.5);
+  if(bad.length)throw new Error(`${label}/treinos: unreadable metric contrast ${JSON.stringify(bad)}`);
+  if(!result.preview||!result.previewContained||result.overlap)throw new Error(`${label}/treinos: exercise preview collapsed or overlapping ${JSON.stringify(result)}`);
+  await noOverflow(page,label,'treinos');
+}
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport});
@@ -47,6 +78,7 @@ async function run(viewport,label){
   const insightText=(await page.locator('#screenHost').textContent())||'';
   if(!insightText.includes('Resumo executivo')||!insightText.includes('Protocolos'))throw new Error(`${label}: Insights route regressed`);
   await noOverflow(page,label,'insights');
+  if(viewport.width<=840)await trainingPhysicalDeviceGuard(page,label);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();
 }
