@@ -112,7 +112,7 @@ function render(){
 
 function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render);}
 function applyControlState(){
-  const values={trainingPeriod:state.ui.trainingPeriod,analysisPeriod:state.ui.analysisPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,segmentalCompareDate:state.ui.segmentalCompareDate,collectionSelect:state.ui.selectedCollection,dataUploadStatus:state.ui.dataUploadStatus,dataUploadSource:state.ui.dataUploadSource};
+  const values={trainingPeriod:state.ui.trainingPeriod,analysisPeriod:state.ui.analysisPeriod,timelinePeriod:state.ui.timelinePeriod,timelineYear:state.ui.timelineYear,timelineMonth:state.ui.timelineMonth,timelineDate:state.ui.timelineDate,timelineDomain:state.ui.timelineDomain,nutritionPeriod:state.ui.nutritionPeriod,nutritionYear:state.ui.nutritionYear,compareA:state.ui.compareA,compareB:state.ui.compareB,segmentalCompareDate:state.ui.segmentalCompareDate,collectionSelect:state.ui.selectedCollection,dataUploadStatus:state.ui.dataUploadStatus,dataUploadSource:state.ui.dataUploadSource};
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
@@ -203,8 +203,14 @@ function bindStaticEvents(){
   document.addEventListener('change',event=>{
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
     if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
-    if(event.target.id==='timelinePeriod'){state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=250;if(event.target.value!=='all')state.ui.timelineYear=null;scheduleRender();}
-    if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
+    if(event.target.id==='timelinePeriod'){
+      state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=250;state.ui.timelineMonth=null;state.ui.timelineDate=null;
+      if(event.target.value!=='all')state.ui.timelineYear=null;
+      scheduleRender();
+    }
+    if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineMonth='all';state.ui.timelineDate=null;state.ui.timelineLimit=250;scheduleRender();}
+    if(event.target.id==='timelineMonth'){state.ui.timelineMonth=event.target.value;state.ui.timelineDate=null;state.ui.timelineLimit=250;scheduleRender();}
+    if(event.target.id==='timelineDate'){state.ui.timelineDate=event.target.value||null;state.ui.timelineLimit=250;scheduleRender();}
     if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
     if(event.target.id==='nutritionPeriod'){setGlobalPeriod(event.target.value);state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='nutritionYear'){state.ui.nutritionYear=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
