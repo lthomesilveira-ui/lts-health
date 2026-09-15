@@ -20,7 +20,16 @@ page.on('pageerror',()=>runtimeErrorCount++);
 page.on('console',m=>{if(m.type()==='error')runtimeErrorCount++;});
 
 async function waitForRoute(route){
-  await page.evaluate(value=>{location.hash=`#${value}`;},route);
+  const mobile=(await page.viewportSize()).width<=840;
+  const direct=`#${mobile?'mobileNav':'primaryNav'} [data-route="${route}"]`;
+  if(await page.locator(direct).count()){
+    await page.locator(direct).click();
+  }else{
+    const more=`#${mobile?'mobileNav':'primaryNav'} [data-route="mais"]`;
+    await page.locator(more).click();
+    await page.waitForSelector('#moreSheet:not(.hidden)',{timeout:30000});
+    await page.locator(`#moreSheet [data-route="${route}"]`).click();
+  }
   await page.waitForFunction(value=>{
     const routeAction=document.querySelector('#routeAction');
     const mobileButtons=[...document.querySelectorAll('#mobileNav button')].filter(button=>{
@@ -78,7 +87,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='ux-coherence-authenticated-visual-qa-20260915.22')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='ux-coherence-real-navigation-qa-20260915.23')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
