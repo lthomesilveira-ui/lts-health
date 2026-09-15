@@ -15,10 +15,11 @@ const timeline=read('./src/timeline-screen.js');
 const analysis=read('./src/analysis-screen.js');
 const evolution=read('./src/evolution-screen.js');
 const realAuth=read('./real-auth-e2e.mjs');
+const realAuthDepth=read('./real-auth-depth-checks.mjs');
 
-assert.match(index,/name="lts-build" content="ux-coherence-public-qa-remediation-20260915\.21"/);
+assert.match(index,/name="lts-build" content="ux-coherence-authenticated-visual-qa-20260915\.22"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=ux-coherence-public-qa-remediation-20260915.21`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=ux-coherence-authenticated-visual-qa-20260915.22`),`${asset} is not tied to the audited build`);
 }
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
@@ -59,6 +60,11 @@ assert.match(internalCss,/body:has\(\.ltsHomeReference\) \.topbar #routeAction,[
 assert.match(internalCss,/body\[data-product-route="evolucao"\] \.evolutionLowerGrid\s*\{[^}]*align-items:\s*start;/s);
 assert.match(realAuth,/locator\('\.nutritionDays'\)\.scrollIntoViewIfNeeded\(\)/);
 assert.doesNotMatch(realAuth,/locator\('\.nutritionMonth'\)(?:\.first\(\))?\.scrollIntoViewIfNeeded\(\)/);
+assert.match(realAuth,/document\.body\.dataset\.productRoute===value/);
+assert.match(realAuth,/mobileButtons\.length===5/);
+assert.match(realAuth,/assertStableMobileShell\('mobile Timeline'\)/);
+assert.match(realAuth,/desktop-evolution-lower\.png/);
+assert.match(realAuthDepth,/const goto=async\(route,selector\)=>\{await waitForRoute\(route\)/);
 assert.match(index,/id="refreshBtn" aria-label="Atualizar dados"[^>]*><svg class="topActionIcon"/);
 assert.match(index,/id="logoutBtn" aria-label="Sair do LTS Health"[^>]*><svg class="topActionIcon"/);
 
