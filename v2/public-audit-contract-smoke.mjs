@@ -24,6 +24,7 @@ for(const retired of ['training-reference.css','visual-convergence-20260914.css'
 assert.ok(!index.includes('src="./src/training-reference-runtime.js'),'training-reference-runtime.js is still active in the public document');
 
 assert.match(main,/fixtureMode\?legacyScreenRenderers:\{\.\.\.legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,hoje:renderProductHomeReference\}/);
+assert.doesNotMatch(main,/state\.route==='nutricao'\|\|state\.route==='hoje'/);
 assert.match(runtime,/from '\.\/training-reference-v2\.js'/);
 assert.doesNotMatch(runtime,/from '\.\/product-layout-v2\.js'/);
 assert.match(runtime,/treinos:'\.ltsTrainingReference'/);
