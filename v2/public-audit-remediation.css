@@ -520,6 +520,14 @@ body[data-product-route="evolucao"] .screenHost .segmented button {
   padding: 7px 10px;
 }
 
+body[data-product-route="evolucao"] .evolutionLowerGrid {
+  align-items: start;
+}
+
+body[data-product-route="evolucao"] .evolutionLowerGrid > .card {
+  align-self: start;
+}
+
 @media (max-width: 840px) {
   .topbar #refreshBtn::before,
   .topbar #logoutBtn::before {

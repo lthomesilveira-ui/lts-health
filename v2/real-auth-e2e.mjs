@@ -51,7 +51,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='ux-coherence-internal-legibility-20260915.20')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='ux-coherence-public-qa-remediation-20260915.21')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
@@ -269,7 +269,7 @@ try{
   if(await page.locator('#routeAction').isVisible())throw new Error('mobile Nutrition duplicates its import action in the top bar');
   await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition.png`});
-  await page.locator('.nutritionMonth').first().scrollIntoViewIfNeeded();
+  await page.locator('.nutritionDays').scrollIntoViewIfNeeded();
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-history.png`});
   const nutritionDay=page.locator('details.uxDisclosure summary').filter({hasText:'Detalhe do dia selecionado'}).first();
   await nutritionDay.click();
