@@ -28,6 +28,42 @@ async function assertNoHorizontalOverflow(){
   const ok=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1);
   if(!ok)throw new Error('real-data route overflow detected');
 }
+async function auditReferenceHome(label){
+  const result=await page.evaluate(()=>{
+    const top=selector=>document.querySelector(selector)?.getBoundingClientRect().top??99999;
+    return{
+      build:document.querySelector('meta[name="lts-build"]')?.content||'',
+      legacyVisible:Boolean(document.querySelector('[data-executive-dashboard]')),
+      motto:document.querySelector('.ltsRefMotto')?.textContent?.trim()||'',
+      metrics:[...document.querySelectorAll('.ltsRefMetric>span')].map(el=>el.textContent.trim()),
+      top:{metrics:top('.ltsRefMetrics'),today:top('.ltsRefToday'),progress:top('.ltsRefProgress'),panorama:top('.ltsRefIntegrated')},
+      minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
+    };
+  });
+  if(result.build!=='ux-coherence-public-audit-20260915.19')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
+  if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
+  if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
+  if(!(result.top.metrics<result.top.today&&result.top.today<result.top.panorama&&result.top.progress<result.top.panorama))throw new Error(`${label}: Home priority hierarchy is wrong ${JSON.stringify(result.top)}`);
+  if(result.minSupportingFont<9.5)throw new Error(`${label}: Home supporting type is too small (${result.minSupportingFont}px)`);
+}
+async function auditExerciseGeometry(label){
+  const result=await page.evaluate(()=>{
+    const card=document.querySelector('.ltsRefExerciseCard'),header=card?.querySelector(':scope > header'),copy=header?.querySelector(':scope > div:nth-child(2)'),title=copy?.querySelector('b'),sets=card?.querySelector('.ltsRefSetTable'),action=card?.querySelector('.ltsRefExerciseHistory');
+    const rect=el=>el?.getBoundingClientRect()||null,c=rect(card),h=rect(header),x=rect(copy),t=rect(title),s=rect(sets),a=rect(action);
+    return{display:card?getComputedStyle(card).display:'missing',cardWidth:c?.width||0,headerWidth:h?.width||0,copyWidth:x?.width||0,titleWidth:t?.width||0,setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),actionWidth:a?.width||0};
+  });
+  if(result.display!=='block'||result.headerWidth<result.cardWidth*.85||result.copyWidth<110||result.titleWidth<110||!result.setsBelow||result.actionWidth<120)throw new Error(`${label}: real Training exercise geometry is broken ${JSON.stringify(result)}`);
+}
+async function assertLightReadableCards(selector,label){
+  const result=await page.evaluate(selector=>{
+    const parse=color=>{const match=String(color).match(/rgba?\((\d+)[, ]+(\d+)[, ]+(\d+)/);return match?[Number(match[1]),Number(match[2]),Number(match[3])]:null;};
+    const luminance=rgb=>rgb?(0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255:null;
+    return[...document.querySelectorAll(selector)].slice(0,8).map(card=>({bg:luminance(parse(getComputedStyle(card).backgroundColor)),text:luminance(parse(getComputedStyle(card).color))}));
+  },selector);
+  if(!result.length)throw new Error(`${label}: audited cards are missing`);
+  if(result.some(sample=>sample.bg==null||sample.text==null||sample.bg<.78||sample.text>.45))throw new Error(`${label}: dark-on-dark or low-clarity card remains`);
+}
 async function readIntegritySnapshot(){
   return page.evaluate(async ({url,key})=>{
     const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -117,6 +153,7 @@ try{
   }));
   if(!homeState.greeting||homeState.metrics!==3||!homeState.today||homeState.progress!==4||!homeState.trainingRow)throw new Error(`reference Home missing: ${JSON.stringify(homeState)}`);
   if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
+  await auditReferenceHome('desktop Home');
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/desktop-home.png`,fullPage:true});
 
@@ -141,6 +178,7 @@ try{
   if(trainingDetail.exercises!==integrity.latestExpectedExercises||trainingDetail.sets!==integrity.latestExpectedSets){
     throw new Error(`latest real workout linkage mismatch after opening Exercises: ui=${trainingDetail.exercises}/${trainingDetail.sets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
   }
+  await auditExerciseGeometry('desktop Training');
   const firstExerciseHistory=page.locator('.ltsRefExerciseCard [data-depth-exercise]').first();
   if(await firstExerciseHistory.count()){
     await firstExerciseHistory.click();
@@ -168,6 +206,7 @@ try{
 
   await waitForRoute('tratamentos');
   if(await page.locator('.timelineItem').count()<1)throw new Error('real protocol history missing');
+  await assertLightReadableCards('.protocolSummaryCard','desktop Protocols');
   await waitForRoute('dados');
   if(await page.locator('.qualityRow').count()<1)throw new Error('real quality history missing');
   const resolvedCount=await page.locator('.qualityRow').filter({hasText:'resolvido'}).count();
@@ -176,21 +215,35 @@ try{
   if(integrity.uploadActionCount===0&&!dataText.includes('Nada exige sua ação agora'))throw new Error('real Data Inbox action state is contradictory');
   if(integrity.uploadActionCount>0&&dataText.includes('Nada exige sua ação agora'))throw new Error('real Data Inbox hides required user action');
   if(integrity.internalQualityCount>0&&!dataText.includes('Tratamento interno'))throw new Error('real Data Inbox internal-quality state is contradictory');
+  await assertLightReadableCards('.reviewInbox,.reviewStat,.sourceStatus','desktop Data');
 
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
+  await auditReferenceHome('mobile Home');
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
   await waitForRoute('treinos');
   await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-training.png`,fullPage:true});
+  await page.locator('.ltsRefTrainTabs [data-depth-training-view="exercises"]').click();
+  await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='exercises',{timeout:30000});
+  await page.waitForSelector('.ltsRefExerciseCard',{timeout:30000});
+  await auditExerciseGeometry('mobile Training');
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-training-exercises.png`,fullPage:true});
   await waitForRoute('bio');
   await page.waitForSelector('.ltsCompositionV2',{timeout:30000});
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-composition.png`,fullPage:true});
   for(const route of ['nutricao','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
+  await waitForRoute('analise');
+  const recoveryPeriod=await page.evaluate(()=>({value:document.querySelector('#analysisPeriod')?.value||'',heading:document.querySelector('.domainHero span')?.textContent||''}));
+  if(!recoveryPeriod.value||!recoveryPeriod.heading.includes(recoveryPeriod.value==='365'?'último ano':recoveryPeriod.value==='30'?'últimos 30 dias':recoveryPeriod.value==='90'?'últimos 90 dias':'todo o histórico'))throw new Error(`mobile Recovery period control contradicts its heading: ${JSON.stringify(recoveryPeriod)}`);
+  await waitForRoute('timeline');
+  const timelineVisible=Number(await page.locator('.timelineSummary b').textContent());
+  if(timelineVisible>50)throw new Error(`mobile Timeline rendered ${timelineVisible} records before progressive loading`);
 
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir});
 

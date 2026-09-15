@@ -118,7 +118,8 @@ export function renderAnalysisHub(){
   const sleep=sleepCoverageModel(state.data,state.domainStatus,bounds.start,bounds.end);
   const labs=labSnapshot(state.data.labs||[]),labsWindow=labSnapshot(state.data.labs||[],bounds);
   const signals=complementarySignalSeries(state.data.sourceMetrics||[],bounds),protocols=protocolCount(state.data,bounds);
-  const controls=`<div class="controls sectionGap"><label>Janela recente<select id="analysisPeriod"><option value="30">30 dias</option><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Todo histórico</option></select></label></div>`;
+  const selected=value=>period===value?' selected':'';
+  const controls=`<div class="controls sectionGap"><label>Janela recente<select id="analysisPeriod"><option value="30"${selected('30')}>30 dias</option><option value="90"${selected('90')}>90 dias</option><option value="365"${selected('365')}>1 ano</option><option value="all"${selected('all')}>Todo histórico</option></select></label></div>`;
   const failure=['body','workouts','nutrition','labs','sourceMetrics'].filter(failed);
   const failureNote=failure.length?`<div class="note sectionGap"><b>Leitura parcial</b><span>${countLabel(failure.length,'domínio','domínios')} não carregaram agora. Os demais continuam visíveis e nenhum valor ausente foi substituído por zero.</span></div>`:'';
   return`${title('Recuperação & análises','Uma leitura integrada do que mudou, do que aconteceu na janela e do que ainda limita a análise.','Contexto longitudinal')}<section class="domainHero"><div><span>Análise · ${esc(periodLabel(period))}</span><h2>Três respostas antes dos detalhes</h2><p>Composição e exames usam o histórico comparável; treino, nutrição e recuperação seguem a janela comum.</p></div>${controls}</section>${failureNote}

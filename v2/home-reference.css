@@ -1,11 +1,872 @@
-/* Home convergence to the approved mobile reference. The source image is private; this stylesheet contains no health payload. */
-.ltsHomeReference{width:100%;max-width:920px;margin:0 auto;color:#101827}.ltsRefHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.ltsRefBrand{display:flex;align-items:center;gap:10px}.ltsRefBrand b{font-size:19px;letter-spacing:-.025em}.ltsRefBrand em{font-style:normal;color:#43c4ea}.ltsRefPulse{font-size:28px;color:#43c4ea;line-height:1}.ltsRefAvatar{width:42px;height:42px;border:0;border-radius:50%;background:#18273a;color:#fff;font-weight:800;font-size:15px}.ltsRefGreeting h1{margin:0;font-size:34px;line-height:1.02;letter-spacing:-.045em}.ltsRefGreeting>p{margin:7px 0 0;color:#768499;font-size:14px}
-.ltsRefMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.ltsRefMetric{min-width:0;border:1px solid #e5ebf1;background:#fff;border-radius:18px;padding:14px;text-align:left;box-shadow:0 8px 24px rgba(20,35,55,.05);color:#101827}.ltsRefMetric>span{display:block;font-size:11px;color:#65748a}.ltsRefMetric>strong{display:block;margin-top:8px;font-size:24px;line-height:1;letter-spacing:-.04em;white-space:nowrap}.ltsRefMetric>div{margin-top:9px;display:grid;gap:2px}.ltsRefMetric>div b{font-size:10px;color:#2d6ea8}.ltsRefMetric>div small{font-size:9px;color:#8b97a8}
-.ltsRefCard{margin-top:14px;border:1px solid #e4e9ef;background:#fff;border-radius:21px;box-shadow:0 9px 28px rgba(18,32,49,.06);overflow:hidden;color:#101827}.ltsRefCard>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 10px}.ltsRefCard>header>div{display:flex;align-items:baseline;gap:8px}.ltsRefCard>header h2,.ltsRefRecent h2{margin:0;font-size:18px;letter-spacing:-.025em}.ltsRefCard>header span{font-size:10px;color:#7d8a9e}.ltsRefCard>header button,.ltsRefRecent header button{border:0;background:transparent;color:#2374d8;font-size:10.5px;font-weight:750;padding:4px 0}.ltsRefTodayRow{width:100%;min-height:58px;border:0;border-top:1px solid #edf1f5;background:#fff;display:grid;grid-template-columns:40px minmax(0,1fr) 30px;align-items:center;gap:10px;padding:9px 14px;text-align:left;color:#101827}.ltsRefTodayIcon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:17px}.ltsRefTodayIcon.training{background:#ef2749}.ltsRefTodayIcon.medication{background:#7657e8}.ltsRefTodayIcon.water{background:#159be9}.ltsRefTodayIcon.nutrition{background:#ff7a1a}.ltsRefTodayIcon.labs{background:#a94468}.ltsRefTodayIcon.recovery{background:#7057d9}.ltsRefTodayCopy{min-width:0}.ltsRefTodayCopy b{display:block;font-size:13px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltsRefTodayCopy small{display:block;margin-top:3px;font-size:9.5px;color:#768499;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltsRefTodayState{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#0aa66f;color:#fff;font-size:13px;font-weight:900}.ltsRefTodayState.historical{background:#eef2f6;color:#738196}.ltsRefTodayState.entry{background:#edf4ff;color:#2676d8}.ltsRefTodayState.current{background:#0aa66f;color:#fff}
-.ltsRefRecent{margin-top:14px;color:#fff}.ltsRefRecent>header{display:flex;align-items:center;justify-content:space-between;padding:0 2px 7px}.ltsRefRecent h2{font-size:14px;color:#e8eef5}.ltsRefRecent>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ltsRefRecentRow{border:1px solid #24394c;background:#0d2234;border-radius:13px;padding:10px;display:grid;grid-template-columns:32px minmax(0,1fr) 12px;gap:8px;align-items:center;text-align:left;color:#fff}.ltsRefRecentRow .ltsRefTodayIcon{width:30px;height:30px;border-radius:9px;font-size:13px}.ltsRefRecentRow>span{min-width:0;display:grid;gap:2px}.ltsRefRecentRow small{font-size:8px;color:#9fb0c1}.ltsRefRecentRow b{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltsRefRecentRow em{font-size:8px;font-style:normal;color:#7f93a8}.ltsRefRecentRow>strong{font-size:17px;color:#8fa2b6}
-.ltsRefProgress{padding-bottom:14px}.ltsRefProgressGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:6px 12px 3px}.ltsRefProgressItem{min-width:0;text-align:center}.ltsRefRing{--ring:#33b875;width:62px;height:62px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ring) var(--progress),#e8edf2 0);position:relative}.ltsRefRing::after{content:'';position:absolute;inset:7px;border-radius:50%;background:#fff}.ltsRefRing span{position:relative;z-index:1}.ltsRefRing b{font-size:13px;letter-spacing:-.02em}.ltsRefProgressItem>small{display:block;margin-top:6px;font-size:9.5px;color:#536177}.ltsRefProgressItem.training .ltsRefRing{--ring:#20ad68}.ltsRefProgressItem.nutrition .ltsRefRing{--ring:#41c48a}.ltsRefProgressItem.water .ltsRefRing{--ring:#26a9e7}.ltsRefProgressItem.sleep .ltsRefRing{--ring:#7657e8}
-/* Integrated cockpit: the Home answers before asking the user to drill down. */
-.ltsRefIntegrated,.ltsRefChange{margin-top:14px}.ltsRefIntegrated>header,.ltsRefChange>header{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 2px 9px}.ltsRefIntegrated>header span,.ltsRefChange>header span{display:block;font-size:9px;letter-spacing:.12em;font-weight:800;color:#83a0b9}.ltsRefIntegrated>header h2,.ltsRefChange>header h2{margin:3px 0 0;font-size:20px;letter-spacing:-.035em;color:#fff}.ltsRefIntegrated>header button,.ltsRefChange>header button{border:0;background:transparent;color:#62bfe5;font-size:10px;font-weight:800;white-space:nowrap}.ltsRefDomainGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.ltsRefDomain{grid-column:span 2;min-width:0;border:1px solid #24394c;border-radius:16px;padding:12px;background:#0d2234;color:#fff;text-align:left}.ltsRefDomain:nth-child(4),.ltsRefDomain:nth-child(5){grid-column:span 3}.ltsRefDomainTop{display:flex;align-items:center;gap:7px}.ltsRefDomainTop .ltsRefTodayIcon{width:28px;height:28px;border-radius:9px;font-size:12px}.ltsRefDomainTop>span{font-size:9px;color:#a9b9c8;font-weight:750;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltsRefDomainTop>strong{font-size:16px;color:#8095a8}.ltsRefDomain>b{display:block;margin-top:10px;font-size:17px;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ltsRefDomain>small{display:block;margin-top:4px;font-size:8px;line-height:1.3;color:#91a4b6;min-height:21px}.ltsRefDomain.training{border-color:#314b4c}.ltsRefDomain.nutrition{border-color:#4b3b2c}.ltsRefDomain.labs{border-color:#503044}.ltsRefDomain.recovery{border-color:#3c3455}.ltsRefDomain.water{border-color:#24465a}
-.ltsRefChange{border:1px solid #24394c;background:#0a1c2c;border-radius:17px;padding:13px}.ltsRefChange>header{margin:0 0 10px}.ltsRefChangeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.ltsRefChangeGrid>div{min-width:0;background:#10273a;border-radius:11px;padding:9px}.ltsRefChangeGrid span{display:block;font-size:7.5px;color:#91a4b6;text-transform:uppercase;letter-spacing:.06em}.ltsRefChangeGrid b{display:block;margin-top:5px;font-size:14px;color:#fff;white-space:nowrap}.ltsRefChangeGrid small{display:block;margin-top:2px;font-size:7px;color:#7790a5}.ltsRefChange>p{margin:9px 1px 0;font-size:8px;line-height:1.35;color:#7f95a9}
-@media(max-width:840px){.mobileNav{min-height:72px!important;height:72px!important;padding:6px 8px calc(5px + env(safe-area-inset-bottom))!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:start!important}.mobileNav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-width:0!important;height:56px!important;padding:3px 1px!important;border:0!important;background:transparent!important;color:#1f2a38!important;font-size:11px!important;line-height:1!important;font-weight:600!important}.mobileNav .mobileNavIcon{display:block;font-size:21px;line-height:1;color:#0e1826;font-weight:500}.mobileNav button.active,.mobileNav button.active .mobileNavIcon{color:#ef2749!important}body[data-product-route="bio"] .mobileNav button[data-route="mais"],body[data-product-route="saude"] .mobileNav button[data-route="mais"]{color:#1f2a38!important}body[data-product-route="bio"] .mobileNav button[data-route="mais"] .mobileNavIcon,body[data-product-route="saude"] .mobileNav button[data-route="mais"] .mobileNavIcon{color:#0e1826!important}body[data-product-route="timeline"] .mobileNav button[data-route="mais"],body[data-product-route="analise"] .mobileNav button[data-route="mais"],body[data-product-route="timeline"] .mobileNav button[data-route="mais"] .mobileNavIcon,body[data-product-route="analise"] .mobileNav button[data-route="mais"] .mobileNavIcon{color:#ef2749!important}body[data-product-route="hoje"]{background:#07131f}body[data-product-route="hoje"] .app{background:#07131f!important}body[data-product-route="hoje"] .topbar{display:none!important}body[data-product-route="hoje"] .screenHost{background:#07131f!important;padding:12px 14px calc(96px + env(safe-area-inset-bottom))!important;min-height:100dvh}body[data-product-route="hoje"] .mobileNav{background:rgba(255,255,255,.99)!important;border-top:1px solid #dce3ea!important;box-shadow:0 -8px 24px rgba(0,0,0,.12)!important}.ltsHomeReference{max-width:430px;color:#fff}.ltsRefHeader{margin-bottom:8px}.ltsRefBrand b{font-size:17px}.ltsRefPulse{font-size:24px}.ltsRefAvatar{width:36px;height:36px;background:#eaf4f8;color:#0f1b29}.ltsRefGreeting h1{font-size:25px;color:#fff;letter-spacing:-.035em}.ltsRefGreeting>p{margin-top:4px;color:#d2dbe5;font-size:11px}.ltsRefMetrics{gap:7px;margin-top:10px}.ltsRefMetric{padding:9px 9px;border-radius:12px;min-height:94px}.ltsRefMetric>span{font-size:9px;color:#536177}.ltsRefMetric>strong{font-size:18px;margin-top:6px}.ltsRefMetric>div{margin-top:6px}.ltsRefMetric>div b{font-size:9px}.ltsRefMetric>div small{font-size:7.5px;line-height:1.15}.ltsRefIntegrated,.ltsRefChange{margin-top:12px}.ltsRefIntegrated>header,.ltsRefChange>header{margin-bottom:7px}.ltsRefIntegrated>header h2,.ltsRefChange>header h2{font-size:17px}.ltsRefIntegrated>header span,.ltsRefChange>header span{font-size:7.5px}.ltsRefIntegrated>header button,.ltsRefChange>header button{font-size:8.5px}.ltsRefDomainGrid{gap:6px}.ltsRefDomain{padding:9px;border-radius:12px}.ltsRefDomainTop .ltsRefTodayIcon{width:25px;height:25px}.ltsRefDomainTop>span{font-size:8px}.ltsRefDomain>b{font-size:14px;margin-top:7px}.ltsRefDomain>small{font-size:7.2px}.ltsRefChange{padding:10px;border-radius:13px}.ltsRefChangeGrid{gap:4px}.ltsRefChangeGrid>div{padding:7px 6px}.ltsRefChangeGrid span{font-size:6.5px}.ltsRefChangeGrid b{font-size:12px}.ltsRefChange>p{font-size:7.3px}.ltsRefCard{margin-top:9px;border-radius:13px;box-shadow:none}.ltsRefCard>header{padding:9px 11px 7px}.ltsRefCard>header h2{font-size:14px}.ltsRefCard>header span{font-size:8px}.ltsRefCard>header button{font-size:9px}.ltsRefTodayRow{min-height:45px;grid-template-columns:30px minmax(0,1fr) 22px;gap:7px;padding:6px 10px}.ltsRefTodayIcon{width:28px;height:28px;border-radius:8px;font-size:13px}.ltsRefTodayCopy b{font-size:10.8px}.ltsRefTodayCopy small{font-size:8px}.ltsRefTodayState{width:19px;height:19px;font-size:10px}.ltsRefRecent{margin-top:9px}.ltsRefRecent>header{padding-bottom:5px}.ltsRefRecent h2{font-size:12px}.ltsRefRecent header button{font-size:8.5px}.ltsRefRecentRow{padding:8px;grid-template-columns:28px minmax(0,1fr) 10px;gap:6px}.ltsRefRecentRow .ltsRefTodayIcon{width:26px;height:26px}.ltsRefProgress{padding-bottom:9px}.ltsRefProgressGrid{gap:4px;padding:4px 8px 2px}.ltsRefRing{width:48px;height:48px}.ltsRefRing::after{inset:6px}.ltsRefRing b{font-size:10px}.ltsRefProgressItem>small{font-size:8px;margin-top:4px}}
-@media(max-width:360px){.ltsRefMetrics{gap:5px}.ltsRefMetric{padding:8px 7px}.ltsRefMetric>strong{font-size:17px}.ltsRefProgressGrid{gap:2px}.ltsRefRing{width:45px;height:45px}.ltsRefRing b{font-size:9px}.ltsRefChangeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Canonical Home surface. Mobile follows the approved private reference without embedding private evidence. */
+.ltsHomeReference {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: #101827;
+}
+
+.ltsRefHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.ltsRefBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ltsRefBrand b {
+  font-size: 20px;
+  letter-spacing: -.025em;
+}
+
+.ltsRefBrand em {
+  color: #43c4ea;
+  font-style: normal;
+}
+
+.ltsRefPulse {
+  color: #43c4ea;
+  font-size: 29px;
+  line-height: 1;
+}
+
+.ltsRefAvatar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  place-items: center;
+  background: #18273a;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.ltsRefGreeting h1 {
+  margin: 0;
+  font-size: 36px;
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+
+.ltsRefGreeting > p {
+  margin: 7px 0 0;
+  color: #68778b;
+  font-size: 14px;
+}
+
+.ltsRefMotto {
+  display: flex;
+  min-height: 40px;
+  margin-top: 13px;
+  padding: 9px 13px;
+  border: 1px solid #dce6ed;
+  border-radius: 13px;
+  align-items: center;
+  gap: 9px;
+  background: #edf6f9;
+  color: #203247;
+}
+
+.ltsRefMotto span {
+  color: #20a8d4;
+  font-size: 16px;
+}
+
+.ltsRefMotto b {
+  font-size: 13px;
+  letter-spacing: .005em;
+}
+
+.ltsRefMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: 13px;
+}
+
+.ltsRefMetric {
+  min-width: 0;
+  min-height: 118px;
+  padding: 15px;
+  border: 1px solid #dfe6ed;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 35, 55, .05);
+  color: #101827;
+  text-align: left;
+}
+
+.ltsRefMetric > span {
+  display: block;
+  color: #5f6f84;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ltsRefMetric > strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 26px;
+  line-height: 1;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+}
+
+.ltsRefMetric > div {
+  display: grid;
+  gap: 2px;
+  margin-top: 9px;
+}
+
+.ltsRefMetric > div b {
+  color: #245f9f;
+  font-size: 11px;
+}
+
+.ltsRefMetric > div small {
+  color: #718096;
+  font-size: 11px;
+}
+
+.ltsRefCoreGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr);
+  gap: 13px;
+  margin-top: 13px;
+  align-items: stretch;
+}
+
+.ltsRefCard {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid #dfe6ed;
+  border-radius: 21px;
+  background: #fff;
+  box-shadow: 0 9px 28px rgba(18, 32, 49, .06);
+  color: #101827;
+}
+
+.ltsRefCard > header {
+  display: flex;
+  padding: 15px 16px 11px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ltsRefCard > header > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ltsRefProgress > header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.ltsRefCard > header h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -.025em;
+}
+
+.ltsRefCard > header span {
+  color: #68778b;
+  font-size: 11px;
+}
+
+.ltsRefCard > header button {
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #1f67bc;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.ltsRefTodayRow {
+  display: grid;
+  width: 100%;
+  min-height: 62px;
+  padding: 9px 15px;
+  border: 0;
+  border-top: 1px solid #e8edf2;
+  grid-template-columns: 42px minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #101827;
+  text-align: left;
+}
+
+.ltsRefTodayIcon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  place-items: center;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.ltsRefTodayIcon.training { background: #ef2749; }
+.ltsRefTodayIcon.medication { background: #7657e8; }
+.ltsRefTodayIcon.water { background: #159be9; }
+.ltsRefTodayIcon.nutrition { background: #ff7a1a; }
+.ltsRefTodayIcon.labs { background: #a94468; }
+.ltsRefTodayIcon.recovery { background: #7057d9; }
+
+.ltsRefTodayCopy {
+  min-width: 0;
+}
+
+.ltsRefTodayCopy b {
+  display: block;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ltsRefTodayCopy small {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: #68778b;
+  font-size: 11px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ltsRefTodayState {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  place-items: center;
+  background: #0a9565;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.ltsRefTodayState.historical {
+  background: #e8edf2;
+  color: #59697d;
+}
+
+.ltsRefTodayState.entry {
+  background: #e8f1ff;
+  color: #1f67bc;
+}
+
+.ltsRefProgress {
+  padding-bottom: 15px;
+}
+
+.ltsRefProgressGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px 7px;
+  padding: 9px 13px 4px;
+}
+
+.ltsRefProgressItem {
+  min-width: 0;
+  text-align: center;
+}
+
+.ltsRefRing {
+  --ring: #33b875;
+  position: relative;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 50%;
+  place-items: center;
+  background: conic-gradient(var(--ring) var(--progress), #e8edf2 0);
+}
+
+.ltsRefRing::after {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  background: #fff;
+  content: '';
+}
+
+.ltsRefRing span {
+  position: relative;
+  z-index: 1;
+}
+
+.ltsRefRing b {
+  font-size: 13px;
+  letter-spacing: -.02em;
+}
+
+.ltsRefProgressItem > small {
+  display: block;
+  margin-top: 6px;
+  color: #536177;
+  font-size: 11px;
+}
+
+.ltsRefProgressItem.training .ltsRefRing { --ring: #20ad68; }
+.ltsRefProgressItem.nutrition .ltsRefRing { --ring: #41c48a; }
+.ltsRefProgressItem.water .ltsRefRing { --ring: #26a9e7; }
+.ltsRefProgressItem.sleep .ltsRefRing { --ring: #7657e8; }
+
+.ltsRefIntegrated,
+.ltsRefChange {
+  margin-top: 24px;
+}
+
+.ltsRefIntegrated > header,
+.ltsRefChange > header {
+  display: flex;
+  margin: 0 2px 11px;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ltsRefIntegrated > header span,
+.ltsRefChange > header span {
+  display: block;
+  color: #63758a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.ltsRefIntegrated > header h2,
+.ltsRefChange > header h2 {
+  margin: 3px 0 0;
+  color: #101827;
+  font-size: 22px;
+  letter-spacing: -.035em;
+}
+
+.ltsRefIntegrated > header button,
+.ltsRefChange > header button {
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #1f67bc;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ltsRefDomainGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.ltsRefDomain {
+  min-width: 0;
+  min-height: 134px;
+  padding: 13px;
+  border: 1px solid #24394c;
+  border-radius: 17px;
+  background: #0d2234;
+  color: #fff;
+  text-align: left;
+}
+
+.ltsRefDomainTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ltsRefDomainTop .ltsRefTodayIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.ltsRefDomainTop > span {
+  flex: 1;
+  color: #c3d0dc;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.ltsRefDomainTop > strong {
+  color: #91a5b7;
+  font-size: 17px;
+}
+
+.ltsRefDomain > b {
+  display: block;
+  margin-top: 12px;
+  color: #fff;
+  font-size: 17px;
+  line-height: 1.15;
+  letter-spacing: -.025em;
+}
+
+.ltsRefDomain > small {
+  display: block;
+  margin-top: 6px;
+  color: #aebdca;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ltsRefDomain.training { border-color: #315250; }
+.ltsRefDomain.nutrition { border-color: #55402d; }
+.ltsRefDomain.labs { border-color: #59354a; }
+.ltsRefDomain.recovery { border-color: #463a62; }
+.ltsRefDomain.water { border-color: #28516a; }
+
+.ltsRefIntegratedSummary {
+  margin: 10px 2px 0;
+  color: #5f6f84;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ltsRefChange {
+  padding: 16px;
+  border: 1px solid #dfe6ed;
+  border-radius: 19px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 35, 55, .04);
+}
+
+.ltsRefChange > header {
+  margin: 0 0 12px;
+}
+
+.ltsRefChangeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ltsRefChangeGrid > div {
+  min-width: 0;
+  padding: 11px;
+  border-radius: 13px;
+  background: #f2f5f8;
+}
+
+.ltsRefChangeGrid span {
+  display: block;
+  color: #63758a;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.ltsRefChangeGrid b {
+  display: block;
+  margin-top: 6px;
+  color: #101827;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.ltsRefChangeGrid small {
+  display: block;
+  margin-top: 3px;
+  color: #63758a;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.ltsRefChange > p {
+  margin: 11px 1px 0;
+  color: #63758a;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.ltsHomeReference button:focus-visible {
+  outline: 3px solid rgba(45, 135, 226, .42);
+  outline-offset: 2px;
+}
+
+@media (max-width: 940px) {
+  .ltsRefCoreGrid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .8fr);
+  }
+
+  .ltsRefDomainGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 840px) {
+  body[data-product-route="hoje"] {
+    background: #07131f;
+  }
+
+  body[data-product-route="hoje"] .app {
+    background: #07131f !important;
+  }
+
+  body[data-product-route="hoje"] .topbar {
+    display: none !important;
+  }
+
+  body[data-product-route="hoje"] .screenHost {
+    min-height: 100dvh;
+    padding: 13px 14px calc(100px + env(safe-area-inset-bottom)) !important;
+    background: #07131f !important;
+  }
+
+  body[data-product-route="hoje"] .mobileNav {
+    display: grid !important;
+    min-height: 72px !important;
+    height: 72px !important;
+    padding: 6px 8px calc(5px + env(safe-area-inset-bottom)) !important;
+    border-top: 1px solid #dce3ea !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    align-items: start !important;
+    background: rgba(255, 255, 255, .99) !important;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, .12) !important;
+  }
+
+  .mobileNav button {
+    display: flex !important;
+    min-width: 0 !important;
+    height: 56px !important;
+    padding: 3px 1px !important;
+    border: 0 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    background: transparent !important;
+    color: #1f2a38 !important;
+    font-size: 11px !important;
+    font-weight: 650 !important;
+    line-height: 1 !important;
+  }
+
+  .mobileNav .mobileNavIcon {
+    display: block;
+    color: #0e1826;
+    font-size: 21px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .mobileNav button.active,
+  .mobileNav button.active .mobileNavIcon {
+    color: #ef2749 !important;
+  }
+
+  .ltsHomeReference {
+    max-width: 430px;
+    color: #fff;
+  }
+
+  .ltsRefHeader {
+    min-height: 38px;
+    margin-bottom: 9px;
+  }
+
+  .ltsRefBrand b,
+  .ltsRefGreeting h1 {
+    color: #fff;
+  }
+
+  .ltsRefBrand b {
+    font-size: 18px;
+  }
+
+  .ltsRefPulse {
+    font-size: 25px;
+  }
+
+  .ltsRefAvatar {
+    width: 38px;
+    height: 38px;
+    background: #eaf4f8;
+    color: #0f1b29;
+    font-size: 13px;
+  }
+
+  .ltsRefGreeting {
+    padding: 0 2px;
+  }
+
+  .ltsRefGreeting h1 {
+    font-size: 27px;
+    letter-spacing: -.035em;
+  }
+
+  .ltsRefGreeting > p {
+    margin-top: 5px;
+    color: #c6d1db;
+    font-size: 12px;
+  }
+
+  .ltsRefMotto {
+    min-height: 38px;
+    margin-top: 10px;
+    padding: 8px 11px;
+    border-color: #20364a;
+    border-radius: 11px;
+    background: #0d2032;
+    color: #e4edf4;
+  }
+
+  .ltsRefMotto span {
+    font-size: 15px;
+  }
+
+  .ltsRefMotto b {
+    font-size: 12px;
+  }
+
+  .ltsRefMetrics {
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .ltsRefMetric {
+    min-height: 110px;
+    padding: 11px 10px;
+    border: 0;
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  .ltsRefMetric > span {
+    font-size: 10.5px;
+  }
+
+  .ltsRefMetric > strong {
+    margin-top: 7px;
+    font-size: 20px;
+  }
+
+  .ltsRefMetric > div {
+    margin-top: 8px;
+  }
+
+  .ltsRefMetric > div b,
+  .ltsRefMetric > div small {
+    font-size: 10px;
+    line-height: 1.25;
+  }
+
+  .ltsRefCoreGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .ltsRefCard {
+    border: 0;
+    border-radius: 17px;
+    box-shadow: none;
+  }
+
+  .ltsRefCard > header {
+    padding: 11px 12px 9px;
+  }
+
+  .ltsRefCard > header h2 {
+    font-size: 17px;
+  }
+
+  .ltsRefCard > header span {
+    font-size: 10px;
+  }
+
+  .ltsRefCard > header button {
+    font-size: 10.5px;
+  }
+
+  .ltsRefTodayRow {
+    min-height: 56px;
+    padding: 8px 12px;
+    grid-template-columns: 36px minmax(0, 1fr) 24px;
+    gap: 9px;
+  }
+
+  .ltsRefTodayIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
+  .ltsRefTodayCopy b {
+    font-size: 13px;
+  }
+
+  .ltsRefTodayCopy small {
+    font-size: 10.5px;
+  }
+
+  .ltsRefTodayState {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .ltsRefProgress {
+    padding-bottom: 11px;
+  }
+
+  .ltsRefProgressGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    padding: 5px 9px 4px;
+  }
+
+  .ltsRefRing {
+    width: 52px;
+    height: 52px;
+  }
+
+  .ltsRefRing::after {
+    inset: 6px;
+  }
+
+  .ltsRefRing b {
+    color: #101827;
+    font-size: 11px;
+  }
+
+  .ltsRefProgressItem > small {
+    margin-top: 5px;
+    font-size: 10px;
+  }
+
+  .ltsRefIntegrated,
+  .ltsRefChange {
+    margin-top: 20px;
+  }
+
+  .ltsRefIntegrated > header,
+  .ltsRefChange > header {
+    margin-bottom: 9px;
+  }
+
+  .ltsRefIntegrated > header span,
+  .ltsRefChange > header span {
+    color: #a8b9c8;
+    font-size: 10px;
+  }
+
+  .ltsRefIntegrated > header h2,
+  .ltsRefChange > header h2 {
+    color: #fff;
+    font-size: 20px;
+  }
+
+  .ltsRefIntegrated > header button,
+  .ltsRefChange > header button {
+    color: #6fc5ea;
+    font-size: 10.5px;
+  }
+
+  .ltsRefDomainGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .ltsRefDomain {
+    min-height: 128px;
+    padding: 11px;
+    border-radius: 14px;
+  }
+
+  .ltsRefDomain:last-child {
+    grid-column: 1 / -1;
+    min-height: 108px;
+  }
+
+  .ltsRefDomainTop > span {
+    font-size: 10.5px;
+  }
+
+  .ltsRefDomain > b {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+
+  .ltsRefDomain > small {
+    font-size: 10.5px;
+  }
+
+  .ltsRefIntegratedSummary {
+    color: #a8b9c8;
+    font-size: 10.5px;
+  }
+
+  .ltsRefChange {
+    padding: 13px;
+    border-color: #24394c;
+    border-radius: 16px;
+    background: #0a1c2c;
+    box-shadow: none;
+  }
+
+  .ltsRefChangeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .ltsRefChangeGrid > div {
+    padding: 10px;
+    background: #10273a;
+  }
+
+  .ltsRefChangeGrid span,
+  .ltsRefChangeGrid small,
+  .ltsRefChange > p {
+    color: #a8b9c8;
+    font-size: 10px;
+  }
+
+  .ltsRefChangeGrid b {
+    color: #fff;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 370px) {
+  .ltsRefMetric {
+    padding-inline: 8px;
+  }
+
+  .ltsRefMetric > strong {
+    font-size: 18px;
+  }
+
+  .ltsRefMetric > div small {
+    font-size: 9.5px;
+  }
+
+  .ltsRefRing {
+    width: 48px;
+    height: 48px;
+  }
+}

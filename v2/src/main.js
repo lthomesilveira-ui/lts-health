@@ -1,4 +1,4 @@
-import {state,routes,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
+import {state,routes,fixtureMode,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData,downloadStructuredBackup} from './data-layer.js';
 import {renderBioHub} from './bio-screen.js';
 import {renderTrainingScreen} from './training-screen.js';
@@ -10,10 +10,16 @@ import {renderNutritionHub} from './nutrition-screen.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
+import {renderProductHomeReference} from './home-reference.js';
+import {renderProductTraining} from './training-reference-v2.js';
+import {renderProductComposition} from './composition-layout-v2.js';
+import {renderProductLabs} from './labs-layout-v2.js';
+import {renderRecoveryDepth} from './recovery-layout-v2.js';
 import {mountEvidencePanels} from './evidence-priority.js';
 import {openEntry,setupEntryController} from './entry.js';
 
-const screenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
+const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
+const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,hoje:renderProductHomeReference};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
@@ -174,7 +180,7 @@ function bindStaticEvents(){
     }
     const sourceButton=event.target.closest('[data-source-upload]');
     if(sourceButton){const select=$('uploadType');if(select)select.value=sourceButton.dataset.sourceUpload;$('uploadFile')?.focus();return;}
-    const timelineMore=event.target.closest('[data-timeline-more]');if(timelineMore){state.ui.timelineLimit=Number(state.ui.timelineLimit||250)+250;scheduleRender();return;}
+    const timelineMore=event.target.closest('[data-timeline-more]');if(timelineMore){state.ui.timelineLimit=Number(state.ui.timelineLimit||50)+50;scheduleRender();return;}
     const timelineJump=event.target.closest('[data-timeline-jump]');if(timelineJump){openTimelineTarget(timelineJump);return;}
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
     const evidenceButton=event.target.closest('[data-evidence-route]');if(evidenceButton){event.preventDefault();setRoute(evidenceButton.dataset.evidenceRoute,{replace:false});return;}
@@ -195,7 +201,7 @@ function bindStaticEvents(){
   document.addEventListener('input',event=>{
     if(event.target.id==='trainingQuery'){state.ui.trainingQuery=event.target.value;scheduleRender();}
     if(event.target.id==='exerciseQuery'){state.ui.exerciseQuery=event.target.value;scheduleRender();}
-    if(event.target.id==='timelineQuery'){state.ui.timelineQuery=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
+    if(event.target.id==='timelineQuery'){state.ui.timelineQuery=event.target.value;state.ui.timelineLimit=50;scheduleRender();}
     if(event.target.id==='labQuery'){state.ui.labQuery=event.target.value;scheduleRender();}
     if(event.target.id==='treatmentQuery'){state.ui.treatmentQuery=event.target.value;scheduleRender();}
   });
@@ -204,14 +210,14 @@ function bindStaticEvents(){
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
     if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
     if(event.target.id==='timelinePeriod'){
-      state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=250;state.ui.timelineMonth=null;state.ui.timelineDate=null;
+      state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=50;state.ui.timelineMonth=null;state.ui.timelineDate=null;
       if(event.target.value!=='all')state.ui.timelineYear=null;
       scheduleRender();
     }
-    if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineMonth='all';state.ui.timelineDate=null;state.ui.timelineLimit=250;scheduleRender();}
-    if(event.target.id==='timelineMonth'){state.ui.timelineMonth=event.target.value;state.ui.timelineDate=null;state.ui.timelineLimit=250;scheduleRender();}
-    if(event.target.id==='timelineDate'){state.ui.timelineDate=event.target.value||null;state.ui.timelineLimit=250;scheduleRender();}
-    if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;state.ui.timelineLimit=250;scheduleRender();}
+    if(event.target.id==='timelineYear'){state.ui.timelineYear=event.target.value;state.ui.timelineMonth='all';state.ui.timelineDate=null;state.ui.timelineLimit=50;scheduleRender();}
+    if(event.target.id==='timelineMonth'){state.ui.timelineMonth=event.target.value;state.ui.timelineDate=null;state.ui.timelineLimit=50;scheduleRender();}
+    if(event.target.id==='timelineDate'){state.ui.timelineDate=event.target.value||null;state.ui.timelineLimit=50;scheduleRender();}
+    if(event.target.id==='timelineDomain'){state.ui.timelineDomain=event.target.value;state.ui.timelineLimit=50;scheduleRender();}
     if(event.target.id==='nutritionPeriod'){setGlobalPeriod(event.target.value);state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='nutritionYear'){state.ui.nutritionYear=event.target.value;state.ui.nutritionDate=null;scheduleRender();}
     if(event.target.id==='compareA'){state.ui.compareA=event.target.value;scheduleRender();}

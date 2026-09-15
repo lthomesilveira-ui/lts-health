@@ -101,7 +101,7 @@ function exercisesView(workout){
 
 function tabs(view){
   const options=[['summary','Resumo'],['exercises','Exercícios'],['history','Histórico']];
-  return `<div class="ltsRefTrainTabs" role="tablist" aria-label="Detalhes do treino">${options.map(([key,label])=>`<button type="button" data-depth-training-view="${key}" role="tab" aria-selected="${view===key}" class="${view===key?'active':''}">${label}</button>`).join('')}</div>`;
+  return `<div class="ltsRefTrainTabs ltsRefTrainPrimaryTabs" role="tablist" aria-label="Detalhes do treino">${options.map(([key,label])=>`<button type="button" data-depth-training-view="${key}" role="tab" aria-selected="${view===key}" class="${view===key?'active':''}">${label}</button>`).join('')}</div>`;
 }
 
 function exerciseNav(){return `<div class="ltsRefTrainTabs ltsRefExerciseNav" role="navigation" aria-label="Retorno do histórico do exercício"><button type="button" data-depth-training-view="exercises">Exercícios</button><button type="button" data-depth-training-view="history">Histórico completo</button></div>`;}

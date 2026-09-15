@@ -1,0 +1,411 @@
+/* Canonical corrections from the 2026-09-15 public-product audit. */
+
+/* Timeline and protocols: restore light surfaces, contrast and readable type. */
+.sourceStatus,
+.timelineStat,
+.timelineContextCard,
+.protocolSummaryCard {
+  border-color: #dfe6ed;
+  background: #fff;
+  color: #111a29;
+  box-shadow: 0 6px 20px rgba(20, 35, 55, .035);
+}
+
+.sourceStatus.ready {
+  border-color: #b9dfcf;
+  background: #f1faf6;
+}
+
+.sourceStatusTop b,
+.timelineContextHead > div:first-child b,
+.timelineDate b,
+.protocolSummaryHead h3,
+.protocolSummaryFacts b {
+  color: #111a29;
+}
+
+.sourceStatusTop b {
+  font-size: 13px;
+}
+
+.sourceStatus p {
+  color: #5f6f84;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.sourceStatus button,
+.loadMore button {
+  min-height: 38px;
+  border-color: #101b2d;
+  background: #101b2d;
+  color: #fff;
+  font-size: 11px;
+}
+
+.timelineStat {
+  min-height: 76px;
+}
+
+.timelineStat b {
+  color: #111a29;
+  font-size: 19px;
+}
+
+.timelineStat span,
+.timelineContextHead > div:first-child span,
+.timelineDate span,
+.timelineSummary,
+.timelineItem.rich em,
+.protocolSummaryHead span,
+.protocolSummaryFacts span,
+.protocolSummaryCard p,
+.protocolSummaryCard em {
+  color: #5f6f84;
+}
+
+.timelineStat span,
+.timelineContextHead > div:first-child span,
+.timelineDate span,
+.timelineSummary,
+.timelineItem.rich em,
+.protocolSummaryHead span,
+.protocolSummaryFacts span,
+.protocolSummaryCard em {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.timelineContextHead > div:first-child b,
+.timelineDate b {
+  font-size: 13px;
+}
+
+.timelineDomainChips span {
+  border-color: #b9dcec;
+  background: #edf8fc;
+  color: #176989;
+  font-size: 10px;
+}
+
+.timelineContextRows > div,
+.timelineContextJump {
+  border-color: #e5ebf1;
+}
+
+.timelineContextJump:hover,
+.timelineContextJump:focus-visible,
+.timelineLink:hover,
+.timelineLink:focus-visible {
+  background: #f3f7fa;
+}
+
+.timelineContextRows strong,
+.timelineItem.rich > span {
+  color: #216b8a;
+  font-size: 10.5px;
+}
+
+.timelineContextRows span {
+  color: #4f6075;
+  font-size: 11px;
+}
+
+.timelineContextCard > small {
+  color: #68778b;
+  font-size: 10.5px;
+}
+
+.timelineSummary b {
+  color: #111a29;
+  font-size: 16px;
+}
+
+.timelineItem.rich > div > b {
+  color: #111a29;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.protocolSummaryHead h3 {
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.protocolSummaryFacts b {
+  font-size: 13px;
+}
+
+.protocolSummaryCard p {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Data and provenance: remove dark-on-dark cards left by the previous theme. */
+.backupPanel,
+.reviewInbox,
+.reviewStat,
+.reviewTopic,
+.coverageRow,
+.processingDetail {
+  border-color: #dfe6ed;
+  background: #fff;
+  color: #111a29;
+}
+
+.reviewInbox {
+  background: radial-gradient(circle at 92% 6%, rgba(52, 169, 205, .10), transparent 34%), #fff;
+  box-shadow: 0 8px 26px rgba(20, 35, 55, .045);
+}
+
+.reviewInboxHero h2,
+.reviewStat strong,
+.reviewTopic b,
+.coverageIdentity b,
+.coveragePeriod b,
+.coverageUnit b,
+.backupPanel b,
+.uploadAuditRow b {
+  color: #111a29;
+}
+
+.reviewEyebrow,
+.reviewTopic strong,
+.coverageCount strong,
+.backupPanel > div:first-child > span {
+  color: #167797;
+}
+
+.reviewInboxHero p,
+.reviewStat span,
+.reviewStat small,
+.reviewTopic small,
+.coverageHead p,
+.coverageIdentity small,
+.coveragePeriod span,
+.coverageUnit span,
+.coverageCount span,
+.backupPanel p,
+.backupPanel small,
+.backupActions span,
+.uploadAuditRow time,
+.uploadAuditRow > div > small,
+.processingDetail > div > span:not(.pill),
+.processingDetail ul,
+.processingDetail > small,
+.processingMuted,
+.sourceScope,
+.sourceMore summary {
+  color: #5f6f84;
+}
+
+.reviewStat.attention {
+  border-color: #e3ca93;
+  background: #fff9ec;
+}
+
+.reviewSafeNote {
+  border-color: #b9dfcf;
+  background: #f1faf6;
+}
+
+.reviewSafeNote b {
+  color: #14704c;
+}
+
+.reviewSafeNote span {
+  color: #405269;
+}
+
+.sourceCapability,
+.sourceScope,
+.sourceMore summary,
+.backupPanel > div:first-child > span,
+.backupPanel p,
+.backupPanel small,
+.backupActions span,
+.uploadAuditRow time,
+.uploadAuditRow > div > small,
+.processingDetail > div > span:not(.pill),
+.processingDetail ul,
+.processingDetail > small,
+.processingMuted,
+.coveragePeriod span,
+.coverageUnit span,
+.coverageCount span {
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.uploadAuditRow b,
+.coveragePeriod b,
+.coverageUnit b {
+  font-size: 12px;
+}
+
+.sourceCapability {
+  border-color: #cad5df;
+  color: #405269;
+}
+
+/* Recovery and analysis: one light semantic system, no dark text on dark legacy panels. */
+.analysisLead,
+.analysisDigest,
+.analysisRegion,
+.analysisSleep,
+.limitationList > div,
+.analysisSafety,
+.analysisDigestCard {
+  border-color: #dfe6ed;
+  background: #fff;
+  color: #111a29;
+}
+
+.analysisLead,
+.analysisDigest {
+  background: linear-gradient(145deg, #f4fafc, #fff);
+}
+
+.analysisDigestCard.attention {
+  border-color: #e3ca93;
+  background: #fff9ec;
+}
+
+.analysisDigestCard.change {
+  border-color: #b9dfcf;
+}
+
+.analysisDigestCard.context {
+  border-color: #d3c8e8;
+}
+
+.analysisLeadHead h2,
+.analysisInterval b,
+.analysisRegionHead b,
+.analysisRegionFacts b,
+.analysisSleep b,
+.analysisPerformance b,
+.analysisDigestHead h2,
+.analysisDigestCard h3,
+.analysisSafety b {
+  color: #111a29;
+}
+
+.analysisLeadHead span,
+.analysisDigestHead span,
+.analysisDigestCard button {
+  color: #167797;
+}
+
+.analysisLeadHead > small,
+.analysisInterval span,
+.analysisRegionHead span,
+.analysisRegionHead small,
+.analysisRegionFacts span,
+.analysisRegion p,
+.analysisPerformance span,
+.analysisPerformance small,
+.analysisSleep span,
+.analysisBarRow > small,
+.analysisDigestHead small,
+.analysisDigestCard > span,
+.analysisDigestCard p,
+.limitationList > div,
+.analysisSafety span {
+  color: #5f6f84;
+}
+
+.analysisDigestCard > span,
+.analysisLeadHead span,
+.analysisDigestHead span,
+.analysisRegionHead span,
+.analysisRegionHead small,
+.analysisRegionFacts span,
+.analysisRegion p,
+.analysisPerformance span,
+.analysisSleep span,
+.analysisBarRow > small,
+.analysisDigestHead small,
+.analysisDigestCard p,
+.analysisDigestCard button,
+.limitationList > div,
+.analysisSafety b,
+.analysisSafety span {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.analysisBarRow > div {
+  background: #e4eaf0;
+}
+
+/* The approved detail routes keep their density, but labels remain readable on a phone. */
+@media (max-width: 840px) {
+  .ltsCompositionV2 .ltsSectionHead span,
+  .ltsLabsV2 .ltsSectionHead span,
+  .ltsCompositionMetric span,
+  .ltsLabsHeroContext span,
+  .ltsCompositionScale,
+  .ltsLabsScale,
+  .ltsCompositionAxis,
+  .ltsLabsAxis,
+  .ltsCompositionChangeGrid span,
+  .ltsCompositionHistoryRow time,
+  .ltsLabsHistoryRow time,
+  .ltsCompositionHistoryRow > span,
+  .ltsLabsHistoryRow > span,
+  .ltsLabsHeroTop > div > span,
+  .ltsLabsMarkerRail button small {
+    font-size: 10px !important;
+  }
+
+  .ltsCompositionV2 .ltsField,
+  .ltsLabsV2 .ltsField,
+  .ltsCompositionV2 .ltsDepthNote,
+  .ltsLabsV2 .ltsDepthNote,
+  .ltsCompositionHistoryRow small,
+  .ltsLabsHistoryRow small,
+  .ltsCompositionTrust p,
+  .ltsLabsTrust p,
+  .ltsLabsNoSeries,
+  .ltsHistoryContext {
+    font-size: 10.5px !important;
+  }
+
+  .ltsCompositionV2 .ltsField select,
+  .ltsLabsV2 .ltsField select,
+  .ltsLabsV2 .ltsField input,
+  .ltsCompositionHistoryRow b,
+  .ltsLabsHistoryRow b,
+  .ltsLabsMarkerRail button b {
+    font-size: 11.5px !important;
+  }
+
+  .timelineItem.rich {
+    grid-template-columns: 86px minmax(0, 1fr);
+  }
+
+  .reviewInbox {
+    padding: 17px;
+  }
+}
+
+@media (max-width: 430px) {
+  .timelineStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timelineContextRows > div,
+  .timelineContextJump,
+  .timelineItem.rich {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .protocolSummaryFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .protocolSummaryFacts > div:last-child {
+    grid-column: 1 / -1;
+  }
+}

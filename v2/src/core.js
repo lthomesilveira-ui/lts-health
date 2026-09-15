@@ -31,7 +31,7 @@ export const state = {
     analysisPeriod: '365',
     timelinePeriod: '365',
     timelineYear: null,
-    timelineLimit: 250,
+    timelineLimit: 50,
     timelineDomain: 'all',
     timelineQuery: '',
     nutritionPeriod: '365',

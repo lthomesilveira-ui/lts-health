@@ -63,13 +63,13 @@ async function run(viewport,label){
   await page.waitForFunction(()=>!document.querySelector('#timelineDate'));
 
   await page.fill('#timelineQuery','Teste carga timeline');
-  await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='250');
+  await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='50');
   await page.waitForFunction(()=>document.querySelector('.timelineSummary span')?.textContent.includes('de 300'));
   await page.waitForSelector('[data-timeline-more]');
   await page.click('[data-timeline-more]');
-  await page.waitForFunction(async()=>{const {state}=await import('./src/core.js');return Number(state.ui.timelineLimit)>=500;});
-  await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='300');
-  if(await page.locator('[data-timeline-more]').count())throw new Error(`${label}: load-more button remained after all matching history became visible`);
+  await page.waitForFunction(async()=>{const {state}=await import('./src/core.js');return Number(state.ui.timelineLimit)>=100;});
+  await page.waitForFunction(()=>document.querySelector('.timelineSummary b')?.textContent==='100');
+  if(!await page.locator('[data-timeline-more]').count())throw new Error(`${label}: incremental history control disappeared before all matching records were visible`);
 
   await page.fill('#timelineQuery','');
   await page.waitForTimeout(80);

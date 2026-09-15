@@ -41,6 +41,7 @@ try{
   assert.equal(await page.locator('[data-depth-workout]').last().getAttribute('data-depth-workout'),'w-0');
   await page.locator('[data-depth-workout]').last().click();
   assert.ok((await page.locator('.ltsTrainingV2 h1').textContent()).includes('Sessão sintética 0'));
+  await page.locator('[data-depth-training-view="exercises"]').first().click();
   await page.locator('[data-depth-exercise]').first().click();
   await page.waitForSelector('.ltsExerciseHistory');assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
   await overflow(page);
