@@ -75,6 +75,7 @@ jobs:
           node --check v2/cockpit-smoke.mjs
           node --check v2/home-information-integrity-smoke.mjs
           node --check v2/public-audit-contract-smoke.mjs
+          node --check v2/physical-iphone-layout-smoke.mjs
           node v2/public-audit-contract-smoke.mjs
       - name: Start fixture server
         run: |
@@ -84,6 +85,8 @@ jobs:
         run: node v2/cockpit-smoke.mjs
       - name: Home information integrity on mobile
         run: node v2/home-information-integrity-smoke.mjs
+      - name: Physical iPhone reduced-viewport layout
+        run: node v2/physical-iphone-layout-smoke.mjs
       - name: Upload safe visual audit evidence
         if: always()
         uses: actions/upload-artifact@v4

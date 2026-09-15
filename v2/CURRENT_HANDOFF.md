@@ -1,6 +1,6 @@
 # LTS Health — CURRENT HANDOFF
 
-Updated: 2026-09-15 after the published-product audit, cross-product remediation and authenticated visual QA closure. Public engineering metadata only; health data, credentials and private screenshots stay private.
+Updated: 2026-09-15 after physical-iPhone evidence rejected the visual QA closure for build `.26`. Public engineering metadata only; health data, credentials and private screenshots stay private.
 
 ## Restart phrase
 
@@ -24,9 +24,9 @@ The reference contains the intended mobile Home/Início plus Training summary an
 
 Physical-iPhone screenshots from the owner outrank fixture-only visual confidence. The owner explicitly reported on 14/09 that the product had improved but remained far from the approved mockup. There is **no final pixel parity or product acceptance** yet.
 
-## Current verified product release
+## Current published release — rejected on physical iPhone
 
-Published visual-audit closure:
+The currently published build remains:
 - PR #292;
 - build `ux-coherence-public-visual-closure-20260915.26`;
 - product commit `3519968f82eb6043a8835e7fa9ad8b5e2be27395`;
@@ -39,11 +39,13 @@ All nine post-merge workflows for the product commit passed. The final encrypted
 
 The actual public URL was then opened in Cloud Browser with the authenticated session, build `.26` was confirmed, and every primary/secondary area was navigated. Separately, all 32 final authenticated screenshots — desktop and mobile — were privately decrypted and visually inspected. No plaintext screenshot or key material belongs in the repository.
 
-This closes the engineering QA package, **not** owner acceptance, physical-iPhone acceptance or pixel parity.
+The owner then supplied eight full-size screenshots from a physical iPhone. Those screenshots invalidate the previous statement that no obvious defect remained: the Home retained an empty hidden-topbar track, all audited mobile routes reserved bottom space twice, the first viewport was oversized, and Training ended in a large blank surface. Build `.26` is published but visually rejected and must not be presented for homologation.
+
+The active package is `PKG-PHYSICAL-IPHONE-REMEDIATION-001`. Its candidate build is `physical-iphone-remediation-20260915.27`; it is not a verified release until normal PR/merge, deploy, authenticated public navigation and post-deploy inspection are complete.
 
 ## Home/Início state
 
-Home now follows the approved mobile reference structure and passed the published desktop/mobile engineering review, but is **not accepted as finished by the owner**.
+Home preserves the approved mobile reference structure, but the `.26` implementation failed on a physical iPhone and is **not accepted as finished by the owner**.
 
 Current non-negotiable semantics:
 - `Hoje` means the current calendar day only;
@@ -60,7 +62,7 @@ Current reference-oriented mobile order is:
 4. weekly progress;
 5. older recent records.
 
-The final audited mobile evidence shows the compact dark shell, three composition metrics, Today, weekly progress and exclusive bottom navigation in the same first-screen hierarchy as the approved reference. Preserve this structure and respond to new physical-iPhone evidence if the owner still finds a material gap.
+The owner screenshots show that the remote evidence overstated first-screen parity. Preserve the information order, but collapse the empty topbar track, eliminate duplicated bottom reserve and require the weekly progress surface to begin within a reduced `393 × 650` Safari viewport.
 
 ## Training state
 
@@ -90,7 +92,7 @@ Do not reimplement older caps or lose these capabilities:
 
 ## Remaining execution order
 
-There is no autonomous `ready` or `in_progress` product task after this closure. The next product gate is subjective owner homologation of the published `.26`, especially on physical iPhone. If feedback identifies a real mismatch, treat the device evidence as authoritative and correct it in a coherent package rather than reopening generic micro-polish.
+`LTS-PHYSICAL-IPHONE-001` is in progress. Finish the coherent mobile-shell/Home/Training/internal-route package, then publish and repeat the full authenticated public-browser inspection before asking for owner judgment.
 
 Do not trade away existing history/provenance depth to obtain visual similarity. Do not add reference-only graphs, device imagery, values or health semantics without canonical evidence.
 
@@ -108,4 +110,4 @@ The approved source remains in the owner's private Drive as `LTS Health - refere
 
 ## Next action
 
-Ask the owner to judge the published `.26` only after confirming that the exact build still opens. If it is rejected on a real device, capture the affected route/viewport, compare it directly with the private reference, preserve valid functionality and ship the correction through a normal PR plus the same public-browser/authenticated visual gates. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
+Do not ask the owner to judge `.26`; it was rejected with physical-iPhone evidence. Promote `.27` only through a normal PR, then open the exact public build, authenticate, navigate every area, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.

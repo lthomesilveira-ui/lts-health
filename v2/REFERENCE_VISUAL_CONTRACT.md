@@ -10,7 +10,11 @@ A imagem mobile aprovada foi recuperada, inspecionada e preservada em Drive priv
 
 O arquivo contém detalhes pessoais e exemplos ilustrativos; não deve ser copiado para o repositório público. Um agente autorizado deve obter o original no Drive privado do proprietário. Os valores, metas e exemplos da imagem não são dados de produção nem instruções de saúde a implementar.
 
-A imagem reúne três telas mobile: resumo pessoal com hierarquia compacta; detalhe de sessão com métricas e abas; exercícios com séries legíveis. A auditoria pública de 15/09/2026 confirma que a implementação `.26` usa essa estrutura como direção e preserva a profundidade funcional. Isso não equivale a aceite do proprietário, paridade pixel ou autorização para reiniciar cores, arquitetura e dados.
+A imagem reúne três telas mobile: resumo pessoal com hierarquia compacta; detalhe de sessão com métricas e abas; exercícios com séries legíveis. A implementação `.26` preservou parte dessa estrutura, mas foi rejeitada após inspeção em iPhone físico: densidade, recortes e vazios ainda divergiam materialmente. Isso não autoriza reiniciar cores, arquitetura, dados ou funcionalidades válidas.
+
+## Evidência física e viewport reduzido — 15/09/2026
+
+O navegador usado no iPhone deixou aproximadamente `393 × 650` CSS px de área útil, menor que o viewport limpo de `390 × 844` usado pelos gates anteriores. A Home não pode manter uma linha reservada para topbar quando a topbar está oculta; nenhuma rota pode repetir no conteúdo a altura já destinada à navegação inferior. Home deve expor cabeçalho, métricas, Hoje e Progresso semanal nessa área reduzida, mantendo o panorama longitudinal logo na sequência. Treino e demais áreas devem terminar sem faixas vazias desproporcionais.
 
 Os parágrafos desktop abaixo preservam a referência histórica anterior, não podem anular a direção mobile posterior nem justificar uma volta ao dashboard rejeitado. Precedência: imagem privada aprovada + feedback mais recente > implementação publicada aceita direcionalmente > contrato histórico. Não declarar paridade exata sem comparação visual e aceite explícito.
 
