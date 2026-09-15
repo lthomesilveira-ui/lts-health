@@ -30,7 +30,7 @@
     height: 50px !important;
     padding: 3px 1px !important;
     gap: 2px !important;
-    font-size: 10px !important;
+    font-size: 10.5px !important;
   }
 
   .mobileNav .mobileNavIcon {
@@ -301,11 +301,22 @@
   .ltsLabsV2 > .ltsPageHeader {
     min-height: 50px !important;
     margin-bottom: 8px !important;
+    grid-template-columns: 36px minmax(0, 1fr) 36px !important;
+    gap: 7px !important;
+  }
+
+  .ltsCompositionV2 > .ltsPageHeader .ltsBack,
+  .ltsLabsV2 > .ltsPageHeader .ltsBack,
+  .ltsCompositionV2 > .ltsPageHeader .ltsRoundAction,
+  .ltsLabsV2 > .ltsPageHeader .ltsRoundAction {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
   }
 
   .ltsCompositionV2 > .ltsPageHeader h1,
   .ltsLabsV2 > .ltsPageHeader h1 {
-    font-size: 22px !important;
+    font-size: 25px !important;
   }
 }
 
