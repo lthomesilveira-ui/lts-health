@@ -10,7 +10,7 @@ A imagem mobile aprovada foi recuperada, inspecionada e preservada em Drive priv
 
 O arquivo contém detalhes pessoais e exemplos ilustrativos; não deve ser copiado para o repositório público. Um agente autorizado deve obter o original no Drive privado do proprietário. Os valores, metas e exemplos da imagem não são dados de produção nem instruções de saúde a implementar.
 
-A imagem reúne três telas mobile: resumo pessoal com hierarquia compacta; detalhe de sessão com métricas e abas; exercícios com séries legíveis. A aceitação mais recente do usuário preserva a direção atual de Home/Treinos/Composição/Exames e pede mais profundidade funcional. Portanto, não reiniciar cores ou arquitetura neste pacote.
+A imagem reúne três telas mobile: resumo pessoal com hierarquia compacta; detalhe de sessão com métricas e abas; exercícios com séries legíveis. A auditoria pública de 15/09/2026 confirma que a implementação `.26` usa essa estrutura como direção e preserva a profundidade funcional. Isso não equivale a aceite do proprietário, paridade pixel ou autorização para reiniciar cores, arquitetura e dados.
 
 Os parágrafos desktop abaixo preservam a referência histórica anterior, não podem anular a direção mobile posterior nem justificar uma volta ao dashboard rejeitado. Precedência: imagem privada aprovada + feedback mais recente > implementação publicada aceita direcionalmente > contrato histórico. Não declarar paridade exata sem comparação visual e aceite explícito.
 
@@ -85,4 +85,6 @@ Nenhuma versão é considerada pronta apenas por CI verde. Antes de promover ao 
 - validar funcionamento e dados reais sem degradar a composição;
 - preservar os testes funcionais e de proveniência existentes.
 
-A imagem aprovada prevalece sobre qualquer regra textual ou teste caso uma futura implementação volte a divergir visualmente.
+Depois da publicação e antes de pedir homologação ao proprietário também é obrigatório abrir o link público final em Cloud Browser, confirmar o build entregue, autenticar quando possível, navegar pelo conteúdo real e corrigir defeitos óbvios observados. Evidência mobile autenticada deve ser inspecionada em tamanho legível; uma miniatura ou contact sheet isolada não basta para resolver ambiguidade visual.
+
+A imagem aprovada e a evidência em iPhone físico prevalecem sobre qualquer regra textual, teste ou screenshot remoto caso uma futura implementação volte a divergir visualmente.
