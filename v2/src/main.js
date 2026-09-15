@@ -25,7 +25,7 @@ let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
 let renderedRoute=null;
-const mobileMoreRoutes=new Set(['bio','nutricao','saude','tratamentos','evolucao','dados']);
+const mobileMoreRoutes=new Set(['timeline','nutricao','analise','tratamentos','evolucao','dados']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
 function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}

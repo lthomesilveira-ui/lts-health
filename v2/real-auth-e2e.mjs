@@ -51,7 +51,9 @@ async function waitForRoute(route){
       const rect=button.getBoundingClientRect(),style=getComputedStyle(button);
       return style.display!=='none'&&style.visibility!=='hidden'&&rect.width>=44&&rect.left>=-1&&rect.right<=window.innerWidth+1;
     });
-    const mobileShellReady=window.innerWidth>840||mobileButtons.length===5;
+    const expectedMobileRoute=['hoje','bio','treinos','saude'].includes(value)?value:'mais';
+    const mobileActive=mobileButtons.filter(button=>button.classList.contains('active'));
+    const mobileShellReady=window.innerWidth>840||(mobileButtons.length===5&&mobileActive.length===1&&mobileActive[0].dataset.route===expectedMobileRoute);
     return location.hash===`#${value}`
       &&document.body.dataset.productRoute===value
       &&Boolean(document.querySelector('#screenHost h1'))
@@ -71,13 +73,16 @@ async function assertStableMobileShell(label){
   const result=await page.evaluate(()=>{
     if(window.innerWidth>840)return{desktop:true};
     const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
-    const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width};});
+    const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{route:button.dataset.route,text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width,active:button.classList.contains('active')};});
     const brand=[document.querySelector('.topbar .brand b'),document.querySelector('.ltsRefBrand')].find(visible);
     const routeAction=document.querySelector('#routeAction');
-    return{desktop:false,viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
+    return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
   if(result.desktop)return;
   if(result.buttons.length!==5||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
+  const expected=['hoje','bio','treinos','saude'].includes(result.route)?result.route:'mais';
+  const active=result.buttons.filter(button=>button.active);
+  if(active.length!==1||active[0].route!==expected)throw new Error(`${label}: mobile navigation has competing or incorrect active destinations ${JSON.stringify({route:result.route,expected,active})}`);
   if(!result.brand.includes('LTS Health'))throw new Error(`${label}: mobile brand is not visible`);
   if(result.routeActionVisible)throw new Error(`${label}: stale contextual action remains visible`);
 }
@@ -104,7 +109,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='ux-coherence-mobile-route-action-fix-20260915.25')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='ux-coherence-public-visual-closure-20260915.26')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
@@ -294,10 +299,13 @@ try{
   await page.locator('.evolutionLowerGrid').scrollIntoViewIfNeeded();
   const evolutionLowerGrid=await page.evaluate(()=>{
     const grid=document.querySelector('.evolutionLowerGrid');
-    return{align:grid?getComputedStyle(grid).alignItems:'missing',cards:grid?[...grid.children].map(card=>({align:getComputedStyle(card).alignSelf,height:card.getBoundingClientRect().height})):[]};
+    const cards=grid?[...grid.children]:[],rects=cards.map(card=>card.getBoundingClientRect());
+    return{align:grid?getComputedStyle(grid).alignItems:'missing',columns:grid?getComputedStyle(grid).gridTemplateColumns:'missing',cards:cards.map((card,index)=>({align:getComputedStyle(card).alignSelf,height:rects[index].height,width:rects[index].width,top:rects[index].top,bottom:rects[index].bottom}))};
   });
-  if(evolutionLowerGrid.align!=='start'||evolutionLowerGrid.cards.length!==2||evolutionLowerGrid.cards.some(card=>card.align!=='start'))throw new Error(`desktop Evolution lower grid remains stretched: ${JSON.stringify(evolutionLowerGrid)}`);
+  if(evolutionLowerGrid.align!=='start'||evolutionLowerGrid.cards.length!==2||evolutionLowerGrid.cards.some(card=>card.align!=='start')||evolutionLowerGrid.cards[1].top<evolutionLowerGrid.cards[0].bottom-1)throw new Error(`desktop Evolution lower flow remains split or stretched: ${JSON.stringify(evolutionLowerGrid)}`);
   await page.screenshot({path:`${evidenceDir}/desktop-evolution-lower.png`});
+  await page.locator('.evolutionSegmental').scrollIntoViewIfNeeded();
+  await page.screenshot({path:`${evidenceDir}/desktop-evolution-segmental.png`});
 
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
@@ -370,6 +378,9 @@ try{
   await page.locator('.evolutionChangeTable').scrollIntoViewIfNeeded();
   await assertStableMobileShell('mobile Evolution changes');
   await page.screenshot({path:`${evidenceDir}/mobile-evolution-changes.png`});
+  await page.locator('.evolutionTrainingRhythm').scrollIntoViewIfNeeded();
+  await assertStableMobileShell('mobile Evolution training rhythm');
+  await page.screenshot({path:`${evidenceDir}/mobile-evolution-training.png`});
   if(await page.locator('.segmentKinds').count()){
     await page.locator('.segmentKinds').scrollIntoViewIfNeeded();
     await assertMinimumReadableType('.segmentKindTitle b,.segmentKindTitle small,.segmentPair span,.segmentPair strong,.sideDifferenceHead small',10.5,'mobile Evolution segmental');
