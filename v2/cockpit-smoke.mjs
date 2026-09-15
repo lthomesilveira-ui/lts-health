@@ -1,7 +1,11 @@
 import { chromium } from 'playwright';
+import {mkdirSync} from 'node:fs';
+
+const evidenceDir='v2/public-audit-evidence';
+mkdirSync(evidenceDir,{recursive:true});
 
 async function noOverflow(page,label,route){const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);if(overflow>3)throw new Error(`${label}/${route}: horizontal overflow ${overflow}px`);}
-async function trainingPhysicalDeviceGuard(page,label){
+async function trainingFinalRendererGuard(page,label){
   await page.evaluate(async()=>{
     const core=await import('./src/core.js');
     const training=await import('./src/training-reference-v2.js');
@@ -31,6 +35,42 @@ async function trainingPhysicalDeviceGuard(page,label){
   if(bad.length)throw new Error(`${label}/treinos: unreadable metric contrast ${JSON.stringify(bad)}`);
   if(!result.preview||!result.previewContained||result.overlap)throw new Error(`${label}/treinos: exercise preview collapsed or overlapping ${JSON.stringify(result)}`);
   await noOverflow(page,label,'treinos');
+  await page.screenshot({path:`${evidenceDir}/${label}-training-summary.png`,fullPage:true});
+
+  await page.evaluate(async()=>{
+    const core=await import('./src/core.js');
+    const training=await import('./src/training-reference-v2.js');
+    core.state.ui.productTrainingView='exercises';
+    document.querySelector('#screenHost').innerHTML=training.renderProductTraining();
+  });
+  await page.waitForSelector('.ltsTrainingReference[data-training-view="exercises"] .ltsRefExerciseCard',{timeout:5000});
+  const exercises=await page.evaluate(()=>{
+    const card=document.querySelector('.ltsRefExerciseCard');
+    const header=card?.querySelector(':scope > header');
+    const copy=header?.querySelector(':scope > div:nth-child(2)');
+    const title=copy?.querySelector('b');
+    const sets=card?.querySelector('.ltsRefSetTable');
+    const action=card?.querySelector('.ltsRefExerciseHistory');
+    const rect=el=>el?.getBoundingClientRect()||null;
+    const c=rect(card),h=rect(header),x=rect(copy),t=rect(title),s=rect(sets),a=rect(action);
+    const fontSizes=[...card.querySelectorAll('b,small,span,i,em,button')].map(el=>parseFloat(getComputedStyle(el).fontSize));
+    return{
+      display:getComputedStyle(card).display,
+      cardWidth:c?.width||0,
+      headerWidth:h?.width||0,
+      copyWidth:x?.width||0,
+      titleWidth:t?.width||0,
+      setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),
+      actionWidth:a?.width||0,
+      minFont:Math.min(...fontSizes)
+    };
+  });
+  if(exercises.display!=='block')throw new Error(`${label}/treinos: final exercise card inherited the legacy grid ${JSON.stringify(exercises)}`);
+  if(exercises.headerWidth<exercises.cardWidth*.85||exercises.copyWidth<110||exercises.titleWidth<110)throw new Error(`${label}/treinos: exercise identity is crushed ${JSON.stringify(exercises)}`);
+  if(!exercises.setsBelow||exercises.actionWidth<120)throw new Error(`${label}/treinos: exercise detail hierarchy is broken ${JSON.stringify(exercises)}`);
+  if(exercises.minFont<9.5)throw new Error(`${label}/treinos: exercise detail contains unreadable type ${JSON.stringify(exercises)}`);
+  await noOverflow(page,label,'treinos-exercises');
+  await page.screenshot({path:`${evidenceDir}/${label}-training-exercises.png`,fullPage:true});
 }
 async function run(viewport,label){
   const browser=await chromium.launch({headless:true});
@@ -78,7 +118,7 @@ async function run(viewport,label){
   const insightText=(await page.locator('#screenHost').textContent())||'';
   if(!insightText.includes('Resumo executivo')||!insightText.includes('Protocolos'))throw new Error(`${label}: Insights route regressed`);
   await noOverflow(page,label,'insights');
-  if(viewport.width<=840)await trainingPhysicalDeviceGuard(page,label);
+  await trainingFinalRendererGuard(page,label);
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();
 }

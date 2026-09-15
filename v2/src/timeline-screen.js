@@ -155,7 +155,7 @@ function domainSummary(rows,missing){
 }
 function monthLabel(value){const index=Number(value)-1;return monthNames[index]||value;}
 export function renderTimelineHub(){
-  const all=events(),missing=unavailable(),domain=state.ui.timelineDomain||'all',q=norm(state.ui.timelineQuery),period=state.ui.timelinePeriod||'365',limit=Number(state.ui.timelineLimit||250),cut=period==='all'?null:since(Number(period));
+  const all=events(),missing=unavailable(),domain=state.ui.timelineDomain||'all',q=norm(state.ui.timelineQuery),period=state.ui.timelinePeriod||'365',limit=Number(state.ui.timelineLimit||50),cut=period==='all'?null:since(Number(period));
   const domains=['all',...unique(all.map(e=>e.domain)).sort((a,b)=>a.localeCompare(b,'pt-BR'))],years=unique(all.map(e=>yearOf(e.date))).filter(Boolean).sort((a,b)=>b.localeCompare(a));
   if(period==='all'&&(!state.ui.timelineYear||!years.includes(state.ui.timelineYear)))state.ui.timelineYear=years[0]||null;
   const yearRows=all.filter(e=>(!cut||e.date>=cut)&&(period!=='all'||!state.ui.timelineYear||yearOf(e.date)===state.ui.timelineYear));
@@ -183,5 +183,5 @@ export function renderTimelineHub(){
     <div class="controls sectionGap"><select id="timelinePeriod"><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Histórico</option></select>${historicalControls}<select id="timelineDomain">${domains.map(d=>`<option value="${esc(d)}">${d==='all'?'Todas as áreas':esc(d)}</option>`).join('')}</select><input id="timelineQuery" type="search" placeholder="Buscar no histórico" value="${esc(state.ui.timelineQuery)}"></div>
     <div class="timelineSummary"><b>${filtered.length}</b><span>de ${countLabel(matching.length,'registro encontrado','registros encontrados')}${scopeLabel}${missing.length?' entre as áreas carregadas':''}</span></div>
     <div class="timelineGroups sectionGap">${[...grouped.entries()].map(([date,rows])=>`<section class="timelineDay"><div class="timelineDate"><b>${fmtDate(date)}</b><span>${countLabel(rows.length,'registro','registros')}</span></div><div class="card timelineDayCard">${rows.map(item).join('')}</div></section>`).join('')||empty(missing.length?'Nenhum dos registros carregados corresponde aos filtros.':'Nenhum registro corresponde aos filtros.')}</div>
-    ${matching.length>filtered.length?`<div class="loadMore"><button type="button" data-timeline-more>Mostrar mais ${Math.min(250,matching.length-filtered.length)} registros</button></div>`:''}`;
+    ${matching.length>filtered.length?`<div class="loadMore"><button type="button" data-timeline-more>Mostrar mais ${Math.min(50,matching.length-filtered.length)} registros</button></div>`:''}`;
 }

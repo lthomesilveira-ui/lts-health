@@ -6,10 +6,17 @@ on:
       - 'v2/index.html'
       - 'v2/src/today-screen.js'
       - 'v2/src/home-reference.js'
+      - 'v2/src/training-reference-v2.js'
+      - 'v2/src/product-layout-runtime.js'
+      - 'v2/src/main.js'
+      - 'v2/src/core.js'
+      - 'v2/src/timeline-screen.js'
       - 'v2/src/treatment-screen.js'
       - 'v2/src/analysis-screen.js'
       - 'v2/src/data-layer.js'
       - 'v2/home-reference.css'
+      - 'v2/training-reference-v2.css'
+      - 'v2/public-audit-remediation.css'
       - 'v2/cockpit.css'
       - 'v2/analysis.css'
       - 'v2/secondary.css'
@@ -17,16 +24,24 @@ on:
       - 'v2/product-delivery.css'
       - 'v2/cockpit-smoke.mjs'
       - 'v2/home-information-integrity-smoke.mjs'
+      - 'v2/public-audit-contract-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   pull_request:
     paths:
       - 'v2/index.html'
       - 'v2/src/today-screen.js'
       - 'v2/src/home-reference.js'
+      - 'v2/src/training-reference-v2.js'
+      - 'v2/src/product-layout-runtime.js'
+      - 'v2/src/main.js'
+      - 'v2/src/core.js'
+      - 'v2/src/timeline-screen.js'
       - 'v2/src/treatment-screen.js'
       - 'v2/src/analysis-screen.js'
       - 'v2/src/data-layer.js'
       - 'v2/home-reference.css'
+      - 'v2/training-reference-v2.css'
+      - 'v2/public-audit-remediation.css'
       - 'v2/cockpit.css'
       - 'v2/analysis.css'
       - 'v2/secondary.css'
@@ -34,6 +49,7 @@ on:
       - 'v2/product-delivery.css'
       - 'v2/cockpit-smoke.mjs'
       - 'v2/home-information-integrity-smoke.mjs'
+      - 'v2/public-audit-contract-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   workflow_dispatch:
 jobs:
@@ -58,6 +74,8 @@ jobs:
           node --check v2/src/data-layer.js
           node --check v2/cockpit-smoke.mjs
           node --check v2/home-information-integrity-smoke.mjs
+          node --check v2/public-audit-contract-smoke.mjs
+          node v2/public-audit-contract-smoke.mjs
       - name: Start fixture server
         run: |
           cd v2
@@ -66,3 +84,11 @@ jobs:
         run: node v2/cockpit-smoke.mjs
       - name: Home information integrity on mobile
         run: node v2/home-information-integrity-smoke.mjs
+      - name: Upload safe visual audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-audit-fixture-visuals
+          path: v2/public-audit-evidence/*.png
+          if-no-files-found: warn
+          retention-days: 14
