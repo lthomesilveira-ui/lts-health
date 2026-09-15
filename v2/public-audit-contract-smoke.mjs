@@ -13,10 +13,12 @@ const internalCss=read('./public-audit-remediation.css');
 const core=read('./src/core.js');
 const timeline=read('./src/timeline-screen.js');
 const analysis=read('./src/analysis-screen.js');
+const evolution=read('./src/evolution-screen.js');
+const realAuth=read('./real-auth-e2e.mjs');
 
-assert.match(index,/name="lts-build" content="ux-coherence-internal-legibility-20260915\.20"/);
+assert.match(index,/name="lts-build" content="ux-coherence-public-qa-remediation-20260915\.21"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=ux-coherence-internal-legibility-20260915.20`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=ux-coherence-public-qa-remediation-20260915.21`),`${asset} is not tied to the audited build`);
 }
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
@@ -45,6 +47,7 @@ assert.match(core,/timelineLimit:\s*50/);
 assert.match(timeline,/timelineLimit\|\|50/);
 assert.match(timeline,/Math\.min\(50,matching\.length-filtered\.length\)/);
 assert.match(analysis,/option value="365"\$\{selected\('365'\)\}/);
+assert.match(evolution,/grid cols2 sectionGap evolutionLowerGrid/);
 
 for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInbox','.analysisDigestCard']){
   assert.ok(internalCss.includes(selector),`audited readability reset is missing ${selector}`);
@@ -53,6 +56,9 @@ for(const selector of ['body[data-product-route="nutricao"] .nutritionMonthHead 
   assert.ok(internalCss.includes(selector),`internal legibility contract is missing ${selector}`);
 }
 assert.match(internalCss,/body:has\(\.ltsHomeReference\) \.topbar #routeAction,[\s\S]*body\[data-product-route="nutricao"\] \.topbar #routeAction\s*\{[^}]*display:\s*none !important;/s);
+assert.match(internalCss,/body\[data-product-route="evolucao"\] \.evolutionLowerGrid\s*\{[^}]*align-items:\s*start;/s);
+assert.match(realAuth,/locator\('\.nutritionDays'\)\.scrollIntoViewIfNeeded\(\)/);
+assert.doesNotMatch(realAuth,/locator\('\.nutritionMonth'\)(?:\.first\(\))?\.scrollIntoViewIfNeeded\(\)/);
 assert.match(index,/id="refreshBtn" aria-label="Atualizar dados"[^>]*><svg class="topActionIcon"/);
 assert.match(index,/id="logoutBtn" aria-label="Sair do LTS Health"[^>]*><svg class="topActionIcon"/);
 
