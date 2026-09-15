@@ -422,6 +422,7 @@
   stroke-linejoin: round;
 }
 
+body[data-product-route="hoje"] .topbar #routeAction,
 body[data-product-route="nutricao"] .topbar #routeAction {
   display: none !important;
 }

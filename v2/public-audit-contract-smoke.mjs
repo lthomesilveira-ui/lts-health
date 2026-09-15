@@ -51,7 +51,7 @@ for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInb
 for(const selector of ['body[data-product-route="nutricao"] .nutritionMonthHead b','body[data-product-route="nutricao"] .nutritionDays small','body[data-product-route="evolucao"] [data-evolution-metric]','body[data-product-route="evolucao"] .changeRow','.topActionIcon']){
   assert.ok(internalCss.includes(selector),`internal legibility contract is missing ${selector}`);
 }
-assert.match(internalCss,/body\[data-product-route="nutricao"\] \.topbar #routeAction\s*\{[^}]*display:\s*none !important;/s);
+assert.match(internalCss,/body\[data-product-route="hoje"\] \.topbar #routeAction,[\s\S]*body\[data-product-route="nutricao"\] \.topbar #routeAction\s*\{[^}]*display:\s*none !important;/s);
 assert.match(index,/id="refreshBtn" aria-label="Atualizar dados"[^>]*><svg class="topActionIcon"/);
 assert.match(index,/id="logoutBtn" aria-label="Sair do LTS Health"[^>]*><svg class="topActionIcon"/);
 

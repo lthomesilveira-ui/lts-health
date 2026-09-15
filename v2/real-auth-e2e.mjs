@@ -164,6 +164,7 @@ try{
   }));
   if(!homeState.greeting||homeState.metrics!==3||!homeState.today||homeState.progress!==4||!homeState.trainingRow)throw new Error(`reference Home missing: ${JSON.stringify(homeState)}`);
   if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
+  if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
   await auditReferenceHome('desktop Home');
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/desktop-home.png`,fullPage:true});
@@ -241,6 +242,7 @@ try{
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
+  if(await page.locator('#routeAction').isVisible())throw new Error('mobile Home duplicates the water import action in the top bar');
   await auditReferenceHome('mobile Home');
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
