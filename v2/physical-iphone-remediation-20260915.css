@@ -118,7 +118,7 @@
   }
 
   .ltsRefMetric > span {
-    font-size: 9px;
+    font-size: 9.5px;
   }
 
   .ltsRefMetric > strong {
@@ -131,11 +131,11 @@
   }
 
   .ltsRefMetric > div b {
-    font-size: 8.5px;
+    font-size: 9.5px;
   }
 
   .ltsRefMetric > div small {
-    font-size: 7.5px;
+    font-size: 9.5px;
   }
 
   .ltsRefCoreGrid {
@@ -156,11 +156,11 @@
   }
 
   .ltsRefCard > header span {
-    font-size: 8px;
+    font-size: 9.5px;
   }
 
   .ltsRefCard > header button {
-    font-size: 8.5px;
+    font-size: 9.5px;
   }
 
   .ltsRefTodayRow {
@@ -182,13 +182,13 @@
   }
 
   .ltsRefTodayCopy small {
-    font-size: 8px;
+    font-size: 9.5px;
   }
 
   .ltsRefTodayState {
     width: 18px;
     height: 18px;
-    font-size: 9px;
+    font-size: 9.5px;
   }
 
   .ltsRefProgress {
@@ -210,12 +210,12 @@
   }
 
   .ltsRefRing b {
-    font-size: 9px;
+    font-size: 9.5px;
   }
 
   .ltsRefProgressItem > small {
     margin-top: 3px;
-    font-size: 7.5px;
+    font-size: 9.5px;
   }
 
   /* Detail routes keep their full evidence but no longer read like enlarged
