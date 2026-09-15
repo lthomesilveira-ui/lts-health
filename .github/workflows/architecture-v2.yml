@@ -59,9 +59,9 @@ jobs:
           test -f v2/src/integrated-analysis.js
           test ! -f v2/app.js
           test ! -f v2/src/screens.js
-          grep -q 'type="module" src="./src/main.js?v=ux-coherence-' v2/index.html
+          grep -q 'type="module" src="./src/main.js?v=home-dashboard-reference-' v2/index.html
           grep -q './product-finish.css' v2/index.html
-          grep -q './ux-coherence.css?v=ux-coherence-' v2/index.html
+          grep -q './ux-coherence.css?v=home-dashboard-reference-' v2/index.html
           grep -q 'Seu cockpit longitudinal de saúde' v2/index.html
           grep -q 'data-route="bio">Composição<' v2/index.html
           grep -q 'data-route="analise">Recuperação & análises<' v2/index.html

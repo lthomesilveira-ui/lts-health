@@ -1,82 +1,61 @@
-/* Canonical Home surface. Mobile follows the approved private reference without embedding private evidence. */
+/* Canonical Home. The approved private reference governs the mobile hierarchy;
+   desktop expands the same hierarchy into one longitudinal cockpit. */
 .ltsHomeReference {
+  --home-ink: #111a28;
+  --home-muted: #67768a;
+  --home-line: #dfe7ee;
+  --home-canvas: #f3f6f8;
+  --home-blue: #176cc1;
+  --home-navy: #071522;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1180px;
   margin: 0 auto;
-  color: #101827;
+  color: var(--home-ink);
+}
+
+.ltsHomeReference button {
+  font: inherit;
+}
+
+.ltsHomeReference button:focus-visible {
+  outline: 3px solid rgba(45, 135, 226, .42);
+  outline-offset: 2px;
 }
 
 .ltsRefHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
-
-.ltsRefBrand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.ltsRefBrand b {
-  font-size: 20px;
-  letter-spacing: -.025em;
-}
-
-.ltsRefBrand em {
-  color: #43c4ea;
-  font-style: normal;
-}
-
-.ltsRefPulse {
-  color: #43c4ea;
-  font-size: 29px;
-  line-height: 1;
-}
-
-.ltsRefAvatar {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 50%;
-  place-items: center;
-  background: #18273a;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 800;
+  display: none;
 }
 
 .ltsRefGreeting h1 {
   margin: 0;
-  font-size: 36px;
+  color: var(--home-ink);
+  font-size: clamp(30px, 3vw, 42px);
   line-height: 1.02;
   letter-spacing: -.045em;
 }
 
 .ltsRefGreeting > p {
-  margin: 7px 0 0;
-  color: #68778b;
+  margin: 8px 0 0;
+  color: var(--home-muted);
   font-size: 14px;
 }
 
 .ltsRefMotto {
   display: flex;
-  min-height: 40px;
-  margin-top: 13px;
-  padding: 9px 13px;
-  border: 1px solid #dce6ed;
+  min-height: 42px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px solid #d7e4eb;
   border-radius: 13px;
   align-items: center;
   gap: 9px;
-  background: #edf6f9;
+  background: #eaf4f7;
   color: #203247;
 }
 
 .ltsRefMotto span {
-  color: #20a8d4;
-  font-size: 16px;
+  color: #159fce;
+  font-size: 17px;
 }
 
 .ltsRefMotto b {
@@ -87,75 +66,95 @@
 .ltsRefMetrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 11px;
-  margin-top: 13px;
+  gap: 12px;
+  margin-top: 14px;
 }
 
 .ltsRefMetric {
   min-width: 0;
-  min-height: 118px;
-  padding: 15px;
-  border: 1px solid #dfe6ed;
+  min-height: 112px;
+  padding: 15px 16px;
+  border: 1px solid var(--home-line);
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(20, 35, 55, .05);
-  color: #101827;
+  color: var(--home-ink);
   text-align: left;
 }
 
 .ltsRefMetric > span {
   display: block;
-  color: #5f6f84;
+  color: #5d6c80;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 750;
 }
 
 .ltsRefMetric > strong {
   display: block;
+  overflow: hidden;
   margin-top: 8px;
-  font-size: 26px;
+  font-size: 27px;
   line-height: 1;
   letter-spacing: -.04em;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .ltsRefMetric > div {
-  display: grid;
-  gap: 2px;
-  margin-top: 9px;
+  display: flex;
+  margin-top: 10px;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .ltsRefMetric > div b {
-  color: #245f9f;
-  font-size: 11px;
+  color: #1767ad;
+  font-size: 12px;
 }
 
 .ltsRefMetric > div small {
   color: #718096;
-  font-size: 11px;
+  font-size: 11.5px;
+}
+
+.ltsRefMetric.unavailable {
+  border-color: #e5c9cf;
+  background: #fffafb;
+}
+
+.ltsRefMetric.unavailable > div b {
+  color: #a94156;
 }
 
 .ltsRefCoreGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr);
+  grid-template-columns: minmax(330px, .92fr) minmax(0, 1.38fr);
+  grid-template-areas:
+    "today trend"
+    "progress trend";
   gap: 13px;
-  margin-top: 13px;
+  margin-top: 14px;
   align-items: stretch;
 }
 
-.ltsRefCard {
+.ltsRefToday { grid-area: today; }
+.ltsRefProgress { grid-area: progress; }
+.ltsRefTrend { grid-area: trend; }
+
+.ltsRefCard,
+.ltsRefTrend {
   overflow: hidden;
   margin: 0;
-  border: 1px solid #dfe6ed;
-  border-radius: 21px;
+  border: 1px solid var(--home-line);
+  border-radius: 20px;
   background: #fff;
-  box-shadow: 0 9px 28px rgba(18, 32, 49, .06);
-  color: #101827;
+  box-shadow: 0 9px 28px rgba(18, 32, 49, .055);
+  color: var(--home-ink);
 }
 
 .ltsRefCard > header {
   display: flex;
-  padding: 15px 16px 11px;
+  padding: 14px 16px 11px;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -169,53 +168,70 @@
 
 .ltsRefProgress > header > div {
   display: grid;
-  gap: 3px;
+  gap: 2px;
 }
 
-.ltsRefCard > header h2 {
+.ltsRefCard > header h2,
+.ltsRefTrend h2,
+.ltsRefIntegrated h2,
+.ltsRefChange h2 {
   margin: 0;
+  color: var(--home-ink);
   font-size: 19px;
-  letter-spacing: -.025em;
+  line-height: 1.1;
+  letter-spacing: -.03em;
 }
 
 .ltsRefCard > header span {
-  color: #68778b;
-  font-size: 11px;
+  color: var(--home-muted);
+  font-size: 11.5px;
 }
 
-.ltsRefCard > header button {
+.ltsRefCard > header button,
+.ltsRefTrend > header button,
+.ltsRefIntegrated > header button,
+.ltsRefChange article > header button,
+.ltsRefChange aside > header button {
   padding: 5px 0;
   border: 0;
   background: transparent;
-  color: #1f67bc;
+  color: var(--home-blue);
   font-size: 12px;
-  font-weight: 750;
+  font-weight: 800;
   white-space: nowrap;
 }
 
 .ltsRefTodayRow {
   display: grid;
   width: 100%;
-  min-height: 62px;
-  padding: 9px 15px;
+  min-height: 56px;
+  padding: 8px 15px;
   border: 0;
   border-top: 1px solid #e8edf2;
-  grid-template-columns: 42px minmax(0, 1fr) 30px;
+  grid-template-columns: 38px minmax(0, 1fr) 26px;
   align-items: center;
   gap: 10px;
   background: #fff;
-  color: #101827;
+  color: var(--home-ink);
   text-align: left;
+}
+
+.ltsRefTodayRow:hover,
+.ltsRefEvent:hover,
+.ltsRefContextItem:hover,
+.ltsRefDomain:hover {
+  background: #f8fafc;
 }
 
 .ltsRefTodayIcon {
   display: grid;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 11px;
   place-items: center;
   color: #fff;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 900;
 }
 
@@ -225,6 +241,7 @@
 .ltsRefTodayIcon.nutrition { background: #ff7a1a; }
 .ltsRefTodayIcon.labs { background: #a94468; }
 .ltsRefTodayIcon.recovery { background: #7057d9; }
+.ltsRefTodayIcon.timeline { background: #1677b8; }
 
 .ltsRefTodayCopy {
   min-width: 0;
@@ -233,7 +250,7 @@
 .ltsRefTodayCopy b {
   display: block;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -243,8 +260,8 @@
   display: block;
   overflow: hidden;
   margin-top: 3px;
-  color: #68778b;
-  font-size: 11px;
+  color: var(--home-muted);
+  font-size: 11.5px;
   line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -258,7 +275,7 @@
   place-items: center;
   background: #0a9565;
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
 }
 
@@ -269,18 +286,18 @@
 
 .ltsRefTodayState.entry {
   background: #e8f1ff;
-  color: #1f67bc;
+  color: var(--home-blue);
 }
 
 .ltsRefProgress {
-  padding-bottom: 15px;
+  padding-bottom: 11px;
 }
 
 .ltsRefProgressGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 13px 7px;
-  padding: 9px 13px 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px 11px 3px;
 }
 
 .ltsRefProgressItem {
@@ -292,8 +309,8 @@
   --ring: #33b875;
   position: relative;
   display: grid;
-  width: 64px;
-  height: 64px;
+  width: 54px;
+  height: 54px;
   margin: 0 auto;
   border-radius: 50%;
   place-items: center;
@@ -302,7 +319,7 @@
 
 .ltsRefRing::after {
   position: absolute;
-  inset: 7px;
+  inset: 6px;
   border-radius: 50%;
   background: #fff;
   content: '';
@@ -314,15 +331,19 @@
 }
 
 .ltsRefRing b {
-  font-size: 13px;
+  color: var(--home-ink);
+  font-size: 12px;
   letter-spacing: -.02em;
 }
 
 .ltsRefProgressItem > small {
   display: block;
-  margin-top: 6px;
+  overflow: hidden;
+  margin-top: 5px;
   color: #536177;
-  font-size: 11px;
+  font-size: 11.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ltsRefProgressItem.training .ltsRefRing { --ring: #20ad68; }
@@ -330,69 +351,217 @@
 .ltsRefProgressItem.water .ltsRefRing { --ring: #26a9e7; }
 .ltsRefProgressItem.sleep .ltsRefRing { --ring: #7657e8; }
 
-.ltsRefIntegrated,
-.ltsRefChange {
-  margin-top: 24px;
+.ltsRefTrend {
+  padding: 18px;
 }
 
+.ltsRefTrend > header,
 .ltsRefIntegrated > header,
-.ltsRefChange > header {
+.ltsRefChange article > header,
+.ltsRefChange aside > header {
   display: flex;
-  margin: 0 2px 11px;
-  align-items: end;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
 }
 
+.ltsRefTrend > header > div,
+.ltsRefIntegrated > header > div,
+.ltsRefChange article > header > div,
+.ltsRefChange aside > header > div {
+  min-width: 0;
+}
+
+.ltsRefTrend > header span,
 .ltsRefIntegrated > header span,
-.ltsRefChange > header span {
+.ltsRefChange article > header span,
+.ltsRefChange aside > header span {
   display: block;
-  color: #63758a;
-  font-size: 10px;
-  font-weight: 800;
+  color: #68788c;
+  font-size: 10.5px;
+  font-weight: 850;
   letter-spacing: .12em;
 }
 
+.ltsRefTrend > header h2,
 .ltsRefIntegrated > header h2,
-.ltsRefChange > header h2 {
-  margin: 3px 0 0;
-  color: #101827;
-  font-size: 22px;
+.ltsRefChange article > header h2,
+.ltsRefChange aside > header h2 {
+  margin-top: 4px;
+}
+
+.ltsRefTrend > header p,
+.ltsRefIntegrated > header p {
+  margin: 5px 0 0;
+  color: var(--home-muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.ltsRefPeriod {
+  display: flex;
+  width: fit-content;
+  margin-top: 13px;
+  padding: 3px;
+  border: 1px solid #dce5ec;
+  border-radius: 10px;
+  gap: 2px;
+  background: #f1f5f7;
+}
+
+.ltsRefPeriod button {
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #526278;
+  font-size: 11.5px;
+  font-weight: 750;
+}
+
+.ltsRefPeriod button.active {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 35, 55, .08);
+  color: var(--home-ink);
+}
+
+.ltsRefTrendTabs {
+  display: flex;
+  overflow-x: auto;
+  margin-top: 12px;
+  padding-bottom: 3px;
+  gap: 5px;
+  scrollbar-width: thin;
+}
+
+.ltsRefTrendTabs button {
+  min-height: 31px;
+  padding: 5px 10px;
+  border: 1px solid #dfe6ed;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: #fff;
+  color: #526278;
+  font-size: 11.5px;
+  font-weight: 750;
+}
+
+.ltsRefTrendTabs button.active {
+  border-color: #142638;
+  background: #142638;
+  color: #fff;
+}
+
+.ltsRefTrendValue {
+  display: flex;
+  margin-top: 12px;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ltsRefTrendValue b {
+  color: var(--home-ink);
+  font-size: 24px;
   letter-spacing: -.035em;
 }
 
-.ltsRefIntegrated > header button,
-.ltsRefChange > header button {
-  padding: 5px 0;
-  border: 0;
-  background: transparent;
-  color: #1f67bc;
+.ltsRefTrendValue span {
+  color: var(--home-muted);
+  font-size: 11.5px;
+}
+
+.ltsRefTrendChart {
+  margin-top: 8px;
+}
+
+.ltsRefTrendChart svg {
+  display: block;
+  width: 100%;
+  height: 174px;
+  overflow: visible;
+}
+
+.ltsRefTrendGridLines line {
+  stroke: #e7edf2;
+  stroke-width: 1;
+}
+
+.ltsRefTrendAxis text {
+  fill: #7a8798;
+  font-size: 10px;
+}
+
+.ltsRefTrendMarks {
+  fill: #1b86cb;
+}
+
+.ltsRefTrendLine {
+  fill: none;
+  stroke: #1b86cb;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.ltsRefTrendMarks circle {
+  fill: #fff;
+  stroke: #1b86cb;
+  stroke-width: 2.5;
+}
+
+.ltsRefTrendChart > div {
+  display: flex;
+  margin: -20px 0 0 48px;
+  justify-content: space-between;
+  color: #7a8798;
+  font-size: 10.5px;
+}
+
+.ltsRefTrendEmpty,
+.ltsRefEmpty {
+  display: grid;
+  min-height: 150px;
+  margin: 12px 0 0;
+  border: 1px dashed #cfdae3;
+  border-radius: 13px;
+  place-items: center;
+  color: var(--home-muted);
   font-size: 12px;
-  font-weight: 800;
-  white-space: nowrap;
+  text-align: center;
+}
+
+.ltsRefIntegrated {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid var(--home-line);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(20, 35, 55, .045);
 }
 
 .ltsRefDomainGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 9px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .ltsRefDomain {
   min-width: 0;
-  min-height: 134px;
-  padding: 13px;
-  border: 1px solid #24394c;
-  border-radius: 17px;
-  background: #0d2234;
-  color: #fff;
+  min-height: 138px;
+  padding: 12px;
+  border: 1px solid #e0e7ed;
+  border-radius: 15px;
+  background: #f7f9fb;
+  color: var(--home-ink);
   text-align: left;
 }
 
 .ltsRefDomainTop {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .ltsRefDomainTop .ltsRefTodayIcon {
@@ -404,126 +573,164 @@
 
 .ltsRefDomainTop > span {
   flex: 1;
-  color: #c3d0dc;
-  font-size: 11px;
-  font-weight: 750;
+  color: #4f6074;
+  font-size: 11.5px;
+  font-weight: 800;
   line-height: 1.2;
 }
 
 .ltsRefDomainTop > strong {
-  color: #91a5b7;
+  color: #8a98a8;
   font-size: 17px;
 }
 
 .ltsRefDomain > b {
   display: block;
   margin-top: 12px;
-  color: #fff;
+  color: var(--home-ink);
   font-size: 17px;
   line-height: 1.15;
   letter-spacing: -.025em;
 }
 
 .ltsRefDomain > small {
-  display: block;
+  display: -webkit-box;
+  overflow: hidden;
   margin-top: 6px;
-  color: #aebdca;
+  color: var(--home-muted);
   font-size: 11px;
   line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
-.ltsRefDomain.training { border-color: #315250; }
-.ltsRefDomain.nutrition { border-color: #55402d; }
-.ltsRefDomain.labs { border-color: #59354a; }
-.ltsRefDomain.recovery { border-color: #463a62; }
-.ltsRefDomain.water { border-color: #28516a; }
-
-.ltsRefIntegratedSummary {
-  margin: 10px 2px 0;
-  color: #5f6f84;
-  font-size: 11px;
-  line-height: 1.5;
-}
+.ltsRefDomain.training { background: #f1f9f7; }
+.ltsRefDomain.nutrition { background: #fff8f1; }
+.ltsRefDomain.water { background: #f1f9fd; }
+.ltsRefDomain.labs { background: #fcf4f7; }
+.ltsRefDomain.recovery { background: #f7f4fc; }
+.ltsRefDomain.medication { background: #f5f4fb; }
 
 .ltsRefChange {
-  padding: 16px;
-  border: 1px solid #dfe6ed;
-  border-radius: 19px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
+  gap: 13px;
+  margin-top: 13px;
+}
+
+.ltsRefChange > article,
+.ltsRefChange > aside {
+  overflow: hidden;
+  min-width: 0;
+  border: 1px solid var(--home-line);
+  border-radius: 20px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(20, 35, 55, .04);
 }
 
-.ltsRefChange > header {
-  margin: 0 0 12px;
+.ltsRefChange article > header,
+.ltsRefChange aside > header {
+  padding: 16px;
 }
 
-.ltsRefChangeGrid {
+.ltsRefEvent {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  width: 100%;
+  min-height: 59px;
+  padding: 9px 15px;
+  border: 0;
+  border-top: 1px solid #e8edf2;
+  grid-template-columns: 82px 34px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: var(--home-ink);
+  text-align: left;
 }
 
-.ltsRefChangeGrid > div {
-  min-width: 0;
-  padding: 11px;
-  border-radius: 13px;
-  background: #f2f5f8;
-}
-
-.ltsRefChangeGrid span {
-  display: block;
-  color: #63758a;
-  font-size: 10px;
+.ltsRefEvent time {
+  color: #617187;
+  font-size: 11.5px;
   font-weight: 750;
-  letter-spacing: .05em;
-  text-transform: uppercase;
 }
 
-.ltsRefChangeGrid b {
+.ltsRefEvent .ltsRefTodayIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.ltsRefEvent > span:not(.ltsRefTodayIcon) {
+  min-width: 0;
+}
+
+.ltsRefEvent b,
+.ltsRefContextItem b {
   display: block;
-  margin-top: 6px;
-  color: #101827;
-  font-size: 17px;
+  color: var(--home-ink);
+  font-size: 12.5px;
+}
+
+.ltsRefEvent small,
+.ltsRefContextItem small {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--home-muted);
+  font-size: 11.5px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ltsRefChangeGrid small {
-  display: block;
-  margin-top: 3px;
-  color: #63758a;
-  font-size: 10px;
-  line-height: 1.3;
+.ltsRefEvent > i,
+.ltsRefContextItem > i {
+  color: #8b99a9;
+  font-size: 17px;
+  font-style: normal;
 }
 
-.ltsRefChange > p {
-  margin: 11px 1px 0;
-  color: #63758a;
-  font-size: 11px;
-  line-height: 1.45;
+.ltsRefContextItem {
+  display: grid;
+  width: 100%;
+  min-height: 76px;
+  padding: 11px 15px;
+  border: 0;
+  border-top: 1px solid #e8edf2;
+  grid-template-columns: minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: var(--home-ink);
+  text-align: left;
 }
 
-.ltsHomeReference button:focus-visible {
-  outline: 3px solid rgba(45, 135, 226, .42);
-  outline-offset: 2px;
+.ltsRefContextItem small {
+  overflow: visible;
+  white-space: normal;
 }
 
-@media (max-width: 940px) {
-  .ltsRefCoreGrid {
-    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .8fr);
-  }
-
+@media (max-width: 1120px) {
   .ltsRefDomainGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 840px) {
-  body[data-product-route="hoje"] {
-    background: #07131f;
+@media (max-width: 940px) and (min-width: 841px) {
+  .ltsRefCoreGrid {
+    grid-template-columns: minmax(300px, .95fr) minmax(0, 1.15fr);
   }
 
+  .ltsRefTrend {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 840px) {
+  body[data-product-route="hoje"],
   body[data-product-route="hoje"] .app {
-    background: #07131f !important;
+    background: var(--home-navy, #071522) !important;
   }
 
   body[data-product-route="hoje"] .topbar {
@@ -531,51 +738,9 @@
   }
 
   body[data-product-route="hoje"] .screenHost {
-    min-height: 100dvh;
-    padding: 13px 14px calc(100px + env(safe-area-inset-bottom)) !important;
-    background: #07131f !important;
-  }
-
-  body[data-product-route="hoje"] .mobileNav {
-    display: grid !important;
-    min-height: 72px !important;
-    height: 72px !important;
-    padding: 6px 8px calc(5px + env(safe-area-inset-bottom)) !important;
-    border-top: 1px solid #dce3ea !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    align-items: start !important;
-    background: rgba(255, 255, 255, .99) !important;
-    box-shadow: 0 -8px 24px rgba(0, 0, 0, .12) !important;
-  }
-
-  .mobileNav button {
-    display: flex !important;
-    min-width: 0 !important;
-    height: 56px !important;
-    padding: 3px 1px !important;
-    border: 0 !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 3px !important;
-    background: transparent !important;
-    color: #1f2a38 !important;
-    font-size: 11px !important;
-    font-weight: 650 !important;
-    line-height: 1 !important;
-  }
-
-  .mobileNav .mobileNavIcon {
-    display: block;
-    color: #0e1826;
-    font-size: 21px;
-    font-weight: 500;
-    line-height: 1;
-  }
-
-  .mobileNav button.active,
-  .mobileNav button.active .mobileNavIcon {
-    color: #ef2749 !important;
+    min-height: 0;
+    padding: calc(10px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom)) !important;
+    background: #071522 !important;
   }
 
   .ltsHomeReference {
@@ -584,29 +749,47 @@
   }
 
   .ltsRefHeader {
+    display: flex;
     min-height: 38px;
     margin-bottom: 9px;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .ltsRefBrand b,
-  .ltsRefGreeting h1 {
-    color: #fff;
+  .ltsRefBrand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .ltsRefBrand b {
+    color: #fff;
     font-size: 18px;
+    letter-spacing: -.025em;
+  }
+
+  .ltsRefBrand em {
+    color: #43c4ea;
+    font-style: normal;
   }
 
   .ltsRefPulse {
+    color: #43c4ea;
     font-size: 25px;
+    line-height: 1;
   }
 
   .ltsRefAvatar {
+    display: grid;
     width: 38px;
     height: 38px;
+    border: 0;
+    border-radius: 50%;
+    place-items: center;
     background: #eaf4f8;
     color: #0f1b29;
     font-size: 13px;
+    font-weight: 850;
   }
 
   .ltsRefGreeting {
@@ -614,23 +797,24 @@
   }
 
   .ltsRefGreeting h1 {
-    font-size: 27px;
+    color: #fff;
+    font-size: 28px;
     letter-spacing: -.035em;
   }
 
   .ltsRefGreeting > p {
     margin-top: 5px;
-    color: #c6d1db;
+    color: #c8d4df;
     font-size: 12px;
   }
 
   .ltsRefMotto {
-    min-height: 38px;
-    margin-top: 10px;
+    min-height: 39px;
+    margin-top: 11px;
     padding: 8px 11px;
-    border-color: #20364a;
+    border-color: #203b50;
     border-radius: 11px;
-    background: #0d2032;
+    background: #0d2334;
     color: #e4edf4;
   }
 
@@ -648,7 +832,7 @@
   }
 
   .ltsRefMetric {
-    min-height: 110px;
+    min-height: 105px;
     padding: 11px 10px;
     border: 0;
     border-radius: 14px;
@@ -656,31 +840,38 @@
   }
 
   .ltsRefMetric > span {
-    font-size: 10.5px;
+    font-size: 12px;
   }
 
   .ltsRefMetric > strong {
     margin-top: 7px;
-    font-size: 20px;
+    font-size: clamp(18px, 5.2vw, 22px);
   }
 
   .ltsRefMetric > div {
+    display: grid;
+    gap: 2px;
     margin-top: 8px;
   }
 
   .ltsRefMetric > div b,
   .ltsRefMetric > div small {
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.25;
   }
 
   .ltsRefCoreGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "today"
+      "progress"
+      "trend";
     gap: 10px;
     margin-top: 10px;
   }
 
-  .ltsRefCard {
+  .ltsRefCard,
+  .ltsRefTrend {
     border: 0;
     border-radius: 17px;
     box-shadow: none;
@@ -694,26 +885,23 @@
     font-size: 17px;
   }
 
-  .ltsRefCard > header span {
-    font-size: 10px;
-  }
-
+  .ltsRefCard > header span,
   .ltsRefCard > header button {
-    font-size: 10.5px;
+    font-size: 11.5px;
   }
 
   .ltsRefTodayRow {
-    min-height: 56px;
-    padding: 8px 12px;
-    grid-template-columns: 36px minmax(0, 1fr) 24px;
+    min-height: 52px;
+    padding: 7px 12px;
+    grid-template-columns: 34px minmax(0, 1fr) 24px;
     gap: 9px;
   }
 
   .ltsRefTodayIcon {
-    width: 34px;
-    height: 34px;
+    width: 33px;
+    height: 33px;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .ltsRefTodayCopy b {
@@ -721,134 +909,147 @@
   }
 
   .ltsRefTodayCopy small {
-    font-size: 10.5px;
-  }
-
-  .ltsRefTodayState {
-    width: 22px;
-    height: 22px;
-    font-size: 11px;
+    font-size: 11.5px;
   }
 
   .ltsRefProgress {
-    padding-bottom: 11px;
+    padding-bottom: 12px;
   }
 
   .ltsRefProgressGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
-    padding: 5px 9px 4px;
+    gap: 4px;
+    padding: 5px 8px 2px;
   }
 
   .ltsRefRing {
-    width: 52px;
-    height: 52px;
+    width: 51px;
+    height: 51px;
   }
 
-  .ltsRefRing::after {
-    inset: 6px;
-  }
-
-  .ltsRefRing b {
-    color: #101827;
+  .ltsRefRing b,
+  .ltsRefProgressItem > small {
     font-size: 11px;
   }
 
-  .ltsRefProgressItem > small {
-    margin-top: 5px;
-    font-size: 10px;
+  .ltsRefTrend {
+    padding: 15px 13px;
   }
 
-  .ltsRefIntegrated,
-  .ltsRefChange {
-    margin-top: 20px;
-  }
-
-  .ltsRefIntegrated > header,
-  .ltsRefChange > header {
-    margin-bottom: 9px;
-  }
-
+  .ltsRefTrend > header span,
   .ltsRefIntegrated > header span,
-  .ltsRefChange > header span {
-    color: #a8b9c8;
-    font-size: 10px;
+  .ltsRefChange article > header span,
+  .ltsRefChange aside > header span {
+    font-size: 10.5px;
   }
 
+  .ltsRefTrend > header h2,
   .ltsRefIntegrated > header h2,
-  .ltsRefChange > header h2 {
-    color: #fff;
-    font-size: 20px;
+  .ltsRefChange article > header h2,
+  .ltsRefChange aside > header h2 {
+    font-size: 18px;
   }
 
+  .ltsRefTrend > header p,
+  .ltsRefIntegrated > header p,
+  .ltsRefTrend > header button,
   .ltsRefIntegrated > header button,
-  .ltsRefChange > header button {
-    color: #6fc5ea;
-    font-size: 10.5px;
+  .ltsRefChange article > header button,
+  .ltsRefChange aside > header button {
+    font-size: 11.5px;
   }
 
-  .ltsRefDomainGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
+  .ltsRefPeriod {
+    width: 100%;
   }
 
-  .ltsRefDomain {
-    min-height: 128px;
-    padding: 11px;
-    border-radius: 14px;
+  .ltsRefPeriod button {
+    flex: 1 1 0;
+    padding-inline: 4px;
+    font-size: 11px;
   }
 
-  .ltsRefDomain:last-child {
-    grid-column: 1 / -1;
-    min-height: 108px;
+  .ltsRefTrendTabs button {
+    font-size: 11px;
   }
 
-  .ltsRefDomainTop > span {
-    font-size: 10.5px;
+  .ltsRefTrendValue {
+    display: grid;
+    gap: 3px;
   }
 
-  .ltsRefDomain > b {
+  .ltsRefTrendValue b {
+    font-size: 23px;
+  }
+
+  .ltsRefTrendValue span {
+    font-size: 11.5px;
+  }
+
+  .ltsRefTrendChart svg {
+    height: 150px;
+  }
+
+  .ltsRefIntegrated {
     margin-top: 10px;
-    font-size: 16px;
-  }
-
-  .ltsRefDomain > small {
-    font-size: 10.5px;
-  }
-
-  .ltsRefIntegratedSummary {
-    color: #a8b9c8;
-    font-size: 10.5px;
-  }
-
-  .ltsRefChange {
-    padding: 13px;
-    border-color: #24394c;
-    border-radius: 16px;
-    background: #0a1c2c;
+    padding: 14px 12px 12px;
+    border: 0;
+    border-radius: 17px;
     box-shadow: none;
   }
 
-  .ltsRefChangeGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
+  .ltsRefDomainGrid {
+    display: flex;
+    overflow-x: auto;
+    margin: 12px -12px 0;
+    padding: 0 12px 4px;
+    gap: 8px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
   }
 
-  .ltsRefChangeGrid > div {
-    padding: 10px;
-    background: #10273a;
+  .ltsRefDomainGrid::-webkit-scrollbar {
+    display: none;
   }
 
-  .ltsRefChangeGrid span,
-  .ltsRefChangeGrid small,
-  .ltsRefChange > p {
-    color: #a8b9c8;
-    font-size: 10px;
+  .ltsRefDomain {
+    min-width: 216px;
+    min-height: 125px;
+    flex: 0 0 216px;
+    scroll-snap-align: start;
   }
 
-  .ltsRefChangeGrid b {
-    color: #fff;
-    font-size: 16px;
+  .ltsRefDomainTop > span,
+  .ltsRefDomain > small {
+    font-size: 11.5px;
+  }
+
+  .ltsRefChange {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .ltsRefChange > article,
+  .ltsRefChange > aside {
+    border: 0;
+    border-radius: 17px;
+    box-shadow: none;
+  }
+
+  .ltsRefChange article > header,
+  .ltsRefChange aside > header {
+    padding: 14px 12px;
+  }
+
+  .ltsRefEvent {
+    grid-template-columns: 72px 32px minmax(0, 1fr) 16px;
+    padding-inline: 12px;
+  }
+
+  .ltsRefEvent time,
+  .ltsRefEvent small,
+  .ltsRefContextItem small {
+    font-size: 11px;
   }
 }
 
@@ -858,15 +1059,22 @@
   }
 
   .ltsRefMetric > strong {
-    font-size: 18px;
+    font-size: 17px;
   }
 
-  .ltsRefMetric > div small {
-    font-size: 9.5px;
+  .ltsRefMetric > div b,
+  .ltsRefMetric > div small,
+  .ltsRefProgressItem > small {
+    font-size: 10.5px;
   }
 
   .ltsRefRing {
-    width: 48px;
-    height: 48px;
+    width: 47px;
+    height: 47px;
+  }
+
+  .ltsRefEvent {
+    grid-template-columns: 66px 30px minmax(0, 1fr) 14px;
+    gap: 7px;
   }
 }

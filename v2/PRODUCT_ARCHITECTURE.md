@@ -53,15 +53,16 @@ Toda informação visível deve responder pelo menos uma destas perguntas:
 
 ### Hierarquia da Visão geral
 
-A abertura deve ser uma superfície de decisão, nesta ordem:
+A abertura deve ser uma superfície de decisão reconhecível como a primeira tela da referência aprovada. No mobile, a ordem é:
 
-1. **Cabeçalho e janela:** título, explicação curta e filtro global.
-2. **Estado por domínio:** cinco resumos de Composição, Treinos, Nutrição, Recuperação e Exames.
-3. **Tendência principal:** um único gráfico longitudinal, alternável entre métricas, ao lado da síntese da janela.
-4. **Acontecimentos recentes:** uma linha temporal curta que conecta os domínios sem repetir seus detalhes.
-5. **Cobertura:** somente lacunas que realmente limitam a leitura, com acesso à gestão de fontes.
+1. **Contexto pessoal:** marca, saudação, data e uma frase curta.
+2. **Composição compacta:** peso, gordura e massa magra, com comparação somente quando segura.
+3. **Hoje:** treino, tratamentos, hidratação e alimentação do dia atual, sem promover registros históricos.
+4. **Progresso semanal:** quatro indicadores compactos de cobertura recente.
+5. **Evolução longitudinal:** um gráfico principal com quatro períodos e oito métricas selecionáveis.
+6. **Aprofundamento:** seis domínios em faixa horizontal, acontecimentos recentes e contexto das fontes.
 
-A primeira tela não deve apresentar todos os elementos com o mesmo peso nem empilhar mini-dashboards por domínio. O gráfico principal vem cedo; o detalhe fica nas áreas especializadas.
+No desktop, a mesma hierarquia usa a largura disponível: `Hoje` e progresso ficam ao lado da evolução; os domínios formam uma única faixa; acontecimentos e proveniência fecham o cockpit. A primeira tela não apresenta todos os elementos com o mesmo peso nem empilha mini-dashboards por domínio. O detalhe permanece nas áreas especializadas.
 
 ## Contrato de cada área
 

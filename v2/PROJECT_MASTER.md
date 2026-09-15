@@ -123,7 +123,15 @@ Esse marco comprova o pacote técnico e visual definido; não presume aceite sub
 
 Um novo registro real confirmou um caso que o produto precisava representar explicitamente: a sessão pode ter duração completa informada pelo usuário, enquanto o dispositivo registra apenas um trecho. O pacote `PKG-LATEST-WORKOUT-TELEMETRY-001` mantém o treino estruturado como evento canônico, liga a evidência Polar à mesma sessão e impede que energia extrapolada ou frequência cardíaca parcial sejam apresentadas como medições integrais. Dados pessoais, valores do treino e capturas permanecem somente no armazenamento privado.
 
-O candidato `latest-workout-telemetry-20260915.29` adiciona qualificadores na Home e no detalhe de Treino, deriva o estado apenas de campos estruturados da evidência e preserva a proibição de expor `source_payload`. Publicação, navegação autenticada e inspeção pública mobile/desktop ainda são gates obrigatórios.
+O build `latest-workout-telemetry-20260915.29` foi publicado pelo PR #296 e adicionou qualificadores na Home e no detalhe de Treino, derivados apenas de campos estruturados da evidência, preservando a proibição de expor `source_payload`. A rejeição posterior da Home não invalida essas proteções; elas passam a integrar o pacote `.30` e continuam sujeitas à nova inspeção pública mobile/desktop.
+
+## Reconstrução decisiva da Home — 15/09/2026
+
+O proprietário abriu o build `.29` e rejeitou a Home como entrega do layout combinado. O pacote `PKG-HOME-DASHBOARD-REFERENCE-REBUILD-001` substitui qualquer fechamento visual anterior e reúne as pendências de iPhone físico, telemetria parcial e cockpit longitudinal em uma entrega coerente.
+
+A imagem privada aprovada foi reaberta antes da implementação. O candidato `home-dashboard-reference-20260915.30` reconstrói a primeira tela mobile na ordem marca/saudação → três métricas → Hoje → progresso semanal → evolução; mantém seis domínios em faixa horizontal e preserva acontecimentos, proveniência, histórico e drill-downs. No desktop, Hoje e progresso dividem a primeira área com um gráfico longitudinal de oito métricas. Uma falha transitória observada no domínio de composição passa por uma repetição limitada antes de ser declarada, sem converter falha em ausência.
+
+O pacote permanece em execução até PR/merge normal, deploy e inspeção do link público exato com conteúdo autenticado em desktop e evidência mobile legível. O proprietário não será convocado para QA básico e seu aceite não é presumido.
 
 ## Pendências abertas confirmadas
 
@@ -132,7 +140,7 @@ O estado detalhado, o critério de aceite e o próximo passo de cada item ficam 
 1. A importação histórica de água do MyFitnessPal está pronta tecnicamente e bloqueada apenas pela execução do extrator na sessão autenticada do usuário em um notebook.
 2. OAuth contínuo do MyFitnessPal, teste HealthKit em aparelho físico, expansão Polar e parsers/integrações laboratoriais dependem de acesso, dispositivo ou originais externos ainda indisponíveis.
 3. Inventários sem arquivo original e medições sem fonte datada permanecem limitações aceitas; não geram dados ou tarefas artificiais.
-4. Não há item `ready` ou `in_progress` ao fechar o pacote de continuidade; QA visual, funcional, segurança, privacidade e proveniência continuam sendo gates de toda release.
+4. `LTS-HOME-DASHBOARD-REFERENCE-REBUILD-001`, `LTS-PHYSICAL-IPHONE-001` e `LTS-WORKOUT-PARTIAL-TELEMETRY-001` estão em execução no pacote `.30`; QA público visual e funcional continua obrigatório antes do próximo pedido de julgamento.
 
 O fechamento de 15/09 reconcilia `LTS-REMAINING-DOMAINS-001` como concluído tecnicamente: Timeline, Nutrição/Hidratação, Recuperação/Análises e consistência transversal foram auditadas com dados autenticados e preservam seus drill-downs. A próxima decisão de produto é a homologação subjetiva do proprietário; ela não é convertida artificialmente em tarefa autônoma `ready`.
 

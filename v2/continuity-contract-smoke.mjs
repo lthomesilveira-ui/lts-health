@@ -97,6 +97,7 @@ assert.match(feedback,/FB-014/);
 assert.match(feedback,/FB-016/);
 assert.match(feedback,/FB-017/);
 assert.match(feedback,/FB-020/);
+assert.match(feedback,/FB-023/);
 assert.ok(state.release_gates.some(gate=>/Cloud Browser/.test(gate)),'public visual delivery must require Cloud Browser inspection');
 assert.match(architecture,/não substitui a abertura do produto publicado/);
 for(const phrase of ['falta desktop','Somente então promover','validar sessão autenticada com o treino mais recente'])assert.ok(!parity.includes(phrase),`stale parity phrase: ${phrase}`);

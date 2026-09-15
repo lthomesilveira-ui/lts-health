@@ -1,49 +1,244 @@
-import {state,esc,fmtDate,fmtNum,num,workoutRows,day} from './core.js';
+import {state,esc,fmtDate,fmtNum,num,workoutRows,day,periodLabel} from './core.js';
 import {executiveCockpitModel} from './today-screen.js';
-const latest=(rows,key)=>[...(rows||[])].filter(r=>r?.[key]).sort((a,b)=>String(a[key]).localeCompare(String(b[key]))).at(-1)||null;
-const dateKey=v=>day(v),safe=(v,f='—')=>v==null||v===''?f:v;
-function displayName(){const m=state.session?.user?.user_metadata||{},raw=m.full_name||m.name||m.display_name||'';return String(raw).trim().split(/\s+/)[0]||'';}
-function greeting(){const h=new Date().getHours(),base=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite',name=displayName();return name?`${base}, ${name}`:base;}
-function longDate(v=new Date()){try{return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(v).replace(/^./,x=>x.toUpperCase());}catch{return'';}}
-function bodyRows(){const rows=[...(state.data.body||[])].filter(r=>r?.measured_at&&num(r.weight_kg)!=null).sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at))),anchor=rows.at(-1);if(!anchor)return[];const coherent=anchor.source?rows.filter(r=>r.source===anchor.source):rows.length===1?rows:[],out=[],seen=new Set();for(const r of coherent){const k=dateKey(r.measured_at);if(k&&!seen.has(k)){seen.add(k);out.push(r);}}return out;}
-function deltaFrom(rows,read,unit=''){const a=read(rows.at(-1)),b=read(rows.at(-2));if(a==null||b==null)return{v:'—',l:'sem comparação'};const d=a-b;return{v:`${d>0?'+':''}${fmtNum(d,1)}${unit}`,l:'vs. medição anterior'};}
+
+const latest=(rows,key)=>[...(rows||[])].filter(row=>row?.[key]).sort((a,b)=>String(a[key]).localeCompare(String(b[key]))).at(-1)||null;
+const dateKey=value=>day(value);
+const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
+const plural=(count,one,many)=>`${count} ${count===1?one:many}`;
+const failed=key=>state.domainStatus?.[key]==='error'||Boolean(state.errors?.[key]);
+
+function displayName(){
+  const metadata=state.session?.user?.user_metadata||{};
+  const raw=metadata.full_name||metadata.name||metadata.display_name||'';
+  return String(raw).trim().split(/\s+/)[0]||'';
+}
+
+function greeting(){
+  const hour=new Date().getHours();
+  const base=hour<12?'Bom dia':hour<18?'Boa tarde':'Boa noite';
+  const name=displayName();
+  return name?`${base}, ${name}`:base;
+}
+
+function longDate(value=new Date()){
+  try{
+    return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(value).replace(/^./,letter=>letter.toUpperCase());
+  }catch{return'';}
+}
+
+function bodyRows(){
+  const rows=[...(state.data.body||[])]
+    .filter(row=>row?.measured_at&&num(row.weight_kg)!=null)
+    .sort((a,b)=>String(a.measured_at).localeCompare(String(b.measured_at)));
+  const anchor=rows.at(-1);
+  if(!anchor)return[];
+  const coherent=anchor.source?rows.filter(row=>row.source===anchor.source):rows.length===1?rows:[];
+  const output=[];
+  const seen=new Set();
+  for(const row of coherent){
+    const key=dateKey(row.measured_at);
+    if(key&&!seen.has(key)){seen.add(key);output.push(row);}
+  }
+  return output;
+}
+
+function leanMass(row){
+  const weight=num(row?.weight_kg),fatMass=num(row?.fat_mass_kg);
+  return weight==null||fatMass==null?null:weight-fatMass;
+}
+
+function deltaFrom(rows,read,unit=''){
+  const current=read(rows.at(-1)),previous=read(rows.at(-2));
+  if(current==null||previous==null)return{value:'—',label:'sem comparação'};
+  const difference=current-previous;
+  return{value:`${difference>0?'+':''}${fmtNum(difference,1)}${unit}`,label:'vs. medição anterior'};
+}
+
 function delta(rows,key,unit=''){return deltaFrom(rows,row=>num(row?.[key]),unit);}
-function leanMass(row){const weight=num(row?.weight_kg),fatMass=num(row?.fat_mass_kg);return weight==null||fatMass==null?null:weight-fatMass;}
-function metric(label,value,d){const arrow=d.v.startsWith('+')?'↑':d.v.startsWith('-')?'↓':'•';return `<button class="ltsRefMetric" data-route="bio"><span>${esc(label)}</span><strong>${esc(value)}</strong><div><b>${arrow} ${esc(d.v)}</b><small>${esc(d.l)}</small></div></button>`;}
-function icon(kind){return `<span class="ltsRefTodayIcon ${kind}" aria-hidden="true">${kind==='training'?'↔':kind==='medication'?'✦':kind==='water'?'◌':kind==='labs'?'◇':kind==='recovery'?'☾':'⌁'}</span>`;}
-function todayRow(kind,title,subtitle,route,entry=false,current=false){const attr=entry?`data-entry="${entry}"`:`data-route="${route}"`,cls=entry?'entry':current?'current':'historical',mark=entry?'+':current?'✓':'›';return `<button class="ltsRefTodayRow" ${attr}>${icon(kind)}<span class="ltsRefTodayCopy"><b>${esc(title)}</b><small>${esc(subtitle)}</small></span><span class="ltsRefTodayState ${cls}">${mark}</span></button>`;}
-function uniqueDays(rows,key,pred,anchor){const end=new Date(anchor),start=new Date(anchor);end.setHours(23,59,59,999);start.setDate(start.getDate()-6);start.setHours(0,0,0,0);const set=new Set();for(const r of rows||[]){if(!pred(r)||!r?.[key])continue;const d=new Date(String(r[key]).length===10?`${r[key]}T12:00:00`:r[key]);if(!Number.isNaN(d.getTime())&&d>=start&&d<=end)set.add(dateKey(r[key]));}return Math.min(7,set.size);}
-function ring(label,count,kind){return `<div class="ltsRefProgressItem ${kind}"><div class="ltsRefRing" style="--progress:${Math.max(0,Math.min(100,count/7*100))}%"><span><b>${count}/7</b></span></div><small>${esc(label)}</small></div>`;}
-function domain(kind,label,value,detail,route,tone){return `<button class="ltsRefDomain ${tone}" data-route="${route}"><div class="ltsRefDomainTop">${icon(kind)}<span>${esc(label)}</span><strong>›</strong></div><b>${esc(value)}</b><small>${esc(detail)}</small></button>`;}
-const plural=(n,one,many)=>`${n} ${n===1?one:many}`;
-function latestWorkout(){return latest(workoutRows(),'workout_date');}
+
+function metric(label,value,comparison,{unavailable=false}={}){
+  const arrow=comparison.value.startsWith('+')?'↑':comparison.value.startsWith('-')?'↓':'•';
+  const footer=unavailable?'<b>Falha temporária</b><small>toque para tentar novamente</small>':`<b>${arrow} ${esc(comparison.value)}</b><small>${esc(comparison.label)}</small>`;
+  return `<button class="ltsRefMetric${unavailable?' unavailable':''}" data-route="bio"><span>${esc(label)}</span><strong>${esc(value)}</strong><div>${footer}</div></button>`;
+}
+
+function icon(kind){
+  const glyph={training:'↔',medication:'✦',water:'◌',nutrition:'⌁',labs:'◇',recovery:'☾',timeline:'◷'}[kind]||'•';
+  return `<span class="ltsRefTodayIcon ${kind}" aria-hidden="true">${glyph}</span>`;
+}
+
+function todayRow(kind,title,subtitle,route,{entry=false,current=false}={}){
+  const attr=entry?`data-entry="${entry}"`:`data-route="${route}"`;
+  const tone=entry?'entry':current?'current':'historical';
+  const marker=entry?'+':current?'✓':'›';
+  return `<button class="ltsRefTodayRow" ${attr}>${icon(kind)}<span class="ltsRefTodayCopy"><b>${esc(title)}</b><small>${esc(subtitle)}</small></span><span class="ltsRefTodayState ${tone}">${marker}</span></button>`;
+}
+
+function uniqueDays(rows,key,predicate,anchor){
+  const end=new Date(anchor),start=new Date(anchor);
+  end.setHours(23,59,59,999);
+  start.setDate(start.getDate()-6);
+  start.setHours(0,0,0,0);
+  const dates=new Set();
+  for(const row of rows||[]){
+    if(!predicate(row)||!row?.[key])continue;
+    const value=new Date(String(row[key]).length===10?`${row[key]}T12:00:00`:row[key]);
+    if(!Number.isNaN(value.getTime())&&value>=start&&value<=end)dates.add(dateKey(row[key]));
+  }
+  return Math.min(7,dates.size);
+}
+
+function ring(label,count,kind){
+  const progress=Math.max(0,Math.min(100,count/7*100));
+  return `<div class="ltsRefProgressItem ${kind}"><div class="ltsRefRing" style="--progress:${progress}%"><span><b>${count}/7</b></span></div><small>${esc(label)}</small></div>`;
+}
+
+const trendTabs=[
+  ['weight','Peso'],['fat','Gordura'],['muscle','Músculo'],['training','Treinos'],
+  ['nutrition','Nutrição'],['sleep','Sono'],['labs','Exames'],['water','Água']
+];
+
+function trendDefinition(model,key){
+  const definitions={
+    weight:{label:'Peso corporal',route:'bio',points:model.weightSeries,unit:' kg',digits:1,description:'Medições consolidadas com a origem preservada.'},
+    fat:{label:'Gordura corporal',route:'bio',points:model.bodyFatSeries,unit:'%',digits:1,description:'Medições comparáveis de composição corporal.'},
+    muscle:{label:'Massa muscular',route:'bio',points:model.muscleSeries,unit:' kg',digits:1,description:'Massa muscular esquelética registrada nas medições.'},
+    training:{label:'Treinos por semana',route:'treinos',points:model.trainingSeries,unit:' sessões',digits:0,bar:true,description:'Ritmo semanal dentro da janela selecionada.'},
+    nutrition:{label:'Energia registrada',route:'nutricao',points:model.calorieSeries,unit:' kcal',digits:0,description:'Somente dias com total diário inequívoco.'},
+    sleep:{label:'Sono registrado',route:'analise',points:model.sleepSeries,unit:' h',digits:1,description:'Uma origem por vez; fontes diferentes não são misturadas.'},
+    labs:{label:'Resultados por coleta',route:'saude',points:model.labSeries,unit:' resultados',digits:0,bar:true,description:'Quantidade de resultados estruturados em cada coleta.'},
+    water:{label:'Água registrada',route:'nutricao',points:model.waterSeries,unit:' mL',digits:0,description:'Ingestão diária registrada; água corporal é outra medida.'}
+  };
+  const selected=definitions[key]||definitions.weight;
+  const points=(selected.points||[]).filter(point=>point?.date&&num(point?.value)!=null);
+  const first=points[0]||null,last=points.at(-1)||null;
+  return{...selected,key,points,first,last,difference:first&&last&&first!==last?last.value-first.value:null};
+}
+
+function trendChart(points,{unit='',digits=0,label='',bar=false}={}){
+  const rows=(points||[]).filter(point=>point?.date&&num(point?.value)!=null).slice(-36);
+  if(rows.length<2)return '<div class="ltsRefTrendEmpty">Sem pontos suficientes nesta janela.</div>';
+  const values=rows.map(row=>Number(row.value));
+  const low=bar?0:Math.min(...values),high=Math.max(...values),span=Math.max(high-low,1),padding=bar?0:span*.14;
+  const min=bar?0:low-padding,max=bar?Math.max(high,1):high+padding;
+  const width=640,height=174,left=48,right=14,top=14,bottom=30,plotWidth=width-left-right,plotHeight=height-top-bottom;
+  const x=index=>left+index*plotWidth/Math.max(1,rows.length-1);
+  const y=value=>top+(max-value)*plotHeight/Math.max(max-min,1e-9);
+  const ticks=[max,max-(max-min)/2,min];
+  const grid=ticks.map(value=>`<line x1="${left}" y1="${y(value).toFixed(1)}" x2="${width-right}" y2="${y(value).toFixed(1)}"/>`).join('');
+  const labels=ticks.map(value=>`<text x="${left-7}" y="${(y(value)+4).toFixed(1)}" text-anchor="end">${esc(fmtNum(value,digits))}</text>`).join('');
+  const marks=bar
+    ?rows.map((row,index)=>{const barWidth=Math.max(5,Math.min(25,plotWidth/rows.length*.52));return `<rect x="${(x(index)-barWidth/2).toFixed(1)}" y="${y(row.value).toFixed(1)}" width="${barWidth.toFixed(1)}" height="${Math.max(1,y(min)-y(row.value)).toFixed(1)}" rx="3"><title>${esc(fmtDate(row.date))}: ${esc(fmtNum(row.value,digits))}${esc(unit)}</title></rect>`;}).join('')
+    :(()=>{const path=rows.map((row,index)=>`${index?'L':'M'}${x(index).toFixed(1)} ${y(row.value).toFixed(1)}`).join(' ');return `<path class="ltsRefTrendLine" d="${path}"/>${rows.map((row,index)=>`<circle cx="${x(index).toFixed(1)}" cy="${y(row.value).toFixed(1)}" r="3"><title>${esc(fmtDate(row.date))}: ${esc(fmtNum(row.value,digits))}${esc(unit)}</title></circle>`).join('')}`;})();
+  return `<div class="ltsRefTrendChart" role="img" aria-label="${esc(label)}"><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"><g class="ltsRefTrendGridLines">${grid}</g><g class="ltsRefTrendAxis">${labels}</g><g class="ltsRefTrendMarks">${marks}</g></svg><div><span>${fmtDate(rows[0].date)}</span><span>${fmtDate(rows.at(-1).date)}</span></div></div>`;
+}
+
+function periodPicker(period){
+  const options=[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Histórico']];
+  return `<div class="ltsRefPeriod" role="group" aria-label="Janela da evolução">${options.map(([value,label])=>`<button type="button" data-home-period="${value}" class="${period===value?'active':''}" aria-pressed="${period===value?'true':'false'}">${label}</button>`).join('')}</div>`;
+}
+
+function trendPanel(model,period){
+  const selectedKey=trendTabs.some(([key])=>key===state.ui.homeMetric)?state.ui.homeMetric:'weight';
+  const trend=trendDefinition(model,selectedKey);
+  const difference=trend.difference==null?'Sem comparação disponível':`${trend.difference>0?'+':''}${fmtNum(trend.difference,trend.digits)}${trend.unit} desde ${fmtDate(trend.first.date)}`;
+  return `<section class="ltsRefTrend"><header><div><span>EVOLUÇÃO LONGITUDINAL</span><h2>${esc(trend.label)}</h2><p>${esc(trend.description)}</p></div><button data-route="${esc(trend.route)}">Abrir detalhes ›</button></header>${periodPicker(period)}<div class="ltsRefTrendTabs" role="tablist" aria-label="Métrica da evolução">${trendTabs.map(([key,label])=>`<button type="button" role="tab" data-home-metric="${key}" class="${selectedKey===key?'active':''}" aria-selected="${selectedKey===key?'true':'false'}">${label}</button>`).join('')}</div><div class="ltsRefTrendValue"><b>${trend.last?`${fmtNum(trend.last.value,trend.digits)}${esc(trend.unit)}`:'Sem dados'}</b><span>${trend.last?`${fmtDate(trend.last.date)} · ${difference}`:'Nenhum registro comparável nesta janela.'}</span></div>${trendChart(trend.points,{unit:trend.unit,digits:trend.digits,label:trend.label,bar:trend.bar})}</section>`;
+}
+
+function domain(kind,label,value,detail,route,tone){
+  return `<button class="ltsRefDomain ${tone}" data-route="${route}"><div class="ltsRefDomainTop">${icon(kind)}<span>${esc(label)}</span><strong>›</strong></div><b>${esc(value)}</b><small>${esc(detail)}</small></button>`;
+}
+
+function withinBounds(value,bounds){
+  const key=dateKey(value);
+  return Boolean(key&&(!bounds?.start||key>=bounds.start)&&(!bounds?.end||key<=bounds.end));
+}
+
 function panorama(model){
-  const n=latest(state.data.nutrition,'nutrition_date'),sleep=model.sleep?.sources?.[0],sleepPoints=sleep?.periodPoints||[],water=model.water||[],lastWater=water.at(-1),trainingLast=latestWorkout(),interval=model.nutrition?.intervalDays||model.bounds?.days||30,nutDays=model.nutrition?.days||0,nutCoverage=model.nutrition?.coveragePct,windowLabs=model.labs?.windowCollections||0,windowLabMarkers=model.labs?.windowMarkers||0,windowLabLast=model.labs?.windowLast,allLabLast=model.labs?.last,allLabMarkers=model.labs?.markers||0,reference=model.referenceDay||model.bounds?.end;
-  const nutritionDetail=model.nutrition?.latestAmbiguous?'Último dia com totais conflitantes':model.nutrition?.available?`${nutCoverage==null?'Cobertura disponível':`${nutCoverage}% cobertura`}${model.nutrition?.latestDate?` · último ${fmtDate(model.nutrition.latestDate)}`:n?.nutrition_date?` · último ${fmtDate(n.nutrition_date)}`:''}`:'Sem dias inequívocos na janela';
-  const labsValue=windowLabs?`${plural(windowLabs,'coleta','coletas')} / 30 dias`:'Sem coleta / 30 dias';
-  const labsDetail=windowLabs?`Última ${fmtDate(windowLabLast)} · ${plural(windowLabMarkers,'marcador','marcadores')} na janela`:allLabLast?`Última ${fmtDate(allLabLast)} · ${plural(allLabMarkers,'marcador','marcadores')} no histórico`:'Sem exames estruturados';
+  const interval=model.nutrition?.intervalDays||model.bounds?.days||30;
+  const nutritionDays=model.nutrition?.days||0;
+  const nutritionCoverage=model.nutrition?.coveragePct;
+  const sleep=model.sleep?.sources?.[0];
+  const sleepPoints=sleep?.periodPoints||[];
   const sleepLast=sleepPoints.at(-1)?.date||sleep?.lastDate;
-  const sleepValue=sleep?`${sleepPoints.length} de ${model.bounds?.days||30} dias`:'Sem cobertura';
-  const sleepDetail=sleep?`${sleepLast?`Último ${fmtDate(sleepLast)} · `:''}${safe(sleep.label,'Fonte registrada')}`:'Sem série comparável na janela';
+  const water=model.water||[];
+  const waterLast=water.at(-1);
+  const latestTraining=latest(workoutRows(),'workout_date');
+  const treatmentRows=(state.data.treatments||[]).filter(row=>withinBounds(row.event_date,model.bounds));
+  const latestTreatment=latest(state.data.treatments,'event_date');
+  const nutritionValue=failed('nutrition')?'Indisponível':model.nutrition?.available?`${nutritionDays} de ${interval} dias`:'Sem cobertura';
+  const nutritionDetail=failed('nutrition')?'Os dados não carregaram agora':model.nutrition?.latestAmbiguous?'Último dia com totais conflitantes':nutritionCoverage==null?'Totais diários preservados':`${nutritionCoverage}% cobertura${model.nutrition?.latestDate?` · último ${fmtDate(model.nutrition.latestDate)}`:''}`;
+  const labsValue=failed('labs')?'Indisponível':model.labs?.windowCollections?plural(model.labs.windowCollections,'coleta','coletas'):`Sem coleta / ${periodLabel(model.period)}`;
+  const labsDetail=failed('labs')?'Os dados não carregaram agora':model.labs?.windowLast?`Última ${fmtDate(model.labs.windowLast)} · ${plural(model.labs.windowMarkers,'marcador','marcadores')}`:model.labs?.last?`Última no histórico ${fmtDate(model.labs.last)}`:'Sem exames estruturados';
+  const sleepValue=failed('sourceMetrics')?'Indisponível':sleep?`${sleepPoints.length} de ${model.bounds?.days||30} dias`:'Sem cobertura';
+  const sleepDetail=failed('sourceMetrics')?'Os dados não carregaram agora':sleepLast?`Último ${fmtDate(sleepLast)} · ${safe(sleep.label,'origem registrada')}`:'Sem série comparável na janela';
   const waterValue=water.length?`${water.length} de ${model.bounds?.days||30} dias`:'Histórico pendente';
-  const waterDetail=water.length?`${lastWater?.date?`Último ${fmtDate(lastWater.date)}`:'Registros estruturados disponíveis'}`:'MyFitnessPal ainda não importado';
-  const readout=[];
-  readout.push(`${model.training?.totalSessions||0} treinos nos últimos 30 dias`);
-  if(model.nutrition?.available)readout.push(`nutrição em ${nutDays}/${interval} dias${model.nutrition?.latestDate?`, último ${fmtDate(model.nutrition.latestDate)}`:''}`);
-  readout.push(windowLabs?`${plural(windowLabs,'coleta','coletas')} de exames na janela, última ${fmtDate(windowLabLast)}`:allLabLast?`sem coleta nos 30 dias, última ${fmtDate(allLabLast)}`:'sem exames estruturados');
-  if(sleep)readout.push(`sono em ${sleepPoints.length}/${model.bounds?.days||30} dias${sleepLast?`, último ${fmtDate(sleepLast)}`:''}`);
-  return `<section class="ltsRefIntegrated"><header><div><span>PANORAMA · 30 DIAS${reference?` ATÉ ${esc(fmtDate(reference))}`:''}</span><h2>Sua saúde em uma leitura</h2></div><button data-route="analise">Análise completa ›</button></header><div class="ltsRefDomainGrid">${domain('training','Treino',`${model.training?.totalSessions||0} sessões / 30 dias`,trainingLast?.workout_date?`Último ${fmtDate(trainingLast.workout_date)}`:'Sem sessão registrada','treinos','training')}${domain('nutrition','Nutrição',model.nutrition?.available?`${nutDays} de ${interval} dias`:'Sem leitura',nutritionDetail,'nutricao','nutrition')}${domain('labs','Exames',labsValue,labsDetail,'saude','labs')}${domain('recovery','Sono & recuperação',sleepValue,sleepDetail,'analise','recovery')}${domain('water','Hidratação',waterValue,waterDetail,'nutricao','water')}</div><p class="ltsRefIntegratedSummary">${esc(readout.join(' · '))}</p></section>`;
+  const waterDetail=water.length?`Último ${fmtDate(waterLast?.date)}`:'MyFitnessPal ainda não importado';
+  const treatmentValue=failed('treatments')?'Indisponível':treatmentRows.length?plural(treatmentRows.length,'registro','registros'):'Sem registro na janela';
+  const treatmentDetail=failed('treatments')?'Os dados não carregaram agora':latestTreatment?.event_date?`Último ${fmtDate(latestTreatment.event_date)}`:'Sem contexto estruturado';
+  return `<section class="ltsRefIntegrated"><header><div><span>PANORAMA · ${esc(periodLabel(model.period).toUpperCase())}</span><h2>Saúde em contexto</h2><p>Resumo dos domínios; toque em uma área para aprofundar.</p></div><button data-route="analise">Análise completa ›</button></header><div class="ltsRefDomainGrid">${domain('training','Treinos',`${model.training?.totalSessions||0} sessões / ${periodLabel(model.period)}`,latestTraining?.workout_date?`Último ${fmtDate(latestTraining.workout_date)}`:'Sem sessão registrada','treinos','training')}${domain('nutrition','Nutrição',nutritionValue,nutritionDetail,'nutricao','nutrition')}${domain('water','Hidratação',waterValue,waterDetail,'nutricao','water')}${domain('labs','Exames',labsValue,labsDetail,'saude','labs')}${domain('recovery','Sono & recuperação',sleepValue,sleepDetail,'analise','recovery')}${domain('medication','Tratamentos & contexto',treatmentValue,treatmentDetail,'tratamentos','medication')}</div></section>`;
 }
+
+function recentEvents(model){
+  const events=[];
+  const latestBody=latest(state.data.body,'measured_at');
+  const latestWorkout=latest(workoutRows(),'workout_date');
+  const latestNutrition=latest(state.data.nutrition,'nutrition_date');
+  const latestTreatment=latest(state.data.treatments,'event_date');
+  const latestSleep=model.sleep?.sources?.[0]?.periodPoints?.at(-1)||model.sleep?.sources?.[0]?.points?.at(-1);
+  if(latestWorkout)events.push({date:dateKey(latestWorkout.workout_date),kind:'training',route:'treinos',title:safe(latestWorkout.workout_type,'Treino'),detail:[num(latestWorkout.duration_minutes)!=null?`${fmtNum(latestWorkout.duration_minutes,0)} min`:null,latestWorkout.location].filter(Boolean).join(' · ')||'Sessão registrada'});
+  if(latestBody)events.push({date:dateKey(latestBody.measured_at),kind:'timeline',route:'bio',title:'Composição corporal',detail:`Medição · ${safe(latestBody.source,'origem registrada')}`});
+  if(latestNutrition)events.push({date:dateKey(latestNutrition.nutrition_date),kind:'nutrition',route:'nutricao',title:'Nutrição',detail:'Dia alimentar estruturado'});
+  if(model.labs?.last)events.push({date:model.labs.last,kind:'labs',route:'saude',title:'Exames',detail:`${plural(model.labs.totalResults,'resultado estruturado','resultados estruturados')} no histórico`});
+  if(latestTreatment)events.push({date:dateKey(latestTreatment.event_date),kind:'medication',route:'tratamentos',title:'Tratamento & contexto',detail:'Registro preservado no histórico'});
+  if(latestSleep?.date)events.push({date:latestSleep.date,kind:'recovery',route:'analise',title:'Sono & recuperação',detail:'Registro preservado por origem'});
+  return events.filter(event=>event.date).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5).map(event=>`<button class="ltsRefEvent" data-route="${event.route}"><time>${fmtDate(event.date)}</time>${icon(event.kind)}<span><b>${esc(event.title)}</b><small>${esc(event.detail)}</small></span><i>›</i></button>`).join('');
+}
+
+function contextItems(model,rows){
+  const items=[];
+  const body=rows.at(-1);
+  if(failed('body'))items.push(['Composição','A carga falhou nesta atualização; o app não converteu a falha em zero.','bio']);
+  else if(body)items.push(['Composição',`Última medição ${fmtDate(body.measured_at)} · ${safe(body.source,'origem registrada')}.`,'bio']);
+  else items.push(['Composição','Nenhuma medição estruturada disponível.','bio']);
+  if(model.water?.length)items.push(['Hidratação',`${model.water.length} dias registrados nesta janela.`,'nutricao']);
+  else items.push(['Hidratação','Extrator do MyFitnessPal pronto; execução autenticada permanece pendente.','dados']);
+  const domainFailures=Object.values(state.domainStatus||{}).filter(status=>status==='error').length;
+  items.push(['Proveniência',domainFailures?`${plural(domainFailures,'domínio','domínios')} não carregaram agora; os demais registros permanecem visíveis.`:'Origens e vínculos preservados nos detalhes.','dados']);
+  return items.map(([title,detail,route])=>`<button class="ltsRefContextItem" data-route="${route}"><span><b>${esc(title)}</b><small>${esc(detail)}</small></span><i>›</i></button>`).join('');
+}
+
 function changes(model,rows){
-  const fatDelta=delta(rows,'body_fat_pct',' p.p.'),leanDelta=deltaFrom(rows,leanMass,' kg'),nut=model.nutrition?.coveragePct,nutDays=model.nutrition?.days||0,interval=model.nutrition?.intervalDays||model.bounds?.days||30;
-  return `<section class="ltsRefChange"><header><div><span>EVOLUÇÃO</span><h2>O que mudou</h2></div><button data-route="analise">Ver tendências ›</button></header><div class="ltsRefChangeGrid"><div><span>Gordura</span><b>${esc(fatDelta.v)}</b><small>${esc(fatDelta.l)}</small></div><div><span>Massa magra</span><b>${esc(leanDelta.v)}</b><small>${esc(leanDelta.l)}</small></div><div><span>Treinos</span><b>${model.training?.totalSessions||0}</b><small>sessões nos últimos 30 dias</small></div><div><span>Nutrição</span><b>${model.nutrition?.available?`${nutDays}/${interval}`:'—'}</b><small>${nut==null?'sem cobertura comparável':`${nut}% cobertura${model.nutrition?.latestDate?` · último ${fmtDate(model.nutrition.latestDate)}`:''}`}</small></div></div><p>Composição compara medições da mesma origem. Massa magra é calculada como peso menos massa de gordura registrada. Treino e nutrição usam 30 dias.</p></section>`;
+  return `<section class="ltsRefChange"><article class="ltsRefEvents"><header><div><span>LINHA DO TEMPO</span><h2>Acontecimentos recentes</h2></div><button data-route="timeline">Abrir Timeline ›</button></header><div>${recentEvents(model)||'<p class="ltsRefEmpty">Nenhum acontecimento estruturado disponível.</p>'}</div></article><aside class="ltsRefContext"><header><div><span>CONTEXTO DOS DADOS</span><h2>Cobertura e origem</h2></div><button data-route="dados">Dados & fontes ›</button></header><div>${contextItems(model,rows)}</div></aside></section>`;
 }
+
 export function renderProductHomeReference(){
- const rows=bodyRows(),body=rows.at(-1),weight=num(body?.weight_kg),fat=num(body?.body_fat_pct),lean=leanMass(body),model=executiveCockpitModel(state.data,state.domainStatus,'30');
- const workouts=workoutRows(),today=new Date(),key=dateKey(today.toISOString()),todayLabel=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(today),tw=workouts.find(r=>dateKey(r.workout_date)===key),tn=[...(state.data.nutrition||[])].filter(r=>dateKey(r.nutrition_date)===key).at(-1),twater=[...(state.data.nutrition||[])].find(r=>dateKey(r.nutrition_date)===key&&num(r.water_ml)>0),treat=[...(state.data.treatments||[])].filter(r=>dateKey(r.event_date)===key&&r.medication);
- const wt=uniqueDays(state.data.workouts,'workout_date',r=>r?.is_canonical===true&&r?.record_status!=='quarantined',today),wn=uniqueDays(state.data.nutrition,'nutrition_date',r=>num(r.calories_kcal)!=null,today),ww=uniqueDays(state.data.nutrition,'nutrition_date',r=>num(r.water_ml)>0,today),ws=uniqueDays(state.data.metrics,'measured_at',r=>String(r?.metric_type||'').includes('sleep'),today);
- const meds=treat.length?treat.map(r=>todayRow('medication',r.medication,'Aplicação registrada hoje','tratamentos',false,true)).join(''):todayRow('medication','Medicações','Nenhuma aplicação registrada hoje','tratamentos');
- const todayCard=`<section class="ltsRefCard ltsRefToday"><header><div><h2>Hoje</h2><span>${esc(todayLabel)}</span></div><button data-route="timeline">Ver dia completo ›</button></header>${todayRow('training',tw?safe(tw.workout_type,'Treino'):'Treino',tw?`${num(tw.duration_minutes)!=null?`${fmtNum(tw.duration_minutes,0)} min`:safe(tw.location,'registro')}${num(tw.calories_kcal)!=null?` · ${fmtNum(tw.calories_kcal,0)} kcal${tw.telemetry_energy_is_estimated?' estimadas':''}`:''}`:'Nenhum treino registrado hoje','treinos',false,!!tw)}${meds}${todayRow('water','Água',twater?`${fmtNum(num(twater.water_ml)/1000,1)} L registrados hoje`:'Nenhuma hidratação estruturada hoje','nutricao',twater?false:'water-import',!!twater)}${todayRow('nutrition','Dieta',tn?`${num(tn.calories_kcal)!=null?`${fmtNum(tn.calories_kcal,0)} kcal`:''}${num(tn.protein_g)!=null?` · ${fmtNum(tn.protein_g,0)} g proteína`:''}`:'Nenhuma alimentação estruturada hoje','nutricao',false,!!tn)}</section>`;
- const progressCard=`<section class="ltsRefCard ltsRefProgress"><header><div><h2>Progresso semanal</h2><span>cobertura dos últimos 7 dias</span></div><button data-route="analise">Ver mais ›</button></header><div class="ltsRefProgressGrid">${ring('Treinos',wt,'training')}${ring('Dieta',wn,'nutrition')}${ring('Hidratação',ww,'water')}${ring('Sono',ws,'sleep')}</div></section>`;
- return `<section class="ltsHomeV2 ltsHomeReference"><header class="ltsRefHeader"><div class="ltsRefBrand"><span class="ltsRefPulse">⌁</span><b>LTS <em>Health</em></b></div><button class="ltsRefAvatar" data-route="dados" aria-label="Abrir dados e fontes">${esc((displayName()||'L')[0].toUpperCase())}</button></header><section class="ltsRefGreeting"><h1>${esc(greeting())}</h1><p>${esc(longDate(today))}</p></section><div class="ltsRefMotto"><span aria-hidden="true">✦</span><b>Disciplina hoje, evolução sempre.</b></div><section class="ltsRefMetrics">${metric('Peso',weight!=null?`${fmtNum(weight,1)} kg`:'—',delta(rows,'weight_kg',' kg'))}${metric('Gordura',fat!=null?`${fmtNum(fat,1)}%`:'—',delta(rows,'body_fat_pct',' p.p.'))}${metric('Massa magra',lean!=null?`${fmtNum(lean,1)} kg`:'—',deltaFrom(rows,leanMass,' kg'))}</section><div class="ltsRefCoreGrid">${todayCard}${progressCard}</div>${panorama(model)}${changes(model,rows)}</section>`;
+  const rows=bodyRows(),body=rows.at(-1),bodyUnavailable=failed('body');
+  const weight=num(body?.weight_kg),fat=num(body?.body_fat_pct),lean=leanMass(body);
+  const period=state.ui.homePeriod||'30';
+  const model=executiveCockpitModel(state.data,state.domainStatus,period);
+  const workouts=workoutRows(),today=new Date(),todayKey=dateKey(today.toISOString());
+  const todayLabel=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(today);
+  const todayWorkout=workouts.find(row=>dateKey(row.workout_date)===todayKey);
+  const todayNutrition=[...(state.data.nutrition||[])].filter(row=>dateKey(row.nutrition_date)===todayKey).at(-1);
+  const todayWater=[...(state.data.nutrition||[])].find(row=>dateKey(row.nutrition_date)===todayKey&&num(row.water_ml)>0);
+  const todayTreatments=[...(state.data.treatments||[])].filter(row=>dateKey(row.event_date)===todayKey&&row.medication);
+  const weeklyTraining=uniqueDays(state.data.workouts,'workout_date',row=>row?.is_canonical===true&&row?.record_status!=='quarantined',today);
+  const weeklyNutrition=uniqueDays(state.data.nutrition,'nutrition_date',row=>num(row.calories_kcal)!=null,today);
+  const weeklyWater=uniqueDays(state.data.nutrition,'nutrition_date',row=>num(row.water_ml)>0,today);
+  const sleepRows=[
+    ...(state.data.metrics||[]),
+    ...(state.data.sourceMetrics||[]).map(row=>({...row,measured_at:row.metric_date}))
+  ];
+  const weeklySleep=uniqueDays(sleepRows,'measured_at',row=>String(row?.metric_type||'').includes('sleep')&&num(row?.value)!=null,today);
+  const medicationRows=todayTreatments.length
+    ?todayTreatments.map(row=>todayRow('medication',row.medication,'Aplicação registrada hoje','tratamentos',{current:true})).join('')
+    :todayRow('medication','Medicações','Nenhuma aplicação registrada hoje','tratamentos');
+  const workoutSubtitle=todayWorkout
+    ?`${num(todayWorkout.duration_minutes)!=null?`${fmtNum(todayWorkout.duration_minutes,0)} min`:safe(todayWorkout.location,'registro')}${num(todayWorkout.calories_kcal)!=null?` · ${fmtNum(todayWorkout.calories_kcal,0)} kcal${todayWorkout.telemetry_energy_is_estimated?' estimadas':''}`:''}`
+    :'Nenhum treino registrado hoje';
+  const todayCard=`<section class="ltsRefCard ltsRefToday"><header><div><h2>Hoje</h2><span>${esc(todayLabel)}</span></div><button data-route="timeline">Ver dia completo ›</button></header>${todayRow('training',todayWorkout?safe(todayWorkout.workout_type,'Treino'):'Treino',workoutSubtitle,'treinos',{current:Boolean(todayWorkout)})}${medicationRows}${todayRow('water','Água',todayWater?`${fmtNum(num(todayWater.water_ml)/1000,1)} L registrados hoje`:'Nenhuma hidratação estruturada hoje','nutricao',{entry:todayWater?false:'water-import',current:Boolean(todayWater)})}${todayRow('nutrition','Dieta',todayNutrition?`${num(todayNutrition.calories_kcal)!=null?`${fmtNum(todayNutrition.calories_kcal,0)} kcal`:''}${num(todayNutrition.protein_g)!=null?` · ${fmtNum(todayNutrition.protein_g,0)} g proteína`:''}`:'Nenhuma alimentação estruturada hoje','nutricao',{current:Boolean(todayNutrition)})}</section>`;
+  const progressCard=`<section class="ltsRefCard ltsRefProgress"><header><div><h2>Progresso semanal</h2><span>cobertura dos últimos 7 dias</span></div><button data-route="analise">Ver mais ›</button></header><div class="ltsRefProgressGrid">${ring('Treinos',weeklyTraining,'training')}${ring('Dieta',weeklyNutrition,'nutrition')}${ring('Hidratação',weeklyWater,'water')}${ring('Sono',weeklySleep,'sleep')}</div></section>`;
+  const unavailableValue=bodyUnavailable?'Erro':rows.length?'Sem dado':'Sem medição';
+  return `<section class="ltsHomeV2 ltsHomeReference"><header class="ltsRefHeader"><div class="ltsRefBrand"><span class="ltsRefPulse">⌁</span><b>LTS <em>Health</em></b></div><button class="ltsRefAvatar" data-route="dados" aria-label="Abrir dados e fontes">${esc((displayName()||'L')[0].toUpperCase())}</button></header><section class="ltsRefGreeting"><h1>${esc(greeting())}</h1><p>${esc(longDate(today))}</p></section><div class="ltsRefMotto"><span aria-hidden="true">✦</span><b>Disciplina hoje, evolução sempre.</b></div><section class="ltsRefMetrics">${metric('Peso',weight!=null?`${fmtNum(weight,1)} kg`:unavailableValue,delta(rows,'weight_kg',' kg'),{unavailable:bodyUnavailable})}${metric('Gordura',fat!=null?`${fmtNum(fat,1)}%`:unavailableValue,delta(rows,'body_fat_pct',' p.p.'),{unavailable:bodyUnavailable})}${metric('Massa magra',lean!=null?`${fmtNum(lean,1)} kg`:unavailableValue,deltaFrom(rows,leanMass,' kg'),{unavailable:bodyUnavailable})}</section><div class="ltsRefCoreGrid">${todayCard}${progressCard}${trendPanel(model,period)}</div>${panorama(model)}${changes(model,rows)}</section>`;
 }

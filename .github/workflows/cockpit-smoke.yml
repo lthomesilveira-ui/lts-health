@@ -15,6 +15,7 @@ on:
       - 'v2/src/analysis-screen.js'
       - 'v2/src/data-layer.js'
       - 'v2/home-reference.css'
+      - 'v2/physical-iphone-remediation-20260915.css'
       - 'v2/training-reference-v2.css'
       - 'v2/public-audit-remediation.css'
       - 'v2/cockpit.css'
@@ -25,6 +26,8 @@ on:
       - 'v2/cockpit-smoke.mjs'
       - 'v2/home-information-integrity-smoke.mjs'
       - 'v2/public-audit-contract-smoke.mjs'
+      - 'v2/home-dashboard-reference-smoke.mjs'
+      - 'v2/physical-iphone-layout-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   pull_request:
     paths:
@@ -40,6 +43,7 @@ on:
       - 'v2/src/analysis-screen.js'
       - 'v2/src/data-layer.js'
       - 'v2/home-reference.css'
+      - 'v2/physical-iphone-remediation-20260915.css'
       - 'v2/training-reference-v2.css'
       - 'v2/public-audit-remediation.css'
       - 'v2/cockpit.css'
@@ -50,6 +54,8 @@ on:
       - 'v2/cockpit-smoke.mjs'
       - 'v2/home-information-integrity-smoke.mjs'
       - 'v2/public-audit-contract-smoke.mjs'
+      - 'v2/home-dashboard-reference-smoke.mjs'
+      - 'v2/physical-iphone-layout-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   workflow_dispatch:
 jobs:
@@ -75,6 +81,7 @@ jobs:
           node --check v2/cockpit-smoke.mjs
           node --check v2/home-information-integrity-smoke.mjs
           node --check v2/public-audit-contract-smoke.mjs
+          node --check v2/home-dashboard-reference-smoke.mjs
           node --check v2/physical-iphone-layout-smoke.mjs
           node v2/public-audit-contract-smoke.mjs
       - name: Start fixture server
@@ -85,6 +92,8 @@ jobs:
         run: node v2/cockpit-smoke.mjs
       - name: Home information integrity on mobile
         run: node v2/home-information-integrity-smoke.mjs
+      - name: Approved Home dashboard on desktop and mobile
+        run: node v2/home-dashboard-reference-smoke.mjs
       - name: Physical iPhone reduced-viewport layout
         run: node v2/physical-iphone-layout-smoke.mjs
       - name: Upload safe visual audit evidence

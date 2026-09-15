@@ -61,20 +61,27 @@ Cada cartão mostra dado atual, contexto/comparação segura e uma pequena indic
 
 ## Composição obrigatória da Home
 
-1. Cabeçalho com título, texto curto e seletor 30 dias / 90 dias / 1 ano / Histórico.
-2. Cinco cartões executivos: Composição, Treinos, Nutrição, Recuperação e Exames.
-3. Um gráfico longitudinal principal com seletor de métrica: Peso, Gordura, Massa muscular, Treinos, Nutrição, Sono, Exames e Água.
-4. Resumo curto da janela ao lado do gráfico no desktop e abaixo dele no celular.
-5. Fechamento compacto: últimos acontecimentos e dados a completar.
-6. Gráficos somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
+A primeira tela mobile da imagem privada prevalece sobre a composição desktop histórica. Sua ordem reconhecível é:
+
+1. marca, saudação, data e contexto curto;
+2. três métricas compactas de composição corporal: peso, gordura e massa magra;
+3. cartão `Hoje` com treino, tratamentos, hidratação e alimentação;
+4. progresso semanal em quatro anéis compactos;
+5. evolução longitudinal com períodos 30 dias / 90 dias / 1 ano / Histórico e métricas Peso, Gordura, Músculo, Treinos, Nutrição, Sono, Exames e Água;
+6. panorama dos demais domínios em uma faixa horizontal, seguido por acontecimentos recentes e contexto das fontes.
+
+No desktop, o mesmo conteúdo pode ser reorganizado para aproveitar largura: `Hoje` e progresso semanal formam uma coluna ao lado da evolução, os seis domínios ficam em uma faixa e o fechamento divide acontecimentos e proveniência. Isso não autoriza substituir a hierarquia mobile por cinco cartões executivos genéricos.
+
+Gráficos aparecem somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
 
 ## Mobile
 
-- Preservar a linguagem clara do conteúdo; não transformar a Home em um produto escuro no celular.
-- Seletor de período sempre acessível.
-- Cards executivos formam uma única faixa horizontal com gesto nativo e snap; não podem virar cinco blocos verticais.
-- O gráfico principal aparece antes do resumo, com seletor de métricas horizontal e legível.
-- Acontecimentos e lacunas passam para uma coluna; os dashboards detalhados permanecem nas áreas especializadas.
+- A Home usa o canvas azul-marinho escuro observado na imagem aprovada, com cartões brancos de alto contraste; telas internas preservam superfícies claras quando essa é a hierarquia mais legível.
+- Marca, saudação, data, métricas, `Hoje` e progresso semanal precisam ser reconhecíveis sem aparência de dashboard web comprimido.
+- Seletor de período permanece acessível na evolução longitudinal.
+- Os seis domínios formam uma única faixa horizontal com gesto nativo e snap; não podem virar uma longa pilha vertical.
+- O seletor de métricas da evolução é horizontal e legível.
+- Acontecimentos e contexto das fontes passam para uma coluna; os detalhes permanecem nas áreas especializadas.
 - Navegação inferior pode permanecer desde que não cubra conteúdo.
 
 ## Gate de homologação
@@ -82,10 +89,11 @@ Cada cartão mostra dado atual, contexto/comparação segura e uma pequena indic
 Nenhuma versão é considerada pronta apenas por CI verde. Antes de promover ao `main` é obrigatório:
 
 - renderizar a Home em 1536 × 864 e em viewport mobile;
-- conferir sidebar, canvas claro, tipografia sans-serif, cinco cartões coloridos, gráfico principal, resumo e fechamento compacto;
+- conferir no desktop rail, canvas claro, três métricas, `Hoje`, progresso, evolução, seis domínios e fechamento compacto;
+- conferir no mobile canvas escuro, cartões brancos, a ordem exata da primeira tela aprovada e navegação inferior sem cobertura;
 - medir ausência de overflow horizontal;
 - verificar que a sidebar permanece dentro da faixa documentada e que o canvas continua dominante no desktop;
-- verificar que o fundo do canvas e as cinco famílias de cor dos cartões correspondem à referência;
+- verificar que o contraste do canvas e as famílias semânticas dos cartões correspondem à referência em cada viewport;
 - validar funcionamento e dados reais sem degradar a composição;
 - preservar os testes funcionais e de proveniência existentes.
 

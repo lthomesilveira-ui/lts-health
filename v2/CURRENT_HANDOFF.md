@@ -1,6 +1,6 @@
 # LTS Health — CURRENT HANDOFF
 
-Updated: 2026-09-15 after build `.28` was published and a newly recorded workout exposed partial-telemetry semantics that need an explicit UI treatment. Public engineering metadata only; health data, credentials and private screenshots stay private.
+Updated: 2026-09-15 after the owner rejected the published `.29` Home and the approved mobile reference was reopened for a decisive dashboard rebuild. Public engineering metadata only; health data, credentials and private screenshots stay private.
 
 ## Restart phrase
 
@@ -24,9 +24,11 @@ The reference contains the intended mobile Home/Início plus Training summary an
 
 Physical-iPhone screenshots from the owner outrank fixture-only visual confidence. The owner explicitly reported on 14/09 that the product had improved but remained far from the approved mockup. There is **no final pixel parity or product acceptance** yet.
 
-## Current published release — not owner-homologated
+## Current published release — rejected by the owner
 
-The currently published build is `physical-iphone-remediation-20260915.28`, promoted normally by PR #295 with merge commit `3bd552670c30186eb41052097d643150171a471d`. Its post-merge deploy, Pages, smoke and authenticated automation gates passed. The exact public URL was opened again in Cloud Browser and `.28` was observed at the login surface, but the current Cloud Browser session is not authenticated. This is publication evidence, not owner acceptance and not a claim that authenticated visual QA is complete.
+The currently published build is `latest-workout-telemetry-20260915.29`, promoted normally by PR #296 at `main` commit `4d8bbf33426bf81f0ff2124cdd2b23c31aab10af`. Its automation and deploy evidence do not constitute visual acceptance. The owner opened `.29`, supplied a physical-device capture and explicitly reported that the dashboard still did not deliver the agreed layout.
+
+The exact public `.29` was also opened in Cloud Browser with an authenticated session during the new audit. The first composition load failed and rendered placeholders even though the real records existed; a manual refresh loaded the domain. This established a transient loader failure, not absent history, and the candidate adds one bounded retry before showing an error.
 
 The package chain from PR #285 through #292 rebuilt the audited Home/Training experience, aligned the internal routes, removed visual and navigation regressions found in the public app, and made authenticated evidence follow real UI navigation with route-specific readiness.
 
@@ -36,11 +38,11 @@ The actual public URL was then opened in Cloud Browser with the authenticated se
 
 The owner then supplied eight full-size screenshots from a physical iPhone. Those screenshots invalidate the previous statement that no obvious defect remained: the Home retained an empty hidden-topbar track, all audited mobile routes reserved bottom space twice, the first viewport was oversized, and Training ended in a large blank surface. Build `.26` is published but visually rejected and must not be presented for homologation.
 
-The active package is `PKG-LATEST-WORKOUT-TELEMETRY-001`. Its candidate build is `latest-workout-telemetry-20260915.29`. It preserves the newly recorded workout in the private data store and makes the UI distinguish session duration from estimated energy and heart-rate values measured only during a partial device recording. No private workout values or screenshots enter this repository.
+The active package is `PKG-HOME-DASHBOARD-REFERENCE-REBUILD-001`. Its candidate build is `home-dashboard-reference-20260915.30`. It owns the unresolved physical-iPhone acceptance, the truthful partial-telemetry presentation and the new Home reconstruction as one coherent release. No private workout values or screenshots enter this repository.
 
 ## Home/Início state
 
-Home preserves the approved mobile reference structure, but the `.26` implementation failed on a physical iPhone and is **not accepted as finished by the owner**.
+Home is being rebuilt from the recovered private reference because the owner rejected `.29`; no earlier implementation is accepted as finished.
 
 Current non-negotiable semantics:
 - `Hoje` means the current calendar day only;
@@ -51,13 +53,14 @@ Current non-negotiable semantics:
 - bottom navigation cannot cover content.
 
 Current reference-oriented mobile order is:
-1. brand/header + greeting;
-2. compact composition metrics;
+1. brand/header, greeting, date and short context;
+2. three compact composition metrics;
 3. Today;
 4. weekly progress;
-5. older recent records.
+5. longitudinal evolution with 30 days / 90 days / 1 year / history and eight metric choices;
+6. six-domain horizontal panorama, recent events and provenance.
 
-The owner screenshots show that the remote evidence overstated first-screen parity. Preserve the information order, but collapse the empty topbar track, eliminate duplicated bottom reserve and require the weekly progress surface to begin within a reduced `393 × 650` Safari viewport.
+The `.30` candidate uses the approved dark mobile canvas with white cards, keeps the desktop canvas light, collapses the hidden topbar track, eliminates duplicated bottom reserve and requires weekly progress within a reduced `393 × 650` Safari viewport. Historical data and all existing drill-downs remain intact.
 
 ## Training state
 
@@ -87,7 +90,7 @@ Do not reimplement older caps or lose these capabilities:
 
 ## Remaining execution order
 
-`LTS-WORKOUT-PARTIAL-TELEMETRY-001` is in progress. Finish the truthful partial-telemetry labels across Home and Training, protect them with regression gates, then publish and repeat the full authenticated public-browser inspection before asking for owner judgment.
+`LTS-HOME-DASHBOARD-REFERENCE-REBUILD-001`, `LTS-PHYSICAL-IPHONE-001` and `LTS-WORKOUT-PARTIAL-TELEMETRY-001` are in progress under one package. Finish the complete gates, publish `.30`, open the exact public build, inspect authenticated real content in desktop and mobile evidence, correct obvious defects and only then ask for owner judgment.
 
 Do not trade away existing history/provenance depth to obtain visual similarity. Do not add reference-only graphs, device imagery, values or health semantics without canonical evidence.
 
@@ -105,4 +108,4 @@ The approved source remains in the owner's private Drive as `LTS Health - refere
 
 ## Next action
 
-Do not ask the owner to judge `.26`; it was rejected with physical-iPhone evidence. Build `.28` is public but is not owner-homologated. Promote `.29` only through a normal PR, then open the exact public build, authenticate when possible, navigate affected areas, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
+Do not ask the owner to judge `.29`; it was explicitly rejected. Promote candidate `.30` only through a normal PR, then open the exact public build, authenticate, navigate affected areas, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
