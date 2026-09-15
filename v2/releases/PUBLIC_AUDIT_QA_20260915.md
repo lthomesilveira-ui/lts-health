@@ -2,6 +2,8 @@
 
 Checkpoint público de engenharia. Não contém dados pessoais de saúde, capturas privadas, credenciais nem material de autenticação.
 
+> Estado posterior: este fechamento visual foi invalidado pelas oito capturas do iPhone físico fornecidas pelo proprietário. A versão `.26` permanece registrada como deploy histórico, mas está rejeitada para homologação. A remediação vigente está em `PHYSICAL_IPHONE_REMEDIATION_20260915.md`.
+
 ## Escopo e autoridade
 
 Esta auditoria foi iniciada a partir do produto realmente publicado, e não de uma suposição baseada em CI. A autoridade visual foi a imagem mobile aprovada preservada no Drive privado como `LTS Health - referencia visual aprovada.png`, SHA256 `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`.

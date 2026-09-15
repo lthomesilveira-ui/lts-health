@@ -31,7 +31,13 @@ O pacote `PKG-PUBLIC-AUDIT-CLOSURE-001` partiu do app realmente publicado e da r
 
 O build final `ux-coherence-public-visual-closure-20260915.26` foi promovido pelo PR #292 ao commit de `main` `cb4ec22f9fe9c5f3f00b2c9875db7d6e9ea7c5cf`. Os nove workflows pós-merge passaram. Depois do deploy, o link público foi aberto no Cloud Browser com sessão autenticada; todas as áreas foram navegadas, o build foi conferido e a composição desktop foi inspecionada diretamente. O artefato real-auth `10379557671` teve digest verificado e suas 32 capturas mobile/desktop foram descriptografadas apenas no ambiente privado e revisadas visualmente.
 
-A comparação e a disposição manter/corrigir/refazer estão registradas em `v2/releases/PUBLIC_AUDIT_QA_20260915.md`. Não restou defeito óbvio conhecido no escopo auditado, mas esse fechamento continua sendo QA de engenharia: não presume aceite do proprietário, teste em iPhone físico ou paridade pixel.
+A comparação e a disposição manter/corrigir/refazer estão registradas em `v2/releases/PUBLIC_AUDIT_QA_20260915.md`. Esse checkpoint é histórico e foi posteriormente invalidado como fechamento visual pelas capturas do iPhone físico descritas abaixo.
+
+## Reabertura por evidência de iPhone físico — 15/09/2026
+
+O proprietário abriu a `.26` no iPhone e forneceu oito capturas em tamanho integral. Elas comprovaram defeitos que o CI, o E2E e a revisão remota não representaram adequadamente: a Home reservava `50px` para uma topbar oculta, as rotas mobile duplicavam cerca de `100px` de espaço inferior apesar da navegação ocupar linha própria, o primeiro viewport ficava desproporcional e o Treino terminava em uma extensa faixa vazia.
+
+O pacote `PKG-PHYSICAL-IPHONE-REMEDIATION-001` reabre o P0 visual sem remover dados ou profundidade funcional. O gate passa a incluir `393 × 650`, além do viewport cheio, e exige inspeção pública posterior ao deploy antes de qualquer novo pedido de homologação.
 
 ## Fechamento do reset de arquitetura — 08/09/2026
 

@@ -124,6 +124,8 @@ CI verde comprova regressões técnicas cobertas. Ele não comprova, isoladament
 
 Para uma entrega visual, “confirmação de deploy” significa abrir o link público final em navegador remoto, autenticar quando possível, navegar pela interface real e inspecionar as superfícies afetadas em desktop e mobile. Screenshot de CI pode complementar essa verificação, mas não substitui a abertura do produto publicado.
 
+Para mudanças mobile, o conjunto mínimo inclui viewport cheio e viewport reduzido de navegador (`393 × 650`). O shell não pode reservar espaço para elementos ocultos nem somar padding de navegação quando a navegação já ocupa uma linha própria.
+
 ## Referência visual e precedência atual
 
 A imagem aprovada em 04/09/2026 foi recuperada e está preservada fora do repositório público no Drive privado do proprietário como `LTS Health - referencia visual aprovada.png`, SHA256 `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`. O contrato textual correspondente está em `REFERENCE_VISUAL_CONTRACT.md`.

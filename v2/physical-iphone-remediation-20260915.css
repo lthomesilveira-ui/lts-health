@@ -1,0 +1,362 @@
+/* Physical iPhone remediation.
+   This is the final mobile layout authority after the 2026-09-15 Safari-sheet audit.
+   It changes presentation only: data, provenance and drill-down behavior remain intact. */
+@media (max-width: 840px) {
+  /* The shell already gives navigation its own grid row. Do not reserve the same
+     space again inside every scroll surface. */
+  .app {
+    grid-template-rows: 50px minmax(0, 1fr) 60px !important;
+  }
+
+  .screenHost {
+    min-height: 0 !important;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+    scroll-padding-top: 8px;
+    scroll-padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+
+  .mobileNav,
+  body[data-product-route="hoje"] .mobileNav {
+    min-height: 60px !important;
+    height: calc(60px + env(safe-area-inset-bottom)) !important;
+    margin: 0 !important;
+    padding: 4px 7px env(safe-area-inset-bottom) !important;
+    align-items: center !important;
+  }
+
+  .mobileNav button,
+  body[data-product-route="hoje"] .mobileNav button {
+    min-height: 50px !important;
+    height: 50px !important;
+    padding: 3px 1px !important;
+    gap: 2px !important;
+    font-size: 10px !important;
+  }
+
+  .mobileNav .mobileNavIcon {
+    font-size: 19px !important;
+  }
+
+  /* Home has no topbar. Collapse that empty grid track instead of leaving a
+     hidden 50px band above the first meaningful item. */
+  body[data-product-route="hoje"] .app {
+    grid-template-rows: minmax(0, 1fr) 60px !important;
+  }
+
+  body[data-product-route="hoje"] .screenHost {
+    grid-row: 1 !important;
+    min-height: 0 !important;
+    padding: calc(6px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body[data-product-route="hoje"] .mobileNav {
+    grid-row: 2 !important;
+  }
+
+  .ltsHomeReference {
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .ltsRefHeader {
+    min-height: 34px;
+    margin-bottom: 6px;
+  }
+
+  .ltsRefBrand {
+    gap: 7px;
+  }
+
+  .ltsRefPulse {
+    font-size: 21px;
+  }
+
+  .ltsRefBrand b {
+    font-size: 16px;
+  }
+
+  .ltsRefAvatar {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .ltsRefGreeting h1 {
+    font-size: 23px;
+    line-height: 1.03;
+  }
+
+  .ltsRefGreeting > p {
+    margin-top: 3px;
+    font-size: 10px;
+  }
+
+  .ltsRefMotto {
+    min-height: 30px;
+    margin-top: 7px;
+    padding: 6px 9px;
+    border-radius: 9px;
+  }
+
+  .ltsRefMotto span {
+    font-size: 13px;
+  }
+
+  .ltsRefMotto b {
+    font-size: 10px;
+  }
+
+  .ltsRefMetrics {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .ltsRefMetric {
+    min-height: 78px;
+    padding: 9px 8px;
+    border-radius: 12px;
+  }
+
+  .ltsRefMetric > span {
+    font-size: 9px;
+  }
+
+  .ltsRefMetric > strong {
+    margin-top: 5px;
+    font-size: 18px;
+  }
+
+  .ltsRefMetric > div {
+    margin-top: 5px;
+  }
+
+  .ltsRefMetric > div b {
+    font-size: 8.5px;
+  }
+
+  .ltsRefMetric > div small {
+    font-size: 7.5px;
+  }
+
+  .ltsRefCoreGrid {
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .ltsRefCard {
+    border-radius: 14px;
+  }
+
+  .ltsRefCard > header {
+    padding: 8px 10px 6px;
+  }
+
+  .ltsRefCard > header h2 {
+    font-size: 14px;
+  }
+
+  .ltsRefCard > header span {
+    font-size: 8px;
+  }
+
+  .ltsRefCard > header button {
+    font-size: 8.5px;
+  }
+
+  .ltsRefTodayRow {
+    min-height: 42px;
+    padding: 6px 9px;
+    grid-template-columns: 27px minmax(0, 1fr) 19px;
+    gap: 7px;
+  }
+
+  .ltsRefTodayIcon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    font-size: 11px;
+  }
+
+  .ltsRefTodayCopy b {
+    font-size: 10.5px;
+  }
+
+  .ltsRefTodayCopy small {
+    font-size: 8px;
+  }
+
+  .ltsRefTodayState {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+
+  .ltsRefProgress {
+    padding-bottom: 7px;
+  }
+
+  .ltsRefProgressGrid {
+    gap: 3px;
+    padding: 2px 7px 3px;
+  }
+
+  .ltsRefRing {
+    width: 43px;
+    height: 43px;
+  }
+
+  .ltsRefRing::after {
+    inset: 5px;
+  }
+
+  .ltsRefRing b {
+    font-size: 9px;
+  }
+
+  .ltsRefProgressItem > small {
+    margin-top: 3px;
+    font-size: 7.5px;
+  }
+
+  /* Detail routes keep their full evidence but no longer read like enlarged
+     desktop reports in the reduced Safari visual viewport. */
+  body[data-product-route="treinos"] .screenHost,
+  body[data-product-route="bio"] .screenHost,
+  body[data-product-route="saude"] .screenHost {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .ltsRefTrainHeader {
+    grid-template-columns: 38px minmax(0, 1fr) 38px;
+    gap: 8px;
+  }
+
+  .ltsRefTrainBack,
+  .ltsRefTrainAdd {
+    width: 38px;
+    height: 38px;
+  }
+
+  .ltsRefTrainHeader h1 {
+    font-size: 22px !important;
+  }
+
+  .ltsRefTrainHeader p {
+    font-size: 10px !important;
+  }
+
+  .ltsRefTrainTabs {
+    min-height: 42px;
+  }
+
+  .ltsRefTrainTabs button {
+    min-height: 38px;
+    font-size: 10px !important;
+  }
+
+  .ltsRefTrainHero {
+    min-height: 96px !important;
+    padding: 14px !important;
+    border-radius: 18px !important;
+  }
+
+  .ltsRefTrainHero strong {
+    font-size: 22px !important;
+  }
+
+  .ltsRefTrainMetrics {
+    gap: 6px !important;
+  }
+
+  .ltsRefTrainMetric {
+    min-height: 68px !important;
+    padding: 9px !important;
+  }
+
+  .ltsTrainingReference .ltsRefTrainMetric strong,
+  .ltsTrainingReference .ltsRefHrNumbers b {
+    font-size: 19px !important;
+  }
+
+  .ltsRefTrainPanel,
+  .ltsRefExercisesPanel {
+    padding: 12px !important;
+  }
+
+  .ltsRefOverviewGrid > div {
+    min-height: 70px !important;
+    padding: 10px !important;
+  }
+
+  .ltsRefOverviewGrid b {
+    font-size: 21px !important;
+  }
+
+  .ltsRefExercisePreview {
+    margin-top: 8px !important;
+    padding: 9px 10px !important;
+  }
+
+  .ltsCompositionV2 > .ltsPageHeader,
+  .ltsLabsV2 > .ltsPageHeader {
+    min-height: 50px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .ltsCompositionV2 > .ltsPageHeader h1,
+  .ltsLabsV2 > .ltsPageHeader h1 {
+    font-size: 22px !important;
+  }
+}
+
+/* The physical Safari sheet leaves roughly 650 CSS pixels for the page. This
+   gate is deliberately height-based so full-screen phones keep normal type. */
+@media (max-width: 840px) and (max-height: 700px) {
+  .app {
+    grid-template-rows: 46px minmax(0, 1fr) 56px !important;
+  }
+
+  body[data-product-route="hoje"] .app {
+    grid-template-rows: minmax(0, 1fr) 56px !important;
+  }
+
+  .mobileNav,
+  body[data-product-route="hoje"] .mobileNav {
+    min-height: 56px !important;
+    height: calc(56px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .mobileNav button,
+  body[data-product-route="hoje"] .mobileNav button {
+    min-height: 46px !important;
+    height: 46px !important;
+  }
+
+  .ltsRefHeader {
+    min-height: 30px;
+    margin-bottom: 4px;
+  }
+
+  .ltsRefGreeting h1 {
+    font-size: 21px;
+  }
+
+  .ltsRefMotto {
+    margin-top: 5px;
+  }
+
+  .ltsRefMetrics,
+  .ltsRefCoreGrid {
+    margin-top: 6px;
+  }
+
+  .ltsRefMetric {
+    min-height: 72px;
+  }
+
+  .ltsRefTodayRow {
+    min-height: 39px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+}

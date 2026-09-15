@@ -10,6 +10,7 @@ const homeCss=read('./home-reference.css');
 const training=read('./src/training-reference-v2.js');
 const trainingCss=read('./training-reference-v2.css');
 const internalCss=read('./public-audit-remediation.css');
+const physicalIphoneCss=read('./physical-iphone-remediation-20260915.css');
 const core=read('./src/core.js');
 const timeline=read('./src/timeline-screen.js');
 const analysis=read('./src/analysis-screen.js');
@@ -17,10 +18,11 @@ const evolution=read('./src/evolution-screen.js');
 const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 
-assert.match(index,/name="lts-build" content="ux-coherence-public-visual-closure-20260915\.26"/);
+assert.match(index,/name="lts-build" content="physical-iphone-remediation-20260915\.27"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=ux-coherence-public-visual-closure-20260915.26`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=physical-iphone-remediation-20260915.27`),`${asset} is not tied to the audited build`);
 }
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=physical-iphone-remediation-20260915.27'),'physical iPhone remediation is not the final stylesheet');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }
@@ -63,6 +65,9 @@ assert.match(internalCss,/\.topbar #routeAction\.hidden\s*\{[^}]*display:\s*none
 assert.match(internalCss,/body\[data-product-route="evolucao"\] \.evolutionLowerGrid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);[^}]*align-items:\s*start;/s);
 assert.match(internalCss,/body\[data-product-route="nutricao"\] \.hydrationSecondaryAction\s*\{[^}]*appearance:\s*none;[^}]*border-radius:\s*10px;/s);
 assert.match(internalCss,/#screenHost h1\[tabindex="-1"\]:focus[\s\S]*outline:\s*none !important;/s);
+assert.match(physicalIphoneCss,/body\[data-product-route="hoje"\] \.app\s*\{[^}]*grid-template-rows:\s*minmax\(0, 1fr\) 60px !important;/s);
+assert.match(physicalIphoneCss,/body\[data-product-route="hoje"\] \.screenHost\s*\{[^}]*grid-row:\s*1 !important;[^}]*min-height:\s*0 !important;/s);
+assert.match(physicalIphoneCss,/@media \(max-width: 840px\) and \(max-height: 700px\)/);
 assert.match(realAuth,/locator\('\.nutritionDays'\)\.scrollIntoViewIfNeeded\(\)/);
 assert.doesNotMatch(realAuth,/locator\('\.nutritionMonth'\)(?:\.first\(\))?\.scrollIntoViewIfNeeded\(\)/);
 assert.match(realAuth,/document\.body\.dataset\.productRoute===value/);
