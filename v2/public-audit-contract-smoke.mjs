@@ -14,9 +14,9 @@ const core=read('./src/core.js');
 const timeline=read('./src/timeline-screen.js');
 const analysis=read('./src/analysis-screen.js');
 
-assert.match(index,/name="lts-build" content="ux-coherence-public-audit-20260915\.19"/);
+assert.match(index,/name="lts-build" content="ux-coherence-internal-legibility-20260915\.20"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=ux-coherence-public-audit-20260915.19`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=ux-coherence-internal-legibility-20260915.20`),`${asset} is not tied to the audited build`);
 }
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
@@ -48,6 +48,12 @@ assert.match(analysis,/option value="365"\$\{selected\('365'\)\}/);
 for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInbox','.analysisDigestCard']){
   assert.ok(internalCss.includes(selector),`audited readability reset is missing ${selector}`);
 }
+for(const selector of ['body[data-product-route="nutricao"] .nutritionMonthHead b','body[data-product-route="nutricao"] .nutritionDays small','body[data-product-route="evolucao"] [data-evolution-metric]','body[data-product-route="evolucao"] .changeRow','.topActionIcon']){
+  assert.ok(internalCss.includes(selector),`internal legibility contract is missing ${selector}`);
+}
+assert.match(internalCss,/body\[data-product-route="nutricao"\] \.topbar #routeAction\s*\{[^}]*display:\s*none !important;/s);
+assert.match(index,/id="refreshBtn" aria-label="Atualizar dados"[^>]*><svg class="topActionIcon"/);
+assert.match(index,/id="logoutBtn" aria-label="Sair do LTS Health"[^>]*><svg class="topActionIcon"/);
 
 const canonicalSizes=[...`${homeCss}\n${trainingCss}`.matchAll(/font-size:\s*([0-9.]+)px/g)].map(match=>Number(match[1]));
 assert.ok(canonicalSizes.length>30,'canonical responsive typography was not found');

@@ -409,3 +409,188 @@
     grid-column: 1 / -1;
   }
 }
+
+/* Internal-route legibility from the authenticated public audit. */
+.topActionIcon {
+  display: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body[data-product-route="nutricao"] .topbar #routeAction {
+  display: none !important;
+}
+
+body[data-product-route="nutricao"] .nutritionMonthHead b,
+body[data-product-route="nutricao"] .mealDistributionRow b,
+body[data-product-route="nutricao"] .nutritionDays b,
+body[data-product-route="nutricao"] .mealRow b {
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+body[data-product-route="nutricao"] .nutritionMonthHead span,
+body[data-product-route="nutricao"] .nutritionMonthStats span,
+body[data-product-route="nutricao"] .mealDistributionRow small,
+body[data-product-route="nutricao"] .nutritionDays time,
+body[data-product-route="nutricao"] .nutritionDays small,
+body[data-product-route="nutricao"] .nutritionDayHead small,
+body[data-product-route="nutricao"] .macroGrid span,
+body[data-product-route="nutricao"] .mealRow small,
+body[data-product-route="nutricao"] .mealRow em,
+body[data-product-route="nutricao"] .yearGrid span,
+body[data-product-route="nutricao"] .yearGrid small {
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+body[data-product-route="nutricao"] .nutritionDayHead span {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+body[data-product-route="nutricao"] .mealRow > span {
+  font-size: 11.5px;
+}
+
+body[data-product-route="nutricao"] .nutritionMonth,
+body[data-product-route="nutricao"] .nutritionDays button,
+body[data-product-route="nutricao"] .mealRow {
+  min-height: 48px;
+}
+
+body[data-product-route="evolucao"] [data-evolution-metric],
+body[data-product-route="evolucao"] [data-segmental-date],
+body[data-product-route="evolucao"] .segmentCompareControl span,
+body[data-product-route="evolucao"] .segmentCompareControl select,
+body[data-product-route="evolucao"] .evoAxis,
+body[data-product-route="evolucao"] .evoDelta,
+body[data-product-route="evolucao"] .segmentPair span,
+body[data-product-route="evolucao"] .segmentTrunk span,
+body[data-product-route="evolucao"] .segmentPair strong,
+body[data-product-route="evolucao"] .segmentDelta b,
+body[data-product-route="evolucao"] .segmentDelta span,
+body[data-product-route="evolucao"] .segmentKindTitle small,
+body[data-product-route="evolucao"] .sideDifferenceHead small,
+body[data-product-route="evolucao"] .sideDifferenceGrid span,
+body[data-product-route="evolucao"] .segmentDeltaTitle small,
+body[data-product-route="evolucao"] .weeklyRhythm > div small,
+body[data-product-route="evolucao"] .weeklyRhythm > div span {
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+body[data-product-route="evolucao"] .evoAxis b,
+body[data-product-route="evolucao"] .evoDelta b,
+body[data-product-route="evolucao"] .segmentKindTitle b,
+body[data-product-route="evolucao"] .sideDifferenceHead b,
+body[data-product-route="evolucao"] .segmentDeltaGroup > div > b,
+body[data-product-route="evolucao"] .segmentDeltaTitle b {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-product-route="evolucao"] .sideDifferenceGrid b {
+  font-size: 14px;
+}
+
+body[data-product-route="evolucao"] .changeRow {
+  font-size: 11px;
+}
+
+body[data-product-route="evolucao"] .changeHead {
+  font-size: 10px;
+}
+
+body[data-product-route="evolucao"] .changeRow > * {
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+body[data-product-route="evolucao"] .screenHost .segmented button {
+  min-height: 34px;
+  padding: 7px 10px;
+}
+
+@media (max-width: 840px) {
+  .topbar #refreshBtn::before,
+  .topbar #logoutBtn::before {
+    content: none !important;
+  }
+
+  .topbar #refreshBtn .topActionIcon,
+  .topbar #logoutBtn .topActionIcon {
+    display: block;
+  }
+
+  body[data-product-route="nutricao"] .nutritionMonth {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px 0;
+  }
+
+  body[data-product-route="nutricao"] .nutritionMonthStats {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-left: 94px;
+    margin-top: -3px;
+  }
+
+  body[data-product-route="nutricao"] .nutritionDays button {
+    grid-template-columns: 82px minmax(0, 1fr);
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  body[data-product-route="evolucao"] .cardHead .segmented {
+    width: 100%;
+    margin-top: 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  body[data-product-route="evolucao"] .changeRow {
+    font-size: 11px;
+  }
+
+  body[data-product-route="evolucao"] .changeRow time,
+  body[data-product-route="evolucao"] .changeRow span,
+  body[data-product-route="evolucao"] .changeRow strong {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  body[data-product-route="evolucao"] .changeRow span::before,
+  body[data-product-route="evolucao"] .changeRow strong::before {
+    font-size: 9.5px !important;
+    line-height: 1.25;
+  }
+
+  body[data-product-route="evolucao"] .weeklyRhythm > div {
+    min-width: 48px;
+  }
+
+  body[data-product-route="evolucao"] .weeklyRhythm > div small {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 430px) {
+  body[data-product-route="nutricao"] .nutritionMonth {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  body[data-product-route="nutricao"] .nutritionMonthStats {
+    padding-left: 88px;
+  }
+
+  body[data-product-route="nutricao"] .nutritionDays button {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+}

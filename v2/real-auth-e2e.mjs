@@ -28,6 +28,17 @@ async function assertNoHorizontalOverflow(){
   const ok=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1);
   if(!ok)throw new Error('real-data route overflow detected');
 }
+async function assertMinimumReadableType(selector,minimum,label){
+  const result=await page.evaluate(selector=>{
+    const samples=[...document.querySelectorAll(selector)].filter(el=>{
+      const rect=el.getBoundingClientRect(),style=getComputedStyle(el);
+      return style.display!=='none'&&style.visibility!=='hidden'&&(rect.width>0||rect.height>0);
+    }).map(el=>parseFloat(getComputedStyle(el).fontSize)).filter(Number.isFinite);
+    return{count:samples.length,minimum:samples.length?Math.min(...samples):null};
+  },selector);
+  if(!result.count)throw new Error(`${label}: audited typography is missing`);
+  if(result.minimum<minimum)throw new Error(`${label}: supporting type is too small (${result.minimum}px)`);
+}
 async function auditReferenceHome(label){
   const result=await page.evaluate(()=>{
     const top=selector=>document.querySelector(selector)?.getBoundingClientRect().top??99999;
@@ -40,7 +51,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='ux-coherence-public-audit-20260915.19')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='ux-coherence-internal-legibility-20260915.20')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
@@ -168,6 +179,7 @@ try{
     throw new Error(`latest workout summary mismatch: ui=${trainingSummary.summaryExercises}/${trainingSummary.summarySets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
   }
   if(integrity.latestWorkoutDate&&!trainingSummary.text.includes(String(integrity.latestWorkoutDate).split('-').reverse().join('/')))throw new Error('latest workout date missing from structural Training');
+  await page.screenshot({path:`${evidenceDir}/desktop-training-summary.png`,fullPage:true});
   await page.locator('.ltsRefTrainTabs [data-depth-training-view="exercises"]').click();
   await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='exercises',{timeout:30000});
   await page.waitForSelector('.ltsRefExerciseCard',{timeout:30000});
@@ -179,6 +191,7 @@ try{
     throw new Error(`latest real workout linkage mismatch after opening Exercises: ui=${trainingDetail.exercises}/${trainingDetail.sets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
   }
   await auditExerciseGeometry('desktop Training');
+  await page.screenshot({path:`${evidenceDir}/desktop-training-exercises.png`,fullPage:true});
   const firstExerciseHistory=page.locator('.ltsRefExerciseCard [data-depth-exercise]').first();
   if(await firstExerciseHistory.count()){
     await firstExerciseHistory.click();
@@ -217,6 +230,14 @@ try{
   if(integrity.internalQualityCount>0&&!dataText.includes('Tratamento interno'))throw new Error('real Data Inbox internal-quality state is contradictory');
   await assertLightReadableCards('.reviewInbox,.reviewStat,.sourceStatus','desktop Data');
 
+  await waitForRoute('nutricao');
+  await assertMinimumReadableType('.nutritionMonthHead b,.nutritionMonthHead span,.nutritionMonthStats span,.nutritionDays time,.nutritionDays b,.nutritionDays small',10.5,'desktop Nutrition');
+  if(await page.locator('#routeAction').isVisible())throw new Error('desktop Nutrition duplicates its import action in the top bar');
+  await page.screenshot({path:`${evidenceDir}/desktop-nutrition.png`});
+  await waitForRoute('evolucao');
+  await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'desktop Evolution');
+  await page.screenshot({path:`${evidenceDir}/desktop-evolution.png`});
+
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
@@ -225,6 +246,8 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
   await waitForRoute('treinos');
   await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
+  await page.locator('.ltsRefTrainTabs [data-depth-training-view="summary"]').click();
+  await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='summary',{timeout:30000});
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-training.png`,fullPage:true});
   await page.locator('.ltsRefTrainTabs [data-depth-training-view="exercises"]').click();
@@ -237,13 +260,61 @@ try{
   await page.waitForSelector('.ltsCompositionV2',{timeout:30000});
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/mobile-composition.png`,fullPage:true});
-  for(const route of ['nutricao','analise','saude','tratamentos','evolucao','timeline','dados']){await waitForRoute(route);await assertNoHorizontalOverflow();}
+
+  await waitForRoute('nutricao');
+  await assertNoHorizontalOverflow();
+  await assertMinimumReadableType('.nutritionMonthHead b,.nutritionMonthHead span,.nutritionMonthStats span,.nutritionDays time,.nutritionDays b,.nutritionDays small',10.5,'mobile Nutrition');
+  if(await page.locator('#routeAction').isVisible())throw new Error('mobile Nutrition duplicates its import action in the top bar');
+  await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
+  await page.screenshot({path:`${evidenceDir}/mobile-nutrition.png`});
+  await page.locator('.nutritionMonth').first().scrollIntoViewIfNeeded();
+  await page.screenshot({path:`${evidenceDir}/mobile-nutrition-history.png`});
+  const nutritionDay=page.locator('details.uxDisclosure summary').filter({hasText:'Detalhe do dia selecionado'}).first();
+  await nutritionDay.click();
+  await page.locator('.nutritionDayHead').scrollIntoViewIfNeeded();
+  await assertMinimumReadableType('.nutritionDayHead span,.nutritionDayHead small,.macroGrid span,.mealRow b,.mealRow small,.mealRow em',10.5,'mobile Nutrition day detail');
+  await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
+
   await waitForRoute('analise');
   const recoveryPeriod=await page.evaluate(()=>({value:document.querySelector('#analysisPeriod')?.value||'',heading:document.querySelector('.domainHero span')?.textContent||''}));
   if(!recoveryPeriod.value||!recoveryPeriod.heading.includes(recoveryPeriod.value==='365'?'último ano':recoveryPeriod.value==='30'?'últimos 30 dias':recoveryPeriod.value==='90'?'últimos 90 dias':'todo o histórico'))throw new Error(`mobile Recovery period control contradicts its heading: ${JSON.stringify(recoveryPeriod)}`);
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-recovery.png`});
+
+  await waitForRoute('saude');
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-labs.png`});
+
+  await waitForRoute('tratamentos');
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-protocols.png`});
+
+  await waitForRoute('evolucao');
+  await assertNoHorizontalOverflow();
+  await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'mobile Evolution');
+  await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
+  await page.screenshot({path:`${evidenceDir}/mobile-evolution.png`});
+  await page.locator('.evolutionChangeTable').scrollIntoViewIfNeeded();
+  await page.screenshot({path:`${evidenceDir}/mobile-evolution-changes.png`});
+  if(await page.locator('.segmentKinds').count()){
+    await page.locator('.segmentKinds').scrollIntoViewIfNeeded();
+    await assertMinimumReadableType('.segmentKindTitle b,.segmentKindTitle small,.segmentPair span,.segmentPair strong,.sideDifferenceHead small',10.5,'mobile Evolution segmental');
+    await page.screenshot({path:`${evidenceDir}/mobile-evolution-segmental.png`});
+  }
+
   await waitForRoute('timeline');
   const timelineVisible=Number(await page.locator('.timelineSummary b').textContent());
   if(timelineVisible>50)throw new Error(`mobile Timeline rendered ${timelineVisible} records before progressive loading`);
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-timeline.png`});
+
+  await waitForRoute('dados');
+  await assertNoHorizontalOverflow();
+  await page.screenshot({path:`${evidenceDir}/mobile-data.png`});
+  await page.locator('#mobileNav [data-route="mais"]').click();
+  await page.waitForSelector('#moreSheet:not(.hidden)',{timeout:30000});
+  await page.screenshot({path:`${evidenceDir}/mobile-more.png`});
+  await page.locator('#moreSheet [data-route="evolucao"]').click();
 
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir});
 
