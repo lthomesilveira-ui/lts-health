@@ -19,7 +19,22 @@ const page=await context.newPage();
 page.on('pageerror',()=>runtimeErrorCount++);
 page.on('console',m=>{if(m.type()==='error')runtimeErrorCount++;});
 
+const routeReadySelectors=Object.freeze({
+  hoje:'.ltsHomeReference',
+  timeline:'.timelineSummary',
+  treinos:'.ltsTrainingReference',
+  bio:'.ltsCompositionV2',
+  nutricao:'.nutritionDays',
+  saude:'.ltsLabsV2',
+  analise:'.ltsRecoveryV2',
+  tratamentos:'.protocolSummaryGrid',
+  dados:'[data-review-inbox]',
+  evolucao:'.evolutionChangeTable'
+});
+
 async function waitForRoute(route){
+  const readySelector=routeReadySelectors[route];
+  if(!readySelector)throw new Error(`no authenticated ready selector registered for ${route}`);
   const mobile=(await page.viewportSize()).width<=840;
   const direct=`#${mobile?'mobileNav':'primaryNav'} [data-route="${route}"]`;
   if(await page.locator(direct).count()){
@@ -30,7 +45,7 @@ async function waitForRoute(route){
     await page.waitForSelector('#moreSheet:not(.hidden)',{timeout:30000});
     await page.locator(`#moreSheet [data-route="${route}"]`).click();
   }
-  await page.waitForFunction(value=>{
+  await page.waitForFunction(({value,readySelector})=>{
     const routeAction=document.querySelector('#routeAction');
     const mobileButtons=[...document.querySelectorAll('#mobileNav button')].filter(button=>{
       const rect=button.getBoundingClientRect(),style=getComputedStyle(button);
@@ -40,9 +55,11 @@ async function waitForRoute(route){
     return location.hash===`#${value}`
       &&document.body.dataset.productRoute===value
       &&Boolean(document.querySelector('#screenHost h1'))
+      &&Boolean(document.querySelector(readySelector))
+      &&!document.querySelector('#screenHost .loadingState')
       &&(!routeAction||getComputedStyle(routeAction).display==='none')
       &&mobileShellReady;
-  },route,{timeout:30000});
+  },{value:route,readySelector},{timeout:30000});
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(150);
 }
@@ -87,7 +104,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='ux-coherence-real-navigation-qa-20260915.23')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='ux-coherence-route-render-stability-20260915.24')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
