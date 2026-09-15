@@ -46,7 +46,7 @@ await page.evaluate(async()=>{
 await page.waitForSelector('.ltsHomeReference');
 const result=await page.evaluate(()=>{
   const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
-  const domains=[...document.querySelectorAll('.ltsRefDomain')].map(el=>({label:el.querySelector('.ltsRefDomainTop span')?.textContent?.trim(),text:el.textContent.trim(),value:el.querySelector(':scope>b')?.textContent?.trim(),overflow:el.scrollWidth-el.clientWidth}));
+  const domains=[...document.querySelectorAll('.ltsRefDomain')].map(el=>({label:el.querySelector('.ltsRefDomainTop>span:not(.ltsRefTodayIcon)')?.textContent?.trim(),text:el.textContent.trim(),value:el.querySelector(':scope>b')?.textContent?.trim(),overflow:el.scrollWidth-el.clientWidth}));
   const change=[...document.querySelectorAll('.ltsRefChangeGrid>div')].map(el=>({label:el.querySelector('span')?.textContent?.trim(),value:el.querySelector('b')?.textContent?.trim(),detail:el.querySelector('small')?.textContent?.trim()}));
   return{
     order:[top('.ltsRefHeader'),top('.ltsRefGreeting'),top('.ltsRefMetrics'),top('.ltsRefIntegrated'),top('.ltsRefChange'),top('.ltsRefToday'),top('.ltsRefProgress')],
