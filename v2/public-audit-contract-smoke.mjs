@@ -18,11 +18,11 @@ const evolution=read('./src/evolution-screen.js');
 const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 
-assert.match(index,/name="lts-build" content="physical-iphone-remediation-20260915\.27"/);
+assert.match(index,/name="lts-build" content="physical-iphone-remediation-20260915\.28"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=physical-iphone-remediation-20260915.27`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=physical-iphone-remediation-20260915.28`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=physical-iphone-remediation-20260915.27'),'physical iPhone remediation is not the final stylesheet');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=physical-iphone-remediation-20260915.28'),'physical iPhone remediation is not the final stylesheet');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }

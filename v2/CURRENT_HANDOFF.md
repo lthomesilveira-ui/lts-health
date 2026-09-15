@@ -41,7 +41,7 @@ The actual public URL was then opened in Cloud Browser with the authenticated se
 
 The owner then supplied eight full-size screenshots from a physical iPhone. Those screenshots invalidate the previous statement that no obvious defect remained: the Home retained an empty hidden-topbar track, all audited mobile routes reserved bottom space twice, the first viewport was oversized, and Training ended in a large blank surface. Build `.26` is published but visually rejected and must not be presented for homologation.
 
-The active package is `PKG-PHYSICAL-IPHONE-REMEDIATION-001`. Its candidate build is `physical-iphone-remediation-20260915.27`; it is not a verified release until normal PR/merge, deploy, authenticated public navigation and post-deploy inspection are complete.
+The active package is `PKG-PHYSICAL-IPHONE-REMEDIATION-001`. Its candidate build is `physical-iphone-remediation-20260915.28`; it is not a verified release until normal PR/merge, deploy, authenticated public navigation and post-deploy inspection are complete.
 
 ## Home/Início state
 
@@ -110,4 +110,4 @@ The approved source remains in the owner's private Drive as `LTS Health - refere
 
 ## Next action
 
-Do not ask the owner to judge `.26`; it was rejected with physical-iPhone evidence. Promote `.27` only through a normal PR, then open the exact public build, authenticate, navigate every area, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
+Do not ask the owner to judge `.26`; it was rejected with physical-iPhone evidence. Build `.27` reached production and passed real-auth, but the post-deploy Pages gate rejected its 10 px mobile navigation typography. Promote corrected `.28` only through a normal PR, then open the exact public build, authenticate, navigate every area, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
