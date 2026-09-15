@@ -429,6 +429,13 @@ body[data-product-route="nutricao"] .topbar #routeAction {
   display: none !important;
 }
 
+/* The structural mobile shell gives the contextual action an ID-level
+   display rule. Keep the application state authoritative on every route so a
+   hidden action can never leak the label from the previously visited screen. */
+.topbar #routeAction.hidden {
+  display: none !important;
+}
+
 body[data-product-route="nutricao"] .nutritionMonthHead b,
 body[data-product-route="nutricao"] .mealDistributionRow b,
 body[data-product-route="nutricao"] .nutritionDays b,
