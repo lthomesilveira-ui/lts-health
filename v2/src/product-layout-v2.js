@@ -76,8 +76,8 @@ export function renderProductHome(){
         <div class="ltsWorkoutFeatureHead"><div><span class="ltsActivityIcon">↗</span><div><small>${fmtDate(workout.workout_date)}</small><b>${esc(safe(workout.workout_type,'Treino'))}</b><em>${esc(workout.location||'')}</em></div></div><span class="ltsChevron">›</span></div>
         <div class="ltsWorkoutMetrics">
           ${workoutMetric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min','duração')}
-          ${workoutMetric(num(workout.calories_kcal)!=null?fmtNum(workout.calories_kcal,0):'—','kcal','energia')}
-          ${workoutMetric(num(workout.heart_rate_avg)!=null?fmtNum(workout.heart_rate_avg,0):'—','bpm','FC média')}
+          ${workoutMetric(num(workout.calories_kcal)!=null?fmtNum(workout.calories_kcal,0):'—','kcal',workout.telemetry_energy_is_estimated?'energia estimada':'energia')}
+          ${workoutMetric(num(workout.heart_rate_avg)!=null?fmtNum(workout.heart_rate_avg,0):'—','bpm',workout.telemetry_heart_rate_is_partial?'FC média · trecho':'FC média')}
         </div>
       </button>`:'<div class="ltsEmptyCard">Nenhum treino recente estruturado.</div>'}
     </section>
@@ -122,11 +122,11 @@ function workoutDetail(workout){
   return `<div class="ltsWorkoutDetail">
     <div class="ltsWorkoutStats">
       ${stat('Duração',num(workout.duration_minutes)!=null?`${fmtNum(workout.duration_minutes,0)} min`:'—')}
-      ${stat('Energia',num(workout.calories_kcal)!=null?`${fmtNum(workout.calories_kcal,0)} kcal`:'—')}
-      ${stat('FC média',num(workout.heart_rate_avg)!=null?`${fmtNum(workout.heart_rate_avg,0)} bpm`:'—')}
+      ${stat(workout.telemetry_energy_is_estimated?'Energia estimada':'Energia',num(workout.calories_kcal)!=null?`${fmtNum(workout.calories_kcal,0)} kcal`:'—')}
+      ${stat(workout.telemetry_heart_rate_is_partial?'FC média · trecho':'FC média',num(workout.heart_rate_avg)!=null?`${fmtNum(workout.heart_rate_avg,0)} bpm`:'—')}
       ${stat('Séries',setCount==null?'Indisponível':String(setCount))}
     </div>
-    ${num(workout.heart_rate_min)!=null||num(workout.heart_rate_max)!=null?`<p class="ltsDepthNote">FC mínima ${num(workout.heart_rate_min)!=null?`${fmtNum(workout.heart_rate_min,0)} bpm`:'não informada'} · FC máxima ${num(workout.heart_rate_max)!=null?`${fmtNum(workout.heart_rate_max,0)} bpm`:'não informada'} · Origem: ${esc(workout.source||'não informada')}</p>`:''}
+    ${num(workout.heart_rate_min)!=null||num(workout.heart_rate_max)!=null?`<p class="ltsDepthNote">${workout.telemetry_heart_rate_is_partial?'Trecho Polar: ':'FC da sessão: '}mínima ${num(workout.heart_rate_min)!=null?`${fmtNum(workout.heart_rate_min,0)} bpm`:'não informada'} · máxima ${num(workout.heart_rate_max)!=null?`${fmtNum(workout.heart_rate_max,0)} bpm`:'não informada'} · Origem: ${esc(workout.source||'não informada')}</p>`:''}
     <div class="ltsExerciseList">${failed(state,'exercises')?errorCard('Os exercícios não carregaram agora.'):exercises.length?exercises.map((e,index)=>{
       const sets=failed(state,'sets')?[]:setsFor(e);
       return `<article class="ltsExerciseCard"><div class="ltsExerciseIndex">${String(index+1).padStart(2,'0')}</div><div class="ltsExerciseContent"><header><div><b>${esc(e.exercise||'Exercício')}</b><small>${esc([e.machine,e.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'Séries indisponíveis':`${sets.length} séries`}</span></header><button type="button" class="ltsDepthLink" data-depth-exercise="${esc(e.source_record_id)}" aria-label="Histórico de ${esc(e.exercise||'exercício')}">Histórico deste exercício ›</button><div class="ltsSetList">${sets.length?sets.map((s,i)=>{const t=setText(s);return `<div><span>S${i+1}</span><b>${t.missing?'<strong class="ltsSetMissing">Dados não informados</strong>':`<strong>${esc(t.load)}</strong><i>×</i><strong>${esc(t.reps)}</strong><small> reps</small>`}${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</b></div>`;}).join(''):`<div class="ltsMuted">${failed(state,'sets')?'As séries não carregaram agora.':esc(e.source_text||'Séries ainda não estruturadas.')}</div>`}</div></div></article>`;
