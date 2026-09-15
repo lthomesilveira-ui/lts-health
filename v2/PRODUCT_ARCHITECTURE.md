@@ -122,13 +122,16 @@ Um pacote só pode ser chamado de concluído quando reúne quatro evidências di
 
 CI verde comprova regressões técnicas cobertas. Ele não comprova, isoladamente, que o produto corresponde ao briefing ou à referência visual.
 
-## Referência visual e limitação atual
+Para uma entrega visual, “confirmação de deploy” significa abrir o link público final em navegador remoto, autenticar quando possível, navegar pela interface real e inspecionar as superfícies afetadas em desktop e mobile. Screenshot de CI pode complementar essa verificação, mas não substitui a abertura do produto publicado.
 
-O histórico registra uma imagem aprovada em 04/09/2026 e o contrato textual correspondente em `REFERENCE_VISUAL_CONTRACT.md`. A imagem-fonte original não está preservada no repositório atual. Por isso:
+## Referência visual e precedência atual
 
-- o contrato textual continua orientando a linguagem visual;
-- nenhum pacote pode declarar paridade pixel a pixel sem recuperar e versionar a imagem-fonte;
-- melhorias inequívocas de hierarquia, leitura, navegação, acessibilidade e estados continuam executáveis sem esse arquivo.
+A imagem aprovada em 04/09/2026 foi recuperada e está preservada fora do repositório público no Drive privado do proprietário como `LTS Health - referencia visual aprovada.png`, SHA256 `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`. O contrato textual correspondente está em `REFERENCE_VISUAL_CONTRACT.md`.
+
+- a imagem privada é a autoridade visual mobile e deve ser recuperada antes de qualquer redesenho;
+- o contrato textual ajuda a proteger estrutura e semântica, mas não pode contrariar a imagem;
+- nenhuma comparação autoriza copiar valores, metas ou exemplos ilustrativos para dados reais;
+- nenhum pacote pode declarar paridade pixel ou aceite sem comparação visual efetiva e decisão explícita do proprietário.
 
 ## Fontes usadas nesta consolidação
 

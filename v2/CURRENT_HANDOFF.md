@@ -1,6 +1,6 @@
 # LTS Health — CURRENT HANDOFF
 
-Updated: 2026-09-14 after physical-iPhone reference-parity correction and permanent Training visual guard. Public engineering metadata only; health data, credentials and private screenshots stay private.
+Updated: 2026-09-15 after the published-product audit, cross-product remediation and authenticated visual QA closure. Public engineering metadata only; health data, credentials and private screenshots stay private.
 
 ## Restart phrase
 
@@ -26,24 +26,24 @@ Physical-iPhone screenshots from the owner outrank fixture-only visual confidenc
 
 ## Current verified product release
 
-Reference-parity product package:
-- PR #279
-- build `ux-coherence-reference-parity-20260914.16`
-- product merge commit `2393213b2824812a5f463d947b3f6be53246e4a7`
-- checkpoint `v2/releases/REFERENCE_PARITY_IPHONE_20260914.md`
+Published visual-audit closure:
+- PR #292;
+- build `ux-coherence-public-visual-closure-20260915.26`;
+- product commit `3519968f82eb6043a8835e7fa9ad8b5e2be27395`;
+- merge commit `cb4ec22f9fe9c5f3f00b2c9875db7d6e9ea7c5cf`;
+- checkpoint `v2/releases/PUBLIC_AUDIT_QA_20260915.md`.
 
-PR #279 fixed the exact physical-iPhone defects observed in Training and refined Home hierarchy/readability. Post-merge deploy, smoke, Timeline, functional depth, deployed homologation, staging and real authenticated E2E succeeded.
+The package chain from PR #285 through #292 rebuilt the audited Home/Training experience, aligned the internal routes, removed visual and navigation regressions found in the public app, and made authenticated evidence follow real UI navigation with route-specific readiness.
 
-Permanent regression guard:
-- PR #280
-- guard merge commit `f1b1779c385aadcae167ba2165186c10e28b762e`
-- `v2/cockpit-smoke.mjs` now rejects low-contrast Training metric/telemetry/structure values and overlapping/collapsed first-exercise preview geometry at the mobile reference viewport.
+All nine post-merge workflows for the product commit passed. The final encrypted real-auth artifact is `10379557671`, digest SHA256 `152f3a0ca8b70676ca3380da4711ff66b256589b6d82b791bd819c3b57ac174b`.
 
-The guard itself was tested after an initial route-fixture attempt proved insufficient; the final version renders the canonical Training reference component with fixture data and passed its cockpit browser gate before merge.
+The actual public URL was then opened in Cloud Browser with the authenticated session, build `.26` was confirmed, and every primary/secondary area was navigated. Separately, all 32 final authenticated screenshots — desktop and mobile — were privately decrypted and visually inspected. No plaintext screenshot or key material belongs in the repository.
+
+This closes the engineering QA package, **not** owner acceptance, physical-iPhone acceptance or pixel parity.
 
 ## Home/Início state
 
-Home is in the approved mobile reference family but is **not accepted as finished**.
+Home now follows the approved mobile reference structure and passed the published desktop/mobile engineering review, but is **not accepted as finished by the owner**.
 
 Current non-negotiable semantics:
 - `Hoje` means the current calendar day only;
@@ -60,7 +60,7 @@ Current reference-oriented mobile order is:
 4. weekly progress;
 5. older recent records.
 
-The owner still considers Home materially far from the original reference, so continue direct reference-to-implementation comparison rather than generic dashboard polishing.
+The final audited mobile evidence shows the compact dark shell, three composition metrics, Today, weekly progress and exclusive bottom navigation in the same first-screen hierarchy as the approved reference. Preserve this structure and respond to new physical-iPhone evidence if the owner still finds a material gap.
 
 ## Training state
 
@@ -73,7 +73,7 @@ The current mobile reference package has:
 - HR min/avg/max only when source data exists;
 - exercise/set detail and complete history.
 
-The 14/09 physical iPhone screenshots exposed a CSS regression despite green CI: real values existed but were almost white on light cards, and the first-exercise preview collapsed. PR #279 explicitly fixes those surfaces. PR #280 makes the same defect a permanent CI gate.
+The 14/09 physical iPhone screenshots exposed a CSS regression despite green CI: real values existed but were almost white on light cards, and the first-exercise preview collapsed. PR #279 fixed those surfaces and PR #280 made the defect a permanent gate. The final `.26` evidence confirms the corrected summary and exercise/set hierarchy with real authenticated content.
 
 Do **not** fabricate heart-rate zones, time series, graphs or other telemetry solely to mimic the mockup. Add them only when backed by actual source data; otherwise show an explicit unavailable/insufficient-data state.
 
@@ -90,17 +90,9 @@ Do not reimplement older caps or lose these capabilities:
 
 ## Remaining execution order
 
-Visual convergence is now the dominant workstream:
-1. Home/Início — direct comparison against the approved first reference screen.
-2. Training — confirm the newly corrected physical-device result, then refine only evidence-backed gaps.
-3. Composition — bring geometry, typography, graphs and detail into the same reference language.
-4. Exams/Labs.
-5. Timeline.
-6. Nutrition/hydration.
-7. Recovery/analyses.
-8. Cross-product visual consistency and final physical-iPhone acceptance.
+There is no autonomous `ready` or `in_progress` product task after this closure. The next product gate is subjective owner homologation of the published `.26`, especially on physical iPhone. If feedback identifies a real mismatch, treat the device evidence as authoritative and correct it in a coherent package rather than reopening generic micro-polish.
 
-Do not trade away existing history/provenance depth to obtain visual similarity.
+Do not trade away existing history/provenance depth to obtain visual similarity. Do not add reference-only graphs, device imagery, values or health semantics without canonical evidence.
 
 ## Pending user/external items
 
@@ -112,6 +104,8 @@ Preserve all other integration/security blockers from the structured ledger. Nev
 
 The original visual reference and encrypted authenticated visual evidence are private. Never publish plaintext health screenshots, private keys, credentials, cookies or personal health payloads in the public repository.
 
-## Next autonomous action
+The approved source remains in the owner's private Drive as `LTS Health - referencia visual aprovada.png`, SHA256 `dc322921f2d05d26f6478d213a6e3a2317978fba62897a77df4dda29d03cc05c`. The final authenticated evidence remains encrypted in GitHub artifact `10379557671`; use the private procedure documented in the project if a future audit must reopen it.
 
-Start from current `main`, confirm the latest guard/package checks, then continue direct reference convergence with **Composition next unless Home/Training public evidence reveals a remaining P0 regression**. Before asking the owner to test again, produce a substantive visible jump and validate the public authenticated build. When physical-iPhone feedback conflicts with CI, the physical device wins.
+## Next action
+
+Ask the owner to judge the published `.26` only after confirming that the exact build still opens. If it is rejected on a real device, capture the affected route/viewport, compare it directly with the private reference, preserve valid functionality and ship the correction through a normal PR plus the same public-browser/authenticated visual gates. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.

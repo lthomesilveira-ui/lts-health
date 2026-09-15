@@ -25,6 +25,14 @@ O feedback real de 09/09 confirmou que coerência estrutural não bastou: a apli
 
 O pacote `PKG-EXECUTIVE-DENSITY-002` foi promovido pelo PR #241 e publicado no build `ux-coherence-20260909.16`. Os gates desktop/mobile passaram no `cockpit-smoke` 34405719991 e no `LTS Health Dashboard Reference Contract` 34405720062. A inspeção posterior abriu a versão pública real, confirmou a barra utilitária com 46 px, o início da área principal antes de 350 px, contexto recente antes de 720 px, a faixa completa de três métricas em Treinos e ausência de overflow horizontal. A evidência fecha a pendência técnica sem presumir aceite subjetivo ou paridade pixel com a fonte visual original ainda indisponível.
 
+## Fechamento da auditoria pública e visual — 15/09/2026
+
+O pacote `PKG-PUBLIC-AUDIT-CLOSURE-001` partiu do app realmente publicado e da referência mobile privada recuperada, em vez de inferir qualidade visual por CI. A cadeia de PRs #285–#292 reconstruiu Home/Treinos, alinhou as rotas internas, corrigiu defeitos encontrados durante a inspeção pública e tornou o E2E autenticado fiel à navegação real da interface.
+
+O build final `ux-coherence-public-visual-closure-20260915.26` foi promovido pelo PR #292 ao commit de `main` `cb4ec22f9fe9c5f3f00b2c9875db7d6e9ea7c5cf`. Os nove workflows pós-merge passaram. Depois do deploy, o link público foi aberto no Cloud Browser com sessão autenticada; todas as áreas foram navegadas, o build foi conferido e a composição desktop foi inspecionada diretamente. O artefato real-auth `10379557671` teve digest verificado e suas 32 capturas mobile/desktop foram descriptografadas apenas no ambiente privado e revisadas visualmente.
+
+A comparação e a disposição manter/corrigir/refazer estão registradas em `v2/releases/PUBLIC_AUDIT_QA_20260915.md`. Não restou defeito óbvio conhecido no escopo auditado, mas esse fechamento continua sendo QA de engenharia: não presume aceite do proprietário, teste em iPhone físico ou paridade pixel.
+
 ## Fechamento do reset de arquitetura — 08/09/2026
 
 O pacote `PKG-PRODUCT-ARCHITECTURE-RESET` foi promovido ao `main` pelos PRs #212, #213 e #214. O resultado público deixa de organizar o produto como uma lista de funcionalidades e passa a seguir as perguntas definidas em `PRODUCT_ARCHITECTURE.md`: estado conhecido, mudança, cobertura, prioridades e acesso à evidência.
@@ -113,6 +121,8 @@ O estado detalhado, o critério de aceite e o próximo passo de cada item ficam 
 2. OAuth contínuo do MyFitnessPal, teste HealthKit em aparelho físico, expansão Polar e parsers/integrações laboratoriais dependem de acesso, dispositivo ou originais externos ainda indisponíveis.
 3. Inventários sem arquivo original e medições sem fonte datada permanecem limitações aceitas; não geram dados ou tarefas artificiais.
 4. Não há item `ready` ou `in_progress` ao fechar o pacote de continuidade; QA visual, funcional, segurança, privacidade e proveniência continuam sendo gates de toda release.
+
+O fechamento de 15/09 reconcilia `LTS-REMAINING-DOMAINS-001` como concluído tecnicamente: Timeline, Nutrição/Hidratação, Recuperação/Análises e consistência transversal foram auditadas com dados autenticados e preservam seus drill-downs. A próxima decisão de produto é a homologação subjetiva do proprietário; ela não é convertida artificialmente em tarefa autônoma `ready`.
 
 ## Feedbacks anteriores preservados / resolvidos por decisão posterior
 

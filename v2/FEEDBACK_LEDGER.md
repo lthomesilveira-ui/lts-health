@@ -17,7 +17,7 @@ Status: fonte de verdade dos feedbacks de produto recuperados. O texto é públi
 | FB-001 | 26/08 | O produto deve ser um assistente de saúde completo, longitudinal e capaz de identificar lacunas. | A abertura produz leitura, mudança, cobertura e prioridades; não apenas números. | Entregue parcialmente | Arquitetura e abertura entregues; integrações que dependem de terceiros permanecem bloqueadas no ledger. |
 | FB-002 | 26/08 | Centralizar Apple Saúde, Polar, MyFitnessPal, bioimpedância, exames, documentos, treinos e contexto de tratamentos. | Fontes distintas entram em domínios ligados por Timeline e visão longitudinal. | Entregue parcialmente | `PROJECT_BRIEF.md`; telas e camada de dados existentes; integrações externas permanecem no ledger. |
 | FB-003 | 28/08 | A aplicação anterior é o piso, não o resultado final. | Preservar capacidades e proveniência enquanto a experiência evolui além da implementação original. | Entregue neste pacote | Arquitetura por jornadas, Home de decisão e camadas legadas removidas da execução ativa. |
-| FB-004 | 04/09 | A imagem aprovada é a referência visual canônica. | Layout claro com rail escuro, hierarquia executiva e cinco domínios. | Bloqueado parcialmente | Contrato textual preservado; imagem-fonte original precisa ser recuperada para paridade pixel. |
+| FB-004 | 04/09 | A imagem aprovada é a referência visual canônica. | A imagem privada prevalece sobre contrato textual, implementação e testes. | Entregue tecnicamente | Original recuperado no Drive privado, hash preservado e comparação direta registrada em `v2/releases/PUBLIC_AUDIT_QA_20260915.md`; aceite subjetivo continua separado. |
 | FB-005 | 04–05/09 | Não reiniciar nem perder o estado real já construído. | Evoluir por migração compatível, sem sobrescrever histórico, dados ou branches. | Entregue | `CONTINUITY_PROTOCOL.md`; políticas de merge e proveniência. |
 | FB-006 | 28/08 | Área azul e textos sem sentido não podem permanecer. | Cor precisa ter função; copy deve explicar a decisão ou o estado. | Entregue | Canvas claro, famílias semânticas por domínio e ações específicas no build público `product-architecture-20260908.3`. |
 | FB-007 | 28/08 | O app abriu sem carregar conteúdo. | Loading, falha parcial e sessão precisam ser distinguíveis e testados. | Entregue | Estados explícitos e jornadas revalidadas em browser desktop/mobile. |
@@ -31,6 +31,7 @@ Status: fonte de verdade dos feedbacks de produto recuperados. O texto é públi
 | FB-015 | 08/09 | No celular a Home continua parecendo módulos empilhados, não um aplicativo pensado para acompanhar evolução. | Substituir o dashboard longo por uma visão compacta com seletor único de evolução, resumo da janela, acontecimentos recentes e aprofundamento por área. | Entregue | PR #216; gates desktop/mobile 34228093456 e 34228093464; build público `longitudinal-home-20260908.4`. |
 | FB-016 | 08/09 | A melhora da Home não basta: as telas internas ainda parecem relatórios empilhados, perdem o período escolhido e usam textos mecânicos. | Aplicar um único sistema de UX em todas as jornadas: janela global, resposta antes do detalhe, exploração progressiva, estados vazios únicos e linguagem natural. | Entregue | PR #228; PR #238; PR #239; build público `ux-coherence-20260908.14`; gates desktop/mobile e smokes públicos concluídos. Aceite subjetivo não é presumido. |
 | FB-017 | 09/09 | Mesmo após o pacote de coerência, o app ainda parece distante do modelo de UX criticado e continua com aparência de dashboard web genérico. | Compactar a primeira tela, integrar a barra utilitária ao canvas, reduzir repetição e usar a mesma escala de densidade nas rotas internas. | Entregue tecnicamente | PR #241; build público `ux-coherence-20260909.16`; gates desktop/mobile e inspeção pública concluídos. Aceite subjetivo e paridade pixel não são presumidos. |
+| FB-020 | 15/09 | CI, E2E e deploy não provam que o produto publicado foi realmente visto; o proprietário não pode continuar sendo o QA básico. | Toda entrega visual precisa abrir o link público final, autenticar quando possível, navegar, comparar com a referência em desktop/mobile e corrigir defeitos óbvios antes de pedir homologação. | Entregue neste pacote | PRs #285–#292; build público `.26` aberto no Cloud Browser; 32 capturas autenticadas revisadas; `v2/releases/PUBLIC_AUDIT_QA_20260915.md`. Aceite do proprietário não é presumido. |
 
 ## Dívidas identificadas pela auditoria
 
@@ -41,7 +42,7 @@ Status: fonte de verdade dos feedbacks de produto recuperados. O texto é públi
 | D-003 | `Evolução`, `Histórico`, `Insights` e áreas de domínio competiam sem agrupamento. | Carga cognitiva e navegação sem modelo mental claro. | Concluído: navegação agrupada; Evolução permanece apenas como detalhe compatível. |
 | D-004 | “Ver mais” repetido e resumo duplicado em vários blocos. | Ações sem propósito e sensação de coleção de cards. | Concluído: ações nomeiam o destino e a Home separa leitura, prioridades, evidência e fontes. |
 | D-005 | A tela de login podia expor partes do shell em alguns estados. | Entrada com aparência inacabada. | Concluído: entrada isolada, proposta de valor visível e contrato desktop/mobile. |
-| D-006 | A imagem visual aprovada não foi versionada como artefato. | Impossível provar fidelidade exata. | Recuperar e versionar a fonte antes de nova alegação de paridade pixel. |
+| D-006 | A imagem visual aprovada não estava preservada como artefato recuperável. | Impossibilidade de comparação direta e risco de regressão por memória. | Concluído: original preservado no Drive privado, identidade fixada por SHA256 e precedência registrada. O arquivo privado não é copiado ao repositório público. |
 
 ## Regra de reconciliação
 
@@ -55,3 +56,10 @@ Ao fim de cada pacote, os IDs afetados são atualizados aqui e vinculados a tare
 - D-006 resolvida quanto à recuperação da fonte: original guardado em Drive privado, com hash em `REFERENCE_VISUAL_CONTRACT.md`. Isso não equivale a paridade ou aceitação final.
 
 Home/Treinos/Composição/Exames foram promovidos tecnicamente até os PRs #263/#264. Os estados antigos de “Entregue” acima são históricos e não encerram as novas lacunas da issue #265. Histórico de água, integrações e segurança de conta preservam os bloqueios do ledger.
+
+## Auditoria pública e fechamento transversal — 15/09/2026
+
+- FB-018 e `LTS-REMAINING-DOMAINS-001` foram concluídos tecnicamente: histórico e drill-downs permanecem acessíveis, e Timeline, Nutrição/Hidratação, Recuperação/Análises e consistência transversal entraram no QA autenticado final.
+- FB-019 foi concluído quanto à continuidade: o estado final, a referência, o artefato criptografado e as evidências de promoção estão registrados fora da memória do chat.
+- FB-020 formaliza a correção de processo: a versão `.26` foi aberta no app público real e comparada visualmente antes do pedido de homologação.
+- Nenhum desses estados significa que o proprietário aprovou a experiência em iPhone físico ou declarou paridade pixel.
