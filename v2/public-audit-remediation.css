@@ -436,6 +436,38 @@ body[data-product-route="nutricao"] .topbar #routeAction {
   display: none !important;
 }
 
+/* Programmatic heading focus announces a changed view without painting a
+   browser-default rectangle over the page title. Interactive controls retain
+   the visible focus treatment from accessibility.css. */
+#screenHost h1[tabindex="-1"]:focus,
+#screenHost h1[tabindex="-1"]:focus-visible {
+  outline: none !important;
+}
+
+body[data-product-route="nutricao"] .hydrationSecondaryAction {
+  appearance: none;
+  min-height: 40px;
+  padding: 9px 14px;
+  border: 1px solid #cbd6e4;
+  border-radius: 10px;
+  background: #fff;
+  color: #173152;
+  box-shadow: 0 1px 2px rgba(20, 43, 75, .04);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+body[data-product-route="nutricao"] .hydrationSecondaryAction:hover {
+  border-color: #9fb5d2;
+  background: #f7faff;
+}
+
+body[data-product-route="nutricao"] .hydrationSecondaryAction:focus-visible {
+  outline: 3px solid rgba(47, 114, 220, .34);
+  outline-offset: 2px;
+}
+
 body[data-product-route="nutricao"] .nutritionMonthHead b,
 body[data-product-route="nutricao"] .mealDistributionRow b,
 body[data-product-route="nutricao"] .nutritionDays b,
@@ -528,10 +560,12 @@ body[data-product-route="evolucao"] .screenHost .segmented button {
 }
 
 body[data-product-route="evolucao"] .evolutionLowerGrid {
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
 }
 
 body[data-product-route="evolucao"] .evolutionLowerGrid > .card {
+  width: 100%;
   align-self: start;
 }
 

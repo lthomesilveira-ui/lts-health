@@ -17,9 +17,9 @@ const evolution=read('./src/evolution-screen.js');
 const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 
-assert.match(index,/name="lts-build" content="ux-coherence-mobile-route-action-fix-20260915\.25"/);
+assert.match(index,/name="lts-build" content="ux-coherence-public-visual-closure-20260915\.26"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=ux-coherence-mobile-route-action-fix-20260915.25`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=ux-coherence-public-visual-closure-20260915.26`),`${asset} is not tied to the audited build`);
 }
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
@@ -48,7 +48,9 @@ assert.match(core,/timelineLimit:\s*50/);
 assert.match(timeline,/timelineLimit\|\|50/);
 assert.match(timeline,/Math\.min\(50,matching\.length-filtered\.length\)/);
 assert.match(analysis,/option value="365"\$\{selected\('365'\)\}/);
-assert.match(evolution,/grid cols2 sectionGap evolutionLowerGrid/);
+assert.match(evolution,/grid sectionGap evolutionLowerGrid/);
+assert.match(evolution,/evolutionTrainingRhythm[\s\S]*evolutionSegmental/);
+assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','analise','tratamentos','evolucao','dados'\]\)/);
 
 for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInbox','.analysisDigestCard']){
   assert.ok(internalCss.includes(selector),`audited readability reset is missing ${selector}`);
@@ -58,11 +60,14 @@ for(const selector of ['body[data-product-route="nutricao"] .nutritionMonthHead 
 }
 assert.match(internalCss,/body:has\(\.ltsHomeReference\) \.topbar #routeAction,[\s\S]*body\[data-product-route="nutricao"\] \.topbar #routeAction\s*\{[^}]*display:\s*none !important;/s);
 assert.match(internalCss,/\.topbar #routeAction\.hidden\s*\{[^}]*display:\s*none !important;/s);
-assert.match(internalCss,/body\[data-product-route="evolucao"\] \.evolutionLowerGrid\s*\{[^}]*align-items:\s*start;/s);
+assert.match(internalCss,/body\[data-product-route="evolucao"\] \.evolutionLowerGrid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);[^}]*align-items:\s*start;/s);
+assert.match(internalCss,/body\[data-product-route="nutricao"\] \.hydrationSecondaryAction\s*\{[^}]*appearance:\s*none;[^}]*border-radius:\s*10px;/s);
+assert.match(internalCss,/#screenHost h1\[tabindex="-1"\]:focus[\s\S]*outline:\s*none !important;/s);
 assert.match(realAuth,/locator\('\.nutritionDays'\)\.scrollIntoViewIfNeeded\(\)/);
 assert.doesNotMatch(realAuth,/locator\('\.nutritionMonth'\)(?:\.first\(\))?\.scrollIntoViewIfNeeded\(\)/);
 assert.match(realAuth,/document\.body\.dataset\.productRoute===value/);
 assert.match(realAuth,/mobileButtons\.length===5/);
+assert.match(realAuth,/mobile navigation has competing or incorrect active destinations/);
 assert.match(realAuth,/page\.locator\(direct\)\.click\(\)/);
 assert.match(realAuth,/page\.locator\(more\)\.click\(\)/);
 assert.match(realAuth,/#moreSheet:not\(\.hidden\)/);
@@ -72,6 +77,8 @@ assert.match(realAuth,/Boolean\(document\.querySelector\(readySelector\)\)/);
 assert.match(realAuth,/!document\.querySelector\('#screenHost \.loadingState'\)/);
 assert.match(realAuth,/assertStableMobileShell\('mobile Timeline'\)/);
 assert.match(realAuth,/desktop-evolution-lower\.png/);
+assert.match(realAuth,/desktop-evolution-segmental\.png/);
+assert.match(realAuth,/mobile-evolution-training\.png/);
 assert.match(realAuthDepth,/const goto=async\(route,selector\)=>\{await waitForRoute\(route\)/);
 assert.match(index,/id="refreshBtn" aria-label="Atualizar dados"[^>]*><svg class="topActionIcon"/);
 assert.match(index,/id="logoutBtn" aria-label="Sair do LTS Health"[^>]*><svg class="topActionIcon"/);
