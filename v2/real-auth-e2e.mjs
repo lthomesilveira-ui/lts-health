@@ -21,12 +21,39 @@ page.on('console',m=>{if(m.type()==='error')runtimeErrorCount++;});
 
 async function waitForRoute(route){
   await page.evaluate(value=>{location.hash=`#${value}`;},route);
-  await page.waitForFunction(value=>location.hash===`#${value}`&&Boolean(document.querySelector('#screenHost h1')),route,{timeout:30000});
-  await page.waitForTimeout(300);
+  await page.waitForFunction(value=>{
+    const routeAction=document.querySelector('#routeAction');
+    const mobileButtons=[...document.querySelectorAll('#mobileNav button')].filter(button=>{
+      const rect=button.getBoundingClientRect(),style=getComputedStyle(button);
+      return style.display!=='none'&&style.visibility!=='hidden'&&rect.width>=44&&rect.left>=-1&&rect.right<=window.innerWidth+1;
+    });
+    const mobileShellReady=window.innerWidth>840||mobileButtons.length===5;
+    return location.hash===`#${value}`
+      &&document.body.dataset.productRoute===value
+      &&Boolean(document.querySelector('#screenHost h1'))
+      &&(!routeAction||getComputedStyle(routeAction).display==='none')
+      &&mobileShellReady;
+  },route,{timeout:30000});
+  await page.evaluate(()=>document.fonts.ready);
+  await page.waitForTimeout(150);
 }
 async function assertNoHorizontalOverflow(){
   const ok=await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1);
   if(!ok)throw new Error('real-data route overflow detected');
+}
+async function assertStableMobileShell(label){
+  const result=await page.evaluate(()=>{
+    if(window.innerWidth>840)return{desktop:true};
+    const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
+    const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width};});
+    const brand=[document.querySelector('.topbar .brand b'),document.querySelector('.ltsRefBrand')].find(visible);
+    const routeAction=document.querySelector('#routeAction');
+    return{desktop:false,viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
+  });
+  if(result.desktop)return;
+  if(result.buttons.length!==5||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
+  if(!result.brand.includes('LTS Health'))throw new Error(`${label}: mobile brand is not visible`);
+  if(result.routeActionVisible)throw new Error(`${label}: stale contextual action remains visible`);
 }
 async function assertMinimumReadableType(selector,minimum,label){
   const result=await page.evaluate(selector=>{
@@ -51,7 +78,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='ux-coherence-public-qa-remediation-20260915.21')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='ux-coherence-authenticated-visual-qa-20260915.22')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
@@ -238,6 +265,13 @@ try{
   await waitForRoute('evolucao');
   await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'desktop Evolution');
   await page.screenshot({path:`${evidenceDir}/desktop-evolution.png`});
+  await page.locator('.evolutionLowerGrid').scrollIntoViewIfNeeded();
+  const evolutionLowerGrid=await page.evaluate(()=>{
+    const grid=document.querySelector('.evolutionLowerGrid');
+    return{align:grid?getComputedStyle(grid).alignItems:'missing',cards:grid?[...grid.children].map(card=>({align:getComputedStyle(card).alignSelf,height:card.getBoundingClientRect().height})):[]};
+  });
+  if(evolutionLowerGrid.align!=='start'||evolutionLowerGrid.cards.length!==2||evolutionLowerGrid.cards.some(card=>card.align!=='start'))throw new Error(`desktop Evolution lower grid remains stretched: ${JSON.stringify(evolutionLowerGrid)}`);
+  await page.screenshot({path:`${evidenceDir}/desktop-evolution-lower.png`});
 
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
@@ -245,22 +279,26 @@ try{
   if(await page.locator('#routeAction').isVisible())throw new Error('mobile Home duplicates the water import action in the top bar');
   await auditReferenceHome('mobile Home');
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Home');
   await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
   await waitForRoute('treinos');
   await page.waitForSelector('.ltsTrainingV2',{timeout:30000});
   await page.locator('.ltsRefTrainTabs [data-depth-training-view="summary"]').click();
   await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='summary',{timeout:30000});
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Training summary');
   await page.screenshot({path:`${evidenceDir}/mobile-training.png`,fullPage:true});
   await page.locator('.ltsRefTrainTabs [data-depth-training-view="exercises"]').click();
   await page.waitForFunction(()=>document.querySelector('.ltsTrainingV2')?.dataset.trainingView==='exercises',{timeout:30000});
   await page.waitForSelector('.ltsRefExerciseCard',{timeout:30000});
   await auditExerciseGeometry('mobile Training');
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Training exercises');
   await page.screenshot({path:`${evidenceDir}/mobile-training-exercises.png`,fullPage:true});
   await waitForRoute('bio');
   await page.waitForSelector('.ltsCompositionV2',{timeout:30000});
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Composition');
   await page.screenshot({path:`${evidenceDir}/mobile-composition.png`,fullPage:true});
 
   await waitForRoute('nutricao');
@@ -268,39 +306,48 @@ try{
   await assertMinimumReadableType('.nutritionMonthHead b,.nutritionMonthHead span,.nutritionMonthStats span,.nutritionDays time,.nutritionDays b,.nutritionDays small',10.5,'mobile Nutrition');
   if(await page.locator('#routeAction').isVisible())throw new Error('mobile Nutrition duplicates its import action in the top bar');
   await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
+  await assertStableMobileShell('mobile Nutrition');
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition.png`});
   await page.locator('.nutritionDays').scrollIntoViewIfNeeded();
+  await assertStableMobileShell('mobile Nutrition history');
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-history.png`});
   const nutritionDay=page.locator('details.uxDisclosure summary').filter({hasText:'Detalhe do dia selecionado'}).first();
   await nutritionDay.click();
   await page.locator('.nutritionDayHead').scrollIntoViewIfNeeded();
   await assertMinimumReadableType('.nutritionDayHead span,.nutritionDayHead small,.macroGrid span,.mealRow b,.mealRow small,.mealRow em',10.5,'mobile Nutrition day detail');
+  await assertStableMobileShell('mobile Nutrition day detail');
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
 
   await waitForRoute('analise');
   const recoveryPeriod=await page.evaluate(()=>({value:document.querySelector('#analysisPeriod')?.value||'',heading:document.querySelector('.domainHero span')?.textContent||''}));
   if(!recoveryPeriod.value||!recoveryPeriod.heading.includes(recoveryPeriod.value==='365'?'último ano':recoveryPeriod.value==='30'?'últimos 30 dias':recoveryPeriod.value==='90'?'últimos 90 dias':'todo o histórico'))throw new Error(`mobile Recovery period control contradicts its heading: ${JSON.stringify(recoveryPeriod)}`);
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Recovery');
   await page.screenshot({path:`${evidenceDir}/mobile-recovery.png`});
 
   await waitForRoute('saude');
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Labs');
   await page.screenshot({path:`${evidenceDir}/mobile-labs.png`});
 
   await waitForRoute('tratamentos');
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Protocols');
   await page.screenshot({path:`${evidenceDir}/mobile-protocols.png`});
 
   await waitForRoute('evolucao');
   await assertNoHorizontalOverflow();
   await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'mobile Evolution');
   await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
+  await assertStableMobileShell('mobile Evolution');
   await page.screenshot({path:`${evidenceDir}/mobile-evolution.png`});
   await page.locator('.evolutionChangeTable').scrollIntoViewIfNeeded();
+  await assertStableMobileShell('mobile Evolution changes');
   await page.screenshot({path:`${evidenceDir}/mobile-evolution-changes.png`});
   if(await page.locator('.segmentKinds').count()){
     await page.locator('.segmentKinds').scrollIntoViewIfNeeded();
     await assertMinimumReadableType('.segmentKindTitle b,.segmentKindTitle small,.segmentPair span,.segmentPair strong,.sideDifferenceHead small',10.5,'mobile Evolution segmental');
+    await assertStableMobileShell('mobile Evolution segmental');
     await page.screenshot({path:`${evidenceDir}/mobile-evolution-segmental.png`});
   }
 
@@ -308,17 +355,20 @@ try{
   const timelineVisible=Number(await page.locator('.timelineSummary b').textContent());
   if(timelineVisible>50)throw new Error(`mobile Timeline rendered ${timelineVisible} records before progressive loading`);
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Timeline');
   await page.screenshot({path:`${evidenceDir}/mobile-timeline.png`});
 
   await waitForRoute('dados');
   await assertNoHorizontalOverflow();
+  await assertStableMobileShell('mobile Data');
   await page.screenshot({path:`${evidenceDir}/mobile-data.png`});
   await page.locator('#mobileNav [data-route="mais"]').click();
   await page.waitForSelector('#moreSheet:not(.hidden)',{timeout:30000});
+  await assertStableMobileShell('mobile More');
   await page.screenshot({path:`${evidenceDir}/mobile-more.png`});
   await page.locator('#moreSheet [data-route="evolucao"]').click();
 
-  await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir});
+  await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
 
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
   if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
