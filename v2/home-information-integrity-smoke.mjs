@@ -57,6 +57,7 @@ const result=await page.evaluate(()=>{
     motto:document.querySelector('.ltsRefMotto')?.textContent?.trim()||'',
     metrics:[...document.querySelectorAll('.ltsRefMetric>span')].map(el=>el.textContent.trim()),
     inlineIntegrity:Boolean(document.querySelector('#lts-home-information-integrity')),
+    duplicateRouteAction:getComputedStyle(document.querySelector('#routeAction')).display!=='none',
     fontSizes:[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small,.ltsRefChangeGrid small')].map(el=>parseFloat(getComputedStyle(el).fontSize)),
     summary:document.querySelector('.ltsRefIntegratedSummary')?.textContent?.trim()||'',
     horizontal:document.documentElement.scrollWidth-window.innerWidth
@@ -70,6 +71,7 @@ if(!nutrition||!nutrition.text.includes('2 de 30 dias')||!nutrition.text.include
 if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`Approved Home context line is missing: ${result.motto}`);
 if(!result.metrics.includes('Massa magra'))throw new Error(`Approved Home metric is missing: ${JSON.stringify(result.metrics)}`);
 if(result.inlineIntegrity)throw new Error('Home still injects a runtime style/order override');
+if(result.duplicateRouteAction)throw new Error('Home duplicates the contextual water import action in the top bar');
 if(result.fontSizes.some(size=>size<9.5))throw new Error(`Home contains unreadable mobile supporting type: ${JSON.stringify(result.fontSizes)}`);
 const fat=result.change.find(x=>x.label==='Gordura'),muscle=result.change.find(x=>x.label==='Massa magra');
 if(!fat||fat.value==='—'||!fat.detail.includes('medição anterior'))throw new Error(`Fat change does not reuse current-composition comparison: ${JSON.stringify(fat)}`);
