@@ -14,6 +14,7 @@ async function trainingFinalRendererGuard(page,label){
     core.state.ui.openWorkout=null;
     core.state.ui.productTrainingView='summary';
     document.body.dataset.productRoute='treinos';
+    document.querySelectorAll('#primaryNav [data-route],#mobileNav [data-route]').forEach(button=>button.classList.toggle('active',button.dataset.route==='treinos'));
     document.querySelector('#screenHost').innerHTML=training.renderProductTraining();
   });
   await page.waitForSelector('.ltsTrainingReference',{timeout:5000});
