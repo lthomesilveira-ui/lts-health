@@ -53,6 +53,20 @@ const loaders={
 };
 
 const backupLoaders={...loaders};
+const wait=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
+
+async function loadRows(key){
+  let firstError=null;
+  for(let attempt=0;attempt<2;attempt+=1){
+    try{return await loaders[key]();}
+    catch(error){
+      firstError=error;
+      if(attempt===0)await wait(180);
+    }
+  }
+  throw firstError;
+}
+
 const fixtureSourceMetrics=[{
   source_record_id:'source-metric-candidate-1',metric_date:'2026-02-02',metric_type:'steps',value:7100,unit:'count',
   source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'fixture-source'
@@ -120,7 +134,7 @@ async function loadKey(key,force=false){
   const hadPrevious=Object.hasOwn(state.data,key);
   state.domainStatus[key]='loading';
   try{
-    const rows=await loaders[key](),visibleRows=visibleRowsForDomain(key,rows);
+    const rows=await loadRows(key),visibleRows=visibleRowsForDomain(key,rows);
     state.data[key]=visibleRows;
     delete state.errors[key];state.domainStatus[key]='ready';
   }catch(error){

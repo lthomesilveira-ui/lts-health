@@ -2,6 +2,7 @@ import {chromium} from 'playwright';
 import {mkdirSync} from 'node:fs';
 
 const evidenceDir='v2/public-audit-evidence';
+const origin=process.env.LTS_TEST_ORIGIN||'http://127.0.0.1:4173';
 mkdirSync(evidenceDir,{recursive:true});
 
 const browser=await chromium.launch({headless:true});
@@ -33,7 +34,7 @@ for(const config of [
     const value=message.text();
     if(message.type()==='error'&&!value.includes('Failed to load resource'))errors.push(value);
   });
-  await page.goto('http://127.0.0.1:4173/?fixture=1#hoje',{waitUntil:'domcontentloaded'});
+  await page.goto(`${origin}/?fixture=1#hoje`,{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
 
   await productRoute(page,'hoje','./src/home-reference.js','renderProductHomeReference');
