@@ -31,12 +31,19 @@ export function decorateWorkoutProvenance(workouts=[],evidence=[]){
   const byWorkout=new Map();
   for(const row of confirmedTelemetryEvidence(evidence)){
     const workoutId=row?.workout_source_record_id,sourceName=String(row?.source_name||'').trim();
-    if(!workoutId||!sourceName)continue;
-    if(!byWorkout.has(workoutId))byWorkout.set(workoutId,new Set());
-    byWorkout.get(workoutId).add(sourceName);
+    if(!workoutId)continue;
+    if(!byWorkout.has(workoutId))byWorkout.set(workoutId,{sourceNames:new Set(),fieldNames:new Set()});
+    const entry=byWorkout.get(workoutId);
+    if(sourceName)entry.sourceNames.add(sourceName);
+    for(const field of row?.field_names||[])entry.fieldNames.add(normalized(field));
   }
   return (workouts||[]).map(workout=>{
-    const sourceNames=[...(byWorkout.get(workout?.source_record_id)||new Set())].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const evidenceEntry=byWorkout.get(workout?.source_record_id)||{sourceNames:new Set(),fieldNames:new Set()};
+    const sourceNames=[...evidenceEntry.sourceNames].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const fieldNames=evidenceEntry.fieldNames;
+    const partialTelemetry=[...fieldNames].some(field=>field.startsWith('partial_'));
+    const partialHeartRate=[...fieldNames].some(field=>field.startsWith('partial_heart_rate_'));
+    const estimatedEnergy=fieldNames.has('estimated_session_calories_kcal');
     const hasTelemetry=hasWorkoutTelemetry(workout),base=baseSourceLabel(workout);
     const source=sourceNames.length
       ? `${base} · telemetria: ${sourceNames.join(' + ')}`
@@ -48,7 +55,10 @@ export function decorateWorkoutProvenance(workouts=[],evidence=[]){
       source_recorded:workout?.source??null,
       source,
       telemetry_provenance_status:sourceNames.length?'confirmed':hasTelemetry?'unknown':'not_applicable',
-      telemetry_source_names:sourceNames
+      telemetry_source_names:sourceNames,
+      telemetry_is_partial:partialTelemetry,
+      telemetry_heart_rate_is_partial:partialHeartRate,
+      telemetry_energy_is_estimated:estimatedEnergy
     };
   });
 }

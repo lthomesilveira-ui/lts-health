@@ -46,15 +46,17 @@ function hrPanel(workout){
   if(min==null&&avg==null&&max==null)return `<section class="ltsRefTrainPanel"><header><div><span>Telemetria</span><h2>Frequência cardíaca</h2></div></header><div class="ltsRefTrainEmpty">Sem telemetria de frequência cardíaca registrada para esta sessão.</div></section>`;
   const values=[min,avg,max].filter(v=>v!=null),lo=Math.min(...values),hi=Math.max(...values),span=Math.max(hi-lo,1);
   const avgPos=avg==null?null:Math.max(0,Math.min(100,((avg-lo)/span)*100));
+  const sourceLabel=workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada';
+  const telemetryLabel=workout.telemetry_heart_rate_is_partial?`Trecho parcial · ${sourceLabel}`:sourceLabel;
   return `<section class="ltsRefTrainPanel ltsRefHrPanel">
-    <header><div><span>Telemetria</span><h2>Frequência cardíaca</h2></div><small>${esc(workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada')}</small></header>
+    <header><div><span>Telemetria</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>
     <div class="ltsRefHrNumbers">
       <div><small>Mín.</small><b>${min!=null?fmtNum(min,0):'—'}</b><span>bpm</span></div>
       <div><small>Média</small><b>${avg!=null?fmtNum(avg,0):'—'}</b><span>bpm</span></div>
       <div><small>Máx.</small><b>${max!=null?fmtNum(max,0):'—'}</b><span>bpm</span></div>
     </div>
     <div class="ltsRefHrTrack" aria-label="Faixa registrada de frequência cardíaca"><span></span>${avgPos!=null?`<i style="left:${avgPos.toFixed(1)}%"></i>`:''}</div>
-    <p>Faixa descritiva da sessão registrada. Não representa distribuição por zonas nem série temporal.</p>
+    <p>${workout.telemetry_heart_rate_is_partial?'Valores medidos somente no trecho registrado; não representam a sessão inteira.':'Faixa descritiva da sessão registrada.'} Não representa distribuição por zonas nem série temporal.</p>
   </section>`;
 }
 
@@ -69,8 +71,8 @@ function summaryView(workout){
   return `${sessionHero(workout)}
     <section class="ltsRefTrainMetrics">
       ${metric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min','Duração')}
-      ${metric(num(workout.calories_kcal)!=null?fmtNum(workout.calories_kcal,0):'—','kcal','Energia')}
-      ${metric(num(workout.heart_rate_avg)!=null?fmtNum(workout.heart_rate_avg,0):'—','bpm','FC média')}
+      ${metric(num(workout.calories_kcal)!=null?fmtNum(workout.calories_kcal,0):'—','kcal',workout.telemetry_energy_is_estimated?'Energia estimada':'Energia')}
+      ${metric(num(workout.heart_rate_avg)!=null?fmtNum(workout.heart_rate_avg,0):'—','bpm',workout.telemetry_heart_rate_is_partial?'FC média · trecho':'FC média')}
       ${metric(setCount==null?'—':' '+setCount,'','Séries')}
     </section>
     ${hrPanel(workout)}

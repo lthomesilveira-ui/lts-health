@@ -5,6 +5,8 @@ const migration=fs.readFileSync(new URL('../supabase/migrations/20260903195000_a
 const dataLayer=fs.readFileSync(new URL('./src/data-layer.js',import.meta.url),'utf8');
 const evidenceModule=fs.readFileSync(new URL('./src/workout-evidence.js',import.meta.url),'utf8');
 const sourceStatusModule=fs.readFileSync(new URL('./src/source-status.js',import.meta.url),'utf8');
+const trainingReference=fs.readFileSync(new URL('./src/training-reference-v2.js',import.meta.url),'utf8');
+const homeReference=fs.readFileSync(new URL('./src/home-reference.js',import.meta.url),'utf8');
 
 if(!migration.includes('health_workout_source_evidence'))throw new Error('evidence table migration missing');
 if(!migration.includes("source_family,\n  source_name"))throw new Error('structured source identity missing');
@@ -14,6 +16,8 @@ if(!dataLayer.includes("workoutEvidence:()=>fetchAll('health_workout_source_evid
 if(/health_workout_source_evidence[^\n]*source_payload/.test(dataLayer))throw new Error('source_payload leaked into workout evidence loader');
 if(!dataLayer.includes('decorateWorkoutProvenance'))throw new Error('workout provenance decoration missing');
 if(!evidenceModule.includes("evidence_status)==='confirmed'"))throw new Error('only confirmed evidence may label telemetry source');
+if(!trainingReference.includes("'Energia estimada'")||!trainingReference.includes("'FC média · trecho'"))throw new Error('partial telemetry labels missing from Training');
+if(!homeReference.includes("' estimadas'"))throw new Error('estimated workout energy is not qualified on Home');
 if(sourceStatusModule.includes("contains(workouts,['source','source_file'],'polar')"))throw new Error('Polar source status still depends on workout display/source text');
 if(!sourceStatusModule.includes("confirmedWorkoutEvidence(workoutEvidence,'polar_flow')"))throw new Error('Polar source status is not driven by structured workout evidence');
 
@@ -22,6 +26,7 @@ const page=await browser.newPage({viewport:{width:1280,height:900}});
 const errors=[];
 page.on('pageerror',e=>errors.push(e.message));
 page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.supabase={createClient(){return {auth:{}}}};'}));
 
 await page.goto('http://127.0.0.1:4173/?fixture=1#treinos',{waitUntil:'domcontentloaded'});
 await page.waitForSelector('#app:not(.hidden)');
@@ -52,6 +57,11 @@ const contract=await page.evaluate(async()=>{
   ],[
     {source_record_id:'candidate-evidence',workout_source_record_id:'candidate-workout',source_family:'polar_flow',source_name:'Polar Flow',evidence_kind:'telemetry',evidence_status:'candidate'}
   ]);
+  const partialTelemetry=decorateWorkoutProvenance([
+    {source_record_id:'partial-workout',duration_minutes:53,calories_kcal:427,heart_rate_avg:106,source:'Registro LTS',is_canonical:true,record_status:'validated'}
+  ],[
+    {source_record_id:'partial-evidence',workout_source_record_id:'partial-workout',source_family:'polar_flow',source_name:'Polar Flow',evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['partial_duration_minutes','partial_heart_rate_avg','estimated_session_calories_kcal']}
+  ])[0];
   const recordedWorkouts=state.data.workouts;
   const recordedEvidence=state.data.workoutEvidence;
   const recordedSourceMetrics=state.data.sourceMetrics;
@@ -71,6 +81,12 @@ const contract=await page.evaluate(async()=>{
     filteredIds:filtered.map(row=>row.workout_source_record_id),
     candidateSource:candidateOnly[0].source,
     candidateStatus:candidateOnly[0].telemetry_provenance_status,
+    partialTelemetry:{
+      partial:partialTelemetry.telemetry_is_partial,
+      partialHeartRate:partialTelemetry.telemetry_heart_rate_is_partial,
+      estimatedEnergy:partialTelemetry.telemetry_energy_is_estimated,
+      source:partialTelemetry.source
+    },
     structuralStatus,
     structuralCoverage,
     candidateEvidenceStatus,
@@ -85,6 +101,8 @@ const contract=await page.evaluate(async()=>{
 if(contract.filteredIds.includes('shadow-workout'))throw new Error('orphan/noncanonical workout evidence crossed the structured workout boundary');
 if(!contract.filteredIds.every(id=>contract.canonical.includes(id)))throw new Error('workout evidence is linked outside visible canonical workouts');
 if(contract.candidateStatus!=='unknown'||contract.candidateSource.includes('Polar Flow'))throw new Error('candidate evidence was presented as confirmed telemetry provenance');
+if(!contract.partialTelemetry.partial||!contract.partialTelemetry.partialHeartRate||!contract.partialTelemetry.estimatedEnergy)throw new Error('partial/estimated telemetry evidence was not preserved in the UI model');
+if(!contract.partialTelemetry.source.includes('Polar Flow'))throw new Error('confirmed partial telemetry source was not preserved');
 if(contract.structuralStatus!=='ready')throw new Error('confirmed Polar evidence does not mark source as available when workout text is scrubbed');
 if(contract.structuralCoverage.confirmedDate!=='2026-02-02')throw new Error('Polar confirmed date does not follow structured workout evidence');
 if(contract.candidateEvidenceStatus!=='candidate')throw new Error('candidate Polar workout evidence was not preserved as candidate-only source state');

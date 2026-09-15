@@ -7,6 +7,9 @@ on:
       - 'v2/src/data-layer.js'
       - 'v2/src/workout-evidence.js'
       - 'v2/src/source-status.js'
+      - 'v2/src/training-reference-v2.js'
+      - 'v2/src/home-reference.js'
+      - 'v2/src/product-layout-v2.js'
       - 'v2/workout-source-evidence-smoke.mjs'
       - '.github/workflows/workout-source-evidence-smoke.yml'
   workflow_dispatch:

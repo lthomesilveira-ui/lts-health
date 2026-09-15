@@ -1,6 +1,6 @@
 # LTS Health — CURRENT HANDOFF
 
-Updated: 2026-09-15 after physical-iPhone evidence rejected the visual QA closure for build `.26`. Public engineering metadata only; health data, credentials and private screenshots stay private.
+Updated: 2026-09-15 after build `.28` was published and a newly recorded workout exposed partial-telemetry semantics that need an explicit UI treatment. Public engineering metadata only; health data, credentials and private screenshots stay private.
 
 ## Restart phrase
 
@@ -24,14 +24,9 @@ The reference contains the intended mobile Home/Início plus Training summary an
 
 Physical-iPhone screenshots from the owner outrank fixture-only visual confidence. The owner explicitly reported on 14/09 that the product had improved but remained far from the approved mockup. There is **no final pixel parity or product acceptance** yet.
 
-## Current published release — rejected on physical iPhone
+## Current published release — not owner-homologated
 
-The currently published build remains:
-- PR #292;
-- build `ux-coherence-public-visual-closure-20260915.26`;
-- product commit `3519968f82eb6043a8835e7fa9ad8b5e2be27395`;
-- merge commit `cb4ec22f9fe9c5f3f00b2c9875db7d6e9ea7c5cf`;
-- checkpoint `v2/releases/PUBLIC_AUDIT_QA_20260915.md`.
+The currently published build is `physical-iphone-remediation-20260915.28`, promoted normally by PR #295 with merge commit `3bd552670c30186eb41052097d643150171a471d`. Its post-merge deploy, Pages, smoke and authenticated automation gates passed. The exact public URL was opened again in Cloud Browser and `.28` was observed at the login surface, but the current Cloud Browser session is not authenticated. This is publication evidence, not owner acceptance and not a claim that authenticated visual QA is complete.
 
 The package chain from PR #285 through #292 rebuilt the audited Home/Training experience, aligned the internal routes, removed visual and navigation regressions found in the public app, and made authenticated evidence follow real UI navigation with route-specific readiness.
 
@@ -41,7 +36,7 @@ The actual public URL was then opened in Cloud Browser with the authenticated se
 
 The owner then supplied eight full-size screenshots from a physical iPhone. Those screenshots invalidate the previous statement that no obvious defect remained: the Home retained an empty hidden-topbar track, all audited mobile routes reserved bottom space twice, the first viewport was oversized, and Training ended in a large blank surface. Build `.26` is published but visually rejected and must not be presented for homologation.
 
-The active package is `PKG-PHYSICAL-IPHONE-REMEDIATION-001`. Its candidate build is `physical-iphone-remediation-20260915.28`; it is not a verified release until normal PR/merge, deploy, authenticated public navigation and post-deploy inspection are complete.
+The active package is `PKG-LATEST-WORKOUT-TELEMETRY-001`. Its candidate build is `latest-workout-telemetry-20260915.29`. It preserves the newly recorded workout in the private data store and makes the UI distinguish session duration from estimated energy and heart-rate values measured only during a partial device recording. No private workout values or screenshots enter this repository.
 
 ## Home/Início state
 
@@ -92,7 +87,7 @@ Do not reimplement older caps or lose these capabilities:
 
 ## Remaining execution order
 
-`LTS-PHYSICAL-IPHONE-001` is in progress. Finish the coherent mobile-shell/Home/Training/internal-route package, then publish and repeat the full authenticated public-browser inspection before asking for owner judgment.
+`LTS-WORKOUT-PARTIAL-TELEMETRY-001` is in progress. Finish the truthful partial-telemetry labels across Home and Training, protect them with regression gates, then publish and repeat the full authenticated public-browser inspection before asking for owner judgment.
 
 Do not trade away existing history/provenance depth to obtain visual similarity. Do not add reference-only graphs, device imagery, values or health semantics without canonical evidence.
 
@@ -110,4 +105,4 @@ The approved source remains in the owner's private Drive as `LTS Health - refere
 
 ## Next action
 
-Do not ask the owner to judge `.26`; it was rejected with physical-iPhone evidence. Build `.27` reached production and passed real-auth, but the post-deploy Pages gate rejected its 10 px mobile navigation typography. Promote corrected `.28` only through a normal PR, then open the exact public build, authenticate, navigate every area, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
+Do not ask the owner to judge `.26`; it was rejected with physical-iPhone evidence. Build `.28` is public but is not owner-homologated. Promote `.29` only through a normal PR, then open the exact public build, authenticate when possible, navigate affected areas, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
