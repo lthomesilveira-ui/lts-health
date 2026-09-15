@@ -5,29 +5,35 @@ on:
     paths:
       - 'v2/index.html'
       - 'v2/src/today-screen.js'
+      - 'v2/src/home-reference.js'
       - 'v2/src/treatment-screen.js'
       - 'v2/src/analysis-screen.js'
       - 'v2/src/data-layer.js'
+      - 'v2/home-reference.css'
       - 'v2/cockpit.css'
       - 'v2/analysis.css'
       - 'v2/secondary.css'
       - 'v2/shell-route-actions.css'
       - 'v2/product-delivery.css'
       - 'v2/cockpit-smoke.mjs'
+      - 'v2/home-information-integrity-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   pull_request:
     paths:
       - 'v2/index.html'
       - 'v2/src/today-screen.js'
+      - 'v2/src/home-reference.js'
       - 'v2/src/treatment-screen.js'
       - 'v2/src/analysis-screen.js'
       - 'v2/src/data-layer.js'
+      - 'v2/home-reference.css'
       - 'v2/cockpit.css'
       - 'v2/analysis.css'
       - 'v2/secondary.css'
       - 'v2/shell-route-actions.css'
       - 'v2/product-delivery.css'
       - 'v2/cockpit-smoke.mjs'
+      - 'v2/home-information-integrity-smoke.mjs'
       - '.github/workflows/cockpit-smoke.yml'
   workflow_dispatch:
 jobs:
@@ -46,13 +52,17 @@ jobs:
       - name: Syntax checks
         run: |
           node --check v2/src/today-screen.js
+          node --check v2/src/home-reference.js
           node --check v2/src/treatment-screen.js
           node --check v2/src/analysis-screen.js
           node --check v2/src/data-layer.js
           node --check v2/cockpit-smoke.mjs
+          node --check v2/home-information-integrity-smoke.mjs
       - name: Start fixture server
         run: |
           cd v2
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-cockpit-server.log 2>&1 &
       - name: Cockpit desktop and mobile
         run: node v2/cockpit-smoke.mjs
+      - name: Home information integrity on mobile
+        run: node v2/home-information-integrity-smoke.mjs
