@@ -532,6 +532,13 @@
   font-size: 10.5px;
 }
 
+/* The calendar plot includes its own axis; do not apply the old date-row flex
+   layout to the entire plot or move the dates outside the visible chart. */
+.ltsRefTrendChart > .ltsContextPlot {
+  display: block;
+  margin: 0;
+}
+
 .ltsRefTrendEmpty,
 .ltsRefEmpty {
   display: grid;
