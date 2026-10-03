@@ -2,7 +2,7 @@
 
 ## Retomada e contexto útil — 03/10/2026
 
-O código público já estava em `.30` após PR #297, apesar do handoff antigo. O pacote `PKG-HEALTH-CONTEXT-001` parte desse código e implementa painéis sincronizados, filtros estritos, leitura de resultados por coleta e contexto histórico de medicações. A complementação de dados fica exclusivamente no banco privado. Evidência técnica e limites: `releases/HEALTH_CONTEXT_20261003.md`; fila atual: `EXECUTION_STATE.json`. O aceite subjetivo no dispositivo físico continua separado da publicação.
+O pacote `PKG-HEALTH-CONTEXT-001` foi concluído tecnicamente e publicado em `home-dashboard-reference-20261003.33` pelos PRs #298–#300, preservando o código `.30` já entregue pelo PR #297. Inclui painéis sincronizados com o mesmo eixo, filtros estritos, resultados juntos por coleta e contexto registrado das medicações. A complementação de dados fica exclusivamente no banco privado. Todos os nove workflows finais passaram; o build público autenticado foi aberto e inspecionado. Evidência técnica e limites: `releases/HEALTH_CONTEXT_20261003.md`; fila atual: `EXECUTION_STATE.json`. Aceite subjetivo, iPhone físico e paridade pixel continuam separados da publicação. As seções antigas abaixo mantêm o histórico, não substituem este checkpoint.
 
 Este arquivo é a referência pública de engenharia/produto para continuidade do projeto. Não contém dados pessoais de saúde, valores clínicos, credenciais ou payloads privados.
 
