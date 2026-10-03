@@ -2,11 +2,17 @@
 
 ## Current checkpoint — 2026-10-03
 
-Live code inspection confirmed that `.30` was already merged into `main` by PR #297; the older paragraphs below are historical and must not be used to restore `.29` or an old export. The active candidate is `home-dashboard-reference-20261003.33`, developed from current `main` on `ux-health-context-20261003`.
+The published build is `home-dashboard-reference-20261003.33`, promoted by normal PRs #298, #299 and #300. Product commit: `747adeb7c2a4b7ba43fc9abb799207a82ce53881`. `.30` was already delivered by PR #297; do not restore `.29` or an old export.
 
 The owner authorized implementation of the UX review and completion of missing private data. The current package adds synchronized source-backed panels, current-result laboratory views and recorded medication context while preserving histories and security. See `releases/HEALTH_CONTEXT_20261003.md`. The reviewed private import was independently reconciled and replayed without additional insertions; its private manifest and medical values do not belong here.
 
-Normal PR/browser gates and exact-build post-deploy authenticated inspection remain pending at this checkpoint. Physical-device product acceptance and the existing MyFitnessPal dependency are not presumed resolved.
+All final PR gates and all nine post-merge workflows passed, including deployment and authenticated desktop/mobile runtime. The exact public `.33` was opened in the authenticated Cloud Browser; laboratory collections, recorded treatment context, preserved composition history and synchronized dates were inspected. Full-history and 90-day panels were checked to have identical calendar axes. Private reconciliation/import evidence and plaintext screenshots stay outside this repository.
+
+The technical package is complete. Owner judgment, physical-device acceptance and final pixel parity are not presumed. Historical MyFitnessPal water and existing integration/account blockers are preserved in `EXECUTION_STATE.json`; no new source data is invented. See `releases/HEALTH_CONTEXT_20261003.md` for exact gate and encrypted-artifact identifiers.
+
+## Historical checkpoints — superseded by the checkpoint above
+
+The remaining text preserves prior feedback and engineering context. Old release names, candidate states and next actions below are historical, not the current execution queue.
 
 Updated: 2026-09-15 after the owner rejected the published `.29` Home and the approved mobile reference was reopened for a decisive dashboard rebuild. Public engineering metadata only; health data, credentials and private screenshots stay private.
 
