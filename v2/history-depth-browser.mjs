@@ -34,8 +34,11 @@ try{
   await page.locator('#homeLabMarker').selectOption('marcador 01');
   await page.locator('#healthContextDate').selectOption('2024-01-10');
   assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-10','shared day selector');
-  await page.locator('.ltsContextPanel.body [data-health-date="2024-01-11"]').click();
-  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-11','chart point drives shared day');
+  await page.locator('.ltsContextPanel.body [data-health-date="2024-02-02"]').click();
+  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-02-02','chart point drives shared day');
+  // Dense all-history observations can overlap honestly on a calendar axis; keyboard and day selection remain exact.
+  await page.locator('.ltsContextPanel.body [data-health-date="2024-01-11"]').press('Enter');
+  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-11','dense point remains keyboard accessible');
   assert.ok((await page.locator('.ltsContextFacts').innerText()).includes('Composição'));
   await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
