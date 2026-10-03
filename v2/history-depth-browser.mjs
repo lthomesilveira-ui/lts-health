@@ -29,6 +29,15 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
+  assert.equal(await page.locator('.ltsContextPanel').count(),4,'four simultaneous source-backed panels');
+  await page.locator('[data-home-period="all"]').click();
+  await page.locator('#homeLabMarker').selectOption('marcador 01');
+  await page.locator('#healthContextDate').selectOption('2024-01-10');
+  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-10','shared day selector');
+  await page.locator('.ltsContextPanel.body [data-health-date="2024-01-11"]').click();
+  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-11','chart point drives shared day');
+  assert.ok((await page.locator('.ltsContextFacts').innerText()).includes('Composição'));
+  await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
   await goto(page,'treinos','.ltsTrainingV2 .ltsExerciseCard');
   await page.locator('[data-depth-training-view="history"]').first().click();

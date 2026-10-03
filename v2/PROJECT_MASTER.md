@@ -1,5 +1,9 @@
 # LTS Health v2 — lista-mestra de execução
 
+## Retomada e contexto útil — 03/10/2026
+
+O código público já estava em `.30` após PR #297, apesar do handoff antigo. O pacote `PKG-HEALTH-CONTEXT-001` parte desse código e implementa painéis sincronizados, filtros estritos, leitura de resultados por coleta e contexto histórico de medicações. A complementação de dados fica exclusivamente no banco privado. Evidência técnica e limites: `releases/HEALTH_CONTEXT_20261003.md`; fila atual: `EXECUTION_STATE.json`. O aceite subjetivo no dispositivo físico continua separado da publicação.
+
 Este arquivo é a referência pública de engenharia/produto para continuidade do projeto. Não contém dados pessoais de saúde, valores clínicos, credenciais ou payloads privados.
 
 ## Como retomar o projeto

@@ -44,18 +44,18 @@ export const failed=(state,key)=>state.domainStatus?.[key]==='error'||Boolean(st
 export const valueText=(value,unit='',digits=1)=>num(value)==null?'Não informado':`${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
 export const differenceText=(a,b,unit='',digits=1)=>num(a)==null||num(b)==null?'Sem comparação':`${num(a)-num(b)>0?'+':''}${fmtNum(num(a)-num(b),digits)}${unit?` ${unit}`:''}`;
 
-export function pointChart(points,{unit='',label='Evolução',scope='',selected=null}={}){
+export function pointChart(points,{unit='',label='Evolução',scope='',selected=null,connect=true}={}){
   const clean=points.filter(p=>validDay(p.date)&&num(p.value)!=null).sort((a,b)=>validDay(a.date).localeCompare(validDay(b.date)));
-  if(clean.length<2)return emptyCard('Ainda não há dois pontos inequívocos nesta série e período. Os resultados continuam disponíveis no histórico.');
+  if(!clean.length)return emptyCard('Não há pontos numéricos exatos nesta série e período. Os resultados continuam disponíveis no histórico.');
   const values=clean.map(p=>Number(p.value)),low=Math.min(...values),high=Math.max(...values);
   const span=high-low||Math.max(Math.abs(high)*.1,1),min=low-span*.12,max=high+span*.12;
   const w=660,h=190,l=12,r=12,t=12,b=12;
   const time=p=>Date.parse(`${validDay(p.date)}T12:00:00Z`),start=time(clean[0]),end=time(clean.at(-1));
-  const x=p=>l+(time(p)-start)/(end-start||1)*(w-l-r),y=v=>t+(max-v)/(max-min)*(h-t-b);
-  const line=clean.map((p,i)=>`${i?'L':'M'}${x(p).toFixed(2)} ${y(p.value).toFixed(2)}`).join(' ');
+  const x=p=>start===end?w/2:l+(time(p)-start)/(end-start)*(w-l-r),y=v=>t+(max-v)/(max-min)*(h-t-b);
+  const line=connect&&clean.length>=2?clean.map((p,i)=>`${i?'L':'M'}${x(p).toFixed(2)} ${y(p.value).toFixed(2)}`).join(' '):'';
   const mid=(min+max)/2,ticks=[max,mid,min];
   const index=selected!=null&&Number.isInteger(Number(selected))&&Number(selected)>=0&&Number(selected)<clean.length?Number(selected):clean.length-1;
   const focus=clean[index];
   const digits=span<.1?3:span<1?2:1;
-  return `<div class="ltsDepthChart" data-chart-scope="${esc(scope)}"><div class="ltsDepthPlot"><div class="ltsDepthScale">${ticks.map(v=>`<span>${fmtNum(v,digits)}</span>`).join('')}</div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(label)}; ${clean.length} pontos; ${esc(unit)}"><path class="ltsDepthGrid" d="${ticks.map(v=>`M${l} ${y(v).toFixed(2)}H${w-r}`).join(' ')}"/><path class="ltsDepthLine" d="${line}"/>${clean.map((p,i)=>`<circle class="${i===index?'selected':''}" cx="${x(p).toFixed(2)}" cy="${y(p.value).toFixed(2)}" r="${i===index?5:3}"><title>${esc(fmtDate(p.date))}: ${esc(valueText(p.value,unit,digits))}</title></circle>`).join('')}</svg></div><div class="ltsDepthAxis"><span>${esc(fmtDate(clean[0].date))}</span><b>${esc(unit)}</b><span>${esc(fmtDate(clean.at(-1).date))}</span></div><div class="ltsPointReadout"><label class="ltsField">Consultar ponto<select id="${esc(scope)}Point" data-depth-field="${esc(scope)}Point">${clean.map((p,i)=>`<option value="${i}" ${i===index?'selected':''}>${esc(fmtDate(p.date))}</option>`).join('')}</select></label><p role="status"><b>${esc(valueText(focus.value,unit,digits))}</b><span>${esc(focus.context||fmtDate(focus.date))}</span></p></div></div>`;
+  return `<div class="ltsDepthChart" data-chart-scope="${esc(scope)}"><div class="ltsDepthPlot"><div class="ltsDepthScale">${ticks.map(v=>`<span>${fmtNum(v,digits)}</span>`).join('')}</div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(label)}; ${clean.length} pontos; ${esc(unit)}"><path class="ltsDepthGrid" d="${ticks.map(v=>`M${l} ${y(v).toFixed(2)}H${w-r}`).join(' ')}"/>${line?`<path class="ltsDepthLine" d="${line}"/>`:''}${clean.map((p,i)=>`<circle class="${i===index?'selected':''}" cx="${x(p).toFixed(2)}" cy="${y(p.value).toFixed(2)}" r="${i===index?5:3}"><title>${esc(fmtDate(p.date))}: ${esc(valueText(p.value,unit,digits))}</title></circle>`).join('')}</svg></div><div class="ltsDepthAxis"><span>${esc(fmtDate(clean[0].date))}</span><b>${esc(unit)}</b><span>${esc(fmtDate(clean.at(-1).date))}</span></div><div class="ltsPointReadout"><label class="ltsField">Consultar ponto<select id="${esc(scope)}Point" data-depth-field="${esc(scope)}Point">${clean.map((p,i)=>`<option value="${i}" ${i===index?'selected':''}>${esc(fmtDate(p.date))}</option>`).join('')}</select></label><p role="status"><b>${esc(valueText(focus.value,unit,digits))}</b><span>${esc(focus.context||fmtDate(focus.date))}</span></p></div></div>`;
 }

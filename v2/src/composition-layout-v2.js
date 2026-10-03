@@ -1,5 +1,6 @@
 import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
 import {validDay,rowKey,pageOf,pager,years,yearFilter,seriesWindow,periodControl,pointChart,emptyCard,errorCard,failed,valueText,differenceText} from './history-tools.js';
+import {bodySourceLabel,bodyMetricSeries,contextChart} from './health-context.js';
 
 export const compositionMetrics={
   body_fat_pct:{label:'Gordura corporal',short:'Gordura',unit:'%',deltaUnit:'p.p.'},
@@ -10,7 +11,7 @@ export const compositionMetrics={
 const identity=row=>norm(row?.source_family||row?.source_name||row?.source||'');
 const sourceDisplay=row=>{
   const raw=String(row?.source_name||row?.source||row?.source_family||'').trim();
-  return norm(raw).includes('inbody')?'InBody':norm(raw).includes('bioimpedance')?'Bioimpedância':raw||'Origem não informada';
+  return bodySourceLabel(row);
 };
 export function compositionModel(){
   const all=(state.data.body||[]).map((r,i)=>({...r,__key:rowKey(r,i)})).sort((a,b)=>String(a.measured_at||'').localeCompare(String(b.measured_at||'')));
@@ -61,6 +62,7 @@ export function renderProductComposition(){
   const first=m.recent[0],end=m.recent.at(-1),originName=m.origins.find(([key])=>key===m.source)?.[1]||'Origem não informada';
   return `<section class="ltsCompositionV2" data-composition-view="overview">${header()}
     ${last?`<section class="ltsCompositionHero"><div class="ltsCompositionHeroTop"><div><span>Última medição inequívoca · ${esc(sourceDisplay(last))}</span><strong>${num(last.body_fat_pct)!=null?`${fmtNum(last.body_fat_pct,1)}%`:'Medição registrada'}</strong><small>${esc(fmtDate(last.measured_at))}</small></div><span class="ltsCompositionGlyph" aria-hidden="true">◒</span></div><div class="ltsCompositionMetrics">${metricTile('Peso',last.weight_kg,'kg')}${metricTile('Gordura',last.body_fat_pct,'%')}${metricTile('Massa muscular',last.skeletal_muscle_mass_kg,'kg')}</div><button class="ltsDepthLink" data-depth-composition-record="${esc(last.__key)}">Detalhes e análise segmentar ›</button></section>`:emptyCard('As datas têm múltiplos registros. Todas as medições continuam abaixo; nenhuma é escolhida automaticamente como atual.')}
+    <section class="ltsSection"><div class="ltsSectionHead"><div><span>Histórico em contexto</span><h2>Todas as medições de gordura corporal</h2></div></div>${contextChart(bodyMetricSeries(m.all,'body_fat_pct',{end:validDay(last?.measured_at)}),{label:'Gordura corporal por origem',unit:'%',selectable:false})}<p class="ltsDepthNote">${esc(m.origins.map(([,label])=>label).join(' · '))}. Origens diferentes aparecem lado a lado, sem linha de ligação ou diferença automática entre elas. Abaixo você pode aprofundar uma origem por vez.</p></section>
 
     <section class="ltsSection ltsCompositionTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2>Tendência por métrica</h2></div></div><label class="ltsField ltsSourceSelect">Origem da série<select id="productCompositionSource" data-depth-field="productCompositionSource">${m.origins.map(([key,label])=>`<option value="${esc(key)}" ${key===m.source?'selected':''}>${esc(label)}</option>`).join('')}</select></label>${periodControl('productCompositionPeriod',m.period)}<div class="ltsCompositionTabs" role="group" aria-label="Métrica de composição">${Object.entries(compositionMetrics).map(([key,v])=>`<button type="button" data-composition-metric="${key}" class="${key===metric?'active':''}" aria-pressed="${key===metric}">${esc(v.short)}</button>`).join('')}</div><div class="ltsCompositionChart">${pointChart(m.recent.map(r=>({date:r.measured_at,value:r[metric]})),{unit:meta.unit,label:meta.label,scope:'productComposition',selected:state.ui.productCompositionPoint})}</div><p class="ltsDepthNote">${m.recent.length} de ${m.series.length} medições inequívocas · ${esc(originName)}. A janela termina na última medição desta origem; o último registro permanece visível mesmo quando não há uma medição de hoje.</p></section>
 

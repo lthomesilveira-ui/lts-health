@@ -75,11 +75,11 @@ function labSnapshot(data,bounds=null){
 function labCollectionSeries(data,bounds){
   const all=dateRows(data.labs||[],'collection_date').map(([date,items])=>({date,value:items.length}));
   const window=all.filter(point=>inBounds(point.date,bounds));
-  return window.length>=2?window:all.slice(-12);
+  return window;
 }
 
-export function executiveCockpitModel(data={},status={},period='30'){
-  const integrated=buildIntegratedAnalysis(data,status),bounds=periodBounds(period,integrated.referenceDay),previous=previousBounds(bounds);
+export function executiveCockpitModel(data={},status={},period='30',referenceDay=null){
+  const integrated=buildIntegratedAnalysis(data,status),bounds=periodBounds(period,referenceDay||integrated.referenceDay),previous=previousBounds(bounds);
   const training=trainingDistributionModel(data,status,bounds.start,bounds.end),trainingPrevious=previous?trainingDistributionModel(data,status,previous.start,previous.end):null;
   const performance=comparablePerformanceModel(data,status,4,bounds.start,bounds.end);
   const nutrition=nutritionPeriodModel(data,status,bounds.start,bounds.end),nutritionPrevious=previous?nutritionPeriodModel(data,status,previous.start,previous.end):null;
@@ -95,7 +95,7 @@ export function executiveCockpitModel(data={},status={},period='30'){
   const sleepSources=activitySleep.sleepSources.map(source=>({...source,periodPoints:source.points.filter(p=>inBounds(p.date,bounds))})).filter(s=>s.periodPoints.length);
   const topGroups=(training.rows||[]).slice(0,4);
   return{
-    period,bounds,previous,referenceDay:integrated.referenceDay,
+    period,bounds,previous,referenceDay:referenceDay||integrated.referenceDay,
     training:{...training,previousSessions:trainingPrevious?.totalSessions??null,deltaPct:trainingPrevious?pctDelta(training.totalSessions,trainingPrevious.totalSessions):null,topGroups,performance},
     nutrition:{...nutrition,latestDate:integrated.lastNutritionDate,latestAmbiguous:integrated.nutritionLatestAmbiguous,coveragePct:nutritionCoverage,previousCoveragePct:prevNutritionCoverage,coverageDelta:prevNutritionCoverage==null||nutritionCoverage==null?null:nutritionCoverage-prevNutritionCoverage},
     body:{...body,latestOverall:latestBody,window:bodyWindow},
@@ -103,12 +103,12 @@ export function executiveCockpitModel(data={},status={},period='30'){
     activitySleep,
     labs:{...labs,windowCollections:labsWindow.collections,windowMarkers:labsWindow.markers,windowLast:labsWindow.last},
     water,
-    bodyFatSeries:historySeries(data.body||[],'measured_at','body_fat_pct',12),
-    muscleSeries:historySeries(data.body||[],'measured_at','skeletal_muscle_mass_kg',18),
-    weightSeries:windowWeight.length>=2?windowWeight:allWeight.slice(-18),
+    bodyFatSeries:periodSeries(data.body||[],'measured_at','body_fat_pct',bounds),
+    muscleSeries:periodSeries(data.body||[],'measured_at','skeletal_muscle_mass_kg',bounds),
+    weightSeries:windowWeight,
     calorieSeries:periodSeries(data.nutrition||[],'nutrition_date','calories_kcal',bounds),
     trainingSeries:weeklySeries(data,bounds),
-    sleepSeries:sleepSources[0]?.periodPoints?.length>=2?sleepSources[0].periodPoints:(activitySleep.sleepSources[0]?.points||[]).slice(-30),
+    sleepSeries:sleepSources[0]?.periodPoints||[],
     labSeries:labCollectionSeries(data,bounds),
     waterSeries:water.map(row=>({date:row.date,value:row.value}))
   };

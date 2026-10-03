@@ -80,7 +80,7 @@ if(result.duplicateRouteAction)throw new Error('Home duplicates the contextual w
 if(result.fontSizes.some(size=>size<10.5))throw new Error(`Home contains unreadable mobile supporting type: ${JSON.stringify(result.fontSizes)}`);
 if(!result.metricFooters[1]?.includes('medição anterior')||!result.metricFooters[2]?.includes('medição anterior'))throw new Error(`Composition changes do not reuse the comparable body pair: ${JSON.stringify(result.metricFooters)}`);
 if(result.trendTabs!==8||result.activePeriod!=='30 dias')throw new Error(`Longitudinal controls are incomplete: ${JSON.stringify(result)}`);
-if(result.events<3||!result.context.includes('Extrator do MyFitnessPal pronto'))throw new Error(`Recent history or preserved water context is missing: ${JSON.stringify(result)}`);
+if(result.events<3||!result.context.includes('Ainda não há ingestão de água importada'))throw new Error(`Recent history or preserved water context is missing: ${JSON.stringify(result)}`);
 if(result.domains.some(x=>x.overflow>3))throw new Error(`Domain card overflows mobile width: ${JSON.stringify(result.domains)}`);
 if(result.horizontal>3)throw new Error(`Home horizontal overflow ${result.horizontal}px`);
 await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});

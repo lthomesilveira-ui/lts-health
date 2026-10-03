@@ -27,7 +27,8 @@ if(/health-inspect-(lab|fleury|einstein)/i.test(core))throw new Error('specializ
 
 const treatmentLoader=dataLayer.match(/treatments:\(\)=>fetchAll\('health_medication_events','([^']+)'/)?.[1]||'';
 const treatmentFields=treatmentLoader.split(',').map(x=>x.trim()).filter(Boolean);
-const allowedTreatment=['source_record_id','event_date','medication','event_type','source','source_file','confidence'];
+// Read-only, explicitly requested application history. No raw payload, dose, regimen or future instruction.
+const allowedTreatment=['source_record_id','event_date','medication','event_type','source','source_file','confidence','local_time:source_payload->>local_time','recorded_timezone:source_payload->>timezone','recorded_site:source_payload->>site','recorded_side:source_payload->>side'];
 if(JSON.stringify(treatmentFields)!==JSON.stringify(allowedTreatment))throw new Error(`treatment loader projection drifted: ${treatmentFields.join(',')}`);
 const regimenLoader=dataLayer.match(/regimens:\(\)=>fetchAll\('health_medication_regimens','([^']+)'/)?.[1]||'';
 const regimenFields=regimenLoader.split(',').map(x=>x.trim()).filter(Boolean);
@@ -35,6 +36,7 @@ const allowedRegimen=['source_record_id','medication','source','source_file','co
 if(JSON.stringify(regimenFields)!==JSON.stringify(allowedRegimen))throw new Error(`regimen loader projection drifted: ${regimenFields.join(',')}`);
 const operational=/(dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)/i;
 if(treatmentFields.some(f=>operational.test(f))||regimenFields.some(f=>operational.test(f)))throw new Error('operational treatment field entered a normal protocol loader');
+if(treatmentFields.includes('source_payload')||treatmentFields.includes('notes'))throw new Error('raw medication payload or messages entered the UI');
 if(new RegExp(`\\br\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(treatment))throw new Error('protocol screen renders an operational field');
 if(new RegExp(`\\bt\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(timeline))throw new Error('timeline renders an operational treatment field');
 for(const token of ['Cadastro de contexto não significa uso atual','missing_event_dose:\'Contexto histórico de tratamento\'','Registro histórico preservado sem detalhe operacional nesta tela.'])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);

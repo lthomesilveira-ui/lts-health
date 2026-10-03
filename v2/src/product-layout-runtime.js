@@ -9,11 +9,11 @@ import {renderRecoveryDepth} from './recovery-layout-v2.js';
 if(!fixtureMode){
   const renderers={hoje:renderProductHomeReference,treinos:renderProductTraining,bio:renderProductComposition,saude:renderProductLabs,analise:renderRecoveryDepth};
   const markers={hoje:'.ltsHomeReference',treinos:'.ltsTrainingReference',bio:'.ltsCompositionV2',saude:'.ltsLabsV2',analise:'.ltsRecoveryV2'};
-  let applying=false,pollTimer=null,pollStarted=0,hostObserver=null,lastData=null,lastRoute=null;
+  let applying=false,pollTimer=null,pollStarted=0,lastData=null,lastRoute=null;
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
   const pageFields=new Set(['productTrainingPage','productLabPage','productCompositionPage','productExercisePage']);
   const textFields=new Set(['productTrainingQuery','productLabQuery']);
-  const selectFields=new Set(['productTrainingYear','productLabCohort','productLabMarkerSelect','productCompositionSource','productCompositionYear','productCompareA','productCompareB','productExerciseUnit','productLabPoint','productCompositionPoint','productExercisePoint']);
+  const selectFields=new Set(['productTrainingYear','productLabCollection','productLabCohort','productLabMarkerSelect','productCompositionSource','productCompositionYear','productCompareA','productCompareB','productExerciseUnit','productLabPoint','productCompositionPoint','productExercisePoint']);
   function ownRouteAction(key){
     const action=document.getElementById('routeAction');if(!renderers[key]||!action)return;
     action.classList.add('hidden');action.setAttribute('aria-hidden','true');action.tabIndex=-1;
@@ -77,8 +77,7 @@ if(!fixtureMode){
   }
   function boot(){
     const host=document.getElementById('screenHost');if(!host){setTimeout(boot,80);return;}
-    hostObserver=new MutationObserver(()=>{const key=route();if(!applying&&renderers[key]&&state.loaded&&(!host.querySelector(markers[key])||dataChanged(dataInputs(key))))queueMicrotask(apply);});
-    hostObserver.observe(host,{childList:true});
+    // main.js owns canonical rendering. Depth controls redraw explicitly; no DOM rewrite observer.
     window.addEventListener('hashchange',settle);window.addEventListener('online',settle);
     document.addEventListener('input',event=>{if(textFields.has(event.target.dataset?.depthField))fieldChanged(event.target);});
     document.addEventListener('change',event=>{if(selectFields.has(event.target.dataset?.depthField))fieldChanged(event.target);});

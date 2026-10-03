@@ -46,7 +46,7 @@ assert.match(home,/data-home-period/,'Home-specific period selector is missing')
 assert.match(home,/data-home-metric/,'interactive longitudinal metric selector is missing');
 assert.match(home,/\['weight','Peso'\].*\['water','Água'\]/s,'longitudinal domains are not represented in the main chart');
 for(const domain of ['Treinos','Nutrição','Hidratação','Exames','Sono & recuperação','Tratamentos & contexto'])assert.match(home,new RegExp(domain),`Home domain missing: ${domain}`);
-assert.match(home,/Extrator do MyFitnessPal pronto/);
+assert.match(home,/Ainda não há ingestão de água importada/);
 
 assert.match(homeCss,/body\[data-product-route="hoje"\][\s\S]*background: var\(--home-navy/,'mobile Home canvas is not dark like the approved reference');
 assert.match(homeCss,/\.ltsRefMetrics[\s\S]*grid-template-columns: repeat\(3/,'three composition metrics are not protected');
