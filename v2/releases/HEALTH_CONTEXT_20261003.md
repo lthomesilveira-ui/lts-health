@@ -1,6 +1,6 @@
 # Result-first health context — candidate .31
 
-Build: `home-dashboard-reference-20261003.32`. This document contains public engineering metadata only.
+Build: `home-dashboard-reference-20261003.33`. This document contains public engineering metadata only.
 
 ## Changes
 

@@ -37,6 +37,8 @@ try{
   });
   assert.ok(axis.labels.every(r=>r.left>=axis.plot.left-1&&r.right<=axis.plot.right+1&&r.top>=axis.svgBottom-1),'both calendar labels are visible below the main plot');
   assert.equal(await page.locator('.ltsContextPanel').count(),4,'four simultaneous source-backed panels');
+  const sharedAxes=await page.locator('.ltsContextPanel .ltsContextAxis').allTextContents();
+  assert.ok(sharedAxes.length>=2&&new Set(sharedAxes).size===1,'populated all-history panels use the same calendar axis');
   await page.locator('#homeLabMarker').selectOption('marcador 01');
   await page.locator('#healthContextDate').selectOption('2024-01-10');
   assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-10','shared day selector');

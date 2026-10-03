@@ -52,9 +52,12 @@ export function healthContextModel(data,bounds,requestedLab,requestedDate){
   const lab=labTrend(data.labs||[],requestedLab,bounds);
   const eventDates=[...(data.body||[]).map(r=>r.measured_at),...(data.nutrition||[]).map(r=>r.nutrition_date),...workouts.map(r=>r.workout_date),...(data.labs||[]).map(r=>r.collection_date),...(data.treatments||[]).map(r=>r.event_date)].map(day).filter(d=>inHealthWindow(d,bounds));
   const availableDates=[...new Set(eventDates)].sort();
+  // An unbounded history still needs one shared calendar axis, not four
+  // independent starts that make the same date appear in different places.
+  const sharedBounds={...bounds,start:bounds?.start||availableDates[0]||null};
   const selectedDate=availableDates.includes(requestedDate)?requestedDate:availableDates.at(-1)||null;
   const dateRows=(key,dateKey)=>(data[key]||[]).filter(r=>day(r[dateKey])===selectedDate);
-  return {bounds,body,protein,training,lab,availableDates,selectedDate,selected:{body:dateRows('body','measured_at'),nutrition:dateRows('nutrition','nutrition_date'),workouts:workouts.filter(r=>day(r.workout_date)===selectedDate),labs:dateRows('labs','collection_date'),treatments:dateRows('treatments','event_date')}};
+  return {bounds:sharedBounds,body,protein,training,lab,availableDates,selectedDate,selected:{body:dateRows('body','measured_at'),nutrition:dateRows('nutrition','nutrition_date'),workouts:workouts.filter(r=>day(r.workout_date)===selectedDate),labs:dateRows('labs','collection_date'),treatments:dateRows('treatments','event_date')}};
 }
 
 // Calendar-proportional axes; absent days are not zeroes. Never connect different cohorts.
