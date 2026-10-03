@@ -39,9 +39,9 @@ export function labCohorts(group){
 export function labsModel(){
   const rows=state.data.labs||[],groups=labGroups(rows);
   const ranked=groups.map(group=>({group,cohorts:labCohorts(group)})).sort((a,b)=>String(b.group.rows.at(-1)?.collection_date||'').localeCompare(String(a.group.rows.at(-1)?.collection_date||''))||a.group.label.localeCompare(b.group.label,'pt-BR'));
-  const item=ranked.find(i=>i.group.key===state.ui.productLabMarker)||ranked.find(i=>i.cohorts.some(c=>c.rows.length>=2))||ranked[0]||null;
+  const item=ranked.find(i=>i.group.key===state.ui.productLabMarker)||ranked.find(i=>i.group.key===norm('Hemoglobina Glicada (A1C)')&&i.group.rows.at(-1)?.collection_date===ranked[0]?.group.rows.at(-1)?.collection_date)||ranked[0]||null;
   if(!item)return{rows,groups,ranked,item:null};
-  const cohort=item.cohorts.find(c=>c.key===state.ui.productLabCohort)||item.cohorts.find(c=>c.rows.length>=2)||item.cohorts[0];
+  const cohort=item.cohorts.find(c=>c.key===state.ui.productLabCohort)||item.cohorts[0];
   const lastDate=validDay(cohort?.all.at(-1)?.collection_date);
   const latestRows=lastDate?cohort.all.filter(row=>validDay(row.collection_date)===lastDate):cohort?.all||[];
   const latest=latestRows.length===1?latestRows[0]:null;
@@ -54,16 +54,25 @@ export function labsModel(){
 const header=()=>`<header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1 tabindex="-1" id="productLabsTitle">Exames</h1><p>Resultados e histórico, com origem preservada.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>`;
 function resultMeta(row){return [origin(row)||'Origem não informada',unit(row)||'Unidade não informada',row.reference_range?`Referência: ${row.reference_range}`:'Referência não informada',method(row)?`Método: ${method(row)}`:''].filter(Boolean).join(' · ');}
 
+function collectionOverview(rows){
+  const dates=[...new Set(rows.map(r=>validDay(r.collection_date)).filter(Boolean))].sort().reverse();
+  const date=dates.includes(state.ui.productLabCollection)?state.ui.productLabCollection:dates[0];
+  const panels=[['Metabolismo e lipídios',['Hemoglobina Glicada (A1C)','Glicose','LDL-Colesterol','HDL-Colesterol','Triglicérides','Apolipoproteína B']],['Hemograma e reservas',['Hemoglobina','Hematócrito','Leucócitos','Ferritina','Vitamina B-12','25-OH Vitamina D Total']],['Hormônios e contexto',['Testosterona Total','Testosterona livre','Estradiol','SHBG','TSH','T4 Livre']]];
+  const values=rows.filter(r=>validDay(r.collection_date)===date);
+  return `<section class="ltsLabCollection"><div class="ltsSectionHead"><div><span>RESULTADOS JUNTOS</span><h2>Coleta de ${esc(fmtDate(date))}</h2></div></div><label class="ltsField">Consultar coleta<select id="productLabCollection" data-depth-field="productLabCollection">${dates.map(d=>`<option value="${d}" ${d===date?'selected':''}>${fmtDate(d)}</option>`).join('')}</select></label>${panels.map(([title,names])=>{const cards=names.map(name=>{const matches=values.filter(r=>norm(r.biomarker)===norm(name));if(!matches.length)return '';return `<button type="button" class="ltsLabValueCard" data-lab-marker="${esc(norm(name))}"><span>${esc(name)}</span><strong>${esc(matches.length===1?labResultText(matches[0]):'Resultados distintos')}</strong><small>${esc(matches.length===1?matches[0].reference_range?`Referência do laudo: ${matches[0].reference_range}`:'Sem referência registrada':'Consulte cada resultado no histórico.')}</small><em>Histórico e detalhes ›</em></button>`;}).join('');return cards?`<h3>${esc(title)}</h3><div class="ltsLabValueGrid">${cards}</div>`:'';}).join('')}<p class="ltsDepthNote">Referências do laboratório não são metas individuais. Esta visão não classifica risco nem sugere ajustes de tratamento. Outros marcadores, métodos e resultados textuais continuam no seletor completo abaixo.</p></section>`;
+}
+
 export function renderProductLabs(){
   if(failed(state,'labs'))return `<section class="ltsLabsV2">${header()}${errorCard('Os resultados laboratoriais não carregaram agora.')}</section>`;
   const m=labsModel();
   if(!m.item)return `<section class="ltsLabsV2">${header()}${emptyCard('Nenhum resultado laboratorial foi encontrado no histórico carregado.')}</section>`;
   const group=m.item.group,c=m.cohort,first=m.recent[0],last=m.recent.at(-1);
-  const change=m.recent.length>=2?`${fmtDate(first.collection_date)} → ${fmtDate(last.collection_date)}: ${differenceText(last.result_numeric,first.result_numeric,c.unit,2)}`:'Não há dois pontos comparáveis no período.';
+  const change=c.method&&m.recent.length>=2?`${fmtDate(first.collection_date)} → ${fmtDate(last.collection_date)}: ${differenceText(last.result_numeric,first.result_numeric,c.unit,2)}`:!c.method?'Método não informado: leitura dos pontos, sem diferença automática.':'Não há dois pontos comparáveis no período.';
   const shortcuts=(state.ui.productLabQuery?m.matches:m.ranked.map(i=>i.group)).slice(0,8);
   const latestValue=m.latest?labResultText(m.latest):`${m.latestRows.length} resultados na mesma data`;
   return `<section class="ltsLabsV2">
     ${header()}
+    ${collectionOverview(m.rows)}
     <section class="ltsLabsHero"><div class="ltsLabsHeroTop"><div><span>${esc(group.label)}</span><strong>${esc(latestValue)}</strong><small>${esc(m.lastDate?fmtDate(m.lastDate):'Data não informada')} · ${esc(c.origin||'Origem não informada')}</small></div><span class="ltsLabsGlyph" aria-hidden="true">✦</span></div><div class="ltsLabsHeroContext"><div><span>Último registro da origem selecionada</span><b>${m.latest?'Valor transcrito da fonte.':'Nenhum resultado foi escolhido automaticamente.'}</b></div><div><span>Referência registrada</span><b>${esc(m.latest?.reference_range||'Consulte o contexto de cada resultado no histórico.')}</b></div></div></section>
 
     <section class="ltsSection ltsLabsMarkers"><div class="ltsSectionHead"><div><span>Explorar</span><h2>Todos os marcadores</h2></div><small>${m.groups.length} marcadores · ${m.rows.length} resultados</small></div>
@@ -77,7 +86,7 @@ export function renderProductLabs(){
       <label class="ltsField ltsSourceSelect">Origem, unidade e método da série<select id="productLabCohort" data-depth-field="productLabCohort">${m.item.cohorts.map(co=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} · ${esc(co.method||'Método não informado')} (${co.all.length})</option>`).join('')}</select></label>
       ${periodControl('productLabPeriod',m.period)}
       <div class="ltsHistoryContext"><b>Diferença na série selecionada</b>${esc(change)}</div>
-      <div class="ltsLabsChart">${pointChart(m.recent.map(r=>({date:r.collection_date,value:r.result_numeric,context:r.reference_range?`Referência da coleta: ${r.reference_range}`:'Referência não informada'})),{unit:c.unit,label:group.label,scope:'productLab',selected:state.ui.productLabPoint})}</div>
+      <div class="ltsLabsChart">${pointChart(m.recent.map(r=>({date:r.collection_date,value:r.result_numeric,context:r.reference_range?`Referência da coleta: ${r.reference_range}`:'Referência não informada'})),{unit:c.unit,label:group.label,scope:'productLab',selected:state.ui.productLabPoint,connect:Boolean(c.method)})}</div>
       <p class="ltsDepthNote">${m.recent.length} pontos exibidos de ${c.rows.length} inequívocos. A janela termina na última coleta comparável desta série; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>
     </section>
 

@@ -1,5 +1,19 @@
 /* Canonical Home. The approved private reference governs the mobile hierarchy;
    desktop expands the same hierarchy into one longitudinal cockpit. */
+.ltsBodySnapshotDate{margin:10px 0 -5px;color:#536579;font-size:11px;line-height:1.45}
+.ltsHealthContext{margin:24px 0;padding:22px;border:1px solid #dfe7ee;border-radius:22px;background:#fff;color:#172638}
+.ltsHealthContext>header span{font-size:10px;font-weight:800;letter-spacing:.09em;color:#607b91}
+.ltsHealthContext h2{margin:7px 0;font-size:24px;letter-spacing:-.025em}.ltsHealthContext>header p{margin:0 0 16px;max-width:75ch;color:#586c80;font-size:13px;line-height:1.55}
+.ltsHealthContext>.ltsField{max-width:440px}.ltsHealthContext select,.ltsContextDay select{min-height:44px;width:100%}
+.ltsContextGridPanels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.ltsContextPanel{--chart-color:#1472bb;min-width:0;padding:16px;border:1px solid #e0e8ef;border-radius:17px;background:#f9fbfd}.ltsContextPanel.nutrition{--chart-color:#228663}.ltsContextPanel.workouts{--chart-color:#8765c3}.ltsContextPanel.labs{--chart-color:#a04875}
+.ltsContextPanel header{display:flex;justify-content:space-between;gap:10px;align-items:center}.ltsContextPanel h3{margin:0;font-size:14px;line-height:1.35}.ltsContextPanel header button{flex:none;border:0;background:none;color:#226396;font-size:11px;min-height:36px}
+.ltsContextPanel>p{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:14px 0 5px}.ltsContextPanel>p b{font-size:23px;overflow-wrap:anywhere}.ltsContextPanel>p small{color:#5a6d80;font-size:11px;white-space:nowrap}
+.ltsContextPlot svg{width:100%;height:auto;display:block;overflow:visible}.ltsContextPlot text{fill:#52677b;font-size:12px}.ltsContextGrid{stroke:#e0e8ef;stroke-width:1}.ltsContextLine{fill:none;stroke:var(--chart-color,#176cc1);stroke-width:2;vector-effect:non-scaling-stroke}.ltsContextPlot circle{fill:var(--chart-color,#176cc1);stroke:#fff;stroke-width:1.5;vector-effect:non-scaling-stroke}.ltsContextPlot circle.selected{stroke:#13283e;stroke-width:2}.ltsContextGuide{stroke:#718aa0;stroke-dasharray:4 4}.ltsContextPlot a:focus circle{stroke:#121e2d;stroke-width:4}
+.ltsContextAxis{display:flex;justify-content:space-between;color:#52677b;font-size:10px;gap:8px}.ltsContextEmpty{min-height:125px;display:grid;place-items:center;padding:12px;color:#5c7084;font-size:12px;text-align:center;border:1px dashed #cfdae4;border-radius:12px}
+.ltsContextPlot rect{fill:var(--chart-color,#176cc1)}
+.ltsContextDay{padding:16px;border-radius:16px;background:#edf4f8}.ltsContextDay>.ltsField{max-width:320px;margin-bottom:15px}.ltsContextFacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ltsContextFacts button{text-align:left;min-width:0;min-height:80px;padding:13px;border:1px solid #d4e2ed;border-radius:12px;background:#fff;color:#243a50}.ltsContextFacts b{display:block;font-size:12px}.ltsContextFacts span{display:block;margin-top:7px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:840px){.ltsHealthContext{margin:18px 0;padding:14px;border-radius:18px}.ltsHealthContext h2{font-size:21px}.ltsContextGridPanels,.ltsContextFacts{grid-template-columns:1fr}.ltsContextPanel{padding:13px}.ltsHealthContext>header p{font-size:12px}.ltsContextDay{padding:12px}.ltsContextPlot svg{min-height:125px}.ltsBodySnapshotDate{font-size:10.5px;margin-top:8px}.ltsRefMetrics{margin-top:9px}}
 .ltsHomeReference {
   --home-ink: #111a28;
   --home-muted: #67768a;

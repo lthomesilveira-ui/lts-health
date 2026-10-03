@@ -34,6 +34,7 @@ jobs:
           node --check v2/src/today-screen.js
           node --check v2/src/main.js
           node --check v2/src/product-shell.js
+          node v2/health-context-model-test.mjs
           node v2/product-architecture-contract-smoke.mjs
           node v2/ux-coherence-contract-smoke.mjs
 

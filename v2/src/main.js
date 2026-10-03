@@ -186,6 +186,7 @@ function bindStaticEvents(){
     const homePeriod=event.target.closest('button[data-home-period]');if(homePeriod){event.preventDefault();state.ui.homePeriod=homePeriod.dataset.homePeriod;render();return;}
     const periodButton=event.target.closest('button[data-period]');if(periodButton){event.preventDefault();setGlobalPeriod(periodButton.dataset.period);scheduleRender();return;}
     const homeMetric=event.target.closest('[data-home-metric]');if(homeMetric){event.preventDefault();state.ui.homeMetric=homeMetric.dataset.homeMetric;render();return;}
+    const healthDate=event.target.closest('[data-health-date]');if(healthDate){event.preventDefault();state.ui.healthContextDate=healthDate.dataset.healthDate;scheduleRender();return;}
     const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
     const bodyDate=event.target.closest('[data-body-date]');if(bodyDate){state.ui.selectedBodyDate=bodyDate.dataset.bodyDate;scheduleRender();return;}
@@ -207,6 +208,8 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;scheduleRender();}
+    if(event.target.id==='homeLabMarker'){state.ui.homeLabMarker=event.target.value;scheduleRender();}
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
     if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
     if(event.target.id==='timelinePeriod'){

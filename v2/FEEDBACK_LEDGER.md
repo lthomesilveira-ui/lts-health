@@ -12,8 +12,11 @@ Status: fonte de verdade dos feedbacks de produto recuperados. O texto é públi
 
 ## Feedbacks e decisões
 
+2026-10-03 checkpoint: the owner reopened the app because counts and isolated modules were not useful enough. Authorized scope: implement the UX review, show several information streams together with interactive graphs, and complete missing private records. Candidate `.31` is documented in `releases/HEALTH_CONTEXT_20261003.md`; publication and owner acceptance remain distinct.
+
 | ID | Origem | Feedback consolidado | Tradução para produto | Estado | Evidência ou próximo passo |
 | --- | --- | --- | --- | --- | --- |
+| FB-024 | 03/10 | Dashboards precisam reunir informações úteis e cruzar períodos; contagens de registros não respondem às perguntas do usuário. | Painéis simultâneos, seleção de marcador, consulta sincronizada de um dia e valores laboratoriais juntos por coleta. | Em execução | `PKG-HEALTH-CONTEXT-001`; `releases/HEALTH_CONTEXT_20261003.md`; gates e inspeção pública antes de concluir. |
 | FB-001 | 26/08 | O produto deve ser um assistente de saúde completo, longitudinal e capaz de identificar lacunas. | A abertura produz leitura, mudança, cobertura e prioridades; não apenas números. | Entregue parcialmente | Arquitetura e abertura entregues; integrações que dependem de terceiros permanecem bloqueadas no ledger. |
 | FB-002 | 26/08 | Centralizar Apple Saúde, Polar, MyFitnessPal, bioimpedância, exames, documentos, treinos e contexto de tratamentos. | Fontes distintas entram em domínios ligados por Timeline e visão longitudinal. | Entregue parcialmente | `PROJECT_BRIEF.md`; telas e camada de dados existentes; integrações externas permanecem no ledger. |
 | FB-003 | 28/08 | A aplicação anterior é o piso, não o resultado final. | Preservar capacidades e proveniência enquanto a experiência evolui além da implementação original. | Entregue neste pacote | Arquitetura por jornadas, Home de decisão e camadas legadas removidas da execução ativa. |

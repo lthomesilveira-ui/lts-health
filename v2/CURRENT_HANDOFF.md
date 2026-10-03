@@ -1,5 +1,13 @@
 # LTS Health — CURRENT HANDOFF
 
+## Current checkpoint — 2026-10-03
+
+Live code inspection confirmed that `.30` was already merged into `main` by PR #297; the older paragraphs below are historical and must not be used to restore `.29` or an old export. The active candidate is `home-dashboard-reference-20261003.31`, developed from current `main` on `ux-health-context-20261003`.
+
+The owner authorized implementation of the UX review and completion of missing private data. The current package adds synchronized source-backed panels, current-result laboratory views and recorded medication context while preserving histories and security. See `releases/HEALTH_CONTEXT_20261003.md`. The reviewed private import was independently reconciled and replayed without additional insertions; its private manifest and medical values do not belong here.
+
+Normal PR/browser gates and exact-build post-deploy authenticated inspection remain pending at this checkpoint. Physical-device product acceptance and the existing MyFitnessPal dependency are not presumed resolved.
+
 Updated: 2026-09-15 after the owner rejected the published `.29` Home and the approved mobile reference was reopened for a decisive dashboard rebuild. Public engineering metadata only; health data, credentials and private screenshots stay private.
 
 ## Restart phrase
