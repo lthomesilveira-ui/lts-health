@@ -50,26 +50,37 @@
   },
   "current_package": {
     "id": "PKG-HEALTH-AUTO-EXPORT-UNITS-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Resolve the authenticated physical-iPhone unsupported-unit failure and verify a real upload.",
     "task_ids": [
       "LTS-HEALTH-AUTO-EXPORT-UNITS-001",
       "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001"
-    ]
+    ],
+    "completed_evidence": [
+      "PR 311 merged normally at f264d0580d5cfe9db8736edc209eda243456faef; all five candidate gates and nine post-merge workflows passed.",
+      "Receiver version 3 retrieved files match the tested and merged code exactly.",
+      "First real physical-iPhone daily JSON v2 upload succeeded on 2026-10-04. Private database receipt and source attribution were independently verified.",
+      "Exact authenticated public app shows Recebendo dados; Nutrition displays the two new daily summaries. No water volume was received."
+    ],
+    "release_state": "real_iPhone_receipt_and_nutrition_verified; water_not_received; exact_background_timing_not_guaranteed"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
     "build_id": "home-dashboard-reference-20261003.36",
-    "main_commit": "19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3",
+    "main_commit": "f264d0580d5cfe9db8736edc209eda243456faef",
     "verified_on": "2026-10-04",
     "evidence": [
       "PR 309 merged normally at 19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3; public build home-dashboard-reference-20261003.36.",
       "All seven final candidate gates and all ten post-merge workflows passed; deploy 37231135684 and real authenticated E2E 37231135691.",
       "Exact public authenticated Cloud Browser inspection verified build .36, authorized Polar, pending physical-iPhone activation and a real receipt-check request.",
       "Deployed HTTP receiver accepted supported daily data and idempotent replay from an isolated test owner; revoked key returned 401. Test owner and all associated rows removed, with independent zero-count verification.",
-      "v2/releases/HEALTH_AUTO_EXPORT_20261004.md"
+      "v2/releases/HEALTH_AUTO_EXPORT_20261004.md",
+      "PR 311 merged normally at f264d0580d5cfe9db8736edc209eda243456faef; all five candidate gates and nine post-merge workflows passed.",
+      "Receiver version 3 retrieved files match the tested and merged code exactly.",
+      "First real physical-iPhone daily JSON v2 upload succeeded on 2026-10-04. Private database receipt and source attribution were independently verified.",
+      "Exact authenticated public app shows Recebendo dados; Nutrition displays the two new daily summaries. No water volume was received."
     ],
-    "acceptance_note": "Technical web publication and synthetic receiver checks are preserved. The physical iPhone is now configured, with a valid key and enabled five-minute automation. Its real export has exposed HTTP 422 unsupported_unit; activation remains in progress until actual ingestion and public receipt are verified. Direct MFP API access, original historical water import and complete Apple Health equivalence are not claimed."
+    "acceptance_note": "Web build .36 and receiver version 3 are published and verified. The first real physical-iPhone export succeeded, MyFitnessPal nutrition provenance was confirmed privately, and the exact public app displays receiving status and new daily nutrition summaries. The owner selected a five-minute cadence; exact background intervals are not guaranteed. Water was not received. Direct MFP API access, original historical MFP water import, full Apple Health equivalence and subjective UX acceptance are not claimed."
   },
   "tasks": [
     {
@@ -1062,7 +1073,7 @@
       "id": "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Enable the purchased Health Auto Export app on the physical iPhone and verify its first real upload.",
       "acceptance": [
@@ -1075,16 +1086,20 @@
         "Owner approved the annual Premium bridge and confirmed purchase on 2026-10-04.",
         "v2/src/health-auto-export-connection.js includes configuration and real receipt status.",
         "Published .36 setup inspected in the exact authenticated public app; no real owner upload or phone key was generated during verification.",
-        "Owner enabled MyFitnessPal Health sharing and saved/enabled daily JSON v2 REST automation on the physical iPhone at a requested five-minute frequency. Authenticated transport is verified; ingestion returns unsupported_unit and no receipt is yet recorded."
+        "Owner enabled MyFitnessPal Health sharing and saved/enabled daily JSON v2 REST automation on the physical iPhone at a requested five-minute frequency. Authenticated transport is verified; ingestion returns unsupported_unit and no receipt is yet recorded.",
+        "PR 311 merged normally at f264d0580d5cfe9db8736edc209eda243456faef; all five candidate gates and nine post-merge workflows passed.",
+        "Receiver version 3 retrieved files match the tested and merged code exactly.",
+        "First real physical-iPhone daily JSON v2 upload succeeded on 2026-10-04. Private database receipt and source attribution were independently verified.",
+        "Exact authenticated public app shows Recebendo dados; Nutrition displays the two new daily summaries. No water volume was received."
       ],
-      "next_action": "Resolve the server unit compatibility error and verify the next real phone upload; do not ask the owner to recreate the valid key or permissions.",
+      "next_action": "Activation and server compatibility are verified. Preserve the phone configuration and key; follow the separate water-availability task without claiming complete Apple Health coverage.",
       "blocker": null
     },
     {
       "id": "LTS-HEALTH-AUTO-EXPORT-UNITS-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Resolve HTTP 422 unsupported_unit from the configured physical-iPhone exporter.",
       "acceptance": [
@@ -1097,10 +1112,34 @@
         "Physical iPhone configuration saved and enabled; authenticated requests reach the receiver but return HTTP 422 unsupported_unit.",
         "Health Auto Export receiver version 3 deployed and read back byte-for-byte; adds count/min heart-rate support and bounded unit diagnostics.",
         "Local parser, receiver privacy/no-partial-write, UI lifecycle, hydration, reporting and continuity contracts passed.",
-        "v2/releases/HEALTH_AUTO_EXPORT_UNITS_20261004.md"
+        "v2/releases/HEALTH_AUTO_EXPORT_UNITS_20261004.md",
+        "PR 311 merged normally at f264d0580d5cfe9db8736edc209eda243456faef; all five candidate gates and nine post-merge workflows passed.",
+        "Receiver version 3 retrieved files match the tested and merged code exactly.",
+        "First real physical-iPhone daily JSON v2 upload succeeded on 2026-10-04. Private database receipt and source attribution were independently verified.",
+        "Exact authenticated public app shows Recebendo dados; Nutrition displays the two new daily summaries. No water volume was received."
       ],
-      "next_action": "Inspect the next real upload diagnostic, correct its explicit unit mapping, then verify receipt and the public connection state.",
+      "next_action": "Activation and server compatibility are verified. Preserve the phone configuration and key; follow the separate water-availability task without claiming complete Apple Health coverage.",
       "blocker": null
+    },
+    {
+      "id": "LTS-HEALTH-AUTO-EXPORT-WATER-001",
+      "area": "integrations",
+      "priority": "P0",
+      "status": "blocked_user",
+      "owner": "Lucas",
+      "summary": "Verify whether real dietary-water records exist in Apple Health and can be exported through the active bridge.",
+      "acceptance": [
+        "Water is available only after an actual positive dietary-water value reaches the protected receiver.",
+        "Missing volume is not estimated, replaced by zero or confused with body water.",
+        "This bridge does not close the separate authenticated original MFP water-history import."
+      ],
+      "evidence": [
+        "The first real supported phone upload and MyFitnessPal nutrient summaries were verified; no dietary-water row or water receipt date exists.",
+        "All health metrics were selected in the enabled phone automation.",
+        "Official MyFitnessPal Apple Health sharing documentation confirms food/nutrients but does not explicitly confirm water sharing."
+      ],
+      "next_action": "On the physical iPhone, inspect Apple Health Water for a current-day record and its originating app. If no record exists, keep the missing-source limitation explicit; do not rotate the working key or repeat the connection setup.",
+      "blocker": "The server cannot inspect or create missing dietary-water records inside physical-iPhone HealthKit. Its availability/source must be checked on the phone."
     }
   ],
   "package_history": [
