@@ -3,6 +3,7 @@ import {validDay} from './history-tools.js';
 import {localHealthDay,bodySourceLabel,bodyMetricSeries,labHighlights} from './health-context.js';
 import {labGroups,labCohorts} from './labs-layout-v2.js';
 import {addDays,normalizeMuscleGroup} from './integrated-analysis.js';
+import {hydrationModel} from './hydration.js';
 
 const ready=(status,key)=>status?.[key]==='ready';
 const ordered=(rows,key)=>rows.filter(r=>validDay(r[key])).slice().sort((a,b)=>day(a[key]).localeCompare(day(b[key])));
@@ -61,7 +62,7 @@ const regionFor=value=>{
   return null;
 };
 export function trainingSummary(data,status,bounds,region=null){
-  if(!ready(status,'workouts'))return {available:false,sessions:null,minutes:null,sets:null,points:[]};
+  if(!ready(status,'workouts'))return {available:false,sessions:null,minutes:null,recordedMinutes:null,durationCoverage:null,durationTotal:null,durationComplete:false,sets:null,points:[]};
   const workouts=(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'&&inside(r.workout_date,bounds));
   const ids=new Set(workouts.map(r=>r.source_record_id)),exercises=ready(status,'exercises')?(data.exercises||[]).filter(r=>ids.has(r.workout_source_record_id)&&(!region||regionFor(r.muscle_group)===region)):[];
   const exIds=new Set(exercises.map(r=>r.source_record_id));
@@ -71,7 +72,17 @@ export function trainingSummary(data,status,bounds,region=null){
   const knownDuration=selected.filter(r=>num(r.duration_minutes)!=null),groups=new Map();
   for(const row of selected){const date=day(row.workout_date);if(!groups.has(date))groups.set(date,[]);groups.get(date).push(row);}
   const points=[...groups].filter(([,list])=>list.every(r=>num(r.duration_minutes)!=null)).map(([date,list])=>({date,value:list.reduce((s,r)=>s+num(r.duration_minutes),0),cohort:'recorded-duration'})).sort((a,b)=>a.date.localeCompare(b.date));
-  return {available:true,sessions,sets:sets?.length??null,minutes:selected.length&&knownDuration.length===selected.length?knownDuration.reduce((s,r)=>s+num(r.duration_minutes),0):null,durationCoverage:knownDuration.length,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
+  const recordedMinutes=knownDuration.length?knownDuration.reduce((s,r)=>s+num(r.duration_minutes),0):null;
+  const durationComplete=selected.length>0&&knownDuration.length===selected.length;
+  return {available:true,sessions,sets:sets?.length??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
+}
+export function hydrationSummary(data,status,bounds){
+  // A failed overlapping source can hide a conflict; do not select the surviving one.
+  if(!ready(status,'nutrition')||!ready(status,'sourceMetrics'))return {available:false,mean:null,days:null,rows:[],conflicts:[],origins:[]};
+  const timeline=hydrationModel(data),rows=timeline.rows.filter(r=>inside(r.date,bounds));
+  const rowDates=new Set(rows.map(r=>r.date)),origins=[...new Set(rows.map(r=>norm(r.source)))];
+  if((data.nutrition||[]).some(r=>rowDates.has(day(r.nutrition_date))&&num(r.water_ml)>0&&!norm(r.source)))origins.push(null);
+  return {available:true,mean:mean(rows.map(r=>r.value)),days:rows.length,intervalDays:days(bounds.start,bounds.end),rows,conflicts:timeline.conflicts.filter(r=>inside(r.date,bounds)),origins};
 }
 export function nutritionSummary(data,status,bounds){
   if(!ready(status,'nutrition'))return {available:false,days:null,means:{},counts:{},rows:[],origins:[]};
@@ -143,9 +154,11 @@ export function usefulReports(data={},status={},ui={},today=localHealthDay()){
     windows.current.start=dates[0]||today;
   }
   const bounds=windows.current,body=compositionReport(data,status,bounds,ui.reportBodySource),segmental=segmentalReport(data,status,bounds,ui.reportSegmentSource,ui.reportRegion,ui.reportSegmentMetric),labs=laboratoryReport(data,status,bounds,ui.reportLabMarker),training=trainingSummary(data,status,bounds),nutrition=nutritionSummary(data,status,bounds),recovery=recoveryReport(data,status,bounds,ui.reportRecoverySource);
-  const prior=windows.previous?{training:trainingSummary(data,status,windows.previous),nutrition:nutritionSummary(data,status,windows.previous),recovery:recoveryReport(data,status,windows.previous,recovery.selected?.key)}:null;
+  const hydration=hydrationSummary(data,status,bounds);
+  const prior=windows.previous?{training:trainingSummary(data,status,windows.previous),nutrition:nutritionSummary(data,status,windows.previous),hydration:hydrationSummary(data,status,windows.previous),recovery:recoveryReport(data,status,windows.previous,recovery.selected?.key)}:null;
   // A prior device is never substituted for the selected current device.
   if(prior?.recovery.selected?.key!==recovery.selected?.key&&prior?.recovery)prior.recovery={...prior.recovery,selected:null,points:[]};
   const sourcesMatch=nutrition.origins.length===1&&nutrition.origins[0]&&prior?.nutrition.origins.length===1&&nutrition.origins[0]===prior.nutrition.origins[0];
-  return {period,today,...windows,body,segmental,labs,training,polar:polarTrainingSummary(data,status,bounds),nutrition,recovery,prior,nutritionComparable:Boolean(sourcesMatch),lastNutrition:ordered(ready(status,'nutrition')?data.nutrition||[]:[],'nutrition_date').at(-1)?.nutrition_date||null,lastWorkout:ordered(ready(status,'workouts')?(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'):[],'workout_date').at(-1)?.workout_date||null};
+  const waterSourcesMatch=hydration.origins.length===1&&hydration.origins[0]&&prior?.hydration.origins.length===1&&hydration.origins[0]===prior.hydration.origins[0];
+  return {period,today,...windows,body,segmental,labs,training,polar:polarTrainingSummary(data,status,bounds),nutrition,hydration,recovery,prior,nutritionComparable:Boolean(sourcesMatch),hydrationComparable:Boolean(waterSourcesMatch),lastNutrition:ordered(ready(status,'nutrition')?data.nutrition||[]:[],'nutrition_date').at(-1)?.nutrition_date||null,lastWorkout:ordered(ready(status,'workouts')?(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'):[],'workout_date').at(-1)?.workout_date||null};
 }

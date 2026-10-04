@@ -133,6 +133,39 @@ try{
   assert.ok((await page.locator('.ltsReportHeader').innerText()).includes('Janela termina hoje'),'empty recent windows remain explicit');
   await overflow(page);
 
+  // A partial known total is useful, but cannot become a complete-period delta.
+  await page.evaluate(()=>{
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const d=new Date(`${today}T12:00:00Z`);d.setUTCDate(d.getUTCDate()-40);const prior=d.toISOString().slice(0,10);
+    window.__depthDb.health_workouts=[{source_record_id:'duration-prior',workout_date:prior,is_canonical:true,duration_minutes:50},{source_record_id:'duration-known',workout_date:today,is_canonical:true,duration_minutes:40},{source_record_id:'duration-missing',workout_date:today,is_canonical:true,duration_minutes:null}];
+    const water=(metric_date,value)=>({metric_date,value,metric_type:'dietary_water_ml',source_family:'myfitnesspal',source_name:'MyFitnessPal',canonical_status:'canonical',confidence:'account_authenticated_export',unit:'mL'});
+    window.__depthDb.health_source_daily_metrics=[water(today,2000),water(today,2000),water(prior,1000)];
+  });
+  await page.locator('#refreshBtn').click();
+  await page.waitForFunction(()=>document.querySelector('#reportPeriods')?.textContent.includes('1 de 2 sessões com duração'));
+  if(label!=='desktop'){
+    const retry=await page.locator('#refreshBtn').boundingBox();
+    assert.ok(retry?.width>=44&&retry?.height>=44,'report retry remains visible with a phone-sized touch target');
+  }
+  const durationRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Tempo registrado dos treinos'});
+  assert.ok((await durationRow.innerText()).includes('40 min'));
+  assert.ok((await durationRow.innerText()).includes('Cobertura incompleta'));
+  if(label!=='desktop'){
+    const values=await durationRow.locator('td').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top};}));
+    assert.ok(values.every(r=>r.left>=0&&r.right<=width), 'all three period values must be visible without swiping');
+    assert.ok(values.every(r=>Math.abs(r.top-values[0].top)<2),'prior/current/difference share a phone row');
+  }
+  const waterRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Água por dia registrado'});
+  assert.ok((await waterRow.innerText()).includes('1 de 30 dias com valor'));
+  assert.ok((await waterRow.innerText()).includes('+1.000 mL'));
+  assert.equal(await page.locator('#reportHydration circle').count(),1,'replayed water is one daily point');
+  await overflow(page);
+  if(label!=='small'){await page.locator('#reportPeriods').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-duration-water.png`});}
+  await page.evaluate(()=>{window.__failTable='health_source_daily_metrics';});await page.locator('#refreshBtn').click();
+  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível verificar todas as fontes de água'));
+  assert.equal(await page.locator('#reportHydration .ltsContextPlot').count(),0,'failed source must hide stale water');
+  await page.evaluate(()=>{window.__failTable='';});
+
   // Explicit read failure is not a valid empty dataset and cannot show stale hero.
   await goto(page,'saude','.ltsLabsV2 .ltsLabsHero');await page.evaluate(()=>{window.__failTable='health_lab_results';});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsDepthError');assert.equal(await page.locator('.ltsLabsHero').count(),0);
   await page.evaluate(()=>{window.__failTable='';window.__depthDb.health_lab_results=[];});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsEmptyCard');assert.equal(await page.locator('.ltsDepthError').count(),0);await overflow(page);
