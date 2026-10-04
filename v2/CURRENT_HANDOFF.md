@@ -2,9 +2,11 @@
 
 ## Current checkpoint — 2026-10-04 UTC
 
+Polar activation is verified against the real provider: owner consent, encrypted callback, initial history import, idempotent replay and a real refresh grant succeeded. The authenticated public app shows last-success status and imported Polar chart/table rows; canonical workouts were preserved. Normal token-expiry handling is restored in `health-polar-connection` version 16. `PKG-POLAR-LIVE-SYNC-001` remains in progress only for normal PR promotion and final CI reconciliation. Credentials and consent must not be requested again. See `releases/POLAR_LIVE_SYNC_20261004.md` and `EXECUTION_STATE.json`.
+
 `PKG-USEFUL-REPORTS-001` is technically complete. PR #302 published `.34` at product commit `7c62565ab5571d10d26a45b40ce4aa7c6c0e6240`: current-day calendars, equal prior periods, regional scan/workout/nutrition context, lab method/reference comparisons and source-separated recovery. Six final candidate gates and nine post-merge workflows passed, including authenticated desktop/mobile data verification. The exact public build was inspected in authenticated Cloud Browser: all-history/90-day axes, left-arm context, lab search/current-point references and account activation states.
 
-Polar OAuth/callback version 1 and protected tables are deployed; credentials, consent and real-provider validation remain blocked. Updates on app open are prepared; no closed-app background schedule exists. MyFitnessPal API approval and notebook water import remain blocked; Apple Health is deferred. No user secrets are to be requested through chat. See `releases/USEFUL_REPORTS_20261004.md` and `EXECUTION_STATE.json`. Owner/physical-device usefulness acceptance is not presumed.
+Polar OAuth/callback and protected tables are deployed; real activation is described above. Updates on app open and manual refresh work; no closed-app background schedule exists. MyFitnessPal API approval and notebook water import remain blocked; Apple Health is deferred. No user secrets are to be requested through chat. See `releases/USEFUL_REPORTS_20261004.md` and `EXECUTION_STATE.json`. Owner/physical-device usefulness acceptance is not presumed.
 
 ## Previous checkpoint — 2026-10-03
 

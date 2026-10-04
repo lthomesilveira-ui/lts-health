@@ -1,5 +1,9 @@
 # LTS Health v2 — lista-mestra de execução
 
+## Ativação Polar comprovada — 04/10/2026
+
+Consentimento oficial e callback criptografado concluídos. A coleta real, repetição sem duplicidade e renovação real da autorização passaram; a aplicação pública autenticada apresenta estado de sucesso e histórico Polar com gráficos e frequência cardíaca, mantendo sessões de musculação separadas. O tratamento normal de expiração está restaurado na função versão 16. A promoção normal deste pacote e a reconciliação dos workflows seguem em execução. Credenciais e consentimento já resolvidos não devem ser solicitados novamente. Ver `releases/POLAR_LIVE_SYNC_20261004.md` e `EXECUTION_STATE.json`.
+
 ## Pacote de relatórios úteis — 04/10/2026 UTC
 
 O feedback FB-025 prioriza relatórios históricos, perguntas de investigação cruzando segmentos corporais/treino/alimentação/exames e conexões Polar/MyFitnessPal, adiando Apple Saúde. `PKG-USEFUL-REPORTS-001` foi concluído tecnicamente e publicado em `.34` pelo PR #302, commit `7c62565ab5571d10d26a45b40ce4aa7c6c0e6240`, sem inferir causalidade ou preencher lacunas. Os seis gates finais e nove workflows pós-merge passaram, incluindo runtime autenticado desktop/mobile. A versão pública exata foi inspecionada com sessão autenticada: períodos, contexto regional, pesquisa e referência por coleta, estados de conexão. O servidor Polar foi preparado com OAuth, tokens protegidos e sessões separadas; cadastro da aplicação, credenciais e autorização real ainda faltam, assim como liberação da API MyFitnessPal. Estado atual: `EXECUTION_STATE.json`; evidência e próximos passos concretos: `releases/USEFUL_REPORTS_20261004.md`. A importação histórica de água permanece pendente no notebook, sem notificação agendada. Aceite subjetivo/físico não é presumido.
