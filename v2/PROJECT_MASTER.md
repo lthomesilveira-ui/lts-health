@@ -2,7 +2,7 @@
 
 ## Ativação Polar comprovada — 04/10/2026
 
-Consentimento oficial e callback criptografado concluídos. A coleta real, repetição sem duplicidade e renovação real da autorização passaram; a aplicação pública autenticada apresenta estado de sucesso e histórico Polar com gráficos e frequência cardíaca, mantendo sessões de musculação separadas. O tratamento normal de expiração está restaurado na função versão 16. A promoção normal deste pacote e a reconciliação dos workflows seguem em execução. Credenciais e consentimento já resolvidos não devem ser solicitados novamente. Ver `releases/POLAR_LIVE_SYNC_20261004.md` e `EXECUTION_STATE.json`.
+Consentimento oficial e callback criptografado concluídos. A coleta real, repetição sem duplicidade e renovação real da autorização passaram; a aplicação pública autenticada apresenta estado de sucesso e histórico Polar com gráficos e frequência cardíaca, mantendo sessões de musculação separadas. O tratamento normal de expiração está restaurado na função versão 16. PR #304 promovido normalmente ao commit `a4a66649f0ad8086b889f91eb2265d0687b3e96c`; os quatro checks candidatos e oito workflows pós-merge passaram. A repetição após a promoção também concluiu sem duplicidade. O frontend permanece `.34`. Credenciais e consentimento já resolvidos não devem ser solicitados novamente. Ver `releases/POLAR_LIVE_SYNC_20261004.md` e `EXECUTION_STATE.json`.
 
 ## Pacote de relatórios úteis — 04/10/2026 UTC
 
