@@ -44,7 +44,14 @@ function source(point){
   if(typeof point.source!=='string'||point.source.length>160||/[\u0000-\u001f]/.test(point.source))throw Error('invalid_source');
   return point.source.trim()||'Origem não informada pelo Saúde';
 }
-function converted(qty,unit,kind,max){
+// Diagnostics use a fixed vocabulary: never echo arbitrary payload strings, values or sources.
+const diagnosticUnits=new Set(['kcal','kj','g','mg','kg','ml','l','fl oz','fl. oz.','us fl oz','lb','lbs','h','hr','hrs','min','ms','s','count','bpm','count/min','breaths/min','br/min','%','sec','seconds','minutes','hours','contagem','bat/min','resp/min']);
+export function unitErrorDetails(error){
+  const context=error?.unitContext;
+  if(error?.message!=='unsupported_unit'||!context||(!Object.hasOwn(definitions,context.metric)&&context.metric!=='sleep_analysis'))return null;
+  return {metric:context.metric,unit:diagnosticUnits.has(context.unit)?context.unit:'unrecognized'};
+}
+function converted(qty,unit,kind,max,name){
   if(typeof qty!=='number'||!Number.isFinite(qty)||qty<0)throw Error('invalid_value');
   const u=String(unit||'').trim().toLowerCase();let factor;
   if(kind==='energy')factor={kcal:1,kj:1/4.184}[u];
@@ -56,10 +63,10 @@ function converted(qty,unit,kind,max){
   if(kind==='minutes')factor={min:1,h:60,hr:60}[u];
   if(kind==='milliseconds')factor={ms:1,s:1000}[u];
   if(kind==='count')factor=u==='count'?1:undefined;
-  if(kind==='bpm')factor=u==='bpm'?1:undefined;
+  if(kind==='bpm')factor=['bpm','count/min'].includes(u)?1:undefined;
   if(kind==='respiration')factor=['count/min','breaths/min','br/min'].includes(u)?1:undefined;
   if(kind==='percentage')factor=u==='%'?1:undefined;
-  if(factor===undefined)throw Error('unsupported_unit');
+  if(factor===undefined){const error=Error('unsupported_unit');error.unitContext={metric:name,unit:u};throw error;}
   const value=Math.round(qty*factor*1000000)/1000000;if(value>max)throw Error('invalid_value');return value;
 }
 export function normalizeExport(payload,{aggregation,today=localToday()}={}){
@@ -88,10 +95,10 @@ export function normalizeExport(payload,{aggregation,today=localToday()}={}){
       const date=pointDay(point.date,today),originalSource=source(point);
       if(metric.name==='sleep_analysis'){
         if(point.totalSleep==null)throw Error('daily_aggregation_required');
-        for(const [field,type] of Object.entries(sleepFields))if(point[field]!=null)add(type,'h',converted(point[field],metric.units,'hours',24),date,originalSource,metric.name);
+        for(const [field,type] of Object.entries(sleepFields))if(point[field]!=null)add(type,'h',converted(point[field],metric.units,'hours',24,metric.name),date,originalSource,metric.name);
       }else{
         const [type,unit,kind,max]=def,qty=metric.name==='heart_rate'?(point.Avg??point.qty):point.qty;
-        add(type,unit,converted(qty,metric.units,kind,max),date,originalSource,metric.name);
+        add(type,unit,converted(qty,metric.units,kind,max,metric.name),date,originalSource,metric.name);
       }
     }
   }
