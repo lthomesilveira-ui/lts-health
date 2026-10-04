@@ -1,3 +1,7 @@
+# Active checkpoint — Health Auto Export unit compatibility, 2026-10-04
+
+The owner completed physical-iPhone permissions, MyFitnessPal Health sharing and an enabled REST automation: JSON v2, summarized by Day, Default period and a requested five-minute cadence. The protected receiver accepts authentication but real uploads fail with HTTP 422 `unsupported_unit`. This is now a server compatibility task owned by Codex, not missing user setup. No actual receipt has been verified. Receiver version 3 adds explicit `count/min` heart-rate equivalence and fixed-vocabulary validation diagnostics without health values, sources or credentials. Local contract tests passed and deployed code was read back exactly. Inspect the next real attempt and resolve its unit before claiming activation. Keep the valid key and existing phone configuration. See `releases/HEALTH_AUTO_EXPORT_UNITS_20261004.md` and `EXECUTION_STATE.json`.
+
 # LTS Health v2 — lista-mestra de execução
 
 ## Health Auto Export — publicado e verificado em 04/10/2026

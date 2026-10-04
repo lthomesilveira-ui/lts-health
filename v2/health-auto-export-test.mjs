@@ -23,6 +23,10 @@ assert.throws(()=>normalizeExport({...exportOf(metric('protein','g',10)),data:{m
 const sleep=normalizeExport(exportOf({name:'sleep_analysis',units:'hr',data:[{date:'2026-10-03',totalSleep:7.5,core:4,deep:1,rem:2.5}]}),options);
 assert.equal(sleep.metrics[0].value,7.5);assert.ok(sleep.metrics.every(x=>x.canonical_status==='candidate'));
 const hr=normalizeExport(exportOf({name:'heart_rate',units:'bpm',data:[{date:'2026-10-03',Min:60,Avg:72,Max:120}]}),options);assert.equal(hr.metrics[0].value,72);
+const hkHr=normalizeExport(exportOf({name:'heart_rate',units:'count/min',data:[{date:'2026-10-03',Min:60,Avg:72,Max:120}]},metric('resting_heart_rate','count/min',60)),options);
+assert.deepEqual(hkHr.metrics.map(row=>[row.value,row.unit]),[[72,'bpm'],[60,'bpm']]);
+assert.ok(hkHr.metrics.every(row=>row.canonical_status==='candidate'));
+assert.throws(()=>normalizeExport(exportOf(metric('heart_rate','count',72)),options),/unsupported_unit/,'a raw count cannot become a rate');
 assert.equal(normalizeExport(exportOf(metric('caffeine','mg',10)),options).ignored_points,1);
 assert.throws(()=>normalizeExport(exportOf({...metric('protein','g',10),data:new Array(2501).fill({})}),options),/too_many_points/);
 const token=randomToken();assert.ok(validToken(token));assert.equal((await digest(token)).length,64);
@@ -31,6 +35,14 @@ const req=(key=token,payload=exportOf(metric('protein','g',150)),aggregation='Da
 assert.equal((await receiveHealthExport(req('bad'),db)).status,401);assert.equal(writes,0);
 active=false;assert.equal((await receiveHealthExport(req(),db)).status,401);assert.equal(writes,0);
 active=true;assert.equal((await receiveHealthExport(req(),db)).status,200);assert.equal(writes,1);
+const savedWarn=console.warn,diagnostics=[];console.warn=message=>diagnostics.push(message);
+try{
+ const unsupported=await receiveHealthExport(req(token,exportOf(metric('dietary_water','g',1234,'Private Source'))),db);
+ assert.equal(unsupported.status,422);assert.deepEqual(await unsupported.json(),{error:'unsupported_unit',metric:'dietary_water',unit:'g'});assert.equal(writes,1,'unsupported units cannot ingest any partial batch');
+ const privateUnit=await receiveHealthExport(req(token,exportOf(metric('protein',token,1234,'Private Source'))),db);
+ assert.equal(privateUnit.status,422);assert.deepEqual(await privateUnit.json(),{error:'unsupported_unit',metric:'protein',unit:'unrecognized'});assert.equal(writes,1);
+ assert.equal(diagnostics.length,2);assert.doesNotMatch(diagnostics.join(''),new RegExp(token+'|1234|Private Source|2026-10-03'));
+}finally{console.warn=savedWarn;}
 assert.equal((await receiveHealthExport(req(token,exportOf(metric('protein','g',150)),'hour'),db)).status,422);assert.equal(writes,1);
 db.rpc=async()=>({data:{error:'unauthorized'}});assert.equal((await receiveHealthExport(req(),db)).status,401,'rotation between lookup and commit fails closed');
 db.rpc=async()=>({error:{message:'private database details'}});const failed=await receiveHealthExport(req(),db);assert.equal(failed.status,503);assert.doesNotMatch(await failed.text(),/private database/);

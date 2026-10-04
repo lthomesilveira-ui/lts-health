@@ -1,4 +1,4 @@
-import {KEY_HEADER,MAX_BODY_BYTES,validToken,digest,normalizeExport} from './health-auto-export-contract.mjs';
+import {KEY_HEADER,MAX_BODY_BYTES,validToken,digest,normalizeExport,unitErrorDetails} from './health-auto-export-contract.mjs';
 
 const cors={'Access-Control-Allow-Origin':'https://lthomesilveira-ui.github.io','Access-Control-Allow-Headers':`content-type,${KEY_HEADER},automation-aggregation`,'Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...cors,'Content-Type':'application/json'}});
@@ -30,7 +30,9 @@ export async function receiveHealthExport(req,db){
     if(!result.data?.received)return json({error:'temporarily_unavailable'},503);
     return json({...result.data,ignored_points:batch.ignored_points});
   }catch(error){
-    const code=validationErrors.has(error?.message)?error.message:'temporarily_unavailable';
-    return json({error:code},code==='payload_too_large'?413:validationErrors.has(code)?422:503);
+  const code=validationErrors.has(error?.message)?error.message:'temporarily_unavailable';
+  const details=unitErrorDetails(error);
+  if(details)console.warn(JSON.stringify({event:'health_auto_export_validation',error:code,...details}));
+  return json({error:code,...(details||{})},code==='payload_too_large'?413:validationErrors.has(code)?422:503);
   }
 }
