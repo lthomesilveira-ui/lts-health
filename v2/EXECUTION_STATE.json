@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-HEALTH-AUTO-EXPORT-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Enable the owner-approved Health Auto Export bridge for daily nutrition, real water volumes and source-separated recovery while preserving Polar.",
     "task_ids": [
       "LTS-HEALTH-AUTO-EXPORT-001"
@@ -58,24 +58,28 @@
     "completed_evidence": [
       "Daily parser, authenticated bounded receiver and UI key-lifecycle contracts passed.",
       "Protected database migrations applied; rollback probes passed for replay, projection, reviewed rows, rotation and revocation.",
-      "Two Edge Functions active; anonymous connection and missing/unknown phone keys return 401."
+      "Two Edge Functions active; anonymous connection and missing/unknown phone keys return 401.",
+      "PR 309 merged normally at 19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3; public build home-dashboard-reference-20261003.36.",
+      "All seven final candidate gates and all ten post-merge workflows passed; deploy 37231135684 and real authenticated E2E 37231135691.",
+      "Exact public authenticated Cloud Browser inspection verified build .36, authorized Polar, pending physical-iPhone activation and a real receipt-check request.",
+      "Deployed HTTP receiver accepted supported daily data and idempotent replay from an isolated test owner; revoked key returned 401. Test owner and all associated rows removed, with independent zero-count verification.",
+      "v2/releases/HEALTH_AUTO_EXPORT_20261004.md"
     ],
-    "release_state": "candidate_build_36; public_promotion_and_phone_upload_pending"
+    "release_state": "published_and_verified_build_36; physical_iPhone_activation_and_first_real_upload_pending"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "home-dashboard-reference-20261003.35",
-    "main_commit": "dc48bd4d0fc354547f840fda75675e393fdf6979",
+    "build_id": "home-dashboard-reference-20261003.36",
+    "main_commit": "19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3",
     "verified_on": "2026-10-04",
     "evidence": [
-      "PR 306 merged at de7c1cc0ebdd25405036fa59fadd5acdcb378ce0; public build home-dashboard-reference-20261003.35",
-      "All five final candidate gates passed; responsive production-path evidence inspected at artifact 11311845561",
-      "PR 307 merged at dc48bd4d0fc354547f840fda75675e393fdf6979; real-data assertion now awaits the actual selected report",
-      "All nine post-merge workflows passed, including deploy 37225072815 and real authenticated E2E 37225072814",
-      "Exact public authenticated Cloud Browser inspection passed: duration coverage, missing water, unchanged authorized Polar and official MFP export instructions",
-      "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
+      "PR 309 merged normally at 19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3; public build home-dashboard-reference-20261003.36.",
+      "All seven final candidate gates and all ten post-merge workflows passed; deploy 37231135684 and real authenticated E2E 37231135691.",
+      "Exact public authenticated Cloud Browser inspection verified build .36, authorized Polar, pending physical-iPhone activation and a real receipt-check request.",
+      "Deployed HTTP receiver accepted supported daily data and idempotent replay from an isolated test owner; revoked key returned 401. Test owner and all associated rows removed, with independent zero-count verification.",
+      "v2/releases/HEALTH_AUTO_EXPORT_20261004.md"
     ],
-    "acceptance_note": "Technical publication, responsive gates, independent authenticated data checks and exact-public Cloud Browser inspection passed. This does not claim owner/physical-device acceptance, a connected MyFitnessPal account, newly imported water or complete Apple Health equivalence. Private values and plaintext health screenshots remain outside the repository."
+    "acceptance_note": "Technical publication, authenticated receiving/replay/revocation, responsive gates and exact-public Cloud Browser inspection passed. Physical-iPhone permissions/configuration and the first real owner upload remain pending. This does not claim direct MyFitnessPal API access, historical original MFP water import, complete Apple Health equivalence or subjective owner acceptance. Private values, credentials and plaintext health screenshots remain outside the repository."
   },
   "tasks": [
     {
@@ -1039,7 +1043,7 @@
       "id": "LTS-HEALTH-AUTO-EXPORT-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Deliver the owner-approved Health Auto Export bridge and source-backed reporting.",
       "acceptance": [
@@ -1054,9 +1058,14 @@
         "v2/health-auto-export-smoke.mjs",
         "supabase/functions/health-auto-export-receive/index.ts",
         "supabase/migrations/20261004194659_health_auto_export_bridge.sql",
-        "supabase/migrations/20261004195418_allow_authenticated_auto_export_nutrition.sql"
+        "supabase/migrations/20261004195418_allow_authenticated_auto_export_nutrition.sql",
+        "PR 309 merged normally at 19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3; public build home-dashboard-reference-20261003.36.",
+        "All seven final candidate gates and all ten post-merge workflows passed; deploy 37231135684 and real authenticated E2E 37231135691.",
+        "Exact public authenticated Cloud Browser inspection verified build .36, authorized Polar, pending physical-iPhone activation and a real receipt-check request.",
+        "Deployed HTTP receiver accepted supported daily data and idempotent replay from an isolated test owner; revoked key returned 401. Test owner and all associated rows removed, with independent zero-count verification.",
+        "v2/releases/HEALTH_AUTO_EXPORT_20261004.md"
       ],
-      "next_action": "Complete candidate CI, normal merge, deployment and exact public verification.",
+      "next_action": "Implementation is published and verified; continue with the separate physical-iPhone activation task after the owner grants permissions and sends the first real upload.",
       "blocker": null
     },
     {
@@ -1074,7 +1083,8 @@
       ],
       "evidence": [
         "Owner approved the annual Premium bridge and confirmed purchase on 2026-10-04.",
-        "v2/src/health-auto-export-connection.js includes configuration and real receipt status."
+        "v2/src/health-auto-export-connection.js includes configuration and real receipt status.",
+        "Published .36 setup inspected in the exact authenticated public app; no real owner upload or phone key was generated during verification."
       ],
       "next_action": "Grant iPhone Health permissions, copy the LTS setup into a REST API automation and export yesterday/today once.",
       "blocker": "Only the owner can grant physical iPhone permissions and configure the purchased phone application."

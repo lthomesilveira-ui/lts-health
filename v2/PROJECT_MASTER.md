@@ -1,8 +1,8 @@
 # LTS Health v2 — lista-mestra de execução
 
-## Health Auto Export — candidato de 04/10/2026
+## Health Auto Export — publicado e verificado em 04/10/2026
 
-Ponte anual aprovada e compra confirmada pelo usuário. Backend protegido e importação diária preparados; o build `.36` aguarda CI, promoção e inspeção pública. Não afirmar sincronização real antes do primeiro envio do iPhone. Polar e o histórico original permanecem preservados. Ver `releases/HEALTH_AUTO_EXPORT_20261004.md` e `EXECUTION_STATE.json`.
+Ponte anual aprovada e compra confirmada pelo usuário. `PKG-HEALTH-AUTO-EXPORT-001` concluído tecnicamente: build `.36` publicado pelo PR #309 no commit `19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3`; sete gates candidatos e dez workflows pós-merge passaram. A versão pública autenticada foi inspecionada em Cloud Browser, com Polar autorizado e ativação no iPhone corretamente pendente. O receptor implantado aceitou envio de teste e repetição sem duplicidade, rejeitou chave revogada e teve todos os registros sintéticos removidos com verificação independente. O primeiro envio real do iPhone é `blocked_user`; não afirmar sincronização real antes dele. Polar e o histórico original permanecem preservados. Água histórica original do MyFitnessPal continua pendente. Ver `releases/HEALTH_AUTO_EXPORT_20261004.md` e `EXECUTION_STATE.json`.
 
 ## Ativação Polar comprovada — 04/10/2026
 

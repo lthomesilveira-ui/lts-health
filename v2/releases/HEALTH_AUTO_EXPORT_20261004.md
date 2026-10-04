@@ -16,18 +16,26 @@ The authenticated Data screen creates a random, revocable phone key and exposes 
 - Water uses actual volumes, explicit units and canonical bridge provenance. Conflicting overlapping water observations remain excluded from totals. The bridge does not complete `LTS-HYD-IMPORT-001`, which requires the original authenticated MyFitnessPal water export.
 - Sleep, heart rate, HRV, respiratory rate, saturation, weight and activity remain separate source evidence; they do not replace bioimpedance, canonical activity summaries or structured strength sessions. Polar endpoints, authorization and history are unchanged.
 
-## Validation completed before candidate promotion
+## Validation completed
 
 - Parser/receiver, UI key lifecycle, hydration and useful-report contracts passed.
 - Desktop/mobile setup, canonical boundary, source status, source-copy, verifiable backup and recovery browser gates passed.
 - Actual database transaction probes passed for creation, replay, nutrition projection, held value/status retention, rotation and revocation; the transaction was rolled back with no synthetic health rows retained.
 - Database metadata confirms RLS on connection storage, no browser/anonymous SELECT, no browser ingestion EXECUTE and service ingestion EXECUTE.
 - Actual anonymous connection calls and missing/unknown phone keys returned 401.
+- The deployed receiver accepted two supported metrics from an isolated synthetic test owner over HTTP. Replay retained two source rows and one nutrition projection. Revocation then returned 401. The isolated owner was removed; independent counts confirmed zero remaining owner, connection, source or nutrition rows. No test key or health payload belongs in the repository.
+- An actual authenticated browser-role provenance forgery was rejected with SQLSTATE 42501 in a rolled-back probe.
 - Security advisor: protected service-only tables intentionally have RLS with no browser policies ([explanation](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy)); an existing Auth leaked-password protection warning is outside this package ([setting](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)).
 
-## Candidate state and phone activation
+## Published release and phone activation
 
-Candidate frontend: `home-dashboard-reference-20261003.36`. Candidate CI, normal merge, public deploy and exact authenticated Cloud Browser verification are required before declaring delivery. Update this section with actual evidence after promotion.
+Published frontend: `home-dashboard-reference-20261003.36`. PR #309 merged normally at `19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3`; final candidate `def397e3015d2add65a15062791dc6c97b1a7c5f`.
+
+All seven final candidate gates passed: Health Auto Export `37231022696`, recovery `37231022799`, workout sources `37231022790`, cockpit `37231022779`, nutrition `37231022797`, dashboard reference `37231022804`, functional depth `37231022825`.
+
+All ten post-merge workflows passed: deploy `37231135684`, authenticated E2E `37231135691`, Health Auto Export `37231135696`, recovery `37231135706`, nutrition `37231135707`, functional depth `37231135712`, smoke `37231135732`, timeline `37231135758`, public Pages `37231154223`, homologation Pages `37231154231`.
+
+The exact public URL `https://lthomesilveira-ui.github.io/lts-health/v2/#dados` was inspected in the authenticated Cloud Browser after deployment. Build `.36`, the authorized Polar account, Health Auto Export setup, pending-iPhone status and a real receipt-check request were verified. No real owner key was generated during this inspection. Technical implementation is complete; physical-iPhone activation and subjective owner acceptance are not presumed.
 
 The owner must grant Health read permissions on the physical iPhone, enable MyFitnessPal HealthKit sharing, and configure a REST API automation with the LTS-provided URL/header/key. Use Health Metrics, JSON v2, Summarize ON, Day grouping, Default period and an hourly cadence; select only the supported needed metrics. Prefer MyFitnessPal for nutrition where the exporter offers preferred sources. Export yesterday/today once and verify receipt in LTS. Background refresh/widget improve opportunities; iOS unlocked-device restrictions mean hourly delivery is not guaranteed.
 
