@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-POLAR-LIVE-SYNC-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Validate real authorized Polar imports and replay while preserving owner-scoped credentials, canonical histories and source attribution.",
     "task_ids": [
       "LTS-POLAR-ACTIVATION-001"
@@ -61,14 +61,17 @@
       "Real callback stored an encrypted connection; requested scopes verified",
       "Successful initial provider collection, idempotent replay and real token refresh verified on 2026-10-04",
       "Authenticated public source status and Polar history chart/table inspected; canonical histories preserved",
-      "Normal refresh condition restored in deployed Edge Function version 16; normal PR promotion pending"
+      "Normal refresh condition restored in deployed Edge Function version 16; normal PR promotion pending",
+      "PR 304 merged normally at a4a66649f0ad8086b889f91eb2265d0687b3e96c",
+      "All four candidate checks and all eight post-merge workflows passed",
+      "Normal deployed runtime replay and authenticated public source/report inspection passed after promotion"
     ],
-    "release_state": "live_backend_validated; normal_pr_promotion_pending; frontend_build_34_preserved"
+    "release_state": "published_backend_version_16; frontend_build_34_preserved; real_sync_refresh_replay_verified; physical_owner_acceptance_not_presumed"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
     "build_id": "home-dashboard-reference-20261003.34",
-    "main_commit": "7c62565ab5571d10d26a45b40ce4aa7c6c0e6240",
+    "main_commit": "a4a66649f0ad8086b889f91eb2265d0687b3e96c",
     "verified_on": "2026-10-04",
     "evidence": [
       "PR 302",
@@ -76,7 +79,10 @@
       "Authenticated desktop/mobile runtime 37166510321",
       "Full-history browser 37166510345",
       "Exact public build opened with authenticated Cloud Browser; all-history and 90-day axes, left-arm interval context, laboratory search/current-point reference and Polar/MFP activation states checked",
-      "v2/releases/USEFUL_REPORTS_20261004.md"
+      "v2/releases/USEFUL_REPORTS_20261004.md",
+      "PR 304 preserves frontend build .34 and publishes the verified Polar runtime source",
+      "Deploy 37221851057; all eight post-merge workflows passed",
+      "Authenticated public app shows successful real Polar source status and duration/heart-rate history; replay and token refresh verified"
     ],
     "acceptance_note": "Technical publication and responsive/runtime verification are complete. Synthetic desktop/mobile visuals were inspected; the exact public authenticated app was inspected directly in Cloud Browser. This is not a claim of owner acceptance, physical-device acceptance or final pixel parity. Private medical values and plaintext screenshots stay outside the repository."
   },
@@ -979,7 +985,7 @@
       "id": "LTS-POLAR-ACTIVATION-001",
       "area": "integrations",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Activate the prepared Polar account connection with provider credentials and owner consent.",
       "acceptance": [
@@ -1000,9 +1006,11 @@
         "Real initial import and replay preserved unique provider records and canonical workout counts",
         "Real refresh grant succeeded with unchanged requested scopes; normal refresh condition restored",
         "Authenticated public app reports show imported Polar dates, duration and heart-rate data",
-        "Supabase health-polar-connection deployed version 16; 2026-10-04"
+        "Supabase health-polar-connection deployed version 16; 2026-10-04",
+        "PR 304 at a4a66649f0ad8086b889f91eb2265d0687b3e96c; four candidate and eight post-merge workflows successful",
+        "Post-promotion normal runtime replay succeeded; no duplicate provider records or canonical workout changes"
       ],
-      "next_action": "Promote the verified runtime through normal PR, complete required CI and reconcile the final checkpoint.",
+      "next_action": null,
       "blocker": null
     }
   ],
