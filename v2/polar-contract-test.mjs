@@ -27,6 +27,6 @@ assert.match(runtime,/auth\.getUser\(auth\.slice\(7\)\)/);assert.doesNotMatch(ru
 assert.match(handler,/if\(!configured\(c\)\)/);assert.match(callback,/consumeState/);assert.match(runtime,/delete\(\).*eq\('state_hash'.*gt\('expires_at'/);
 assert.doesNotMatch(runtime,/from\('health_workouts'\)\.(insert|upsert)/,'provider sessions cannot duplicate canonical strength workouts');
 globalThis.location={search:'?fixture=1'};const {state}=await import('./src/core.js'),{renderConnections}=await import('./src/polar-connection.js');
-state.polarConnection={status:'ready',configured:false,connected:false};assert.doesNotMatch(renderConnections(),/data-polar-action="start"/);assert.match(renderConnections(),/Acesso à API pendente/);
+state.polarConnection={status:'ready',configured:false,connected:false};assert.doesNotMatch(renderConnections(),/data-polar-action="start"/);assert.match(renderConnections(),/Ponte pelo Saúde do iPhone/);assert.match(renderConnections(),/data-health-auto-export/);
 state.polarConnection={status:'ready',configured:true,connected:false};assert.match(renderConnections(),/data-polar-action="start"/);assert.doesNotMatch(renderConnections(),/data-polar-action="sync"/);
 console.log('Polar contracts: encrypted owner binding, single-use-state shape, minimal scopes, date/duration semantics, no canonical duplication and honest activation status passed.');
