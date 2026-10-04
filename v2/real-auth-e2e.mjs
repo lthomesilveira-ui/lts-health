@@ -109,7 +109,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='home-dashboard-reference-20261003.33')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='home-dashboard-reference-20261003.34')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
@@ -353,8 +353,9 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
 
   await waitForRoute('analise');
-  const recoveryPeriod=await page.evaluate(()=>({value:document.querySelector('#analysisPeriod')?.value||'',heading:document.querySelector('.domainHero span')?.textContent||''}));
-  if(!recoveryPeriod.value||!recoveryPeriod.heading.includes(recoveryPeriod.value==='365'?'último ano':recoveryPeriod.value==='30'?'últimos 30 dias':recoveryPeriod.value==='90'?'últimos 90 dias':'todo o histórico'))throw new Error(`mobile Recovery period control contradicts its heading: ${JSON.stringify(recoveryPeriod)}`);
+  const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:[...document.querySelectorAll('.ltsUsefulReports h2')].map(e=>e.textContent),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
+  if(!reports.period||!reports.sections.includes('Onde o corpo mudou')||!reports.sections.includes('Exames ao longo do tempo'))throw new Error('mobile useful reports are missing');
+  if(reports.axes.length&&new Set(reports.axes).size!==1)throw new Error('mobile report calendars disagree');
   await assertNoHorizontalOverflow();
   await assertStableMobileShell('mobile Recovery');
   await page.screenshot({path:`${evidenceDir}/mobile-recovery.png`});

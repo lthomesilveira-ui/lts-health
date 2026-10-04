@@ -100,6 +100,39 @@ try{
   await page.locator('[data-depth-composition-back]').last().click();assert.equal(await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().getAttribute('data-depth-composition-record'),'b-0');
   await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);await overflow(page);
 
+  await goto(page,'analise','.ltsUsefulReports');
+  await page.locator('#analysisPeriod').selectOption('all');
+  assert.equal(await page.locator('#reportLabMarker option').count(),23,'reports expose all markers, including qualitative results');
+  const reportAxes=await page.locator('.ltsUsefulReports .ltsContextAxis').allTextContents();
+  assert.ok(reportAxes.length>=4&&new Set(reportAxes).size===1,'report panels share one historical calendar');
+  await page.locator('#reportRegion').selectOption('left_arm');
+  await page.locator('#reportSegmentMetric').selectOption('fat');
+  assert.equal(await page.locator('#reportRegion').inputValue(),'left_arm');
+  assert.equal(await page.locator('#reportSegmentMetric').inputValue(),'fat');
+  assert.equal(await page.locator('#reportSegmental tbody tr').count(),5,'all regions shown together');
+  await page.locator('#reportLabQuery').fill('Marcador 22');
+  await page.waitForFunction(()=>document.querySelectorAll('#reportLabs [data-report-marker]').length===1&&document.querySelector('#reportLabQuery')?.value==='Marcador 22');
+  assert.equal(await page.locator('#reportLabs [data-report-marker]').count(),1);
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'reportLabQuery','report search retains keyboard focus');
+  await page.locator('[data-report-marker="marcador 22"]').click();
+  await page.waitForFunction(()=>document.querySelector('#reportLabMarker')?.value==='marcador 22');
+  assert.equal(await page.locator('#reportLabMarker').inputValue(),'marcador 22');
+  assert.equal(await page.locator('#reportLabPoint option').count(),25,'no historical graph cap');
+  await page.locator('#reportLabPoint').selectOption('0');
+  await page.waitForFunction(()=>document.querySelector('#reportLabPoint')?.value==='0'&&document.querySelector('#reportLabs .ltsReportContext[role="status"]')?.textContent.includes('Faixa sintética'));
+  assert.ok((await page.locator('#reportLabs .ltsReportContext[role="status"]').innerText()).includes('Faixa sintética'),'selected point shows its own reference');
+  assert.equal(await page.locator('#reportLabs .ltsContextLine').count(),0,'unknown methods cannot create connected trend');
+  await page.locator('#reportLabQuery').fill('');
+  await page.waitForFunction(()=>document.querySelectorAll('#reportLabs [data-report-marker]').length===10&&document.querySelector('#reportLabQuery')?.value==='');
+  await page.locator('[data-report-page="reportLabPage"]').last().click();
+  await page.waitForFunction(()=>document.querySelector('#reportLabs [data-report-marker]')?.getAttribute('data-report-marker')==='marcador 11');
+  assert.equal(await page.locator('#reportLabs [data-report-marker]').count(),10,'report comparison pagination is interactive');
+  await overflow(page);
+  if(label!=='small'){await page.locator('#reportSegmental').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-reports.png`});}
+  await page.locator('#analysisPeriod').selectOption('30');
+  assert.ok((await page.locator('.ltsReportHeader').innerText()).includes('Janela termina hoje'),'empty recent windows remain explicit');
+  await overflow(page);
+
   // Explicit read failure is not a valid empty dataset and cannot show stale hero.
   await goto(page,'saude','.ltsLabsV2 .ltsLabsHero');await page.evaluate(()=>{window.__failTable='health_lab_results';});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsDepthError');assert.equal(await page.locator('.ltsLabsHero').count(),0);
   await page.evaluate(()=>{window.__failTable='';window.__depthDb.health_lab_results=[];});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsEmptyCard');assert.equal(await page.locator('.ltsDepthError').count(),0);await overflow(page);

@@ -17,6 +17,13 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   const goto=async(route,selector)=>{await waitForRoute(route);await page.waitForSelector(selector,{timeout:30000});};
   const noOverflow=async()=>check(await page.evaluate(()=>{const h=document.querySelector('#screenHost');return document.documentElement.scrollWidth<=innerWidth+1&&h.scrollWidth<=h.clientWidth+1;}),'horizontal overflow');
   const same=(a,b)=>a.length===b.length&&a.every(x=>b.includes(x));
+  const polar=await page.evaluate(async()=>{const {CONFIG,sb}=await import('./src/core.js');const {data,error}=await sb.functions.invoke('health-polar-connection',{body:{action:'status'}});return {ok:!error,keys:Object.keys(data||{}),status:data};});
+  check(polar.ok&&typeof polar.status?.configured==='boolean'&&typeof polar.status?.connected==='boolean','authenticated Polar activation status failed');
+  check(!polar.keys.some(k=>/token|secret|user_id/.test(k)),'Polar status exposed connection credentials or owner');
+  const unauthenticated=await page.request.post(`${supabaseUrl}/functions/v1/health-polar-connection`,{headers:{apikey:supabaseKey},data:{action:'status'}});
+  check(unauthenticated.status()===401,'Polar connection accepts unauthenticated access');
+  const invalidCallback=await page.request.get(`${supabaseUrl}/functions/v1/health-polar-callback?state=invalid`);
+  check(invalidCallback.status()===400,'invalid OAuth callback state was accepted');
   await page.setViewportSize({width:390,height:844});
   await goto('treinos','.ltsTrainingV2');await page.locator('[data-depth-training-view="history"]').first().click();
   const workoutIds=[];
@@ -51,5 +58,12 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   if(bodyIds.length){await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().click();await page.waitForSelector('[data-composition-view="detail"]');check((await page.locator('.ltsRecordDetails').count())>=2,'measurement and segmental context missing');await noOverflow();await assertStableMobileShell('mobile measurement detail');await page.screenshot({path:`${evidenceDir}/mobile-measurement-detail.png`});await page.setViewportSize({width:1440,height:1000});await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-measurement-detail.png`});await page.locator('[data-depth-composition-back]').last().click();}
   await goto('treinos','.ltsTrainingV2');await page.locator('[data-depth-training-view="history"]').first().click();await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-training-full-history.png`});
   await goto('saude','.ltsLabsV2 .ltsLabsHero');if(truth.largestMarker)await page.locator('#productLabMarkerSelect').selectOption(truth.largestMarker);await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-labs-full-history.png`});
+  await goto('analise','.ltsUsefulReports');await page.locator('#analysisPeriod').selectOption('all');
+  const reportKeys=await page.locator('#reportLabMarker option').evaluateAll(es=>es.map(e=>e.value));
+  check(same(reportKeys,truth.markerKeys),'report markers differ from the independent private database read');
+  if(truth.singleMarker){await page.locator('#reportLabMarker').selectOption(truth.singleMarker);check(await page.locator('#reportLabs .ltsContextLine').count()===0,'single-result report manufactured a trend');}
+  await page.locator('#reportRegion').selectOption('left_arm');check(await page.locator('#reportRegion').inputValue()==='left_arm','regional report control failed');
+  await noOverflow();await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await page.screenshot({path:`${evidenceDir}/desktop-useful-reports.png`});
+  await page.setViewportSize({width:390,height:844});await noOverflow();await assertStableMobileShell('mobile useful reports');await page.screenshot({path:`${evidenceDir}/mobile-useful-reports.png`});
   console.log('Real-data functional depth verified against independent database reads: complete workout, marker and measurement access.');
 }

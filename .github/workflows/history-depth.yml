@@ -28,6 +28,10 @@ jobs:
           node --check v2/src/labs-layout-v2.js
           node --check v2/src/composition-layout-v2.js
           node --check v2/src/product-layout-runtime.js
+          node --check v2/src/reports-model.js
+          node --check v2/src/reports-screen.js
+          node v2/reports-model-test.mjs
+          node v2/polar-contract-test.mjs
           node v2/history-depth-contract.mjs
           node v2/continuity-contract-smoke.mjs
           node v2/public-payload-guard.mjs

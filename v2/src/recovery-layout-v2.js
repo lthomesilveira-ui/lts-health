@@ -1,4 +1,6 @@
-import {state,esc,fmtDate,fmtNum,countLabel,periodLabel} from './core.js';
+import {state,fixtureMode,esc,fmtDate,fmtNum,countLabel,periodLabel} from './core.js';
+import {renderUsefulReports} from './reports-screen.js';
+import {reportBounds} from './reports-model.js';
 import {renderAnalysisHub,complementarySignalSeries} from './analysis-screen.js';
 import {periodBounds,referenceDayFor} from './integrated-analysis.js';
 
@@ -23,9 +25,9 @@ function signalRows(series){
 }
 
 export function renderRecoveryDepth(){
-  const base=renderAnalysisHub();
+  const base=fixtureMode?renderAnalysisHub():renderUsefulReports();
   const period=state.ui.analysisPeriod||'365';
-  const bounds=periodBounds(period,referenceDayFor(state.data));
+  const bounds=fixtureMode?periodBounds(period,referenceDayFor(state.data)):reportBounds(period).current;
   if(state.domainStatus?.sourceMetrics==='error')return `<div class="ltsRecoveryV2">${base}<details class="uxDisclosure sectionGap" data-disclosure="recovery-evidence"><summary><span><b>Sinais de recuperação por origem</b><small>Evidência complementar sem mistura entre dispositivos</small></span><i>Explorar</i></summary><div class="disclosureBody card"><div class="errorState"><b>Sinais complementares indisponíveis agora.</b><span>Nenhum valor ausente foi substituído por zero e nenhuma origem foi usada como substituta de outra.</span></div></div></details></div>`;
   const series=complementarySignalSeries(state.data.sourceMetrics||[],bounds);
   const origins=new Set(series.map(item=>`${item.family}\u0000${item.identity}`));
