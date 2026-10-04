@@ -1,12 +1,12 @@
 # LTS Health — CURRENT HANDOFF
 
-## Active candidate — 2026-10-04 UTC
+## Current checkpoint — 2026-10-04 UTC
 
-`PKG-USEFUL-REPORTS-001` implements FB-025, candidate `.34`: current-day calendars, equal prior periods, regional scan/workout/nutrition context, lab method/reference comparisons and source-separated recovery. Polar OAuth/callback version 1 and protected tables are deployed; credentials, consent and real-provider validation remain blocked. Updates on app open are prepared; no closed-app background schedule exists. MyFitnessPal API approval and notebook water import remain blocked; Apple Health is deferred.
+`PKG-USEFUL-REPORTS-001` is technically complete. PR #302 published `.34` at product commit `7c62565ab5571d10d26a45b40ce4aa7c6c0e6240`: current-day calendars, equal prior periods, regional scan/workout/nutrition context, lab method/reference comparisons and source-separated recovery. Six final candidate gates and nine post-merge workflows passed, including authenticated desktop/mobile data verification. The exact public build was inspected in authenticated Cloud Browser: all-history/90-day axes, left-arm context, lab search/current-point references and account activation states.
 
-See `releases/USEFUL_REPORTS_20261004.md`. Finish responsive CI, authenticated public checks and exact-public Cloud Browser inspection before marking the package done. The `.33` proof below is the last completed release until that happens.
+Polar OAuth/callback version 1 and protected tables are deployed; credentials, consent and real-provider validation remain blocked. Updates on app open are prepared; no closed-app background schedule exists. MyFitnessPal API approval and notebook water import remain blocked; Apple Health is deferred. No user secrets are to be requested through chat. See `releases/USEFUL_REPORTS_20261004.md` and `EXECUTION_STATE.json`. Owner/physical-device usefulness acceptance is not presumed.
 
-## Current checkpoint — 2026-10-03
+## Previous checkpoint — 2026-10-03
 
 The published build is `home-dashboard-reference-20261003.33`, promoted by normal PRs #298, #299 and #300. Product commit: `747adeb7c2a4b7ba43fc9abb799207a82ce53881`. `.30` was already delivered by PR #297; do not restore `.29` or an old export.
 
