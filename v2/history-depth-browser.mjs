@@ -119,8 +119,8 @@ try{
   assert.equal(await page.locator('#reportLabMarker').inputValue(),'marcador 22');
   assert.equal(await page.locator('#reportLabPoint option').count(),25,'no historical graph cap');
   await page.locator('#reportLabPoint').selectOption('0');
-  await page.waitForFunction(()=>document.querySelector('#reportLabPoint')?.value==='0'&&document.querySelector('#reportLabs [role="status"]')?.textContent.includes('Faixa sintética'));
-  assert.ok((await page.locator('#reportLabs [role="status"]').innerText()).includes('Faixa sintética'),'selected point shows its own reference');
+  await page.waitForFunction(()=>document.querySelector('#reportLabPoint')?.value==='0'&&document.querySelector('#reportLabs .ltsReportContext[role="status"]')?.textContent.includes('Faixa sintética'));
+  assert.ok((await page.locator('#reportLabs .ltsReportContext[role="status"]').innerText()).includes('Faixa sintética'),'selected point shows its own reference');
   assert.equal(await page.locator('#reportLabs .ltsContextLine').count(),0,'unknown methods cannot create connected trend');
   await page.locator('#reportLabQuery').fill('');
   await page.waitForFunction(()=>document.querySelectorAll('#reportLabs [data-report-marker]').length===10&&document.querySelector('#reportLabQuery')?.value==='');

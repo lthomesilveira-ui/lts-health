@@ -54,4 +54,8 @@ assert.equal(JSON.stringify(data),snapshot,'reports do not mutate source records
 assert.doesNotMatch(contextChart([{date:'2025-02-02',value:30}],{bar:true,selectable:false}),/data-health-date/);
 state.data={...data,labs:[{...lab('2025-02-25',12),biomarker:'<script>alert(1)</script>'}]};state.domainStatus=status;state.ui={analysisPeriod:'all'};
 const html=renderUsefulReports();assert.match(html,/Onde o corpo mudou/);assert.match(html,/Exames ao longo do tempo/);assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/<script>alert/);
+state.data=data;state.ui={analysisPeriod:'all',reportLabPoint:null};
+assert.match(renderUsefulReports().match(/<select id="reportLabPoint"[\s\S]*?<\/select>/)?.[0]||'',/<option value="1" selected>/,'a newly selected marker opens its latest point');
+state.ui.reportLabPoint='0';
+assert.match(renderUsefulReports().match(/<select id="reportLabPoint"[\s\S]*?<\/select>/)?.[0]||'',/<option value="0" selected>/,'the earliest point remains explicitly selectable');
 console.log('Useful reports: calendar windows, segment/device boundaries, interval context, missingness, lab comparability, provenance and escaping passed.');
