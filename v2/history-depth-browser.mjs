@@ -150,6 +150,11 @@ try{
   const durationRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Tempo registrado dos treinos'});
   assert.ok((await durationRow.innerText()).includes('40 min'));
   assert.ok((await durationRow.innerText()).includes('Cobertura incompleta'));
+  if(label!=='desktop'){
+    const values=await durationRow.locator('td').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top};}));
+    assert.ok(values.every(r=>r.left>=0&&r.right<=width), 'all three period values must be visible without swiping');
+    assert.ok(values.every(r=>Math.abs(r.top-values[0].top)<2),'prior/current/difference share a phone row');
+  }
   const waterRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Água por dia registrado'});
   assert.ok((await waterRow.innerText()).includes('1 de 30 dias com valor'));
   assert.ok((await waterRow.innerText()).includes('+1.000 mL'));

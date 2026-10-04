@@ -5,6 +5,7 @@ Candidate `home-dashboard-reference-20261003.35`. Publication and authenticated 
 ## Behavior
 
 - Known workout durations are shown even when other sessions lack a duration. Each period shows the number of sessions with duration. An incomplete recorded total never produces a complete-period difference.
+- Period comparisons show prior/current/difference together on phones, with the date windows visible and without requiring horizontal scrolling.
 - The report refresh button remains visible on phones with a 44 px touch target, so a failed source can actually be retried.
 - Ingested water has a historical chart and equal-window comparison using recorded positive daily totals. Replays are deduplicated, conflicting dates are excluded, missing days are absent, and failed overlapping sources block the calculation. Unknown or differing source identities block period differences.
 - Data & sources explains the official MyFitnessPal ZIP export path, its Premium/Premium+ requirement, and the separate need for a real water source. An import never claims that an account is connected.
