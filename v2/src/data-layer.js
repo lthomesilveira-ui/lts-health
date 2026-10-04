@@ -7,13 +7,13 @@ const routeDomains={
   bio:[],
   treinos:[],
   evolucao:[],
-  analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens'],
+  analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions'],
   tratamentos:['treatments','regimens'],
   hoje:['nutrition','metrics','sourceMetrics','labs','uploads','treatments','regimens'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
   nutricao:['nutrition','meals','sourceMetrics'],
-  dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens']
+  dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens','polarSessions']
 };
 
 export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb){
@@ -32,6 +32,7 @@ export async function fetchAll(table,select='*',orderColumn=null,ascending=false
 }
 
 const loaders={
+  polarSessions:()=>fetchAll('health_polar_sessions','source_record_id,workout_date,recorded_start,session_name,duration_minutes,heart_rate_avg,heart_rate_max,source_name','workout_date',false),
   body:()=>fetchAll('health_body_composition','source_record_id,measured_at,weight_kg,skeletal_muscle_mass_kg,fat_mass_kg,body_fat_pct,body_water_l,visceral_fat_level,score,waist_hip_ratio,bmr_kcal,source,source_file,confidence,notes,device_name:source_payload->>device','measured_at',true),
   segmental:()=>fetchAll('health_segmental_composition','source_record_id,measured_at,lean_right_arm_kg,lean_left_arm_kg,lean_trunk_kg,lean_right_leg_kg,lean_left_leg_kg,fat_right_arm_kg,fat_left_arm_kg,fat_trunk_kg,fat_right_leg_kg,fat_left_leg_kg,source,source_file,confidence,notes','measured_at',true),
   workouts:()=>fetchAll('health_workouts','source_record_id,workout_date,workout_type,location,duration_minutes,calories_kcal,heart_rate_avg,heart_rate_min,heart_rate_max,muscle_groups,sets_by_group,raw_exercises,source,source_file,confidence,notes,record_status,is_canonical','workout_date',false),

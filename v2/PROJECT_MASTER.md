@@ -1,5 +1,9 @@
 # LTS Health v2 — lista-mestra de execução
 
+## Pacote de relatórios úteis — 04/10/2026 UTC
+
+O feedback FB-025 prioriza relatórios históricos, perguntas de investigação cruzando segmentos corporais/treino/alimentação/exames e conexões Polar/MyFitnessPal, adiando Apple Saúde. `PKG-USEFUL-REPORTS-001`, candidato `.34`, implementa essas leituras sem inferir causalidade ou preencher lacunas. O servidor Polar foi preparado com OAuth, tokens protegidos e sessões separadas; cadastro da aplicação, credenciais e autorização real ainda faltam. CI responsivo, runtime autenticado e inspeção pública precisam terminar antes do fechamento. Estado atual: `EXECUTION_STATE.json`; contrato/evidência: `releases/USEFUL_REPORTS_20261004.md`. A importação histórica de água permanece pendente no notebook, sem notificação agendada.
+
 ## Retomada e contexto útil — 03/10/2026
 
 O pacote `PKG-HEALTH-CONTEXT-001` foi concluído tecnicamente e publicado em `home-dashboard-reference-20261003.33` pelos PRs #298–#300, preservando o código `.30` já entregue pelo PR #297. Inclui painéis sincronizados com o mesmo eixo, filtros estritos, resultados juntos por coleta e contexto registrado das medicações. A complementação de dados fica exclusivamente no banco privado. Todos os nove workflows finais passaram; o build público autenticado foi aberto e inspecionado. Evidência técnica e limites: `releases/HEALTH_CONTEXT_20261003.md`; fila atual: `EXECUTION_STATE.json`. Aceite subjetivo, iPhone físico e paridade pixel continuam separados da publicação. As seções antigas abaixo mantêm o histórico, não substituem este checkpoint.

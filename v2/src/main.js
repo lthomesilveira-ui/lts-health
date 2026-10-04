@@ -17,6 +17,7 @@ import {renderProductLabs} from './labs-layout-v2.js';
 import {renderRecoveryDepth} from './recovery-layout-v2.js';
 import {mountEvidencePanels} from './evidence-priority.js';
 import {openEntry,setupEntryController} from './entry.js';
+import {checkPolarConnection,actOnPolar,resetPolarConnection} from './polar-connection.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
 const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,hoje:renderProductHomeReference};
@@ -62,6 +63,7 @@ function setRoute(route,{replace=true}={}){
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
+  if(route==='dados'&&state.session&&!state.polarConnection)checkPolarConnection().then(scheduleRender);
   settleRouteScroll(route);
 }
 
@@ -122,6 +124,7 @@ function applyControlState(){
 }
 
 async function refresh(){if(state.loading)return;setSync('Atualizando…');scheduleRender();await refreshData(state.route,setSync);scheduleRender();}
+async function updatePolarOnOpen(){const updated=await checkPolarConnection({syncOnOpen:true});if(updated)await refreshData(state.route,setSync);scheduleRender();}
 
 export function uploadOutcomeMessage(result){
   if(result?.processing==='review_required')return'Arquivo recebido e preservado. A leitura automática não terminou; ficou aguardando leitura segura.';
@@ -153,7 +156,7 @@ async function doLogin(){
   if(loginBusy)return;
   const button=$('loginBtn'),email=$('email').value.trim(),password=$('password').value;
   loginBusy=true;if(button){button.disabled=true;button.setAttribute('aria-busy','true');}$('loginMsg').textContent='Entrando…';
-  try{await signIn(email,password);$('loginMsg').textContent='';showApp();setRoute(routeFromLocation());await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();}
+  try{await signIn(email,password);$('loginMsg').textContent='';showApp();setRoute(routeFromLocation());await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}
   catch(error){console.error(error);$('loginMsg').textContent='Não foi possível entrar. Confira e tente novamente.';}
   finally{loginBusy=false;if(button){button.disabled=false;button.removeAttribute('aria-busy');}}
 }
@@ -169,6 +172,14 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const polarCheck=event.target.closest('[data-polar-check]');
+    if(polarCheck){polarCheck.disabled=true;await checkPolarConnection();scheduleRender();return;}
+    const polarAction=event.target.closest('[data-polar-action]');
+    if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
+    const reportPage=event.target.closest('[data-report-page]');
+    if(reportPage&&['reportLabPage','reportPolarPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
+    const reportMarker=event.target.closest('[data-report-marker]');
+    if(reportMarker){state.ui.reportLabMarker=reportMarker.dataset.reportMarker;state.ui.reportLabPoint=null;scheduleRender();return;}
     const backupButton=event.target.closest('#backupExportBtn');
     if(backupButton){
       const msg=$('backupExportMsg');backupButton.disabled=true;if(msg)msg.textContent='Preparando backup…';
@@ -200,6 +211,7 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('input',event=>{
+    if(event.target.matches('[data-report-search]')){state.ui.reportLabQuery=event.target.value;state.ui.reportLabPage=1;scheduleRender();}
     if(event.target.id==='trainingQuery'){state.ui.trainingQuery=event.target.value;scheduleRender();}
     if(event.target.id==='exerciseQuery'){state.ui.exerciseQuery=event.target.value;scheduleRender();}
     if(event.target.id==='timelineQuery'){state.ui.timelineQuery=event.target.value;state.ui.timelineLimit=50;scheduleRender();}
@@ -208,10 +220,12 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource']);
+    if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;scheduleRender();}
     if(event.target.id==='homeLabMarker'){state.ui.homeLabMarker=event.target.value;scheduleRender();}
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
-    if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
+    if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);state.ui.reportLabPage=1;state.ui.reportLabPoint=null;scheduleRender();}
     if(event.target.id==='timelinePeriod'){
       state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=50;state.ui.timelineMonth=null;state.ui.timelineDate=null;
       if(event.target.value!=='all')state.ui.timelineYear=null;
@@ -254,7 +268,7 @@ function bindStaticEvents(){
   $('loginBtn').addEventListener('click',doLogin);
   $('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   $('refreshBtn').addEventListener('click',refresh);
-  $('logoutBtn').addEventListener('click',async()=>{await signOut();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
+  $('logoutBtn').addEventListener('click',async()=>{await signOut();resetPolarConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
   $('closeMore').addEventListener('click',()=>$('moreSheet').classList.add('hidden'));
   $('moreSheet').addEventListener('click',e=>{if(e.target===$('moreSheet'))$('moreSheet').classList.add('hidden');});
   window.addEventListener('popstate',()=>setRoute(routeFromLocation()));
@@ -265,9 +279,9 @@ function bindStaticEvents(){
 
 async function boot(){
   bindStaticEvents();setupEntryController({onSaved:refresh});state.route=routeFromLocation();
-  try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();}}
+  try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}}
   catch(error){console.error(error);showLogin('Não foi possível restaurar sua sessão.');}
-  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
+  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){resetPolarConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
 }
 
 window.addEventListener('beforeunload',()=>authSubscription?.unsubscribe?.());

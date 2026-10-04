@@ -2,6 +2,7 @@ import {state,esc,fmtDate,norm,countLabel} from './core.js';
 import {sourceStatusFor,sourceCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
+import {renderConnections} from './polar-connection.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
@@ -179,13 +180,14 @@ function qualitySections(issues){
 function waterSourceBridge(){
   const status=historicalMyFitnessPalWaterStatus(state.data,state.domainStatus);
   if(status==='unknown')return `<section class="card sectionGap waterSourceBridge"><div><span>MyFitnessPal</span><h2>Histórico de água não verificado</h2><p>Os registros de hidratação não carregaram agora. Atualize a tela antes de concluir que a importação está pendente ou concluída.</p></div><button type="button" class="primary" data-entry="water-import">Abrir importação</button></section>`;
-  if(status==='imported')return `<section class="card sectionGap waterSourceBridge"><div><span>MyFitnessPal · conectado</span><h2>Histórico de água importado</h2><p>O LTS já recebeu ao menos uma extração autenticada. Você pode repetir o processo para atualizar novas datas; a mesma data é atualizada sem duplicação.</p></div><button type="button" class="primary" data-entry="water-import">Atualizar histórico do MFP</button></section>`;
+  if(status==='imported')return `<section class="card sectionGap waterSourceBridge"><div><span>MyFitnessPal · arquivo importado</span><h2>Histórico de água importado</h2><p>O LTS já recebeu ao menos uma extração autenticada. Você pode repetir o processo para atualizar novas datas; a mesma data é atualizada sem duplicação. Esta importação não ativa sincronização da conta.</p></div><button type="button" class="primary" data-entry="water-import">Atualizar histórico do MFP</button></section>`;
   return `<section class="card sectionGap waterSourceBridge" data-water-import-pending><div><span>MyFitnessPal · pendente no notebook</span><h2>Importar o histórico de água</h2><p>O extrator já está pronto. Quando estiver no notebook, execute-o na sessão aberta do MyFitnessPal e importe um único JSON aqui. Ele percorre o período automaticamente: não é necessário digitar dia a dia.</p></div><button type="button" class="primary" data-entry="water-import">Importar histórico do MFP</button></section>`;
 }
 
 export function renderDataHub(){
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados & fontes','Conecte ou envie fontes, acompanhe a entrada no histórico e veja somente o que realmente exige atenção.','Sistema')}
+    ${renderConnections()}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
     ${waterSourceBridge()}
