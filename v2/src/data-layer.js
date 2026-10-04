@@ -1,6 +1,7 @@
 import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
 import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFitnessPalViaApple} from './source-status.js';
 import {visibleWorkoutEvidence,decorateWorkoutProvenance} from './workout-evidence.js';
+import {nutritionWithAutoExport} from './health-auto-export-data.js';
 
 const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
@@ -87,7 +88,7 @@ export function visibleRowsForDomain(key,rows=[]){
     if(!isAppleSource(row))return true;
     return isAppleActivitySummarySource(row)&&stableAppleMetricTypes.has(row?.metric_type);
   });
-  if(key==='nutrition')return rows.filter(row=>!isMyFitnessPalViaApple(row));
+  if(key==='nutrition')return nutritionWithAutoExport(rows,rows.filter(row=>!isMyFitnessPalViaApple(row)));
   if(key==='workouts')return rows.filter(row=>row?.is_canonical===true&&row?.record_status!=='quarantined');
   return rows;
 }

@@ -75,7 +75,7 @@ async function run(viewport,label){
   if(!userActionText.includes('bad.zip')||userActionText.includes('Detalhe ainda depende de revisão da fonte.'))throw new Error(`${label}: internal quality work leaked into user action queue`);
   if(!internalActionText.includes('Detalhe ainda depende de revisão da fonte.')||!internalActionText.includes('tratamento interno')||internalActionText.includes('bad.zip'))throw new Error(`${label}: internal quality queue is not separated from user file actions`);
 
-  const sourceCards=await page.locator('.sourceStatus').allTextContents();
+  const sourceCards=await page.locator('.sourceStatus:has([data-source-upload])').allTextContents();
   const sourceCard=name=>sourceCards.find(card=>card.includes(name))||'';
   if(!sourceCard('Apple Saúde').includes('processando')||sourceCard('Apple Saúde').includes('com dados'))throw new Error(`${label}: Apple upload was falsely presented as confirmed data`);
   if(!sourceCard('MyFitnessPal').includes('arquivo recebido')||sourceCard('MyFitnessPal').includes('com dados'))throw new Error(`${label}: MyFitnessPal file was falsely presented as confirmed data`);

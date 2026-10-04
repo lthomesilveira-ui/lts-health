@@ -41,3 +41,5 @@ Este arquivo é público e não contém dados pessoais de saúde. A entrada prin
 - A entrada pública atual é uma base funcional, não uma homologação vigente do produto final; o aceite depende dos gates de `PRODUCT_ARCHITECTURE.md` e do feedback registrado em `FEEDBACK_LEDGER.md`.
 - A versão anterior permanece preservada em `legacy.html` como fallback auditável.
 - Desenvolvimento continua em `architecture-v2` e chega a `main` por pull request e merge normal, nunca por force.
+
+A ponte nativa Apple mantém sono fora da promoção canônica automática; Health Auto Export preserva sono como evidência por origem.

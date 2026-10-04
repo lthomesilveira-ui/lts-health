@@ -43,7 +43,8 @@ export function hydrationModel(data={}){
 
   const sourceGroups=new Map();
   for(const row of data.sourceMetrics||[]){
-    if(norm(row?.source_family)!=='myfitnesspal'||row?.metric_type!=='dietary_water_ml'||norm(row?.canonical_status)!=='canonical'||norm(row?.unit)!=='ml')continue;
+    const family=norm(row?.source_family),bridge=family==='health_auto_export'&&row?.confidence==='authenticated_auto_export'&&String(row?.source_record_id||'').startsWith('health_auto_export:');
+    if((family!=='myfitnesspal'&&!bridge)||row?.metric_type!=='dietary_water_ml'||norm(row?.canonical_status)!=='canonical'||norm(row?.unit)!=='ml')continue;
     const date=day(row?.metric_date),value=num(row?.value);
     if(!date||value==null||value<=0)continue;
     if(!sourceGroups.has(date))sourceGroups.set(date,[]);

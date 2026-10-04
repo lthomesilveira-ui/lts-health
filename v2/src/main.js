@@ -18,6 +18,7 @@ import {renderRecoveryDepth} from './recovery-layout-v2.js';
 import {mountEvidencePanels} from './evidence-priority.js';
 import {openEntry,setupEntryController} from './entry.js';
 import {checkPolarConnection,actOnPolar,resetPolarConnection} from './polar-connection.js';
+import {checkAutoExportConnection,actOnAutoExport,copyAutoExport,resetAutoExportConnection} from './health-auto-export-connection.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
 const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,hoje:renderProductHomeReference};
@@ -64,6 +65,7 @@ function setRoute(route,{replace=true}={}){
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
   if(route==='dados'&&state.session&&!state.polarConnection)checkPolarConnection().then(scheduleRender);
+  if(route==='dados'&&state.session&&!state.autoExportConnection)checkAutoExportConnection().then(scheduleRender);
   settleRouteScroll(route);
 }
 
@@ -172,6 +174,12 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const haeCheck=event.target.closest('[data-hae-check]');
+    if(haeCheck){haeCheck.disabled=true;await checkAutoExportConnection();if(state.autoExportConnection?.received)await refreshData(state.route,setSync);scheduleRender();return;}
+    const haeAction=event.target.closest('[data-hae-action]');
+    if(haeAction){haeAction.disabled=true;await actOnAutoExport(haeAction.dataset.haeAction);scheduleRender();return;}
+    const haeCopy=event.target.closest('[data-hae-copy]');
+    if(haeCopy){await copyAutoExport(haeCopy.dataset.haeCopy);scheduleRender();return;}
     const polarCheck=event.target.closest('[data-polar-check]');
     if(polarCheck){polarCheck.disabled=true;await checkPolarConnection();scheduleRender();return;}
     const polarAction=event.target.closest('[data-polar-action]');
@@ -268,7 +276,7 @@ function bindStaticEvents(){
   $('loginBtn').addEventListener('click',doLogin);
   $('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   $('refreshBtn').addEventListener('click',refresh);
-  $('logoutBtn').addEventListener('click',async()=>{await signOut();resetPolarConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
+  $('logoutBtn').addEventListener('click',async()=>{await signOut();resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
   $('closeMore').addEventListener('click',()=>$('moreSheet').classList.add('hidden'));
   $('moreSheet').addEventListener('click',e=>{if(e.target===$('moreSheet'))$('moreSheet').classList.add('hidden');});
   window.addEventListener('popstate',()=>setRoute(routeFromLocation()));
@@ -281,7 +289,7 @@ async function boot(){
   bindStaticEvents();setupEntryController({onSaved:refresh});state.route=routeFromLocation();
   try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}}
   catch(error){console.error(error);showLogin('Não foi possível restaurar sua sessão.');}
-  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){resetPolarConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
+  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
 }
 
 window.addEventListener('beforeunload',()=>authSubscription?.unsubscribe?.());

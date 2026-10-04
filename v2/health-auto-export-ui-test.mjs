@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:''};
+let copied='',action='',created=false;const key='hae_'+'A'.repeat(43);
+globalThis.window={supabase:{createClient:()=>({functions:{invoke:async(_,{body})=>{
+  action=body.action;if(action==='create')created=true;if(action==='disconnect')created=false;
+  return {data:{configured:created,received:false,key_revision:'synthetic-revision',...(action==='create'?{setup_key:key}:{})}};
+}}})}};
+Object.defineProperty(globalThis,'navigator',{value:{clipboard:{writeText:async value=>{copied=value;}}},configurable:true});
+globalThis.confirm=()=>true;
+const {state}=await import('./src/core.js');
+const {checkAutoExportConnection,actOnAutoExport,copyAutoExport,renderAutoExportConnection,resetAutoExportConnection}=await import('./src/health-auto-export-connection.js');
+state.session={user:{id:'synthetic-owner'}};
+await checkAutoExportConnection();assert.equal(action,'status');assert.match(renderAutoExportConnection(),/Ativação no iPhone pendente/);
+await actOnAutoExport('create');assert.match(renderAutoExportConnection(),/Aguardando primeiro envio/);assert.doesNotMatch(renderAutoExportConnection(),new RegExp(key),'private key hidden by default');
+await copyAutoExport('key');assert.equal(copied,key);
+await actOnAutoExport('show');assert.match(renderAutoExportConnection(),new RegExp(key),'key visible only after explicit reveal');
+await checkAutoExportConnection();assert.equal(state.autoExportConnection.received,false,'configuration is not an actual upload');
+await actOnAutoExport('hide');copied='';await copyAutoExport('key');assert.equal(copied,'','erased key cannot be copied');
+await actOnAutoExport('create');state.session={user:{id:'different-owner'}};assert.doesNotMatch(renderAutoExportConnection(),new RegExp(key));copied='';await copyAutoExport('key');assert.equal(copied,'','key cannot cross sessions');
+resetAutoExportConnection();assert.equal(state.autoExportConnection,null);
+console.log('Health Auto Export UI: one-time key, explicit reveal/copy, received distinction, erase and owner isolation passed.');

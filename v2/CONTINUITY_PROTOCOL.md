@@ -57,6 +57,10 @@ Antes de cada escrita, reler os heads de `main`, `architecture-v2` e `product-cl
 - Uma parte ainda dependente do usuário ou de terceiro vira tarefa bloqueada separada; ela não mantém artificialmente aberto o pacote que já foi entregue.
 - Branches de referência sem commits exclusivos podem ser alinhados por fast-forward depois da promoção, sempre sem force.
 
+## Health Auto Export aprovado — 04/10/2026
+
+O usuário autorizou e comprou a ponte anual Health Auto Export. Executar a integração segura sem reabrir a autorização; a ativação em aparelho físico requer as permissões do Saúde e a configuração REST API pelo usuário. Isso não autoriza assinatura Apple Developer nem muda a regra do histórico original de água abaixo. A água desta ponte exige volume real e origem explícita.
+
 ## Hidratação pendente
 
 `LTS-HYD-IMPORT-001` permanece `blocked_user` enquanto o banco não contiver uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. O app exibe um caminho explícito para continuar no notebook, sem sugerir digitação diária ou instalação de aplicativo; o ledger privado registra a solicitação; e uma trigger muda a solicitação para concluída quando o primeiro lote válido chegar.
