@@ -61,7 +61,14 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   await goto('analise','.ltsUsefulReports');await page.locator('#analysisPeriod').selectOption('all');
   const reportKeys=await page.locator('#reportLabMarker option').evaluateAll(es=>es.map(e=>e.value));
   check(same(reportKeys,truth.markerKeys),'report markers differ from the independent private database read');
-  if(truth.singleMarker){await page.locator('#reportLabMarker').selectOption(truth.singleMarker);check(await page.locator('#reportLabs .ltsContextLine').count()===0,'single-result report manufactured a trend');}
+  if(truth.singleMarker){
+    const previousReport=await page.locator('#reportLabs').elementHandle();
+    await page.locator('#reportLabMarker').selectOption(truth.singleMarker);
+    // Selection schedules the production render on the next animation frame.
+    // Check the new report, rather than the previous marker's still-mounted chart.
+    await page.waitForFunction(element=>!element.isConnected,previousReport);
+    check(await page.locator('#reportLabs .ltsContextLine').count()===0,'single-result report manufactured a trend');
+  }
   await page.locator('#reportRegion').selectOption('left_arm');check(await page.locator('#reportRegion').inputValue()==='left_arm','regional report control failed');
   await noOverflow();await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await page.screenshot({path:`${evidenceDir}/desktop-useful-reports.png`});
   await page.setViewportSize({width:390,height:844});await noOverflow();await assertStableMobileShell('mobile useful reports');await page.screenshot({path:`${evidenceDir}/mobile-useful-reports.png`});
