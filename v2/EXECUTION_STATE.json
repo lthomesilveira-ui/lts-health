@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/POLAR_LIVE_SYNC_20261004.md"
+    "latest_release": "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,33 +50,34 @@
   },
   "current_package": {
     "id": "PKG-MFP-REPORT-COVERAGE-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Complete useful duration and water reporting while preserving the verified Polar connection and the actual MyFitnessPal access blocker.",
     "task_ids": [
       "LTS-REPORT-COVERAGE-001"
     ],
     "completed_evidence": [
-      "Duration, hydration, MyFitnessPal transfer and Polar contracts passed locally; publication gates pending."
+      "PR 306 merged at de7c1cc0ebdd25405036fa59fadd5acdcb378ce0; public build home-dashboard-reference-20261003.35",
+      "All five final candidate gates passed; responsive production-path evidence inspected at artifact 11311845561",
+      "PR 307 merged at dc48bd4d0fc354547f840fda75675e393fdf6979; real-data assertion now awaits the actual selected report",
+      "All nine post-merge workflows passed, including deploy 37225072815 and real authenticated E2E 37225072814",
+      "Exact public authenticated Cloud Browser inspection passed: duration coverage, missing water, unchanged authorized Polar and official MFP export instructions"
     ],
-    "release_state": "candidate_build_35; MyFitnessPal_account_not_connected"
+    "release_state": "published_and_verified_build_35; MyFitnessPal_account_and_water_import_remain_blocked; physical_owner_acceptance_not_presumed"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "home-dashboard-reference-20261003.34",
-    "main_commit": "a4a66649f0ad8086b889f91eb2265d0687b3e96c",
+    "build_id": "home-dashboard-reference-20261003.35",
+    "main_commit": "dc48bd4d0fc354547f840fda75675e393fdf6979",
     "verified_on": "2026-10-04",
     "evidence": [
-      "PR 302",
-      "Deploy 37166510377",
-      "Authenticated desktop/mobile runtime 37166510321",
-      "Full-history browser 37166510345",
-      "Exact public build opened with authenticated Cloud Browser; all-history and 90-day axes, left-arm interval context, laboratory search/current-point reference and Polar/MFP activation states checked",
-      "v2/releases/USEFUL_REPORTS_20261004.md",
-      "PR 304 preserves frontend build .34 and publishes the verified Polar runtime source",
-      "Deploy 37221851057; all eight post-merge workflows passed",
-      "Authenticated public app shows successful real Polar source status and duration/heart-rate history; replay and token refresh verified"
+      "PR 306 merged at de7c1cc0ebdd25405036fa59fadd5acdcb378ce0; public build home-dashboard-reference-20261003.35",
+      "All five final candidate gates passed; responsive production-path evidence inspected at artifact 11311845561",
+      "PR 307 merged at dc48bd4d0fc354547f840fda75675e393fdf6979; real-data assertion now awaits the actual selected report",
+      "All nine post-merge workflows passed, including deploy 37225072815 and real authenticated E2E 37225072814",
+      "Exact public authenticated Cloud Browser inspection passed: duration coverage, missing water, unchanged authorized Polar and official MFP export instructions",
+      "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
     ],
-    "acceptance_note": "Technical publication and responsive/runtime verification are complete. Synthetic desktop/mobile visuals were inspected; the exact public authenticated app was inspected directly in Cloud Browser. This is not a claim of owner acceptance, physical-device acceptance or final pixel parity. Private medical values and plaintext screenshots stay outside the repository."
+    "acceptance_note": "Technical publication, responsive gates, independent authenticated data checks and exact-public Cloud Browser inspection passed. This does not claim owner/physical-device acceptance, a connected MyFitnessPal account, newly imported water or complete Apple Health equivalence. Private values and plaintext health screenshots remain outside the repository."
   },
   "tasks": [
     {
@@ -1011,7 +1012,7 @@
       "id": "LTS-REPORT-COVERAGE-001",
       "area": "experience",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "system",
       "summary": "Expose partial recorded workout time, source-backed water history and equal-window water comparisons without inventing missing data.",
       "acceptance": [
@@ -1025,9 +1026,14 @@
         "v2/src/reports-screen.js",
         "v2/reports-model-test.mjs",
         "v2/history-depth-browser.mjs",
-        "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
+        "v2/releases/MFP_REPORT_COVERAGE_20261004.md",
+        "PR 306 merged at de7c1cc0ebdd25405036fa59fadd5acdcb378ce0; public build home-dashboard-reference-20261003.35",
+        "All five final candidate gates passed; responsive production-path evidence inspected at artifact 11311845561",
+        "PR 307 merged at dc48bd4d0fc354547f840fda75675e393fdf6979; real-data assertion now awaits the actual selected report",
+        "All nine post-merge workflows passed, including deploy 37225072815 and real authenticated E2E 37225072814",
+        "Exact public authenticated Cloud Browser inspection passed: duration coverage, missing water, unchanged authorized Polar and official MFP export instructions"
       ],
-      "next_action": "Complete candidate workflows, promote normally and inspect the exact authenticated public build.",
+      "next_action": null,
       "blocker": null
     }
   ],

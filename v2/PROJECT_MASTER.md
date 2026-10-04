@@ -169,3 +169,10 @@ O fechamento de 15/09 reconcilia `LTS-REMAINING-DOMAINS-001` como concluído tec
 - TestFlight/assinatura Apple dependem de setup externo.
 - Integração direta Fleury depende de caminho autenticado/API tecnicamente e legalmente viável ainda não confirmado.
 - Parsers Fleury/Einstein específicos dependem de arquivos originais reais.
+
+
+## Relatórios úteis, cobertura e MyFitnessPal — 04/10/2026
+
+PRs #306/#307 publicaram e verificaram `.35`: tempo conhecido dos treinos com cobertura, comparação móvel legível, atualização acessível e água histórica/comparável somente a partir de valores reais. Todos os gates finais passaram, incluindo E2E autenticado e inspeção do produto público. `releases/MFP_REPORT_COVERAGE_20261004.md` registra a evidência. Polar permanece autorizado; seu conector atual cobre sessões/sono, sem equivalência completa com HealthKit.
+
+A tentativa autorizada de acesso MyFitnessPal encontrou recusa de segurança no navegador na nuvem antes do login, persistente após uma recarga. Não houve acesso ao diário, novas importações ou conexão contínua. ZIP alimentar e JSON autenticado de água continuam prontos para receber arquivos reais; água permanece pendente no ledger. Uma senha não é a solução para essa recusa. A aceitação de uso/física continua distinta da entrega técnica.
