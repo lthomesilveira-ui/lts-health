@@ -49,24 +49,16 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-POLAR-LIVE-SYNC-001",
-    "status": "done",
-    "goal": "Validate real authorized Polar imports and replay while preserving owner-scoped credentials, canonical histories and source attribution.",
+    "id": "PKG-MFP-REPORT-COVERAGE-001",
+    "status": "in_progress",
+    "goal": "Complete useful duration and water reporting while preserving the verified Polar connection and the actual MyFitnessPal access blocker.",
     "task_ids": [
-      "LTS-POLAR-ACTIVATION-001"
+      "LTS-REPORT-COVERAGE-001"
     ],
     "completed_evidence": [
-      "Official client registration and secure server configuration verified",
-      "Owner approved training/sleep read consent at the official provider",
-      "Real callback stored an encrypted connection; requested scopes verified",
-      "Successful initial provider collection, idempotent replay and real token refresh verified on 2026-10-04",
-      "Authenticated public source status and Polar history chart/table inspected; canonical histories preserved",
-      "Normal refresh condition restored in deployed Edge Function version 16; normal PR promotion pending",
-      "PR 304 merged normally at a4a66649f0ad8086b889f91eb2265d0687b3e96c",
-      "All four candidate checks and all eight post-merge workflows passed",
-      "Normal deployed runtime replay and authenticated public source/report inspection passed after promotion"
+      "Duration, hydration, MyFitnessPal transfer and Polar contracts passed locally; publication gates pending."
     ],
-    "release_state": "published_backend_version_16; frontend_build_34_preserved; real_sync_refresh_replay_verified; physical_owner_acceptance_not_presumed"
+    "release_state": "candidate_build_35; MyFitnessPal_account_not_connected"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -502,10 +494,11 @@
         "v2/src/mfp-water-extractor.js",
         "v2/src/mfp-water-transfer.js",
         "v2/mfp-water-transfer-test.mjs",
-        "v2/mfp-water-import-smoke.mjs"
+        "v2/mfp-water-import-smoke.mjs",
+        "2026-10-04: authorized cloud-browser attempt was rejected by MyFitnessPal security before sign-in; one reload did not recover access."
       ],
-      "next_action": "On a notebook, open the public helper while signed in to MyFitnessPal, add/run the favorite, then import the generated JSON in LTS Health.",
-      "blocker": "The authenticated MyFitnessPal session and local browser action belong to the user; credentials and cookies must not be transferred."
+      "next_action": "Provide an authenticated water export when available; the existing notebook helper can generate a complete JSON without daily entry. The agent can validate and import that file.",
+      "blocker": "The provider currently rejects the agent cloud browser before login. No authenticated water export is available, and no credentials or cookies may be used to bypass that block."
     },
     {
       "id": "LTS-MFP-OAUTH-001",
@@ -523,10 +516,11 @@
         "v2/PROJECT_MASTER.md",
         "https://www.myfitnesspal.com/apps/api/version",
         "v2/src/polar-connection.js",
-        "v2/releases/USEFUL_REPORTS_20261004.md"
+        "v2/releases/USEFUL_REPORTS_20261004.md",
+        "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
       ],
-      "next_action": "Reassess only when an official application credential and supported API scope are available.",
-      "blocker": "Provider approval and supported API access are not available to this project."
+      "next_action": "Use the existing official ZIP import for fresh nutrition when provided; continuous sync still requires approved application access and supported scopes.",
+      "blocker": "Approved API access is not available to this project; the 2026-10-04 direct account attempt also encountered a persistent provider-served browser security block before login."
     },
     {
       "id": "LTS-IOS-HEALTH-001",
@@ -1012,6 +1006,29 @@
       ],
       "next_action": null,
       "blocker": null
+    },
+    {
+      "id": "LTS-REPORT-COVERAGE-001",
+      "area": "experience",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "system",
+      "summary": "Expose partial recorded workout time, source-backed water history and equal-window water comparisons without inventing missing data.",
+      "acceptance": [
+        "Recorded duration remains useful with explicit session coverage; incomplete totals cannot produce period deltas.",
+        "Water uses actual daily totals, preserves conflicts and source identity, and fails closed when overlapping sources cannot load.",
+        "Official MyFitnessPal file-update instructions distinguish imported history from continuous account access.",
+        "Responsive browser gates and exact-public authenticated inspection pass after normal promotion."
+      ],
+      "evidence": [
+        "v2/src/reports-model.js",
+        "v2/src/reports-screen.js",
+        "v2/reports-model-test.mjs",
+        "v2/history-depth-browser.mjs",
+        "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
+      ],
+      "next_action": "Complete candidate workflows, promote normally and inspect the exact authenticated public build.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -1109,6 +1126,26 @@
         "Exact public authenticated Cloud Browser inspection: report periods, regional context, lab search/reference selection and account blockers"
       ],
       "release_state": "published_and_verified_build_34; Polar_activation_and_MyFitnessPal_API_access_remain_external_blockers"
+    },
+    {
+      "id": "PKG-POLAR-LIVE-SYNC-001",
+      "status": "done",
+      "goal": "Validate real authorized Polar imports and replay while preserving owner-scoped credentials, canonical histories and source attribution.",
+      "task_ids": [
+        "LTS-POLAR-ACTIVATION-001"
+      ],
+      "completed_evidence": [
+        "Official client registration and secure server configuration verified",
+        "Owner approved training/sleep read consent at the official provider",
+        "Real callback stored an encrypted connection; requested scopes verified",
+        "Successful initial provider collection, idempotent replay and real token refresh verified on 2026-10-04",
+        "Authenticated public source status and Polar history chart/table inspected; canonical histories preserved",
+        "Normal refresh condition restored in deployed Edge Function version 16; normal PR promotion pending",
+        "PR 304 merged normally at a4a66649f0ad8086b889f91eb2265d0687b3e96c",
+        "All four candidate checks and all eight post-merge workflows passed",
+        "Normal deployed runtime replay and authenticated public source/report inspection passed after promotion"
+      ],
+      "release_state": "published_backend_version_16; frontend_build_34_preserved; real_sync_refresh_replay_verified; physical_owner_acceptance_not_presumed"
     }
   ]
 }
