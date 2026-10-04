@@ -2,10 +2,10 @@ name: LTS Health Functional Depth
 on:
   pull_request:
     branches: [main, architecture-v2]
-    paths: ['v2/**', '.github/workflows/history-depth.yml']
+    paths: ['v2/**', 'supabase/functions/health-polar-connection/**', 'supabase/functions/health-polar-callback/**', 'supabase/functions/_shared/polar-*.mjs', '.github/workflows/history-depth.yml']
   push:
     branches: [main]
-    paths: ['v2/**', '.github/workflows/history-depth.yml']
+    paths: ['v2/**', 'supabase/functions/health-polar-connection/**', 'supabase/functions/health-polar-callback/**', 'supabase/functions/_shared/polar-*.mjs', '.github/workflows/history-depth.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,6 +32,7 @@ jobs:
           node --check v2/src/reports-screen.js
           node v2/reports-model-test.mjs
           node v2/polar-contract-test.mjs
+          node v2/polar-provider-test.mjs
           node v2/history-depth-contract.mjs
           node v2/continuity-contract-smoke.mjs
           node v2/public-payload-guard.mjs

@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/USEFUL_REPORTS_20261004.md"
+    "latest_release": "v2/releases/POLAR_LIVE_SYNC_20261004.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,24 +49,21 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-USEFUL-REPORTS-001",
-    "status": "done",
-    "goal": "Deliver historical reports and cross-domain investigation context, with an honest Polar authorization path and documented provider blockers.",
+    "id": "PKG-POLAR-LIVE-SYNC-001",
+    "status": "in_progress",
+    "goal": "Validate real authorized Polar imports and replay while preserving owner-scoped credentials, canonical histories and source attribution.",
     "task_ids": [
-      "LTS-USEFUL-REPORTS-001",
-      "LTS-POLAR-CONNECTOR-PREP-001"
+      "LTS-POLAR-ACTIVATION-001"
     ],
     "completed_evidence": [
-      "Reports and Polar unit contracts passed",
-      "Polar connection/callback Edge Functions deployed at version 1",
-      "New tables have RLS and explicit grants; credential/state tables are server-only",
-      "Existing private laboratory/body/workout histories preserved",
-      "PR 302; product commit 7c62565ab5571d10d26a45b40ce4aa7c6c0e6240; public build home-dashboard-reference-20261003.34",
-      "All six final candidate gates and all nine post-merge workflows passed",
-      "Authenticated desktop/mobile runtime 37166510321; complete histories and protected Polar status verified",
-      "Exact public authenticated Cloud Browser inspection: report periods, regional context, lab search/reference selection and account blockers"
+      "Official client registration and secure server configuration verified",
+      "Owner approved training/sleep read consent at the official provider",
+      "Real callback stored an encrypted connection; requested scopes verified",
+      "Successful initial provider collection, idempotent replay and real token refresh verified on 2026-10-04",
+      "Authenticated public source status and Polar history chart/table inspected; canonical histories preserved",
+      "Normal refresh condition restored in deployed Edge Function version 16; normal PR promotion pending"
     ],
-    "release_state": "published_and_verified_build_34; Polar_activation_and_MyFitnessPal_API_access_remain_external_blockers"
+    "release_state": "live_backend_validated; normal_pr_promotion_pending; frontend_build_34_preserved"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -982,8 +979,8 @@
       "id": "LTS-POLAR-ACTIVATION-001",
       "area": "integrations",
       "priority": "P1",
-      "status": "blocked_external",
-      "owner": "external",
+      "status": "in_progress",
+      "owner": "system",
       "summary": "Activate the prepared Polar account connection with provider credentials and owner consent.",
       "acceptance": [
         "Polar client registration uses the deployed fixed callback URL and server-side client credentials/encryption key.",
@@ -995,10 +992,18 @@
         "https://www.polar.com/polar-api-v4/",
         "https://admin.polaraccesslink.com",
         "v2/releases/USEFUL_REPORTS_20261004.md",
-        "v2/src/polar-connection.js"
+        "v2/src/polar-connection.js",
+        "Official client and secure configuration verified; no credential material in repository",
+        "Owner consent and encrypted callback verified on 2026-10-04",
+        "v2/polar-provider-test.mjs",
+        "v2/releases/POLAR_LIVE_SYNC_20261004.md",
+        "Real initial import and replay preserved unique provider records and canonical workout counts",
+        "Real refresh grant succeeded with unchanged requested scopes; normal refresh condition restored",
+        "Authenticated public app reports show imported Polar dates, duration and heart-rate data",
+        "Supabase health-polar-connection deployed version 16; 2026-10-04"
       ],
-      "next_action": "Register the LTS Health API client at Polar, configure POLAR_CLIENT_ID, POLAR_CLIENT_SECRET and a 32-byte base64 POLAR_TOKEN_ENCRYPTION_KEY in secure server secrets, then authorize the account in Data & sources and validate real provider sync.",
-      "blocker": "Application credentials, secure server secret setup and Polar account consent are not available. Provider OAuth and automatic imports have not been validated with a real authorized account."
+      "next_action": "Promote the verified runtime through normal PR, complete required CI and reconcile the final checkpoint.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -1076,6 +1081,26 @@
         "Encrypted real-auth artifact 11277494595"
       ],
       "release_state": "published_build_33; technical_gates_complete; physical_owner_acceptance_not_presumed"
+    },
+    {
+      "id": "PKG-USEFUL-REPORTS-001",
+      "status": "done",
+      "goal": "Deliver historical reports and cross-domain investigation context, with an honest Polar authorization path and documented provider blockers.",
+      "task_ids": [
+        "LTS-USEFUL-REPORTS-001",
+        "LTS-POLAR-CONNECTOR-PREP-001"
+      ],
+      "completed_evidence": [
+        "Reports and Polar unit contracts passed",
+        "Polar connection/callback Edge Functions deployed at version 1",
+        "New tables have RLS and explicit grants; credential/state tables are server-only",
+        "Existing private laboratory/body/workout histories preserved",
+        "PR 302; product commit 7c62565ab5571d10d26a45b40ce4aa7c6c0e6240; public build home-dashboard-reference-20261003.34",
+        "All six final candidate gates and all nine post-merge workflows passed",
+        "Authenticated desktop/mobile runtime 37166510321; complete histories and protected Polar status verified",
+        "Exact public authenticated Cloud Browser inspection: report periods, regional context, lab search/reference selection and account blockers"
+      ],
+      "release_state": "published_and_verified_build_34; Polar_activation_and_MyFitnessPal_API_access_remain_external_blockers"
     }
   ]
 }

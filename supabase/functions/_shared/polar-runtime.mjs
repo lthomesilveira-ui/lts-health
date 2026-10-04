@@ -1,5 +1,6 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.117.2';
 import {POLAR_SCOPES,validKey,encryptTokens,decryptTokens,digest,randomState,localDay,addDays,polarSessions,polarSleep,validDay} from './polar-contract.mjs';
+import {providerRead,providerItems,syncFailure,dayWindows,trainingWindowParams} from './polar-provider.mjs';
 
 export const APP_URL='https://lthomesilveira-ui.github.io/lts-health/v2/';
 export const cors={'Access-Control-Allow-Origin':'https://lthomesilveira-ui.github.io','Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
@@ -43,41 +44,53 @@ export async function tokenExchange(c,params){
 export async function saveAuthorization(db,c,userId,token){
   const {error}=await db.from('health_polar_connections').upsert({user_id:userId,tokens_encrypted:await encryptTokens(token,c.encryptionKey,userId),scopes:token.scopes,revision:crypto.randomUUID(),connected_at:new Date().toISOString(),last_sync_at:null,last_attempt_at:null,sync_error:null,sync_lease_until:'1970-01-01T00:00:00Z'});if(error)throw Error('write_failed');
 }
-async function providerRead(token,path,params){
-  const url=new URL(`https://www.polaraccesslink.com/v4/data/${path}`);url.search=new URLSearchParams(params).toString();
-  return responseJson(await fetch(url,{headers:{Authorization:`Bearer ${token}`,Accept:'application/json'},redirect:'error',signal:AbortSignal.timeout(15000)}));
-}
 async function writeRows(db,table,rows){for(let i=0;i<rows.length;i+=500){const {error}=await db.from(table).upsert(rows.slice(i,i+500),{onConflict:'user_id,source_record_id'});if(error)throw Error('write_failed');}}
 export async function syncPolar(db,c,userId){
   const row=await connection(db,userId);if(!row)return {connected:false,synced:false};
   const now=new Date().toISOString(),lease=new Date(Date.now()+300000).toISOString();
   const claim=await db.from('health_polar_connections').update({sync_lease_until:lease,last_attempt_at:now}).eq('user_id',userId).eq('revision',row.revision).lte('sync_lease_until',now).select('user_id').maybeSingle();
   if(claim.error)throw Error('write_failed');if(!claim.data)return {connected:true,synced:false,in_progress:true};
+  let phase='token';
   try{
     let token=await decryptTokens(row.tokens_encrypted,c.encryptionKey,userId);
     if(!token.access_token||!token.refresh_token)throw Error('authorization_expired');
     if(token.expires_at<Date.now()+60000){
+      phase='refresh';
       token=await tokenExchange(c,{grant_type:'refresh_token',refresh_token:token.refresh_token});
       const update=await db.from('health_polar_connections').update({tokens_encrypted:await encryptTokens(token,c.encryptionKey,userId),scopes:token.scopes}).eq('user_id',userId).eq('revision',row.revision).select('user_id').maybeSingle();
       if(update.error||!update.data)throw Error('authorization_expired');
     }
+    phase='calendar';
     const today=localDay(),end=addDays(today,1),start=addDays(today,row.last_sync_at?-6:-29);
-    const [sessionsPayload,sleepList]=await Promise.all([providerRead(token.access_token,'training-sessions/list',{from:addDays(today,row.last_sync_at?-6:-89),to:end}),providerRead(token.access_token,'sleeps',{from:start,to:end})]);
-    if(!Array.isArray(sleepList?.nightSleeps))throw Error('provider_unavailable');
-    const dates=[...new Set(sleepList.nightSleeps.map(r=>validDay(r.sleepDate)).filter(d=>d&&d>=start&&d<=today))];
+    phase='lists';
+    const sessionsPayload={trainingSessions:[]};
+    for(const window of dayWindows(addDays(today,row.last_sync_at?-6:-89),end)){
+      const payload=await providerRead(token.access_token,'training-sessions/list',trainingWindowParams(window));
+      sessionsPayload.trainingSessions.push(...providerItems(payload,'trainingSessions','sessions'));
+    }
+    const sleepList=await providerRead(token.access_token,'sleeps',{from:start,to:end});
+    phase='sleep_dates';
+    const dates=[...new Set(providerItems(sleepList,'nightSleeps','sleep').map(r=>validDay(r.sleepDate)).filter(d=>d&&d>=start&&d<=today))];
     const metrics=[];
     for(let i=0;i<dates.length;i+=3){
+      phase='sleep_details';
       const results=await Promise.all(dates.slice(i,i+3).map(d=>providerRead(token.access_token,'sleeps',{from:d,to:addDays(d,1),features:'sleep-result,sleep-evaluation'})));
-      for(const payload of results)metrics.push(...await polarSleep(payload,userId));
+      for(const payload of results){providerItems(payload,'nightSleeps','sleep');metrics.push(...await polarSleep(payload,userId));}
     }
+    phase='sessions';
+    providerItems(sessionsPayload,'trainingSessions','sessions');
     const sessions=(await polarSessions(sessionsPayload,userId)).filter(r=>r.workout_date<=today&&r.workout_date>=addDays(today,row.last_sync_at?-6:-89));
+    phase='ownership';
     const stillLinked=await connection(db,userId,'revision');if(stillLinked?.revision!==row.revision)return {connected:false,synced:false};
+    phase='write';
     await writeRows(db,'health_polar_sessions',sessions);await writeRows(db,'health_source_daily_metrics',metrics);
     const updated=await db.from('health_polar_connections').update({last_sync_at:new Date().toISOString(),sync_error:null,sync_lease_until:'1970-01-01T00:00:00Z'}).eq('user_id',userId).eq('revision',row.revision);
     if(updated.error)throw Error('write_failed');return {connected:true,synced:true};
   }catch(error){
-    const reason=['authorization_expired','write_failed'].includes(error?.message)?error.message:'provider_unavailable';
-    await db.from('health_polar_connections').update({sync_error:reason,sync_lease_until:'1970-01-01T00:00:00Z'}).eq('user_id',userId).eq('revision',row.revision);
+    const detail=syncFailure(error,phase),reason=['authorization_expired','write_failed'].includes(detail)?detail:'provider_unavailable';
+    console.info('polar_sync_failure',detail);
+    const released=await db.from('health_polar_connections').update({sync_error:reason,sync_lease_until:'1970-01-01T00:00:00Z'}).eq('user_id',userId).eq('revision',row.revision).eq('sync_lease_until',lease);
+    if(released.error)throw Error('write_failed');
     return {connected:true,synced:false,sync_error:reason};
   }
 }
