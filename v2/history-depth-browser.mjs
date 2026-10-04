@@ -115,14 +115,17 @@ try{
   assert.equal(await page.locator('#reportLabs [data-report-marker]').count(),1);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'reportLabQuery','report search retains keyboard focus');
   await page.locator('[data-report-marker="marcador 22"]').click();
+  await page.waitForFunction(()=>document.querySelector('#reportLabMarker')?.value==='marcador 22');
   assert.equal(await page.locator('#reportLabMarker').inputValue(),'marcador 22');
   assert.equal(await page.locator('#reportLabPoint option').count(),25,'no historical graph cap');
   await page.locator('#reportLabPoint').selectOption('0');
+  await page.waitForFunction(()=>document.querySelector('#reportLabPoint')?.value==='0'&&document.querySelector('#reportLabs [role="status"]')?.textContent.includes('Faixa sintética'));
   assert.ok((await page.locator('#reportLabs [role="status"]').innerText()).includes('Faixa sintética'),'selected point shows its own reference');
   assert.equal(await page.locator('#reportLabs .ltsContextLine').count(),0,'unknown methods cannot create connected trend');
   await page.locator('#reportLabQuery').fill('');
   await page.waitForFunction(()=>document.querySelectorAll('#reportLabs [data-report-marker]').length===10&&document.querySelector('#reportLabQuery')?.value==='');
   await page.locator('[data-report-page="reportLabPage"]').last().click();
+  await page.waitForFunction(()=>document.querySelector('#reportLabs [data-report-marker]')?.getAttribute('data-report-marker')==='marcador 11');
   assert.equal(await page.locator('#reportLabs [data-report-marker]').count(),10,'report comparison pagination is interactive');
   await overflow(page);
   if(label!=='small'){await page.locator('#reportSegmental').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-reports.png`});}
