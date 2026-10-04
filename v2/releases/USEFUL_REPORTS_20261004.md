@@ -1,4 +1,4 @@
-# Useful reports and Polar preparation — candidate .34
+# Useful reports and Polar preparation — published .34
 
 The owner requested practical historical reports and cross-domain investigation context, prioritizing Polar/MyFitnessPal over Apple Health. FB-025 reopens report usefulness after the technical .33 delivery. Owner/physical acceptance is not presumed.
 
@@ -32,7 +32,15 @@ MyFitnessPal API access remains externally blocked; imported files are distingui
 
 Local report, encryption/provider-schema, health-context, history, privacy and public-build contracts passed. Fifteen affected modules passed syntax. Post-migration queries confirm RLS and explicit grants, no browser access to token/state tables, owner-only session reads and no user writes. Two advisor INFO notices concern deliberately service-only tables without client policies; the pre-existing password-protection warning is tracked separately. [RLS informational notice](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy).
 
-Responsive candidate CI, authenticated public checks and exact-public browser inspection are pending. The package stays in progress until executed evidence is appended. Existing private lab/body/workout histories remain preserved; no private values, credentials or plaintext health screenshots belong here.
+PR #302 published `home-dashboard-reference-20261003.34` at product commit `7c62565ab5571d10d26a45b40ce4aa7c6c0e6240`. All six final candidate gates passed at candidate `067e226452ad6b3e25c91691c8072587acc2b856`: product contract `37166395675`, full histories `37166395765`, cockpit `37166395760`, workout evidence `37166395761`, nutrition `37166395758` and recovery `37166395781`.
+
+All nine post-merge workflows passed: deploy `37166510377`, authenticated real-data desktop/mobile `37166510321`, full histories `37166510345`, public Pages `37166529412` (attempt 2), homologation Pages `37166529425`, nutrition `37166510316`, recovery `37166510341`, timeline `37166510311` and smoke `37166510332`. The first public Pages browser attempt timed out waiting for its fixture; an unchanged-code retry passed. The authenticated gate independently reconciled complete workout, marker and body access, confirmed protected Polar activation status, anonymous rejection and invalid callback rejection, and preserved original histories.
+
+Encrypted private screenshot artifact: `11289633336`, SHA256 `b147e898109d037033746ebd3296a8b48902f1696c76970fff49865d28f172d8`. Synthetic responsive artifact: `11289324075`, SHA256 `218cdb6aa5c4e920c6e1305c482e43b9739536dbb0c119af6a0f84b803a64e99`; desktop/mobile segmental captures were visually reviewed. Plaintext authenticated CI screenshots were not decrypted in this checkpoint; no claim of that review is made.
+
+The exact public `.34` was independently opened in authenticated Cloud Browser on 2026-10-04 after secure login. Production report layout, all-history and 90-day shared axes, legacy left-arm interval context, five segment rows, lab search with retained focus, marker/current-point selection with its own reference and Data & sources activation states were checked. A private viewport capture was retained outside the repository. The report defaults to the latest point when a marker changes; an explicit oldest-point choice remains available.
+
+The technical package is complete. Real Polar consent/pulls/refresh/replay remain activation work; MyFitnessPal API access and notebook water remain blocked. Owner usefulness judgment, physical-iPhone acceptance and final pixel parity are not presumed. Existing private histories remain preserved; no private values, credentials or plaintext health screenshots belong here.
 
 ## Primary sources
 
