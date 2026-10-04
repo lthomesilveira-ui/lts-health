@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
+    "latest_release": "v2/releases/HEALTH_AUTO_EXPORT_20261004.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,20 +49,18 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-MFP-REPORT-COVERAGE-001",
-    "status": "done",
-    "goal": "Complete useful duration and water reporting while preserving the verified Polar connection and the actual MyFitnessPal access blocker.",
+    "id": "PKG-HEALTH-AUTO-EXPORT-001",
+    "status": "in_progress",
+    "goal": "Enable the owner-approved Health Auto Export bridge for daily nutrition, real water volumes and source-separated recovery while preserving Polar.",
     "task_ids": [
-      "LTS-REPORT-COVERAGE-001"
+      "LTS-HEALTH-AUTO-EXPORT-001"
     ],
     "completed_evidence": [
-      "PR 306 merged at de7c1cc0ebdd25405036fa59fadd5acdcb378ce0; public build home-dashboard-reference-20261003.35",
-      "All five final candidate gates passed; responsive production-path evidence inspected at artifact 11311845561",
-      "PR 307 merged at dc48bd4d0fc354547f840fda75675e393fdf6979; real-data assertion now awaits the actual selected report",
-      "All nine post-merge workflows passed, including deploy 37225072815 and real authenticated E2E 37225072814",
-      "Exact public authenticated Cloud Browser inspection passed: duration coverage, missing water, unchanged authorized Polar and official MFP export instructions"
+      "Daily parser, authenticated bounded receiver and UI key-lifecycle contracts passed.",
+      "Protected database migrations applied; rollback probes passed for replay, projection, reviewed rows, rotation and revocation.",
+      "Two Edge Functions active; anonymous connection and missing/unknown phone keys return 401."
     ],
-    "release_state": "published_and_verified_build_35; MyFitnessPal_account_and_water_import_remain_blocked; physical_owner_acceptance_not_presumed"
+    "release_state": "candidate_build_36; public_promotion_and_phone_upload_pending"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -507,7 +505,7 @@
       "priority": "P1",
       "status": "blocked_external",
       "owner": "external",
-      "summary": "Replace the user-triggered MyFitnessPal transfer with an official continuous connection if provider access becomes available.",
+      "summary": "Direct MyFitnessPal API access remains unavailable; the owner approved a separate Apple Health bridge.",
       "acceptance": [
         "Official authorization is approved for the application.",
         "Tokens remain server-side and sync is idempotent, observable, and revocable.",
@@ -518,9 +516,10 @@
         "https://www.myfitnesspal.com/apps/api/version",
         "v2/src/polar-connection.js",
         "v2/releases/USEFUL_REPORTS_20261004.md",
-        "v2/releases/MFP_REPORT_COVERAGE_20261004.md"
+        "v2/releases/MFP_REPORT_COVERAGE_20261004.md",
+        "2026-10-04: owner approved and purchased the annual Health Auto Export bridge; tracked separately from direct API access."
       ],
-      "next_action": "Use the existing official ZIP import for fresh nutrition when provided; continuous sync still requires approved application access and supported scopes.",
+      "next_action": "Use the authorized Health Auto Export bridge after physical iPhone activation. Revisit direct API access only when the provider makes it available.",
       "blocker": "Approved API access is not available to this project; the 2026-10-04 direct account attempt also encountered a persistent provider-served browser security block before login."
     },
     {
@@ -1035,6 +1034,50 @@
       ],
       "next_action": null,
       "blocker": null
+    },
+    {
+      "id": "LTS-HEALTH-AUTO-EXPORT-001",
+      "area": "integrations",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Deliver the owner-approved Health Auto Export bridge and source-backed reporting.",
+      "acceptance": [
+        "JWT-authenticated owner setup creates a revocable key; only its digest is stored.",
+        "Daily JSON v2 uploads keep original source, explicit units and dates; replays do not duplicate days.",
+        "Original nutrition history wins on overlap; bridge water cannot close the original MFP water import.",
+        "Desktop/mobile configuration and the exact published authenticated app are verified."
+      ],
+      "evidence": [
+        "v2/health-auto-export-test.mjs",
+        "v2/health-auto-export-ui-test.mjs",
+        "v2/health-auto-export-smoke.mjs",
+        "supabase/functions/health-auto-export-receive/index.ts",
+        "supabase/migrations/20261004194659_health_auto_export_bridge.sql",
+        "supabase/migrations/20261004195418_allow_authenticated_auto_export_nutrition.sql"
+      ],
+      "next_action": "Complete candidate CI, normal merge, deployment and exact public verification.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001",
+      "area": "integrations",
+      "priority": "P0",
+      "status": "blocked_user",
+      "owner": "Lucas",
+      "summary": "Enable the purchased Health Auto Export app on the physical iPhone and verify its first real upload.",
+      "acceptance": [
+        "MyFitnessPal is permitted to write nutrition to Apple Health.",
+        "Health Auto Export can read selected metrics and sends daily JSON v2 to the protected LTS receiver.",
+        "The first real upload changes the public connection state to receiving data.",
+        "Water is declared available only after an actual positive volume reaches the receiver."
+      ],
+      "evidence": [
+        "Owner approved the annual Premium bridge and confirmed purchase on 2026-10-04.",
+        "v2/src/health-auto-export-connection.js includes configuration and real receipt status."
+      ],
+      "next_action": "Grant iPhone Health permissions, copy the LTS setup into a REST API automation and export yesterday/today once.",
+      "blocker": "Only the owner can grant physical iPhone permissions and configure the purchased phone application."
     }
   ],
   "package_history": [
@@ -1152,6 +1195,22 @@
         "Normal deployed runtime replay and authenticated public source/report inspection passed after promotion"
       ],
       "release_state": "published_backend_version_16; frontend_build_34_preserved; real_sync_refresh_replay_verified; physical_owner_acceptance_not_presumed"
+    },
+    {
+      "id": "PKG-MFP-REPORT-COVERAGE-001",
+      "status": "done",
+      "goal": "Complete useful duration and water reporting while preserving the verified Polar connection and the actual MyFitnessPal access blocker.",
+      "task_ids": [
+        "LTS-REPORT-COVERAGE-001"
+      ],
+      "completed_evidence": [
+        "PR 306 merged at de7c1cc0ebdd25405036fa59fadd5acdcb378ce0; public build home-dashboard-reference-20261003.35",
+        "All five final candidate gates passed; responsive production-path evidence inspected at artifact 11311845561",
+        "PR 307 merged at dc48bd4d0fc354547f840fda75675e393fdf6979; real-data assertion now awaits the actual selected report",
+        "All nine post-merge workflows passed, including deploy 37225072815 and real authenticated E2E 37225072814",
+        "Exact public authenticated Cloud Browser inspection passed: duration coverage, missing water, unchanged authorized Polar and official MFP export instructions"
+      ],
+      "release_state": "published_and_verified_build_35; MyFitnessPal_account_and_water_import_remain_blocked; physical_owner_acceptance_not_presumed"
     }
   ]
 }

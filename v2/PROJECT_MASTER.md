@@ -1,5 +1,9 @@
 # LTS Health v2 — lista-mestra de execução
 
+## Health Auto Export — candidato de 04/10/2026
+
+Ponte anual aprovada e compra confirmada pelo usuário. Backend protegido e importação diária preparados; o build `.36` aguarda CI, promoção e inspeção pública. Não afirmar sincronização real antes do primeiro envio do iPhone. Polar e o histórico original permanecem preservados. Ver `releases/HEALTH_AUTO_EXPORT_20261004.md` e `EXECUTION_STATE.json`.
+
 ## Ativação Polar comprovada — 04/10/2026
 
 Consentimento oficial e callback criptografado concluídos. A coleta real, repetição sem duplicidade e renovação real da autorização passaram; a aplicação pública autenticada apresenta estado de sucesso e histórico Polar com gráficos e frequência cardíaca, mantendo sessões de musculação separadas. O tratamento normal de expiração está restaurado na função versão 16. PR #304 promovido normalmente ao commit `a4a66649f0ad8086b889f91eb2265d0687b3e96c`; os quatro checks candidatos e oito workflows pós-merge passaram. A repetição após a promoção também concluiu sem duplicidade. O frontend permanece `.34`. Credenciais e consentimento já resolvidos não devem ser solicitados novamente. Ver `releases/POLAR_LIVE_SYNC_20261004.md` e `EXECUTION_STATE.json`.

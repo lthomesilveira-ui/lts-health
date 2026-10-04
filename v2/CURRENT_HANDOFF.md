@@ -1,3 +1,9 @@
+# Candidate checkpoint — Health Auto Export, 2026-10-04
+
+Owner approved and purchased annual Premium Health Auto Export. This reopens Apple Health only for the third-party bridge, without an Apple Developer subscription. Build `.36` is a candidate, not yet a verified public release. See `EXECUTION_STATE.json` and `releases/HEALTH_AUTO_EXPORT_20261004.md`.
+
+Backend migrations and the two authenticated/custom-key functions are deployed. Phone credentials remain private and revocable; setup status does not claim a real upload. Daily nutrition and water use explicit provenance; original nutrition wins on overlapping dates. Polar remains authorized and unchanged. Sleep/recovery stay source-separated. The first real phone upload requires physical iPhone permissions and REST API configuration by the owner. Historical original MyFitnessPal water is still pending.
+
 # LTS Health — CURRENT HANDOFF
 
 ## Current checkpoint — useful duration and water reports, 2026-10-04

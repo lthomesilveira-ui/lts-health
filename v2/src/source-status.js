@@ -1,7 +1,7 @@
 import {state,norm} from './core.js';
 
 export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
-const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone','healthkit_candidate']);
+const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone','healthkit_candidate','health_auto_export']);
 const preservedCandidateStatuses=new Set(['candidate','held']);
 const appleSourceTerms=['apple health','healthkit','activitysummary','activity summary','apple watch','apple_watch','iphone'];
 
@@ -13,6 +13,7 @@ const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_f
 const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&isPreservedCandidate(row);
 const anyCandidateMetric=rows=>(rows||[]).some(appleCandidate);
 const appleSourceMetric=row=>appleNativeFamilies.has(norm(row?.source_family));
+const confirmedAutoExport=row=>row?.source_family==='health_auto_export'&&row?.canonical_status==='canonical'&&row?.confidence==='authenticated_auto_export'&&String(row?.source_record_id||'').startsWith('health_auto_export:');
 const workoutEvidenceFor=(rows,family,statuses=null)=>(rows||[]).filter(row=>norm(row?.source_family)===norm(family)&&(!statuses||statuses.has(norm(row?.evidence_status))));
 const confirmedWorkoutEvidence=(rows,family)=>workoutEvidenceFor(rows,family,new Set(['confirmed']));
 const preservedWorkoutEvidence=(rows,family)=>workoutEvidenceFor(rows,family,preservedCandidateStatuses);
@@ -39,6 +40,7 @@ export function isMyFitnessPalSource(row){
 
 export function isMyFitnessPalViaApple(row){
   if(!isMyFitnessPalSource(row))return false;
+  if(row?.source_family==='health_auto_export'||String(row?.source_record_id||'').startsWith('health_auto_export:'))return true;
   const text=provenanceText(row);
   return appleSourceTerms.some(term=>text.includes(term));
 }
@@ -61,7 +63,7 @@ function latestUploadFor(source){
 function sourceEvidence(source){
   const workoutEvidence=state.data.workoutEvidence||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],sourceMetrics=state.data.sourceMetrics||[];
   if(source==='apple_health')return{
-    dataFound:!failed('metrics')&&metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&isAppleSource(m)&&isAppleActivitySummarySource(m)),
+    dataFound:(!failed('metrics')&&metrics.some(m=>stableAppleMetricTypes.has(m.metric_type)&&isAppleSource(m)&&isAppleActivitySummarySource(m)))||(!failed('sourceMetrics')&&sourceMetrics.some(confirmedAutoExport)),
     candidateFound:!failed('sourceMetrics')&&anyCandidateMetric(sourceMetrics),
     domainKeys:['metrics','sourceMetrics']
   };
@@ -98,6 +100,7 @@ export function latestConfirmedSourceDateFor(source){
   const workoutEvidence=state.data.workoutEvidence||[],labs=state.data.labs||[],nutrition=state.data.nutrition||[],meals=state.data.meals||[],metrics=state.data.metrics||[],directDates=[];
   if(source==='apple_health'){
     if(!failed('metrics'))directDates.push(...metrics.filter(row=>stableAppleMetricTypes.has(row?.metric_type)&&isAppleSource(row)&&isAppleActivitySummarySource(row)).map(row=>row?.measured_at));
+    if(!failed('sourceMetrics'))directDates.push(...(state.data.sourceMetrics||[]).filter(confirmedAutoExport).map(row=>row?.metric_date));
   }else if(source==='polar_flow'){
     if(!failed('workoutEvidence'))directDates.push(...confirmedWorkoutEvidence(workoutEvidence,'polar_flow').map(row=>row?.workout_date));
   }else if(source==='myfitnesspal'){

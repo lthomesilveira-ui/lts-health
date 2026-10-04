@@ -20,7 +20,7 @@ const complementarySignalDefs={
   respiratory_rate_bpm:{label:'Frequência respiratória',digits:1},
   oxygen_saturation_pct:{label:'Saturação de oxigênio',digits:1}
 };
-const complementarySourceLabels={apple_watch:'Apple Watch',iphone:'iPhone',polar_flow:'Polar Flow',healthkit_candidate:'Apple Saúde',ringconn:'RingConn'};
+const complementarySourceLabels={apple_watch:'Apple Watch',iphone:'iPhone',polar_flow:'Polar Flow',healthkit_candidate:'Apple Saúde',health_auto_export:'Saúde do iPhone',ringconn:'RingConn'};
 
 export function complementarySignalSeries(rows,bounds={start:null,end:null}){
   const groups=new Map();

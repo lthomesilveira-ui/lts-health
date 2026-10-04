@@ -1,0 +1,37 @@
+name: LTS Health Auto Export
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, 'health-auto-export-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  health-auto-export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate authenticated daily import and source boundaries
+        run: |
+          node --check v2/src/main.js
+          node --check v2/src/health-auto-export-connection.js
+          node --check supabase/functions/_shared/health-auto-export-handler.mjs
+          node v2/health-auto-export-test.mjs
+          node v2/health-auto-export-ui-test.mjs
+          node v2/hydration-contract-test.mjs
+          node v2/reports-model-test.mjs
+      - name: Install browser runtime
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install chromium
+      - name: Verify desktop and mobile setup
+        run: |
+          python3 -m http.server 4173 --directory v2 >/tmp/lts-health-v2-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          node v2/health-auto-export-smoke.mjs

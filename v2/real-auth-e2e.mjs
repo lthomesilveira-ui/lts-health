@@ -109,7 +109,7 @@ async function auditReferenceHome(label){
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='home-dashboard-reference-20261003.35')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='home-dashboard-reference-20261003.36')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
@@ -152,7 +152,7 @@ async function readIntegritySnapshot(){
       ['exercises','health_workout_exercises','source_record_id,workout_source_record_id'],
       ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id'],
       ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id'],
-      ['sourceMetrics','health_source_daily_metrics','source_record_id,metric_type,source_family,canonical_status'],
+      ['sourceMetrics','health_source_daily_metrics','source_record_id,metric_type,source_family,source_name,canonical_status,confidence,unit,value'],
       ['quality','health_data_quality_issues','source_record_id,status'],
       ['uploads','health_uploads','id,status']
     ];
@@ -165,12 +165,16 @@ async function readIntegritySnapshot(){
       .sort((a,b)=>String(b.workout_date||'').localeCompare(String(a.workout_date||''))||String(a.source_record_id||'').localeCompare(String(b.source_record_id||'')));
     const latest=visibleWorkouts[0]||null;
     const allowedCanonical=new Set(['apple_activity_summary|active_energy_kcal','apple_activity_summary|exercise_minutes','apple_activity_summary|stand_hours']);
+    const bridgeTypes={dietary_energy_kcal:['kcal',20000],dietary_protein_g:['g',2000],dietary_carbs_g:['g',5000],dietary_fat_g:['g',2000],dietary_fiber_g:['g',1000],dietary_water_ml:['mL',100000]};
+    const validBridge=r=>r.source_family==='health_auto_export'&&r.confidence==='authenticated_auto_export'&&String(r.source_record_id||'').startsWith('health_auto_export:')&&bridgeTypes[r.metric_type]?.[0]===r.unit&&Number.isFinite(Number(r.value))&&Number(r.value)>=0&&Number(r.value)<=bridgeTypes[r.metric_type][1];
+    const validOriginalWater=r=>r.source_family==='myfitnesspal'&&r.source_name==='MyFitnessPal'&&r.metric_type==='dietary_water_ml'&&r.unit==='mL'&&Number(r.value)>0&&Number(r.value)<=100000&&['user_confirmed','account_authenticated_export'].includes(r.confidence);
+
     return{
       orphanExercises:data.exercises.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
       orphanSetsByWorkout:data.sets.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
       orphanSetsByExercise:data.sets.filter(r=>r.exercise_source_record_id&&!exerciseIds.has(r.exercise_source_record_id)).length,
       orphanEvidence:data.evidence.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
-      canonicalBoundaryViolations:data.sourceMetrics.filter(r=>String(r.canonical_status||'').toLowerCase()==='canonical'&&!allowedCanonical.has(`${String(r.source_family||'').toLowerCase()}|${String(r.metric_type||'').toLowerCase()}`)).length,
+      canonicalBoundaryViolations:data.sourceMetrics.filter(r=>String(r.canonical_status||'').toLowerCase()==='canonical'&&!allowedCanonical.has(`${String(r.source_family||'').toLowerCase()}|${String(r.metric_type||'').toLowerCase()}`)&&!validBridge(r)&&!validOriginalWater(r)).length,
       latestWorkoutId:latest?.source_record_id||null,
       latestWorkoutDate:latest?.workout_date||null,
       latestExpectedExercises:latest?data.exercises.filter(r=>r.workout_source_record_id===latest.source_record_id).length:0,

@@ -73,3 +73,7 @@ Home/Treinos/Composição/Exames foram promovidos tecnicamente até os PRs #263/
 - FB-020 formaliza a correção de processo, mas a evidência física posterior demonstrou que a revisão remota da `.26` não foi suficiente.
 - FB-021 prevalece sobre o fechamento anterior: `.26` está rejeitada; nenhum CI ou screenshot remoto substitui o resultado observado no iPhone físico.
 - Nenhum desses estados significa que o proprietário aprovou a experiência em iPhone físico ou declarou paridade pixel.
+
+## FB-026 — ponte automática via Saúde do iPhone (04/10/2026)
+
+O usuário aprovou o Health Auto Export Premium anual e confirmou a compra para reduzir envios manuais de dados. Implementar a ponte MyFitnessPal → Saúde → Health Auto Export → LTS, incluindo água somente se registrada no Saúde. Preservar Polar, histórico original e comparação por origem. Estado: `in_progress`, pacote `PKG-HEALTH-AUTO-EXPORT-001`. A ativação no iPhone é `blocked_user`; nenhum novo pedido de pagamento, credenciais Polar ou consentimento já resolvido é necessário.
