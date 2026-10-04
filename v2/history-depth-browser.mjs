@@ -143,6 +143,10 @@ try{
   });
   await page.locator('#refreshBtn').click();
   await page.waitForFunction(()=>document.querySelector('#reportPeriods')?.textContent.includes('1 de 2 sessões com duração'));
+  if(label!=='desktop'){
+    const retry=await page.locator('#refreshBtn').boundingBox();
+    assert.ok(retry?.width>=44&&retry?.height>=44,'report retry remains visible with a phone-sized touch target');
+  }
   const durationRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Tempo registrado dos treinos'});
   assert.ok((await durationRow.innerText()).includes('40 min'));
   assert.ok((await durationRow.innerText()).includes('Cobertura incompleta'));

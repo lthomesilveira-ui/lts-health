@@ -53,7 +53,7 @@ function periodComparison(m){
 function hydrationSection(m){
   const h=m.hydration;
   if(!h.available)return `<section class="ltsReportSection" id="reportHydration"><h2>Água ingerida ao longo do tempo</h2>${empty('Não foi possível verificar todas as fontes de água. Atualize os dados; nenhum valor ausente foi tratado como zero.')}</section>`;
-  const latest=h.rows.at(-1),points=h.rows.map(r=>({...r,cohort:norm(r.source),context:r.source}));
+  const latest=h.rows.at(-1),points=h.rows.map(r=>({...r,cohort:h.origins.includes(null)?null:norm(r.source),context:r.source}));
   return `<section class="ltsReportSection" id="reportHydration"><h2>Água ingerida ao longo do tempo</h2>${latest?`<p class="ltsReportValue">${value(latest.value,'mL',0)}<small>${fmtDate(latest.date)} · ${esc(latest.source)}</small></p>${contextChart(points,{label:'Água ingerida',unit:'mL',digits:0,bounds:m.current,selectable:false})}${note(`${h.days} de ${h.intervalDays} dias com total registrado. Média nesses dias: ${value(h.mean,'mL',0)}. Ausência de registro não significa consumo zero.`)}`:empty('Sem total de água nesta janela. Importe o histórico do MyFitnessPal para preencher o relatório.')} ${h.conflicts.length?note(`${h.conflicts.length} dia(s) com totais divergentes ficaram fora da média e do gráfico.`):''}${note('Água ingerida e água corporal da bioimpedância são medidas diferentes. Os registros não definem uma meta ou necessidade de hidratação.')}<button type="button" data-route="nutricao">Consultar alimentação e água ›</button></section>`;
 }
 function bodySection(m){
