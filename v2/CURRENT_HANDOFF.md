@@ -1,10 +1,13 @@
 # LTS Health — CURRENT HANDOFF
 
-## Current candidate — 2026-10-04
+## Current checkpoint — useful duration and water reports, 2026-10-04
 
-`PKG-MFP-REPORT-COVERAGE-001` prepares `.35`: recorded workout time with explicit incomplete coverage, water history and equal-window water averages, and official MyFitnessPal ZIP instructions. Local contracts passed; candidate CI, promotion and public inspection are pending. MyFitnessPal denied the authorized cloud browser before login and remained blocked after one reload. Its plugin does not expose diary or water reads. No new account data was imported and no continuous MyFitnessPal sync is active. The existing nutrition ZIP and authenticated water JSON importers remain usable when a source file is available. Do not request a password as a solution to this security block. Water remains pending.
+`PKG-MFP-REPORT-COVERAGE-001` is technically complete and `.35` is published. PR #306 merged at `de7c1cc0ebdd25405036fa59fadd5acdcb378ce0`: partial recorded durations with session coverage, water history and equal-window averages, a reachable mobile refresh action, readable mobile period comparisons and official MyFitnessPal ZIP guidance. All five final candidate gates passed; responsive synthetic captures were inspected. PR #307 synchronized the real-data lab assertion with the actual selected report at `dc48bd4d0fc354547f840fda75675e393fdf6979`. All nine final post-merge workflows passed, including deploy `37225072815` and authenticated E2E `37225072814`. Exact-public authenticated Cloud Browser inspection confirmed the build, recorded duration coverage, absent water, unchanged authorized Polar and official MFP instructions. See `releases/MFP_REPORT_COVERAGE_20261004.md`.
 
-## Current checkpoint — 2026-10-04 UTC
+The owner authorized the agent to lead MyFitnessPal implementation. The provider denied this cloud browser before login and remained blocked after one reload; the agent stopped that site. The plugin does not expose diary or water access. No new account data was imported, and no continuous MyFitnessPal connection is active. The existing official ZIP and authenticated water JSON importers remain ready when actual files are available. Do not request a password as a solution to this security block. Water remains pending. Polar credentials and consent must not be requested again. Apple Health is deferred; Polar's present session/sleep connector does not replace every HealthKit category. Owner/physical-device usefulness acceptance is not presumed.
+
+## Previous same-day checkpoint — Polar activation
+
 
 Polar activation is verified against the real provider: owner consent, encrypted callback, initial history import, idempotent replay and a real refresh grant succeeded. The authenticated public app shows last-success status and imported Polar chart/table rows; canonical workouts were preserved. Normal token-expiry handling is restored in `health-polar-connection` version 16. `PKG-POLAR-LIVE-SYNC-001` is complete: PR #304 merged at `a4a66649f0ad8086b889f91eb2265d0687b3e96c`, all four candidate and eight post-merge workflows passed, and normal runtime replay succeeded after promotion. The frontend remains `.34`. Credentials and consent must not be requested again. See `releases/POLAR_LIVE_SYNC_20261004.md` and `EXECUTION_STATE.json`.
 
