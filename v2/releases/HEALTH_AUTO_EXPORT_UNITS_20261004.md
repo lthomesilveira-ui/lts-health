@@ -1,3 +1,13 @@
+# Verified real activation — 2026-10-04
+
+PR #311 merged normally at `f264d0580d5cfe9db8736edc209eda243456faef`, candidate `111a7584f2496caa63b6060d00f0eb85bf75545a`. All five candidate gates passed: Auto Export `37236660598`, nutrition `37236660593`, recovery `37236660628`, dashboard `37236660591`, functional depth `37236660669`. All nine post-merge workflows passed: deployment `37236790472`, Auto Export `37236790347`, nutrition `37236790247`, recovery `37236790332`, functional depth `37236790369`, smoke `37236790345`, timeline `37236790317`, public Pages `37236814633`, homologation Pages `37236814643`.
+
+The owner retried from the physical iPhone and received HTTP 200 with actual supported data accepted. Database receipt and original MyFitnessPal nutrient provenance were independently verified. The exact authenticated public Data route displays **Recebendo dados**, and Nutrition exposes the new daily summaries in the normal runtime. No synthetic row or owner credential was used for this verification. Deployed version 3 and merged shared files were compared byte-for-byte with tested source.
+
+Water is absent from the real upload; the public app states that no water volume has arrived. Its phone HealthKit availability/source is a separate blocked task. Keep the valid existing key and enabled five-minute automation. Exact background timing is not guaranteed, and broader metric import, direct MFP API access, original water history and subjective UX acceptance remain separate.
+
+## Earlier diagnostic checkpoint — superseded by the verified activation above
+
 # Health Auto Export unit compatibility — 2026-10-04
 
 ## Trigger and current state
