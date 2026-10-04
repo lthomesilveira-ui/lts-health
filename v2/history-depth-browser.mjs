@@ -111,6 +111,7 @@ try{
   assert.equal(await page.locator('#reportSegmentMetric').inputValue(),'fat');
   assert.equal(await page.locator('#reportSegmental tbody tr').count(),5,'all regions shown together');
   await page.locator('#reportLabQuery').fill('Marcador 22');
+  await page.waitForFunction(()=>document.querySelectorAll('#reportLabs [data-report-marker]').length===1&&document.querySelector('#reportLabQuery')?.value==='Marcador 22');
   assert.equal(await page.locator('#reportLabs [data-report-marker]').count(),1);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'reportLabQuery','report search retains keyboard focus');
   await page.locator('[data-report-marker="marcador 22"]').click();
@@ -120,6 +121,7 @@ try{
   assert.ok((await page.locator('#reportLabs [role="status"]').innerText()).includes('Faixa sintética'),'selected point shows its own reference');
   assert.equal(await page.locator('#reportLabs .ltsContextLine').count(),0,'unknown methods cannot create connected trend');
   await page.locator('#reportLabQuery').fill('');
+  await page.waitForFunction(()=>document.querySelectorAll('#reportLabs [data-report-marker]').length===10&&document.querySelector('#reportLabQuery')?.value==='');
   await page.locator('[data-report-page="reportLabPage"]').last().click();
   assert.equal(await page.locator('#reportLabs [data-report-marker]').count(),10,'report comparison pagination is interactive');
   await overflow(page);

@@ -185,7 +185,7 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[]};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
