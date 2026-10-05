@@ -58,7 +58,44 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   if(bodyIds.length){await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().click();await page.waitForSelector('[data-composition-view="detail"]');check((await page.locator('.ltsRecordDetails').count())>=2,'measurement and segmental context missing');await noOverflow();await assertStableMobileShell('mobile measurement detail');await page.screenshot({path:`${evidenceDir}/mobile-measurement-detail.png`});await page.setViewportSize({width:1440,height:1000});await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-measurement-detail.png`});await page.locator('[data-depth-composition-back]').last().click();}
   await goto('treinos','.ltsTrainingV2');await page.locator('[data-depth-training-view="history"]').first().click();await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-training-full-history.png`});
   await goto('saude','.ltsLabsV2 .ltsLabsHero');if(truth.largestMarker)await page.locator('#productLabMarkerSelect').selectOption(truth.largestMarker);await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-labs-full-history.png`});
-  await goto('analise','.ltsUsefulReports');await page.locator('#analysisPeriod').selectOption('all');
+  await goto('analise','.ltsUsefulReports');
+  const insightBeforePeriod=await page.locator('#reportEvidenceInsights').elementHandle();
+  await page.locator('#analysisPeriod').selectOption('all');
+  await page.waitForFunction(element=>!element.isConnected,insightBeforePeriod);
+  await page.waitForSelector('#reportEvidenceInsights');
+  await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all'&&document.querySelector('#reportNutritionSource'));
+  const insightTruth=await page.evaluate(async()=>{
+    const {state,fmtNum}=await import('./src/core.js');
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const norm=x=>String(x||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+    const selected=document.querySelector('#reportNutritionSource')?.value;
+    const days=new Map();
+    for(const row of state.data.nutrition||[]){const date=String(row.nutrition_date||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>=today)continue;if(!days.has(date))days.set(date,[]);days.get(date).push(row);}
+    const training=new Set((state.data.workouts||[]).filter(r=>r.is_canonical===true&&norm(r.record_status)!=='quarantined').map(r=>String(r.workout_date||'').slice(0,10)));
+    const observations=[...days].filter(([,rows])=>rows.length===1&&norm(rows[0].source)===selected).map(([date,[row]])=>({row,training:training.has(date)}));
+    const rows=[...document.querySelectorAll('#reportEvidenceInsights .ltsInsightTable')][0]?.querySelectorAll('tbody tr');
+    const specifications=[['protein_g','g'],['calories_kcal','kcal'],['carbs_g','g'],['fat_g','g']];
+    const matches=Boolean(rows?.length===4)&&specifications.every(([key,unit],index)=>{
+      const value=r=>r[key]==null||r[key]===''?null:Number(r[key]);
+      const group=flag=>observations.filter(o=>o.training===flag&&value(o.row)!=null&&Number.isFinite(value(o.row))&&value(o.row)>=0).map(o=>value(o.row));
+      const withValues=group(true),withoutValues=group(false);
+      const average=values=>values.length?values.reduce((a,b)=>a+b,0)/values.length:null;
+      const a=average(withValues),b=average(withoutValues),cells=rows[index].querySelectorAll('td');
+      const expected=(mean,count)=>`${mean==null?'Sem valor':`${fmtNum(mean,0)} ${unit}`}${count} dias com valor`;
+      const clean=text=>String(text).replace(/\s+/g,' ').trim();
+      const cellMatch=(cell,mean,count)=>clean(cell.textContent)===clean(expected(mean,count));
+      const difference=withValues.length>=5&&withoutValues.length>=5?`${a-b>0?'+':''}${fmtNum(a-b,1)} ${unit}`:'Base curta: mínimo 5 dias por grupo';
+      return cellMatch(cells[0],a,withValues.length)&&cellMatch(cells[1],b,withoutValues.length)&&clean(cells[2].textContent)===clean(difference);
+    });
+    return{section:Boolean(document.querySelector('#reportEvidenceInsights')),matches};
+  });
+  check(insightTruth.section&&insightTruth.matches,'insight table differs from independently recomputed observed means and denominators');
+  const loadLink=page.locator('[data-report-exercise]').first();
+  if(await loadLink.count()){
+    await loadLink.click();await page.waitForSelector('.ltsExerciseHistory');
+    check(await page.locator('.ltsTrainingV2').getAttribute('data-training-view')==='exercise','load insight did not open exercise evidence');
+    await goto('analise','.ltsUsefulReports');
+  }
   const reportKeys=await page.locator('#reportLabMarker option').evaluateAll(es=>es.map(e=>e.value));
   check(same(reportKeys,truth.markerKeys),'report markers differ from the independent private database read');
   if(truth.singleMarker){
