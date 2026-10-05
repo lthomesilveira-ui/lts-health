@@ -1,6 +1,8 @@
-# Active package — evidence-backed insights, 2026-10-04
+# Published package — evidence-backed insights, 2026-10-05
 
-Owner requested meaningful insight from existing private history, leaving water separate. Candidate `.37` adds a shared Home/Reports model for source-separated daily nutrition contrasts and recorded working loads at matching repetitions/equipment/location/provenance. Independent model and existing report/privacy contracts passed. Browser CI, authenticated release verification and exact public inspection remain pending; do not mark technical delivery or subjective acceptance complete. Operational authority: `EXECUTION_STATE.json`; release details: `releases/EVIDENCE_INSIGHTS_20261004.md`.
+Owner requested meaningful insight from existing private history, leaving water separate. `.37` is published by normal PR #313 at `dc80a109f9074b891952e14c916ca6e5738d0484`: shared Home/Reports nutrition contrasts by origin and recorded loads at matching repetitions/equipment/location/provenance. All seven final candidate gates passed and synthetic desktop/two phone widths were inspected. Deploy `37260736710` and authenticated E2E `37260736697` passed, with independent private means/counts verification. The post-merge synthetic capture helper is corrected for rerender timing.
+
+Exact manual public visual inspection remains blocked by an interrupted secure Cloud Browser login. The package is `blocked_user`, not done; do not retry sign-in without renewed owner intent, request repeated phone tests or infer subjective acceptance. Operational authority: `EXECUTION_STATE.json`; release details: `releases/EVIDENCE_INSIGHTS_20261004.md`. Water remains unconfirmed and separate.
 
 # Verified checkpoint — real Health Auto Export activation, 2026-10-04
 

@@ -1,6 +1,6 @@
 # Evidence insights — 2026-10-04
 
-Status: candidate `.37`; public delivery and owner acceptance are not claimed yet.
+Status: `.37` published through normal PR #313 at `dc80a109f9074b891952e14c916ca6e5738d0484`. Automated authenticated validation passed; exact manual public visual inspection and owner acceptance are not claimed.
 
 The owner asked to use existing longitudinal history for useful dashboards and reports, leaving water as a separate integration gap. This package revises the current authenticated LTS app in place. No database/schema/security changes, reimports, paid services or new public data are introduced.
 
@@ -14,7 +14,11 @@ The owner asked to use existing longitudinal history for useful dashboards and r
 
 ## Verification
 
-Local syntax and independent synthetic model expectations passed, as did existing report, functional-depth, privacy and continuity contracts. The local Chromium launch was denied by the environment; it is not marked passed. Candidate CI must run the production-renderer test at desktop, phone and narrow-phone widths. Authenticated release tests and exact public Cloud Browser inspection remain required before marking the package done.
+Local syntax and independent synthetic model expectations passed, as did existing report, functional-depth, privacy and continuity contracts. The local Chromium launch was denied by the environment; it is not marked passed. All seven final candidate checks passed at `d689e3e81fc8305e1b7e824504b31887f99620ff`, including production-renderer controls and calculations at desktop, phone and narrow-phone widths. Synthetic visual captures were inspected. Home insight details preserve the selected Home calendar window.
+
+Deployment `37260736710` and real authenticated E2E `37260736697` passed against published `.37`. The rendered nutrition table was checked against independently recomputed private observed means, metric-specific counts and display boundaries; available load links opened exercise evidence. Other public post-merge gates passed. The functional-depth screenshot helper hit a detached control during rerender after promotion; it now scrolls the current DOM synchronously. This capture correction does not alter product calculations or the published asset build.
+
+The secure Cloud Browser login was interrupted. A fresh canonical public navigation still shows the login form. Do not retry authentication without renewed owner intent, claim exact manual authenticated visual inspection, mark the package done or ask for repeated phone micro-tests. `EXECUTION_STATE.json` records this acceptance blocker explicitly; the previous fully inspected release remains `.36` until the visual gate is met.
 
 No private values, dates, payloads, screenshots or credentials are included in public evidence. Synthetic UI evidence is clearly synthetic.
 

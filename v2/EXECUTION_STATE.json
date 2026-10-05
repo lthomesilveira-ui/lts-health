@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-04",
+  "updated_on": "2026-10-05",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/HEALTH_AUTO_EXPORT_20261004.md"
+    "latest_release": "v2/releases/EVIDENCE_INSIGHTS_20261004.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,16 +50,21 @@
   },
   "current_package": {
     "id": "PKG-EVIDENCE-INSIGHTS-001",
-    "status": "in_progress",
+    "status": "blocked_user",
     "goal": "Turn existing private history into source-aware descriptive insights shared by Home and Reports without redesigning the approved app.",
     "task_ids": [
       "LTS-EVIDENCE-INSIGHTS-001"
     ],
     "completed_evidence": [
       "Shared source-aware insight model, responsive views, pagination and evidence drill-down implemented in the existing app.",
-      "Independent synthetic calculation contracts, existing report contracts, privacy and continuity checks passed locally."
+      "Independent synthetic calculation contracts, existing report contracts, privacy and continuity checks passed locally.",
+      "All seven final candidate checks passed at d689e3e81fc8305e1b7e824504b31887f99620ff; responsive production-renderer captures inspected at desktop and two phone widths.",
+      "PR 313 merged normally at dc80a109f9074b891952e14c916ca6e5738d0484; deploy 37260736710 and authenticated E2E 37260736697 passed. Rendered means and metric-specific counts independently recomputed with private observations.",
+      "Public Cloud Browser remains at the login page after secure authentication was interrupted. No manual authenticated visual acceptance is claimed."
     ],
-    "release_state": "candidate_build_37; calculation_contracts_passed; browser_CI_and_public_inspection_pending"
+    "release_state": "public_build_37_deployed; authenticated_calculations_verified; exact_manual_visual_inspection_blocked_login",
+    "published_build": "home-dashboard-reference-20261003.37",
+    "published_commit": "dc80a109f9074b891952e14c916ca6e5738d0484"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -84,7 +89,7 @@
       "id": "LTS-EVIDENCE-INSIGHTS-001",
       "area": "analytics",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "blocked_user",
       "owner": "Codex",
       "summary": "Deliver useful descriptive nutrition/training and matching-repetition load insights in the existing Home and Reports.",
       "acceptance": [
@@ -96,10 +101,14 @@
       "evidence": [
         "v2/evidence-insights-test.mjs passed independent expected means, denominators, identity and failure cases.",
         "v2/reports-model-test.mjs, history-depth-contract.mjs, public-payload-guard.mjs and continuity-contract-smoke.mjs passed locally.",
+        "Seven final candidate checks passed; synthetic desktop, 390px and 320px renders inspected.",
+        "Published .37 through PR 313; deploy 37260736710 and real authenticated E2E 37260736697 passed, including independent private observed means/counts and exercise evidence navigation.",
+        "Post-merge functional-depth capture hit a detached element during scroll; screenshot helper corrected to use the current DOM. Product calculations and all seven candidate gates had passed.",
+        "Cloud Browser secure login was interrupted; fresh canonical public navigation still shows login. No retry or owner phone micro-QA is requested.",
         "v2/releases/EVIDENCE_INSIGHTS_20261004.md"
       ],
-      "next_action": "Complete candidate CI, inspect responsive synthetic renders, promote normally and verify the exact authenticated public build.",
-      "blocker": null
+      "next_action": "Complete exact public manual visual inspection only if the owner later reopens secure browser authentication; preserve the published build and working phone integration.",
+      "blocker": "The Cloud Browser session is signed out and the secure login request was interrupted. Authenticated automated release verification passed, but it does not replace the required manual public visual inspection."
     },
     {
       "id": "LTS-BRIEF-001",

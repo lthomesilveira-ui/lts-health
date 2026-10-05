@@ -50,7 +50,13 @@ for(const task of state.tasks){
 const executable=state.tasks.filter(task=>['ready','in_progress'].includes(task.status));
 for(const task of executable)assert.ok(state.current_package.task_ids.includes(task.id),`${task.id} is executable but not owned by the current package`);
 if(executable.length)assert.equal(state.current_package.status,'in_progress','executable work requires an in-progress package');
-else assert.equal(state.current_package.status,'done','a package without executable work must be done');
+else{
+  const pending=state.tasks.filter(task=>state.current_package.task_ids.includes(task.id)&&task.status!=='done');
+  if(pending.length&&pending.every(task=>task.status.startsWith('blocked_'))){
+    const expected=pending.some(task=>task.status==='blocked_user')?'blocked_user':'blocked_external';
+    assert.equal(state.current_package.status,expected,'unmet blocked acceptance must not be labelled done');
+  }else assert.equal(state.current_package.status,'done','a package with no pending acceptance or executable work must be done');
+}
 const water=state.tasks.find(task=>task.id==='LTS-HYD-IMPORT-001');
 assert.equal(water?.status,'blocked_user');
 assert.equal(water?.priority,'P0');

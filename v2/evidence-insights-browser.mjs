@@ -42,7 +42,7 @@ try{
     assert.match(await protein.innerText(),/5 dias com valor/s,'source switch recalculates denominators');
     await page.locator('#reportNutritionSource').selectOption('synthetic food a');
     await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('10 dias com valor'));
-    await overflow(page);await page.locator('#reportNutritionSource').scrollIntoViewIfNeeded();
+    await overflow(page);await page.evaluate(()=>document.querySelector('#reportNutritionSource').scrollIntoView({block:'center'}));
     await page.screenshot({path:`${dir}/synthetic-${label}-insights.png`,fullPage:false});
     await page.locator('[data-report-exercise]').first().click();await page.waitForSelector('.ltsExerciseHistory');
     assert.match(await page.locator('.ltsExerciseHistory').innerText(),/Synthetic press/,'evidence link opens the actual exercise');
