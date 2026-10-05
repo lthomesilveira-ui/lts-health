@@ -31,6 +31,7 @@ jobs:
           node --check v2/src/reports-model.js
           node --check v2/src/reports-screen.js
           node v2/reports-model-test.mjs
+          node v2/evidence-insights-test.mjs
           node v2/polar-contract-test.mjs
           node v2/polar-provider-test.mjs
           node v2/history-depth-contract.mjs
@@ -46,12 +47,16 @@ jobs:
           python3 -m http.server 4173 >/tmp/lts-depth-server.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/v2/ >/dev/null && break; sleep 1; done
       - name: Exercise production renderers with synthetic service at desktop and mobile sizes
-        run: node v2/history-depth-browser.mjs
+        run: |
+          node v2/history-depth-browser.mjs
+          node v2/evidence-insights-browser.mjs
       - name: Upload synthetic UI inspection evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: functional-depth-synthetic-visual
-          path: v2/history-depth-evidence
+          path: |
+            v2/history-depth-evidence
+            v2/evidence-insights-visual
           if-no-files-found: warn
           retention-days: 14

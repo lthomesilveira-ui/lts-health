@@ -184,8 +184,12 @@ function bindStaticEvents(){
     if(polarCheck){polarCheck.disabled=true;await checkPolarConnection();scheduleRender();return;}
     const polarAction=event.target.closest('[data-polar-action]');
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
+    const homeInsight=event.target.closest('[data-home-insight-details]');
+    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'30');state.ui.reportNutritionSource=null;state.ui.reportLoadPage=1;setRoute('analise');return;}
     const reportPage=event.target.closest('[data-report-page]');
-    if(reportPage&&['reportLabPage','reportPolarPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
+    if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
+    const reportExercise=event.target.closest('[data-report-exercise]');
+    if(reportExercise){state.ui.productExerciseId=reportExercise.dataset.reportExercise;state.ui.productExerciseUnit=reportExercise.dataset.reportLoadUnit;state.ui.productExercisePage=1;state.ui.productExercisePoint=null;state.ui.productTrainingView='exercise';setRoute('treinos');return;}
     const reportMarker=event.target.closest('[data-report-marker]');
     if(reportMarker){state.ui.reportLabMarker=reportMarker.dataset.reportMarker;state.ui.reportLabPoint=null;scheduleRender();return;}
     const backupButton=event.target.closest('#backupExportBtn');
@@ -228,12 +232,12 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
-    const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource']);
+    const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource']);
     if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;scheduleRender();}
     if(event.target.id==='homeLabMarker'){state.ui.homeLabMarker=event.target.value;scheduleRender();}
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
-    if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);state.ui.reportLabPage=1;state.ui.reportLabPoint=null;scheduleRender();}
+    if(event.target.id==='analysisPeriod'){setGlobalPeriod(event.target.value);state.ui.reportLabPage=1;state.ui.reportLoadPage=1;state.ui.reportLabPoint=null;scheduleRender();}
     if(event.target.id==='timelinePeriod'){
       state.ui.timelinePeriod=event.target.value;state.ui.timelineLimit=50;state.ui.timelineMonth=null;state.ui.timelineDate=null;
       if(event.target.value!=='all')state.ui.timelineYear=null;

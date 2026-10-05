@@ -49,20 +49,17 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-HEALTH-AUTO-EXPORT-UNITS-001",
-    "status": "done",
-    "goal": "Resolve the authenticated physical-iPhone unsupported-unit failure and verify a real upload.",
+    "id": "PKG-EVIDENCE-INSIGHTS-001",
+    "status": "in_progress",
+    "goal": "Turn existing private history into source-aware descriptive insights shared by Home and Reports without redesigning the approved app.",
     "task_ids": [
-      "LTS-HEALTH-AUTO-EXPORT-UNITS-001",
-      "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001"
+      "LTS-EVIDENCE-INSIGHTS-001"
     ],
     "completed_evidence": [
-      "PR 311 merged normally at f264d0580d5cfe9db8736edc209eda243456faef; all five candidate gates and nine post-merge workflows passed.",
-      "Receiver version 3 retrieved files match the tested and merged code exactly.",
-      "First real physical-iPhone daily JSON v2 upload succeeded on 2026-10-04. Private database receipt and source attribution were independently verified.",
-      "Exact authenticated public app shows Recebendo dados; Nutrition displays the two new daily summaries. No water volume was received."
+      "Shared source-aware insight model, responsive views, pagination and evidence drill-down implemented in the existing app.",
+      "Independent synthetic calculation contracts, existing report contracts, privacy and continuity checks passed locally."
     ],
-    "release_state": "real_iPhone_receipt_and_nutrition_verified; water_not_received; exact_background_timing_not_guaranteed"
+    "release_state": "candidate_build_37; calculation_contracts_passed; browser_CI_and_public_inspection_pending"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -83,6 +80,27 @@
     "acceptance_note": "Web build .36 and receiver version 3 are published and verified. The first real physical-iPhone export succeeded, MyFitnessPal nutrition provenance was confirmed privately, and the exact public app displays receiving status and new daily nutrition summaries. The owner selected a five-minute cadence; exact background intervals are not guaranteed. Water was not received. Direct MFP API access, original historical MFP water import, full Apple Health equivalence and subjective UX acceptance are not claimed."
   },
   "tasks": [
+    {
+      "id": "LTS-EVIDENCE-INSIGHTS-001",
+      "area": "analytics",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Deliver useful descriptive nutrition/training and matching-repetition load insights in the existing Home and Reports.",
+      "acceptance": [
+        "Nutrition contrasts use one explicit origin, unique closed days and metric-specific counts; comparisons need five observed days per group and do not imply significance, causality, adequacy or confirmed rest.",
+        "Load comparisons use canonical working sets with matching exercise, equipment, location, provenance, unit, recorded technique and repetitions; unknown scales and ambiguous days are excluded.",
+        "Home and Reports share one calculated model; all comparisons are reachable by pagination, origin selection and evidence links.",
+        "Calculation contracts, responsive production-renderer tests, authenticated runtime, deployment and exact public inspection pass without publishing private values."
+      ],
+      "evidence": [
+        "v2/evidence-insights-test.mjs passed independent expected means, denominators, identity and failure cases.",
+        "v2/reports-model-test.mjs, history-depth-contract.mjs, public-payload-guard.mjs and continuity-contract-smoke.mjs passed locally.",
+        "v2/releases/EVIDENCE_INSIGHTS_20261004.md"
+      ],
+      "next_action": "Complete candidate CI, inspect responsive synthetic renders, promote normally and verify the exact authenticated public build.",
+      "blocker": null
+    },
     {
       "id": "LTS-BRIEF-001",
       "area": "product",
@@ -1139,10 +1157,17 @@
         "Official MyFitnessPal Apple Health sharing documentation confirms food/nutrients but does not explicitly confirm water sharing."
       ],
       "next_action": "On the physical iPhone, inspect Apple Health Water for a current-day record and its originating app. If no record exists, keep the missing-source limitation explicit; do not rotate the working key or repeat the connection setup.",
-      "blocker": "The server cannot inspect or create missing dietary-water records inside physical-iPhone HealthKit. Its availability/source must be checked on the phone."
+      "blocker": "Phone checks found no Apple Health water records despite Google Health receiving an updated MFP total. Google-to-Apple relay has not been observed; latency, provider behavior or a defect remain unresolved. Do not demand repeated phone micro-tests or promise automatic arrival."
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-HEALTH-AUTO-EXPORT-UNITS-001",
+      "status": "done",
+      "goal": "Resolve physical-iPhone unit compatibility and verify a real upload.",
+      "task_ids": ["LTS-HEALTH-AUTO-EXPORT-UNITS-001", "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001"],
+      "completed_evidence": ["Normal PR #311, receiver v3, candidate/post-merge gates, real phone receipt and authenticated public nutrition inspection verified; water remains separate."]
+    },
     {
       "id": "PKG-EXECUTIVE-DENSITY-002",
       "status": "done",

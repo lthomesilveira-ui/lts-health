@@ -1,3 +1,9 @@
+# Active checkpoint — evidence-backed insights, 2026-10-04
+
+`PKG-EVIDENCE-INSIGHTS-001` is in progress; candidate frontend `.37`. The owner asked to turn existing history into useful Home/dashboard and report insights, with water left as a separate gap. Shared source-aware nutrition contrasts and matching-repetition working-load comparisons are implemented in place. Local calculation, existing report/privacy/continuity contracts pass; local browser launch is blocked by environment permissions. Run candidate CI, inspect synthetic responsive evidence, promote normally and inspect the exact authenticated public build before closing. See `releases/EVIDENCE_INSIGHTS_20261004.md`. No private health values are published.
+
+The phone now confirms MFP totals reach Google Health, but Apple Health Water still has no records. Transport to the LTS receiver is not verified, and timing/provider behavior remain unresolved. Do not repeat phone micro-tests, rotate the working key or claim permanent impossibility/guaranteed eventual sync.
+
 # Verified checkpoint — real Health Auto Export activation, 2026-10-04
 
 The configured physical iPhone successfully sent daily JSON v2 to receiver version 3. The database receipt and real MyFitnessPal nutrition provenance were independently verified; the exact authenticated public Data route shows **Recebendo dados** and Nutrition displays the new daily summaries. The unit correction is promoted by normal PR #311 at `f264d0580d5cfe9db8736edc209eda243456faef`; all five candidate and nine post-merge workflows passed. `LTS-HEALTH-AUTO-EXPORT-UNITS-001` and physical activation are done. Polar stays authorized. Preserve the working phone key and setup.

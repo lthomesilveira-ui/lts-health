@@ -4,6 +4,7 @@ import {contextChart,bodySourceLabel} from './health-context.js';
 import {labResultText} from './labs-layout-v2.js';
 import {pageOf,pager} from './history-tools.js';
 import {screenTitle} from './product-shell.js';
+import {renderEvidenceInsights} from './evidence-insights-view.js';
 
 const value=(v,unit='',digits=1)=>num(v)==null?'Sem dado':`${fmtNum(v,digits)}${unit?` ${unit}`:''}`;
 const delta=(v,unit='',digits=1)=>num(v)==null?'Sem comparação':`${v>0?'+':''}${value(v,unit,digits)}`;
@@ -76,7 +77,7 @@ function trainingRecovery(m){
 }
 export function renderUsefulReports(){
   const m=usefulReports(state.data,state.domainStatus,state.ui),failures=['body','segmental','nutrition','labs','workouts','exercises','sets','sourceMetrics','polarSessions'].filter(k=>state.domainStatus[k]==='error');
-  return `<div class="ltsUsefulReports">${screenTitle('Recuperação & análises','Comparações históricas e contexto para discutir com seu treinador e seu médico.','Relatórios & insights')}<div class="ltsReportHeader"><label class="ltsField">Janela do relatório<select id="analysisPeriod">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Todo o histórico']].map(([k,l])=>`<option value="${k}" ${k===m.period?'selected':''}>${l}</option>`).join('')}</select></label><p>${esc(range(m.current))}<small>Janela termina hoje; cada observação mantém sua data.</small></p></div>${failures.length?empty('Parte dos dados não carregou. As comparações dessas áreas ficam bloqueadas; as demais continuam disponíveis.'):''}${findings(m)}${periodComparison(m)}${hydrationSection(m)}${bodySection(m)}${segmentSection(m)}${labsSection(m)}${trainingRecovery(m)}${polarSection(m)}<p class="ltsReportNote">Achados baseados em regras e registros, sem diagnóstico, prescrição ou ajuste automático de treino e medicações. As perguntas de investigação orientam a conversa com seus profissionais.</p></div>`;
+  return `<div class="ltsUsefulReports">${screenTitle('Recuperação & análises','Comparações históricas e contexto para discutir com seu treinador e seu médico.','Relatórios & insights')}<div class="ltsReportHeader"><label class="ltsField">Janela do relatório<select id="analysisPeriod">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Todo o histórico']].map(([k,l])=>`<option value="${k}" ${k===m.period?'selected':''}>${l}</option>`).join('')}</select></label><p>${esc(range(m.current))}<small>Janela termina hoje; cada observação mantém sua data.</small></p></div>${failures.length?empty('Parte dos dados não carregou. As comparações dessas áreas ficam bloqueadas; as demais continuam disponíveis.'):''}${renderEvidenceInsights(state.data,state.domainStatus,m.current,state.ui)}${findings(m)}${periodComparison(m)}${hydrationSection(m)}${bodySection(m)}${segmentSection(m)}${labsSection(m)}${trainingRecovery(m)}${polarSection(m)}<p class="ltsReportNote">Achados baseados em regras e registros, sem diagnóstico, prescrição ou ajuste automático de treino e medicações. As perguntas de investigação orientam a conversa com seus profissionais.</p></div>`;
 }
 function polarSection(m){
   if(state.domainStatus.polarSessions==='error')return `<section class="ltsReportSection"><h2>Treinos recebidos do Polar</h2>${empty('As sessões Polar não carregaram. Elas não foram substituídas por sessões de outra origem.')}</section>`;
