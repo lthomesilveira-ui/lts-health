@@ -184,6 +184,8 @@ function bindStaticEvents(){
     if(polarCheck){polarCheck.disabled=true;await checkPolarConnection();scheduleRender();return;}
     const polarAction=event.target.closest('[data-polar-action]');
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
+    const homeInsight=event.target.closest('[data-home-insight-details]');
+    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'30');state.ui.reportNutritionSource=null;state.ui.reportLoadPage=1;setRoute('analise');return;}
     const reportPage=event.target.closest('[data-report-page]');
     if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
     const reportExercise=event.target.closest('[data-report-exercise]');

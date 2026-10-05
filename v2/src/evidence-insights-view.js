@@ -16,5 +16,5 @@ export function renderEvidenceInsights(data,status,bounds,ui={}){
 
 export function renderHomeEvidenceInsights(data,status,bounds){
   const rows=insightSummaries(evidenceInsights(data,status,bounds));
-  return `<section class="ltsRefEvidenceBrief" aria-label="Insights da janela"><header><div><span>LEITURA DA JANELA</span><h2>O que os registros mostram</h2></div><button data-route="analise">Base e detalhes ›</button></header>${rows.length?rows.map(row=>`<article><b>${esc(row.title)}</b><p>${esc(row.text)}</p></article>`).join(''):'<p>Ainda não há base comparável para os cruzamentos desta janela. Os históricos permanecem disponíveis.</p>'}<small>Comparações descritivas; hoje não entra. Abra os detalhes para consultar origem, cobertura e limites.</small></section>`;
+  return `<section class="ltsRefEvidenceBrief" aria-label="Insights da janela"><header><div><span>LEITURA DA JANELA</span><h2>O que os registros mostram</h2></div><button data-home-insight-details>Base e detalhes ›</button></header>${rows.length?rows.map(row=>`<article><b>${esc(row.title)}</b><p>${esc(row.text)}</p></article>`).join(''):'<p>Ainda não há base comparável para os cruzamentos desta janela. Os históricos permanecem disponíveis.</p>'}<small>Comparações descritivas; hoje não entra. Abra os detalhes para consultar origem, cobertura e limites.</small></section>`;
 }

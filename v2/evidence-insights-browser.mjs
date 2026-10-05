@@ -28,6 +28,7 @@ try{
     assert.match(await page.locator('.ltsRefEvidenceBrief').innerText(),/150 g\/dia.*10 dias/s,'Home uses matching counted observations');
     await overflow(page);await page.locator('.ltsRefEvidenceBrief button').click();
     await page.waitForSelector('#reportEvidenceInsights');
+    assert.equal(await page.locator('#analysisPeriod').inputValue(),'30','evidence details retain the Home calendar window');
     assert.equal(await page.locator('#reportNutritionSource').inputValue(),'synthetic food a');
     const protein=page.locator('#reportEvidenceInsights .ltsInsightTable').first().locator('tbody tr').first();
     assert.match(await protein.innerText(),/150 g.*10 dias.*100 g.*10 dias.*\+50,0 g/s,'rendered table binds independently known means and counts');
