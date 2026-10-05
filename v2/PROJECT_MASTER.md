@@ -1,3 +1,7 @@
+# Active package — evidence-backed insights, 2026-10-04
+
+Owner requested meaningful insight from existing private history, leaving water separate. Candidate `.37` adds a shared Home/Reports model for source-separated daily nutrition contrasts and recorded working loads at matching repetitions/equipment/location/provenance. Independent model and existing report/privacy contracts passed. Browser CI, authenticated release verification and exact public inspection remain pending; do not mark technical delivery or subjective acceptance complete. Operational authority: `EXECUTION_STATE.json`; release details: `releases/EVIDENCE_INSIGHTS_20261004.md`.
+
 # Verified checkpoint — real Health Auto Export activation, 2026-10-04
 
 The configured physical iPhone successfully sent daily JSON v2 to receiver version 3. The database receipt and real MyFitnessPal nutrition provenance were independently verified; the exact authenticated public Data route shows **Recebendo dados** and Nutrition displays the new daily summaries. The unit correction is promoted by normal PR #311 at `f264d0580d5cfe9db8736edc209eda243456faef`; all five candidate and nine post-merge workflows passed. `LTS-HEALTH-AUTO-EXPORT-UNITS-001` and physical activation are done. Polar stays authorized. Preserve the working phone key and setup.
