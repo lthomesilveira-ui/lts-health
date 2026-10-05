@@ -55,6 +55,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: functional-depth-synthetic-visual
-          path: v2/history-depth-evidence
+          path: |
+            v2/history-depth-evidence
+            v2/evidence-insights-visual
           if-no-files-found: warn
           retention-days: 14

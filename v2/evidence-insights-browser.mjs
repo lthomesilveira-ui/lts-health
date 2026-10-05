@@ -37,10 +37,10 @@ try{
     await page.locator('#analysisPeriod').selectOption('90');
     await page.waitForFunction(()=>document.querySelectorAll('[data-report-exercise]').length===8);
     await page.locator('#reportNutritionSource').selectOption('synthetic food b');
-    await page.waitForFunction(()=>document.querySelector('#reportNutritionSource')?.value==='synthetic food b');
+    await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('5 dias com valor'));
     assert.match(await protein.innerText(),/5 dias com valor/s,'source switch recalculates denominators');
     await page.locator('#reportNutritionSource').selectOption('synthetic food a');
-    await page.waitForFunction(()=>document.querySelector('#reportNutritionSource')?.value==='synthetic food a');
+    await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('10 dias com valor'));
     await overflow(page);await page.locator('#reportEvidenceInsights').scrollIntoViewIfNeeded();
     await page.screenshot({path:`${dir}/synthetic-${label}-insights.png`,fullPage:false});
     await page.locator('[data-report-exercise]').first().click();await page.waitForSelector('.ltsExerciseHistory');
