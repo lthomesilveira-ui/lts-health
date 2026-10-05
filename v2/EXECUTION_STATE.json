@@ -1152,8 +1152,8 @@
       "id": "LTS-HEALTH-AUTO-EXPORT-WATER-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "blocked_user",
-      "owner": "Lucas",
+      "status": "blocked_external",
+      "owner": "Codex",
       "summary": "Verify whether real dietary-water records exist in Apple Health and can be exported through the active bridge.",
       "acceptance": [
         "Water is available only after an actual positive dietary-water value reaches the protected receiver.",
@@ -1163,9 +1163,10 @@
       "evidence": [
         "The first real supported phone upload and MyFitnessPal nutrient summaries were verified; no dietary-water row or water receipt date exists.",
         "All health metrics were selected in the enabled phone automation.",
-        "Official MyFitnessPal Apple Health sharing documentation confirms food/nutrients but does not explicitly confirm water sharing."
+        "Official MyFitnessPal Apple Health sharing documentation confirms food/nutrients but does not explicitly confirm water sharing.",
+        "Completed phone checks show no Apple Health water records after an updated MFP total reached Google Health; the current private receiver audit still finds no canonical water."
       ],
-      "next_action": "On the physical iPhone, inspect Apple Health Water for a current-day record and its originating app. If no record exists, keep the missing-source limitation explicit; do not rotate the working key or repeat the connection setup.",
+      "next_action": "Keep this bridge pending until authentic provider water reaches Apple Health and the protected receiver. Use new provider evidence or a future normal receipt to reassess; do not repeat completed phone checks, connection setup or ask for duplicate daily entry.",
       "blocker": "Phone checks found no Apple Health water records despite Google Health receiving an updated MFP total. Google-to-Apple relay has not been observed; latency, provider behavior or a defect remain unresolved. Do not demand repeated phone micro-tests or promise automatic arrival."
     }
   ],
