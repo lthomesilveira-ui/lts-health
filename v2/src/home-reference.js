@@ -143,9 +143,9 @@ function withinBounds(value,bounds){
 }
 
 function panorama(model){
-  const interval=model.nutrition?.intervalDays||model.bounds?.days||30;
+  const interval=model.nutrition?.intervalDays||model.bounds?.days;
   const nutritionDays=model.nutrition?.days||0;
-  const nutritionCoverage=model.nutrition?.coveragePct;
+  const nutritionCoverage=interval?`${nutritionDays} de ${interval} dias`:`${plural(nutritionDays,'dia registrado','dias registrados')} no histórico`;
   const sleep=model.sleep?.sources?.[0];
   const sleepPoints=sleep?.periodPoints||[];
   const sleepLast=sleepPoints.at(-1)?.date||sleep?.lastDate;
@@ -155,13 +155,13 @@ function panorama(model){
   const treatmentRows=(state.data.treatments||[]).filter(row=>withinBounds(row.event_date,model.bounds));
   const latestTreatment=latest(state.data.treatments,'event_date');
   const nutritionValue=failed('nutrition')?'Indisponível':num(model.nutrition?.calorieAvg)!=null?`${fmtNum(model.nutrition.calorieAvg,0)} kcal/dia`:'Sem alimentação registrada';
-  const nutritionDetail=failed('nutrition')?'Os dados não carregaram agora':`${num(model.nutrition?.proteinAvg)!=null?`${fmtNum(model.nutrition.proteinAvg,0)} g proteína/dia · `:''}${nutritionDays} de ${interval} dias${model.nutrition?.latestDate?` · último ${fmtDate(model.nutrition.latestDate)}`:''}`;
+  const nutritionDetail=failed('nutrition')?'Os dados não carregaram agora':`${num(model.nutrition?.proteinAvg)!=null?`${fmtNum(model.nutrition.proteinAvg,0)} g proteína/dia · `:''}${nutritionCoverage}${model.nutrition?.latestDate?` · último ${fmtDate(model.nutrition.latestDate)}`:''}`;
   const lab=highlightedLabs((state.data.labs||[]).filter(row=>withinBounds(row.collection_date,model.bounds)))[0];
   const labsValue=failed('labs')?'Indisponível':lab?`${lab.result_raw||fmtNum(lab.result_numeric,2)} ${lab.unit||''}`:model.labs?.windowCollections?'Coleta disponível':`Sem coleta / ${periodLabel(model.period)}`;
   const labsDetail=failed('labs')?'Os dados não carregaram agora':lab?`${lab.biomarker} · ${fmtDate(lab.collection_date)}`:model.labs?.windowLast?`Última coleta ${fmtDate(model.labs.windowLast)}`:model.labs?.last?`Última no histórico ${fmtDate(model.labs.last)}`:'Sem exames registrados';
   const sleepValue=failed('sourceMetrics')?'Indisponível':sleepPoints.length?`${fmtNum(sleepPoints.reduce((sum,p)=>sum+num(p.value),0)/sleepPoints.length,1)} h/noite`:'Sem cobertura';
   const sleepDetail=failed('sourceMetrics')?'Os dados não carregaram agora':sleepLast?`Último ${fmtDate(sleepLast)} · ${safe(sleep.label,'origem registrada')}`:'Sem série comparável na janela';
-  const waterValue=water.length?`${water.length} de ${model.bounds?.days||30} dias`:'Histórico pendente';
+  const waterValue=water.length?(model.bounds?.days?`${water.length} de ${model.bounds.days} dias`:`${plural(water.length,'dia registrado','dias registrados')} no histórico`):'Histórico pendente';
   const waterDetail=water.length?`Último ${fmtDate(waterLast?.date)}`:'MyFitnessPal ainda não importado';
   const treatmentValue=failed('treatments')?'Indisponível':treatmentRows.length?`Última ${fmtDate(latestTreatment.event_date)}`:'Sem registro na janela';
   const treatmentDetail=failed('treatments')?'Os dados não carregaram agora':latestTreatment?.event_date?`${latestTreatment.medication} · ${medicationContext(latestTreatment)}`:'Sem aplicação registrada';
