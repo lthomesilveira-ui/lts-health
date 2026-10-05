@@ -1,3 +1,11 @@
+# Verified restart — published .38 and unresolved water, 2026-10-05
+
+The exact-public manual inspection blocker is superseded by the private 2026-10-05 validation record: secure authentication succeeded and build `home-dashboard-reference-20261003.38` was inspected. PRs #315/#316 are merged at `b3bc19200c63a153260115d23871f1e2872d5fc5`; all ten post-merge runs were independently rechecked as successful. `PKG-EVIDENCE-INSIGHTS-001` is technically done. This does not presume owner UX/physical-device acceptance. Do not revert to `.36`/`.37` or ask for authentication to close an already completed gate.
+
+The read-only restart audit confirms the working bridge still receives other metrics, with no dietary-water receipt, and Polar has no recorded sync error. The owner reports water remains absent in Apple Health even after a direct Google Health entry. The internal cause is unconfirmed; waiting is not a verified remedy. The owner chose to keep MyFitnessPal as the sole water-entry source. Pursue supported direct access or an authentic batch export; preserve the existing extractor and importer. Do not change the recording routine, repeat phone micro-tests, rotate the valid key or substitute a support message for a solution.
+
+New Google Health API projects are not currently onboarded; the legacy Fitbit API shutdown on 30/10/2026 prevents treating it as a durable replacement. No new source volume was imported and no water resolution is claimed. Original MFP history remains separate and pending. See `releases/CONTINUITY_WATER_20261005.md` and `EXECUTION_STATE.json`. Earlier checkpoints below are historical.
+
 # Published checkpoint — evidence-backed insights, 2026-10-05
 
 Frontend `.37` is published through normal PR #313 at `dc80a109f9074b891952e14c916ca6e5738d0484`. Shared source-aware nutrition contrasts and matching-repetition working-load comparisons are available in Home and Reports, with the Home calendar preserved on drill-down. All seven final candidate gates passed; synthetic desktop and two phone widths were inspected. Deploy `37260736710` and authenticated E2E `37260736697` passed, including independently recomputed private observed means/counts. A post-merge synthetic screenshot hit a detached control; the current-DOM capture helper is corrected separately. No private health values are published.
