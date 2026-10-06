@@ -50,7 +50,7 @@ export function renderHomeCockpit(c){
     +executiveCard('training','Treinos',count(m.training.available,m.training.sessions,'sessões'),m.prior?.training.available?`${m.prior.training.sessions} no período anterior`:'Somente sessões confirmadas',m.training.available?`${m.training.sets==null?'Séries indisponíveis':`${m.training.sets} séries registradas`} · sem somar Polar novamente`:'A fonte precisa carregar.','treinos')
     +executiveCard('nutrition','Nutrição',count(r.nutrition.available,foodDays,'dias'),value(r.nutrition.means.calories_kcal,'kcal/dia',0),r.nutrition.source?.label?`${r.nutrition.source.label} · dias encerrados`:'Sem origem com registros na janela.','nutricao')
     +executiveCard('sleep','Recuperação',r.sleep.available?value(r.sleep.mean,'h/registro'):'Indisponível',`${r.sleep.closedRows.length} registros de sono`,r.sleep.source?.label||'Sem série de sono nessa janela.','analise')
-    +executiveCard('labs','Exames',statusValue(m.labs,labRows),`${labDates.length} coletas na janela`,labDates.length?`Última ${fmtDate(labDates.at(-1))}`:'Consulte o histórico de resultados.','saude');
+    +executiveCard('labs','Exames',statusValue(m.labs,labRows),`${labDates.length} ${labDates.length===1?'coleta':'coletas'} na janela`,labDates.length?`Última ${fmtDate(labDates.at(-1))}`:'Consulte o histórico de resultados.','saude');
   const bodyPoints=m.body.series.weight_kg||[];
   const common={bounds:m.current};
   const panels=panel('training','Treino','treinos',trainingPoints,{...common,label:'Sessões confirmadas por dia',unit:'sessões',digits:0,bar:true},[['Sessões',value(m.training.sessions,'',0)],['Séries',value(m.training.sets,'',0)],['Dias',value(r.training.available?r.training.days:null,'',0)]],'Sessões confirmadas por dia')

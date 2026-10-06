@@ -76,6 +76,7 @@
   body[data-product-route="hoje"] .topbar #syncText{display:none}
   body[data-product-route="hoje"] .topbar .topActions{gap:0}
   body[data-product-route="hoje"] .topbar #refreshBtn,body[data-product-route="hoje"] .topbar #logoutBtn{display:inline-flex;align-items:center;justify-content:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:0}
+  body[data-product-route="hoje"] .topbar .topActionIcon{display:block}
   body[data-product-route="hoje"] .ltsCockpitWindow{right:106px}
   body[data-product-route="hoje"] .ltsCockpitHeading{padding-right:451px}
 }

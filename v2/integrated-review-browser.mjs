@@ -37,6 +37,11 @@ try{
       assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.footer,'approved executive hierarchy');
       assert.ok(geometry.footer<800,`executive footer fits desktop viewport: ${geometry.footer}`);
       assert.ok(await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom<=864),'the complete executive footer fits the desktop reference, not only its first line');
+      for(const selector of ['#refreshBtn','#logoutBtn']){
+        assert.ok(await page.locator(`${selector} .topActionIcon`).isVisible(),'icon-only header actions must retain their visible SVG');
+        const box=await page.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44,'header actions retain a usable target');
+      }
+      const periodBox=await page.locator('.ltsCockpitWindow').boundingBox(),refreshBox=await page.locator('#refreshBtn').boundingBox();assert.ok(periodBox.x+periodBox.width<=refreshBox.x,'period and utility controls do not overlap');
       const axes=await page.locator('.ltsCockpitGrid .ltsContextAxis').allTextContents();assert.equal(new Set(axes).size,1,'all populated cockpit modules share one calendar');
     }else{
       assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),false);
