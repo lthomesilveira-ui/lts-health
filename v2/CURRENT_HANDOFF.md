@@ -1,4 +1,10 @@
-# Verified restart — published .38 and unresolved water, 2026-10-05
+# Active package — integrated review, 2026-10-06 UTC
+
+`PKG-INTEGRATED-REVIEW-001` implements source-aware daily review, closed-day water/training and sleep/training contrasts, progressive report modes, a device-only consultation text summary and consistent canonical hydration in Home Today/week. Candidate `.39` is not yet published; responsive and public runtime gates remain pending. Existing approved first-screen structure, full history and integrations are preserved. See `releases/INTEGRATED_REVIEW_20261006.md` and `EXECUTION_STATE.json`.
+
+Initial real dietary-water receipt is now privately verified and the public historical hydration view was inspected. This supersedes the absence statements below. The initial export was manual; automatic recurrence stays separate in `LTS-WATER-RECURRENCE-001`. Original authenticated MyFitnessPal water history is still pending. Keep MyFitnessPal as the entry source and preserve the paid/configured bridge, key and selected metrics. No source data is changed or reconstructed by this frontend package.
+
+# Historical verified restart — published .38 and unresolved water, 2026-10-05
 
 The exact-public manual inspection blocker is superseded by the private 2026-10-05 validation record: secure authentication succeeded and build `home-dashboard-reference-20261003.38` was inspected. PRs #315/#316 are merged at `b3bc19200c63a153260115d23871f1e2872d5fc5`; all ten post-merge runs were independently rechecked as successful. `PKG-EVIDENCE-INSIGHTS-001` is technically done. This does not presume owner UX/physical-device acceptance. Do not revert to `.36`/`.37` or ask for authentication to close an already completed gate.
 

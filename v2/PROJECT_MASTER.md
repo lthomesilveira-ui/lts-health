@@ -1,4 +1,10 @@
-# Verified restart — published .38 and unresolved water, 2026-10-05
+# Integrated review candidate — 2026-10-06 UTC
+
+The user authorized continued development after the first real bridge water delivery. `PKG-INTEGRATED-REVIEW-001` adds exact-date/source exploration, closed-day descriptive contrasts and a private device-only consultation summary while preserving the approved Home and its existing details. The Home water indicators now use the canonical historical hydration model. Candidate `.39` remains in progress until candidate, responsive, authenticated public runtime and exact-public inspection gates finish. `EXECUTION_STATE.json` is authoritative; `releases/INTEGRATED_REVIEW_20261006.md` records the package.
+
+Private read-only evidence now confirms initial water ingestion. Earlier absence statements are historical, not the current state. Automatic recurrence without manually triggered export and original authenticated MFP history are separate unresolved tasks. No private observations or payloads are published here.
+
+# Historical verified restart — published .38 and unresolved water, 2026-10-05
 
 The exact-public manual inspection blocker is superseded by the private 2026-10-05 validation record: secure authentication succeeded and build `home-dashboard-reference-20261003.38` was inspected. PRs #315/#316 are merged at `b3bc19200c63a153260115d23871f1e2872d5fc5`; all ten post-merge runs were independently rechecked as successful. `PKG-EVIDENCE-INSIGHTS-001` is technically done. This does not presume owner UX/physical-device acceptance. Do not revert to `.36`/`.37` or ask for authentication to close an already completed gate.
 

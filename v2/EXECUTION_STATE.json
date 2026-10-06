@@ -49,27 +49,19 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-EVIDENCE-INSIGHTS-001",
-    "status": "done",
-    "goal": "Turn existing private history into source-aware descriptive insights shared by Home and Reports without redesigning the approved app.",
+    "id": "PKG-INTEGRATED-REVIEW-001",
+    "status": "in_progress",
+    "goal": "Connect hydration, food, training, recovery and dated clinical context through source-aware daily exploration and a private consultation summary, preserving the approved Home.",
     "task_ids": [
-      "LTS-EVIDENCE-INSIGHTS-001"
+      "LTS-INTEGRATED-REVIEW-001"
     ],
     "completed_evidence": [
-      "Shared source-aware insight model, responsive views, pagination and evidence drill-down implemented in the existing app.",
-      "Independent synthetic calculation contracts, existing report contracts, privacy and continuity checks passed locally.",
-      "All seven final candidate checks passed at d689e3e81fc8305e1b7e824504b31887f99620ff; responsive production-renderer captures inspected at desktop and two phone widths.",
-      "PR 313 merged normally at dc80a109f9074b891952e14c916ca6e5738d0484; deploy 37260736710 and authenticated E2E 37260736697 passed. Rendered means and metric-specific counts independently recomputed with private observations.",
-      "Public Cloud Browser remains at the login page after secure authentication was interrupted. No manual authenticated visual acceptance is claimed.",
-      "PRs 315 and 316 merged normally; public product build home-dashboard-reference-20261003.38 at b3bc19200c63a153260115d23871f1e2872d5fc5.",
-      "The private validation record of 2026-10-05 confirms successful secure Cloud Browser authentication and exact-public manual inspection of build .38. The previous interrupted-login blocker is superseded.",
-      "All ten post-merge workflow runs for b3bc19200c63a153260115d23871f1e2872d5fc5 were independently rechecked as completed/success on this restart, including deployment 37297331595 and real-auth E2E 37297331577.",
-      "History coverage now uses observed days for full history and X of N days for finite windows; calculation and source-selection behavior remain preserved.",
-      "v2/releases/CONTINUITY_WATER_20261005.md"
+      "Read-only operational coverage and authenticated current app audited. Initial canonical water receipt verified privately; automatic recurrence remains separate.",
+      "Source-aware calendar join, closed-day descriptive contrasts, progressive report modes, private device-only text summary and shared Home hydration implemented.",
+      "Independent synthetic model, existing reports, evidence insights and health-context calculation contracts passed locally."
     ],
-    "release_state": "published_and_verified_build_38; manual_public_inspection_confirmed; water_pending; subjective_owner_acceptance_not_presumed",
-    "published_build": "home-dashboard-reference-20261003.38",
-    "published_commit": "b3bc19200c63a153260115d23871f1e2872d5fc5"
+    "release_state": "candidate_39; responsive_candidate_gates_and_public_promotion_pending",
+    "candidate_build": "integrated-review-20261006.39"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1167,9 +1159,9 @@
       "id": "LTS-HEALTH-AUTO-EXPORT-WATER-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "blocked_external",
+      "status": "done",
       "owner": "Codex",
-      "summary": "Resolve missing dietary-water ingestion while preserving MyFitnessPal as the sole water-entry source.",
+      "summary": "Verify the first actual dietary-water receipt through the configured bridge while preserving MyFitnessPal as the sole entry source.",
       "acceptance": [
         "Water is available only after an actual positive dietary-water value reaches the protected receiver.",
         "Missing volume is not estimated, replaced by zero or confused with body water.",
@@ -1185,13 +1177,78 @@
         "Owner explicitly chose to keep MyFitnessPal as the water-entry source on this restart. No switch to Apple Health entry or duplicate recording is authorized.",
         "Official Google Health setup documentation rechecked: new projects are not being onboarded; legacy Fitbit API support ended September 30 and shutdown is scheduled October 30, 2026.",
         "Existing MFP water extractor code preserves an owner-browser authenticated batch export without reading credentials; no real export was obtained during this restart.",
-        "v2/releases/CONTINUITY_WATER_20261005.md"
+        "v2/releases/CONTINUITY_WATER_20261005.md",
+        "Superseding private read-only receipt audit on 2026-10-05 confirms real canonical dietary water from Apple Health / Health Sync through the protected Health Auto Export receiver. Authenticated public hydration history was inspected. Earlier absence evidence above is historical.",
+        "Automatic recurrence without manual export is not inferred from the first manual delivery and is tracked independently as LTS-WATER-RECURRENCE-001."
       ],
-      "next_action": "Pursue supported direct MyFitnessPal access or an authentic owner-side batch export using the existing authenticated helper. Keep the receiver ready for a real source receipt. Do not change the owner's water-entry routine, repeat completed phone tests, request daily duplicate entry or present a support message as the solution.",
-      "blocker": "Owner reports water reaches Google Health but not Apple Health, including a direct Google Health entry. The current live bridge receipt still contains no dietary-water volume. Internal provider/HealthKit diagnostics are unavailable here; direct MFP API is unavailable and the cloud account attempt was rejected before login. New Google Health API projects are not being onboarded, so that path is not a currently available replacement."
+      "next_action": "Initial transport is verified. Preserve the working setup; track automatic recurrence separately, without repeating completed phone setup.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-WATER-RECURRENCE-001",
+      "area": "integrations",
+      "priority": "P1",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "Verify that the next genuine MyFitnessPal water update reaches the app without a manual export.",
+      "acceptance": [
+        "A genuine later source update reaches the protected receiver without a manual Health Auto Export run.",
+        "MyFitnessPal remains the sole routine entry source; no duplicated daily recording or guaranteed iOS cadence is required."
+      ],
+      "evidence": [
+        "The first actual bridge water delivery was independently verified; it followed an owner-triggered export.",
+        "Phone automations and permissions are configured. That first receipt alone does not establish automatic recurrence."
+      ],
+      "next_action": "Read the next genuine source/receiver update when it exists and distinguish it from manually triggered export. Preserve keys, selections and prior records.",
+      "blocker": "A later independently identifiable automatic source update has not yet been observed; iOS background execution is best effort."
+    },
+    {
+      "id": "LTS-INTEGRATED-REVIEW-001",
+      "area": "analysis_and_ux",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Deliver source-aware integrated review, date exploration, private consultation summary and consistent bridge hydration in Home.",
+      "acceptance": [
+        "Home Today and weekly hydration use the same canonical deduplicated water model as historical hydration, with unavailable readers distinct from no data.",
+        "Integrated report aligns observations on exact provider dates, isolates food/water/sleep origins, excludes the open day from means and shows independent denominators.",
+        "Sparse cohorts, source conflicts, missing observations, device changes and reader failures do not create zeroes, causal conclusions or unsupported comparisons.",
+        "Date/source controls, paginated map, period-preserving navigation and device-only text export work at desktop, phone and reduced physical-browser widths.",
+        "Candidate checks, normal promotion, secure real-data runtime, public deploy and exact-public authenticated Cloud Browser inspection are executed before completion."
+      ],
+      "evidence": [
+        "User authorized continuing the existing app with deeper integrated dashboards and reports after initial water delivery.",
+        "Existing approved Home and report details preserved; new shared model, views and independent synthetic tests implemented.",
+        "Local calculation, provenance and escaping contracts passed; candidate responsive and public runtime gates pending."
+      ],
+      "next_action": "Run candidate gates, inspect responsive evidence, promote normally and verify the exact authenticated public build.",
+      "blocker": null
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-EVIDENCE-INSIGHTS-001",
+      "status": "done",
+      "goal": "Turn existing private history into source-aware descriptive insights shared by Home and Reports without redesigning the approved app.",
+      "task_ids": [
+        "LTS-EVIDENCE-INSIGHTS-001"
+      ],
+      "completed_evidence": [
+        "Shared source-aware insight model, responsive views, pagination and evidence drill-down implemented in the existing app.",
+        "Independent synthetic calculation contracts, existing report contracts, privacy and continuity checks passed locally.",
+        "All seven final candidate checks passed at d689e3e81fc8305e1b7e824504b31887f99620ff; responsive production-renderer captures inspected at desktop and two phone widths.",
+        "PR 313 merged normally at dc80a109f9074b891952e14c916ca6e5738d0484; deploy 37260736710 and authenticated E2E 37260736697 passed. Rendered means and metric-specific counts independently recomputed with private observations.",
+        "Public Cloud Browser remains at the login page after secure authentication was interrupted. No manual authenticated visual acceptance is claimed.",
+        "PRs 315 and 316 merged normally; public product build home-dashboard-reference-20261003.38 at b3bc19200c63a153260115d23871f1e2872d5fc5.",
+        "The private validation record of 2026-10-05 confirms successful secure Cloud Browser authentication and exact-public manual inspection of build .38. The previous interrupted-login blocker is superseded.",
+        "All ten post-merge workflow runs for b3bc19200c63a153260115d23871f1e2872d5fc5 were independently rechecked as completed/success on this restart, including deployment 37297331595 and real-auth E2E 37297331577.",
+        "History coverage now uses observed days for full history and X of N days for finite windows; calculation and source-selection behavior remain preserved.",
+        "v2/releases/CONTINUITY_WATER_20261005.md"
+      ],
+      "release_state": "published_and_verified_build_38; manual_public_inspection_confirmed; water_pending; subjective_owner_acceptance_not_presumed",
+      "published_build": "home-dashboard-reference-20261003.38",
+      "published_commit": "b3bc19200c63a153260115d23871f1e2872d5fc5"
+    },
     {
       "id": "PKG-HEALTH-AUTO-EXPORT-UNITS-001",
       "status": "done",

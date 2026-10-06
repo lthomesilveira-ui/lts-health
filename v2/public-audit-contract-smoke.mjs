@@ -19,11 +19,12 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="home-dashboard-reference-20261003\.38"/);
+assert.match(index,/name="lts-build" content="integrated-review-20261006\.39"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=home-dashboard-reference-20261003.38`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=integrated-review-20261006.39`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=home-dashboard-reference-20261003.38'),'physical iPhone remediation is not the final stylesheet');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=integrated-review-20261006.39'),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes('./integrated-review.css?v=integrated-review-20261006.39'),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }
@@ -37,7 +38,9 @@ assert.match(runtime,/treinos:'\.ltsTrainingReference'/);
 
 assert.match(home,/Disciplina hoje, evolução sempre\./);
 assert.match(home,/metric\('Massa magra'/);
-assert.match(home,/class="ltsRefCoreGrid">\$\{todayCard\}\$\{progressCard\}\$\{trendPanel\(model,period\)\}<\/div>\$\{renderHealthContext\(context,state\.domainStatus\)\}\$\{renderHomeEvidenceInsights\(state\.data,state\.domainStatus,model\.bounds\)\}\$\{panorama\(model\)\}\$\{changes\(model,rows\)\}/);
+assert.match(home,/class="ltsRefCoreGrid">\$\{todayCard\}\$\{progressCard\}\$\{trendPanel\(model,period\)\}<\/div>\$\{renderHealthContext\(context,state\.domainStatus,renderHomeDaySignals\(review,context\.selectedDate\)\)\}\$\{renderHomeEvidenceInsights\(state\.data,state\.domainStatus,model\.bounds\)\}\$\{panorama\(model\)\}\$\{changes\(model,rows\)\}/);
+assert.match(home,/waterAvailable\?hydrationModel\(state\.data\)/);
+assert.match(home,/uniqueDays\(hydration\.rows,'date'/);
 assert.match(home,/EVOLUÇÃO LONGITUDINAL/);
 assert.match(home,/Saúde em contexto/);
 assert.match(home,/Tratamentos & contexto/);

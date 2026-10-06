@@ -1,4 +1,10 @@
-# Reconciled restart — 2026-10-05
+# Integrated review — 2026-10-06 UTC
+
+FB-030: the owner authorized deeper integrated dashboards, cross-domain information and reports after initial bridge water delivery. The package adds exact-date exploration, source-isolated closed-day descriptive contrasts and a device-only consultation summary; preserves the approved Home and fixes its legacy water indicator lookup. Candidate `.39` is in progress; gates and publication are not yet claimed. Authority: `EXECUTION_STATE.json` and `releases/INTEGRATED_REVIEW_20261006.md`.
+
+FB-029 superseding evidence: first actual canonical bridge water receipt is verified privately. Historical absence statements below are superseded. Automatic recurrence and original MFP water history remain independent pending tasks; the owner still records routinely only in MFP.
+
+# Historical reconciled restart — 2026-10-05
 
 Build `.38` and exact-public authenticated manual inspection are confirmed. The former login blocker is superseded; earlier summaries below retain historical context. Water remains unresolved and the owner selected MyFitnessPal as the sole entry source. Current authority: `EXECUTION_STATE.json` and `releases/CONTINUITY_WATER_20261005.md`.
 
