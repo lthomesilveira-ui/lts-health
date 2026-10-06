@@ -1,3 +1,17 @@
+# Active package — integrated review, 2026-10-06 UTC
+
+`PKG-INTEGRATED-REVIEW-001` implements source-aware daily review, closed-day water/training and sleep/training contrasts, progressive report modes, a device-only consultation text summary and consistent canonical hydration in Home Today/week. Candidate `.39` is not yet published; responsive and public runtime gates remain pending. Existing approved first-screen structure, full history and integrations are preserved. See `releases/INTEGRATED_REVIEW_20261006.md` and `EXECUTION_STATE.json`.
+
+Initial real dietary-water receipt is now privately verified and the public historical hydration view was inspected. This supersedes the absence statements below. The initial export was manual; automatic recurrence stays separate in `LTS-WATER-RECURRENCE-001`. Original authenticated MyFitnessPal water history is still pending. Keep MyFitnessPal as the entry source and preserve the paid/configured bridge, key and selected metrics. No source data is changed or reconstructed by this frontend package.
+
+# Historical verified restart — published .38 and unresolved water, 2026-10-05
+
+The exact-public manual inspection blocker is superseded by the private 2026-10-05 validation record: secure authentication succeeded and build `home-dashboard-reference-20261003.38` was inspected. PRs #315/#316 are merged at `b3bc19200c63a153260115d23871f1e2872d5fc5`; all ten post-merge runs were independently rechecked as successful. `PKG-EVIDENCE-INSIGHTS-001` is technically done. This does not presume owner UX/physical-device acceptance. Do not revert to `.36`/`.37` or ask for authentication to close an already completed gate.
+
+The read-only restart audit confirms the working bridge still receives other metrics, with no dietary-water receipt, and Polar has no recorded sync error. The owner reports water remains absent in Apple Health even after a direct Google Health entry. The internal cause is unconfirmed; waiting is not a verified remedy. The owner chose to keep MyFitnessPal as the sole water-entry source. Pursue supported direct access or an authentic batch export; preserve the existing extractor and importer. Do not change the recording routine, repeat phone micro-tests, rotate the valid key or substitute a support message for a solution.
+
+New Google Health API projects are not currently onboarded; the legacy Fitbit API shutdown on 30/10/2026 prevents treating it as a durable replacement. No new source volume was imported and no water resolution is claimed. Original MFP history remains separate and pending. See `releases/CONTINUITY_WATER_20261005.md` and `EXECUTION_STATE.json`. Earlier checkpoints below are historical.
+
 # Published checkpoint — evidence-backed insights, 2026-10-05
 
 Frontend `.37` is published through normal PR #313 at `dc80a109f9074b891952e14c916ca6e5738d0484`. Shared source-aware nutrition contrasts and matching-repetition working-load comparisons are available in Home and Reports, with the Home calendar preserved on drill-down. All seven final candidate gates passed; synthetic desktop and two phone widths were inspected. Deploy `37260736710` and authenticated E2E `37260736697` passed, including independently recomputed private observed means/counts. A post-merge synthetic screenshot hit a detached control; the current-DOM capture helper is corrected separately. No private health values are published.
