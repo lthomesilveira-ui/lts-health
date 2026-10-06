@@ -32,8 +32,8 @@ try{
     if(width>840){
       assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
       assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
-      assert.match(await page.locator('.ltsCockpitReading h2').innerText(),/Peso .*medições compatíveis/);
-      assert.notEqual(await page.locator('.ltsCockpitReading h2').innerText(),await page.locator('.ltsCockpitFooter article').first().locator('p').innerText(),'no duplicated main reading');
+      assert.match(await page.locator('.ltsCockpitReading:visible h2').innerText(),/Peso .*medições compatíveis/);
+      assert.notEqual(await page.locator('.ltsCockpitReading:visible h2').innerText(),await page.locator('.ltsCockpitFooter article').first().locator('p').innerText(),'no duplicated main reading');
       assert.match(await page.locator('.ltsCockpitFooter article').last().innerText(),/Dados carregados.*não confirma sincronização/s);
       assert.equal(await page.locator('.ltsMobileHome').first().isVisible(),false);
       const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),footer:top('.ltsCockpitFooter')};});
