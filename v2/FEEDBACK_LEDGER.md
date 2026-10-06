@@ -1,6 +1,10 @@
-# Product experience reopened — 2026-10-06
+# Product experience published — 2026-10-06
 
-FB-031: owner rejected .39 as a consolidator with an unfinished-app appearance, far from approved imagery, and authorized autonomous complete-product implementation. Visual acceptance is reopened in PKG-PRODUCT-EXPERIENCE-001. Desktop executive and private mobile references were reopened. Source-aware cockpit and progressive workspaces are implemented; responsive checks, promotion and exact-public inspection pending. Prior .39 receipts remain technical history, not product acceptance. Current authority: EXECUTION_STATE.json. Cloud Browser no longer retains earlier authentication; do not recover credentials from other surfaces. Water recurrence and original MFP history remain separately pending.
+Build `product-experience-20261006.40` is published by normal PR #320 at `01d8c0c22f7dc20e83844105614b672f65a806f7`. Seven exact final candidate gates and all ten post-merge workflows passed, including deploy `37460043254` and real authenticated E2E `37460043205`. Production-renderer captures were manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740; final artifact `11412535303`. The complete executive footer fits the desktop reference; visible 44px utility icons and non-overlapping period controls are enforced. The approved mobile Today/week hierarchy, truthful source boundaries and progressive report workspaces are preserved.
+
+**One release gate remains blocked externally:** secure Cloud Browser sign-in succeeded and fresh authenticated evidence appeared, but it was the previously loaded .39 document. Reloading for exact .40 inspection lost the browser transport; observation did not return. One session-reset recovery failed `environment_offline`. Final exact-public manual inspection is unknown, not completed. Do not infer owner acceptance, bypass authentication, recover credentials, request repeated login or ask the owner to perform micro-QA. Resume this single inspection when the Cloud Browser infrastructure is available. Automated real-data verification is successful but does not substitute for that manual gate.
+
+Initial bridge water transport is verified; automatic recurrence without manual export and original authenticated MFP water history remain separate unresolved tasks. Preserve the configured paid bridge and Polar authorization. Current authority: `EXECUTION_STATE.json` and `releases/PRODUCT_EXPERIENCE_20261006.md`.
 
 # Integrated review — 2026-10-06 UTC
 

@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/INTEGRATED_REVIEW_20261006.md"
+    "latest_release": "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-PRODUCT-EXPERIENCE-001",
-    "status": "in_progress",
+    "status": "blocked_external",
     "goal": "Reconcile approved desktop executive cockpit and mobile Today-first reference into a coherent source-backed product with progressive reports.",
     "task_ids": [
       "LTS-PRODUCT-EXPERIENCE-001"
@@ -58,10 +58,16 @@
     "completed_evidence": [
       "Owner rejected .39 as a consolidator and authorized autonomous senior UX/product implementation; visual acceptance reopened.",
       "Uploaded desktop reference and private Drive mobile original reopened; illustrative-data boundaries preserved.",
-      "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally."
+      "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally.",
+      "Normal PR 320 published product-experience-20261006.40 at 01d8c0c22f7dc20e83844105614b672f65a806f7.",
+      "All seven exact candidate gates passed for 4106dad625e5056a79be491a65a59e450413a070; functional depth 37459801260.",
+      "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
+      "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
+      "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
+      "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
     ],
-    "release_state": "candidate_40; responsive_ci_real_runtime_and_exact_public_inspection_pending",
-    "candidate_build": "product-experience-20261006.40"
+    "release_state": "published_40; automated_real_data_and_responsive_verified; exact_public_manual_inspection_blocked_browser_environment_offline",
+    "public_build": "product-experience-20261006.40"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -96,7 +102,7 @@
       "id": "LTS-PRODUCT-EXPERIENCE-001",
       "area": "product_ux",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "blocked_external",
       "owner": "Codex",
       "summary": "Deliver approved-reference responsive cockpit and coherent progressive reports after owner rejected .39.",
       "acceptance": [
@@ -109,10 +115,16 @@
       "evidence": [
         "Owner rejected .39 as a consolidator and authorized autonomous senior UX/product implementation; visual acceptance reopened.",
         "Uploaded desktop reference and private Drive mobile original reopened; illustrative-data boundaries preserved.",
-        "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally."
+        "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally.",
+        "Normal PR 320 published product-experience-20261006.40 at 01d8c0c22f7dc20e83844105614b672f65a806f7.",
+        "All seven exact candidate gates passed for 4106dad625e5056a79be491a65a59e450413a070; functional depth 37459801260.",
+        "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
+        "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
+        "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
+        "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
       ],
-      "next_action": "Complete responsive validation, normal promotion and exact-public .40 inspection.",
-      "blocker": null
+      "next_action": "Resume only the exact-public .40 Cloud Browser manual inspection when infrastructure is available; do not repeat implementation, promotion, integrations or successful login.",
+      "blocker": "Cloud Browser environment_offline after successful secure authentication; exact .40 reload observation unknown. No user configuration or credential action is requested."
     },
     {
       "id": "LTS-EVIDENCE-INSIGHTS-001",
@@ -1464,5 +1476,22 @@
       ],
       "release_state": "published_and_verified_build_36; physical_iPhone_activation_and_real_nutrition_receipt_verified; water_remains_pending"
     }
-  ]
+  ],
+  "latest_published_release": {
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+    "build_id": "product-experience-20261006.40",
+    "main_commit": "01d8c0c22f7dc20e83844105614b672f65a806f7",
+    "published_on": "2026-10-06",
+    "automated_runtime_and_responsive_status": "verified",
+    "manual_exact_public_status": "blocked_external_environment_offline",
+    "evidence": [
+      "Normal PR 320 published product-experience-20261006.40 at 01d8c0c22f7dc20e83844105614b672f65a806f7.",
+      "All seven exact candidate gates passed for 4106dad625e5056a79be491a65a59e450413a070; functional depth 37459801260.",
+      "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
+      "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
+      "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
+      "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
+    ],
+    "acceptance_note": "Owner subjective and physical-device acceptance are not inferred. last_verified_release remains .39 until final manual gate is completed."
+  }
 }
