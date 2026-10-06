@@ -120,13 +120,13 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   const waterCard=await page.locator('.ltsReviewCoverage article').nth(2).innerText();
   check(waterCard.includes(reviewTruth.waterAvailable?`${reviewTruth.waterCount} dias`:'Indisponível'),'rendered water coverage differs from observed closed dates');
   if(reviewTruth.waterAvailable&&!reviewTruth.waterComparable)check((await page.locator('.ltsReviewContrast').first().innerText()).includes('Ainda não há base suficiente'),'sparse real water manufactured a contrast');
-  await noOverflow();await page.locator('#reportIntegratedReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${evidenceDir}/mobile-integrated-review.png`});
+  await noOverflow();await page.evaluate(()=>document.querySelector('#reportIntegratedReview')?.scrollIntoView({block:'start'}));await page.screenshot({path:`${evidenceDir}/mobile-integrated-review.png`});
   await page.locator('[data-review-view="day"]').click();await page.waitForSelector('#reviewDate');
   check(await page.locator('#reviewDate option').count()===Math.max(1,reviewTruth.dates),'integrated day selector lost observed dates');
-  await noOverflow();await page.locator('.ltsReviewDayControls').scrollIntoViewIfNeeded();await page.screenshot({path:`${evidenceDir}/mobile-integrated-day.png`});
+  await noOverflow();await page.evaluate(()=>document.querySelector('.ltsReviewDayControls')?.scrollIntoView({block:'start'}));await page.screenshot({path:`${evidenceDir}/mobile-integrated-day.png`});
   await page.locator('[data-review-view="consultation"]').click();await page.waitForSelector('[data-review-export]');
   check((await page.locator('.ltsConsultation').innerText()).includes('Não é laudo'),'private summary lost its interpretation boundary');
-  await noOverflow();await page.locator('.ltsReviewExport').scrollIntoViewIfNeeded();await page.screenshot({path:`${evidenceDir}/mobile-consultation-summary.png`});
+  await noOverflow();await page.evaluate(()=>document.querySelector('.ltsReviewExport')?.scrollIntoView({block:'start'}));await page.screenshot({path:`${evidenceDir}/mobile-consultation-summary.png`});
   await page.setViewportSize({width:1536,height:864});await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-consultation-summary.png`});
   console.log('Real-data functional depth verified: complete histories, integrated closed-date coverage, sparse water boundary, date exploration and private consultation preview. No health observations logged.');
 }

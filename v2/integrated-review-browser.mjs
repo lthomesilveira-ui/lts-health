@@ -11,14 +11,15 @@ const db={health_workouts:[],health_daily_nutrition:[],health_source_daily_metri
 for(let i=0;i<=16;i++){
   db.health_daily_nutrition.push({source_record_id:`n${i}`,nutrition_date:date(i),source:'Synthetic food',calories_kcal:i?2000:9000,protein_g:100});
   db.health_source_daily_metrics.push({source_record_id:`health_auto_export:w${i}`,metric_date:date(i),metric_type:'dietary_water_ml',unit:'mL',value:i===0?1250:i%2?1000:1200,source_name:'Synthetic water',source_family:'health_auto_export',canonical_status:'canonical',confidence:'authenticated_auto_export'},
-    {source_record_id:`s${i}`,metric_date:date(i),metric_type:'sleep_duration_h',unit:'h',value:i%2?8:7,source_name:'Synthetic sleep',source_family:'synthetic',canonical_status:'candidate'},
-    {source_record_id:`other${i}`,metric_date:date(i),metric_type:'sleep_duration_h',unit:'h',value:20,source_name:'Other sleep',source_family:'synthetic',canonical_status:'candidate'});
+    {source_record_id:`s${i}`,metric_date:date(i),metric_type:'sleep_duration_h',unit:'h',value:i%2?8:7,source_name:'Synthetic sleep',source_family:'synthetic',canonical_status:'candidate'});
+  if(i>0)db.health_source_daily_metrics.push({source_record_id:`other${i}`,metric_date:date(i),metric_type:'sleep_duration_h',unit:'h',value:20,source_name:'Other sleep',source_family:'synthetic',canonical_status:'candidate'});
   if(i>0&&i%2===0)db.health_workouts.push({source_record_id:`w${i}`,workout_date:date(i),workout_type:'Synthetic session',source:'Synthetic log',is_canonical:true,record_status:'validated',duration_minutes:40});
 }
 const service=`window.__reviewDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-review-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__reviewDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
 const noOverflow=async page=>assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no document overflow');
+const capture=async(page,selector,path)=>{await page.evaluate(s=>document.querySelector(s)?.scrollIntoView({block:'start',behavior:'auto'}),selector);await page.screenshot({path});};
 try{
   for(const[label,width,height]of [['desktop',1536,864],['mobile',390,844],['physical-viewport',393,650],['small',320,740]]){
     const page=await browser.newPage({viewport:{width,height},acceptDownloads:true});page.on('pageerror',e=>errors.push(e.message));
@@ -32,7 +33,8 @@ try{
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'30');
     assert.match(await page.locator('.ltsReviewContrast').first().innerText(),/1\.200 mL.*1\.000 mL/s);
     assert.match(await page.locator('.ltsReviewCoverage').innerText(),/16 dias/);await noOverflow(page);
-    await page.locator('#reportIntegratedReview').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-overview.png`});
+    assert.match(await page.locator('.ltsReviewContrast').last().innerText(),/7,0 h.*8,0 h/s);
+    await capture(page,'#reportIntegratedReview',`${dir}/${label}-overview.png`);
     await page.locator('[data-review-view="day"]').click();await page.waitForSelector('#reviewDate');
     assert.match(await page.locator('.ltsReviewDay').innerText(),/Dia em andamento/);
     await page.locator('#reviewDate').selectOption(date(2));await page.waitForFunction(()=>document.querySelector('.ltsReviewDayFacts')?.textContent.includes('1.200 mL'));
@@ -45,12 +47,12 @@ try{
     const beforeSource=await page.locator('#reviewPanel').elementHandle();
     await page.locator('#reviewSleepSource').selectOption(other);await page.waitForFunction(element=>!element.isConnected,beforeSource);
     await page.waitForFunction(()=>document.querySelector('.ltsDaySleep')?.textContent.includes('20,0 h'));
-    await noOverflow(page);await page.locator('.ltsReviewDayControls').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-day.png`});
+    await noOverflow(page);await capture(page,'.ltsReviewDayControls',`${dir}/${label}-day.png`);
     await page.locator('[data-review-view="consultation"]').click();await page.waitForSelector('[data-review-export]');
     const downloadPromise=page.waitForEvent('download');await page.locator('[data-review-export]').click();const download=await downloadPromise;
     assert.match(download.suggestedFilename(),/^LTS_Health_Resumo_\d{4}-\d{2}-\d{2}\.txt$/);
     const text=readFileSync(await download.path(),'utf8');assert.match(text,/20,0 h/);assert.match(text,/1\.100 mL/);assert.match(text,/Não é laudo/);
-    await noOverflow(page);await page.locator('.ltsReviewExport').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-consultation.png`});
+    await noOverflow(page);await capture(page,'.ltsReviewExport',`${dir}/${label}-consultation.png`);
     await page.locator('[data-report-section="reportHydration"]').click();assert.equal(new URL(page.url()).hash,'#analise','section jump does not corrupt app routing');
     await page.locator('#analysisPeriod').selectOption('90');await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='90');
     assert.equal(await page.locator('[data-review-view="consultation"]').getAttribute('aria-pressed'),'true','period change preserves the current task');
