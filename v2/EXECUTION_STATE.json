@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
+    "latest_release": "v2/releases/COCKPIT_READING_20261006.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,60 +49,67 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-PRODUCT-EXPERIENCE-001",
-    "status": "blocked_external",
-    "goal": "Reconcile approved desktop executive cockpit and mobile Today-first reference into a coherent source-backed product with progressive reports.",
+    "id": "PKG-COCKPIT-READING-001",
+    "status": "in_progress",
+    "goal": "Make Home explain observed changes and source limitations without repeating counts or equating missing data with failed reads.",
     "task_ids": [
-      "LTS-PRODUCT-EXPERIENCE-001"
+      "LTS-COCKPIT-READING-001"
     ],
     "completed_evidence": [
-      "Owner rejected .39 as a consolidator and authorized autonomous senior UX/product implementation; visual acceptance reopened.",
-      "Uploaded desktop reference and private Drive mobile original reopened; illustrative-data boundaries preserved.",
-      "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally.",
+      "Owner authorized continued autonomous improvements without present homologation; two incoming workouts have not been received or imported.",
+      "Independent body-reason, actual-change, source/day and fail-closed model tests passed locally.",
+      "Existing reports, integrated-review and evidence-insights calculation suites, public-audit and privacy guard passed locally."
+    ],
+    "release_state": "implemented_locally; candidate_responsive_normal_promotion_and_exact_public_41_verification_pending",
+    "candidate_build": "product-clarity-20261006.41"
+  },
+  "last_verified_release": {
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+    "build_id": "product-experience-20261006.40",
+    "main_commit": "01d8c0c22f7dc20e83844105614b672f65a806f7",
+    "published_on": "2026-10-06",
+    "automated_runtime_and_responsive_status": "verified",
+    "manual_exact_public_status": "verified_desktop",
+    "evidence": [
       "Normal PR 320 published product-experience-20261006.40 at 01d8c0c22f7dc20e83844105614b672f65a806f7.",
       "All seven exact candidate gates passed for 4106dad625e5056a79be491a65a59e450413a070; functional depth 37459801260.",
       "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
       "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
       "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
-      "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
+      "v2/releases/PRODUCT_EXPERIENCE_20261006.md",
+      "Cloud Browser infrastructure recovered on 2026-10-06. Existing authenticated session reloaded exact .40; executive Home, shared 30/90-day period, all three report modes and direct hydration workspace navigation were manually inspected. Earlier environment_offline blocker is superseded; no login, private-data write or owner homologation was requested."
     ],
-    "release_state": "published_40; automated_real_data_and_responsive_verified; exact_public_manual_inspection_blocked_browser_environment_offline",
-    "public_build": "product-experience-20261006.40"
-  },
-  "last_verified_release": {
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "integrated-review-20261006.39",
-    "main_commit": "23b6ed237cbe401c9cf0357c5dc1956fdca86bef",
-    "verified_on": "2026-10-06",
-    "evidence": [
-      "PR 309 merged normally at 19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3; public build home-dashboard-reference-20261003.36.",
-      "All seven final candidate gates and all ten post-merge workflows passed; deploy 37231135684 and real authenticated E2E 37231135691.",
-      "Exact public authenticated Cloud Browser inspection verified build .36, authorized Polar, pending physical-iPhone activation and a real receipt-check request.",
-      "Deployed HTTP receiver accepted supported daily data and idempotent replay from an isolated test owner; revoked key returned 401. Test owner and all associated rows removed, with independent zero-count verification.",
-      "v2/releases/HEALTH_AUTO_EXPORT_20261004.md",
-      "PR 311 merged normally at f264d0580d5cfe9db8736edc209eda243456faef; all five candidate gates and nine post-merge workflows passed.",
-      "Receiver version 3 retrieved files match the tested and merged code exactly.",
-      "First real physical-iPhone daily JSON v2 upload succeeded on 2026-10-04. Private database receipt and source attribution were independently verified.",
-      "Exact authenticated public app shows Recebendo dados; Nutrition displays the two new daily summaries. No water volume was received.",
-      "PRs 315 and 316 merged normally; public product build home-dashboard-reference-20261003.38 at b3bc19200c63a153260115d23871f1e2872d5fc5.",
-      "The private validation record of 2026-10-05 confirms successful secure Cloud Browser authentication and exact-public manual inspection of build .38. The previous interrupted-login blocker is superseded.",
-      "All ten post-merge workflow runs for b3bc19200c63a153260115d23871f1e2872d5fc5 were independently rechecked as completed/success on this restart, including deployment 37297331595 and real-auth E2E 37297331577.",
-      "History coverage now uses observed days for full history and X of N days for finite windows; calculation and source-selection behavior remain preserved.",
-      "v2/releases/CONTINUITY_WATER_20261005.md",
-      "Seven final candidate gates passed for 85850aa322ee9d711014d8e8ce1540d67189f17a; functional depth 37404992077 includes production-renderer responsive journeys and private device-only export.",
-      "Final synthetic captures were inspected at desktop, phone, reduced physical-browser and small-phone widths; artifact 11387280460. No private health observations are in the repository.",
-      "Normal PR 318 published integrated-review-20261006.39 at 23b6ed237cbe401c9cf0357c5dc1956fdca86bef. All ten post-merge workflows passed, including deploy 37405185278 and real authenticated E2E 37405185316.",
-      "Exact authenticated public Cloud Browser inspection verified build .39, canonical Home Today/week hydration, all three review modes, independent sources, closed-date context, shared food source and consultation coverage/sparse-base limits.",
-      "v2/releases/INTEGRATED_REVIEW_20261006.md"
-    ],
-    "acceptance_note": "Build .39 is published and technically inspected in the exact authenticated public Cloud Browser after responsive, candidate and all ten post-merge workflows passed. All three integrated review modes and canonical Home hydration are verified with actual sources; this does not presume owner subjective UX or physical-device acceptance. Initial bridge water is now verified; earlier absence evidence is historical. Automatic recurrence without a manual export and original authenticated MFP water history remain separate unresolved tasks."
+    "acceptance_note": "Exact .40 public authenticated desktop manually inspected; responsive production-renderer captures and real-auth runtime gates passed. Owner subjective and physical-device acceptance are not inferred.",
+    "verified_on": "2026-10-06"
   },
   "tasks": [
+    {
+      "id": "LTS-COCKPIT-READING-001",
+      "area": "product_ux",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Refine source-backed reading, distinct body comparison reasons and truthful loading states while preserving approved geometry.",
+      "acceptance": [
+        "Main reading prioritizes a safe observed body change or canonical session-count difference; the footer answers a distinct exact-date overlap question, without causality or illustrative goals.",
+        "Single, empty, ambiguous, changed-source/device and unavailable body states have distinct explanations. Failed sources never render empty-history lab/sleep counts or water totals.",
+        "Loaded-domain chips explicitly describe this consultation, not automatic integration success; unavailable states have visible text and accessible labels.",
+        "Five cards, six modules, one shared period, full desktop footer and mobile Today/week hierarchy pass production-renderer regression at desktop, phone, reduced and small viewports.",
+        "Candidate checks, normal promotion, all relevant post-merge gates and exact public authenticated inspection recorded; owner subjective and physical-device acceptance not inferred."
+      ],
+      "evidence": [
+        "Owner authorized continued autonomous improvements without present homologation; two incoming workouts have not been received or imported.",
+        "Independent body-reason, actual-change, source/day and fail-closed model tests passed locally.",
+        "Existing reports, integrated-review and evidence-insights calculation suites, public-audit and privacy guard passed locally."
+      ],
+      "next_action": "Run exact candidate responsive gates, inspect captures, promote normally, verify authenticated public .41 and record the release.",
+      "blocker": null
+    },
     {
       "id": "LTS-PRODUCT-EXPERIENCE-001",
       "area": "product_ux",
       "priority": "P0",
-      "status": "blocked_external",
+      "status": "done",
       "owner": "Codex",
       "summary": "Deliver approved-reference responsive cockpit and coherent progressive reports after owner rejected .39.",
       "acceptance": [
@@ -121,10 +128,11 @@
         "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
         "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
         "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
-        "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
+        "v2/releases/PRODUCT_EXPERIENCE_20261006.md",
+        "Cloud Browser infrastructure recovered on 2026-10-06. Existing authenticated session reloaded exact .40; executive Home, shared 30/90-day period, all three report modes and direct hydration workspace navigation were manually inspected. Earlier environment_offline blocker is superseded; no login, private-data write or owner homologation was requested."
       ],
-      "next_action": "Resume only the exact-public .40 Cloud Browser manual inspection when infrastructure is available; do not repeat implementation, promotion, integrations or successful login.",
-      "blocker": "Cloud Browser environment_offline after successful secure authentication; exact .40 reload observation unknown. No user configuration or credential action is requested."
+      "next_action": null,
+      "blocker": null
     },
     {
       "id": "LTS-EVIDENCE-INSIGHTS-001",
@@ -1271,6 +1279,28 @@
   ],
   "package_history": [
     {
+      "id": "PKG-PRODUCT-EXPERIENCE-001",
+      "status": "done",
+      "goal": "Reconcile approved desktop executive cockpit and mobile Today-first reference into a coherent source-backed product with progressive reports.",
+      "task_ids": [
+        "LTS-PRODUCT-EXPERIENCE-001"
+      ],
+      "completed_evidence": [
+        "Owner rejected .39 as a consolidator and authorized autonomous senior UX/product implementation; visual acceptance reopened.",
+        "Uploaded desktop reference and private Drive mobile original reopened; illustrative-data boundaries preserved.",
+        "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally.",
+        "Normal PR 320 published product-experience-20261006.40 at 01d8c0c22f7dc20e83844105614b672f65a806f7.",
+        "All seven exact candidate gates passed for 4106dad625e5056a79be491a65a59e450413a070; functional depth 37459801260.",
+        "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
+        "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
+        "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
+        "v2/releases/PRODUCT_EXPERIENCE_20261006.md",
+        "Cloud Browser infrastructure recovered on 2026-10-06. Existing authenticated session reloaded exact .40; executive Home, shared 30/90-day period, all three report modes and direct hydration workspace navigation were manually inspected. Earlier environment_offline blocker is superseded; no login, private-data write or owner homologation was requested."
+      ],
+      "release_state": "published_40; responsive_automated_real_data_and_exact_public_manual_desktop_verified",
+      "public_build": "product-experience-20261006.40"
+    },
+    {
       "id": "PKG-INTEGRATED-REVIEW-001",
       "status": "done",
       "goal": "Connect hydration, food, training, recovery and dated clinical context through source-aware daily exploration and a private consultation summary, preserving the approved Home.",
@@ -1483,15 +1513,16 @@
     "main_commit": "01d8c0c22f7dc20e83844105614b672f65a806f7",
     "published_on": "2026-10-06",
     "automated_runtime_and_responsive_status": "verified",
-    "manual_exact_public_status": "blocked_external_environment_offline",
+    "manual_exact_public_status": "verified_desktop",
     "evidence": [
       "Normal PR 320 published product-experience-20261006.40 at 01d8c0c22f7dc20e83844105614b672f65a806f7.",
       "All seven exact candidate gates passed for 4106dad625e5056a79be491a65a59e450413a070; functional depth 37459801260.",
       "Final synthetic artifact 11412535303 inspected at 1536x864, 390x844, 393x650 and 320x740; full desktop footer, visible utility icons, source/date/export journeys and progressive disclosure verified.",
       "All ten post-merge workflows passed: deploy 37460043254, real authenticated E2E 37460043205, Functional Depth 37460043272, Pages Smoke 37460084743 and Homologation 37460084776.",
       "Secure Cloud Browser authentication succeeded, but .40 reload inspection returned no observation after transport disconnected; one session reset failed environment_offline. Manual exact-public gate remains unknown and blocked externally.",
-      "v2/releases/PRODUCT_EXPERIENCE_20261006.md"
+      "v2/releases/PRODUCT_EXPERIENCE_20261006.md",
+      "Cloud Browser infrastructure recovered on 2026-10-06. Existing authenticated session reloaded exact .40; executive Home, shared 30/90-day period, all three report modes and direct hydration workspace navigation were manually inspected. Earlier environment_offline blocker is superseded; no login, private-data write or owner homologation was requested."
     ],
-    "acceptance_note": "Owner subjective and physical-device acceptance are not inferred. last_verified_release remains .39 until final manual gate is completed."
+    "acceptance_note": "Exact .40 public authenticated desktop manually inspected; responsive production-renderer captures and real-auth runtime gates passed. Owner subjective and physical-device acceptance are not inferred."
   }
 }

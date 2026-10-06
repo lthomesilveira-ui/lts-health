@@ -9,9 +9,9 @@ const [index,core,main,css,contract,browserGate,rawState,...screens]=await Promi
 ]);
 const state=JSON.parse(rawState),screenText=screens.join('\n');
 
-assert.match(index,/lts-build" content="product-experience-20261006\.40/);
-assert.match(index,/ux-coherence\.css\?v=product-experience-20261006\.40/);
-assert.match(index,/main\.js\?v=product-experience-20261006\.40/);
+assert.match(index,/lts-build" content="product-clarity-20261006\.41/);
+assert.match(index,/ux-coherence\.css\?v=product-clarity-20261006\.41/);
+assert.match(index,/main\.js\?v=product-clarity-20261006\.41/);
 assert.doesNotMatch(index,/longitudinal-story/);
 assert.match(core,/export function setGlobalPeriod/);
 assert.match(main,/function resetRouteScroll\(\)/);
