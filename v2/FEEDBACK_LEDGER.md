@@ -1,10 +1,10 @@
-# Cockpit reading improvement — 2026-10-06
+# Cockpit reading published and verified — 2026-10-06
 
-The owner authorized autonomous improvements without current homologation. `PKG-COCKPIT-READING-001` refines safe observed changes, distinct body comparison limits, exact-date overlap context and unavailable-source states while preserving approved desktop/mobile structure. Candidate build `product-clarity-20261006.41` is implemented locally; candidate CI, responsive capture inspection, normal promotion and exact-public verification are still pending. Two incoming workouts have not been received or imported.
+Build `product-clarity-20261006.41` is published by normal PR #322 at `ffc8681e5d361fcc52c63b1021f681934d266a60`. All six exact final candidate checks and all ten product post-merge workflows passed, including deploy `37475661838`, real authenticated E2E `37475661660` and Functional Depth `37475661839`. Final artifact `11418332772` had its digest verified and was manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740. The complete desktop footer fits; approved mobile Today/week priority is preserved.
 
-The former .40 Cloud Browser infrastructure blocker is superseded: the existing authenticated session reloaded exact `.40` and Home/shared periods, all three report modes and direct hydration workspace navigation were manually inspected. No new login or user micro-QA was requested. Responsive capture evidence remains separate from live desktop inspection; owner subjective/physical-device acceptance is not inferred.
+The existing authenticated Cloud Browser session opened exact `.41` successfully. Live desktop inspection verified observed changes, distinct single/changed-device body limits, explicit source-loading status, no repeated reading, shared periods, all three report modes and the direct water workspace. Live desktop evidence is separate from responsive CI captures; no owner subjective or physical-device acceptance is inferred. The previous `.40` environment_offline inspection blocker was recovered and closed, without repeated login or owner micro-QA.
 
-Initial bridge water transport is verified. Automatic recurrence without manual export and original authenticated MyFitnessPal water history remain separate unresolved tasks. Preserve all configured integrations and private source records. Operational authority: `EXECUTION_STATE.json` and `releases/COCKPIT_READING_20261006.md`.
+`PKG-COCKPIT-READING-001` is technically done; no executable task remains in this package. Two owner-announced workouts have not been received or imported. Initial bridge water transport remains verified, while automatic recurrence without manual export and original authenticated MyFitnessPal water history remain separate unresolved tasks. Preserve all integrations, keys, recording routine and private originals. Authority: `EXECUTION_STATE.json` and `releases/COCKPIT_READING_20261006.md`.
 
 # Product experience published — 2026-10-06
 
@@ -114,3 +114,5 @@ O usuário aprovou o Health Auto Export Premium anual e confirmou a compra para 
 ## FB-031 — continued improvements without owner QA (06/10/2026)
 
 The owner authorized ongoing product improvements and cannot homologate now. Continue safe implementation and independent verification; preserve the approved references and do not turn this into a request for user micro-QA. Two workouts are expected but have not been supplied. `LTS-COCKPIT-READING-001` owns this coherent refinement of explanatory reading and unavailable-source states; current acceptance remains in `EXECUTION_STATE.json`.
+
+FB-031 technical closure: `.41` published and independently verified through PR #322; no owner homologation was required for engineering QA, and no owner acceptance is inferred.
