@@ -24,10 +24,11 @@ try{
   for(const [label,width,height] of [['desktop',1440,1000],['mobile',390,844],['small',320,740]]){
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
-    await page.goto(base+'#hoje');await page.waitForSelector('.ltsRefEvidenceBrief article');
+    await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
+    await page.locator('[data-disclosure="home-history"]>summary').click();await page.waitForSelector('.ltsRefEvidenceBrief article');
     assert.match(await page.locator('.ltsRefEvidenceBrief').innerText(),/150 g\/dia.*10 dias/s,'Home uses matching counted observations');
     await overflow(page);await page.locator('.ltsRefEvidenceBrief button').click();
-    await page.waitForSelector('#reportEvidenceInsights');
+    await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'30','evidence details retain the Home calendar window');
     assert.equal(await page.locator('#reportNutritionSource').inputValue(),'synthetic food a');
     const protein=page.locator('#reportEvidenceInsights .ltsInsightTable').first().locator('tbody tr').first();
@@ -47,8 +48,9 @@ try{
     await page.locator('[data-report-exercise]').first().click();await page.waitForSelector('.ltsExerciseHistory');
     assert.match(await page.locator('.ltsExerciseHistory').innerText(),/Synthetic press/,'evidence link opens the actual exercise');
     await overflow(page);
-    await page.evaluate(()=>{location.hash='#analise';});await page.waitForSelector('#reportEvidenceInsights');
+    await page.evaluate(()=>{location.hash='#analise';});await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sets='error';const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
+    await page.locator('[data-report-section="reportEvidenceInsights"]').click();
     assert.equal(await page.locator('[data-report-exercise]').count(),0,'failed sets hide stale load comparisons');
     assert.match(await page.locator('#reportEvidenceInsights').innerText(),/comparação de cargas fica bloqueada/);
     await page.close();

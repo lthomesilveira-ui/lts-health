@@ -33,6 +33,7 @@ jobs:
           node v2/reports-model-test.mjs
           node v2/evidence-insights-test.mjs
           node v2/integrated-review-test.mjs
+          node v2/home-cockpit-test.mjs
           node v2/polar-contract-test.mjs
           node v2/polar-provider-test.mjs
           node v2/history-depth-contract.mjs

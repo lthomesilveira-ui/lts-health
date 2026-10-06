@@ -106,14 +106,17 @@ async function auditReferenceHome(label){
       motto:document.querySelector('.ltsRefMotto')?.textContent?.trim()||'',
       metrics:[...document.querySelectorAll('.ltsRefMetric>span')].map(el=>el.textContent.trim()),
       top:{metrics:top('.ltsRefMetrics'),today:top('.ltsRefToday'),progress:top('.ltsRefProgress'),panorama:top('.ltsRefIntegrated')},
+      desktop:innerWidth>840,
+      cockpit:{cards:document.querySelectorAll('.ltsExecutiveCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,footer:top('.ltsCockpitFooter')},
       minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
     };
   });
-  if(result.build!=='integrated-review-20261006.39')throw new Error(`${label}: unexpected public build ${result.build}`);
+  if(result.build!=='product-experience-20261006.40')throw new Error(`${label}: unexpected public build ${result.build}`);
   if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
   if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
   if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
-  if(!(result.top.metrics<result.top.today&&result.top.today<result.top.panorama&&result.top.progress<result.top.panorama))throw new Error(`${label}: Home priority hierarchy is wrong ${JSON.stringify(result.top)}`);
+  if(result.desktop){if(result.cockpit.cards!==5||result.cockpit.panels!==6||result.cockpit.footer>850)throw new Error(`${label}: executive cockpit is incomplete or oversized ${JSON.stringify(result.cockpit)}`);}
+  else if(!(result.top.metrics<result.top.today&&result.top.today<result.top.panorama&&result.top.progress<result.top.panorama))throw new Error(`${label}: Home priority hierarchy is wrong ${JSON.stringify(result.top)}`);
   if(result.minSupportingFont<9.5)throw new Error(`${label}: Home supporting type is too small (${result.minSupportingFont}px)`);
 }
 async function auditExerciseGeometry(label){

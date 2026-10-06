@@ -30,13 +30,15 @@ try{
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
   await page.locator('[data-home-period="all"]').click();
-  await page.waitForSelector('.ltsRefTrendChart .ltsContextAxis');
-  const axis=await page.locator('.ltsRefTrendChart .ltsContextAxis').evaluate(el=>{
+  const primaryAxis=width>840?'.ltsCockpitPanel.body .ltsContextAxis':'.ltsRefTrendChart .ltsContextAxis';
+  await page.waitForSelector(primaryAxis);
+  const axis=await page.locator(primaryAxis).evaluate(el=>{
    const plot=el.closest('.ltsContextPlot').getBoundingClientRect(),svg=el.previousElementSibling.getBoundingClientRect();
    return {plot:{left:plot.left,right:plot.right},svgBottom:svg.bottom,labels:[...el.children].map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top};})};
   });
   assert.ok(axis.labels.every(r=>r.left>=axis.plot.left-1&&r.right<=axis.plot.right+1&&r.top>=axis.svgBottom-1),'both calendar labels are visible below the main plot');
   assert.equal(await page.locator('.ltsContextPanel').count(),4,'four simultaneous source-backed panels');
+  await page.locator('[data-disclosure="home-history"]>summary').click();
   const sharedAxes=await page.locator('.ltsContextPanel .ltsContextAxis').allTextContents();
   assert.ok(sharedAxes.length>=2&&new Set(sharedAxes).size===1,'populated all-history panels use the same calendar axis');
   await page.locator('#homeLabMarker').selectOption('marcador 01');
@@ -102,6 +104,7 @@ try{
 
   await goto(page,'analise','.ltsUsefulReports');
   await page.locator('#analysisPeriod').selectOption('all');
+  await page.locator('[data-report-section="reportComposition"]').click();
   assert.equal(await page.locator('#reportLabMarker option').count(),23,'reports expose all markers, including qualitative results');
   const reportAxes=await page.locator('.ltsUsefulReports .ltsContextAxis').allTextContents();
   assert.ok(reportAxes.length>=4&&new Set(reportAxes).size===1,'report panels share one historical calendar');
@@ -143,6 +146,7 @@ try{
   });
   await page.locator('#refreshBtn').click();
   await page.waitForFunction(()=>document.querySelector('#reportPeriods')?.textContent.includes('1 de 2 sessões com duração'));
+  await page.locator('[data-report-section="reportPeriods"]').click();
   if(label!=='desktop'){
     const retry=await page.locator('#refreshBtn').boundingBox();
     assert.ok(retry?.width>=44&&retry?.height>=44,'report retry remains visible with a phone-sized touch target');

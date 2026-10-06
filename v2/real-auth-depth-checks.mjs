@@ -62,6 +62,7 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   const insightBeforePeriod=await page.locator('#reportEvidenceInsights').elementHandle();
   await page.locator('#analysisPeriod').selectOption('all');
   await page.waitForFunction(element=>!element.isConnected,insightBeforePeriod);
+  await page.locator('[data-report-section="reportEvidenceInsights"]').click();
   await page.waitForSelector('#reportEvidenceInsights');
   await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all'&&document.querySelector('#reportNutritionSource'));
   const insightTruth=await page.evaluate(async()=>{
@@ -96,6 +97,7 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
     check(await page.locator('.ltsTrainingV2').getAttribute('data-training-view')==='exercise','load insight did not open exercise evidence');
     await goto('analise','.ltsUsefulReports');
   }
+  await page.locator('[data-report-section="reportComposition"]').click();
   const reportKeys=await page.locator('#reportLabMarker option').evaluateAll(es=>es.map(e=>e.value));
   check(same(reportKeys,truth.markerKeys),'report markers differ from the independent private database read');
   if(truth.singleMarker){
