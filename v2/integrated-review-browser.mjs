@@ -27,6 +27,7 @@ try{
     const page=await browser.newPage({viewport:{width,height},acceptDownloads:true});page.on('pageerror',e=>errors.push(e.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
+    await page.screenshot({path:`${dir}/${label}-home.png`});
     assert.equal(await page.locator('[data-home-period]').count(),4,'one shared period control, not duplicate viewport controls');
     if(width>840){
       assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
