@@ -89,7 +89,7 @@ try{
     assert.equal(await page.locator('[data-review-view="consultation"]').getAttribute('aria-pressed'),'true','period change preserves the current task');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';state.ui.reviewView='overview';const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
     assert.match(await page.locator('#reportIntegratedReview').innerText(),/Comparação bloqueada/);assert.doesNotMatch(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
-    await page.locator('.primaryNav [data-route="hoje"]').click();await page.waitForSelector('.ltsHomeReference');
+    await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('.ltsHomeReference');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
     assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregou/);
     if(width>840){
