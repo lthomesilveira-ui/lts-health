@@ -39,7 +39,8 @@ try{
       const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),footer:top('.ltsCockpitFooter')};});
       assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.footer,'approved executive hierarchy');
       assert.ok(geometry.footer<800,`executive footer fits desktop viewport: ${geometry.footer}`);
-      assert.ok(await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom<=864),'the complete executive footer fits the desktop reference, not only its first line');
+      const footerBottom=await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom);
+      assert.ok(footerBottom<=864,`the complete executive footer fits the desktop reference, not only its first line: ${footerBottom}`);
       for(const selector of ['#refreshBtn','#logoutBtn']){
         assert.ok(await page.locator(`${selector} .topActionIcon`).isVisible(),'icon-only header actions must retain their visible SVG');
         const box=await page.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44,'header actions retain a usable target');
