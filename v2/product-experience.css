@@ -54,7 +54,8 @@
 .ltsCockpitFooter summary{font-size:11px;color:#286ba4;cursor:pointer}
 .ltsCockpitSources{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
 .ltsCockpitSources span{font-size:10.5px;border:1px solid #e0e8ef;border-radius:5px;padding:4px 6px;color:#52667e}
-.ltsCockpitSources span:before{content:'●';margin-right:4px;color:#338b6b}.ltsCockpitSources .pending:before{color:#a27740}
+.ltsCockpitSources span.ready{color:#286f57}.ltsCockpitSources span.pending{color:#826033}
+.ltsCockpitFooter .ltsCockpitLoadNote{font-size:10.5px;line-height:1.35;margin:3px 0}
 .ltsHomeExplore,.ltsReportWorkspace{margin-top:13px;border:1px solid #dfe7ef;border-radius:14px;background:#fff;color:#182b42;overflow:hidden}
 .ltsHomeExplore>summary,.ltsReportWorkspace>summary{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;cursor:pointer;list-style:none;min-height:64px}
 .ltsHomeExplore>summary::-webkit-details-marker,.ltsReportWorkspace>summary::-webkit-details-marker{display:none}
