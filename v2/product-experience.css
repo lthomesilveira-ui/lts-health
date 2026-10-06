@@ -35,12 +35,12 @@
 .ltsCockpitPanel .ltsContextPlot svg{width:100%;height:82px;display:block;min-height:0;overflow:visible}
 .ltsCockpitPanel .ltsContextAxis{font-size:9.5px}
 .ltsCockpitPanel .ltsContextPlot text{font-size:20px}
-.ltsCockpitPanel .ltsContextEmpty{min-height:115px;font-size:11px}
+.ltsCockpitPanel .ltsContextEmpty{min-height:96px;font-size:11px}
 .ltsCockpitFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:8px}
 .ltsCockpitFacts>div{min-width:0;border-radius:8px;background:#f2f6fa;padding:7px 8px}
 .ltsCockpitFacts b{display:block;font-size:16px;line-height:1.15;overflow-wrap:anywhere}
 .ltsCockpitFacts small{display:block;font-size:10px;color:#64788e;margin-top:4px;line-height:1.35}
-.secondary .ltsCockpitPanel .ltsContextPlot svg{height:34px}.secondary .ltsCockpitPanel .ltsContextEmpty{min-height:55px}
+.secondary .ltsCockpitPanel .ltsContextPlot svg{height:34px}.secondary .ltsCockpitPanel .ltsContextEmpty{min-height:48px}
 .secondary .ltsCockpitFacts{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:7px}
 .secondary .ltsCockpitFacts>div{padding:5px 8px}.secondary .ltsCockpitFacts b{font-size:13px}
 .secondary .ltsCockpitCaption{margin:3px 0 4px}
@@ -68,6 +68,17 @@
 .ltsReportLibrary{margin:24px 0}.ltsReportLibrary>header h2{font-size:22px;margin:5px 0;letter-spacing:-.02em}.ltsReportLibrary>header p{font-size:13px;color:#667a8d;margin:0 0 12px}
 .ltsWorkspaceContent{padding:0 16px 16px}.ltsWorkspaceContent>.ltsReportSection{box-shadow:none;border:0;border-radius:0;border-bottom:1px solid #e4ebf2;padding:20px 0;margin:0}.ltsWorkspaceContent>.ltsReportSection:last-child{border-bottom:0}
 @media(min-width:841px){body[data-product-route="hoje"] .ltsMain{padding-top:18px}.ltsDesktopCockpit .ltsContextGrid{stroke:#e4ebf2}.ltsDesktopCockpit button:hover{filter:brightness(.98)}}
+/* The wide cockpit has one header, not a second utility band above it. Keep
+   the actual refresh/logout controls accessible beside the period picker. */
+@media(min-width:1151px){
+  body[data-product-route="hoje"] .app{position:relative;grid-template-rows:0 minmax(0,1fr)}
+  body[data-product-route="hoje"] .topbar{position:absolute;top:10px;right:24px;width:88px;min-height:44px;height:44px;padding:0;background:transparent;border:0}
+  body[data-product-route="hoje"] .topbar #syncText{display:none}
+  body[data-product-route="hoje"] .topbar .topActions{gap:0}
+  body[data-product-route="hoje"] .topbar #refreshBtn,body[data-product-route="hoje"] .topbar #logoutBtn{display:inline-flex;align-items:center;justify-content:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:0}
+  body[data-product-route="hoje"] .ltsCockpitWindow{right:106px}
+  body[data-product-route="hoje"] .ltsCockpitHeading{padding-right:451px}
+}
 @media(min-width:841px) and (max-width:1150px){.ltsExecutiveCards{gap:8px}.ltsExecutiveCard{padding:11px 10px}.ltsExecutiveCard strong{font-size:20px}.ltsCockpitHeading h1{font-size:25px}.ltsCockpitHeading{padding-right:320px}.ltsCockpitPanel{padding:12px 10px}.ltsCockpitFacts b{font-size:14px}}
 @media(max-width:840px){
   .ltsDesktopCockpit{display:none}.ltsMobileHome{display:block}.ltsProductExperience{max-width:620px}
