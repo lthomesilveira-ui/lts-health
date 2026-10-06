@@ -62,7 +62,7 @@ A abertura deve ser uma superfície de decisão reconhecível como a primeira te
 5. **Evolução longitudinal:** um gráfico principal com quatro períodos e oito métricas selecionáveis.
 6. **Aprofundamento:** seis domínios em faixa horizontal, acontecimentos recentes e contexto das fontes.
 
-No desktop, a mesma hierarquia usa a largura disponível: `Hoje` e progresso ficam ao lado da evolução; os domínios formam uma única faixa; acontecimentos e proveniência fecham o cockpit. A primeira tela não apresenta todos os elementos com o mesmo peso nem empilha mini-dashboards por domínio. O detalhe permanece nas áreas especializadas.
+No desktop, seguir a referência executiva reenviada em 06/10: cinco cartões de domínio → leitura principal → treino/nutrição/composição → sono/exames/água → resumo/revisões/fontes. Os módulos compartilham calendário, não origens ou unidades. No celular, manter Hoje e cobertura semanal antes da evolução. Calendário cruzado, evidências e acontecimentos ficam em aprofundamento progressivo; o detalhe continua nas áreas especializadas. Não esticar a composição mobile para ocupar o desktop.
 
 ## Contrato de cada área
 

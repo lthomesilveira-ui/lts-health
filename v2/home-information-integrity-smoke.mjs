@@ -78,7 +78,8 @@ if(!result.metrics.includes('Massa magra'))throw new Error(`Approved Home metric
 if(result.inlineIntegrity)throw new Error('Home still injects a runtime style/order override');
 if(result.duplicateRouteAction)throw new Error('Home duplicates the contextual water import action in the top bar');
 if(result.fontSizes.some(size=>size<10.5))throw new Error(`Home contains unreadable mobile supporting type: ${JSON.stringify(result.fontSizes)}`);
-if(!result.metricFooters[1]?.includes('medição anterior')||!result.metricFooters[2]?.includes('medição anterior'))throw new Error(`Composition changes do not reuse the comparable body pair: ${JSON.stringify(result.metricFooters)}`);
+if(!result.metricFooters[1]?.includes('medição comparável')||!result.metricFooters[2]?.includes('medição comparável'))throw new Error(`Composition changes do not reuse the comparable body pair: ${JSON.stringify(result.metricFooters)}`);
+if(!result.metricFooters[0]?.includes('-1,2 kg')||!result.metricFooters[1]?.includes('-2,0 p.p.')||!result.metricFooters[2]?.includes('+0,8 kg'))throw new Error(`Comparable composition deltas changed: ${JSON.stringify(result.metricFooters)}`);
 if(result.trendTabs!==8||result.activePeriod!=='30 dias')throw new Error(`Longitudinal controls are incomplete: ${JSON.stringify(result)}`);
 if(result.events<3||!result.context.includes('Ainda não há ingestão de água importada'))throw new Error(`Recent history or preserved water context is missing: ${JSON.stringify(result)}`);
 if(result.domains.some(x=>x.overflow>3))throw new Error(`Domain card overflows mobile width: ${JSON.stringify(result.domains)}`);

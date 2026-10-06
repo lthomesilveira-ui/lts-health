@@ -39,7 +39,10 @@ if(!fixtureMode){
     const next=dataInputs(key);
     const alreadyOwned=Boolean(host.querySelector(markers[key]));
     if(!force&&alreadyOwned&&!dataChanged(next))return true;
-    const context=lastRoute===key&&alreadyOwned?capture(host):{top:0,id:null,disclosures:[]};
+    // main.js can already have rendered the new route before this compatibility
+    // controller observes it. The live route marker, not this controller's stale
+    // lastRoute, owns focus/disclosure context. Do not close a user's workspace.
+    const context=alreadyOwned?capture(host):{top:0,id:null,disclosures:[]};
     applying=true;
     try{
       host.innerHTML=renderer();host.dataset.productLayout='v2';host.dataset.productLayoutRoute=key;syncRouteChrome(key);

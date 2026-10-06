@@ -49,24 +49,19 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-INTEGRATED-REVIEW-001",
-    "status": "done",
-    "goal": "Connect hydration, food, training, recovery and dated clinical context through source-aware daily exploration and a private consultation summary, preserving the approved Home.",
+    "id": "PKG-PRODUCT-EXPERIENCE-001",
+    "status": "in_progress",
+    "goal": "Reconcile approved desktop executive cockpit and mobile Today-first reference into a coherent source-backed product with progressive reports.",
     "task_ids": [
-      "LTS-INTEGRATED-REVIEW-001"
+      "LTS-PRODUCT-EXPERIENCE-001"
     ],
     "completed_evidence": [
-      "Read-only operational coverage and authenticated current app audited. Initial canonical water receipt verified privately; automatic recurrence remains separate.",
-      "Source-aware calendar join, closed-day descriptive contrasts, progressive report modes, private device-only text summary and shared Home hydration implemented.",
-      "Independent synthetic model, existing reports, evidence insights and health-context calculation contracts passed locally.",
-      "Seven final candidate gates passed for 85850aa322ee9d711014d8e8ce1540d67189f17a; functional depth 37404992077 includes production-renderer responsive journeys and private device-only export.",
-      "Final synthetic captures were inspected at desktop, phone, reduced physical-browser and small-phone widths; artifact 11387280460. No private health observations are in the repository.",
-      "Normal PR 318 published integrated-review-20261006.39 at 23b6ed237cbe401c9cf0357c5dc1956fdca86bef. All ten post-merge workflows passed, including deploy 37405185278 and real authenticated E2E 37405185316.",
-      "Exact authenticated public Cloud Browser inspection verified build .39, canonical Home Today/week hydration, all three review modes, independent sources, closed-date context, shared food source and consultation coverage/sparse-base limits.",
-      "v2/releases/INTEGRATED_REVIEW_20261006.md"
+      "Owner rejected .39 as a consolidator and authorized autonomous senior UX/product implementation; visual acceptance reopened.",
+      "Uploaded desktop reference and private Drive mobile original reopened; illustrative-data boundaries preserved.",
+      "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally."
     ],
-    "release_state": "published_39; candidate_responsive_deploy_real_runtime_and_exact_public_inspection_verified",
-    "candidate_build": "integrated-review-20261006.39"
+    "release_state": "candidate_40; responsive_ci_real_runtime_and_exact_public_inspection_pending",
+    "candidate_build": "product-experience-20261006.40"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -97,6 +92,28 @@
     "acceptance_note": "Build .39 is published and technically inspected in the exact authenticated public Cloud Browser after responsive, candidate and all ten post-merge workflows passed. All three integrated review modes and canonical Home hydration are verified with actual sources; this does not presume owner subjective UX or physical-device acceptance. Initial bridge water is now verified; earlier absence evidence is historical. Automatic recurrence without a manual export and original authenticated MFP water history remain separate unresolved tasks."
   },
   "tasks": [
+    {
+      "id": "LTS-PRODUCT-EXPERIENCE-001",
+      "area": "product_ux",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Deliver approved-reference responsive cockpit and coherent progressive reports after owner rejected .39.",
+      "acceptance": [
+        "Desktop has five executive cards, main reading, three primary/three secondary modules and compact footer in the reference viewport.",
+        "Mobile preserves dark Home, three metrics, Today and weekly coverage before evolution at 390x844, 393x650 and 320x740 without overflow.",
+        "One Home period propagates to Reports; direct evidence links open the correct workspace without changing routing or losing selections.",
+        "Dates, source-isolated food/sleep/water, canonical workouts, all lab markers, ambiguity and unavailable states remain truthful; no illustrative goals or clinical claims.",
+        "Responsive capture review, normal promotion, real authenticated E2E and final exact-public browser inspection recorded before closure; owner subjective acceptance never inferred."
+      ],
+      "evidence": [
+        "Owner rejected .39 as a consolidator and authorized autonomous senior UX/product implementation; visual acceptance reopened.",
+        "Uploaded desktop reference and private Drive mobile original reopened; illustrative-data boundaries preserved.",
+        "Source-aware cockpit and progressive workspaces implemented; independent model and existing calculation/provenance checks pass locally."
+      ],
+      "next_action": "Complete responsive validation, normal promotion and exact-public .40 inspection.",
+      "blocker": null
+    },
     {
       "id": "LTS-EVIDENCE-INSIGHTS-001",
       "area": "analytics",
@@ -1241,6 +1258,26 @@
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-INTEGRATED-REVIEW-001",
+      "status": "done",
+      "goal": "Connect hydration, food, training, recovery and dated clinical context through source-aware daily exploration and a private consultation summary, preserving the approved Home.",
+      "task_ids": [
+        "LTS-INTEGRATED-REVIEW-001"
+      ],
+      "completed_evidence": [
+        "Read-only operational coverage and authenticated current app audited. Initial canonical water receipt verified privately; automatic recurrence remains separate.",
+        "Source-aware calendar join, closed-day descriptive contrasts, progressive report modes, private device-only text summary and shared Home hydration implemented.",
+        "Independent synthetic model, existing reports, evidence insights and health-context calculation contracts passed locally.",
+        "Seven final candidate gates passed for 85850aa322ee9d711014d8e8ce1540d67189f17a; functional depth 37404992077 includes production-renderer responsive journeys and private device-only export.",
+        "Final synthetic captures were inspected at desktop, phone, reduced physical-browser and small-phone widths; artifact 11387280460. No private health observations are in the repository.",
+        "Normal PR 318 published integrated-review-20261006.39 at 23b6ed237cbe401c9cf0357c5dc1956fdca86bef. All ten post-merge workflows passed, including deploy 37405185278 and real authenticated E2E 37405185316.",
+        "Exact authenticated public Cloud Browser inspection verified build .39, canonical Home Today/week hydration, all three review modes, independent sources, closed-date context, shared food source and consultation coverage/sparse-base limits.",
+        "v2/releases/INTEGRATED_REVIEW_20261006.md"
+      ],
+      "release_state": "published_39; candidate_responsive_deploy_real_runtime_and_exact_public_inspection_verified",
+      "candidate_build": "integrated-review-20261006.39"
+    },
     {
       "id": "PKG-EVIDENCE-INSIGHTS-001",
       "status": "done",

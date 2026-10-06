@@ -1,3 +1,7 @@
+# Product experience reopened — 2026-10-06
+
+FB-031: owner rejected .39 as a consolidator with an unfinished-app appearance, far from approved imagery, and authorized autonomous complete-product implementation. Visual acceptance is reopened in PKG-PRODUCT-EXPERIENCE-001. Desktop executive and private mobile references were reopened. Source-aware cockpit and progressive workspaces are implemented; responsive checks, promotion and exact-public inspection pending. Prior .39 receipts remain technical history, not product acceptance. Current authority: EXECUTION_STATE.json. Cloud Browser no longer retains earlier authentication; do not recover credentials from other surfaces. Water recurrence and original MFP history remain separately pending.
+
 # Integrated review — 2026-10-06 UTC
 
 FB-030: technically delivered through normal PR #318, public build `integrated-review-20261006.39`. The owner authorized deeper integrated dashboards, cross-domain information and reports after initial bridge water delivery. The package adds exact-date exploration, source-isolated closed-day descriptive contrasts and a device-only consultation summary; preserves the approved Home and fixes its legacy water indicator lookup. Seven final candidate and ten post-merge workflows passed. Responsive captures and the exact authenticated public app, including all three modes and actual source/date behavior, were inspected. Owner subjective UX and physical-device acceptance are not presumed. Authority: `EXECUTION_STATE.json` and `releases/INTEGRATED_REVIEW_20261006.md`.

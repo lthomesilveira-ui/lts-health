@@ -9,15 +9,15 @@ const [index,core,main,css,contract,browserGate,rawState,...screens]=await Promi
 ]);
 const state=JSON.parse(rawState),screenText=screens.join('\n');
 
-assert.match(index,/lts-build" content="integrated-review-20261006\.39/);
-assert.match(index,/ux-coherence\.css\?v=integrated-review-20261006\.39/);
-assert.match(index,/main\.js\?v=integrated-review-20261006\.39/);
+assert.match(index,/lts-build" content="product-experience-20261006\.40/);
+assert.match(index,/ux-coherence\.css\?v=product-experience-20261006\.40/);
+assert.match(index,/main\.js\?v=product-experience-20261006\.40/);
 assert.doesNotMatch(index,/longitudinal-story/);
 assert.match(core,/export function setGlobalPeriod/);
 assert.match(main,/function resetRouteScroll\(\)/);
 assert.match(main,/host\?\.scrollTo\(\{top:0,left:0,behavior:'auto'\}\)/);
 assert.match(main,/requestAnimationFrame\(\(\)=>\{reset\(\);requestAnimationFrame\(reset\);\}\)/);
-for(const target of ['analysisPeriod','trainingPeriod','nutritionPeriod'])assert.match(core,new RegExp(`state\\.ui\\.${target}=next`));
+for(const target of ['analysisPeriod','trainingPeriod','nutritionPeriod','homePeriod'])assert.match(core,new RegExp(`state\\.ui\\.${target}=next`));
 for(const id of ['trainingPeriod','analysisPeriod','nutritionPeriod'])assert.match(main,new RegExp(`id==='${id}'[^\n]+setGlobalPeriod`));
 
 for(const file of ['training-screen','nutrition-screen']){

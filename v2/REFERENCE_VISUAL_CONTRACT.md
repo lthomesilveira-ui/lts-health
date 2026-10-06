@@ -16,7 +16,7 @@ A imagem reúne três telas mobile: resumo pessoal com hierarquia compacta; deta
 
 O navegador usado no iPhone deixou aproximadamente `393 × 650` CSS px de área útil, menor que o viewport limpo de `390 × 844` usado pelos gates anteriores. A Home não pode manter uma linha reservada para topbar quando a topbar está oculta; nenhuma rota pode repetir no conteúdo a altura já destinada à navegação inferior. Home deve expor cabeçalho, métricas, Hoje e Progresso semanal nessa área reduzida, mantendo o panorama longitudinal logo na sequência. Treino e demais áreas devem terminar sem faixas vazias desproporcionais.
 
-Os parágrafos desktop abaixo preservam a referência histórica anterior, não podem anular a direção mobile posterior nem justificar uma volta ao dashboard rejeitado. Precedência: imagem privada aprovada + feedback mais recente > implementação publicada aceita direcionalmente > contrato histórico. Não declarar paridade exata sem comparação visual e aceite explícito.
+O feedback de 06/10 e a referência desktop reenviada reabrem o aceite visual da .39. Ambas as imagens aprovadas governam seus respectivos viewports: cockpit executivo claro no desktop, Home escura orientada a Hoje no mobile. Nenhuma permite copiar metas, valores ou conclusões clínicas ilustrativas. Imagens + feedback mais recente prevalecem sobre implementação e contrato histórico; não declarar paridade exata ou aceite presumido.
 
 ## Linguagem visual aprovada
 
@@ -70,7 +70,7 @@ A primeira tela mobile da imagem privada prevalece sobre a composição desktop 
 5. evolução longitudinal com períodos 30 dias / 90 dias / 1 ano / Histórico e métricas Peso, Gordura, Músculo, Treinos, Nutrição, Sono, Exames e Água;
 6. panorama dos demais domínios em uma faixa horizontal, seguido por acontecimentos recentes e contexto das fontes.
 
-No desktop, o mesmo conteúdo pode ser reorganizado para aproveitar largura: `Hoje` e progresso semanal formam uma coluna ao lado da evolução, os seis domínios ficam em uma faixa e o fechamento divide acontecimentos e proveniência. Isso não autoriza substituir a hierarquia mobile por cinco cartões executivos genéricos.
+No desktop, seguir a referência executiva reenviada em 06/10: cinco cartões de domínio → leitura principal → treino/nutrição/composição → sono/exames/água → resumo/revisões/fontes. Os módulos compartilham calendário, não origens ou unidades. No celular, manter Hoje e cobertura semanal antes da evolução. Calendário cruzado, evidências e acontecimentos ficam em aprofundamento progressivo; o detalhe continua nas áreas especializadas. Não esticar a composição mobile para ocupar o desktop.
 
 Gráficos aparecem somente quando respondem a uma pergunta real e sempre com escala/data legíveis.
 

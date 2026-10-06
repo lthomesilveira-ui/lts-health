@@ -19,6 +19,12 @@ const [architecture,feedback,index,home,homeCss,shellCss,productShell,analysisSc
 ]);
 const state=JSON.parse(stateRaw);
 const build=index.match(/<meta name="lts-build" content="([^"]+)">/)?.[1];
+const experienceCss=await read('v2/product-experience.css');
+assert.ok(index.includes(`./product-experience.css?v=${build}`),'responsive product stylesheet must match the active build');
+assert.match(experienceCss,/\.ltsExecutiveCards\{[^}]*grid-template-columns:repeat\(5/);
+assert.match(experienceCss,/\.ltsCockpitGrid\{[^}]*grid-template-columns:repeat\(3/);
+assert.match(home,/data-disclosure="home-history"/);
+assert.match(home,/renderHomeCockpit\(cockpit\)/);
 assert.ok(build,'public build identifier is missing');
 for(const asset of ['executive-shell.css','cockpit.css','home-reference.css'])assert.ok(index.includes(`./${asset}?v=${build}`),`canonical asset is not tied to build ${build}: ${asset}`);
 
