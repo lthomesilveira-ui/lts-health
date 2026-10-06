@@ -38,10 +38,13 @@ try{
     await page.locator('#reviewDate').selectOption(date(2));await page.waitForFunction(()=>document.querySelector('.ltsReviewDayFacts')?.textContent.includes('1.200 mL'));
     assert.match(await page.locator('.ltsReviewDayFacts').innerText(),/Synthetic session.*2\.000 kcal.*1\.200 mL/s);
     await page.locator('.ltsReviewCalendar summary').click();assert.equal(await page.locator('.ltsReviewCalendar tbody tr').count(),7);
-    await page.locator('[data-report-page="reviewDayPage"]').last().click();await page.waitForFunction(()=>document.querySelector('.ltsReviewCalendar tbody tr button')?.textContent.trim()!==new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo'}).format(new Date()));
+    const beforePage=await page.locator('.ltsReviewCalendar tbody').elementHandle();
+    await page.locator('[data-report-page="reviewDayPage"]').last().click();await page.waitForFunction(element=>!element.isConnected,beforePage);
     await page.locator('.ltsReviewSources summary').click();
     const other=JSON.stringify(['sleep_duration_h','synthetic','Other sleep','h']);
-    await page.locator('#reviewSleepSource').selectOption(other);await page.waitForFunction(()=>document.querySelector('.ltsDaySleep')?.textContent.includes('20,0 h'));
+    const beforeSource=await page.locator('#reviewPanel').elementHandle();
+    await page.locator('#reviewSleepSource').selectOption(other);await page.waitForFunction(element=>!element.isConnected,beforeSource);
+    await page.waitForFunction(()=>document.querySelector('.ltsDaySleep')?.textContent.includes('20,0 h'));
     await noOverflow(page);await page.locator('.ltsReviewDayControls').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-day.png`});
     await page.locator('[data-review-view="consultation"]').click();await page.waitForSelector('[data-review-export]');
     const downloadPromise=page.waitForEvent('download');await page.locator('[data-review-export]').click();const download=await downloadPromise;
