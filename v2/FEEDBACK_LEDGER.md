@@ -1,3 +1,11 @@
+# Cockpit reading improvement — 2026-10-06
+
+The owner authorized autonomous improvements without current homologation. `PKG-COCKPIT-READING-001` refines safe observed changes, distinct body comparison limits, exact-date overlap context and unavailable-source states while preserving approved desktop/mobile structure. Candidate build `product-clarity-20261006.41` is implemented locally; candidate CI, responsive capture inspection, normal promotion and exact-public verification are still pending. Two incoming workouts have not been received or imported.
+
+The former .40 Cloud Browser infrastructure blocker is superseded: the existing authenticated session reloaded exact `.40` and Home/shared periods, all three report modes and direct hydration workspace navigation were manually inspected. No new login or user micro-QA was requested. Responsive capture evidence remains separate from live desktop inspection; owner subjective/physical-device acceptance is not inferred.
+
+Initial bridge water transport is verified. Automatic recurrence without manual export and original authenticated MyFitnessPal water history remain separate unresolved tasks. Preserve all configured integrations and private source records. Operational authority: `EXECUTION_STATE.json` and `releases/COCKPIT_READING_20261006.md`.
+
 # Product experience published — 2026-10-06
 
 Build `product-experience-20261006.40` is published by normal PR #320 at `01d8c0c22f7dc20e83844105614b672f65a806f7`. Seven exact final candidate gates and all ten post-merge workflows passed, including deploy `37460043254` and real authenticated E2E `37460043205`. Production-renderer captures were manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740; final artifact `11412535303`. The complete executive footer fits the desktop reference; visible 44px utility icons and non-overlapping period controls are enforced. The approved mobile Today/week hierarchy, truthful source boundaries and progressive report workspaces are preserved.
@@ -102,3 +110,7 @@ Home/Treinos/Composição/Exames foram promovidos tecnicamente até os PRs #263/
 ## FB-026 — ponte automática via Saúde do iPhone (04/10/2026)
 
 O usuário aprovou o Health Auto Export Premium anual e confirmou a compra para reduzir envios manuais de dados. Ponte MyFitnessPal → Saúde → Health Auto Export → LTS implementada, incluindo água somente se registrada no Saúde. Polar, histórico original e comparação por origem preservados. Estado técnico: `done`, pacote `PKG-HEALTH-AUTO-EXPORT-001`, build `.36`, PR #309 e commit `19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3`. Sete gates candidatos, dez workflows pós-merge, receptor HTTP real e versão pública autenticada verificados. A ativação no iPhone e o primeiro envio real continuam `blocked_user`; nenhum novo pedido de pagamento, credenciais Polar ou consentimento já resolvido é necessário. Água histórica original do MyFitnessPal permanece pendente. Evidência: `releases/HEALTH_AUTO_EXPORT_20261004.md`.
+
+## FB-031 — continued improvements without owner QA (06/10/2026)
+
+The owner authorized ongoing product improvements and cannot homologate now. Continue safe implementation and independent verification; preserve the approved references and do not turn this into a request for user micro-QA. Two workouts are expected but have not been supplied. `LTS-COCKPIT-READING-001` owns this coherent refinement of explanatory reading and unavailable-source states; current acceptance remains in `EXECUTION_STATE.json`.

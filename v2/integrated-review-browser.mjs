@@ -32,11 +32,15 @@ try{
     if(width>840){
       assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
       assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
+      assert.match(await page.locator('.ltsCockpitReading:visible h2').innerText(),/Peso .*medições compatíveis/);
+      assert.notEqual(await page.locator('.ltsCockpitReading:visible h2').innerText(),await page.locator('.ltsCockpitFooter article').first().locator('p').innerText(),'no duplicated main reading');
+      assert.match(await page.locator('.ltsCockpitFooter article').last().innerText(),/Dados carregados.*não confirma sincronização/s);
       assert.equal(await page.locator('.ltsMobileHome').first().isVisible(),false);
       const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),footer:top('.ltsCockpitFooter')};});
       assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.footer,'approved executive hierarchy');
       assert.ok(geometry.footer<800,`executive footer fits desktop viewport: ${geometry.footer}`);
-      assert.ok(await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom<=864),'the complete executive footer fits the desktop reference, not only its first line');
+      const footerBottom=await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom);
+      assert.ok(footerBottom<=864,`the complete executive footer fits the desktop reference, not only its first line: ${footerBottom}`);
       for(const selector of ['#refreshBtn','#logoutBtn']){
         assert.ok(await page.locator(`${selector} .topActionIcon`).isVisible(),'icon-only header actions must retain their visible SVG');
         const box=await page.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44,'header actions retain a usable target');
@@ -85,6 +89,14 @@ try{
     assert.equal(await page.locator('[data-review-view="consultation"]').getAttribute('aria-pressed'),'true','period change preserves the current task');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';state.ui.reviewView='overview';const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
     assert.match(await page.locator('#reportIntegratedReview').innerText(),/Comparação bloqueada/);assert.doesNotMatch(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
+    await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
+    assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregou/);
+    if(width>840){
+      assert.match(await page.locator('.ltsDesktopCockpit').innerText(),/Dados não carregaram/);
+      assert.doesNotMatch(await page.locator('.ltsDesktopCockpit').innerText(),/Sem coleta|0 registros de sono|Nenhum registro nesta janela/);
+      assert.match(await page.locator('.ltsCockpitSources').innerText(),/Exames —/);
+    }
+    await noOverflow(page);await capture(page,'.ltsHomeReference',`${dir}/${label}-unavailable.png`);
     await page.close();
   }
   assert.deepEqual(errors,[]);

@@ -1,3 +1,7 @@
+# Exact-public inspection recovered — 2026-10-06
+
+Cloud Browser infrastructure recovered on 2026-10-06. Existing authenticated session reloaded exact .40; executive Home, shared 30/90-day period, all three report modes and direct hydration workspace navigation were manually inspected. Earlier environment_offline blocker is superseded; no login, private-data write or owner homologation was requested.
+
 # Product experience published — 2026-10-06
 
 Build `product-experience-20261006.40` is published by normal PR #320 at `01d8c0c22f7dc20e83844105614b672f65a806f7`. Seven exact final candidate gates and all ten post-merge workflows passed, including deploy `37460043254` and real authenticated E2E `37460043205`. Production-renderer captures were manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740; final artifact `11412535303`. The complete executive footer fits the desktop reference; visible 44px utility icons and non-overlapping period controls are enforced. The approved mobile Today/week hierarchy, truthful source boundaries and progressive report workspaces are preserved.

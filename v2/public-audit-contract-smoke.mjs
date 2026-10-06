@@ -19,12 +19,12 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="product-experience-20261006\.40"/);
+assert.match(index,/name="lts-build" content="product-clarity-20261006\.41"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=product-experience-20261006.40`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=product-clarity-20261006.41`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=product-experience-20261006.40'),'physical iPhone remediation is not versioned with the current build');
-assert.ok(index.includes('./integrated-review.css?v=product-experience-20261006.40'),'integrated review is not versioned with the current build');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=product-clarity-20261006.41'),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes('./integrated-review.css?v=product-clarity-20261006.41'),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }

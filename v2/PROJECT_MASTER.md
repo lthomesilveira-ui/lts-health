@@ -1,3 +1,11 @@
+# Cockpit reading improvement — 2026-10-06
+
+The owner authorized autonomous improvements without current homologation. `PKG-COCKPIT-READING-001` refines safe observed changes, distinct body comparison limits, exact-date overlap context and unavailable-source states while preserving approved desktop/mobile structure. Candidate build `product-clarity-20261006.41` is implemented locally; candidate CI, responsive capture inspection, normal promotion and exact-public verification are still pending. Two incoming workouts have not been received or imported.
+
+The former .40 Cloud Browser infrastructure blocker is superseded: the existing authenticated session reloaded exact `.40` and Home/shared periods, all three report modes and direct hydration workspace navigation were manually inspected. No new login or user micro-QA was requested. Responsive capture evidence remains separate from live desktop inspection; owner subjective/physical-device acceptance is not inferred.
+
+Initial bridge water transport is verified. Automatic recurrence without manual export and original authenticated MyFitnessPal water history remain separate unresolved tasks. Preserve all configured integrations and private source records. Operational authority: `EXECUTION_STATE.json` and `releases/COCKPIT_READING_20261006.md`.
+
 # Product experience published — 2026-10-06
 
 Build `product-experience-20261006.40` is published by normal PR #320 at `01d8c0c22f7dc20e83844105614b672f65a806f7`. Seven exact final candidate gates and all ten post-merge workflows passed, including deploy `37460043254` and real authenticated E2E `37460043205`. Production-renderer captures were manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740; final artifact `11412535303`. The complete executive footer fits the desktop reference; visible 44px utility icons and non-overlapping period controls are enforced. The approved mobile Today/week hierarchy, truthful source boundaries and progressive report workspaces are preserved.
