@@ -2,46 +2,49 @@
    respective approved references; deep evidence remains progressive. */
 .ltsProductExperience{position:relative;max-width:1320px}
 .ltsMobileHome{display:none}
-.ltsCockpitHeading{min-height:58px;padding-right:345px;margin-bottom:14px}
+.ltsCockpitHeading{min-height:46px;padding-right:345px;margin-bottom:10px}
 .ltsCockpitHeading h1{margin:0;color:#142239;font-size:30px;line-height:1.15;letter-spacing:-.035em}
 .ltsCockpitHeading p{margin:7px 0 0;color:#617287;font-size:12px}
 .ltsCockpitWindow{position:absolute;right:0;top:0;max-width:345px}
 .ltsCockpitWindow .ltsRefPeriod{margin:0;background:#eaf0f6;border:1px solid #dce5ee;padding:4px;border-radius:12px}
 .ltsCockpitWindow .ltsRefPeriod button{min-height:38px;font-size:12px;padding:8px 13px}
 .ltsExecutiveCards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
-.ltsExecutiveCard{--accent:#2377ce;min-width:0;min-height:133px;text-align:left;border:1px solid #dbe8f6;border-radius:13px;padding:13px 14px;color:#152840;background:#edf5ff;box-shadow:0 3px 10px #1c345008}
+.ltsExecutiveCard{--accent:#2377ce;min-width:0;min-height:118px;text-align:left;border:1px solid #dbe8f6;border-radius:13px;padding:10px 13px;color:#152840;background:#edf5ff;box-shadow:0 3px 10px #1c345008}
 .ltsExecutiveCard.training{--accent:#258a60;background:#eff9f3;border-color:#dbeee3}
 .ltsExecutiveCard.nutrition{--accent:#d97835;background:#fff6ee;border-color:#f0e4d8}
 .ltsExecutiveCard.sleep{--accent:#805dc4;background:#f6f0ff;border-color:#e7def3}
 .ltsExecutiveCard.labs{--accent:#b34471;background:#fff1f6;border-color:#f0dce5}
 .ltsExecutiveCard>span{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750;color:var(--accent)}
-.ltsExecutiveCard i{font-style:normal;font-size:20px;line-height:1}
+.ltsExecutiveCard i{font-style:normal;font-size:18px;line-height:1}
 .ltsExecutiveCard em{margin-left:auto;font-size:12px;font-style:normal}
-.ltsExecutiveCard strong{display:block;margin:10px 0 6px;font-size:24px;line-height:1.1;letter-spacing:-.035em;overflow-wrap:anywhere}
+.ltsExecutiveCard strong{display:block;margin:8px 0 5px;font-size:22px;line-height:1.1;letter-spacing:-.035em;overflow-wrap:anywhere}
 .ltsExecutiveCard>b{display:block;font-size:11px;font-weight:650;color:#405671;line-height:1.4}
-.ltsExecutiveCard small{display:block;font-size:10.5px;color:#60738b;line-height:1.45;margin-top:7px}
-.ltsCockpitReading{display:flex;align-items:center;gap:15px;border:1px solid #dce7f1;border-left:4px solid #2478d4;border-radius:12px;background:#fff;padding:13px 17px;margin:12px 0}
+.ltsExecutiveCard small{display:block;font-size:10.5px;color:#60738b;line-height:1.35;margin-top:5px}
+.ltsCockpitReading{display:flex;align-items:center;gap:15px;border:1px solid #dce7f1;border-left:4px solid #2478d4;border-radius:12px;background:#fff;padding:10px 17px;margin:12px 0}
 .ltsCockpitReading>div{flex:1;min-width:0}.ltsCockpitReading span,.ltsReportLibrary>header>span{color:#2e6da6;font-size:10px;font-weight:800;letter-spacing:.065em}
-.ltsCockpitReading h2{font-size:16px;line-height:1.35;letter-spacing:-.015em;margin:5px 0;color:#15263c}
+.ltsCockpitReading h2{font-size:16px;line-height:1.35;letter-spacing:-.015em;margin:4px 0;color:#15263c}
 .ltsCockpitReading p{font-size:11.5px;line-height:1.5;color:#627186;margin:0}
 .ltsCockpitReading>button{min-height:38px;padding:9px 14px;border:0;border-radius:8px;color:#fff;background:#216dba;font-size:12px;white-space:nowrap}
 .ltsCockpitGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0}
-.ltsCockpitPanel{--chart-color:#2478ce;min-width:0;border:1px solid #e0e7ee;border-radius:13px;background:#fff;padding:13px 14px;color:#192b43}
+.ltsCockpitPanel{--chart-color:#2478ce;min-width:0;border:1px solid #e0e7ee;border-radius:13px;background:#fff;padding:11px 14px;color:#192b43}
 .ltsCockpitPanel.training{--chart-color:#459681}.ltsCockpitPanel.nutrition{--chart-color:#e29c60}.ltsCockpitPanel.sleep{--chart-color:#9870c9}.ltsCockpitPanel.water{--chart-color:#3ca6d8}
 .ltsCockpitPanel header{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .ltsCockpitPanel h2,.ltsCockpitFooter h2{font-size:13px;line-height:1.4;margin:0;font-weight:750}
-.ltsCockpitPanel header button,.ltsCockpitFooter button{border:0;background:none;color:#286ba4;min-height:28px;padding:3px 0;font-size:10.5px;text-align:left}
-.ltsCockpitCaption{font-size:10.5px;color:#63758a;margin:5px 0 9px;line-height:1.4;overflow-wrap:anywhere}
-.ltsCockpitPanel .ltsContextPlot svg{width:100%;height:100px;display:block;min-height:0;overflow:visible}
+.ltsCockpitPanel header button,.ltsCockpitFooter button{border:0;background:none;color:#286ba4;min-height:22px;padding:3px 0;font-size:10.5px;text-align:left}
+.ltsCockpitCaption{font-size:10.5px;color:#63758a;margin:3px 0 7px;line-height:1.4;overflow-wrap:anywhere}
+.ltsCockpitPanel .ltsContextPlot svg{width:100%;height:82px;display:block;min-height:0;overflow:visible}
 .ltsCockpitPanel .ltsContextAxis{font-size:9.5px}
+.ltsCockpitPanel .ltsContextPlot text{font-size:20px}
 .ltsCockpitPanel .ltsContextEmpty{min-height:115px;font-size:11px}
-.ltsCockpitFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
-.ltsCockpitFacts>div{min-width:0;border-radius:8px;background:#f2f6fa;padding:9px 8px}
+.ltsCockpitFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:8px}
+.ltsCockpitFacts>div{min-width:0;border-radius:8px;background:#f2f6fa;padding:7px 8px}
 .ltsCockpitFacts b{display:block;font-size:16px;line-height:1.15;overflow-wrap:anywhere}
 .ltsCockpitFacts small{display:block;font-size:10px;color:#64788e;margin-top:4px;line-height:1.35}
-.secondary .ltsCockpitPanel .ltsContextPlot svg{height:57px}.secondary .ltsCockpitPanel .ltsContextEmpty{min-height:72px}
+.secondary .ltsCockpitPanel .ltsContextPlot svg{height:34px}.secondary .ltsCockpitPanel .ltsContextEmpty{min-height:55px}
 .secondary .ltsCockpitFacts{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:7px}
-.secondary .ltsCockpitFacts>div{padding:7px 8px}.secondary .ltsCockpitFacts b{font-size:14px}
+.secondary .ltsCockpitFacts>div{padding:5px 8px}.secondary .ltsCockpitFacts b{font-size:13px}
+.secondary .ltsCockpitCaption{margin:3px 0 4px}
+.secondary .ltsContextPlot text{display:none}
 .ltsCockpitLabBrief>p{font-size:20px;font-weight:750;letter-spacing:-.02em;margin:10px 0 4px}
 .ltsCockpitLabBrief>small,.ltsCockpitLabBrief>span{color:#60758a;font-size:10.5px;display:block;line-height:1.5}
 .ltsCockpitLabBrief>span{margin-top:8px}

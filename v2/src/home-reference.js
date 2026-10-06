@@ -40,13 +40,12 @@ function bodyRows(){
   if(!anchor)return[];
   if(rows.filter(row=>dateKey(row.measured_at)===dateKey(anchor.measured_at)).length!==1)return[];
   const coherent=anchor.source?rows.filter(row=>row.source===anchor.source&&(row.device_name||'')===(anchor.device_name||'')):rows.length===1?rows:[];
-  const output=[];
-  const seen=new Set();
+  const grouped=new Map();
   for(const row of coherent){
     const key=dateKey(row.measured_at);
-    if(key&&!seen.has(key)){seen.add(key);output.push(row);}
+    if(!key)continue;if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(row);
   }
-  return output;
+  return [...grouped.values()].filter(list=>list.length===1).map(list=>list[0]);
 }
 
 function leanMass(row){
@@ -58,7 +57,7 @@ function deltaFrom(rows,read,unit=''){
   const current=read(rows.at(-1)),previous=read(rows.at(-2));
   if(current==null||previous==null)return{value:'—',label:'sem comparação'};
   const difference=current-previous;
-  return{value:`${difference>0?'+':''}${fmtNum(difference,1)}${unit}`,label:'vs. medição anterior'};
+  return{value:`${difference>0?'+':''}${fmtNum(difference,1)}${unit}`,label:'vs. medição comparável'};
 }
 
 function delta(rows,key,unit=''){return deltaFrom(rows,row=>num(row?.[key]),unit);}
@@ -220,24 +219,24 @@ export function renderProductHomeReference(){
   const workouts=workoutRows(),today=new Date(),todayKey=localHealthDay(today);
   const todayLabel=new Intl.DateTimeFormat('pt-BR',{timeZone:healthTimeZone,day:'2-digit',month:'2-digit'}).format(today);
   const todayWorkout=workouts.find(row=>dateKey(row.workout_date)===todayKey);
-  const todayNutrition=[...(state.data.nutrition||[])].filter(row=>dateKey(row.nutrition_date)===todayKey).at(-1);
+  const todayNutrition=review.nutrition.rows.find(row=>row.date===todayKey);
   const waterAvailable=state.domainStatus.nutrition==='ready'&&state.domainStatus.sourceMetrics==='ready';
   const hydration=waterAvailable?hydrationModel(state.data):{rows:[],conflicts:[]};
   const todayWater=hydration.rows.find(row=>row.date===todayKey);
   const waterConflict=hydration.conflicts.some(row=>row.date===todayKey);
   const todayTreatments=[...(state.data.treatments||[])].filter(row=>dateKey(row.event_date)===todayKey&&row.medication);
-  const weeklyTraining=uniqueDays(state.data.workouts,'workout_date',row=>row?.is_canonical===true&&row?.record_status!=='quarantined',today);
-  const weeklyNutrition=uniqueDays(state.data.nutrition,'nutrition_date',row=>num(row.calories_kcal)!=null,today);
+  const weeklyTraining=review.training.available?uniqueDays(state.data.workouts,'workout_date',row=>row?.is_canonical===true&&row?.record_status!=='quarantined',today):null;
+  const weeklyNutrition=review.nutrition.available?uniqueDays(review.nutrition.rows,'date',row=>num(row.calories_kcal)!=null,today):null;
   const weeklyWater=waterAvailable?uniqueDays(hydration.rows,'date',row=>num(row.value)>0,today):null;
   const weeklySleep=review.sleep.available?uniqueDays(review.sleep.rows,'date',row=>num(row.value)!=null,today):null;
   const medicationRows=todayTreatments.length
     ?todayTreatments.map(row=>todayRow('medication',row.medication,medicationContext(row),'tratamentos',{current:true})).join('')
-    :todayRow('medication','Medicações','Nenhuma aplicação registrada hoje','tratamentos');
+    :todayRow('medication','Medicações',failed('treatments')?'Aplicações indisponíveis agora':'Nenhuma aplicação registrada hoje','tratamentos');
   const workoutSubtitle=todayWorkout
     ?`${num(todayWorkout.duration_minutes)!=null?`${fmtNum(todayWorkout.duration_minutes,0)} min`:safe(todayWorkout.location,'registro')}${num(todayWorkout.calories_kcal)!=null?` · ${fmtNum(todayWorkout.calories_kcal,0)} kcal${todayWorkout.telemetry_energy_is_estimated?' estimadas':''}`:''}`
-    :'Nenhum treino registrado hoje';
+    :review.training.available?'Nenhum treino registrado hoje':'Treinos indisponíveis agora';
   const waterSubtitle=!waterAvailable?'Fontes de água indisponíveis agora':waterConflict?'Totais em conflito; consulte as fontes':todayWater?`${fmtNum(todayWater.value,0)} mL registrados hoje`:'Nenhuma ingestão de água registrada hoje';
-  const todayCard=`<section class="ltsRefCard ltsRefToday"><header><div><h2>Hoje</h2><span>${esc(todayLabel)}</span></div><button data-route="timeline">Ver dia completo ›</button></header>${todayRow('training',todayWorkout?safe(todayWorkout.workout_type,'Treino'):'Treino',workoutSubtitle,'treinos',{current:Boolean(todayWorkout)})}${medicationRows}${todayRow('water','Água',waterSubtitle,'nutricao',{entry:waterAvailable&&!waterConflict&&!todayWater?'water-import':false,current:Boolean(todayWater)})}${todayRow('nutrition','Dieta',todayNutrition?`${num(todayNutrition.calories_kcal)!=null?`${fmtNum(todayNutrition.calories_kcal,0)} kcal`:''}${num(todayNutrition.protein_g)!=null?` · ${fmtNum(todayNutrition.protein_g,0)} g proteína`:''}`:'Nenhuma alimentação registrada hoje','nutricao',{current:Boolean(todayNutrition)})}</section>`;
+  const todayCard=`<section class="ltsRefCard ltsRefToday"><header><div><h2>Hoje</h2><span>${esc(todayLabel)}</span></div><button data-route="timeline">Ver dia completo ›</button></header>${todayRow('training',todayWorkout?safe(todayWorkout.workout_type,'Treino'):'Treino',workoutSubtitle,'treinos',{current:Boolean(todayWorkout)})}${medicationRows}${todayRow('water','Água',waterSubtitle,'nutricao',{entry:waterAvailable&&!waterConflict&&!todayWater?'water-import':false,current:Boolean(todayWater)})}${todayRow('nutrition','Dieta',todayNutrition?`${num(todayNutrition.calories_kcal)!=null?`${fmtNum(todayNutrition.calories_kcal,0)} kcal`:''}${num(todayNutrition.protein_g)!=null?` · ${fmtNum(todayNutrition.protein_g,0)} g proteína`:''}`:review.nutrition.available?'Nenhuma alimentação registrada hoje':'Alimentação indisponível agora','nutricao',{current:Boolean(todayNutrition)})}</section>`;
   const progressCard=`<section class="ltsRefCard ltsRefProgress"><header><div><h2>Registros da semana</h2><span>cobertura dos últimos 7 dias</span></div><button data-route="analise">Ver mais ›</button></header><div class="ltsRefProgressGrid">${ring('Treinos',weeklyTraining,'training')}${ring('Dieta',weeklyNutrition,'nutrition')}${ring('Hidratação',weeklyWater,'water')}${ring('Sono',weeklySleep,'sleep')}</div></section>`;
   const unavailableValue=bodyUnavailable?'Erro':rows.length?'Sem dado':'Sem medição';
   return `<section class="ltsHomeV2 ltsHomeReference ltsProductExperience">${renderHomeCockpit(cockpit)}<div class="ltsMobileHome"><header class="ltsRefHeader"><div class="ltsRefBrand"><span class="ltsRefPulse">⌁</span><b>LTS <em>Health</em></b></div><button class="ltsRefAvatar" data-route="dados" aria-label="Abrir dados e fontes">${esc((displayName()||'L')[0].toUpperCase())}</button></header><section class="ltsRefGreeting"><h1>${esc(greeting())}</h1><p>${esc(longDate(today))}</p></section><div class="ltsRefMotto"><span aria-hidden="true">✦</span><b>Disciplina hoje, evolução sempre.</b></div><p class="ltsBodySnapshotDate">${body?`Última bioimpedância · ${fmtDate(body.measured_at)} · ${esc(bodySourceLabel(body))}`:'Sem bioimpedância inequívoca disponível'}</p><section class="ltsRefMetrics">${metric('Peso',weight!=null?`${fmtNum(weight,1)} kg`:unavailableValue,delta(rows,'weight_kg',' kg'),{unavailable:bodyUnavailable})}${metric('Gordura',fat!=null?`${fmtNum(fat,1)}%`:unavailableValue,delta(rows,'body_fat_pct',' p.p.'),{unavailable:bodyUnavailable})}${metric('Massa magra',lean!=null?`${fmtNum(lean,1)} kg`:unavailableValue,deltaFrom(rows,leanMass,' kg'),{unavailable:bodyUnavailable})}</section><div class="ltsRefCoreGrid">${todayCard}${progressCard}</div>${renderHomeReading(cockpit,'mobile')}</div><div class="ltsCockpitWindow">${periodPicker(period)}</div><div class="ltsMobileHome">${trendPanel(model,period)}${panorama(model)}</div><details class="ltsHomeExplore" data-disclosure="home-history"><summary><span><b>Explorar histórico e contexto</b><small>Calendário cruzado, evidências e acontecimentos recentes</small></span><i aria-hidden="true">＋</i></summary>${renderHealthContext(context,state.domainStatus,renderHomeDaySignals(review,context.selectedDate))}${renderHomeEvidenceInsights(state.data,state.domainStatus,model.bounds)}${changes(model,rows)}</details></section>`;

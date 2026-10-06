@@ -36,6 +36,7 @@ try{
       const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),footer:top('.ltsCockpitFooter')};});
       assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.footer,'approved executive hierarchy');
       assert.ok(geometry.footer<800,`executive footer fits desktop viewport: ${geometry.footer}`);
+      assert.ok(await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom<=864),'the complete executive footer fits the desktop reference, not only its first line');
       const axes=await page.locator('.ltsCockpitGrid .ltsContextAxis').allTextContents();assert.equal(new Set(axes).size,1,'all populated cockpit modules share one calendar');
     }else{
       assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),false);
