@@ -1,6 +1,6 @@
 # Integrated review — 2026-10-06 UTC
 
-Status: candidate `integrated-review-20261006.39`; not yet promoted or publicly verified. Package `PKG-INTEGRATED-REVIEW-001`, task `LTS-INTEGRATED-REVIEW-001`, feedback FB-030.
+Status: technically complete and publicly verified `integrated-review-20261006.39`. Normal PR #318 merged at `23b6ed237cbe401c9cf0357c5dc1956fdca86bef`. Package `PKG-INTEGRATED-REVIEW-001`, task `LTS-INTEGRATED-REVIEW-001`, feedback FB-030. Owner subjective UX and physical-device acceptance are not presumed.
 
 ## Product and UX
 
@@ -24,4 +24,8 @@ Only synthetic fixtures and operational engineering metadata are in this reposit
 
 - Local independent integrated-review model tests, existing reports, evidence-insights and health-context contracts passed.
 - Added production-renderer synthetic browser journeys for desktop 1536 × 864, mobile 390 × 844, reduced physical browser 393 × 650 and small phone 320 × 740, including export and failure paths.
-- Candidate workflow, responsive capture inspection, normal promotion, deploy, secure real-data runtime and exact authenticated Cloud Browser inspection are pending.
+- All seven final candidate gates passed for `85850aa322ee9d711014d8e8ce1540d67189f17a`: recovery `37404992152`, workout-source evidence `37404992123`, product architecture `37404992131`, export `37404992103`, functional depth `37404992077`, cockpit `37404992072` and nutrition history `37404992064`.
+- Final synthetic responsive artifact `11387280460` was inspected in desktop, phone and reduced physical-browser layouts. Capture helpers synchronize with current rerendered DOM; no production calculations or assertions were weakened.
+- All ten post-merge workflows passed: deploy `37405185278`, real authenticated E2E `37405185316`, export `37405185346`, recovery `37405185300`, nutrition `37405185242`, functional depth `37405185260`, timeline `37405185262`, smoke `37405185274`, public v2 smoke `37405211666` and homologation smoke `37405211784`.
+- Exact authenticated public Cloud Browser inspection confirmed build `.39`, canonical hydration in Home Today/week, all three integrated review modes, independent source pickers, closed-date exploration, source-synchronized food insights and a consultation preview with actual coverage and sparse-base limits. The private screenshot stays outside the repository.
+- Existing histories, Polar authorization and the working phone bridge remain preserved. The initial water delivery does not close `LTS-WATER-RECURRENCE-001` or original authenticated MFP water history `LTS-HYD-IMPORT-001`.

@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-05",
+  "updated_on": "2026-10-06",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/EVIDENCE_INSIGHTS_20261004.md"
+    "latest_release": "v2/releases/INTEGRATED_REVIEW_20261006.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-INTEGRATED-REVIEW-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Connect hydration, food, training, recovery and dated clinical context through source-aware daily exploration and a private consultation summary, preserving the approved Home.",
     "task_ids": [
       "LTS-INTEGRATED-REVIEW-001"
@@ -58,16 +58,21 @@
     "completed_evidence": [
       "Read-only operational coverage and authenticated current app audited. Initial canonical water receipt verified privately; automatic recurrence remains separate.",
       "Source-aware calendar join, closed-day descriptive contrasts, progressive report modes, private device-only text summary and shared Home hydration implemented.",
-      "Independent synthetic model, existing reports, evidence insights and health-context calculation contracts passed locally."
+      "Independent synthetic model, existing reports, evidence insights and health-context calculation contracts passed locally.",
+      "Seven final candidate gates passed for 85850aa322ee9d711014d8e8ce1540d67189f17a; functional depth 37404992077 includes production-renderer responsive journeys and private device-only export.",
+      "Final synthetic captures were inspected at desktop, phone, reduced physical-browser and small-phone widths; artifact 11387280460. No private health observations are in the repository.",
+      "Normal PR 318 published integrated-review-20261006.39 at 23b6ed237cbe401c9cf0357c5dc1956fdca86bef. All ten post-merge workflows passed, including deploy 37405185278 and real authenticated E2E 37405185316.",
+      "Exact authenticated public Cloud Browser inspection verified build .39, canonical Home Today/week hydration, all three review modes, independent sources, closed-date context, shared food source and consultation coverage/sparse-base limits.",
+      "v2/releases/INTEGRATED_REVIEW_20261006.md"
     ],
-    "release_state": "candidate_39; responsive_candidate_gates_and_public_promotion_pending",
+    "release_state": "published_39; candidate_responsive_deploy_real_runtime_and_exact_public_inspection_verified",
     "candidate_build": "integrated-review-20261006.39"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "home-dashboard-reference-20261003.38",
-    "main_commit": "b3bc19200c63a153260115d23871f1e2872d5fc5",
-    "verified_on": "2026-10-05",
+    "build_id": "integrated-review-20261006.39",
+    "main_commit": "23b6ed237cbe401c9cf0357c5dc1956fdca86bef",
+    "verified_on": "2026-10-06",
     "evidence": [
       "PR 309 merged normally at 19219d1f8abacaf6151f8b7a2d0bac09f9f4ddb3; public build home-dashboard-reference-20261003.36.",
       "All seven final candidate gates and all ten post-merge workflows passed; deploy 37231135684 and real authenticated E2E 37231135691.",
@@ -82,9 +87,14 @@
       "The private validation record of 2026-10-05 confirms successful secure Cloud Browser authentication and exact-public manual inspection of build .38. The previous interrupted-login blocker is superseded.",
       "All ten post-merge workflow runs for b3bc19200c63a153260115d23871f1e2872d5fc5 were independently rechecked as completed/success on this restart, including deployment 37297331595 and real-auth E2E 37297331577.",
       "History coverage now uses observed days for full history and X of N days for finite windows; calculation and source-selection behavior remain preserved.",
-      "v2/releases/CONTINUITY_WATER_20261005.md"
+      "v2/releases/CONTINUITY_WATER_20261005.md",
+      "Seven final candidate gates passed for 85850aa322ee9d711014d8e8ce1540d67189f17a; functional depth 37404992077 includes production-renderer responsive journeys and private device-only export.",
+      "Final synthetic captures were inspected at desktop, phone, reduced physical-browser and small-phone widths; artifact 11387280460. No private health observations are in the repository.",
+      "Normal PR 318 published integrated-review-20261006.39 at 23b6ed237cbe401c9cf0357c5dc1956fdca86bef. All ten post-merge workflows passed, including deploy 37405185278 and real authenticated E2E 37405185316.",
+      "Exact authenticated public Cloud Browser inspection verified build .39, canonical Home Today/week hydration, all three review modes, independent sources, closed-date context, shared food source and consultation coverage/sparse-base limits.",
+      "v2/releases/INTEGRATED_REVIEW_20261006.md"
     ],
-    "acceptance_note": "Build .38 was manually inspected after successful secure authentication, with source-aware insights, preserved history and corrected full-history coverage. Ten post-merge workflows were rechecked successfully. This is executed technical/public inspection, not new owner UX or physical-device acceptance. The phone bridge is active but dietary water remains absent; direct MyFitnessPal API and original water history remain separate unresolved source tasks."
+    "acceptance_note": "Build .39 is published and technically inspected in the exact authenticated public Cloud Browser after responsive, candidate and all ten post-merge workflows passed. All three integrated review modes and canonical Home hydration are verified with actual sources; this does not presume owner subjective UX or physical-device acceptance. Initial bridge water is now verified; earlier absence evidence is historical. Automatic recurrence without a manual export and original authenticated MFP water history remain separate unresolved tasks."
   },
   "tasks": [
     {
@@ -1206,7 +1216,7 @@
       "id": "LTS-INTEGRATED-REVIEW-001",
       "area": "analysis_and_ux",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Deliver source-aware integrated review, date exploration, private consultation summary and consistent bridge hydration in Home.",
       "acceptance": [
@@ -1219,9 +1229,14 @@
       "evidence": [
         "User authorized continuing the existing app with deeper integrated dashboards and reports after initial water delivery.",
         "Existing approved Home and report details preserved; new shared model, views and independent synthetic tests implemented.",
-        "Local calculation, provenance and escaping contracts passed; candidate responsive and public runtime gates pending."
+        "Local calculation, provenance and escaping contracts passed; candidate responsive and public runtime gates pending.",
+        "Seven final candidate gates passed for 85850aa322ee9d711014d8e8ce1540d67189f17a; functional depth 37404992077 includes production-renderer responsive journeys and private device-only export.",
+        "Final synthetic captures were inspected at desktop, phone, reduced physical-browser and small-phone widths; artifact 11387280460. No private health observations are in the repository.",
+        "Normal PR 318 published integrated-review-20261006.39 at 23b6ed237cbe401c9cf0357c5dc1956fdca86bef. All ten post-merge workflows passed, including deploy 37405185278 and real authenticated E2E 37405185316.",
+        "Exact authenticated public Cloud Browser inspection verified build .39, canonical Home Today/week hydration, all three review modes, independent sources, closed-date context, shared food source and consultation coverage/sparse-base limits.",
+        "v2/releases/INTEGRATED_REVIEW_20261006.md"
       ],
-      "next_action": "Run candidate gates, inspect responsive evidence, promote normally and verify the exact authenticated public build.",
+      "next_action": "Preserve the verified published package and existing histories. Reopen only on new owner feedback or a reproducible defect; track automatic water recurrence and original MFP history independently.",
       "blocker": null
     }
   ],
