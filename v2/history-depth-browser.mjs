@@ -162,6 +162,7 @@ try{
   const waterRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Água por dia registrado'});
   assert.ok((await waterRow.innerText()).includes('1 de 30 dias com valor'));
   assert.ok((await waterRow.innerText()).includes('+1.000 mL'));
+  await page.locator('[data-report-section="reportHydration"]').click();
   assert.equal(await page.locator('#reportHydration circle').count(),0,'sparse hydration does not imply a trend');
   assert.match(await page.locator('#reportHydration').innerText(),/2\.000 mL/,'received water total remains visible without an average');
   await overflow(page);
