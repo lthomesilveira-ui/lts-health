@@ -7,6 +7,7 @@ import {renderAnalysisHub} from './analysis-screen.js';
 import {renderTreatmentHub} from './treatment-screen.js';
 import {renderHealthHub} from './health-screen.js';
 import {renderNutritionHub} from './nutrition-screen.js';
+import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
@@ -20,9 +21,10 @@ import {openEntry,setupEntryController} from './entry.js';
 import {checkPolarConnection,actOnPolar,resetPolarConnection} from './polar-connection.js';
 import {checkAutoExportConnection,actOnAutoExport,copyAutoExport,resetAutoExportConnection} from './health-auto-export-connection.js';
 import {downloadIntegratedSummary} from './integrated-review-view.js';
+import {saveGoals} from './personal-goals.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
-const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,hoje:renderProductHomeReference};
+const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
@@ -186,7 +188,14 @@ function bindStaticEvents(){
     const polarAction=event.target.closest('[data-polar-action]');
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
     const homeInsight=event.target.closest('[data-home-insight-details]');
-    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'30');state.ui.reportNutritionSource=null;state.ui.reportLoadPage=1;setRoute('analise');return;}
+    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;state.ui.reviewView='overview';setRoute('analise');return;}
+    if(event.target.closest('[data-home-refresh]')){refresh();return;}
+    if(event.target.closest('[data-home-consultation]')){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reviewView='consultation';setRoute('analise');return;}
+    if(event.target.closest('[data-home-goals]')){const details=document.querySelector('.ltsGoalSettings');if(details){details.open=true;details.scrollIntoView({block:'start',behavior:'auto'});details.querySelector('input')?.focus({preventScroll:true});}return;}
+    const homeWorkout=event.target.closest('[data-home-workout]');
+    if(homeWorkout){state.ui.openWorkout=homeWorkout.dataset.homeWorkout;state.ui.productTrainingView='summary';setRoute('treinos');return;}
+    const bodyMetric=event.target.closest('[data-home-body-metric]');
+    if(bodyMetric&&['fat_mass_kg','skeletal_muscle_mass_kg','weight_kg','body_fat_pct'].includes(bodyMetric.dataset.homeBodyMetric)){state.ui.homeBodyMetric=bodyMetric.dataset.homeBodyMetric;render();return;}
     const reportPage=event.target.closest('[data-report-page]');
     if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage','reviewDayPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
     const reviewView=event.target.closest('[data-review-view]');
@@ -240,6 +249,8 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
+    if(['reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
     if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;state.ui.reviewDate=event.target.value;scheduleRender();}
@@ -266,6 +277,11 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('submit',async event=>{
+    if(event.target.id==='personalGoalsForm'){
+      event.preventDefault();const form=event.target,button=form.querySelector('[type="submit"]'),msg=form.querySelector('#personalGoalsMessage');button.disabled=true;msg.textContent='Salvando metas…';
+      try{await saveGoals(form);state.ui.personalGoalsMessage='Metas salvas. As comparações usam a versão vigente em cada data.';render();const details=document.querySelector('.ltsGoalSettings');if(details)details.open=true;}
+      catch(error){msg.textContent=error.message;button.disabled=false;}return;
+    }
     if(event.target.id!=='uploadForm')return;event.preventDefault();
     const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',msg=$('uploadMsg'),button=event.target.querySelector('button[type="submit"]');
     if(msg)msg.textContent='Enviando…';if(button)button.disabled=true;
@@ -299,6 +315,7 @@ function bindStaticEvents(){
 
 async function boot(){
   bindStaticEvents();setupEntryController({onSaved:refresh});state.route=routeFromLocation();
+  if(!fixtureMode)setGlobalPeriod('90');
   try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}}
   catch(error){console.error(error);showLogin('Não foi possível restaurar sua sessão.');}
   authSubscription=subscribeAuth(session=>{state.session=session;if(!session){resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});

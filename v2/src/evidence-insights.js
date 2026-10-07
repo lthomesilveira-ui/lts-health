@@ -32,7 +32,8 @@ export function nutritionTrainingContrast(data={},status={},bounds={},requestedS
     });
     return{...source,rows,comparisonCount:rows.filter(row=>row.comparable).length};
   }).sort((a,b)=>b.comparisonCount-a.comparisonCount||b.days.length-a.days.length||a.key.localeCompare(b.key));
-  const selected=ordered.find(source=>source.key===requestedSource)||ordered[0]||null;
+  const latest=[...ordered].sort((a,b)=>b.days.map(d=>d.date).sort().at(-1).localeCompare(a.days.map(d=>d.date).sort().at(-1))||b.days.length-a.days.length)[0];
+  const selected=requestedSource?ordered.find(source=>source.key===requestedSource)||null:latest||null;
   return{available:true,sources:ordered,selected,rows:selected?.rows||[],ambiguousDays,unknownSourceDays,bounds,today};
 }
 

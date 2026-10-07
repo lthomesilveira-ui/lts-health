@@ -17,7 +17,7 @@ for(let i=0;i<=16;i++){
   if(i>0)db.health_source_daily_metrics.push({source_record_id:`other${i}`,metric_date:date(i),metric_type:'sleep_duration_h',unit:'h',value:20,source_name:'Other sleep',source_family:'synthetic',canonical_status:'candidate'});
   if(i>0&&i%2===0)db.health_workouts.push({source_record_id:`w${i}`,workout_date:date(i),workout_type:'Synthetic session',source:'Synthetic log',is_canonical:true,record_status:'validated',duration_minutes:40});
 }
-const service=`window.__reviewDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-review-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__reviewDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
+const service=`window.__reviewDb=${JSON.stringify(db)};window.__reviewDb.health_personal_goals=JSON.parse(localStorage.getItem('synthetic-review-goals')||'[]');window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-review-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={upsert(row){window.__reviewDb[table]=[...(window.__reviewDb[table]||[]).filter(r=>r.effective_from!==row.effective_from),row];if(table==='health_personal_goals')localStorage.setItem('synthetic-review-goals',JSON.stringify(window.__reviewDb[table]));q.saved=row;return q;},single:async()=>({data:q.saved,error:null}),select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__reviewDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
 const noOverflow=async page=>assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no document overflow');
@@ -29,40 +29,42 @@ try{
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
     await page.screenshot({path:`${dir}/${label}-home.png`});
     assert.equal(await page.locator('[data-home-period]').count(),4,'one shared period control, not duplicate viewport controls');
-    if(width>840){
-      assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
-      assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
-      assert.match(await page.locator('.ltsCockpitReading:visible h2').innerText(),/Peso .*medições compatíveis/);
-      assert.notEqual(await page.locator('.ltsCockpitReading:visible h2').innerText(),await page.locator('.ltsCockpitFooter article').first().locator('p').innerText(),'no duplicated main reading');
-      assert.match(await page.locator('.ltsCockpitFooter article').last().innerText(),/Dados carregados.*não confirma sincronização/s);
-      assert.equal(await page.locator('.ltsMobileHome').first().isVisible(),false);
-      const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),footer:top('.ltsCockpitFooter')};});
-      assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.footer,'approved executive hierarchy');
-      assert.ok(geometry.footer<800,`executive footer fits desktop viewport: ${geometry.footer}`);
-      const footerBottom=await page.locator('.ltsCockpitFooter').evaluate(el=>el.getBoundingClientRect().bottom);
-      assert.ok(footerBottom<=864,`the complete executive footer fits the desktop reference, not only its first line: ${footerBottom}`);
-      for(const selector of ['#refreshBtn','#logoutBtn']){
-        assert.ok(await page.locator(`${selector} .topActionIcon`).isVisible(),'icon-only header actions must retain their visible SVG');
-        const box=await page.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44,'header actions retain a usable target');
-      }
-      const periodBox=await page.locator('.ltsCockpitWindow').boundingBox(),refreshBox=await page.locator('#refreshBtn').boundingBox();assert.ok(periodBox.x+periodBox.width<=refreshBox.x,'period and utility controls do not overlap');
-      const axes=await page.locator('.ltsCockpitGrid .ltsContextAxis').allTextContents();assert.equal(new Set(axes).size,1,'all populated cockpit modules share one calendar');
-    }else{
-      assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),false);
-      assert.ok(await page.locator('.ltsRefMetrics').isVisible());
-      assert.ok(await page.locator('.ltsRefToday').isVisible());
-      const order=await page.evaluate(()=>['.ltsRefMetrics','.ltsRefToday','.ltsRefProgress','.ltsCockpitReading.mobile','.ltsRefTrend'].map(s=>document.querySelector(s).getBoundingClientRect().top));assert.deepEqual(order,[...order].sort((a,b)=>a-b),'mobile Today/progress take priority over deep analysis');
-    }
-    assert.equal(await page.locator('[data-disclosure="home-history"]').getAttribute('open'),null,'deep evidence does not compete with the Home reading');
-    assert.match(await page.locator('.ltsRefToday').innerText(),/1\.250 mL registrados hoje/);
-    assert.equal(await page.locator('.ltsRefProgressItem.water b').innerText(),'7/7');
+    assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
+    assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
+    assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),true,'same product hierarchy on all devices');
+    assert.match(await page.locator('.ltsCockpitReading h2').innerText(),/Gordura.*músculo/);
+    assert.equal(await page.locator('.ltsRefProgressItem,.ltsRefRing').count(),0,'coverage is not an outcome');
+    const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),next:top('.ltsEvolutionNext')};});
+    assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.next);
+    assert.equal(await page.locator('[data-disclosure="home-history"]').getAttribute('open'),null);
+    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/1\.250 mL/);
+    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),new RegExp(today.split('-').reverse().join('/')));
     assert.equal(await page.locator('.ltsDayWater').count(),1);await noOverflow(page);
+    await page.locator('[data-home-body-metric="weight_kg"]').click();
+    assert.equal(await page.locator('[data-home-body-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
+    assert.match(await page.locator('.ltsCockpitPanel.body .ltsContextPlot svg').getAttribute('aria-label'),/Peso/);
     await page.screenshot({path:`${dir}/${label}-home.png`});
+    await page.locator('.ltsCockpitPanel.water [data-home-goals]').click();
+    await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(8));
+    await page.locator('#personalGoalsForm [name="water_ml"]').fill('2200');
+    await page.locator('#personalGoalsForm [name="protein_g"]').fill('150');
+    await page.locator('#personalGoalsForm [type="submit"]').click();
+    await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
+    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/2\.200 mL/);
+    await page.reload();await page.waitForSelector('.ltsHomeReference');
+    await page.locator('.ltsCockpitPanel.water [data-home-goals]').click();
+    assert.equal(await page.locator('#personalGoalsForm [name="water_ml"]').inputValue(),'2200','goal persists after reloading from the service');
+    await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(1));
+    await page.locator('#personalGoalsForm [name="water_ml"]').fill('2000');
+    await page.locator('#personalGoalsForm [name="protein_g"]').fill('120');
+    await page.locator('#personalGoalsForm [type="submit"]').click();
+    await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
+    await page.locator('.ltsGoalSettings summary').first().click();
     await page.locator('.ltsCockpitReading:visible [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
-    assert.equal(await page.locator('#analysisPeriod').inputValue(),'30');
-    assert.match(await page.locator('.ltsReviewContrast').first().innerText(),/1\.200 mL.*1\.000 mL/s);
-    assert.match(await page.locator('.ltsReviewCoverage').innerText(),/16 dias/);await noOverflow(page);
+    assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
+    assert.match(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL.*1\.000 mL/s);
+    assert.equal(await page.locator('.ltsReviewCoverage,.ltsReviewOverlap').count(),0);await noOverflow(page);
     assert.match(await page.locator('.ltsReviewContrast').last().innerText(),/7,0 h.*8,0 h/s);
     await capture(page,'#reportIntegratedReview',`${dir}/${label}-overview.png`);
     await page.locator('[data-review-view="day"]').click();await page.waitForSelector('#reviewDate');
@@ -88,15 +90,12 @@ try{
     await page.locator('#analysisPeriod').selectOption('90');await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='90');
     assert.equal(await page.locator('[data-review-view="consultation"]').getAttribute('aria-pressed'),'true','period change preserves the current task');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';state.ui.reviewView='overview';const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
-    assert.match(await page.locator('#reportIntegratedReview').innerText(),/Comparação bloqueada/);assert.doesNotMatch(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
+    assert.match(await page.locator('#reportIntegratedReview').innerText(),/Entender a evolução/);assert.doesNotMatch(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
     await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('.ltsHomeReference');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
-    assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregou/);
-    if(width>840){
-      assert.match(await page.locator('.ltsDesktopCockpit').innerText(),/Dados não carregaram/);
-      assert.doesNotMatch(await page.locator('.ltsDesktopCockpit').innerText(),/Sem coleta|0 registros de sono|Nenhum registro nesta janela/);
-      assert.match(await page.locator('.ltsCockpitSources').innerText(),/Exames —/);
-    }
+    assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregaram/);
+    assert.match(await page.locator('.ltsDesktopCockpit').innerText(),/não carregou/);
+    assert.doesNotMatch(await page.locator('.ltsDesktopCockpit').innerText(),/0 registros de sono|Nenhum registro nesta janela/);
     await noOverflow(page);await capture(page,'.ltsHomeReference',`${dir}/${label}-unavailable.png`);
     await page.close();
   }

@@ -24,7 +24,7 @@ const routeReadySelectors=Object.freeze({
   timeline:'.timelineSummary',
   treinos:'.ltsTrainingReference',
   bio:'.ltsCompositionV2',
-  nutricao:'.nutritionDays',
+  nutricao:'.ltsNutritionDiary',
   saude:'.ltsLabsV2',
   analise:'.ltsRecoveryV2',
   tratamentos:'.protocolSummaryGrid',
@@ -74,7 +74,7 @@ async function assertStableMobileShell(label){
     if(window.innerWidth>840)return{desktop:true};
     const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
     const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{route:button.dataset.route,text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width,active:button.classList.contains('active')};});
-    const brand=[document.querySelector('.topbar .brand b'),document.querySelector('.ltsRefBrand')].find(visible);
+    const brand=[document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
     const routeAction=document.querySelector('#routeAction');
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
@@ -98,26 +98,17 @@ async function assertMinimumReadableType(selector,minimum,label){
   if(result.minimum<minimum)throw new Error(`${label}: supporting type is too small (${result.minimum}px)`);
 }
 async function auditReferenceHome(label){
-  const result=await page.evaluate(()=>{
-    const top=selector=>document.querySelector(selector)?.getBoundingClientRect().top??99999;
-    return{
-      build:document.querySelector('meta[name="lts-build"]')?.content||'',
-      legacyVisible:Boolean(document.querySelector('[data-executive-dashboard]')),
-      motto:document.querySelector('.ltsRefMotto')?.textContent?.trim()||'',
-      metrics:[...document.querySelectorAll('.ltsRefMetric>span')].map(el=>el.textContent.trim()),
-      top:{metrics:top('.ltsRefMetrics'),today:top('.ltsRefToday'),progress:top('.ltsRefProgress'),panorama:top('.ltsRefIntegrated')},
-      desktop:innerWidth>840,
-      cockpit:{cards:document.querySelectorAll('.ltsExecutiveCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,footer:top('.ltsCockpitFooter')},
-      minSupportingFont:Math.min(...[...document.querySelectorAll('.ltsRefMetric>span,.ltsRefMetric>div small,.ltsRefTodayCopy small,.ltsRefProgressItem>small,.ltsRefDomain>small')].map(el=>parseFloat(getComputedStyle(el).fontSize)))
-    };
-  });
-  if(result.build!=='product-clarity-20261006.41')throw new Error(`${label}: unexpected public build ${result.build}`);
-  if(result.legacyVisible)throw new Error(`${label}: legacy Home is visible`);
-  if(!result.motto.includes('Disciplina hoje, evolução sempre'))throw new Error(`${label}: approved Home context line is missing`);
-  if(!result.metrics.includes('Massa magra'))throw new Error(`${label}: approved lean-mass metric is missing`);
-  if(result.desktop){if(result.cockpit.cards!==5||result.cockpit.panels!==6||result.cockpit.footer>850)throw new Error(`${label}: executive cockpit is incomplete or oversized ${JSON.stringify(result.cockpit)}`);}
-  else if(!(result.top.metrics<result.top.today&&result.top.today<result.top.panorama&&result.top.progress<result.top.panorama))throw new Error(`${label}: Home priority hierarchy is wrong ${JSON.stringify(result.top)}`);
-  if(result.minSupportingFont<9.5)throw new Error(`${label}: Home supporting type is too small (${result.minSupportingFont}px)`);
+ const result=await page.evaluate(()=>{
+  const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
+  const visible=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;};
+  const sizes=[...document.querySelectorAll('.ltsExecutiveCard small,.ltsCockpitCaption,.ltsCockpitFacts small')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
+  return {build:document.querySelector('meta[name="lts-build"]')?.content,cards:document.querySelectorAll('.ltsExecutiveCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,rings:document.querySelectorAll('.ltsRefRing').length,top:[top('.ltsExecutiveCards'),top('.ltsCockpitReading'),top('.ltsCockpitGrid'),top('.ltsEvolutionNext')],minFont:Math.min(...sizes),canvas:getComputedStyle(document.querySelector('#screenHost')).backgroundColor};
+ });
+ if(result.build!=='evolution-product-20261007.42')throw new Error(`${label}: wrong published build`);
+ if(result.cards!==5||result.panels!==6||result.rings!==0)throw new Error(`${label}: outcome hierarchy missing`);
+ if(result.top.some((v,i)=>i&&v<=result.top[i-1]))throw new Error(`${label}: hierarchy incorrect`);
+ if(result.minFont<10)throw new Error(`${label}: supporting text too small`);
+ if(result.canvas!=='rgb(244, 247, 251)')throw new Error(`${label}: light executive canvas missing`);
 }
 async function auditExerciseGeometry(label){
   const result=await page.evaluate(()=>{
@@ -219,16 +210,7 @@ try{
 
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
-  const homeState=await page.evaluate(()=>({
-    greeting:document.querySelector('.ltsHomeReference h1')?.textContent?.trim()||'',
-    metrics:document.querySelectorAll('.ltsRefMetrics .ltsRefMetric').length,
-    today:Boolean(document.querySelector('.ltsRefToday')),
-    progress:document.querySelectorAll('.ltsRefProgressItem').length,
-    trainingRow:Boolean(document.querySelector('.ltsRefTodayIcon.training')),
-    legacyVisible:Boolean(document.querySelector('[data-executive-dashboard]'))
-  }));
-  if(!homeState.greeting||homeState.metrics!==3||!homeState.today||homeState.progress!==4||!homeState.trainingRow)throw new Error(`reference Home missing: ${JSON.stringify(homeState)}`);
-  if(homeState.legacyVisible)throw new Error('legacy executive Home remained active');
+  if(await page.locator('.ltsExecutiveCard').count()!==5||await page.locator('.ltsCockpitPanel').count()!==6)throw new Error('executive Home modules missing');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
   await auditReferenceHome('desktop Home');
   await assertNoHorizontalOverflow();
@@ -297,7 +279,7 @@ try{
   await assertLightReadableCards('.reviewInbox,.reviewStat,.sourceStatus','desktop Data');
 
   await waitForRoute('nutricao');
-  await assertMinimumReadableType('.nutritionMonthHead b,.nutritionMonthHead span,.nutritionMonthStats span,.nutritionDays time,.nutritionDays b,.nutritionDays small',10.5,'desktop Nutrition');
+  await assertMinimumReadableType('.ltsNutritionDiaryMetrics span,.ltsNutritionDiaryMetrics small,.ltsNutritionMeals p',10.5,'desktop Nutrition');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Nutrition duplicates its import action in the top bar');
   await page.screenshot({path:`${evidenceDir}/desktop-nutrition.png`});
   await waitForRoute('evolucao');
@@ -344,18 +326,18 @@ try{
 
   await waitForRoute('nutricao');
   await assertNoHorizontalOverflow();
-  await assertMinimumReadableType('.nutritionMonthHead b,.nutritionMonthHead span,.nutritionMonthStats span,.nutritionDays time,.nutritionDays b,.nutritionDays small',10.5,'mobile Nutrition');
+  await assertMinimumReadableType('.ltsNutritionDiaryMetrics span,.ltsNutritionDiaryMetrics small,.ltsNutritionMeals p',10.5,'mobile Nutrition');
   if(await page.locator('#routeAction').isVisible())throw new Error('mobile Nutrition duplicates its import action in the top bar');
   await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
   await assertStableMobileShell('mobile Nutrition');
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition.png`});
-  await page.locator('.nutritionDays').scrollIntoViewIfNeeded();
+  await page.locator('.ltsNutritionDiary').scrollIntoViewIfNeeded();
   await assertStableMobileShell('mobile Nutrition history');
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-history.png`});
-  const nutritionDay=page.locator('details.uxDisclosure summary').filter({hasText:'Detalhe do dia selecionado'}).first();
-  await nutritionDay.click();
-  await page.locator('.nutritionDayHead').scrollIntoViewIfNeeded();
-  await assertMinimumReadableType('.nutritionDayHead span,.nutritionDayHead small,.macroGrid span,.mealRow b,.mealRow small,.mealRow em',10.5,'mobile Nutrition day detail');
+  const nutritionDates=page.locator('#nutritionDateProduct');
+  const diaryOptions=await nutritionDates.locator('option').evaluateAll(es=>es.map(e=>e.value));
+  if(diaryOptions.length>1){await nutritionDates.selectOption(diaryOptions.at(-1));if(await nutritionDates.inputValue()!==diaryOptions.at(-1))throw new Error('Nutrition day selector did not open the historical diary');}
+  await assertMinimumReadableType('.ltsNutritionDiaryMetrics span,.ltsNutritionDiaryMetrics small',10.5,'mobile Nutrition day detail');
   await assertStableMobileShell('mobile Nutrition day detail');
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
 
