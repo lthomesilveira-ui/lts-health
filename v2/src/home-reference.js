@@ -6,7 +6,12 @@ import {homeCockpitModel,renderHomeCockpit} from './home-cockpit.js';
 export function renderProductHomeReference(){
   const period=state.ui.homePeriod||'90';
   const c=homeCockpitModel(state.data,state.domainStatus,period,state.ui);
-  const context=healthContextModel(state.data,{...state.ui,homePeriod:period},state.domainStatus);
+  // The calendar shares the cockpit's real bounds and selected food source.
+  // Unavailable domains cannot leave stale points or facts in the day reader.
+  const contextData=Object.fromEntries(['body','labs','treatments'].map(key=>[key,state.domainStatus[key]==='ready'?state.data[key]||[]:[]]));
+  contextData.workouts=c.r.training.rows;
+  contextData.nutrition=c.r.nutrition.rows.map(row=>({...row,nutrition_date:row.date}));
+  const context=healthContextModel(contextData,c.m.current,state.ui.homeLabMarker,state.ui.healthContextDate,c.r.dates);
   const picker=`<div class="ltsCockpitWindow"><span>Janela de análise</span><div class="ltsHomePeriod" role="group" aria-label="Janela de análise">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Histórico']].map(([key,label])=>`<button data-home-period="${key}" aria-pressed="${period===key}">${label}</button>`).join('')}</div></div>`;
-  return `<section class="ltsHomeV2 ltsHomeReference ltsProductExperience ltsEvolutionHome">${picker}${renderHomeCockpit(c)}<details class="ltsHomeExplore" data-disclosure="home-history"><summary><span><b>Investigar um dia no histórico</b><small>Treino, alimentação, corpo, exames e protocolos na mesma data</small></span><i aria-hidden="true">＋</i></summary>${renderHealthContext(context,state.domainStatus,renderHomeDaySignals(c.r,context.selectedDate))}</details></section>`;
+  return `<section class="ltsHomeV2 ltsHomeReference ltsProductExperience ltsEvolutionHome">${picker}<button class="ltsEvolutionRefresh ltsEvolutionAction" data-home-refresh>Atualizar dados ↻</button>${renderHomeCockpit(c)}<details class="ltsHomeExplore" data-disclosure="home-history"><summary><span><b>Investigar um dia no histórico</b><small>Treino, alimentação, corpo, exames e protocolos na mesma data</small></span><i aria-hidden="true">＋</i></summary>${renderHealthContext(context,state.domainStatus,renderHomeDaySignals(c.r,context.selectedDate))}</details></section>`;
 }
