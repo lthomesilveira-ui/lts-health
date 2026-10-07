@@ -5,10 +5,11 @@ import {renderProductHomeReference} from './home-reference.js';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
 import {renderRecoveryDepth} from './recovery-layout-v2.js';
+import {renderProductNutrition} from './nutrition-product.js';
 
 if(!fixtureMode){
-  const renderers={hoje:renderProductHomeReference,treinos:renderProductTraining,bio:renderProductComposition,saude:renderProductLabs,analise:renderRecoveryDepth};
-  const markers={hoje:'.ltsHomeReference',treinos:'.ltsTrainingReference',bio:'.ltsCompositionV2',saude:'.ltsLabsV2',analise:'.ltsRecoveryV2'};
+  const renderers={hoje:renderProductHomeReference,treinos:renderProductTraining,bio:renderProductComposition,saude:renderProductLabs,analise:renderRecoveryDepth,nutricao:renderProductNutrition};
+  const markers={hoje:'.ltsHomeReference',treinos:'.ltsTrainingReference',bio:'.ltsCompositionV2',saude:'.ltsLabsV2',analise:'.ltsRecoveryV2',nutricao:'.ltsNutritionProduct'};
   let applying=false,pollTimer=null,pollStarted=0,lastData=null,lastRoute=null;
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
   const pageFields=new Set(['productTrainingPage','productLabPage','productCompositionPage','productExercisePage']);

@@ -82,6 +82,7 @@ export const inspectFunctionForSource = () => CONFIG.inspectFunction;
 
 export function fixtureData(){
   return {
+    goals:[],
     body:[
       {source_record_id:'body-1',measured_at:'2026-01-01',weight_kg:90,skeletal_muscle_mass_kg:45,fat_mass_kg:15,body_fat_pct:16.7,visceral_fat_level:7,score:82,source:'Teste'},
       {source_record_id:'body-2',measured_at:'2026-02-01',weight_kg:91,skeletal_muscle_mass_kg:46,fat_mass_kg:14,body_fat_pct:15.4,visceral_fat_level:6,score:84,source:'Teste'}

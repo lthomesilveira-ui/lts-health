@@ -25,9 +25,9 @@ try{
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
-    await page.locator('[data-disclosure="home-history"]>summary').click();await page.waitForSelector('.ltsRefEvidenceBrief article');
-    assert.match(await page.locator('.ltsRefEvidenceBrief').innerText(),/150 g\/dia.*10 dias/s,'Home uses matching counted observations');
-    await overflow(page);await page.locator('.ltsRefEvidenceBrief button').click();
+    await page.waitForSelector('.ltsCockpitReading');
+    assert.match(await page.locator('.ltsEvolutionFindings').innerText(),/150 versus 100 g\/dia/s,'Home uses matching counted observations');
+    await overflow(page);await page.locator('[data-home-insight-details]').click();
     await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'30','evidence details retain the Home calendar window');
     assert.equal(await page.locator('#reportNutritionSource').inputValue(),'synthetic food a');

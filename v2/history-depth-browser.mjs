@@ -30,7 +30,7 @@ try{
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
   await page.locator('[data-home-period="all"]').click();
-  const primaryAxis=width>840?'.ltsCockpitPanel.body .ltsContextAxis':'.ltsRefTrendChart .ltsContextAxis';
+  const primaryAxis='.ltsCockpitPanel.body .ltsContextAxis';
   await page.waitForSelector(primaryAxis);
   const axis=await page.locator(primaryAxis).evaluate(el=>{
    const plot=el.closest('.ltsContextPlot').getBoundingClientRect(),svg=el.previousElementSibling.getBoundingClientRect();

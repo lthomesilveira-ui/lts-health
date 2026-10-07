@@ -1,90 +1,81 @@
 import {esc,fmtNum,fmtDate,num,day} from './core.js';
 import {usefulReports} from './reports-model.js';
 import {integratedReview} from './integrated-review.js';
-import {contextChart,bodySourceLabel} from './health-context.js';
+import {evolutionModel} from './evolution-model.js';
+import {contextChart,bodySourceLabel,medicationContext} from './health-context.js';
+import {goalForDate,renderGoals} from './personal-goals.js';
+import {loadInsightUnits} from './evidence-insights.js';
 
 const value=(n,unit='',digits=1)=>num(n)==null?'Sem dado':`${fmtNum(n,digits)}${unit?` ${unit}`:''}`;
-const change=(n,unit)=>num(n)==null?'Sem comparação':`${n>0?'+':''}${value(n,unit)}`;
-const count=(available,n,noun)=>available?`${n} ${noun}`:'Indisponível';
-const sourcePoints=(rows,read,cohort)=>rows.filter(r=>num(read(r))!=null).map(r=>({date:r.date,value:num(read(r)),cohort,context:r.source}));
-const bodyLimits={
-  unavailable:['Dados indisponíveis','A composição não carregou nesta atualização.'],
-  empty:['Sem medição na janela','Não há medição nesta janela; consulte Histórico.'],
-  single:['Uma medição na janela','Falta uma medição anterior na janela para comparar.'],
-  source_changed:['Origem ou aparelho diferentes','Medições de origens ou aparelhos diferentes não são comparadas.'],
-  ambiguous:['Medições em revisão','Há mais de uma medição candidata na mesma data.']
-};
-function mainReading(m,r,failures){
-  const bodyLimit=bodyLimits[m.body.reason]||['Sem comparação segura','Não há um par corporal compatível nesta janela.'];
-  const delta=num(m.body.changes?.weight_kg);
-  let title;
-  if(m.body.available&&delta!=null)title=delta===0?'Peso estável entre duas medições compatíveis.':`Peso ${change(delta,'kg')} entre medições compatíveis.`;
-  else if(m.training.available&&m.prior?.training.available){
-    const difference=m.training.sessions-m.prior.training.sessions;
-    title=difference===0?'Mesmo número de treinos que na janela anterior.':`Treinos: ${difference>0?'+':''}${difference} ${Math.abs(difference)===1?'sessão':'sessões'} frente à janela anterior.`;
-  }else title=failures.length?'Parte dos dados não carregou nesta atualização.':r.training.available&&r.nutrition.available?`${r.training.rows.length} sessões confirmadas; alimentação em ${r.nutrition.closedRows.length} dias.`:'Leitura disponível nos registros desta janela.';
-  const detail=m.body.available&&delta!=null
-    ?`${fmtDate(m.body.start)} → ${fmtDate(m.body.end)} · ${bodySourceLabel(m.body.latest)}. Diferença observada, sem atribuir causa à rotina.`
-    :`${bodyLimit[1]} Dias sem registro não significam zero ou descanso.`;
-  const overlap=r.training.available&&r.nutrition.available&&r.water.available
-    ?`${r.overlaps.foodWater} datas com alimentação e água; ${r.overlaps.foodWaterTraining} também com treino. Coincidência no calendário, não causa e efeito.`
-    :'Cruzamentos incompletos: uma das fontes não carregou. Os demais registros continuam disponíveis.';
-  return {title,detail,summary:overlap,bodyLimit};
-}
+const change=(n,unit='',digits=1)=>num(n)==null?'Sem comparação':`${n>0?'+':''}${value(n,unit,digits)}`;
+const points=(rows,read,cohort)=>rows.filter(r=>num(read(r))!=null).map(r=>({date:r.date,value:num(read(r)),cohort,context:r.source}));
+const bodyLimits={unavailable:['Dados indisponíveis','A composição não carregou nesta atualização.'],empty:['Sem medição na janela','A última avaliação é mostrada com sua data; amplie a janela para comparar.'],single:['Uma avaliação','Falta outra medição compatível na janela para calcular a evolução.'],source_changed:['Aparelhos diferentes','As avaliações têm origens ou aparelhos diferentes; as curvas permanecem separadas.'],ambiguous:['Avaliações em revisão','Há mais de uma medição candidata na mesma data.']};
 
-// Uses the same source-aware models as Reports. No mock values, goals or inferred
-// clinical classifications are introduced by the visual presentation.
 export function homeCockpitModel(data,status,period,ui={},today){
   const m=usefulReports(data,status,{...ui,analysisPeriod:period},today);
   const r=integratedReview(data,status,m.current,ui,m.today);
-  const trainingByDate=new Map();
-  for(const row of m.training.rows||[]){const d=day(row.workout_date);trainingByDate.set(d,(trainingByDate.get(d)||0)+1);}
-  const trainingPoints=[...trainingByDate].sort(([a],[b])=>a.localeCompare(b)).map(([date,value])=>({date,value,cohort:'confirmed-sessions'}));
-  const foodPoints=sourcePoints(r.nutrition.rows,row=>row.calories_kcal,r.nutrition.source?.key);
-  const sleepPoints=sourcePoints(r.sleep.rows,row=>row.value,r.sleep.source?.key);
-  const waterPoints=sourcePoints(r.water.rows,row=>row.value,r.water.source?.key);
-  const body=m.body.latest||null;
-  const foodDays=r.nutrition.closedRows.length;
-  const labRows=(m.labs.groups||[]).flatMap(group=>group.rows);
-  const labDates=[...new Set(labRows.map(row=>day(row.collection_date)))].sort();
-  const known=[['Composição',status.body],['Treinos',status.workouts],['Nutrição',status.nutrition],['Recuperação',status.sourceMetrics],['Exames',status.labs]];
-  const failures=known.filter(([,s])=>s!=='ready').map(([label])=>label);
-  const reading=mainReading(m,r,failures);
-  return {m,r,body,foodDays,trainingPoints,foodPoints,sleepPoints,waterPoints,labRows,labDates,failures,...reading};
+  const evo=evolutionModel(data,status,m,r,ui);
+  const failures=[['Composição',status.body],['Treinos',status.workouts],['Nutrição',status.nutrition],['Recuperação',status.sourceMetrics],['Exames',status.labs]].filter(([,s])=>s!=='ready').map(([label])=>label);
+  const first=evo.findings[0],bodyLimit=bodyLimits[m.body.reason]||['Sem comparação','Não há um par corporal compatível nesta janela.'];
+  const title=first?.title||(failures.length?'Parte dos dados está indisponível':evo.body?`${value(evo.body.body_fat_pct,'%')} de gordura · ${value(evo.body.skeletal_muscle_mass_kg,'kg')} de músculo`:'Seu próximo ponto de evolução começa aqui');
+  const detail=first?`${first.text} ${first.detail}`:evo.body?`Última avaliação em ${fmtDate(evo.body.measured_at)} · ${bodySourceLabel(evo.body)}. ${bodyLimit[1]}`:failures.length?`${failures.join(', ')}: dados não carregaram nesta atualização. Use Atualizar dados.`:m.body.reason==='ambiguous'?bodyLimit[1]:'Sem avaliação inequívoca nesta janela. Amplie o período ou consulte os históricos para começar uma comparação.';
+  const trainingByDate=new Map();for(const w of m.training.rows||[]){const d=day(w.workout_date);trainingByDate.set(d,(trainingByDate.get(d)||0)+1);}
+  return {m,r,evo,ui,status,goals:status.goals==='ready'?data.goals||[]:[],body:evo.body,failures,bodyLimit,title,detail,summary:detail,foodDays:r.nutrition.closedRows.length,trainingPoints:[...trainingByDate].map(([date,v])=>({date,value:v,cohort:'confirmed-sessions'})),foodPoints:points(r.nutrition.rows,x=>x.calories_kcal,r.nutrition.source?.key),sleepPoints:points(r.sleep.rows,x=>x.value,r.sleep.source?.key),waterPoints:points(r.water.rows,x=>x.value,r.water.source?.key),labRows:(m.labs.groups||[]).flatMap(g=>g.rows),labDates:[...new Set((m.labs.groups||[]).flatMap(g=>g.rows).map(x=>day(x.collection_date)))]};
 }
-
-function executiveCard(kind,label,main,context,detail,route){
+function card(kind,label,main,context,detail,route){
   const glyph={body:'◈',training:'↔',nutrition:'⌁',sleep:'☾',labs:'◇'}[kind];
   return `<button class="ltsExecutiveCard ${kind}" data-route="${route}"><span><i aria-hidden="true">${glyph}</i>${label}<em aria-hidden="true">↗</em></span><strong>${esc(main)}</strong><b>${esc(context)}</b><small>${esc(detail)}</small></button>`;
 }
-function facts(rows){return `<div class="ltsCockpitFacts">${rows.map(([label,v,context])=>`<div${context?` title="${esc(context)}" aria-label="${esc(`${label}: ${v}; ${context}`)}"`:''}><b>${esc(v)}</b><small>${esc(label)}</small></div>`).join('')}</div>`;}
-function panel(kind,title,route,points,options,factRows,caption,available=true){
-  const chart=available?contextChart(points,{...options,selectable:false}):'<div class="ltsContextEmpty" role="status">Dados não carregaram. Use Atualizar dados.</div>';
-  return `<article class="ltsCockpitPanel ${kind}"><header><h2>${title}</h2><button data-route="${route}" aria-label="Abrir ${title}">Ver mais ↗</button></header><p class="ltsCockpitCaption">${esc(available?caption:'Fonte indisponível nesta atualização')}</p>${chart}${facts(factRows)}</article>`;
+const facts=rows=>`<div class="ltsCockpitFacts">${rows.map(([label,v])=>`<div><b>${esc(v)}</b><small>${esc(label)}</small></div>`).join('')}</div>`;
+const panel=(kind,title,route,content)=>`<article class="ltsCockpitPanel ${kind}"><header><h2>${title}</h2><button data-route="${route}" aria-label="Abrir ${title}">Detalhes ↗</button></header>${content}</article>`;
+const empty=text=>`<div class="ltsContextEmpty" role="status">${esc(text)}</div>`;
+function sourcePicker(domain,field,label){
+  return domain.sources.length>1?`<label class="ltsEvolutionSource">${label}<select id="home-${field}" data-home-field="${field}">${domain.sources.map(s=>`<option value="${esc(s.key)}" ${s.key===domain.source?.key?'selected':''}>${esc(s.label)}</option>`).join('')}</select></label>`:`<p class="ltsCockpitCaption">${esc(domain.source?.label||'Nenhuma origem nesta janela')}</p>`;
+}
+function bodyPanel(c){
+  const metrics=[['fat_mass_kg','Gordura','kg'],['skeletal_muscle_mass_kg','Músculo','kg'],['weight_kg','Peso','kg'],['body_fat_pct','Gordura %','%']];
+  const selected=metrics.find(([key])=>key===c.ui.homeBodyMetric)||metrics[0],b=c.body;
+  if(c.status.body!=='ready')return panel('body','Gordura, músculo e peso','bio',empty('A composição não carregou. Use Atualizar dados.'));
+  return panel('body','Gordura, músculo e peso','bio',`<p class="ltsCockpitCaption">${b?`${fmtDate(b.measured_at)} · ${esc(bodySourceLabel(b))}`:'Sem avaliação disponível'}</p>${facts([['Gordura',value(b?.body_fat_pct,'%')],['Músculo esquelético',value(b?.skeletal_muscle_mass_kg,'kg')],['Peso',value(b?.weight_kg,'kg')]])}<div class="ltsEvolutionTabs" role="group" aria-label="Métrica corporal">${metrics.map(([key,label])=>`<button data-home-body-metric="${key}" aria-pressed="${selected[0]===key}">${label}</button>`).join('')}</div>${contextChart(c.m.body.series?.[selected[0]]||[],{label:selected[1],unit:selected[2],bounds:c.m.current,selectable:false})}<p class="ltsEvolutionConclusion">${esc(c.m.body.available?`${selected[1]}: ${change(c.m.body.changes[selected[0]],selected[0]==='body_fat_pct'?'p.p.':selected[2])} entre ${fmtDate(c.m.body.start)} e ${fmtDate(c.m.body.end)}. Mesma origem e aparelho.`:c.bodyLimit[1])}</p>`);
+}
+function trainingPanel(c){
+  const l=c.evo.insights.highlightLoad,s=c.evo.latestSession;
+  if(!c.m.training.available)return panel('training','Progressão no treino','treinos',empty('Os treinos não carregaram. Use Atualizar dados.'));
+  const progression=l?`<p class="ltsEvolutionHeadline">${esc(l.exercise)}</p>${facts([['Carga anterior',value(l.previous.weight,loadInsightUnits[l.unit])],['Carga atual',value(l.latest.weight,loadInsightUnits[l.unit])],['Mesmas repetições',`${l.reps} reps`]])}${contextChart(l.points.map(p=>({date:p.date,value:p.weight,cohort:l.key||'working-load'})),{label:`Carga de trabalho: ${l.exercise}, ${l.reps} repetições`,unit:loadInsightUnits[l.unit],selectable:false})}<p class="ltsEvolutionConclusion">${esc(l.machine)} · ${esc(l.location)}. ${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}; execução e esforço podem variar.</p><button class="ltsEvolutionAction" data-report-exercise="${esc(l.latest.exerciseId)}" data-report-load-unit="${esc(l.unit)}">Investigar este exercício ↗</button>`:empty('Ainda não há duas séries de trabalho compatíveis para comparar carga, aparelho e repetições. O detalhe da sessão continua disponível.');
+  const session=s?`<button class="ltsEvolutionSession" data-home-workout="${esc(s.source_record_id)}"><span>Última sessão · ${fmtDate(s.workout_date)}</span><b>${esc(s.workout_type||'Treino')}</b><small>${esc(s.location||'Local não informado')} · ${s.exerciseCount==null?'Exercícios indisponíveis':`${s.exerciseCount} exercícios`} · ${s.setCount==null?'Séries indisponíveis':`${s.setCount} séries`}</small></button>`:'';
+  const distribution=c.evo.trainingGroups.length?`<details class="ltsEvolutionDistribution"><summary>Distribuição por grupo muscular</summary>${c.evo.trainingGroups.map(g=>`<div><span>${esc(g.label)}</span><b>${g.value} séries</b></div>`).join('')}<p>Séries anotadas, incluindo aquecimento quando presente. Contagem não mede esforço ou qualidade.</p></details>`:'';
+  return panel('training','Progressão no treino','treinos',progression+session+distribution);
+}
+export function nutritionPanel(c){
+  const n=c.r.nutrition,e=c.evo,last=e.latestFood,summary=Object.fromEntries(['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'].map(key=>[key,n.counts[key]>=5?n.means[key]:last?.[key]]));
+  if(!n.available)return panel('nutrition','Consumo e plano alimentar','nutricao',empty('A alimentação não carregou. Use Atualizar dados.'));
+  const protein=e.nutritionTargets.protein_g,energy=e.nutritionTargets.calories_kcal;
+  const comparison=protein.count||energy.count?`<div class="ltsEvolutionTarget"><b>Consumo versus meta vigente em cada dia</b>${[protein.count?`Proteína: ${value(protein.actual,'g/dia',0)} / meta ${value(protein.target,'g/dia',0)} · ${protein.count} dias pareados`:null,energy.count?`Energia: ${value(energy.actual,'kcal/dia',0)} / meta ${value(energy.target,'kcal/dia',0)} · ${energy.count} dias pareados`:null].filter(Boolean).map(x=>`<p>${esc(x)}</p>`).join('')}<button data-home-goals>Revisar metas</button></div>`:`<p class="ltsEvolutionConclusion">Sem meta confirmada para estes dias. O consumo registrado fica disponível, sem classificação de adequação.</p><button class="ltsEvolutionAction" data-home-goals>Informar metas do meu plano ↗</button>`;
+  const meals=e.mealDistribution.length?`<details><summary>Proteína por refeição</summary>${e.mealDistribution.map(x=>`<p>${esc(x.label)}: ${value(x.value,'g',0)} em média · ${x.days} dias com valor.</p>`).join('')}</details>`:'';
+  return panel('nutrition','Consumo e plano alimentar','nutricao',`${sourcePicker(n,'reportNutritionSource','Origem alimentar')}<p class="ltsCockpitCaption">${n.closedRows.length>=5?`Médias dos diários encerrados com valor · último registro ${last?fmtDate(last.date):'—'}`:last?`Último diário · ${fmtDate(last.date)}`:'Sem diário nesta janela'}</p>${facts([['Energia registrada',value(summary?.calories_kcal,'kcal',0)],['Proteína',value(summary?.protein_g,'g',0)],['Fibra',value(summary?.fiber_g,'g',0)]])}${contextChart(points(n.rows,x=>x.protein_g,n.source?.key),{label:'Proteína registrada por dia',unit:'g',digits:0,bounds:c.m.current,selectable:false})}${comparison}<details><summary>Carboidratos, gorduras e refeições</summary>${facts([['Carboidratos',value(summary?.carbs_g,'g',0)],['Gorduras',value(summary?.fat_g,'g',0)]])}<p>Diários podem estar incompletos. O dia em andamento fica fora das médias.</p>${meals}</details>`);
+}
+function sleepPanel(c){
+  const s=c.r.sleep,last=c.evo.latestSleep,d=c.evo.sleepChange;
+  return panel('sleep','Sono em contexto','analise',!s.available?empty('A fonte de sono não carregou. Use Atualizar dados.'):`${sourcePicker(s,'reviewSleepSource','Origem do sono')}${facts([['Último sono',value(last?.value,'h')],['Data da origem',last?fmtDate(last.date):'Sem registro']])}${contextChart(c.sleepPoints,{label:'Duração do sono registrada',unit:'h',bounds:c.m.current,selectable:false})}<p class="ltsEvolutionConclusion">${s.closedRows.length>=5?`Média dos registros encerrados: ${value(s.mean,'h')}. `:''}${d?`${change(d.delta,'h')} versus a janela anterior, na mesma origem.`:'A data e a origem indicam a atualidade do registro; não há estimativa de prontidão.'}</p>`);
+}
+function labPanel(c){
+  const l=c.m.labs,s=l.selected,current=s?.current;
+  const select=l.groups.length?`<label class="ltsEvolutionSource">Marcador<select id="home-reportLabMarker" data-home-field="reportLabMarker">${l.groups.map(g=>`<option value="${esc(g.key)}" ${g.key===s?.group.key?'selected':''}>${esc(g.label)}</option>`).join('')}</select></label>`:'';
+  const reference=current?.reference_range||[current?.reference_min,current?.reference_max].filter(v=>v!=null).join(' a ');
+  return panel('labs','Evolução dos exames','saude',!l.available?empty('Os exames não carregaram. Use Atualizar dados.'):`${select}${current?`<p class="ltsEvolutionLabValue"><strong>${esc(current.result_raw||value(current.result_numeric,'',2))}</strong><span>${esc(current.unit||'')}</span></p><p class="ltsCockpitCaption">Coleta ${fmtDate(current.collection_date)} · ${esc(current.laboratory||current.source||'Origem no detalhe')}</p><p>Referência do laboratório: ${esc(reference||'não informada neste resultado')}</p>${contextChart(l.points,{label:s.group.label,unit:l.unit,digits:2,bounds:c.m.current,selectable:false})}<p class="ltsEvolutionConclusion">${s.comparable?`Variação ${change(s.delta,l.unit,2)} desde ${fmtDate(s.previous.collection_date)}, em origem e método compatíveis.`:'Resultado legível com sua referência; não há par de método e origem compatíveis nesta janela.'}</p>`:empty('Nenhum resultado inequívoco na janela. Amplie o período ou consulte os exames.')}`);
+}
+export function waterPanel(c){
+  const w=c.r.water,last=c.evo.latestWater,target=last?num(goalForDate(c.goals,last.date)?.water_ml):null;
+  return panel('water','Água consumida','nutricao',!w.available?empty('A ingestão de água não carregou. Use Atualizar dados.'):`${sourcePicker(w,'reviewWaterSource','Origem da água')}${facts([['Último total recebido',last?value(last.value,'mL',0):'Sem registro'],['Data do consumo',last?fmtDate(last.date):'—']])}${target>0?`<p class="ltsEvolutionTarget">Meta vigente nesse dia: <b>${value(target,'mL',0)}</b> · diferença registrada ${change(last.value-target,'mL',0)}.</p>`:`<p class="ltsEvolutionConclusion">Sem meta confirmada para este dia.</p>`}${c.evo.waterMean!=null?contextChart(c.waterPoints,{label:'Água ingerida por data',unit:'mL',digits:0,bounds:c.m.current,selectable:false})+`<p>Média dos dias encerrados com valor: ${value(c.evo.waterMean,'mL',0)}. Dias sem dados não entram como zero.</p>`:'<p class="ltsCockpitCaption">O histórico recebido ainda não sustenta uma tendência. Este é o consumo da data indicada.</p>'}<button class="ltsEvolutionAction" data-home-goals>Revisar meta de água ↗</button>`);
+}
+export function renderHomeReading(c,extraClass=''){
+  return `<section class="ltsCockpitReading ${extraClass}"><div><span>O QUE MUDOU · EVIDÊNCIA E CONTEXTO</span><h2>${esc(c.title)}</h2><p>${esc(c.detail)}</p></div><button data-home-insight-details>Explorar análise ↗</button></section>`;
 }
 export function renderHomeCockpit(c){
-  const {m,r,body,foodDays,trainingPoints,foodPoints,sleepPoints,waterPoints,labRows,labDates,failures}=c;
-  const latestSleep=sleepPoints.at(-1),latestWater=waterPoints.at(-1);
-  const bodyAvailable=m.body.reason!=='unavailable';
-  const bodyContext=m.body.available?`${change(m.body.changes.weight_kg,'kg')} · medição anterior`:c.bodyLimit[0];
-  const cards=executiveCard('body','Composição',bodyAvailable?value(body?.weight_kg,'kg'):'Indisponível',bodyContext,body?`${fmtDate(body.measured_at)} · ${bodySourceLabel(body)}`:c.bodyLimit[1],'bio')
-    +executiveCard('training','Treinos',count(m.training.available,m.training.sessions,'sessões'),m.training.available&&m.prior?.training.available?`${m.prior.training.sessions} no período anterior`:'Somente sessões confirmadas',m.training.available?`${m.training.sets==null?'Séries indisponíveis':`${m.training.sets} séries registradas`} · sem somar Polar novamente`:'A fonte precisa carregar.','treinos')
-    +executiveCard('nutrition','Nutrição',count(r.nutrition.available,foodDays,'dias'),r.nutrition.available?value(r.nutrition.means.calories_kcal,'kcal/dia',0):'Média indisponível',r.nutrition.available?(r.nutrition.source?.label?`${r.nutrition.source.label} · dias encerrados`:'Sem origem com registros na janela.'):'A fonte precisa carregar.','nutricao')
-    +executiveCard('sleep','Recuperação',r.sleep.available?value(r.sleep.mean,'h/registro'):'Indisponível',r.sleep.available?`${r.sleep.closedRows.length} registros de sono`:'Contagem indisponível',r.sleep.available?(r.sleep.source?.label||'Sem série de sono nessa janela.'):'A fonte precisa carregar.','analise')
-    +executiveCard('labs','Exames',statusValue(m.labs,labRows),m.labs.available?`${labDates.length} ${labDates.length===1?'coleta':'coletas'} na janela`:'Contagem indisponível',m.labs.available?(labDates.length?`Última ${fmtDate(labDates.at(-1))}`:'Consulte o histórico de resultados.'):'A fonte precisa carregar.','saude');
-  const bodyPoints=m.body.series.weight_kg||[];
-  const common={bounds:m.current};
-  const panels=panel('training','Treino','treinos',trainingPoints,{...common,label:'Sessões confirmadas por dia',unit:'sessões',digits:0,bar:true},[['Sessões',value(m.training.sessions,'',0)],['Séries',value(m.training.sets,'',0)],['Dias',value(r.training.available?r.training.days:null,'',0)]],'Sessões confirmadas por dia',m.training.available)
-    +panel('nutrition','Nutrição','nutricao',foodPoints,{...common,label:'Energia registrada',unit:'kcal',digits:0,bar:true},[['kcal / dia com valor',value(r.nutrition.means.calories_kcal,'',0),r.nutrition.available?`Média de ${r.nutrition.counts.calories_kcal} dias encerrados com valor`:'Média indisponível'],['g proteína / dia',value(r.nutrition.means.protein_g,'',0),r.nutrition.available?`Média de ${r.nutrition.counts.protein_g} dias encerrados com valor`:'Média indisponível'],['Dias encerrados',r.nutrition.available?String(foodDays):'—']],r.nutrition.source?.label||'Energia registrada · uma origem por vez',r.nutrition.available)
-    +panel('body','Composição corporal','bio',bodyPoints,{...common,label:'Peso corporal',unit:'kg',digits:1},[['Peso',value(body?.weight_kg,'kg')],['Gordura',value(body?.body_fat_pct,'%')],['Músculo esquelético',value(body?.skeletal_muscle_mass_kg,'kg')]],'Peso · curvas separadas por origem e aparelho',bodyAvailable);
-  const secondary=panel('sleep','Sono e recuperação','analise',sleepPoints,{...common,label:'Duração do sono',unit:'h',digits:1},[['Média registrada',value(r.sleep.mean,'h')],['Último registro',latestSleep?fmtDate(latestSleep.date):'—']],r.sleep.source?.label||'Sem série selecionada',r.sleep.available)
-    +`<article class="ltsCockpitPanel labs ltsCockpitLabBrief"><header><h2>Exames</h2><button data-route="saude" aria-label="Abrir Exames">Ver mais ↗</button></header><p>${esc(statusValue(m.labs,labRows))}</p><small>${m.labs.available?(labDates.length?`Última coleta ${fmtDate(labDates.at(-1))}`:'Sem coleta na janela selecionada'):'Dados não carregaram. Use Atualizar dados.'}</small>${facts([['Coletas',m.labs.available?String(labDates.length):'—'],['Comparações compatíveis',m.labs.available?String(m.labs.comparisons.filter(x=>x.comparable).length):'—']])}<span>Resultados, métodos e referências no detalhe.</span></article>`
-    +panel('water','Hidratação','nutricao',waterPoints,{...common,label:'Água ingerida',unit:'mL',digits:0,bar:true},[['Último total',r.water.available?(latestWater?value(latestWater.value,'mL',0):'Sem registro'):'Indisponível'],['Dias encerrados',r.water.available?String(r.water.closedRows.length):'—']],r.water.source?.label||'Sem origem com ingestão registrada',r.water.available);
-  const issues=[failures.length?`${failures.join(', ')}: dados indisponíveis nesta atualização.`:null,r.water.available&&r.water.closedRows.length<5?'Água: histórico curto; cruzamentos ainda limitados.':null,!m.body.available&&bodyAvailable?`Composição: ${c.bodyLimit[1]}`:null,r.nutrition.ambiguousDays?`${r.nutrition.ambiguousDays} datas alimentares ambíguas excluídas.`:null].filter(Boolean);
-  const sources=[['Corpo','Composição'],['Treino','Treinos'],['Alimentação','Nutrição'],['Saúde','Recuperação'],['Exames','Exames']].map(([label,domain])=>{const loaded=!failures.includes(domain);return `<span class="${loaded?'ready':'pending'}" aria-label="${label}: ${loaded?'dados carregados':'dados indisponíveis'}" title="${label}: ${loaded?'dados carregados':'dados indisponíveis'}">${label} ${loaded?'✓':'—'}</span>`;}).join('');
-  return `<div class="ltsDesktopCockpit"><header class="ltsCockpitHeading"><h1>Visão geral da sua saúde</h1><p>Seu histórico em contexto · ${fmtDate(m.current.start)} a ${fmtDate(m.current.end)}</p></header><div class="ltsExecutiveCards">${cards}</div>${renderHomeReading(c)}<div class="ltsCockpitGrid">${panels}</div><div class="ltsCockpitGrid secondary">${secondary}</div><footer class="ltsCockpitFooter"><article><h2>Registros em conjunto</h2><p>${esc(c.summary)}</p><button data-route="analise">Explorar informações cruzadas ↗</button></article><article><h2>Pontos a revisar</h2><p>${esc(issues[0]||'Origens e cobertura disponíveis nos detalhes.')}</p>${issues.length>1?`<details data-disclosure="home-review-points"><summary>Ver ${issues.length-1} outros pontos</summary>${issues.slice(1).map(s=>`<p>${esc(s)}</p>`).join('')}</details>`:''}</article><article><h2>Dados carregados</h2><div class="ltsCockpitSources">${sources}</div><p class="ltsCockpitLoadNote">Consulta atual; não confirma sincronização.</p><button data-route="dados">Gerenciar conexões e arquivos ↗</button></article></footer></div>`;
-}
-const statusValue=(labs,rows)=>labs.available===false?'Indisponível':`${rows.length} ${rows.length===1?'resultado':'resultados'}`;
-export function renderHomeReading(c,extraClass=''){
-  return `<section class="ltsCockpitReading ${extraClass}"><div><span>LEITURA PRINCIPAL DA JANELA</span><h2>${esc(c.title)}</h2><p>${esc(c.detail)}</p></div><button data-home-insight-details>Explorar análise ↗</button></section>`;
+  const {m,r,evo:e,body:b}=c,l=e.insights.highlightLoad,lab=m.labs.selected;
+  const cards=card('body','Composição',c.status.body==='ready'?value(b?.body_fat_pct,'%'):'Indisponível',`${value(b?.skeletal_muscle_mass_kg,'kg')} músculo`,b?`${fmtDate(b.measured_at)} · ${bodySourceLabel(b)}`:c.bodyLimit[1],'bio')+card('training','Progressão',!m.training.available?'Indisponível':l?change(l.delta,loadInsightUnits[l.unit]):e.latestSession?fmtDate(e.latestSession.workout_date):'Sem sessão',l?`${l.exercise} · ${l.reps} reps`:e.latestSession?.workout_type||'Comparações no detalhe',l?`${l.machine} · ${l.location}`:e.latestSession?.location||'Carga, repetições e execução','treinos')+card('nutrition','Nutrição',r.nutrition.available?value(e.latestFood?.protein_g,'g proteína',0):'Indisponível',e.latestFood?`${value(e.latestFood.calories_kcal,'kcal',0)} · ${fmtDate(e.latestFood.date)}`:'Sem diário nesta janela',r.nutrition.source?.label||'Origem alimentar no detalhe','nutricao')+card('sleep','Sono',r.sleep.available?value(e.latestSleep?.value,'h'):'Indisponível',e.latestSleep?fmtDate(e.latestSleep.date):'Sem registro nesta janela',r.sleep.source?.label||'Data e origem preservadas','analise')+card('labs','Exames',!m.labs.available?'Indisponível':lab?.current?`${lab.current.result_raw||value(lab.current.result_numeric,'',2)} ${lab.current.unit||''}`:'Sem resultado',lab?.group.label||'Marcadores no detalhe',lab?.current?`Coleta ${fmtDate(lab.current.collection_date)}`:'Referências e métodos','saude');
+  const next=e.next.map(x=>`<button ${x.kind==='goals'?'data-home-goals':x.kind==='consultation'?'data-home-consultation':`data-route="${x.route}"`}><span>↗</span><b>${esc(x.title)}</b><p>${esc(x.text)}</p></button>`).join('');
+  const findings=e.findings.slice(1,5).map(x=>`<button data-route="${x.route}"><b>${esc(x.title)}</b><p>${esc(x.text)}</p><small>${esc(x.detail)}</small></button>`).join('');
+  const protocols=e.recentTreatments.length?`<details class="ltsEvolutionProtocols"><summary>Protocolos no contexto da evolução</summary>${e.recentTreatments.map(x=>`<p><b>${fmtDate(x.event_date)} · ${esc(x.medication)}</b><br>${esc(medicationContext(x))}</p>`).join('')}<p>Eventos informados, sem atribuir a eles as mudanças observadas.</p><button data-route="tratamentos">Abrir protocolos e aplicações ↗</button></details>`:'';
+  return `<div class="ltsDesktopCockpit"><header class="ltsCockpitHeading"><div><span class="ltsEvolutionEyebrow">LTS Health · sua evolução</span><h1>Entender o presente.<br>Evoluir com contexto.</h1><p>${fmtDate(m.current.start)} a ${fmtDate(m.current.end)} · cada comparação mantém sua origem.</p></div><button class="ltsEvolutionAction" data-home-consultation>Preparar resumo de consulta ↗</button></header><div class="ltsExecutiveCards">${cards}</div>${renderHomeReading(c)}<div class="ltsCockpitGrid">${bodyPanel(c)}${trainingPanel(c)}${nutritionPanel(c)}${sleepPanel(c)}${labPanel(c)}${waterPanel(c)}</div><section class="ltsEvolutionNext"><header><span>DO HISTÓRICO À PRÓXIMA CONVERSA</span><h2>Pontos para revisar</h2></header><div>${next}</div></section>${findings?`<details class="ltsEvolutionFindings"><summary>Outras mudanças observadas</summary><div>${findings}</div></details>`:''}${protocols}${renderGoals()}<details class="ltsEvolutionDiagnostics"><summary>Origens, sincronização e limites dos dados</summary><p>${esc(c.failures.length?`${c.failures.join(', ')}: indisponível nesta atualização.`:'Os domínios principais carregaram nesta consulta. Isso não confirma a recorrência da sincronização.')}</p><p>Datas sem registro ficam fora das médias; origens não são somadas. O histórico de água depende dos registros recebidos. Dados ambíguos permanecem no diagnóstico.</p><button data-route="dados">Gerenciar fontes e importações ↗</button></details></div>`;
 }
