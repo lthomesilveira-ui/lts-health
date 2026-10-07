@@ -162,7 +162,8 @@ try{
   const waterRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Água por dia registrado'});
   assert.ok((await waterRow.innerText()).includes('1 de 30 dias com valor'));
   assert.ok((await waterRow.innerText()).includes('+1.000 mL'));
-  assert.equal(await page.locator('#reportHydration circle').count(),1,'replayed water is one daily point');
+  assert.equal(await page.locator('#reportHydration circle').count(),0,'sparse hydration does not imply a trend');
+  assert.match(await page.locator('#reportHydration').innerText(),/2\.000 mL/,'received water total remains visible without an average');
   await overflow(page);
   if(label!=='small'){await page.locator('#reportPeriods').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-duration-water.png`});}
   await page.evaluate(()=>{window.__failTable='health_source_daily_metrics';});await page.locator('#refreshBtn').click();
