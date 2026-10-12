@@ -1,12 +1,16 @@
 # Polar automático ativado e verificado — 12/10/2026
 
+Proteção Auth também concluída: após o login administrativo seguro escolhido pelo proprietário, `Prevent use of leaked passwords` foi habilitado e salvo somente no projeto Health. O advisor nativo pós-gravação deixou de reportar `auth_leaked_password_protection`; os quatro avisos informativos de tabelas exclusivamente backend com RLS sem política de navegador são intencionais. Não repetir login ou alterar outras regras de autenticação.
+
+PR normal #331 promovido em `0405d5e457029a3de45ca93d3578ee4db1922fda`; os seis gates candidatos e todos os dez workflows pós-merge passaram, incluindo deploy e smokes públicos. Home autenticada exata `.44` conferida novamente. Evidências e IDs completos preservados no PR e no relatório abaixo.
+
 `LTS-POLAR-BACKGROUND-001` e `PKG-INTEGRATION-CONTINUITY-001` estão `done`. A variante não destrutiva foi aplicada pela mesma ferramenta oficial de migrations: versão gerada `20261012213757`. Ela consome uma autorização de cinco minutos marcando um slot privado como usado; não remove registros, não acumula tickets e não transmite credenciais reutilizáveis. A proposta antiga em `supabase/planned/polar_schedule_one_time_credentials.sql` não foi aplicada e está explicitamente supersedida.
 
 Permissões mínimas, expiração, consumo único e config desabilitada foram testados em transação revertida. Chamadas HTTP controladas provaram payload inválido 400 e replay posterior 401. A execução real cron → HTTP → Polar → banco concluiu antes da inspeção do app, sem duplicação canônica; execuções de validação próximas foram limitadas pelo throttle. A frequência temporária foi removida: job ativo em `17 * * * *`, config habilitada e status de intervalo 60 minutos.
 
 Handlers continuam scheduler v1 e rota do proprietário v17 com JWT obrigatório. A interface `.44` já mostra a atualização horária no servidor e a conclusão automática real. A ponte paga, seus registros, treinos e exames existentes foram preservados; nenhuma meta ou origem de água foi inventada.
 
-A auditoria localizou originais Fleury previamente fornecidos e verificou a presença dos exames recentes; não pedir reenvio do mesmo material ou reimportá-lo. Isso não declara validada a extração automática de novos formatos. Histórico original de água MFP, atribuição/recorrência automática da água, acesso API direto, validação física/signatura iOS e proteção de senha continuam separados. Não declarar o projeto inteiro sem pendências nem presumir aceite subjetivo. Evidência atual: `releases/POLAR_BACKGROUND_20261012.md`; fila: `EXECUTION_STATE.json`.
+A auditoria localizou originais Fleury previamente fornecidos e verificou a presença dos exames recentes; não pedir reenvio do mesmo material ou reimportá-lo. Isso não declara validada a extração automática de novos formatos. Histórico original de água MFP, atribuição/recorrência automática da água, acesso API direto e validação física/signatura iOS continuam separados. A proteção de senha está concluída, conforme evidência acima. Não declarar o projeto inteiro sem pendências nem presumir aceite subjetivo. Evidência atual: `releases/POLAR_BACKGROUND_20261012.md`; fila: `EXECUTION_STATE.json`.
 
 ## Checkpoint anterior — supersedido pela ativação acima
 

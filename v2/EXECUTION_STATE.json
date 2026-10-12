@@ -51,10 +51,11 @@
   "current_package": {
     "id": "PKG-INTEGRATION-CONTINUITY-001",
     "status": "done",
-    "goal": "Clarify source receipts and activate a bounded, source-preserving independent hourly Polar update.",
+    "goal": "Clarify source receipts, activate a bounded independent hourly Polar update and close the verified Auth security warning.",
     "task_ids": [
       "LTS-INTEGRATION-STATUS-001",
-      "LTS-POLAR-BACKGROUND-001"
+      "LTS-POLAR-BACKGROUND-001",
+      "LTS-AUTH-SECURITY-001"
     ],
     "completed_evidence": [
       "Source-status changes published and verified in .44.",
@@ -67,7 +68,9 @@
       "Column-scoped service grants and browser denial verified. Rolled-back first-use, replay, expiry and disabled-config checks passed.",
       "A genuine cron-triggered HTTP/provider/database completion succeeded before opening the app. Repeated validation ticks were throttled; final schedule is active at 17 * * * * with interval_minutes 60.",
       "A controlled live payload/replay sequence returned 400 then 401. Authenticated .44 shows the real scheduled-completion timestamp and hourly server mode.",
-      "Current source audit found no duplicate daily grain or negative supported measures. Existing paid bridge and latest laboratory records preserved; previously supplied Fleury originals were located without reimport."
+      "Current source audit found no duplicate daily grain or negative supported measures. Existing paid bridge and latest laboratory records preserved; previously supplied Fleury originals were located without reimport.",
+      "Normal PR 331 promoted 7b1da169f2aec698e4500267868ff604621200de as main 0405d5e457029a3de45ca93d3578ee4db1922fda. All six candidate and ten triggered post-merge workflows succeeded; exact authenticated public Home was inspected again.",
+      "Secure administrative sign-in completed without model-visible credentials. Prevent use of leaked passwords enabled and saved in the dedicated Health project; the native security advisor no longer reports auth_leaked_password_protection. Other Auth settings were not changed."
     ],
     "pending_evidence": []
   },
@@ -780,17 +783,20 @@
       "id": "LTS-AUTH-SECURITY-001",
       "area": "security",
       "priority": "P1",
-      "status": "blocked_user",
-      "owner": "user",
+      "status": "done",
+      "owner": "Codex",
       "summary": "Enable leaked-password protection in the Supabase Auth settings.",
       "acceptance": [
         "The Supabase security advisor no longer reports leaked-password protection as disabled."
       ],
       "evidence": [
-        "Supabase security advisor"
+        "Supabase security advisor",
+        "2026-10-12: user-selected secure administrative sign-in completed; the existing Health project Email provider setting Prevent use of leaked passwords was enabled and saved. No password, token or other sign-in secret was returned to the agent.",
+        "Native post-save security advisor at 2026-10-12T22:32:30Z no longer reports auth_leaked_password_protection. Only the four intentional backend-only RLS/no-policy informational findings remain.",
+        "v2/releases/POLAR_BACKGROUND_20261012.md"
       ],
-      "next_action": "Enable leaked-password protection in the Supabase Auth dashboard, then rerun the security advisor.",
-      "blocker": "The connected project tools do not expose this Auth dashboard setting."
+      "next_action": "Preserve the enabled protection and rerun the native security advisor after relevant security changes.",
+      "blocker": null
     },
     {
       "id": "LTS-TRAINING-DEPTH-001",
