@@ -1,6 +1,6 @@
 # Evolution product — 2026-10-07
 
-Candidate build: `evolution-product-20261007.42`. Status: implementation complete; candidate and exact-public interface verification pending.
+Published build: `evolution-product-20261012.43`. Status: technically complete and verified on 2026-10-12. Implementation began on 2026-10-07; normal PRs #324 and #325 promoted the changes. Runtime commit: `29a37577c3ec4798df3a147c248dbec4707c8314`.
 
 The owner's latest instruction supersedes the coverage-first Home and nutrition hierarchy. The opening answers what changed, using compatible body measurements, matching-repetition working loads, actual nutrient values, source-specific sleep, a selected laboratory marker and the latest received water total. The same light executive hierarchy is used on desktop and phones. Coverage and ingestion uncertainty remain in diagnostics.
 
@@ -12,6 +12,10 @@ Source selection defaults to the most recently observed source, with explicit le
 
 Verification performed locally: source syntax; reports, evidence insights, integrated review, home hierarchy, dated targets, history boundaries, privacy, security contracts, source context and backup resilience. Database migration applied; owner access and another-user isolation tested in a rolled-back transaction; anonymous read denied; no goal or probe remains seeded.
 
-Release gates: candidate CI, synthetic desktop/phone interface inspection, normal merge/deploy, exact-public authenticated inspection and real-data E2E. These must be recorded before marking the package technically complete. Owner subjective acceptance remains separate.
+Release evidence: all six exact final candidate gates passed for `7d510ebcef01608252c923c1fcd207619568ee8e`; Functional Depth `38290230660`. Synthetic artifact `11765770385` had its SHA-256 verified (`1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199`) and desktop/phone/reduced/small-viewport captures were inspected. Source choice, dated-goal save/reload, historical dates, private export and unavailable states passed.
 
-The two received travel workouts are already persisted with source limitations; this package does not reimport them. Original MyFitnessPal water history and automatic recurrence after the initial manual export remain independently unresolved. Preserve paid bridges, recording routine, keys, authentication and private originals.
+All ten post-merge workflows passed: deploy `38290570232`, real authenticated E2E `38290570154`, Functional Depth `38290570138`, Pages `38290614186` and Homologation `38290614225`, plus timeline, nutrition, recovery, Auto Export and root smoke. The initial .42 real-data run revealed an obsolete coverage-card assertion; .43 checks the new outcome view with independently recomputed closed-date means and suppression of unsupported water comparisons. Recorded-load wording is neutral for increases and decreases, and today's diary is visibly in progress.
+
+The exact .43 authenticated public desktop was manually inspected: Home values, dated/source-bound comparisons, legacy/current source selection, blank goal fields, exact-day protocol context, travel session detail, nutrition diary and consultation preview. Existing authenticated access is confirmed; the intermediate credential request timeout was not treated as a failed or successful sign-in until fresh visible evidence was obtained. No test goal, private capture or health observation was committed. Responsive CI review is not a physical-device owner acceptance. Owner subjective acceptance remains separate.
+
+The two received travel workouts and later recorded protocol events are persisted and readable with source limitations; this package does not reimport them. Further genuine water observations are now visible beyond the initial test. Multiple observed dates do not by themselves prove manual-versus-automatic iOS execution or a guaranteed cadence. Original MyFitnessPal water history and attributable automatic recurrence remain independently tracked. Preserve paid bridges, recording routine, keys, authentication and private originals.

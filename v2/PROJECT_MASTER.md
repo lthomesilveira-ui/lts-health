@@ -1,6 +1,10 @@
-# Correção de produto em execução — 07/10/2026
+# Produto publicado e verificado — 12/10/2026
 
-Pacote `PKG-EVOLUTION-PRODUCT-001`, candidato `evolution-product-20261007.42`. O feedback atual reabre a aceitação: contagens/cobertura não entregam valor. Implementação muda a abertura, alimentação e análise para consumo, evolução, comparação compatível, metas datadas e resumo para consulta, em uma experiência executiva clara no celular e desktop. Testes locais e isolamento de metas passaram; CI, inspeção visual e publicação ainda estão pendentes. Não tratar o candidato como publicado ou homologado. Os dois treinos recebidos já estão persistidos; não duplicar a importação. Histórico original de água e recorrência automática continuam pendências independentes. Ver `releases/EVOLUTION_PRODUCT_20261007.md` e `EXECUTION_STATE.json`. Os marcos abaixo são históricos.
+Pacote `PKG-EVOLUTION-PRODUCT-001` concluído tecnicamente. Build `evolution-product-20261012.43` publicado pelos PRs normais #324/#325, commit de execução `29a37577c3ec4798df3a147c248dbec4707c8314`. Os seis gates do candidato final e os dez workflows pós-publicação passaram, incluindo E2E autenticado `38290570154` e deploy `38290570232`.
+
+Abertura orientada a valores e evolução; alimentação com diário, macros e metas datadas; comparações por origem; contexto de protocolos; resumo privado para consulta. A versão pública exata foi inspecionada em sessão autenticada, incluindo a qualificação do dia em andamento e das mudanças de carga. A captura sintética final `11765770385` foi conferida com seu digest; testes responsivos e inspeção manual desktop são evidências distintas. Aceite subjetivo do proprietário não é presumido.
+
+Os dois treinos recebidos e os eventos mais recentes permanecem preservados. Há novos volumes reais de água recebidos depois do primeiro teste, sem transformar quantidade de registros em resultado de saúde. Histórico original do MyFitnessPal e comprovação atribuível da recorrência automática são pendências independentes; preservar a ponte paga, as configurações, a rotina de registro e as credenciais. Não repetir autenticação já concluída. Estado vigente: `EXECUTION_STATE.json`; detalhes: `releases/EVOLUTION_PRODUCT_20261007.md`. Os marcos abaixo são históricos.
 
 # Cockpit reading published and verified — 2026-10-06
 

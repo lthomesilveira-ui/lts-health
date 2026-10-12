@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-07",
+  "updated_on": "2026-10-12",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,37 +50,39 @@
   },
   "current_package": {
     "id": "PKG-EVOLUTION-PRODUCT-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Replace record coverage with useful outcome evidence, dated personal goals, nutrition diary and consultation narrative across desktop/mobile.",
     "task_ids": [
       "LTS-EVOLUTION-PRODUCT-001"
     ],
     "completed_evidence": [
       "Core implementation and local calculation/security/privacy contracts passed.",
-      "Owner-only dated-goal migration applied and isolation verified with rolled-back probes; no goal default seeded."
+      "Owner-only dated-goal migration applied and isolation verified with rolled-back probes; no goal default seeded.",
+      "Normal PRs 324 and 325 published evolution-product-20261012.43; runtime main commit 29a37577c3ec4798df3a147c248dbec4707c8314.",
+      "All six exact final candidate checks passed for 7d510ebcef01608252c923c1fcd207619568ee8e; Functional Depth 38290230660.",
+      "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
+      "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
+      "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review."
     ],
-    "pending_evidence": [
-      "Candidate CI and responsive synthetic visual inspection.",
-      "Normal merge, deployed exact build and authenticated real-data verification."
-    ]
+    "pending_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "product-clarity-20261006.41",
-    "main_commit": "ffc8681e5d361fcc52c63b1021f681934d266a60",
-    "published_on": "2026-10-06",
+    "build_id": "evolution-product-20261012.43",
+    "main_commit": "29a37577c3ec4798df3a147c248dbec4707c8314",
+    "published_on": "2026-10-12",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
     "evidence": [
-      "All six exact final candidate checks passed for 843339c386f89e5d45fce2c59763c040e1554f07; Functional Depth 37474975840.",
-      "Final synthetic artifact 11418332772 digest verified and inspected at 1536x864, 390x844, 393x650 and 320x740; complete desktop footer, original mobile priority and unavailable states verified.",
-      "Normal PR 322 published product-clarity-20261006.41 at ffc8681e5d361fcc52c63b1021f681934d266a60.",
-      "All ten product post-merge workflows passed, including deploy 37475661838, Functional Depth 37475661839, real authenticated E2E 37475661660, Pages 37475726203 and Homologation 37475726803.",
-      "Exact authenticated public .41 manually inspected in the recovered Cloud Browser: five summaries/six modules/full footer, truthful single/changed-device explanations, observed session-count reading, source loading labels, shared period, all three report modes and direct water workspace. Live desktop inspection and responsive CI captures are distinct; owner acceptance not inferred.",
-      "v2/releases/COCKPIT_READING_20261006.md"
+      "Normal PRs 324 and 325 published evolution-product-20261012.43; runtime main commit 29a37577c3ec4798df3a147c248dbec4707c8314.",
+      "All six exact final candidate checks passed for 7d510ebcef01608252c923c1fcd207619568ee8e; Functional Depth 38290230660.",
+      "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
+      "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
+      "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review.",
+      "v2/releases/EVOLUTION_PRODUCT_20261007.md"
     ],
-    "acceptance_note": "Source-backed reading and truthful unavailable/source-loading states are technically delivered. Responsive synthetic captures, all ten product post-merge gates and exact live authenticated desktop were inspected. Owner subjective UX and physical-device acceptance are not presumed. Incoming workouts have not been received or imported; automatic water recurrence and original authenticated MFP history remain separate.",
-    "verified_on": "2026-10-06"
+    "acceptance_note": "The outcome-oriented product package is technically delivered. Owner subjective UX and physical-device acceptance are separate. Both travel workouts and later recorded protocol events remain preserved. Later water observations are visible; original authenticated MFP history and independently attributable automatic recurrence remain distinct.",
+    "verified_on": "2026-10-12"
   },
   "tasks": [
     {
@@ -1250,7 +1252,8 @@
       ],
       "evidence": [
         "The first actual bridge water delivery was independently verified; it followed an owner-triggered export.",
-        "Phone automations and permissions are configured. That first receipt alone does not establish automatic recurrence."
+        "Phone automations and permissions are configured. That first receipt alone does not establish automatic recurrence.",
+        "Read-only restart and exact public inspection on 2026-10-12 confirm further genuine water observations beyond the first manual receipt. Multiple dates alone do not distinguish manual export from iOS automatic execution; do not guarantee cadence."
       ],
       "next_action": "Read the next genuine source/receiver update when it exists and distinguish it from manually triggered export. Preserve keys, selections and prior records.",
       "blocker": "A later independently identifiable automatic source update has not yet been observed; iOS background execution is best effort."
@@ -1286,7 +1289,7 @@
       "id": "LTS-EVOLUTION-PRODUCT-001",
       "area": "product",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Deliver outcome-oriented Home, source-aware consumption and dated targets, meaningful integrated overview and consultation summary.",
       "acceptance": [
@@ -1299,9 +1302,14 @@
       "evidence": [
         "releases/EVOLUTION_PRODUCT_20261007.md",
         "17 local model, privacy, security, syntax and source-history checks passed.",
-        "Database owner access and other-user/anonymous isolation verified; transient probe rolled back."
+        "Database owner access and other-user/anonymous isolation verified; transient probe rolled back.",
+        "Normal PRs 324 and 325 published evolution-product-20261012.43; runtime main commit 29a37577c3ec4798df3a147c248dbec4707c8314.",
+        "All six exact final candidate checks passed for 7d510ebcef01608252c923c1fcd207619568ee8e; Functional Depth 38290230660.",
+        "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
+        "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
+        "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review."
       ],
-      "next_action": "Verify candidate UI, publish through normal PR and inspect the real authenticated deployed app.",
+      "next_action": "Preserve the verified release; reopen on new owner feedback or a reproducible defect. Track source-history and automation limits separately.",
       "blocker": null
     }
   ],
