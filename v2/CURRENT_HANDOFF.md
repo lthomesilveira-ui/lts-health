@@ -1,3 +1,7 @@
+# Correção de produto em execução — 07/10/2026
+
+Pacote `PKG-EVOLUTION-PRODUCT-001`, candidato `evolution-product-20261007.42`. O feedback atual reabre a aceitação: contagens/cobertura não entregam valor. Implementação muda a abertura, alimentação e análise para consumo, evolução, comparação compatível, metas datadas e resumo para consulta, em uma experiência executiva clara no celular e desktop. Testes locais e isolamento de metas passaram; CI, inspeção visual e publicação ainda estão pendentes. Não tratar o candidato como publicado ou homologado. Os dois treinos recebidos já estão persistidos; não duplicar a importação. Histórico original de água e recorrência automática continuam pendências independentes. Ver `releases/EVOLUTION_PRODUCT_20261007.md` e `EXECUTION_STATE.json`. Os marcos abaixo são históricos.
+
 # Cockpit reading published and verified — 2026-10-06
 
 Build `product-clarity-20261006.41` is published by normal PR #322 at `ffc8681e5d361fcc52c63b1021f681934d266a60`. All six exact final candidate checks and all ten product post-merge workflows passed, including deploy `37475661838`, real authenticated E2E `37475661660` and Functional Depth `37475661839`. Final artifact `11418332772` had its digest verified and was manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740. The complete desktop footer fits; approved mobile Today/week priority is preserved.

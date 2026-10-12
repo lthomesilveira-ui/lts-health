@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-06",
+  "updated_on": "2026-10-07",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/COCKPIT_READING_20261006.md"
+    "latest_release": "v2/releases/EVOLUTION_PRODUCT_20261007.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,26 +49,20 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-COCKPIT-READING-001",
-    "status": "done",
-    "goal": "Make Home explain observed changes and source limitations without repeating counts or equating missing data with failed reads.",
+    "id": "PKG-EVOLUTION-PRODUCT-001",
+    "status": "in_progress",
+    "goal": "Replace record coverage with useful outcome evidence, dated personal goals, nutrition diary and consultation narrative across desktop/mobile.",
     "task_ids": [
-      "LTS-COCKPIT-READING-001"
+      "LTS-EVOLUTION-PRODUCT-001"
     ],
     "completed_evidence": [
-      "Owner authorized continued autonomous improvements without present homologation; two incoming workouts have not been received or imported.",
-      "Independent body-reason, actual-change, source/day and fail-closed model tests passed locally.",
-      "Existing reports, integrated-review and evidence-insights calculation suites, public-audit and privacy guard passed locally.",
-      "All six exact final candidate checks passed for 843339c386f89e5d45fce2c59763c040e1554f07; Functional Depth 37474975840.",
-      "Final synthetic artifact 11418332772 digest verified and inspected at 1536x864, 390x844, 393x650 and 320x740; complete desktop footer, original mobile priority and unavailable states verified.",
-      "Normal PR 322 published product-clarity-20261006.41 at ffc8681e5d361fcc52c63b1021f681934d266a60.",
-      "All ten product post-merge workflows passed, including deploy 37475661838, Functional Depth 37475661839, real authenticated E2E 37475661660, Pages 37475726203 and Homologation 37475726803.",
-      "Exact authenticated public .41 manually inspected in the recovered Cloud Browser: five summaries/six modules/full footer, truthful single/changed-device explanations, observed session-count reading, source loading labels, shared period, all three report modes and direct water workspace. Live desktop inspection and responsive CI captures are distinct; owner acceptance not inferred.",
-      "v2/releases/COCKPIT_READING_20261006.md"
+      "Core implementation and local calculation/security/privacy contracts passed.",
+      "Owner-only dated-goal migration applied and isolation verified with rolled-back probes; no goal default seeded."
     ],
-    "release_state": "published_41; candidate_responsive_all_postmerge_real_data_and_exact_public_manual_desktop_verified",
-    "candidate_build": "product-clarity-20261006.41",
-    "public_build": "product-clarity-20261006.41"
+    "pending_evidence": [
+      "Candidate CI and responsive synthetic visual inspection.",
+      "Normal merge, deployed exact build and authenticated real-data verification."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1287,6 +1281,28 @@
       ],
       "next_action": "Preserve the verified published package and existing histories. Reopen only on new owner feedback or a reproducible defect; track automatic water recurrence and original MFP history independently.",
       "blocker": null
+    },
+    {
+      "id": "LTS-EVOLUTION-PRODUCT-001",
+      "area": "product",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Deliver outcome-oriented Home, source-aware consumption and dated targets, meaningful integrated overview and consultation summary.",
+      "acceptance": [
+        "No hydration coverage or raw record counts promoted as health outcomes.",
+        "Same light executive hierarchy at desktop and phone sizes, usable navigation and no horizontal overflow.",
+        "Goals persist under owner RLS and pair only with effective dates; no guessed personal target.",
+        "Source choice, historical diary, existing workouts/body/labs/protocols and private summary remain usable.",
+        "Candidate checks, normal deployment and exact-public authenticated inspection completed."
+      ],
+      "evidence": [
+        "releases/EVOLUTION_PRODUCT_20261007.md",
+        "17 local model, privacy, security, syntax and source-history checks passed.",
+        "Database owner access and other-user/anonymous isolation verified; transient probe rolled back."
+      ],
+      "next_action": "Verify candidate UI, publish through normal PR and inspect the real authenticated deployed app.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -1517,6 +1533,28 @@
         "Physical iPhone activation and first real nutrition receipt were verified on 2026-10-04; the older activation-pending wording is superseded."
       ],
       "release_state": "published_and_verified_build_36; physical_iPhone_activation_and_real_nutrition_receipt_verified; water_remains_pending"
+    },
+    {
+      "id": "PKG-COCKPIT-READING-001",
+      "status": "done",
+      "goal": "Make Home explain observed changes and source limitations without repeating counts or equating missing data with failed reads.",
+      "task_ids": [
+        "LTS-COCKPIT-READING-001"
+      ],
+      "completed_evidence": [
+        "Owner authorized continued autonomous improvements without present homologation; two incoming workouts have not been received or imported.",
+        "Independent body-reason, actual-change, source/day and fail-closed model tests passed locally.",
+        "Existing reports, integrated-review and evidence-insights calculation suites, public-audit and privacy guard passed locally.",
+        "All six exact final candidate checks passed for 843339c386f89e5d45fce2c59763c040e1554f07; Functional Depth 37474975840.",
+        "Final synthetic artifact 11418332772 digest verified and inspected at 1536x864, 390x844, 393x650 and 320x740; complete desktop footer, original mobile priority and unavailable states verified.",
+        "Normal PR 322 published product-clarity-20261006.41 at ffc8681e5d361fcc52c63b1021f681934d266a60.",
+        "All ten product post-merge workflows passed, including deploy 37475661838, Functional Depth 37475661839, real authenticated E2E 37475661660, Pages 37475726203 and Homologation 37475726803.",
+        "Exact authenticated public .41 manually inspected in the recovered Cloud Browser: five summaries/six modules/full footer, truthful single/changed-device explanations, observed session-count reading, source loading labels, shared period, all three report modes and direct water workspace. Live desktop inspection and responsive CI captures are distinct; owner acceptance not inferred.",
+        "v2/releases/COCKPIT_READING_20261006.md"
+      ],
+      "release_state": "published_41; candidate_responsive_all_postmerge_real_data_and_exact_public_manual_desktop_verified",
+      "candidate_build": "product-clarity-20261006.41",
+      "public_build": "product-clarity-20261006.41"
     }
   ],
   "latest_published_release": {

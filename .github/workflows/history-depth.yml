@@ -34,25 +34,32 @@ jobs:
           node v2/evidence-insights-test.mjs
           node v2/integrated-review-test.mjs
           node v2/home-cockpit-test.mjs
+          node v2/evolution-product-test.mjs
           node v2/polar-contract-test.mjs
           node v2/polar-provider-test.mjs
           node v2/history-depth-contract.mjs
           node v2/continuity-contract-smoke.mjs
           node v2/public-payload-guard.mjs
       - name: Install browser runtime
+        id: browser-runtime
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Start application
+        id: app-server
         run: |
           python3 -m http.server 4173 >/tmp/lts-depth-server.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/v2/ >/dev/null && break; sleep 1; done
-      - name: Exercise production renderers with synthetic service at desktop and mobile sizes
-        run: |
-          node v2/history-depth-browser.mjs
-          node v2/evidence-insights-browser.mjs
-          node v2/integrated-review-browser.mjs
+      - name: Exercise history renderers at desktop and mobile sizes
+        if: always() && steps.app-server.outcome == 'success'
+        run: node v2/history-depth-browser.mjs
+      - name: Exercise source-specific evidence comparisons
+        if: always() && steps.app-server.outcome == 'success'
+        run: node v2/evidence-insights-browser.mjs
+      - name: Exercise integrated review, goals and export
+        if: always() && steps.app-server.outcome == 'success'
+        run: node v2/integrated-review-browser.mjs
       - name: Upload synthetic UI inspection evidence
         if: always()
         uses: actions/upload-artifact@v4

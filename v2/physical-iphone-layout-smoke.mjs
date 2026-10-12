@@ -41,11 +41,11 @@ for(const config of [
   await page.waitForSelector('.ltsHomeReference');
   const home=await page.evaluate(()=>{
     const rect=selector=>document.querySelector(selector)?.getBoundingClientRect();
-    const app=rect('#app'),host=rect('#screenHost'),nav=rect('#mobileNav'),header=rect('.ltsRefHeader'),progress=rect('.ltsRefProgress');
+    const app=rect('#app'),host=rect('#screenHost'),nav=rect('#mobileNav'),header=rect('.ltsCockpitWindow'),cards=rect('.ltsExecutiveCards');
     const hostStyle=getComputedStyle(document.querySelector('#screenHost'));
     return{
       appHeight:app?.height,hostTop:host?.top,hostBottom:host?.bottom,navTop:nav?.top,
-      headerTop:header?.top,progressTop:progress?.top,
+      headerTop:header?.top,cardsTop:cards?.top,
       hostPaddingBottom:parseFloat(hostStyle.paddingBottom),
       hostMinHeight:hostStyle.minHeight,
       overflow:document.documentElement.scrollWidth-window.innerWidth
@@ -56,7 +56,7 @@ for(const config of [
   if(home.hostBottom>home.navTop+1)throw new Error(`${config.label}/home: content overlaps navigation`);
   if(home.hostPaddingBottom>30)throw new Error(`${config.label}/home: duplicate bottom reserve ${home.hostPaddingBottom}px`);
   if(home.overflow>3)throw new Error(`${config.label}/home: horizontal overflow ${home.overflow}px`);
-  if(config.label==='iphone-safari-sheet'&&home.progressTop>650)throw new Error(`${config.label}/home: weekly progress starts below the reduced first viewport at ${Math.round(home.progressTop)}px`);
+  if(home.cardsTop>500)throw new Error(`${config.label}/home: executive values fall below the first viewport at ${Math.round(home.cardsTop)}px`);
   await page.screenshot({path:`${evidenceDir}/${config.label}-home-physical-remediation.png`});
 
   await productRoute(page,'treinos','./src/training-reference-v2.js','renderProductTraining');

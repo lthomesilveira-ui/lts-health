@@ -1,5 +1,8 @@
 # LTS Health — visão canônica de produto
 
+Atualização de autoridade — 07/10/2026: o proprietário rejeitou a prioridade de contagens e cobertura. A experiência ativa usa hierarquia executiva clara em desktop e celular, começa por mudanças e valores relevantes, mantém datas e origens visíveis e guarda cobertura no diagnóstico. Nutrição começa por consumo, diário e metas vigentes. Metas são informadas pelo usuário, têm data de início e não são aplicadas retroativamente. A janela recente termina no dia local atual; registros antigos mantêm a própria data. Estas regras substituem prioridades anteriores de Today/week e calendário de cobertura.
+
+
 **Status:** regra permanente do projeto, aprovada em 04/09/2026.
 
 ## Definição do produto

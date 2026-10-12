@@ -19,40 +19,27 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="product-clarity-20261006\.41"/);
+assert.match(index,/name="lts-build" content="evolution-product-20261007\.42"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=product-clarity-20261006.41`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=evolution-product-20261007.42`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=product-clarity-20261006.41'),'physical iPhone remediation is not versioned with the current build');
-assert.ok(index.includes('./integrated-review.css?v=product-clarity-20261006.41'),'integrated review is not versioned with the current build');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=evolution-product-20261007.42'),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes('./integrated-review.css?v=evolution-product-20261007.42'),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }
 assert.ok(!index.includes('src="./src/training-reference-runtime.js'),'training-reference-runtime.js is still active in the public document');
 
-assert.match(main,/fixtureMode\?legacyScreenRenderers:\{\.\.\.legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,hoje:renderProductHomeReference\}/);
+assert.match(main,/fixtureMode\?legacyScreenRenderers:\{\.\.\.legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference\}/);
 assert.doesNotMatch(main,/state\.route==='nutricao'\|\|state\.route==='hoje'/);
 assert.match(runtime,/from '\.\/training-reference-v2\.js'/);
 assert.doesNotMatch(runtime,/from '\.\/product-layout-v2\.js'/);
 assert.match(runtime,/treinos:'\.ltsTrainingReference'/);
 
-assert.match(home,/Disciplina hoje, evolução sempre\./);
-assert.match(home,/metric\('Massa magra'/);
-assert.match(home,/class="ltsRefCoreGrid">\$\{todayCard\}\$\{progressCard\}/);
-assert.match(home,/renderHomeCockpit\(cockpit\)/);
-assert.match(home,/data-disclosure="home-history"/);
-assert.match(home,/renderHealthContext\(context,state\.domainStatus,renderHomeDaySignals\(review,context\.selectedDate\)\)/);
-assert.match(home,/waterAvailable\?hydrationModel\(state\.data\)/);
-assert.match(home,/uniqueDays\(hydration\.rows,'date'/);
-assert.match(home,/EVOLUÇÃO LONGITUDINAL/);
-assert.match(home,/Saúde em contexto/);
-assert.match(home,/Tratamentos & contexto/);
-assert.match(home,/Acontecimentos recentes/);
-assert.doesNotMatch(home,/integrityStyle|lts-home-information-integrity/);
-assert.match(home,/weight-fatMass/);
-assert.match(homeCss,/\.ltsRefCoreGrid\s*\{/);
-assert.match(homeCss,/grid-template-areas:\s*"today trend"\s*"progress trend"/);
-assert.match(homeCss,/@media \(max-width: 840px\)[\s\S]*\.ltsRefDomainGrid\s*\{[\s\S]*display:\s*flex;[\s\S]*overflow-x:\s*auto;/);
+const evolutionCss=read('./evolution-product.css'),cockpit=read('./src/home-cockpit.js');
+assert.match(home,/renderHomeCockpit\(c\)/);assert.match(home,/data-disclosure="home-history"/);assert.match(home,/ltsEvolutionHome/);
+assert.match(cockpit,/Água consumida/);assert.match(cockpit,/evolutionModel/);assert.doesNotMatch(home,/ltsRefRing|ltsRefProgress/);
+assert.match(evolutionCss,/min-height:44px/);assert.match(evolutionCss,/outline:3px/);assert.match(evolutionCss,/ltsDesktopCockpit\{display:block!important/);
 assert.match(dataLayer,/async function loadRows\(key\)[\s\S]*attempt<2[\s\S]*await wait\(180\)/);
 
 assert.match(training,/ltsRefTrainTabs ltsRefTrainPrimaryTabs/);
@@ -82,7 +69,7 @@ assert.match(internalCss,/#screenHost h1\[tabindex="-1"\]:focus[\s\S]*outline:\s
 assert.match(physicalIphoneCss,/body\[data-product-route="hoje"\] \.app\s*\{[^}]*grid-template-rows:\s*minmax\(0, 1fr\) 60px !important;/s);
 assert.match(physicalIphoneCss,/body\[data-product-route="hoje"\] \.screenHost\s*\{[^}]*grid-row:\s*1 !important;[^}]*min-height:\s*0 !important;/s);
 assert.match(physicalIphoneCss,/@media \(max-width: 840px\) and \(max-height: 700px\)/);
-assert.match(realAuth,/locator\('\.nutritionDays'\)\.scrollIntoViewIfNeeded\(\)/);
+assert.match(realAuth,/locator\('\.ltsNutritionDiary'\)\.scrollIntoViewIfNeeded\(\)/);
 assert.doesNotMatch(realAuth,/locator\('\.nutritionMonth'\)(?:\.first\(\))?\.scrollIntoViewIfNeeded\(\)/);
 assert.match(realAuth,/document\.body\.dataset\.productRoute===value/);
 assert.match(realAuth,/mobileButtons\.length===5/);

@@ -6,7 +6,7 @@ const dataLayer=fs.readFileSync(new URL('./src/data-layer.js',import.meta.url),'
 const evidenceModule=fs.readFileSync(new URL('./src/workout-evidence.js',import.meta.url),'utf8');
 const sourceStatusModule=fs.readFileSync(new URL('./src/source-status.js',import.meta.url),'utf8');
 const trainingReference=fs.readFileSync(new URL('./src/training-reference-v2.js',import.meta.url),'utf8');
-const homeReference=fs.readFileSync(new URL('./src/home-reference.js',import.meta.url),'utf8');
+const homeReference=fs.readFileSync(new URL('./src/home-cockpit.js',import.meta.url),'utf8');
 
 if(!migration.includes('health_workout_source_evidence'))throw new Error('evidence table migration missing');
 if(!migration.includes("source_family,\n  source_name"))throw new Error('structured source identity missing');
@@ -17,7 +17,8 @@ if(/health_workout_source_evidence[^\n]*source_payload/.test(dataLayer))throw ne
 if(!dataLayer.includes('decorateWorkoutProvenance'))throw new Error('workout provenance decoration missing');
 if(!evidenceModule.includes("evidence_status)==='confirmed'"))throw new Error('only confirmed evidence may label telemetry source');
 if(!trainingReference.includes("'Energia estimada'")||!trainingReference.includes("'FC média · trecho'"))throw new Error('partial telemetry labels missing from Training');
-if(!homeReference.includes("' estimadas'"))throw new Error('estimated workout energy is not qualified on Home');
+const homeTraining=homeReference.slice(homeReference.indexOf('function trainingPanel'),homeReference.indexOf('export function nutritionPanel'));
+if(homeTraining.includes('calories_kcal')&&!homeTraining.includes('estimada'))throw new Error('Home must qualify any displayed workout energy as estimated');
 if(sourceStatusModule.includes("contains(workouts,['source','source_file'],'polar')"))throw new Error('Polar source status still depends on workout display/source text');
 if(!sourceStatusModule.includes("confirmedWorkoutEvidence(workoutEvidence,'polar_flow')"))throw new Error('Polar source status is not driven by structured workout evidence');
 

@@ -1,9 +1,8 @@
 import {day,num,norm,fmtDate,fmtNum} from './core.js';
 import {validDay} from './history-tools.js';
 import {hydrationModel} from './hydration.js';
-import {localHealthDay,bodySourceLabel} from './health-context.js';
+import {localHealthDay,bodySourceLabel,medicationContext} from './health-context.js';
 import {recoveryReport} from './reports-model.js';
-import {nutritionTrainingContrast} from './evidence-insights.js';
 import {labResultText} from './labs-layout-v2.js';
 
 const ready=(status,key)=>status?.[key]==='ready';
@@ -23,7 +22,11 @@ function sourcesOf(rows,today){
   return [...groups.values()].map(s=>({...s,rows:order(s.rows),closedDays:s.rows.filter(r=>r.date<today).length}))
     .sort((a,b)=>b.closedDays-a.closedDays||b.rows.length-a.rows.length||a.key.localeCompare(b.key));
 }
-function selectSource(sources,requested){return sources.find(s=>s.key===requested)||sources[0]||null;}
+function selectSource(sources,requested){
+  // A large legacy import must not hide a newer connected source. Preserve an
+  // explicit selection; otherwise start with the most recently observed source.
+  return sources.find(s=>s.key===requested)||[...sources].sort((a,b)=>(b.rows.at(-1)?.date||'').localeCompare(a.rows.at(-1)?.date||'')||b.closedDays-a.closedDays)[0]||null;
+}
 
 // Date joins are exact. Missing days are not zeroes; neither source interpolation
 // nor device pooling is allowed. The current calendar day is context, not a cohort.
@@ -41,8 +44,7 @@ export function integratedReview(data={},status={},bounds={},ui={},today=localHe
     if(Object.values(values).some(v=>v!=null))food.push({date,source:String(row.source).trim(),...values});
   }
   const nutritionSources=sourcesOf(food,today);
-  const nutritionContrast=nutritionTrainingContrast(data,status,bounds,ui.reportNutritionSource,today);
-  const nutritionSource=selectSource(nutritionSources,ui.reportNutritionSource||nutritionContrast.selected?.key);
+  const nutritionSource=selectSource(nutritionSources,ui.reportNutritionSource);
   const nutritionRows=nutritionSource?.rows||[];
   const waterAvailable=ready(status,'nutrition')&&ready(status,'sourceMetrics');
   const hydration=waterAvailable?hydrationModel(data):{rows:[],conflicts:[]};
@@ -81,18 +83,18 @@ export function integratedReview(data={},status={},bounds={},ui={},today=localHe
     contrasts:{water:contrast(waterRows,waterAvailable&&ready(status,'workouts')),sleep:contrast(sleepRows,ready(status,'sourceMetrics')&&ready(status,'workouts'))}};
 }
 
-export function consultationLines(review,reports){
+export function consultationLines(review,reports,evolution=null){
   const v=(value,unit='',digits=1)=>num(value)==null?'Sem dado':`${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
   const coverage=(label,domain)=>`${label}: ${domain.closedRows.length} dias encerrados com registro · ${domain.source?.label||'sem origem disponível'}`;
   const lines=['LTS Health · resumo para consulta',`Gerado em ${fmtDate(review.today)} · janela ${fmtDate(review.bounds.start)} a ${fmtDate(review.bounds.end)}`,
     'Resumo pessoal descritivo. Não é laudo, diagnóstico ou recomendação de tratamento. Nenhum envio a terceiros é feito pelo aplicativo.',
-    '', 'COBERTURA E ROTINA',review.training.available?`Treinos confirmados: ${review.training.rows.length} sessões em ${review.training.days} dias; ${review.training.closedDays} dias anteriores a hoje.`:'Treinos: leitura indisponível.',
+    '', 'EVOLUÇÃO OBSERVADA',...(evolution?.findings.length?evolution.findings.map(f=>`${f.title}. ${f.text} ${f.detail}`):['Sem mudança comparável confirmada na janela escolhida. Valores e datas seguem abaixo.']),
+    '', 'ALIMENTAÇÃO, ÁGUA E SONO',
     review.nutrition.available?coverage('Alimentação',review.nutrition):'Alimentação: leitura indisponível.',
     `Energia média: ${v(review.nutrition.means.calories_kcal,'kcal',0)} · ${review.nutrition.counts.calories_kcal} dias com valor.`,
     `Proteína média: ${v(review.nutrition.means.protein_g,'g',0)} · ${review.nutrition.counts.protein_g} dias com valor.`,
-    review.water.available?`${coverage('Água',review.water)} · média ${v(review.water.mean,'mL',0)}.`:'Água: fontes não verificadas; valores ocultos.',
-    review.sleep.available?`${coverage('Sono',review.sleep)} · média ${v(review.sleep.mean,'h',1)}.`:'Sono: leitura indisponível.',
-    review.overlaps.foodWater==null?'Cruzamento de alimentação e água indisponível.':`Alimentação e água na mesma data: ${review.overlaps.foodWater} dias encerrados; ${review.overlaps.foodWaterTraining??'não verificado'} também com treino registrado.`,
+    review.water.available?`Água: último total ${v(review.water.rows.at(-1)?.value,'mL',0)} em ${fmtDate(review.water.rows.at(-1)?.date)} · ${review.water.source?.label||'sem origem'}.${review.water.closedRows.length>=5?` Média dos dias encerrados com valor: ${v(review.water.mean,'mL',0)}.`:' Histórico curto; sem média de período.'}`:'Água: fontes não verificadas; valores ocultos.',
+    review.sleep.available?`${coverage('Sono',review.sleep)} · ${review.sleep.closedRows.length>=5?`média ${v(review.sleep.mean,'h',1)}`:`último sono ${v(review.sleep.rows.at(-1)?.value,'h')} em ${fmtDate(review.sleep.rows.at(-1)?.date)}`}.`:'Sono: leitura indisponível.',
     '', 'CRUZAMENTOS DESCRITIVOS'];
   for(const[key,label,unit]of [['water','Água','mL'],['sleep','Sono','h']]){
     const c=review.contrasts[key];
@@ -100,10 +102,16 @@ export function consultationLines(review,reports){
   }
   const body=reports.body.latest;
   lines.push('', 'COMPOSIÇÃO E EXAMES',body?`Última medição na janela: ${fmtDate(body.measured_at)} · ${bodySourceLabel(body)} · peso ${v(body.weight_kg,'kg')} · gordura ${v(body.body_fat_pct,'%')}.`:reports.body.reason==='unavailable'?'Composição: leitura indisponível.':'Composição: sem medição inequívoca disponível nesta janela.');
-  if(body)lines.push(reports.body.available?`Diferença de peso entre medições compatíveis: ${v(reports.body.changes.weight_kg,'kg')}; anterior ${fmtDate(reports.body.previous?.measured_at)}.`:'Diferença corporal automática indisponível: confira origem, aparelho e datas nos detalhes.');
+  if(body)lines.push(`Músculo esquelético: ${v(body.skeletal_muscle_mass_kg,'kg')} · massa de gordura ${v(body.fat_mass_kg,'kg')}.`,reports.body.available?`Mudanças entre medições compatíveis: peso ${v(reports.body.changes.weight_kg,'kg')}; gordura ${v(reports.body.changes.fat_mass_kg,'kg')}; músculo ${v(reports.body.changes.skeletal_muscle_mass_kg,'kg')}; anterior ${fmtDate(reports.body.previous?.measured_at)}.`:'Diferença corporal automática indisponível: confira origem, aparelho e datas nos detalhes.');
   const comparisons=reports.labs.comparisons||[];
   lines.push(reports.labs.available?`${comparisons.length} marcadores presentes na janela; ${comparisons.filter(r=>r.comparable).length} com anterior comparável por origem, método e unidade.`:'Exames: leitura indisponível.');
   for(const row of comparisons.slice(0,4))if(row.current)lines.push(`${row.group.label}: ${labResultText(row.current)} · ${fmtDate(row.current.collection_date)} · ${row.current.laboratory||row.current.source||'origem não informada'} · ${row.current.method||'método não informado'}.`);
+  if(evolution){
+    lines.push('','METAS INFORMADAS');
+    for(const[key,label,unit]of [['calories_kcal','Energia','kcal'],['protein_g','Proteína','g']]){const g=evolution.nutritionTargets[key];lines.push(g.count?`${label}: consumo médio ${v(g.actual,unit,0)} versus meta média vigente ${v(g.target,unit,0)} nos mesmos ${g.count} dias.`:`${label}: sem meta informada para os dias observados.`);}
+    const w=evolution.latestSession;if(w)lines.push('','ÚLTIMA SESSÃO',`${fmtDate(w.workout_date)} · ${w.workout_type||'Treino'} · ${w.location||'local não informado'} · ${v(w.duration_minutes,'min')} · ${w.exerciseCount??'—'} exercícios · ${w.setCount??'—'} séries anotadas.`,w.notes||'');
+    lines.push('','PROTOCOLOS NO CONTEXTO',...(evolution.recentTreatments.length?evolution.recentTreatments.map(t=>`${fmtDate(t.event_date)} · ${t.medication} · ${medicationContext(t)} · ${t.notes||''}`):['Sem evento de aplicação na janela ou fonte indisponível.']));
+  }
   lines.push('', 'LIMITES E PERGUNTAS PARA A CONSULTA','Médias e cruzamentos excluem hoje; registros de hoje podem estar incompletos. Dias sem registro não significam zero, descanso confirmado ou diário completo.',
     'Sono usa a data fornecida pela origem: coincidir com o treino não identifica a noite anterior ou posterior. Polar e musculação não são somados.',
     'Diferenças entre grupos descrevem estes registros, sem provar causa, efeito ou adequação. O mínimo de 5 dias não é um teste de significância.',

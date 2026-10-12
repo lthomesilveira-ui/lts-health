@@ -46,22 +46,17 @@ const dangerous={...data,exercises:data.exercises.map(row=>({...row,exercise:'<s
 const html=renderEvidenceInsights(dangerous,status,bounds);assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/<script>unsafe/);
 assert.match(html,/data-report-exercise="e2"/);assert.match(html,/reportNutritionSource/);assert.match(html,/mínimo 5 dias por grupo/);
 assert.match(renderHomeEvidenceInsights(data,status,bounds),/O que os registros mostram/);
-// Reproduce the public all-history coverage defect with a known 40-day history.
+// The revised product must not promote coverage counts to user outcomes.
 const {state}=await import('./src/core.js');
 const {renderProductHomeReference}=await import('./src/home-reference.js');
-state.data={body:[],segmental:[],workouts:[],exercises:[],sets:[],nutrition:Array.from({length:40},(_,i)=>({nutrition_date:new Date(Date.UTC(2025,0,31-i)).toISOString().slice(0,10),source:'Synthetic food',calories_kcal:2000,protein_g:100,water_ml:1000})),labs:[],docs:[],metrics:[],sourceMetrics:[],treatments:[],regimens:[]};
-state.domainStatus={...status,body:'ready',segmental:'ready',labs:'ready',sourceMetrics:'ready',treatments:'ready'};
-state.errors={};
+state.data={body:[],workouts:[],exercises:[],sets:[],nutrition:Array.from({length:40},(_,i)=>({nutrition_date:new Date(Date.UTC(2025,0,31-i)).toISOString().slice(0,10),source:'Synthetic food',calories_kcal:2000,protein_g:100,water_ml:1000})),labs:[],sourceMetrics:[],treatments:[],goals:[]};
+state.domainStatus={...status,body:'ready',segmental:'ready',labs:'ready',sourceMetrics:'ready',treatments:'ready',goals:'ready'};
 const preserved=JSON.stringify(state.data);
-for(const [period,expected] of [['30','30 de 30 dias'],['90','40 de 90 dias'],['365','40 de 365 dias'],['all','40 dias registrados no histórico']]){
-  state.ui.homePeriod=period;
-  const home=renderProductHomeReference();
-  const panorama=home.slice(home.indexOf('<section class="ltsRefIntegrated">'));
-  assert.equal(panorama.split(expected).length-1,2,`${period}: food and water coverage use the selected calendar`);
-  if(period==='all')assert.doesNotMatch(panorama,/40 de 30 dias/,'historical coverage cannot use a 30-day denominator');
+for(const period of ['30','90','365','all']){
+ state.ui.homePeriod=period;const home=renderProductHomeReference();
+ assert.doesNotMatch(home,/ltsRefProgress|de 30 dias|de 90 dias|dias registrados no histórico/);
+ assert.match(home,/Água consumida/);assert.match(home,/Investigar um dia no histórico/);
 }
-state.data.nutrition=[];
-assert.match(renderProductHomeReference(),/0 dias registrados no histórico/,'empty history stays explicit without invented coverage');
-state.data.nutrition=JSON.parse(preserved).nutrition;
-assert.equal(JSON.stringify(state.data),preserved,'coverage labels never alter health records');
-console.log('Evidence insights: independent means/denominators, source separation, ambiguous and open days, working-set identity, matching reps, unknown units, failure boundaries, immutability and escaping passed.');
+state.data.nutrition=[];assert.match(renderProductHomeReference(),/Sem diário nesta janela/);
+state.data.nutrition=JSON.parse(preserved).nutrition;assert.equal(JSON.stringify(state.data),preserved);
+console.log('Evidence insights: independent means, origins, ambiguity, working sets, no coverage outcomes and nonmutation passed.');

@@ -54,11 +54,11 @@ if(!sourceMetricProjection)throw new Error('source metrics projection missing');
 if(sourceMetricProjection.includes('source_payload'))throw new Error('raw source_payload entered structured source metrics');
 if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source metrics use wildcard projection');
 if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens','polarSessions']"))throw new Error('Data route no longer owns all structured provenance/context domains');
-if(!dataLayer.includes("analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions']"))throw new Error('Insights no longer loads preserved source and protocol context');
+if(!dataLayer.includes("analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals']"))throw new Error('Insights no longer loads preserved source and protocol context');
 const polarProjection=dataLayer.match(/polarSessions:\(\)=>fetchAll\('health_polar_sessions','([^']+)'/)?.[1]||'';
 if(!polarProjection||/source_payload|user_id|tokens_encrypted/.test(polarProjection))throw new Error('Polar session projection exposed private connection/raw data');
 if(/health_polar_(connections|oauth_states)/.test(dataLayer+core))throw new Error('service-only credentials entered client table access');
-if(!dataLayer.includes("hoje:['nutrition','metrics','sourceMetrics','labs','uploads','treatments','regimens']"))throw new Error('Cockpit no longer loads protocol context on first open');
+if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','uploads','treatments','regimens','goals']"))throw new Error('Cockpit no longer loads protocol context on first open');
 if(!dataLayer.includes("tratamentos:['treatments','regimens']"))throw new Error('Protocol route no longer loads event and context records together');
 
 const backupBlock=dataLayer.match(/export async function buildStructuredBackup[\s\S]*?export async function downloadStructuredBackup/)?.[0]||'';

@@ -30,7 +30,7 @@ try{
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
   await page.locator('[data-home-period="all"]').click();
-  const primaryAxis=width>840?'.ltsCockpitPanel.body .ltsContextAxis':'.ltsRefTrendChart .ltsContextAxis';
+  const primaryAxis='.ltsCockpitPanel.body .ltsContextAxis';
   await page.waitForSelector(primaryAxis);
   const axis=await page.locator(primaryAxis).evaluate(el=>{
    const plot=el.closest('.ltsContextPlot').getBoundingClientRect(),svg=el.previousElementSibling.getBoundingClientRect();
@@ -162,7 +162,9 @@ try{
   const waterRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Água por dia registrado'});
   assert.ok((await waterRow.innerText()).includes('1 de 30 dias com valor'));
   assert.ok((await waterRow.innerText()).includes('+1.000 mL'));
-  assert.equal(await page.locator('#reportHydration circle').count(),1,'replayed water is one daily point');
+  await page.locator('[data-report-section="reportHydration"]').click();
+  assert.equal(await page.locator('#reportHydration circle').count(),0,'sparse hydration does not imply a trend');
+  assert.match(await page.locator('#reportHydration').innerText(),/2\.000 mL/,'received water total remains visible without an average');
   await overflow(page);
   if(label!=='small'){await page.locator('#reportPeriods').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-duration-water.png`});}
   await page.evaluate(()=>{window.__failTable='health_source_daily_metrics';});await page.locator('#refreshBtn').click();
