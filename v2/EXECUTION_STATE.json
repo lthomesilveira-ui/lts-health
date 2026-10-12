@@ -60,10 +60,12 @@
       "Source-status changes published and verified in .44.",
       "All seven runtime candidate checks, six audit-fix candidate checks and eleven corrected post-merge workflows passed.",
       "Exact authenticated public Sources and Home inspected; responsive synthetic artifact verified.",
-      "Original-source discovery and local background-handler tests completed without promotion, reimport or key changes."
+      "Original-source discovery and local background-handler tests completed without promotion, reimport or key changes.",
+      "Server publication recovered: health-polar-scheduled version 1 and JWT-protected health-polar-connection version 17 are deployed and source-verified.",
+      "Live scheduler calls without a ticket or with an invalid ticket returned 401. An owner-triggered sync completed through the public app; canonical duplicates remain absent."
     ],
     "pending_evidence": [
-      "LTS-POLAR-BACKGROUND-001 remains blocked: ticket migration, handler deployment and genuine scheduled completion are not executed. Job inactive/config disabled."
+      "LTS-POLAR-BACKGROUND-001 remains blocked only by the unapplied ticket migration and genuine scheduled completion. Handlers are published, but job inactive/config disabled; no closed-app automatic update is claimed."
     ]
   },
   "last_verified_release": {
@@ -129,12 +131,15 @@
       "evidence": [
         "Local handler, throttle, lease, authentication, payload and source checks passed.",
         "Applied migration 20261012192605 provisions an inactive job; disabled config and inactive hourly schedule verified on 2026-10-12.",
-        "Function publication returned internal/UNAVAILABLE errors in three bounded attempts. Existing Polar endpoint remains version 16.",
-        "Ticket migration returned Invalid or expired requestState; a fresh read confirms no ticket table. SQL stays planned, not applied.",
-        "Existing on-open Polar and paid Auto Export configuration preserved."
+        "Earlier publication errors were resolved after the owner renewed autonomy: health-polar-scheduled version 1 and JWT-protected health-polar-connection version 17 deployed. Scheduler source matches all submitted files.",
+        "Two live negative HTTP checks returned 401 before connection enumeration: missing ticket and invalid synthetic ticket.",
+        "A real owner-triggered sync succeeded through authenticated public .44; completion advanced, fixed error state remained clear, canonical and provider source-ID duplicates were absent.",
+        "Ticket migration again returned Invalid or expired requestState after renewed permission and a fresh Continue instruction. Bounded retries stopped; read-only verification confirms no ticket table or migration history entry.",
+        "The hourly job remains inactive, config disabled and scheduled completion absent. The reusable-key bootstrap path is not activated.",
+        "Existing Polar authorization, canonical history and paid Auto Export configuration preserved. No owner reauthorization or new credential was requested."
       ],
-      "next_action": "Restore publication and migration execution, apply supabase/planned/polar_schedule_one_time_credentials.sql with any required approval, deploy handlers, verify a real scheduled run, then activate hourly. Never bypass approval requirements.",
-      "blocker": "Edge Function publication is unavailable; the follow-up migration did not execute. The job stays disabled."
+      "next_action": "Resolve the native migration confirmation/request state, then apply supabase/planned/polar_schedule_one_time_credentials.sql with the supported migration tool. Record its generated version, verify grants and single-use replay denial, test a genuine bounded scheduled run and only then activate hourly. Handlers are already deployed; never bypass approval requirements or reactivate the reusable-key bootstrap.",
+      "blocker": "The native migration confirmation continues returning Invalid or expired requestState. The one-use ticket table is absent; the published scheduler remains inactive until this gate and real scheduled execution are verified."
     },
     {
       "id": "LTS-COCKPIT-READING-001",

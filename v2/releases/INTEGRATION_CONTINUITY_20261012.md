@@ -18,10 +18,11 @@ Synthetic artifact `11770862312`, SHA256 `8721883c4d6f63f442d0acd8f5f46f06231006
 ## Server activation is deliberately blocked
 
 - `20261012192605_polar_background_schedule.sql` was applied through MCP. The hourly job is inactive and the config is disabled.
-- Both Edge Function deployment targets returned internal/UNAVAILABLE errors. A second entrypoint layout was tried once, then retries stopped. The working Polar endpoint remains at its prior version.
-- The planned single-use ticket migration returned `Invalid or expired requestState`; a follow-up read confirms it did not execute. `supabase/planned/polar_schedule_one_time_credentials.sql` is not applied migration history.
+- Both Edge Function deployment targets initially returned internal/UNAVAILABLE errors. Publication recovered after the owner renewed autonomy: `health-polar-scheduled` version 1 is deployed with custom authentication, and `health-polar-connection` version 17 retains JWT verification. The scheduler bundle matches the submitted files.
+- Live POST requests with no ticket and with an invalid synthetic ticket returned HTTP 401. An owner-triggered sync through authenticated public `.44` completed successfully; error state remained clear and source-ID duplicate groups were absent. This is not evidence of closed-app scheduling.
+- The planned single-use ticket migration returned `Invalid or expired requestState` again after renewed permission and a fresh Continue instruction. Bounded retries stopped. Read-only verification confirms no ticket table or migration history entry. `supabase/planned/polar_schedule_one_time_credentials.sql` is still not applied migration history.
 - Extension-owned `net` queue grants could not be assumed revoked by the original best-effort statements. The planned replacement therefore never sends a reusable Vault/provider/owner credential: each invocation receives a five-minute ticket consumed atomically before reading connections.
-- Do not activate the existing job before applying that replacement and deploying the handlers. No callback route, existing provider authorization or Auto Export key was changed.
+- Do not activate the existing job before applying that replacement and verifying genuine scheduled execution. The handlers are already published; the bootstrap reusable-key path must remain disabled. No callback route, existing provider authorization or Auto Export key was reset.
 
 ## Original-source audit
 
@@ -35,9 +36,9 @@ The live advisor still reports disabled leaked-password protection. Connected pr
 
 ## Safe next activation sequence
 
-1. Restore the publication service and resolve the migration request state; never bypass an approval requirement.
+1. Resolve the native migration confirmation/request state; publication is already restored. Never bypass an approval requirement with direct SQL or another route.
 2. Apply the explicitly planned ticket migration, record its generated migration version, and verify private grants and atomic replay denial.
-3. Deploy `health-polar-scheduled` with custom ticket authentication and `health-polar-connection` with JWT verification still enabled.
+3. Confirm the already-published scheduler version 1 and owner route version 17 remain source-matched, with JWT verification enabled on the owner route. Redeploy only if code or live evidence actually changes.
 4. Use one bounded validation schedule, confirm a genuine cron → HTTP → provider → database completion, then set the final hourly schedule.
 5. Verify scheduled status/timestamps through the authenticated app and close `LTS-POLAR-BACKGROUND-001` only after those checks.
 
