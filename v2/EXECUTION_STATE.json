@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/EVOLUTION_PRODUCT_20261007.md"
+    "latest_release": "v2/releases/INTEGRATION_CONTINUITY_20261012.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,36 +50,39 @@
   },
   "current_package": {
     "id": "PKG-INTEGRATION-CONTINUITY-001",
-    "status": "in_progress",
+    "status": "blocked_external",
     "goal": "Clarify actual source receipts and prepare bounded independent Polar updates without claiming an unavailable activation.",
     "task_ids": [
       "LTS-INTEGRATION-STATUS-001",
       "LTS-POLAR-BACKGROUND-001"
     ],
     "completed_evidence": [
-      "Provider, hydration, privacy, security and evolution contracts passed locally.",
-      "The supplied Apple Health original was inspected without promoting unverified events."
+      "Source-status changes published and verified in .44.",
+      "All seven runtime candidate checks, six audit-fix candidate checks and eleven corrected post-merge workflows passed.",
+      "Exact authenticated public Sources and Home inspected; responsive synthetic artifact verified.",
+      "Original-source discovery and local background-handler tests completed without promotion, reimport or key changes."
     ],
     "pending_evidence": [
-      "Candidate checks and exact public authenticated verification."
+      "LTS-POLAR-BACKGROUND-001 remains blocked: ticket migration, handler deployment and genuine scheduled completion are not executed. Job inactive/config disabled."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "evolution-product-20261012.43",
-    "main_commit": "29a37577c3ec4798df3a147c248dbec4707c8314",
+    "build_id": "integration-continuity-20261012.44",
+    "main_commit": "2cb1d93e76252c221e3ceafed04be57952e17c01",
     "published_on": "2026-10-12",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
     "evidence": [
-      "Normal PRs 324 and 325 published evolution-product-20261012.43; runtime main commit 29a37577c3ec4798df3a147c248dbec4707c8314.",
-      "All six exact final candidate checks passed for 7d510ebcef01608252c923c1fcd207619568ee8e; Functional Depth 38290230660.",
-      "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
-      "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
-      "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review.",
-      "v2/releases/EVOLUTION_PRODUCT_20261007.md"
+      "Normal PR 327 published .44; PR 328 corrected the release-manifest expectation without changing app runtime or data.",
+      "All seven final PR 327 checks passed for 92ffe5d66b8d8ddf24b0d30ac01b8ec703e0e18b, including responsive source UI, provider and privacy contracts.",
+      "All six PR 328 candidate checks passed for a45fcbb1338a8a5268b486c437aef80712b225d8.",
+      "All eleven corrected post-merge workflows passed at 2cb1d93e76252c221e3ceafed04be57952e17c01, including real authenticated E2E 38303227396 and deploy 38303227420.",
+      "Synthetic artifact 11770862312 SHA256 8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511 verified; desktop and reduced-mobile outcome layouts inspected.",
+      "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
+      "Disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked."
     ],
-    "acceptance_note": "The outcome-oriented product package is technically delivered. Owner subjective UX and physical-device acceptance are separate. Both travel workouts and later recorded protocol events remain preserved. Later water observations are visible; original authenticated MFP history and independently attributable automatic recurrence remain distinct.",
+    "acceptance_note": "Source-state UI is technically delivered; owner UX/physical-device acceptance is separate. Independent Polar server activation remains blocked and inactive. Original MFP water history and independently attributable automatic water recurrence remain unresolved.",
     "verified_on": "2026-10-12"
   },
   "tasks": [
@@ -87,7 +90,7 @@
       "id": "LTS-INTEGRATION-STATUS-001",
       "area": "Data and sources",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Distinguish received data from proved automatic execution and bridge hydration from original MFP water history.",
       "acceptance": [
@@ -98,9 +101,16 @@
       ],
       "evidence": [
         "Existing paid bridge and Polar authorization verified read-only and preserved.",
-        "Local Auto Export, provider, evolution, consultation and privacy checks passed."
+        "Local Auto Export, provider, evolution, consultation and privacy checks passed.",
+        "Normal PR 327 published .44; PR 328 corrected the release-manifest expectation without changing app runtime or data.",
+        "All seven final PR 327 checks passed for 92ffe5d66b8d8ddf24b0d30ac01b8ec703e0e18b, including responsive source UI, provider and privacy contracts.",
+        "All six PR 328 candidate checks passed for a45fcbb1338a8a5268b486c437aef80712b225d8.",
+        "All eleven corrected post-merge workflows passed at 2cb1d93e76252c221e3ceafed04be57952e17c01, including real authenticated E2E 38303227396 and deploy 38303227420.",
+        "Synthetic artifact 11770862312 SHA256 8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511 verified; desktop and reduced-mobile outcome layouts inspected.",
+        "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
+        "Disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked."
       ],
-      "next_action": "Complete candidate and exact public authenticated verification.",
+      "next_action": "Preserve source attribution and automatic-status boundaries in regression tests.",
       "blocker": null
     },
     {
@@ -1604,23 +1614,43 @@
       "release_state": "published_41; candidate_responsive_all_postmerge_real_data_and_exact_public_manual_desktop_verified",
       "candidate_build": "product-clarity-20261006.41",
       "public_build": "product-clarity-20261006.41"
+    },
+    {
+      "id": "PKG-EVOLUTION-PRODUCT-001",
+      "status": "done",
+      "goal": "Replace record coverage with useful outcome evidence, dated personal goals, nutrition diary and consultation narrative across desktop/mobile.",
+      "task_ids": [
+        "LTS-EVOLUTION-PRODUCT-001"
+      ],
+      "completed_evidence": [
+        "Core implementation and local calculation/security/privacy contracts passed.",
+        "Owner-only dated-goal migration applied and isolation verified with rolled-back probes; no goal default seeded.",
+        "Normal PRs 324 and 325 published evolution-product-20261012.43; runtime main commit 29a37577c3ec4798df3a147c248dbec4707c8314.",
+        "All six exact final candidate checks passed for 7d510ebcef01608252c923c1fcd207619568ee8e; Functional Depth 38290230660.",
+        "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
+        "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
+        "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review."
+      ],
+      "pending_evidence": []
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "product-clarity-20261006.41",
-    "main_commit": "ffc8681e5d361fcc52c63b1021f681934d266a60",
-    "published_on": "2026-10-06",
+    "build_id": "integration-continuity-20261012.44",
+    "main_commit": "2cb1d93e76252c221e3ceafed04be57952e17c01",
+    "published_on": "2026-10-12",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
     "evidence": [
-      "All six exact final candidate checks passed for 843339c386f89e5d45fce2c59763c040e1554f07; Functional Depth 37474975840.",
-      "Final synthetic artifact 11418332772 digest verified and inspected at 1536x864, 390x844, 393x650 and 320x740; complete desktop footer, original mobile priority and unavailable states verified.",
-      "Normal PR 322 published product-clarity-20261006.41 at ffc8681e5d361fcc52c63b1021f681934d266a60.",
-      "All ten product post-merge workflows passed, including deploy 37475661838, Functional Depth 37475661839, real authenticated E2E 37475661660, Pages 37475726203 and Homologation 37475726803.",
-      "Exact authenticated public .41 manually inspected in the recovered Cloud Browser: five summaries/six modules/full footer, truthful single/changed-device explanations, observed session-count reading, source loading labels, shared period, all three report modes and direct water workspace. Live desktop inspection and responsive CI captures are distinct; owner acceptance not inferred.",
-      "v2/releases/COCKPIT_READING_20261006.md"
+      "Normal PR 327 published .44; PR 328 corrected the release-manifest expectation without changing app runtime or data.",
+      "All seven final PR 327 checks passed for 92ffe5d66b8d8ddf24b0d30ac01b8ec703e0e18b, including responsive source UI, provider and privacy contracts.",
+      "All six PR 328 candidate checks passed for a45fcbb1338a8a5268b486c437aef80712b225d8.",
+      "All eleven corrected post-merge workflows passed at 2cb1d93e76252c221e3ceafed04be57952e17c01, including real authenticated E2E 38303227396 and deploy 38303227420.",
+      "Synthetic artifact 11770862312 SHA256 8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511 verified; desktop and reduced-mobile outcome layouts inspected.",
+      "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
+      "Disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked."
     ],
-    "acceptance_note": "Source-backed reading and truthful unavailable/source-loading states are technically delivered. Responsive synthetic captures, all ten product post-merge gates and exact live authenticated desktop were inspected. Owner subjective UX and physical-device acceptance are not presumed. Incoming workouts have not been received or imported; automatic water recurrence and original authenticated MFP history remain separate."
+    "acceptance_note": "Source-state UI is technically delivered; owner UX/physical-device acceptance is separate. Independent Polar server activation remains blocked and inactive. Original MFP water history and independently attributable automatic water recurrence remain unresolved.",
+    "verified_on": "2026-10-12"
   }
 }
