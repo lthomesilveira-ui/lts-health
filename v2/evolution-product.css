@@ -92,3 +92,4 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
 @media(max-width:360px){.ltsEvolutionHome .ltsCockpitHeading h1{font-size:27px}.ltsEvolutionHome .ltsExecutiveCard{padding:12px}.ltsEvolutionHome .ltsExecutiveCard strong{font-size:21px}.ltsEvolutionHome .ltsCockpitPanel{padding:16px}.ltsEvolutionHome .ltsGoalsGrid{grid-template-columns:1fr}.ltsEvolutionHome .ltsCockpitFacts{gap:8px}.ltsEvolutionHome .ltsCockpitFacts b{font-size:18px}}
 
 .ltsEvolutionHome .ltsEvolutionRefresh{margin:0 0 20px}.ltsEvolutionHome .ltsCockpitWindow{margin-bottom:12px}
+.ltsReviewContrast>button{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;padding:10px 14px;border:1px solid #cfdde9;border-radius:9px;background:#f4f8fc;color:#234c72;font-family:inherit;font-size:12px;font-weight:650;line-height:1.5;cursor:pointer}.ltsReviewContrast>button:focus-visible{outline:3px solid #668fbe;outline-offset:3px}
