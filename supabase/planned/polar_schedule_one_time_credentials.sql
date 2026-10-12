@@ -1,3 +1,5 @@
+-- Superseded, NOT APPLIED. Use the bounded, non-destructive implementation in
+-- migrations/20261012213757_polar_schedule_singleton_ticket.sql instead.
 -- Extension-managed pg_net tables can retain PUBLIC grants owned by the
 -- platform. Do not depend on a best-effort REVOKE or transmit a reusable key.
 -- Every queued invocation gets a five-minute, atomically consumed ticket.
