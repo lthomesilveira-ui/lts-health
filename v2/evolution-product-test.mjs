@@ -35,4 +35,7 @@ const lowerLoad=homeCockpitModel(decreased,status,'30',{},'2025-04-20');
 assert.equal(lowerLoad.evo.insights.highlightLoad.delta,-10);
 assert.match(lowerLoad.evo.findings[0].detail,/Variação da carga/);
 assert.doesNotMatch(lowerLoad.evo.findings[0].detail,/Maior carga/,'a lower recorded load must not be described as a gain');
+const openDay=homeCockpitModel({...data,nutrition:[...data.nutrition,{nutrition_date:'2025-04-20',source:'Connected',protein_g:40,calories_kcal:600}]},status,'30',{},'2025-04-20');
+assert.match(renderHomeCockpit(openDay),/20\/04\/2025 · em andamento/,'today cannot look like a finished dietary diary');
+assert.equal(openDay.r.nutrition.counts.protein_g,1,'open-day protein stays outside closed-day averages');
 console.log('Evolution: versioned goals, date boundaries, validation, latest-source selection, explicit legacy choice, no retroactive targets, sparse-water suppression, useful diary and private consultation summary passed.');
