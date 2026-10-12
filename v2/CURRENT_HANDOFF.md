@@ -1,10 +1,14 @@
 # Rodada autônoma de integração — 12/10/2026
 
+Atualização após `Permitir sempre` / `Continue`: publicação do servidor recuperada. `health-polar-scheduled` versão 1 e `health-polar-connection` versão 17 estão publicados; a rota do proprietário mantém JWT obrigatório. Código do scheduler conferido no bundle publicado, duas chamadas HTTP sem autorização retornaram 401 e uma sincronização real concluída pelo app autenticado preservou o histórico canônico e a separação das fontes.
+
+O bloqueio restante é **a confirmação nativa da migration**, que voltou a retornar `Invalid or expired requestState`. Tabela de tickets e entrada de migration ausentes; config desabilitada, job inativo e nenhuma conclusão agendada. Não repetir a publicação já comprovada nem contornar a confirmação com SQL direto. Aplicar `supabase/planned/polar_schedule_one_time_credentials.sql` pelo caminho suportado quando a confirmação válida estiver disponível; só depois validar consumo único, execução cron real e ativação horária. A autorização de autonomia não prova alteração das permissões globais da conta.
+
 `integration-continuity-20261012.44` publicado e verificado. `LTS-INTEGRATION-STATUS-001` concluído: sete gates candidatos, seis gates da correção do manifesto e onze workflows pós-merge passaram. E2E autenticado `38303227396`; deploy `38303227420`; main verificado `2cb1d93e76252c221e3ceafed04be57952e17c01`. Sources/Home públicos autenticados foram inspecionados; não há aceite subjetivo ou físico presumido.
 
 `PKG-INTEGRATION-CONTINUITY-001` continua `blocked_external` exclusivamente pela ativação server-side Polar, não por trabalho de UI pendente. Não há tarefa autônoma `ready`/`in_progress` remanescente neste checkpoint.
 
-A agenda **não está ativada**: publicação de Edge Functions retornou erro interno/UNAVAILABLE e a migration de tickets retornou requestState expirado. Job inativo/config desabilitada verificados. Não ativar antes de aplicar o SQL planejado, publicar os handlers e comprovar execução real. Conexões atuais e chaves preservadas.
+A agenda **não está ativada**: a publicação de Edge Functions foi recuperada, mas a migration de tickets continua retornando requestState expirado. Job inativo/config desabilitada verificados. Não ativar antes de aplicar o SQL planejado e comprovar execução real. Conexões atuais e chaves preservadas.
 
 O original Apple fornecido foi inspecionado: há eventos Polar, mas o resumo legado não permite vínculo inequívoco. Não pedir novamente o mesmo ZIP nem promover por coincidência de data. Água original MFP, recorrência atribuível, proteção de senha e validação física seguem separados no `EXECUTION_STATE.json`.
 
