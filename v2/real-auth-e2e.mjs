@@ -97,14 +97,14 @@ async function assertMinimumReadableType(selector,minimum,label){
   if(!result.count)throw new Error(`${label}: audited typography is missing`);
   if(result.minimum<minimum)throw new Error(`${label}: supporting type is too small (${result.minimum}px)`);
 }
-async function auditReferenceHome(label){
+async function auditReferenceHome(label,expectedBuild){
  const result=await page.evaluate(()=>{
   const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
   const visible=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;};
   const sizes=[...document.querySelectorAll('.ltsExecutiveCard small,.ltsCockpitCaption,.ltsCockpitFacts small')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
   return {build:document.querySelector('meta[name="lts-build"]')?.content,cards:document.querySelectorAll('.ltsExecutiveCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,rings:document.querySelectorAll('.ltsRefRing').length,top:[top('.ltsExecutiveCards'),top('.ltsCockpitReading'),top('.ltsCockpitGrid'),top('.ltsEvolutionNext')],minFont:Math.min(...sizes),canvas:getComputedStyle(document.querySelector('#screenHost')).backgroundColor};
  });
- if(result.build!=='evolution-product-20261012.43')throw new Error(`${label}: wrong published build`);
+ if(!expectedBuild||result.build!==expectedBuild)throw new Error(`${label}: wrong published build`);
  if(result.cards!==5||result.panels!==6||result.rings!==0)throw new Error(`${label}: outcome hierarchy missing`);
  if(result.top.some((v,i)=>i&&v<=result.top[i-1]))throw new Error(`${label}: hierarchy incorrect`);
  if(result.minFont<10)throw new Error(`${label}: supporting text too small`);
@@ -212,7 +212,7 @@ try{
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
   if(await page.locator('.ltsExecutiveCard').count()!==5||await page.locator('.ltsCockpitPanel').count()!==6)throw new Error('executive Home modules missing');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
-  await auditReferenceHome('desktop Home');
+  await auditReferenceHome('desktop Home',expectedBuild);
   await assertNoHorizontalOverflow();
   await page.screenshot({path:`${evidenceDir}/desktop-home.png`,fullPage:true});
 
@@ -300,7 +300,7 @@ try{
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
   if(await page.locator('#routeAction').isVisible())throw new Error('mobile Home duplicates the water import action in the top bar');
-  await auditReferenceHome('mobile Home');
+  await auditReferenceHome('mobile Home',expectedBuild);
   await assertNoHorizontalOverflow();
   await assertStableMobileShell('mobile Home');
   await page.screenshot({path:`${evidenceDir}/mobile-home.png`,fullPage:true});
