@@ -30,4 +30,9 @@ c=homeCockpitModel(data,status,'30',{reportNutritionSource:'legacy'},'2025-04-20
 const summary=consultationLines(c.r,c.m,c.evo).join('\n');assert.match(summary,/Histórico curto; sem média de período/);assert.match(summary,/METAS INFORMADAS/);assert.doesNotMatch(summary,/Alimentação e água na mesma data: 0/);
 state.data=data;state.domainStatus=status;state.ui={nutritionPeriod:'all',nutritionDate:'2025-04-19'};
 const diary=renderProductNutrition();assert.match(diary,/140 g/);assert.match(diary,/Meta vigente: 150 g/);assert.doesNotMatch(diary,/Veja a cobertura primeiro|Cobertura do período|2\/7/);
+const decreased={...data,workouts:['2025-04-17','2025-04-18'].map((date,i)=>({source_record_id:`w${i}`,workout_date:date,is_canonical:true,record_status:'validated',location:'Synthetic gym',source:'Synthetic notes'})),exercises:['2025-04-17','2025-04-18'].map((date,i)=>({source_record_id:`e${i}`,workout_source_record_id:`w${i}`,workout_date:date,exercise:'Synthetic press',machine:'Synthetic machine',source:'Synthetic notes'})),sets:['2025-04-17','2025-04-18'].map((date,i)=>({source_record_id:`s${i}`,exercise_source_record_id:`e${i}`,workout_source_record_id:`w${i}`,workout_date:date,phase:'working',weight:i?90:100,weight_unit:'kg',reps_numeric:8,source:'Synthetic notes'}))};
+const lowerLoad=homeCockpitModel(decreased,status,'30',{},'2025-04-20');
+assert.equal(lowerLoad.evo.insights.highlightLoad.delta,-10);
+assert.match(lowerLoad.evo.findings[0].detail,/Variação da carga/);
+assert.doesNotMatch(lowerLoad.evo.findings[0].detail,/Maior carga/,'a lower recorded load must not be described as a gain');
 console.log('Evolution: versioned goals, date boundaries, validation, latest-source selection, explicit legacy choice, no retroactive targets, sparse-water suppression, useful diary and private consultation summary passed.');

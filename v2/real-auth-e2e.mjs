@@ -104,7 +104,7 @@ async function auditReferenceHome(label){
   const sizes=[...document.querySelectorAll('.ltsExecutiveCard small,.ltsCockpitCaption,.ltsCockpitFacts small')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
   return {build:document.querySelector('meta[name="lts-build"]')?.content,cards:document.querySelectorAll('.ltsExecutiveCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,rings:document.querySelectorAll('.ltsRefRing').length,top:[top('.ltsExecutiveCards'),top('.ltsCockpitReading'),top('.ltsCockpitGrid'),top('.ltsEvolutionNext')],minFont:Math.min(...sizes),canvas:getComputedStyle(document.querySelector('#screenHost')).backgroundColor};
  });
- if(result.build!=='evolution-product-20261007.42')throw new Error(`${label}: wrong published build`);
+ if(result.build!=='evolution-product-20261012.43')throw new Error(`${label}: wrong published build`);
  if(result.cards!==5||result.panels!==6||result.rings!==0)throw new Error(`${label}: outcome hierarchy missing`);
  if(result.top.some((v,i)=>i&&v<=result.top[i-1]))throw new Error(`${label}: hierarchy incorrect`);
  if(result.minFont<10)throw new Error(`${label}: supporting text too small`);
