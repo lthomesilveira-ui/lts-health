@@ -21,7 +21,13 @@ The current source audit found no duplicate daily grain or negative values for t
 
 Previously supplied preliminary/final Fleury originals and a prior report were located privately. Do not request them again or reimport existing results. New-format PDF automation is still held by the laboratory safety contract; the source discovery is not a claim that a specialized parser or direct hospital integration is released.
 
-Original authenticated MFP water history, direct official API approval, identifiable automatic MFP water recurrence, native physical-iPhone/signing validation and Auth leaked-password protection remain explicit tasks. They do not invalidate the completed Polar job, and they must not be marked done from intention or assumed device behavior.
+Original authenticated MFP water history, direct official API approval, identifiable automatic MFP water recurrence and native physical-iPhone/signing validation remain explicit tasks. They do not invalidate the completed Polar job, and they must not be marked done from intention or assumed device behavior. New-format laboratory parsing also remains separately held as described above.
+
+## Auth security closure and publication
+
+The owner selected the secure administrative sign-in method and account. Credential values were never returned to the agent. The existing Health project's `Prevent use of leaked passwords` setting was enabled and saved; no other Auth setting, password, provider, key or access permission was changed. The native post-save security advisor at 2026-10-12T22:32:30Z no longer reports `auth_leaked_password_protection`. Its four remaining RLS/no-policy informational findings describe intentional browser-denied backend tables, not a reason to grant browser access.
+
+Normal PR #331 promoted candidate `7b1da169f2aec698e4500267868ff604621200de` as main `0405d5e457029a3de45ca93d3578ee4db1922fda`. The candidate and local tree matched `a8569d6b6a7531b613d8d8fdf7df4b5413875755`. All six candidate workflows and all ten triggered post-merge workflows completed successfully. Deploy: `38316126096`; public Pages: `38316157235`; homologation Pages: `38316157344`; Polar background: `38316126129`; Functional Depth: `38316126158`. The full run list is recorded in the PR. Exact authenticated public `.44` Home was inspected after publication; the approved frontend and real latest workout/source views remain intact.
 
 ## Preservation and checks
 
