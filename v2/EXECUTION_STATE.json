@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/INTEGRATION_CONTINUITY_20261012.md"
+    "latest_release": "v2/releases/POLAR_BACKGROUND_20261012.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,8 +50,8 @@
   },
   "current_package": {
     "id": "PKG-INTEGRATION-CONTINUITY-001",
-    "status": "blocked_external",
-    "goal": "Clarify actual source receipts and prepare bounded independent Polar updates without claiming an unavailable activation.",
+    "status": "done",
+    "goal": "Clarify source receipts and activate a bounded, source-preserving independent hourly Polar update.",
     "task_ids": [
       "LTS-INTEGRATION-STATUS-001",
       "LTS-POLAR-BACKGROUND-001"
@@ -62,11 +62,14 @@
       "Exact authenticated public Sources and Home inspected; responsive synthetic artifact verified.",
       "Original-source discovery and local background-handler tests completed without promotion, reimport or key changes.",
       "Server publication recovered: health-polar-scheduled version 1 and JWT-protected health-polar-connection version 17 are deployed and source-verified.",
-      "Live scheduler calls without a ticket or with an invalid ticket returned 401. An owner-triggered sync completed through the public app; canonical duplicates remain absent."
+      "Live scheduler calls without a ticket or with an invalid ticket returned 401. An owner-triggered sync completed through the public app; canonical duplicates remain absent.",
+      "Native migration 20261012213757 applied a bounded non-destructive single-use ticket slot; no private or credential rows were removed.",
+      "Column-scoped service grants and browser denial verified. Rolled-back first-use, replay, expiry and disabled-config checks passed.",
+      "A genuine cron-triggered HTTP/provider/database completion succeeded before opening the app. Repeated validation ticks were throttled; final schedule is active at 17 * * * * with interval_minutes 60.",
+      "A controlled live payload/replay sequence returned 400 then 401. Authenticated .44 shows the real scheduled-completion timestamp and hourly server mode.",
+      "Current source audit found no duplicate daily grain or negative supported measures. Existing paid bridge and latest laboratory records preserved; previously supplied Fleury originals were located without reimport."
     ],
-    "pending_evidence": [
-      "LTS-POLAR-BACKGROUND-001 remains blocked only by the unapplied ticket migration and genuine scheduled completion. Handlers are published, but job inactive/config disabled; no closed-app automatic update is claimed."
-    ]
+    "pending_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -84,7 +87,7 @@
       "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
       "Disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked."
     ],
-    "acceptance_note": "Source-state UI is technically delivered; owner UX/physical-device acceptance is separate. Independent Polar server activation remains blocked and inactive. Original MFP water history and independently attributable automatic water recurrence remain unresolved.",
+    "acceptance_note": "Source-state UI and independent hourly Polar server activation are technically delivered and verified. Owner UX/physical-device acceptance is separate. Original MFP water history and independently attributable automatic water recurrence remain unresolved; server scheduling does not remove those source limits.",
     "verified_on": "2026-10-12"
   },
   "tasks": [
@@ -119,7 +122,7 @@
       "id": "LTS-POLAR-BACKGROUND-001",
       "area": "Integrations",
       "priority": "P0",
-      "status": "blocked_external",
+      "status": "done",
       "owner": "Codex",
       "summary": "Activate an hourly independent Polar refresh with expiring single-use scheduler authentication.",
       "acceptance": [
@@ -134,12 +137,20 @@
         "Earlier publication errors were resolved after the owner renewed autonomy: health-polar-scheduled version 1 and JWT-protected health-polar-connection version 17 deployed. Scheduler source matches all submitted files.",
         "Two live negative HTTP checks returned 401 before connection enumeration: missing ticket and invalid synthetic ticket.",
         "A real owner-triggered sync succeeded through authenticated public .44; completion advanced, fixed error state remained clear, canonical and provider source-ID duplicates were absent.",
-        "Ticket migration again returned Invalid or expired requestState after renewed permission and a fresh Continue instruction. Bounded retries stopped; read-only verification confirms no ticket table or migration history entry.",
-        "The hourly job remains inactive, config disabled and scheduled completion absent. The reusable-key bootstrap path is not activated.",
-        "Existing Polar authorization, canonical history and paid Auto Export configuration preserved. No owner reauthorization or new credential was requested."
+        "The earlier ticket-row proposal returned Invalid or expired requestState. Supabase's app-specific Allow all actions setting was independently confirmed; repeated permission text was not treated as a fix.",
+        "A genuinely different non-destructive design was applied through the same native migration tool as generated version 20261012213757. It atomically marks a five-minute ticket used in one bounded private slot, with no ticket-row growth or user/provider credential in the queue.",
+        "Anonymous/authenticated schema and RPC access denied; service_role may only update the consumption marker, not enable the job or extend expiry. Functions remain security invoker.",
+        "Rolled-back service-role checks passed for first use, replay, expiry, malformed input and disabled config. Live controlled malformed-payload request returned 400; subsequent same-ticket replay returned 401.",
+        "An initial concurrent synthetic probe returned 400 and a fail-closed 503, not two accepted requests. It is not misreported as a 401 proof; the controlled sequence and real scheduled execution were checked separately.",
+        "The actual database cron invoked the deployed handler and completed provider-to-database sync independently before app inspection. Later validation ticks were skipped by the recent-attempt throttle, with no provider error or canonical/source-ID duplicates.",
+        "Temporary minute validation was removed. Final hourly job is active at 17 * * * *, config enabled and scheduler status enabled with interval_minutes 60.",
+        "Authenticated exact public .44 source screen displays hourly server updates and the real automatic-completion timestamp. No screenshot containing private health data was published.",
+        "The existing callback bundle predates schedule columns. Applied migration 20261012221134 now resets schedule evidence on every new authorization revision without redeploying OAuth or changing tokens. Rolled-back revision probe passed and the real current scheduled timestamp remained preserved.",
+        "Existing Polar authorization, canonical history and paid Auto Export configuration preserved. No owner reauthorization, key reset, new payment or unsupported source attribution was added.",
+        "v2/releases/POLAR_BACKGROUND_20261012.md"
       ],
-      "next_action": "Resolve the native migration confirmation/request state, then apply supabase/planned/polar_schedule_one_time_credentials.sql with the supported migration tool. Record its generated version, verify grants and single-use replay denial, test a genuine bounded scheduled run and only then activate hourly. Handlers are already deployed; never bypass approval requirements or reactivate the reusable-key bootstrap.",
-      "blocker": "The native migration confirmation continues returning Invalid or expired requestState. The one-use ticket table is absent; the published scheduler remains inactive until this gate and real scheduled execution are verified."
+      "next_action": "Preserve the active hourly job and singleton-ticket boundary. Reopen only on a reproduced failure; never apply the superseded ticket-row proposal or restore a reusable queued credential.",
+      "blocker": null
     },
     {
       "id": "LTS-COCKPIT-READING-001",
@@ -724,10 +735,12 @@
       ],
       "evidence": [
         "v2/DATA_AUDIT.md",
-        "v2/src/health-screen.js"
+        "v2/src/health-screen.js",
+        "Private Library lookup resolved previously supplied preliminary/final Fleury originals and an earlier report. The latest validated Fleury records are already in the dedicated app tables; no duplicated reimport or blanket missing-original claim is justified.",
+        "The current specialized-parser quarantine and strict numeric/source safety test passed. Existing source availability is distinct from releasing new-format automatic parsing."
       ],
-      "next_action": "Validate a specialized parser only after representative original files are available.",
-      "blocker": "Representative originals and a confirmed direct integration path are unavailable."
+      "next_action": "Use the privately located Fleury originals for a bounded specialized-parser validation package without asking the owner to resend them. Einstein samples and any direct integration still require actual authorized evidence; preserve the already imported laboratory history.",
+      "blocker": "Broader automatic PDF extraction remains quarantined pending specialized format validation and representative Einstein evidence/direct-access support. Fleury originals have been located privately; the latest existing results are already imported, not missing."
     },
     {
       "id": "LTS-DOCUMENTS-001",
@@ -743,8 +756,8 @@
       "evidence": [
         "v2/DATA_AUDIT.md"
       ],
-      "next_action": "Create a concrete task when an original document is supplied and needed.",
-      "blocker": "There is no safe executable change without the original bytes."
+      "next_action": "Preserve inventory/original separation; use confirmed private originals only through a validated ingestion or document-linking path.",
+      "blocker": "Some laboratory originals are now located separately. Unlinked inventory entries still cannot be treated as openable originals or promoted from metadata alone."
     },
     {
       "id": "LTS-MEASUREMENTS-001",
@@ -1655,7 +1668,7 @@
       "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
       "Disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked."
     ],
-    "acceptance_note": "Source-state UI is technically delivered; owner UX/physical-device acceptance is separate. Independent Polar server activation remains blocked and inactive. Original MFP water history and independently attributable automatic water recurrence remain unresolved.",
+    "acceptance_note": "Source-state UI and independent hourly Polar server activation are technically delivered and verified. Owner UX/physical-device acceptance is separate. Original MFP water history and independently attributable automatic water recurrence remain unresolved; server scheduling does not remove those source limits.",
     "verified_on": "2026-10-12"
   }
 }

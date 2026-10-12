@@ -119,3 +119,5 @@ FB-031 technical closure: `.41` published and independently verified through PR 
 # Continuação autônoma — 12/10/2026
 
 O proprietário pediu executar tudo que for possível e reunir dependências humanas ao final. `PKG-INTEGRATION-CONTINUITY-001` separa clareza de origem/recebimento (`LTS-INTEGRATION-STATUS-001`) e agenda horária independente (`LTS-POLAR-BACKGROUND-001`). Após `Permitir sempre` / `Continue`, publicação do servidor recuperada e sincronização real pelo app verificada; a confirmação nativa da migration ainda expira, com job desativado. A autonomia não autoriza contornar proteções obrigatórias nem prova alteração de permissões globais. Nenhuma chave paga, rotina de registro ou histórico foi redefinido.
+
+Fechamento técnico: a nova variante não destrutiva foi aplicada pela ferramenta oficial e a rotina independente validada antes da ativação horária final. O app mostra uma conclusão automática real, preservando a mesma `.44` e os históricos. Não há novo pedido de autorização em texto ou homologação de engenharia; as dependências que realmente exigem acesso/dispositivo/fonte permanecem explícitas, sem presumir aceite de produto.
