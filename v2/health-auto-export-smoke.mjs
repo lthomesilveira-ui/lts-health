@@ -19,7 +19,7 @@ try{
       state.autoExportConnection={status:'ready',configured:true,received:true,last_received_at:'2026-10-04T19:00:00Z',last_metric_date:'2026-10-03',last_water_date:null};
       document.querySelector('[data-health-auto-export]').outerHTML=renderAutoExportConnection();
     });
-    assert.match(await page.locator('[data-health-auto-export]').innerText(),/Recebendo dados/);
+    assert.match(await page.locator('[data-health-auto-export]').innerText(),/Dados recebidos/);
     assert.match(await page.locator('[data-health-auto-export]').innerText(),/Ainda não recebemos volume de água/);
     await page.locator('[data-health-auto-export] summary').click();
     assert.equal(await page.locator('textarea[aria-label="URL do Health Auto Export"]').inputValue(),'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-auto-export-receive');

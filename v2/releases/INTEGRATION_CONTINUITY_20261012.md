@@ -1,0 +1,40 @@
+# Integration continuity — 12/10/2026
+
+Candidate build: `integration-continuity-20261012.44`. UI delivery and background-server activation have separate acceptance. This is not a declaration that the whole project is finished.
+
+## Code and local checks
+
+- Connection copy distinguishes data already received from independently proved automatic execution.
+- Nutrition and water do not inherit the same MyFitnessPal attribution. Original authenticated MFP water history remains separate.
+- Polar displays scheduled/on-open/unverified states only from verified server status; no fabricated automatic-success timestamp.
+- Scheduler requests have bounded payloads, method/origin checks, connection enumeration limits, a recent-attempt throttle and fixed-code errors. Public owner routes cannot claim the scheduled trigger.
+- Existing encryption, scopes, revision checks and source identifiers are preserved. A lost lease cannot be reported as a successful completion.
+- No clinical interpretation or guessed goal was added.
+
+## Server activation is deliberately blocked
+
+- `20261012192605_polar_background_schedule.sql` was applied through MCP. The hourly job is inactive and the config is disabled.
+- Both Edge Function deployment targets returned internal/UNAVAILABLE errors. A second entrypoint layout was tried once, then retries stopped. The working Polar endpoint remains at its prior version.
+- The planned single-use ticket migration returned `Invalid or expired requestState`; a follow-up read confirms it did not execute. `supabase/planned/polar_schedule_one_time_credentials.sql` is not applied migration history.
+- Extension-owned `net` queue grants could not be assumed revoked by the original best-effort statements. The planned replacement therefore never sends a reusable Vault/provider/owner credential: each invocation receives a five-minute ticket consumed atomically before reading connections.
+- Do not activate the existing job before applying that replacement and deploying the handlers. No callback route, existing provider authorization or Auto Export key was changed.
+
+## Original-source audit
+
+The supplied original Apple Health ZIP was streamed with `apple-polar-history-profile.py`. Polar workout events and their field structure are present; no hydration records were found. The legacy workout summary lacks second-precision durations, so the strict event-link rule cannot prove identity. This corrects “no original at all” without promoting or duplicating canonical workouts.
+
+Native HealthKit/device validation, approved direct MFP API access, original MFP water export and representative additional lab documents remain separate dependencies. Existing laboratory data and both travel sessions remain intact.
+
+## Security
+
+The live advisor still reports disabled leaked-password protection. Connected project tools do not expose that Auth setting. Backend-only credential tables intentionally deny browser roles; the new private schedule config also denies browser access.
+
+## Safe next activation sequence
+
+1. Restore the publication service and resolve the migration request state; never bypass an approval requirement.
+2. Apply the explicitly planned ticket migration, record its generated migration version, and verify private grants and atomic replay denial.
+3. Deploy `health-polar-scheduled` with custom ticket authentication and `health-polar-connection` with JWT verification still enabled.
+4. Use one bounded validation schedule, confirm a genuine cron → HTTP → provider → database completion, then set the final hourly schedule.
+5. Verify scheduled status/timestamps through the authenticated app and close `LTS-POLAR-BACKGROUND-001` only after those checks.
+
+No permanent minute-level polling, new subscription, manual daily entry or owner QA of engineering microchanges is required.

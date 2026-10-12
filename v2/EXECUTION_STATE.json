@@ -49,22 +49,20 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-EVOLUTION-PRODUCT-001",
-    "status": "done",
-    "goal": "Replace record coverage with useful outcome evidence, dated personal goals, nutrition diary and consultation narrative across desktop/mobile.",
+    "id": "PKG-INTEGRATION-CONTINUITY-001",
+    "status": "in_progress",
+    "goal": "Clarify actual source receipts and prepare bounded independent Polar updates without claiming an unavailable activation.",
     "task_ids": [
-      "LTS-EVOLUTION-PRODUCT-001"
+      "LTS-INTEGRATION-STATUS-001",
+      "LTS-POLAR-BACKGROUND-001"
     ],
     "completed_evidence": [
-      "Core implementation and local calculation/security/privacy contracts passed.",
-      "Owner-only dated-goal migration applied and isolation verified with rolled-back probes; no goal default seeded.",
-      "Normal PRs 324 and 325 published evolution-product-20261012.43; runtime main commit 29a37577c3ec4798df3a147c248dbec4707c8314.",
-      "All six exact final candidate checks passed for 7d510ebcef01608252c923c1fcd207619568ee8e; Functional Depth 38290230660.",
-      "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
-      "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
-      "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review."
+      "Provider, hydration, privacy, security and evolution contracts passed locally.",
+      "The supplied Apple Health original was inspected without promoting unverified events."
     ],
-    "pending_evidence": []
+    "pending_evidence": [
+      "Candidate checks and exact public authenticated verification."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -85,6 +83,49 @@
     "verified_on": "2026-10-12"
   },
   "tasks": [
+    {
+      "id": "LTS-INTEGRATION-STATUS-001",
+      "area": "Data and sources",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Distinguish received data from proved automatic execution and bridge hydration from original MFP water history.",
+      "acceptance": [
+        "Received data alone does not assert ongoing automatic execution.",
+        "Water is not labelled MyFitnessPal solely because food uses that bridge.",
+        "Polar on-open, scheduled and unverified states stay distinct; automatic completion needs a server timestamp.",
+        "Public responsive and authenticated regressions pass."
+      ],
+      "evidence": [
+        "Existing paid bridge and Polar authorization verified read-only and preserved.",
+        "Local Auto Export, provider, evolution, consultation and privacy checks passed."
+      ],
+      "next_action": "Complete candidate and exact public authenticated verification.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-POLAR-BACKGROUND-001",
+      "area": "Integrations",
+      "priority": "P0",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "Activate an hourly independent Polar refresh with expiring single-use scheduler authentication.",
+      "acceptance": [
+        "Deploy single-use authentication before reading connections.",
+        "Owner endpoints retain JWT protection and cannot claim scheduled execution.",
+        "A genuine hourly job completes independently, preserves canonical workouts and records real timestamps.",
+        "Replay and anonymous access are denied; queues never expose reusable credentials."
+      ],
+      "evidence": [
+        "Local handler, throttle, lease, authentication, payload and source checks passed.",
+        "Applied migration 20261012192605 provisions an inactive job; disabled config and inactive hourly schedule verified on 2026-10-12.",
+        "Function publication returned internal/UNAVAILABLE errors in three bounded attempts. Existing Polar endpoint remains version 16.",
+        "Ticket migration returned Invalid or expired requestState; a fresh read confirms no ticket table. SQL stays planned, not applied.",
+        "Existing on-open Polar and paid Auto Export configuration preserved."
+      ],
+      "next_action": "Restore publication and migration execution, apply supabase/planned/polar_schedule_one_time_credentials.sql with any required approval, deploy handlers, verify a real scheduled run, then activate hourly. Never bypass approval requirements.",
+      "blocker": "Edge Function publication is unavailable; the follow-up migration did not execute. The job stays disabled."
+    },
     {
       "id": "LTS-COCKPIT-READING-001",
       "area": "product_ux",
@@ -613,7 +654,7 @@
         "v2/releases/MFP_REPORT_COVERAGE_20261004.md",
         "2026-10-04: owner approved and purchased the annual Health Auto Export bridge; tracked separately from direct API access."
       ],
-      "next_action": "The Health Auto Export bridge is already activated for available nutrition and other supported source metrics. Preserve it; pursue direct MyFitnessPal access only when supported access becomes available. Water is tracked separately and is not received.",
+      "next_action": "The paid bridge receives available nutrition and later hydration observations. Preserve it. Direct MFP approval, original authenticated MFP water history and independently attributable automatic recurrence stay separate.",
       "blocker": "Approved API access is not available to this project; the 2026-10-04 direct account attempt also encountered a persistent provider-served browser security block before login."
     },
     {
@@ -651,8 +692,8 @@
         "v2/DATA_AUDIT.md",
         "v2/src/workout-evidence.js"
       ],
-      "next_action": "Audit a real Polar export when it is available.",
-      "blocker": "The required original export and event-level evidence are not present."
+      "next_action": "Use the inspected original as a discovery source; do not request the same ZIP again. Establish event identifiers or independent linkage before canonical reconciliation.",
+      "blocker": "The supplied Apple Health original includes Polar events, but legacy summaries lack precise timing and cannot establish safe identity. Immutable Polar IDs or stronger event-link evidence remain needed."
     },
     {
       "id": "LTS-LABS-SOURCES-001",
