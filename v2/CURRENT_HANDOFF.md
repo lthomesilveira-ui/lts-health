@@ -1,6 +1,8 @@
 # Rodada autônoma de integração — 12/10/2026
 
-`PKG-INTEGRATION-CONTINUITY-001`: clareza de origem/recebimento e preparo da agenda horária Polar. Candidato `integration-continuity-20261012.44`; gates/publicação final pendentes. A versão verificada anterior é `.43`.
+`integration-continuity-20261012.44` publicado e verificado. `LTS-INTEGRATION-STATUS-001` concluído: sete gates candidatos, seis gates da correção do manifesto e onze workflows pós-merge passaram. E2E autenticado `38303227396`; deploy `38303227420`; main verificado `2cb1d93e76252c221e3ceafed04be57952e17c01`. Sources/Home públicos autenticados foram inspecionados; não há aceite subjetivo ou físico presumido.
+
+`PKG-INTEGRATION-CONTINUITY-001` continua `blocked_external` exclusivamente pela ativação server-side Polar, não por trabalho de UI pendente. Não há tarefa autônoma `ready`/`in_progress` remanescente neste checkpoint.
 
 A agenda **não está ativada**: publicação de Edge Functions retornou erro interno/UNAVAILABLE e a migration de tickets retornou requestState expirado. Job inativo/config desabilitada verificados. Não ativar antes de aplicar o SQL planejado, publicar os handlers e comprovar execução real. Conexões atuais e chaves preservadas.
 

@@ -1,6 +1,10 @@
 # Integration continuity — 12/10/2026
 
-Candidate build: `integration-continuity-20261012.44`. UI delivery and background-server activation have separate acceptance. This is not a declaration that the whole project is finished.
+Published build: `integration-continuity-20261012.44`, verified on 2026-10-12. UI delivery and background-server activation have separate acceptance. This is not a declaration that the whole project is finished.
+
+PR 327 final candidate `92ffe5d66b8d8ddf24b0d30ac01b8ec703e0e18b` passed all seven gates. PR 328 corrected an obsolete literal `.43` Home expectation by using the same exact release manifest already checked at publication; all six candidate gates passed. All eleven corrected post-merge workflows passed at `2cb1d93e76252c221e3ceafed04be57952e17c01`, including authenticated E2E `38303227396`, Functional Depth `38303227625` and deploy `38303227420`.
+
+Synthetic artifact `11770862312`, SHA256 `8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511`, was downloaded/verified and inspected at desktop and reduced-mobile sizes. The exact authenticated public .44 source page and Home were manually inspected. No physical-device owner acceptance is inferred.
 
 ## Code and local checks
 
