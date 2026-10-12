@@ -111,17 +111,21 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   await page.locator('#reportRegion').selectOption('left_arm');check(await page.locator('#reportRegion').inputValue()==='left_arm','regional report control failed');
   await noOverflow();await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await page.screenshot({path:`${evidenceDir}/desktop-useful-reports.png`});
   await page.setViewportSize({width:390,height:844});await noOverflow();await assertStableMobileShell('mobile useful reports');await page.screenshot({path:`${evidenceDir}/mobile-useful-reports.png`});
-  await page.locator('[data-review-view="overview"]').click();await page.waitForSelector('.ltsReviewCoverage');
+  await page.locator('[data-review-view="overview"]').click();await page.waitForSelector('.ltsReviewContrasts');
   const reviewTruth=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js'),{usefulReports}=await import('./src/reports-model.js'),{integratedReview}=await import('./src/integrated-review.js');
     const m=usefulReports(state.data,state.domainStatus,state.ui),r=integratedReview(state.data,state.domainStatus,m.current,state.ui,m.today);
     const avg=rows=>rows.length?rows.reduce((sum,row)=>sum+row.value,0)/rows.length:null;
-    return{waterConsistent:r.water.mean===avg(r.water.closedRows),sleepConsistent:r.sleep.mean===avg(r.sleep.closedRows),closed:r.closed.every(d=>d.date<m.today),waterCount:r.water.closedRows.length,waterAvailable:r.water.available,waterComparable:r.contrasts.water.comparable,dates:r.dates.length};
+    return{waterConsistent:r.water.mean===avg(r.water.closedRows),sleepConsistent:r.sleep.mean===avg(r.sleep.closedRows),closed:r.closed.every(d=>d.date<m.today),waterAvailable:r.water.available,waterComparable:r.contrasts.water.comparable,waterWith:avg(r.contrasts.water.withTraining),waterWithout:avg(r.contrasts.water.withoutTraining),dates:r.dates.length};
   });
   check(reviewTruth.waterConsistent&&reviewTruth.sleepConsistent&&reviewTruth.closed,'integrated means include an open day or disagree with observations');
-  const waterCard=await page.locator('.ltsReviewCoverage article').nth(2).innerText();
-  check(waterCard.includes(reviewTruth.waterAvailable?`${reviewTruth.waterCount} dias`:'Indisponível'),'rendered water coverage differs from observed closed dates');
-  if(reviewTruth.waterAvailable&&!reviewTruth.waterComparable)check((await page.locator('.ltsReviewContrast').first().innerText()).includes('Ainda não há base suficiente'),'sparse real water manufactured a contrast');
+  check(await page.locator('.ltsReviewCoverage,.ltsReviewOverlap').count()===0,'record coverage is promoted as a health outcome');
+  const waterCard=page.locator('.ltsReviewContrast').filter({has:page.locator('h3', {hasText:'Água × treino registrado'})});
+  check(await waterCard.count()===(reviewTruth.waterComparable?1:0),'water comparison appears without enough closed observations');
+  if(reviewTruth.waterComparable){
+    const text=await waterCard.innerText(),format=value=>Number(value).toLocaleString('pt-BR',{maximumFractionDigits:0})+' mL';
+    check(text.includes(format(reviewTruth.waterWith))&&text.includes(format(reviewTruth.waterWithout)),'rendered water means disagree with the selected source observations');
+  }
   await noOverflow();await page.evaluate(()=>document.querySelector('#reportIntegratedReview')?.scrollIntoView({block:'start'}));await page.screenshot({path:`${evidenceDir}/mobile-integrated-review.png`});
   await page.locator('[data-review-view="day"]').click();await page.waitForSelector('#reviewDate');
   check(await page.locator('#reviewDate option').count()===Math.max(1,reviewTruth.dates),'integrated day selector lost observed dates');
@@ -130,5 +134,5 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   check((await page.locator('.ltsConsultation').innerText()).includes('Não é laudo'),'private summary lost its interpretation boundary');
   await noOverflow();await page.evaluate(()=>document.querySelector('.ltsReviewExport')?.scrollIntoView({block:'start'}));await page.screenshot({path:`${evidenceDir}/mobile-consultation-summary.png`});
   await page.setViewportSize({width:1536,height:864});await noOverflow();await page.screenshot({path:`${evidenceDir}/desktop-consultation-summary.png`});
-  console.log('Real-data functional depth verified: complete histories, integrated closed-date coverage, sparse water boundary, date exploration and private consultation preview. No health observations logged.');
+  console.log('Real-data functional depth verified: complete histories, source-specific closed-date comparisons, sparse water boundary, date exploration and private consultation preview. No health observations logged.');
 }
