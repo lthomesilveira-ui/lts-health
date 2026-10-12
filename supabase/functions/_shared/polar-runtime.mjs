@@ -1,6 +1,7 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.117.2';
 import {POLAR_SCOPES,validKey,encryptTokens,decryptTokens,digest,randomState,localDay,addDays,polarSessions,polarSleep,validDay} from './polar-contract.mjs';
 import {providerRead,providerItems,syncFailure,dayWindows,trainingWindowParams} from './polar-provider.mjs';
+import {normalizeSyncTrigger} from './polar-schedule.mjs';
 
 export const APP_URL='https://lthomesilveira-ui.github.io/lts-health/v2/';
 export const cors={'Access-Control-Allow-Origin':'https://lthomesilveira-ui.github.io','Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
@@ -17,7 +18,11 @@ export async function authenticatedUser(req,c){
 export async function connection(db,userId,select='*'){
   const {data,error}=await db.from('health_polar_connections').select(select).eq('user_id',userId).maybeSingle();if(error)throw Error('write_failed');return data;
 }
-export function publicStatus(c,row){return {configured:configured(c),connected:Boolean(row),last_sync_at:row?.last_sync_at||null,last_attempt_at:row?.last_attempt_at||null,sync_error:row?.sync_error||null,update_mode:'on_open',callback_url:callbackUrl(c)};}
+export async function schedulerStatus(db){
+  const {data,error}=await db.rpc('health_polar_scheduler_status');
+  return !error&&data&&typeof data.enabled==='boolean'?data:{enabled:false,unverified:true};
+}
+export function publicStatus(c,row,schedule=null){return {configured:configured(c),connected:Boolean(row),last_sync_at:row?.last_sync_at||null,last_attempt_at:row?.last_attempt_at||null,sync_error:row?.sync_error||null,last_sync_trigger:row?.last_sync_trigger||null,last_scheduled_sync_at:row?.last_scheduled_sync_at||null,last_scheduled_attempt_at:row?.last_scheduled_attempt_at||null,update_mode:schedule?.unverified?'unverified':schedule?.enabled&&schedule.interval_minutes===60?'scheduled_hourly':'on_open',callback_url:callbackUrl(c)};}
 export async function startAuthorization(db,c,userId){
   const state=randomState(),hash=await digest(state),now=new Date().toISOString();
   const cleanup=await db.from('health_polar_oauth_states').delete().eq('user_id',userId).lt('expires_at',now);if(cleanup.error)throw Error('write_failed');
@@ -42,13 +47,14 @@ export async function tokenExchange(c,params){
   return {access_token:token.access_token,refresh_token:token.refresh_token,expires_at:Date.now()+Number(token.expires_in)*1000,scopes};
 }
 export async function saveAuthorization(db,c,userId,token){
-  const {error}=await db.from('health_polar_connections').upsert({user_id:userId,tokens_encrypted:await encryptTokens(token,c.encryptionKey,userId),scopes:token.scopes,revision:crypto.randomUUID(),connected_at:new Date().toISOString(),last_sync_at:null,last_attempt_at:null,sync_error:null,sync_lease_until:'1970-01-01T00:00:00Z'});if(error)throw Error('write_failed');
+  const {error}=await db.from('health_polar_connections').upsert({user_id:userId,tokens_encrypted:await encryptTokens(token,c.encryptionKey,userId),scopes:token.scopes,revision:crypto.randomUUID(),connected_at:new Date().toISOString(),last_sync_at:null,last_attempt_at:null,last_sync_trigger:null,last_scheduled_sync_at:null,last_scheduled_attempt_at:null,sync_error:null,sync_lease_until:'1970-01-01T00:00:00Z'});if(error)throw Error('write_failed');
 }
 async function writeRows(db,table,rows){for(let i=0;i<rows.length;i+=500){const {error}=await db.from(table).upsert(rows.slice(i,i+500),{onConflict:'user_id,source_record_id'});if(error)throw Error('write_failed');}}
-export async function syncPolar(db,c,userId){
+export async function syncPolar(db,c,userId,{trigger='manual'}={}){
   const row=await connection(db,userId);if(!row)return {connected:false,synced:false};
   const now=new Date().toISOString(),lease=new Date(Date.now()+300000).toISOString();
-  const claim=await db.from('health_polar_connections').update({sync_lease_until:lease,last_attempt_at:now}).eq('user_id',userId).eq('revision',row.revision).lte('sync_lease_until',now).select('user_id').maybeSingle();
+  const syncTrigger=normalizeSyncTrigger(trigger);
+  const claim=await db.from('health_polar_connections').update({sync_lease_until:lease,last_attempt_at:now,...(syncTrigger==='scheduled'?{last_scheduled_attempt_at:now}:{})}).eq('user_id',userId).eq('revision',row.revision).lte('sync_lease_until',now).select('user_id').maybeSingle();
   if(claim.error)throw Error('write_failed');if(!claim.data)return {connected:true,synced:false,in_progress:true};
   let phase='token';
   try{
@@ -84,8 +90,9 @@ export async function syncPolar(db,c,userId){
     const stillLinked=await connection(db,userId,'revision');if(stillLinked?.revision!==row.revision)return {connected:false,synced:false};
     phase='write';
     await writeRows(db,'health_polar_sessions',sessions);await writeRows(db,'health_source_daily_metrics',metrics);
-    const updated=await db.from('health_polar_connections').update({last_sync_at:new Date().toISOString(),sync_error:null,sync_lease_until:'1970-01-01T00:00:00Z'}).eq('user_id',userId).eq('revision',row.revision);
-    if(updated.error)throw Error('write_failed');return {connected:true,synced:true};
+    const completedAt=new Date().toISOString();
+    const updated=await db.from('health_polar_connections').update({last_sync_at:completedAt,last_sync_trigger:syncTrigger,...(syncTrigger==='scheduled'?{last_scheduled_sync_at:completedAt}:{}),sync_error:null,sync_lease_until:'1970-01-01T00:00:00Z'}).eq('user_id',userId).eq('revision',row.revision).eq('sync_lease_until',lease).select('user_id').maybeSingle();
+    if(updated.error)throw Error('write_failed');return {connected:true,synced:Boolean(updated.data),...(!updated.data?{in_progress:true}:{})};
   }catch(error){
     const detail=syncFailure(error,phase),reason=['authorization_expired','write_failed'].includes(detail)?detail:'provider_unavailable';
     console.info('polar_sync_failure',detail);

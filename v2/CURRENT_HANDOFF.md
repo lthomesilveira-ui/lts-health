@@ -1,3 +1,13 @@
+# Rodada autônoma de integração — 12/10/2026
+
+`PKG-INTEGRATION-CONTINUITY-001`: clareza de origem/recebimento e preparo da agenda horária Polar. Candidato `integration-continuity-20261012.44`; gates/publicação final pendentes. A versão verificada anterior é `.43`.
+
+A agenda **não está ativada**: publicação de Edge Functions retornou erro interno/UNAVAILABLE e a migration de tickets retornou requestState expirado. Job inativo/config desabilitada verificados. Não ativar antes de aplicar o SQL planejado, publicar os handlers e comprovar execução real. Conexões atuais e chaves preservadas.
+
+O original Apple fornecido foi inspecionado: há eventos Polar, mas o resumo legado não permite vínculo inequívoco. Não pedir novamente o mesmo ZIP nem promover por coincidência de data. Água original MFP, recorrência atribuível, proteção de senha e validação física seguem separados no `EXECUTION_STATE.json`.
+
+Plano/evidência: `releases/INTEGRATION_CONTINUITY_20261012.md`.
+
 # Produto publicado e verificado — 12/10/2026
 
 Pacote `PKG-EVOLUTION-PRODUCT-001` concluído tecnicamente. Build `evolution-product-20261012.43` publicado pelos PRs normais #324/#325, commit de execução `29a37577c3ec4798df3a147c248dbec4707c8314`. Os seis gates do candidato final e os dez workflows pós-publicação passaram, incluindo E2E autenticado `38290570154` e deploy `38290570232`.

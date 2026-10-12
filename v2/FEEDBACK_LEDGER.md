@@ -116,3 +116,6 @@ O usuário aprovou o Health Auto Export Premium anual e confirmou a compra para 
 The owner authorized ongoing product improvements and cannot homologate now. Continue safe implementation and independent verification; preserve the approved references and do not turn this into a request for user micro-QA. Two workouts are expected but have not been supplied. `LTS-COCKPIT-READING-001` owns this coherent refinement of explanatory reading and unavailable-source states; current acceptance remains in `EXECUTION_STATE.json`.
 
 FB-031 technical closure: `.41` published and independently verified through PR #322; no owner homologation was required for engineering QA, and no owner acceptance is inferred.
+# Continuação autônoma — 12/10/2026
+
+O proprietário pediu executar tudo que for possível e reunir dependências humanas ao final. `PKG-INTEGRATION-CONTINUITY-001` separa clareza de origem/recebimento (`LTS-INTEGRATION-STATUS-001`) e agenda horária independente (`LTS-POLAR-BACKGROUND-001`). O segundo exige execução real: publicação do servidor e migration seguem bloqueadas, com job desativado. Nenhuma chave paga, rotina de registro ou histórico foi redefinido.
