@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-EVOLUTION-DENSITY-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Finish the approved dashboard density: insights, indicators and charts first, complete source evidence progressively accessible.",
     "task_ids": [
       "LTS-EVOLUTION-DENSITY-001",
@@ -74,11 +74,12 @@
       "Final reconciled .50 candidate 7ae77e24644299b2af56d09986a73cd5eb90ece9 passed all nine triggered workflows. Synthetic artifact 11844472838 SHA256 2a8f28de1f07aed9529e733970525d09477fc30ec88350c2fd96e2f4381da45a inspected at desktop, mobile, reduced viewport and 320px.",
       "PR 341 promoted .50 at 875d0371dfdb4ae595bcbc47472c132c26a16c8b. Exact-head real authenticated E2E 38459845074 and Training Session 38459844766 passed. Concurrent documentation-only PR 342 produced c637cf75d5a95b86c1efe99e7e1d4bd9312dd5c8 with identical executable files; its eleven applicable runtime/deployed gates passed, including deploy 38459880152, Pages 38459946243, homologation 38459946177 and Functional Depth 38459880332. Superseded deployment/functional runs were cancelled by workflow concurrency, not counted as successful or waived.",
       "Exact authenticated .50 Home and consultation inspected: current dated records, closed evidence disclosures, no horizontal overflow and chart labels inside their bounds. The latest session and exercise detail preserve primary/extension distinctions, fractional repetitions, source observations and reported sensor limitations. The consultation contains readable phase labels without raw internal phase keys.",
-      "Source limits and owner physical-device/visual acceptance remain separate. No new source record, integration, permission or clinical decision was created in this final presentation/label pass. Historical water export, independently attributable water recurrence, unconfirmed current food plan and older body devices are not guessed."
+      "Source limits and owner physical-device/visual acceptance remain separate. No new source record, integration, permission or clinical decision was created in this final presentation/label pass. Historical water export, independently attributable water recurrence, unconfirmed current food plan and older body devices are not guessed.",
+      "Consultation follow-up added through PR 345 with bounded private projection and full candidate/runtime source verification. Previously reported context is recovered without repeat questions; no new administration or treatment start is inferred."
     ],
     "pending_evidence": [],
-    "public_build": "evolution-final-20261013.50",
-    "release_state": "published_50; exact_authenticated_desktop_and_responsive_workflows_verified; independent_source_limits_and_owner_acceptance_separate"
+    "public_build": "consultation-followup-20261013.52",
+    "release_state": "published_52; consultation_followup_authenticated_public_verified; independent_source_limits_preserved"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1534,7 +1535,7 @@
       "id": "LTS-CARE-FOLLOWUP-001",
       "area": "protocols",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Show consultation follow-up, reported baseline, pending purchases, requested examinations and message drafts from a bounded private document projection.",
       "acceptance": [
@@ -1546,9 +1547,12 @@
         "The same view works on desktop and mobile and a document failure preserves the application history."
       ],
       "evidence": [
-        "Cross-screen privacy contract passed locally."
+        "PR 345 merged after all ten candidate workflows passed at 022b33c28fa88d76d7e552a4e881a25306fb149c.",
+        "cockpit-smoke 38465822239 explicitly passed the new desktop/mobile consultation, escaping, unconfirmed-state and partial-failure checks.",
+        "Exact public build consultation-followup-20261013.52 inspected in the existing authenticated Cloud Browser session.",
+        "Live consultation context, source dates, pending examinations, purchase/start states and expanded vendor/physician messages verified; application history preserved and no horizontal overflow."
       ],
-      "next_action": "Validate the isolated branch in CI, promote through a normal PR and inspect the exact authenticated published route.",
+      "next_action": "Incorporate only newly supplied consultation documents and confirmed follow-up events; do not reopen prior reported context.",
       "blocker": null,
       "pull_request_url": "https://github.com/lthomesilveira-ui/lts-health/pull/345"
     }
