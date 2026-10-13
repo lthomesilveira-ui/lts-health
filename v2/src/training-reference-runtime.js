@@ -1,6 +1,6 @@
 import {state,fixtureMode,exercisesFor,workoutRows} from './core.js';
 import {isRouteReady} from './data-layer.js';
-import {renderProductTraining} from './training-reference-v2.js?v=evolution-final-20261013.50';
+import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 
 if(!fixtureMode){
   let applying=false;

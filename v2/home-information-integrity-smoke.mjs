@@ -48,6 +48,7 @@ try{
  assert.equal(await page.locator('#healthContextDate option').filter({hasText:dates.old}).count(),0);
  for(const viewport of [{width:390,height:844},{width:1440,height:1000}]){
   await page.setViewportSize(viewport);
+  await page.evaluate(async()=>{const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();document.querySelector('#screenHost').scrollTop=0;});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3),'no horizontal overflow');
   const sizes=await page.locator('.ltsExecutiveCard small,.ltsCockpitPanel p').evaluateAll(es=>es.map(e=>parseFloat(getComputedStyle(e).fontSize)));
   assert.ok(sizes.every(n=>n>=11),'readable evidence and source text');

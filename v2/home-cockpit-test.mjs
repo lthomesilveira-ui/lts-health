@@ -15,6 +15,16 @@ assert.equal(c.title,'Peso -1,0 kg entre avaliações');assert.match(c.detail,/0
 const html=renderHomeCockpit(c);assert.equal((html.match(/class="ltsExecutiveCard /g)||[]).length,5);
 assert.equal((html.match(/class="ltsCockpitPanel /g)||[]).length,6);
 assert.match(html,/Synthetic A/);assert.doesNotMatch(html,/2 resultados|ltsRefRing|2\/7|Registros em conjunto|aderência às metas|Boa evolução|necessidade de água/);
+assert.ok(html.indexOf('class="ltsExecutiveCards"')<html.indexOf('class="ltsCockpitReading'),'desktop DOM leads with summaries');
+globalThis.window={matchMedia:()=>({matches:true})};
+const compactHtml=renderHomeCockpit(c);
+assert.match(compactHtml,/data-home-layout="compact"/);
+assert.ok(compactHtml.indexOf('class="ltsCockpitReading')<compactHtml.indexOf('class="ltsExecutiveCards"'),'mobile DOM leads with the primary insight');
+assert.equal((compactHtml.match(/class="ltsExecutiveCard /g)||[]).length,5);
+assert.equal((compactHtml.match(/class="ltsCockpitPanel /g)||[]).length,6);
+assert.match(compactHtml,/data-disclosure="home-more-readings"/,'secondary findings remain accessible in a native disclosure');
+assert.match(compactHtml,/data-home-body-metric/,'body filters remain available');
+delete globalThis.window;
 assert.deepEqual(data,snapshot,'rendering does not mutate records');
 c=homeCockpitModel(data,{...status,workouts:'error',body:'error',nutrition:'error',sourceMetrics:'error',labs:'error'},'30',{},'2025-04-20');
 assert.equal(c.trainingPoints.length,0);assert.equal(c.body,null);assert.equal(c.foodPoints.length,0);assert.equal(c.labRows.length,0);

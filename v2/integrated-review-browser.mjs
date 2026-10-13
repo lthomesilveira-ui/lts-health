@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mkdirSync,readFileSync} from 'node:fs';
+import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 
 // Synthetic data only. Tests the real authenticated renderer, not a demo page.
@@ -31,6 +31,20 @@ try{
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
     await page.screenshot({path:`${dir}/${label}-home.png`});
+    const firstFold=await page.evaluate(()=>{
+      const box=s=>{const r=document.querySelector(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};},reading=document.querySelector('.ltsCockpitReading'),cards=document.querySelector('.ltsExecutiveCards');
+      const viewportBottom=(visualViewport?.offsetTop||0)+(visualViewport?.height||innerHeight),nav=document.querySelector('#mobileNav'),navVisible=nav&&getComputedStyle(nav).display!=='none';
+      const bottom=Math.min(viewportBottom,box('#screenHost').bottom,navVisible?nav.getBoundingClientRect().top:Infinity),plot=box('.ltsCockpitPanel.body .ltsContextPlot svg');
+      return {bottom,title:box('.ltsCockpitReadings article>b'),meaning:box('.ltsCockpitReadings article>p'),plotVisible:Math.max(0,Math.min(bottom,plot.bottom)-Math.max(0,plot.top)),readingBeforeCards:Boolean(reading.compareDocumentPosition(cards)&Node.DOCUMENT_POSITION_FOLLOWING),scroll:document.querySelector('#screenHost').scrollTop,layout:document.querySelector('[data-home-layout]')?.dataset.homeLayout};
+    });
+    writeFileSync(`${dir}/${label}-first-fold.json`,JSON.stringify({viewport:{width,height},build:await page.locator('meta[name="lts-build"]').getAttribute('content'),...firstFold},null,2));
+    if(width<=840){
+      assert.equal(firstFold.layout,'compact');
+      assert.equal(firstFold.scroll,0,'first-fold evidence is captured before scrolling');
+      assert.equal(firstFold.readingBeforeCards,true,'mobile DOM and keyboard order lead with the insight');
+      assert.ok(firstFold.title.top>=0&&firstFold.meaning.bottom<=firstFold.bottom,'the complete primary finding is readable without scrolling');
+      assert.ok(firstFold.plotVisible>=64,`mobile opening exposes at least 64px of the actual body plot; got ${firstFold.plotVisible}`);
+    }else assert.equal(firstFold.readingBeforeCards,false,'desktop DOM follows the approved cards-first layout');
     assert.equal(await page.locator('[data-home-period]').count(),4,'one shared period control, not duplicate viewport controls');
     assert.ok(await page.locator('[data-home-period]').evaluateAll(buttons=>buttons.every(el=>{const r=el.getBoundingClientRect(),target=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return target&&el.contains(target);})), 'period controls remain clear of floating shell actions');
     assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
@@ -60,7 +74,7 @@ try{
     if(await page.locator('[data-disclosure="home-lab-comparisons"]').getAttribute('open')!=null)await page.locator('[data-disclosure="home-lab-comparisons"]>summary').click();
     assert.equal(await page.locator('.ltsRefProgressItem,.ltsRefRing').count(),0,'coverage is not an outcome');
     const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),next:top('.ltsEvolutionNext')};});
-    assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.next);
+    assert.ok(width<=840?geometry.reading<geometry.cards&&geometry.cards<geometry.charts&&geometry.charts<geometry.next:geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.next,'responsive visual order matches the DOM');
     assert.equal(await page.locator('[data-disclosure="home-history"]').getAttribute('open'),null);
     assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/1\.250 mL/);
     assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),new RegExp(today.split('-').reverse().join('/')));
@@ -89,6 +103,40 @@ try{
     await page.locator('#personalGoalsForm [type="submit"]').click();
     await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
     await page.locator('.ltsGoalSettings summary').first().click();
+    if(label==='mobile'){
+      await page.locator('[data-home-body-metric="weight_kg"]').click();
+      for(const selector of ['[data-home-period="90"]','[data-home-body-metric="weight_kg"]','[data-disclosure="home-insight-labs"]>summary']){
+        await page.setViewportSize({width:839,height:844});
+        await page.waitForSelector('[data-home-layout="compact"]');
+        await page.locator(selector).focus();
+        for(const width of [841,839]){
+          await page.setViewportSize({width,height:844});
+          await page.waitForSelector(`[data-home-layout="${width>840?'desktop':'compact'}"]`);
+          const focus=await page.locator(selector).evaluate(el=>({preserved:el===document.activeElement,expected:el.outerHTML,actual:document.activeElement?.outerHTML.slice(0,500)}));
+          assert.equal(focus.preserved,true,`breakpoint focus ${width}: ${JSON.stringify(focus)}`);
+          assert.equal(await page.locator('[data-home-body-metric="weight_kg"]').getAttribute('aria-pressed'),'true','selected body metric survives responsive re-render');
+          assert.equal(await page.locator('[data-home-period]').count(),4);
+        }
+      }
+      await page.setViewportSize({width,height});
+      await page.waitForSelector('[data-home-layout="compact"]');
+      await page.locator('#home-period-90').focus();
+      const beforeSettlement=await page.locator('#home-period-90').elementHandle();
+      await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.data.goals=[...state.data.goals];});
+      await page.waitForFunction(element=>!element.isConnected,beforeSettlement);
+      assert.equal(await page.locator('#home-period-90').evaluate(el=>el===document.activeElement),true,'late source settlement preserves the focused Home control');
+      assert.equal(await page.locator('[data-disclosure="home-insight-labs"]').getAttribute('open'),null,'focusing a collapsed disclosure does not open it');
+      assert.equal(await page.locator('[id]').evaluateAll(es=>new Set(es.map(e=>e.id)).size===es.length),true,'responsive Home has no duplicate IDs');
+      await page.locator('#home-more-areas-summary').press('Enter');
+      assert.equal(await page.locator('[data-disclosure="home-more-areas"]').getAttribute('open'),'','other three summaries are keyboard-accessible');
+      await page.locator('#home-card-body').focus();
+      for(const width of [841,839]){
+        await page.setViewportSize({width,height:844});
+        await page.waitForSelector(`[data-home-layout="${width>840?'desktop':'compact'}"]`);
+        assert.equal(await page.locator('#home-card-body').evaluate(el=>el===document.activeElement),true,'summary focus survives moving into or out of the mobile disclosure');
+      }
+      await page.setViewportSize({width,height});
+    }
     await page.locator('.ltsCockpitReading:visible [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
