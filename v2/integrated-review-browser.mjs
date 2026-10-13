@@ -33,6 +33,7 @@ try{
     assert.equal(await page.locator('[data-home-period]').count(),4,'one shared period control, not duplicate viewport controls');
     assert.ok(await page.locator('[data-home-period]').evaluateAll(buttons=>buttons.every(el=>{const r=el.getBoundingClientRect(),target=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return target&&el.contains(target);})), 'period controls remain clear of floating shell actions');
     assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
+    if(width<=840){assert.equal(await page.locator('.ltsHomeMobileBrand').isVisible(),true,'mobile Home preserves app identity');assert.match(await page.locator('.ltsHomeMobileBrand').innerText(),/LTS Health/);}
     assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
     assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),true,'same product hierarchy on all devices');
     assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Gordura.*músculo/);
