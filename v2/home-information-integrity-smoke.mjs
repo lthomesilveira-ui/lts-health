@@ -30,7 +30,11 @@ try{
  });
  assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
  assert.equal(await page.locator('.ltsCockpitPanel').count(),6);
+ const bodyEvidence=page.locator('[data-disclosure="home-insight-body"]');
+ assert.equal(await bodyEvidence.evaluate(e=>e.open),false,'source values are progressively disclosed on the compact opening');
+ await bodyEvidence.locator('summary').click();
  assert.match(await page.locator('.ltsCockpitReading').innerText(),/-1,0 kg.*\+1,0 kg/s,'same-device tissue changes, not record totals');
+ await bodyEvidence.locator('summary').click();
  assert.match(await page.locator('.ltsExecutiveCard.nutrition').innerText(),/150 g proteína/);
  assert.match(await page.locator('.ltsCockpitPanel.nutrition').innerText(),/Último diário.*2\.100 kcal/s,'two diaries show the latest value, not an average');
  assert.match(await page.locator('.ltsCockpitPanel.labs').innerText(),/Nenhum resultado inequívoco na janela/,'old labs cannot appear as current-window results');
