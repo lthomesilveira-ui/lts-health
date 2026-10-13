@@ -11,7 +11,7 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js?v=mobile-insight-20261013.51';
+import {renderProductHomeReference} from './home-reference.js?v=overview-20261013.53';
 import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
@@ -91,8 +91,9 @@ function renderFocusSelector(active){
   if(!active)return null;
   if(active.id)return `#${CSS.escape(active.id)}`;
   if(active.matches('.ltsExecutiveCard'))return `.ltsExecutiveCard[data-route="${CSS.escape(active.dataset.route)}"]`;
+  if(active.hasAttribute('data-home-consultation')&&active.closest('.ltsOverview'))return '.ltsOverview [data-home-consultation]';
   if(active.hasAttribute('data-home-consultation'))return active.closest('.ltsCockpitHeading')?'.ltsCockpitHeading [data-home-consultation]':'.ltsEvolutionNext [data-home-consultation]';
-  for(const attribute of ['data-home-period','data-home-body-metric','data-home-consultation','data-home-insight-details']){
+  for(const attribute of ['data-home-period','data-overview-body-metric','data-home-body-metric','data-home-consultation','data-home-insight-details']){
     if(active.hasAttribute(attribute))return `[${attribute}="${CSS.escape(active.getAttribute(attribute))}"]`;
   }
   if(active.matches('summary')&&active.parentElement?.dataset.disclosure)return `[data-disclosure="${CSS.escape(active.parentElement.dataset.disclosure)}"]>summary`;
@@ -210,8 +211,8 @@ function bindStaticEvents(){
     if(homeWorkout){state.ui.openWorkout=homeWorkout.dataset.homeWorkout;state.ui.productTrainingView='summary';setRoute('treinos');return;}
     const homeLab=event.target.closest('[data-home-lab-marker]');
     if(homeLab){state.ui.reportLabMarker=homeLab.dataset.homeLabMarker;render();const detail=document.querySelector('.ltsEvolutionLabDetail');if(detail){detail.open=true;detail.scrollIntoView({block:'nearest'});}return;}
-    const bodyMetric=event.target.closest('[data-home-body-metric]');
-    if(bodyMetric&&['fat_mass_kg','skeletal_muscle_mass_kg','weight_kg','body_fat_pct'].includes(bodyMetric.dataset.homeBodyMetric)){state.ui.homeBodyMetric=bodyMetric.dataset.homeBodyMetric;render();return;}
+    const bodyMetric=event.target.closest('[data-home-body-metric],[data-overview-body-metric]');
+    if(bodyMetric&&['fat_mass_kg','skeletal_muscle_mass_kg','weight_kg','body_fat_pct'].includes(bodyMetric.dataset.homeBodyMetric||bodyMetric.dataset.overviewBodyMetric)){state.ui.homeBodyMetric=bodyMetric.dataset.homeBodyMetric||bodyMetric.dataset.overviewBodyMetric;render();return;}
     const reportPage=event.target.closest('[data-report-page]');
     if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage','reviewDayPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
     const reviewView=event.target.closest('[data-review-view]');

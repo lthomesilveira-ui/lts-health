@@ -1,6 +1,6 @@
 import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
 import {validDay,rowKey,pageOf,pager,years,yearFilter,seriesWindow,periodControl,pointChart,emptyCard,errorCard,failed,valueText,differenceText} from './history-tools.js';
-import {bodySourceLabel,bodyMetricSeries,contextChart} from './health-context.js';
+import {bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,contextChart} from './health-context.js';
 
 export const compositionMetrics={
   body_fat_pct:{label:'Gordura corporal',short:'Gordura',unit:'%',deltaUnit:'p.p.'},
@@ -8,7 +8,7 @@ export const compositionMetrics={
   weight_kg:{label:'Peso',short:'Peso',unit:'kg'},
   fat_mass_kg:{label:'Massa de gordura',short:'Gordura kg',unit:'kg'}
 };
-const identity=row=>norm(row?.source_family||row?.source_name||row?.source||'');
+const identity=bodyEvidenceCohort;
 const sourceDisplay=row=>{
   const raw=String(row?.source_name||row?.source||row?.source_family||'').trim();
   return bodySourceLabel(row);
@@ -34,10 +34,14 @@ function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span
 export function linkedSegmental(record,bodyRows,segmentalRows){
   const date=validDay(record?.measured_at),source=identity(record);
   if(!date||!source)return{row:null,reason:'A data ou origem não permite vincular um registro segmentar.'};
-  let candidates=segmentalRows.filter(r=>validDay(r.measured_at)===date&&identity(r)===source);
-  if(record.source_file)candidates=candidates.filter(r=>!r.source_file||r.source_file===record.source_file);
-  const bodySameDay=bodyRows.filter(r=>validDay(r.measured_at)===date&&identity(r)===source);
-  if(bodySameDay.length>1&&(!record.source_file||!candidates.every(r=>r.source_file===record.source_file)))return{row:null,reason:'Há múltiplas medições nesta data; a vinculação segmentar não é inequívoca.'};
+  // Same original file and date link domains even when their editorial labels differ.
+  // A file-less legacy match still requires the same source and unambiguous date.
+  const sameDay=segmentalRows.filter(r=>validDay(r.measured_at)===date);
+  const exactFile=record.source_file?sameDay.filter(r=>r.source_file===record.source_file):[];
+  const candidates=exactFile.length?exactFile:sameDay.filter(r=>identity(r)===source&&(!record.source_file||!r.source_file));
+  const bodySameDay=bodyRows.filter(r=>validDay(r.measured_at)===date);
+  const sameFile=bodySameDay.filter(r=>record.source_file&&r.source_file===record.source_file);
+  if(sameFile.length>1||(!exactFile.length&&bodySameDay.length>1))return{row:null,reason:'Há múltiplas medições nesta data; a vinculação segmentar não é inequívoca.'};
   return candidates.length===1?{row:candidates[0],reason:''}:{row:null,reason:candidates.length?'Há mais de um registro segmentar compatível; nenhum foi escolhido automaticamente.':'Não há análise segmentar vinculável a esta data e origem.'};
 }
 function renderRecordDetail(model){
