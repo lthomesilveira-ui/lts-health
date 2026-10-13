@@ -93,3 +93,76 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
 
 .ltsEvolutionHome .ltsEvolutionRefresh{margin:0 0 20px}.ltsEvolutionHome .ltsCockpitWindow{margin-bottom:12px}
 .ltsReviewContrast>button{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;padding:10px 14px;border:1px solid #cfdde9;border-radius:9px;background:#f4f8fc;color:#234c72;font-family:inherit;font-size:12px;font-weight:650;line-height:1.5;cursor:pointer}.ltsReviewContrast>button:focus-visible{outline:3px solid #668fbe;outline-offset:3px}
+
+/* Final executive view: scoped controls, readable comparisons and source dates. */
+.ltsEvolutionHome .ltsCockpitHeading{align-items:flex-start;margin-bottom:20px;gap:20px}
+.ltsEvolutionHome .ltsCockpitHeading h1{font-size:clamp(24px,2.3vw,32px);line-height:1.2;margin:4px 0 8px}
+.ltsEvolutionHome .ltsCockpitHeadingControls{display:flex;align-items:flex-end;flex-direction:column;gap:8px;flex-shrink:0}
+.ltsEvolutionHome .ltsCockpitWindow{padding:0!important;margin:0;gap:10px;font-size:11px}
+.ltsEvolutionHome .ltsCockpitHeadingControls>.ltsEvolutionAction{padding:6px 12px;min-height:40px;background:transparent}
+.ltsEvolutionHome .ltsExecutiveCard{min-height:142px;padding:16px;gap:6px;border-radius:13px}
+.ltsEvolutionHome .ltsExecutiveCards{margin-bottom:18px}
+.ltsEvolutionHome .ltsCockpitReading{display:block;padding:18px 20px;margin-bottom:20px}
+.ltsEvolutionHome .ltsCockpitReading>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.ltsEvolutionHome .ltsCockpitReading h2{font-size:16px;margin:0}
+.ltsEvolutionHome .ltsCockpitReading button{margin:0;min-height:40px;padding:6px 12px;background:transparent}
+.ltsEvolutionHome .ltsCockpitReadings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.ltsEvolutionHome .ltsCockpitReadings article{min-width:0;border-left:2px solid #dce6ef;padding-left:12px}
+.ltsEvolutionHome .ltsCockpitReadings b{display:block;font-size:14px;line-height:1.5;color:#203c58}
+.ltsEvolutionHome .ltsCockpitReadings p{font-size:11px;line-height:1.6;margin:6px 0}
+.ltsEvolutionHome .ltsCockpitReadings small{display:block;font-size:11px;line-height:1.65;color:#52647a}
+.ltsEvolutionHome .ltsCockpitGrid{gap:16px;align-items:start}
+.ltsEvolutionHome .ltsCockpitPanel{padding:18px;border-radius:13px}
+.ltsEvolutionHome .ltsContextPlotLabel{display:flex;justify-content:space-between;gap:12px;margin:14px 0 3px;font-size:11px;line-height:1.6;color:#52647a}
+.ltsEvolutionHome .ltsContextPlotLabel span{letter-spacing:0;font-size:11px;font-weight:500}
+.ltsEvolutionHome .ltsContextPlotLabel b{font-weight:650}
+.ltsEvolutionHome .ltsCockpitPanel .ltsContextPlot svg{width:100%;min-height:132px}
+.ltsEvolutionHome .ltsCockpitPanel .ltsContextPlot text{font-size:26px}
+.ltsEvolutionHome .ltsContextAxis{font-size:11px;line-height:1.5}
+.ltsEvolutionHome .ltsEvolutionTableWrap{max-width:100%;overflow-x:auto}
+.ltsEvolutionHome .ltsEvolutionTable{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.ltsEvolutionHome .ltsEvolutionTable caption{text-align:left;font-size:11px;line-height:1.5;color:#52647a;padding:8px 0}
+.ltsEvolutionHome .ltsEvolutionTable th,.ltsEvolutionHome .ltsEvolutionTable td{text-align:left;vertical-align:top;padding:9px 4px;border-bottom:1px solid #e6edf3;overflow-wrap:anywhere;line-height:1.5}
+.ltsEvolutionHome .ltsEvolutionTable thead th{color:#52647a;font-weight:600;font-size:10px}
+.ltsEvolutionHome .ltsEvolutionTable th{width:38%;font-weight:600}
+.ltsEvolutionHome .ltsEvolutionTable b{font-size:12px;font-weight:650}
+.ltsEvolutionHome .ltsEvolutionTable small{display:block;font-size:10px;line-height:1.5;color:#52647a;margin-top:4px;font-weight:400}
+.ltsEvolutionHome .ltsEvolutionTable button{font-family:inherit;font-size:12px;line-height:1.5;min-height:44px;border:0;padding:0;background:transparent;color:#244f76;text-align:left;font-weight:650}
+.ltsEvolutionHome .ltsEvolutionBodyCompare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.ltsEvolutionHome .ltsEvolutionBodyCompare span,.ltsEvolutionHome .ltsEvolutionBodyCompare small{display:block;font-size:10px;line-height:1.6;color:#52647a}
+.ltsEvolutionHome .ltsEvolutionBodyCompare b{display:block;font-size:12px;margin:3px 0}
+.ltsEvolutionHome .ltsEvolutionComparison{margin:14px 0;border-left:3px solid #c9dbea;padding:0 0 0 12px}
+.ltsEvolutionHome .ltsEvolutionComparison>b{font-size:12px;line-height:1.5}
+.ltsEvolutionHome .ltsEvolutionComparison>div{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:9px 0}
+.ltsEvolutionHome .ltsEvolutionComparison span{font-size:10px;line-height:1.5;color:#52647a}
+.ltsEvolutionHome .ltsEvolutionComparison small{display:block;font-size:10px}
+.ltsEvolutionHome .ltsEvolutionComparison strong{font-size:15px;white-space:nowrap;color:#203c58}
+.ltsEvolutionHome .ltsEvolutionComparison p{font-size:11px}
+.ltsEvolutionHome .ltsEvolutionLatestSets h3{font-size:12px;margin:14px 0;color:#52647a;font-weight:650}
+.ltsEvolutionHome .ltsEvolutionLatestSets article{padding:10px 0;border-bottom:1px solid #e6edf3}
+.ltsEvolutionHome .ltsEvolutionLatestSets b{font-size:12px;line-height:1.6}
+.ltsEvolutionHome .ltsEvolutionLatestSets small{display:block;font-size:10px;line-height:1.6;color:#52647a}
+.ltsEvolutionHome .ltsEvolutionLatestSets p{font-size:12px;color:#203c58;line-height:1.7;margin:5px 0}
+.ltsEvolutionHome .ltsEvolutionSession{margin-top:6px;padding:12px}
+.ltsEvolutionHome .ltsEvolutionRegions>div{display:flex;justify-content:space-between;gap:10px;font-size:11px;border-bottom:1px solid #e6edf3;padding:7px 0}
+.ltsEvolutionHome .ltsEvolutionDiagnostics button+button{margin-left:8px}
+@media(max-width:1100px){.ltsEvolutionHome .ltsCockpitReadings{gap:12px}.ltsEvolutionHome .ltsCockpitHeadingControls{max-width:50%}.ltsEvolutionHome .ltsCockpitWindow>span{display:none}}
+@media(max-width:840px){
+ .ltsEvolutionHome .ltsCockpitHeading{display:block;margin-bottom:18px}
+ .ltsEvolutionHome .ltsCockpitHeading h1{font-size:26px}
+ .ltsEvolutionHome .ltsCockpitHeadingControls{max-width:none;align-items:stretch;margin-top:14px;gap:8px}
+ .ltsEvolutionHome .ltsCockpitWindow{display:block;margin:0}.ltsEvolutionHome .ltsHomePeriod button{font-size:11px;padding:8px;min-height:44px}
+ .ltsEvolutionHome .ltsCockpitHeadingControls>.ltsEvolutionAction{align-self:flex-start;min-height:44px}
+ .ltsEvolutionHome .ltsExecutiveCard{min-height:139px;padding:14px}.ltsEvolutionHome .ltsExecutiveCard:last-child{min-height:110px}
+ .ltsEvolutionHome .ltsCockpitReading{padding:16px}.ltsEvolutionHome .ltsCockpitReading button{min-height:44px;font-size:11px}
+ .ltsEvolutionHome .ltsCockpitReadings{grid-template-columns:1fr;gap:14px}.ltsEvolutionHome .ltsCockpitReadings b{font-size:14px}
+ .ltsEvolutionHome .ltsCockpitReadings p,.ltsEvolutionHome .ltsCockpitReadings small{font-size:12px}
+ .ltsEvolutionHome .ltsCockpitPanel{padding:18px}.ltsEvolutionHome .ltsCockpitPanel .ltsContextPlot text{font-size:30px}
+ .ltsEvolutionHome .ltsContextAxis{font-size:12px}
+ .ltsEvolutionHome .ltsEvolutionTable{font-size:12px}.ltsEvolutionHome .ltsEvolutionTable small{font-size:11px}
+ .ltsEvolutionHome .ltsEvolutionComparison strong{font-size:16px}.ltsEvolutionHome .ltsEvolutionComparison span,.ltsEvolutionHome .ltsEvolutionComparison small{font-size:11px}
+ .ltsEvolutionHome .ltsEvolutionDiagnostics button{width:100%;margin:6px 0}.ltsEvolutionHome .ltsEvolutionDiagnostics button+button{margin-left:0}
+}
+
+.ltsEvolutionHome .ltsEvolutionProtocolReference{background:#f7f9fc;border:1px solid #e2e9f0;border-radius:9px;padding:12px;margin:14px 0}.ltsEvolutionHome .ltsEvolutionProtocolReference b{font-size:11px;line-height:1.6;color:#52647a}.ltsEvolutionHome .ltsEvolutionProtocolReference p{font-size:12px;margin:6px 0;color:#203c58}.ltsEvolutionHome .ltsEvolutionProtocolReference small{display:block;font-size:11px;line-height:1.6;color:#52647a}
+@media(min-width:841px){.ltsEvolutionHome .ltsCockpitHeading{padding-right:88px!important}.ltsEvolutionHome .ltsCockpitHeadingControls{max-width:none;min-width:0}}

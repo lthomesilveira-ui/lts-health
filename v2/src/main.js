@@ -194,6 +194,8 @@ function bindStaticEvents(){
     if(event.target.closest('[data-home-goals]')){const details=document.querySelector('.ltsGoalSettings');if(details){details.open=true;details.scrollIntoView({block:'start',behavior:'auto'});details.querySelector('input')?.focus({preventScroll:true});}return;}
     const homeWorkout=event.target.closest('[data-home-workout]');
     if(homeWorkout){state.ui.openWorkout=homeWorkout.dataset.homeWorkout;state.ui.productTrainingView='summary';setRoute('treinos');return;}
+    const homeLab=event.target.closest('[data-home-lab-marker]');
+    if(homeLab){state.ui.reportLabMarker=homeLab.dataset.homeLabMarker;render();const detail=document.querySelector('.ltsEvolutionLabDetail');if(detail){detail.open=true;detail.scrollIntoView({block:'nearest'});}return;}
     const bodyMetric=event.target.closest('[data-home-body-metric]');
     if(bodyMetric&&['fat_mass_kg','skeletal_muscle_mass_kg','weight_kg','body_fat_pct'].includes(bodyMetric.dataset.homeBodyMetric)){state.ui.homeBodyMetric=bodyMetric.dataset.homeBodyMetric;render();return;}
     const reportPage=event.target.closest('[data-report-page]');
@@ -250,7 +252,7 @@ function bindStaticEvents(){
 
   document.addEventListener('change',event=>{
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
-    if(['reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
+    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
     if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;state.ui.reviewDate=event.target.value;scheduleRender();}

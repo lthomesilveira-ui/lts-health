@@ -49,23 +49,23 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-FLEURY-SOURCE-VALIDATION-001",
-    "status": "done",
-    "goal": "Validate already supplied Fleury originals, repair source-proven omissions and preserve the current published product.",
+    "id": "PKG-EVOLUTION-FINAL-001",
+    "status": "in_progress",
+    "goal": "Finish the owner-requested evolution dashboard against the actual authenticated product and supplied visual reference.",
     "task_ids": [
-      "LTS-FLEURY-SOURCE-VALIDATION-001"
+      "LTS-EVOLUTION-FINAL-001"
     ],
     "completed_evidence": [
-      "v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md",
-      "v2/fleury-source-audit.py",
-      "v2/fleury-source-audit-test.py",
-      "Private originals and representative rendered pages inspected; current result comparisons passed after bounded restoration.",
-      "Before/after snapshots preserved all existing record projections. A second execution inserted no records.",
-      "Local synthetic source-audit, lab quarantine/numeric/source, Polar/bridge, continuity and payload checks passed.",
-      "Normal PR 333 published candidate 6a11e9f2e3a8298bd3c79d2001f77fbeab99d3d6 as main ce7340e44037087edebd3ce17e86cd29531d9417. All seven candidate gates passed.",
-      "All twelve triggered post-merge workflows succeeded, including real authenticated E2E 38416744904, Functional Depth 38416744767, source audit 38416744961, deploy 38416744537 and public Pages 38416796518. Frontend .44 remains intact."
+      "Owner requested autonomous final delivery on 2026-10-13.",
+      "Exact authenticated Home inspection identified stale training emphasis, single-marker laboratory reading and an oversized opening.",
+      "Implemented compact executive Home, recent-session set reading, freshness-first working load selection, multi-marker current/prior laboratory view and source-scoped closed-week routine comparisons.",
+      "Source protocol references are preserved separately from currently effective goals; private restoration is deliberately deferred until the matching frontend is published.",
+      "Private read-only snapshots and independent Decimal calculations reconciled the recent dietary comparisons; synthetic freshness, unknown phases, censored results, prior context, device/source and goal-vigency checks passed."
     ],
-    "pending_evidence": []
+    "pending_evidence": [
+      "Candidate responsive UI contracts and synthetic screenshot inspection.",
+      "Normal promotion, exact deployed authenticated inspection and source-reference restoration under the matching release."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1411,6 +1411,32 @@
       ],
       "next_action": "Preserve the verified release; reopen on new owner feedback or a reproducible defect. Track source-history and automation limits separately.",
       "blocker": null
+    },
+    {
+      "id": "LTS-EVOLUTION-FINAL-001",
+      "area": "product",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Complete useful health evolution readings across body, training, laboratories and daily routine.",
+      "acceptance": [
+        "Compact approved executive hierarchy puts values, changes and dates in the opening view.",
+        "Training emphasizes recent sessions and the freshest comparable pair; stale or unclassified sets never become current strength claims.",
+        "Body values and regions remain readable when device identity prevents automatic comparison.",
+        "Several laboratory markers show current and prior values together, preserving units, methods, collection dates and censored results.",
+        "Food, sleep and water show closed-day comparisons from the selected source, with their own denominators and dated goals only.",
+        "Consultation summary carries the same evolution evidence and comparison limits.",
+        "Meaningful synthetic and private read-only calculation checks, responsive candidate journeys, normal promotion and authenticated deployed inspection pass."
+      ],
+      "evidence": [
+        "Latest owner request reopens product acceptance independently of earlier technical release gates.",
+        "Read-only live product and private-source metadata inspected on 2026-10-13.",
+        "Implemented compact executive Home, recent-session set reading, freshness-first working load selection, multi-marker current/prior laboratory view and source-scoped closed-week routine comparisons.",
+        "Source protocol references are preserved separately from currently effective goals; private restoration is deliberately deferred until the matching frontend is published.",
+        "Private read-only snapshots and independent Decimal calculations reconciled the recent dietary comparisons; synthetic freshness, unknown phases, censored results, prior context, device/source and goal-vigency checks passed."
+      ],
+      "next_action": "Implement and verify the coherent final evolution package.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -1705,6 +1731,25 @@
         "Current source audit found no duplicate daily grain or negative supported measures. Existing paid bridge and latest laboratory records preserved; previously supplied Fleury originals were located without reimport.",
         "Normal PR 331 promoted 7b1da169f2aec698e4500267868ff604621200de as main 0405d5e457029a3de45ca93d3578ee4db1922fda. All six candidate and ten triggered post-merge workflows succeeded; exact authenticated public Home was inspected again.",
         "Secure administrative sign-in completed without model-visible credentials. Prevent use of leaked passwords enabled and saved in the dedicated Health project; the native security advisor no longer reports auth_leaked_password_protection. Other Auth settings were not changed."
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "PKG-FLEURY-SOURCE-VALIDATION-001",
+      "status": "done",
+      "goal": "Validate already supplied Fleury originals, repair source-proven omissions and preserve the current published product.",
+      "task_ids": [
+        "LTS-FLEURY-SOURCE-VALIDATION-001"
+      ],
+      "completed_evidence": [
+        "v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md",
+        "v2/fleury-source-audit.py",
+        "v2/fleury-source-audit-test.py",
+        "Private originals and representative rendered pages inspected; current result comparisons passed after bounded restoration.",
+        "Before/after snapshots preserved all existing record projections. A second execution inserted no records.",
+        "Local synthetic source-audit, lab quarantine/numeric/source, Polar/bridge, continuity and payload checks passed.",
+        "Normal PR 333 published candidate 6a11e9f2e3a8298bd3c79d2001f77fbeab99d3d6 as main ce7340e44037087edebd3ce17e86cd29531d9417. All seven candidate gates passed.",
+        "All twelve triggered post-merge workflows succeeded, including real authenticated E2E 38416744904, Functional Depth 38416744767, source audit 38416744961, deploy 38416744537 and public Pages 38416796518. Frontend .44 remains intact."
       ],
       "pending_evidence": []
     }
