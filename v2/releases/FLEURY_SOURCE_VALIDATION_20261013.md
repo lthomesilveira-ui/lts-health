@@ -25,3 +25,9 @@ No new owner consent, source re-upload, subscription, key rotation or manual dai
 ## Checks and promotion
 
 Local source-audit failure cases, private real-source comparisons, database idempotency/preservation checks, lab quarantine, lab source boundaries, provider/bridge, continuity and public-payload guards passed. Browser-dependent laboratory/runtime checks are delegated to the established remote CI, since a supported local browser surface is unavailable. Candidate and post-promotion workflow evidence is recorded in the subsequent verification checkpoint. No new visual-release claim is made.
+
+## Verified publication
+
+Normal PR #333 promoted candidate `6a11e9f2e3a8298bd3c79d2001f77fbeab99d3d6` as main `ce7340e44037087edebd3ce17e86cd29531d9417`. All seven candidate workflows and all twelve triggered post-merge workflows succeeded. Authenticated E2E: `38416744904`; Functional Depth: `38416744767`; source audit: `38416744961`; deploy: `38416744537`; public Pages: `38416796518`; homologation Pages: `38416796298`. The source tree matched the local checked tree.
+
+This closes the bounded source-validation/restoration package. General runtime PDF ingestion and the independent water/device/API dependencies remain separately blocked. No UI code changed, and no new visual or owner acceptance is presumed.
