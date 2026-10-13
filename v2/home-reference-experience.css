@@ -35,3 +35,14 @@
 .ltsReferenceHome .refBodyControls>summary{padding:0;margin:0;min-height:28px;display:flex;align-items:center;cursor:pointer;color:#326b9f;font-size:11px}
 .ltsReferenceHome .refBodyControls p{font-size:11px;color:#647a99;line-height:1.45;margin:7px 0}
 @media(max-width:840px){.ltsReferenceHome .refBodyStamp{font-size:11px}.ltsReferenceHome .refBodyControls>summary{min-height:36px}.ltsReferenceHome .refBodyControls .refBodyDate{margin:4px 0}}
+@media(min-width:841px){.ltsReferenceHome .refSignal small,.ltsReferenceHome .refFootnote,.ltsReferenceHome .refLegend,.ltsReferenceHome .refBodyDate>small,.ltsReferenceHome .refAxis{font-size:11px!important}}
+.ltsReferenceHome .refMobileAttention{display:none}
+@media(max-width:840px){.ltsReferenceHome .refMobileAttention{display:block}}
+@media(min-width:841px){
+ .ltsReferenceHome .refSignal{grid-template-columns:32px minmax(0,1fr);padding:9px 10px 7px}
+ .ltsReferenceHome .refSignal>.refIcon{width:32px;height:32px;min-width:32px}
+ .ltsReferenceHome .refSignalPlot{height:25px;margin-left:30px}
+ .ltsReferenceHome .refSignalPlot .refPlot.mini svg{height:25px}
+ .ltsReferenceHome .refPanel .refPlot svg{height:55px}
+ .ltsReferenceHome .refPanel.sleep .refPlot svg{height:44px}
+}
