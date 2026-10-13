@@ -21,6 +21,7 @@ export function recentObservedChange(rows,key,bounds,today){
   return {comparable:eligible,current:average(a.map(r=>num(r[key]))),previous:average(b.map(r=>num(r[key]))),delta:eligible?average(a.map(r=>num(r[key])))-average(b.map(r=>num(r[key]))):null,currentDays:a.length,previousDays:b.length,currentBounds:current,previousBounds:previous};
 }
 const direction=delta=>delta>0?'aumentou':delta<0?'diminuiu':'ficou estável';
+const routineChange=(label,d,unit)=>d.delta===0?`${label} não mudou entre as semanas`:`${label} ${direction(d.delta)} ${fmtNum(Math.abs(d.delta),0)} ${unit}`;
 function evolutionReadings(m,r,e){
   const readings={};
   const currentLabs=(m.labs.comparisons||[]).filter(row=>row.current),lastCollection=currentLabs.map(row=>day(row.current.collection_date)).sort().at(-1);
@@ -43,9 +44,10 @@ function evolutionReadings(m,r,e){
   const p=e.recent.nutrition.protein_g,k=e.recent.nutrition.calories_kcal;
   if(p.comparable||k.comparable){
     const combinations=p.comparable&&k.comparable;
-    const title=combinations&&p.delta<0&&k.delta>0?'Menos proteína, mais energia registrada':combinations&&p.delta>0&&k.delta<0?'Mais proteína, menos energia registrada':combinations?'Seu registro alimentar mudou':`${p.comparable?'Proteína':'Energia'} registrada ${direction(p.comparable?p.delta:k.delta)}`;
+    const stable=combinations&&p.delta===0&&k.delta===0;
+    const title=stable?'Proteína e energia registradas estáveis':combinations&&p.delta<0&&k.delta>0?'Menos proteína, mais energia registrada':combinations&&p.delta>0&&k.delta<0?'Mais proteína, menos energia registrada':combinations?'Seu registro alimentar mudou':`${p.comparable?'Proteína':'Energia'} registrada ${direction(p.comparable?p.delta:k.delta)}`;
     const d=p.comparable?p:k;
-    readings.nutrition={kind:'nutrition',priority:2,title,meaning:[p.comparable?`A proteína média ${direction(p.delta)} ${fmtNum(Math.abs(p.delta),0)} g/dia`:null,k.comparable?`a energia média ${direction(k.delta)} ${fmtNum(Math.abs(k.delta),0)} kcal/dia`:null].filter(Boolean).join('; ')+'.',evidence:[p.comparable?`Proteína ${fmtNum(p.previous,0)} → ${fmtNum(p.current,0)} g/dia (${p.previousDays} e ${p.currentDays} dias)`:null,k.comparable?`energia ${fmtNum(k.previous,0)} → ${fmtNum(k.current,0)} kcal/dia (${k.previousDays} e ${k.currentDays} dias)`:null].filter(Boolean).join('; ')+`. ${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} → ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)} · ${r.nutrition.source.label}.`,limit:`Os diários podem ser parciais.${e.currentGoal?' Compare com o plano vigente nos mesmos dias.':' O plano atual ainda não tem vigência confirmada; não se conclui adequação ou déficit.'}`,route:'nutricao',action:'Ver alimentação e plano'};
+    readings.nutrition={kind:'nutrition',priority:stable?6:2,title,meaning:[p.comparable?routineChange('A proteína média',p,'g/dia'):null,k.comparable?routineChange('a energia média',k,'kcal/dia'):null].filter(Boolean).join('; ')+'.',evidence:[p.comparable?`Proteína ${fmtNum(p.previous,0)} → ${fmtNum(p.current,0)} g/dia (${p.previousDays} e ${p.currentDays} dias)`:null,k.comparable?`energia ${fmtNum(k.previous,0)} → ${fmtNum(k.current,0)} kcal/dia (${k.previousDays} e ${k.currentDays} dias)`:null].filter(Boolean).join('; ')+`. ${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} → ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)} · ${r.nutrition.source.label}.`,limit:`Os diários podem ser parciais.${e.currentGoal?' Compare com o plano vigente nos mesmos dias.':' O plano atual ainda não tem vigência confirmada; não se conclui adequação ou déficit.'}`,route:'nutricao',action:'Ver alimentação e plano'};
   }
   if(e.latestSleep){
     const d=e.recent.sleep;

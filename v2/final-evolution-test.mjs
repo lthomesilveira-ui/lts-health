@@ -78,6 +78,10 @@ const interpreted=homeCockpitModel(meaningful,status,'30',{},today),view=renderH
 assert.deepEqual(interpreted.evo.takeaways.slice(0,3).map(row=>row.kind),['labs','nutrition','sleep']);
 assert.match(interpreted.evo.domainReadings.nutrition.title,/Menos proteína, mais energia registrada/);
 assert.match(interpreted.evo.domainReadings.sleep.meaning,/30 minutos/);
+const stableRoutine=homeCockpitModel({...meaningful,nutrition:meaningful.nutrition.map(row=>({...row,protein_g:100,calories_kcal:2000}))},status,'30',{},today);
+assert.equal(stableRoutine.evo.domainReadings.nutrition.title,'Proteína e energia registradas estáveis');
+assert.doesNotMatch(stableRoutine.evo.domainReadings.nutrition.meaning,/mudou 0|estável 0|aumentou|diminuiu/);
+assert.match(stableRoutine.evo.domainReadings.nutrition.meaning,/não mudou entre as semanas/);
 assert.match(view,/Exames para discutir na consulta/);assert.match(view,/acima da faixa exibida no laudo/);
 assert.match(view,/Ganho ou perda de tecido ainda não confirmados/);assert.match(view,/Ainda não há conclusão de progressão recente/);
 assert.equal(interpreted.m.segmental.parts[0].previous,4);assert.equal(interpreted.m.segmental.parts[0].previousFat,.4);
