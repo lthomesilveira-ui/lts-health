@@ -7,6 +7,7 @@ const {laboratoryReport}=await import('./src/reports-model.js');
 const {goalForDate,goalComparison,historicalGoalReference}=await import('./src/personal-goals.js');
 const {consultationLines}=await import('./src/integrated-review.js');
 const {labReferenceStatus}=await import('./src/labs-layout-v2.js');
+const {contextChart}=await import('./src/health-context.js');
 const status=Object.fromEntries(['body','segmental','nutrition','sourceMetrics','workouts','exercises','sets','labs','treatments','polarSessions','goals','meals'].map(k=>[k,'ready']));
 const bounds={start:'2025-04-01',end:'2025-04-30'},today='2025-04-30';
 const rows=Array.from({length:14},(_,i)=>({date:`2025-04-${i+16}`,value:i<7?10:20}));
@@ -99,5 +100,10 @@ assert.match(renderHomeCockpit(injection),/&lt;img src=x onerror=alert\(1\)&gt;/
 assert.doesNotMatch(renderHomeCockpit(injection),/<img src=x onerror/,'untrusted source units cannot become HTML');
 const prototypeUnit=homeCockpitModel({...stale,sets:stale.sets.map(row=>({...row,weight_unit:'constructor'}))},status,'30',{},today);
 assert.doesNotMatch(renderHomeCockpit(prototypeUnit),/function Object\(/,'inherited object keys never expose native code as units');
+const longAxis=contextChart([{date:'2025-04-01',value:98765.43,cohort:'synthetic'},{date:'2025-04-20',value:123456.78,cohort:'synthetic'}],{label:'Synthetic large scale',unit:'u',digits:2,showLabel:true,selectable:false});
+assert.match(longAxis,/x1="190"/,'long tick labels reserve space, rather than shrinking the font');
+assert.match(longAxis,/123\.456,78/,'label value and scale remain unchanged');
+assert.ok(view.indexOf('ltsContextPlot')<view.indexOf('data-disclosure="home-body-comparisons"'),'body chart precedes detailed comparison tables');
+assert.match(view,/data-disclosure="home-water-detail"/);assert.match(view,/data-disclosure="home-lab-comparisons"/);
 
 console.log('Final evolution: fresh evidence, conservative sources/methods/ranges, clear routine synthesis, no tissue/performance/clinical overclaims, raw regional pairs, private summary parity, safe source-unit escaping and historical goals passed.');

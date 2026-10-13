@@ -65,7 +65,9 @@ export function contextChart(points,{label='',unit='',digits=1,bounds=null,selec
   const rows=points.filter(p=>p.date&&num(p.value)!=null).sort((a,b)=>a.date.localeCompare(b.date));
   if(!rows.length)return '<div class="ltsContextEmpty" role="status">Nenhum registro nesta janela.</div>';
   const values=rows.map(p=>p.value),low=bar?0:Math.min(...values),high=Math.max(...values),span=high-low||Math.max(Math.abs(high)*.05,.1),min=bar?0:low-span*.15,max=high+span*.15;
-  const width=600,height=160,left=showLabel?90:55,right=12,top=12,bottom=25;
+  const width=600,height=160,right=12,top=12,bottom=25;
+  const labelChars=Math.max(...[high,(low+high)/2,low].map(v=>fmtNum(v,digits).length));
+  const left=showLabel?Math.min(width-right-120,Math.max(90,labelChars*17+20)):55;
   const start=bounds?.start||rows[0].date,end=bounds?.end||rows.at(-1).date,time=d=>Date.parse(`${day(d)}T12:00:00Z`),duration=time(end)-time(start);
   const x=p=>duration?left+(time(p.date)-time(start))/duration*(width-left-right):(left+width-right)/2;
   const y=v=>top+(max-v)/(max-min)*(height-top-bottom);
