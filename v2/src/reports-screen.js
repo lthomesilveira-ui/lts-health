@@ -10,7 +10,7 @@ import {integratedReview} from './integrated-review.js';
 import {goalForDate} from './personal-goals.js';
 
 const value=(v,unit='',digits=1)=>num(v)==null?'Sem dado':`${fmtNum(v,digits)}${unit?` ${unit}`:''}`;
-const delta=(v,unit='',digits=1)=>num(v)==null?'Sem comparação':`${v>0?'+':''}${value(v,unit,digits)}`;
+const delta=(v,unit='',digits=1)=>num(v)==null?'Sem comparação':`${v>0?'+':''}${value(v,unit==='%'?'p.p.':unit,digits)}`;
 const range=b=>`${b.start?fmtDate(b.start):'Início do histórico'} → ${fmtDate(b.end)}`;
 const note=text=>`<p class="ltsReportNote">${esc(text)}</p>`;
 const empty=text=>`<div class="ltsReportEmpty" role="status">${esc(text)}</div>`;

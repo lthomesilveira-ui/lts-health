@@ -58,4 +58,9 @@ assert.match(renderHomeCockpit(ref),/Vigência atual não confirmada/);
 assert.match(summary,/Anterior comparável: 10 u em 02\/01\/2025 \(contexto fora da janela\)/);
 assert.match(summary,/Referências históricas documentadas/);assert.match(summary,/Current annotated.*42,5 kg × 8 reps/s);
 assert.deepEqual(data,saved,'models and exports preserve all source records');
+const percent=homeCockpitModel({...stale,labs:[result('2025-01-02','HPLC',10,{unit:'%'}),result('2025-04-20','HPLC',12,{unit:'%'})]},status,'30',{},today);
+assert.match(renderHomeCockpit(percent),/Δ \+2,00 p\.p\./,'absolute percentage differences use percentage points');
+assert.match(renderHomeCockpit(percent),/12 %/,'source result units remain percentages');
+assert.match(consultationLines(percent.r,percent.m,percent.evo).join('\n'),/Diferença: \+2,00 p\.p\./,'export uses the same delta unit');
+
 console.log('Final evolution: freshness, unknown phases, exact loads, independent weekly denominators, prior collection context, conservative method alias, ambiguity, censored values, historical goals and export consistency passed.');
