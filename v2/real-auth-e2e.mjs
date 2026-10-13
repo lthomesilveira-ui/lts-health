@@ -144,8 +144,8 @@ async function readIntegritySnapshot(){
     const specs=[
       ['workouts','health_workouts','source_record_id,workout_date,is_canonical,record_status'],
       ['exercises','health_workout_exercises','source_record_id,workout_source_record_id'],
-      ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id'],
-      ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id'],
+      ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,phase'],
+      ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id,evidence_kind,evidence_status,field_names'],
       ['sourceMetrics','health_source_daily_metrics','source_record_id,metric_type,source_family,source_name,canonical_status,confidence,unit,value'],
       ['quality','health_data_quality_issues','source_record_id,status'],
       ['uploads','health_uploads','id,status']
@@ -158,6 +158,8 @@ async function readIntegritySnapshot(){
     const visibleWorkouts=data.workouts.filter(r=>r.is_canonical===true&&String(r.record_status||'').toLowerCase()!=='quarantined')
       .sort((a,b)=>String(b.workout_date||'').localeCompare(String(a.workout_date||''))||String(a.source_record_id||'').localeCompare(String(b.source_record_id||'')));
     const latest=visibleWorkouts[0]||null;
+    const latestSetRows=latest?data.sets.filter(r=>r.workout_source_record_id===latest.source_record_id):[];
+    const extensionRows=latestSetRows.filter(r=>['drop','rest_pause'].includes(r.phase));
     const allowedCanonical=new Set(['apple_activity_summary|active_energy_kcal','apple_activity_summary|exercise_minutes','apple_activity_summary|stand_hours']);
     const bridgeTypes={dietary_energy_kcal:['kcal',20000],dietary_protein_g:['g',2000],dietary_carbs_g:['g',5000],dietary_fat_g:['g',2000],dietary_fiber_g:['g',1000],dietary_water_ml:['mL',100000]};
     const validBridge=r=>r.source_family==='health_auto_export'&&r.confidence==='authenticated_auto_export'&&String(r.source_record_id||'').startsWith('health_auto_export:')&&bridgeTypes[r.metric_type]?.[0]===r.unit&&Number.isFinite(Number(r.value))&&Number(r.value)>=0&&Number(r.value)<=bridgeTypes[r.metric_type][1];
@@ -172,7 +174,10 @@ async function readIntegritySnapshot(){
       latestWorkoutId:latest?.source_record_id||null,
       latestWorkoutDate:latest?.workout_date||null,
       latestExpectedExercises:latest?data.exercises.filter(r=>r.workout_source_record_id===latest.source_record_id).length:0,
-      latestExpectedSets:latest?data.sets.filter(r=>r.workout_source_record_id===latest.source_record_id).length:0,
+      latestExpectedSets:latestSetRows.length,
+      latestExpectedPrimarySets:latestSetRows.length-extensionRows.length,
+      latestExpectedExtensions:extensionRows.length,
+      latestMeasurementIssue:latest?data.evidence.some(r=>r.workout_source_record_id===latest.source_record_id&&r.evidence_kind==='telemetry'&&r.evidence_status==='confirmed'&&(r.field_names||[]).includes('measurement_issue_reported')):false,
       internalQualityCount:data.quality.filter(r=>['open','in_progress'].includes(String(r.status||'').toLowerCase())).length,
       uploadActionCount:data.uploads.filter(r=>['rejected','failed'].includes(String(r.status||'').toLowerCase())).length
     };
@@ -221,11 +226,15 @@ try{
   const trainingSummary=await page.evaluate(()=>({
     text:document.querySelector('.ltsTrainingV2')?.innerText||'',
     summaryExercises:document.querySelector('.ltsRefOverviewGrid div:first-child b')?.textContent?.trim()||'',
-    summarySets:document.querySelector('.ltsRefOverviewGrid div:nth-child(2) b')?.textContent?.trim()||''
+    summarySets:document.querySelector('.ltsRefOverviewGrid div:nth-child(2) b')?.textContent?.trim()||'',
+    extensionCount:Number((document.querySelector('.ltsRefExtensionNote')?.textContent||'').match(/^(\d+) prolongamento/)?.[1]||0),
+    measurementIssue:Boolean(document.querySelector('.ltsRefMeasurementNote'))
   }));
-  if(Number(trainingSummary.summaryExercises)!==integrity.latestExpectedExercises||Number(trainingSummary.summarySets)!==integrity.latestExpectedSets){
-    throw new Error(`latest workout summary mismatch: ui=${trainingSummary.summaryExercises}/${trainingSummary.summarySets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedSets}`);
+  if(Number(trainingSummary.summaryExercises)!==integrity.latestExpectedExercises||Number(trainingSummary.summarySets)!==integrity.latestExpectedPrimarySets){
+    throw new Error(`latest workout summary mismatch: ui=${trainingSummary.summaryExercises}/${trainingSummary.summarySets} data=${integrity.latestExpectedExercises}/${integrity.latestExpectedPrimarySets}`);
   }
+  if(trainingSummary.extensionCount!==integrity.latestExpectedExtensions)throw new Error('latest workout extension count does not match recorded drop/rest-pause steps');
+  if(trainingSummary.measurementIssue!==integrity.latestMeasurementIssue)throw new Error('reported sensor limitation is not scoped to the latest session evidence');
   if(integrity.latestWorkoutDate&&!trainingSummary.text.includes(String(integrity.latestWorkoutDate).split('-').reverse().join('/')))throw new Error('latest workout date missing from structural Training');
   await page.screenshot({path:`${evidenceDir}/desktop-training-summary.png`,fullPage:true});
   await page.locator('.ltsRefTrainTabs [data-depth-training-view="exercises"]').click();
