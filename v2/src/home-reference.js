@@ -1,7 +1,7 @@
 import {state} from './core.js';
 import {healthContextModel,renderHealthContext} from './health-context.js';
 import {renderHomeDaySignals} from './integrated-review-view.js';
-import {homeCockpitModel,renderHomeCockpit} from './home-cockpit.js?v=training-evidence-20261013.49';
+import {homeCockpitModel,renderHomeCockpit} from './home-cockpit.js?v=evolution-final-20261013.50';
 
 export function renderProductHomeReference(){
   const period=state.ui.homePeriod||'90';
