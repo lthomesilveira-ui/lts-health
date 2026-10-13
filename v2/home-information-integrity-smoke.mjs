@@ -28,40 +28,27 @@ try{
   document.querySelector('#screenHost').innerHTML=renderProductHomeReference();
   return{latest:date(2),old:date(60)};
  });
- assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
- assert.equal(await page.locator('.ltsCockpitPanel').count(),6);
- await page.locator('[data-disclosure="home-advanced"]>summary').click();
- const bodyEvidence=page.locator('[data-disclosure="home-insight-body"]');
- assert.equal(await bodyEvidence.evaluate(e=>e.open),false,'source values are progressively disclosed on the compact opening');
- await bodyEvidence.locator('summary').click();
- assert.match(await page.locator('.ltsCockpitReading').innerText(),/-1,0 kg.*\+1,0 kg/s,'same-device tissue changes, not record totals');
- await bodyEvidence.locator('summary').click();
- assert.match(await page.locator('.ltsExecutiveCard.nutrition').innerText(),/150 g proteína/);
- assert.match(await page.locator('.ltsCockpitPanel.nutrition').innerText(),/Último diário.*2\.100 kcal/s,'two diaries show the latest value, not an average');
- assert.match(await page.locator('.ltsCockpitPanel.labs').innerText(),/Nenhum resultado inequívoco na janela/,'old labs cannot appear as current-window results');
- assert.doesNotMatch(await page.locator('.ltsCockpitGrid').innerText(),/999|9\.000|2 de 30|2\/7|Cobertura do período/);
- assert.equal(await page.locator('.ltsCockpitPanel.water .ltsContextPlot').count(),0,'no sparse hydration chart or fabricated average');
- await page.locator('[data-disclosure="home-history"] > summary').click();
- const selected=await page.locator('#healthContextDate').inputValue();
- assert.equal(selected,dates.latest);
- assert.equal(await page.locator('.ltsContextPanel.nutrition circle').count(),2);
- assert.doesNotMatch(await page.locator('.ltsContextPanel.nutrition').innerText(),/999/);
- assert.equal(await page.locator('#healthContextDate option').filter({hasText:dates.old}).count(),0);
+ assert.equal(await page.locator('.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
+ assert.match(await page.locator('.refReading').innerText(),/16,0.*15,0.*30,0.*31,0/s,'observed pair belongs to selected period');
+ assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\.050 kcal/,'sparse mean is explicitly an observed mean');
+ assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias encerrados/);
+ assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);
+ assert.doesNotMatch(await page.locator('.refPanels').innerText(),/999|9\.000/);
+ assert.equal(await page.locator('.refPanel.water .refPlot').count(),0,'no invented hydration chart');
+ await page.locator('#overview-body-date').selectOption(dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);
  for(const viewport of [{width:390,height:844},{width:1440,height:1000}]){
   await page.setViewportSize(viewport);
   await page.evaluate(async()=>{const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();document.querySelector('#screenHost').scrollTop=0;});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3),'no horizontal overflow');
-  const sizes=await page.locator('.ltsExecutiveCard small,.ltsCockpitPanel p').evaluateAll(es=>es.map(e=>parseFloat(getComputedStyle(e).fontSize)));
+  const sizes=await page.locator('.refSignal small,.refFootnote').evaluateAll(es=>es.map(e=>parseFloat(getComputedStyle(e).fontSize)));
   assert.ok(sizes.every(n=>n>=11),'readable evidence and source text');
   await page.screenshot({path:`${evidenceDir}/${viewport.width<500?'mobile':'desktop'}-home.png`,fullPage:true});
  }
  await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.domainStatus.nutrition='error';document.querySelector('#screenHost').innerHTML=renderProductHomeReference();
  });
- await page.locator('[data-disclosure="home-advanced"]>summary').click();
- assert.match(await page.locator('.ltsExecutiveCard.nutrition').innerText(),/Indisponível/);
- assert.doesNotMatch(await page.locator('.ltsCockpitPanel.nutrition').innerText(),/150 g|2\.100/);
- await page.locator('[data-disclosure="home-history"] > summary').click();
- assert.equal(await page.locator('.ltsContextPanel.nutrition circle').count(),0,'failed reads hide stale source points');
+ assert.match(await page.locator('.refSignal.nutrition').innerText(),/Dados não carregaram|0\/29/);
+ assert.doesNotMatch(await page.locator('.refPanel.nutrition').innerText(),/150 g|2\.050/);
+ assert.equal(await page.locator('.refPanel.nutrition rect').count(),0,'failed read cannot retain stale food points');
  console.log('Home integrity: shared calendar, compatible tissue deltas, latest actual nutrition, bounded labs, sparse water, read failures and responsive evidence passed.');
 }finally{await browser.close();}

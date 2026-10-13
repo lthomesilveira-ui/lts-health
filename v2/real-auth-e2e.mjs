@@ -74,7 +74,7 @@ async function assertStableMobileShell(label){
     if(window.innerWidth>840)return{desktop:true};
     const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
     const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{route:button.dataset.route,text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width,active:button.classList.contains('active')};});
-    const brand=[document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
+    const brand=[document.querySelector('.refMobileBrand'),document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
     const routeAction=document.querySelector('#routeAction');
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });

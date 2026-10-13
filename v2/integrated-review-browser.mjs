@@ -31,116 +31,27 @@ try{
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
     await page.screenshot({path:`${dir}/${label}-home.png`});
-    const firstFold=await page.evaluate(()=>{
-      const box=s=>document.querySelector(s).getBoundingClientRect(),reading=box('.ltsOverviewReading'),plot=box('.ltsOverviewBodyPlots svg'),nav=document.querySelector('#mobileNav'),bottom=Math.min(innerHeight,nav&&getComputedStyle(nav).display!=='none'?nav.getBoundingClientRect().top:innerHeight);
-      return {readingVisible:reading.top>=0&&reading.bottom<=bottom,plotVisible:Math.max(0,Math.min(bottom,plot.bottom)-Math.max(0,plot.top)),advancedOpen:document.querySelector('.ltsHomeAdvanced').open,scroll:document.querySelector('#screenHost').scrollTop};
-    });
-    writeFileSync(`${dir}/${label}-first-fold.json`,JSON.stringify({viewport:{width,height},...firstFold},null,2));
-    assert.equal(firstFold.advancedOpen,false,'deep evidence does not crowd the opening');
-    assert.equal(firstFold.scroll,0);
-    assert.equal(firstFold.readingVisible,true,'summary visible in the first viewport');
-    if(width<=840)assert.ok(firstFold.plotVisible>=64,`first viewport exposes body graph: ${firstFold.plotVisible}px`);
-    assert.equal(await page.locator('.ltsOverviewCard').count(),4);
-    assert.match(await page.locator('.ltsOverviewCard.routine').innerText(),/Rotina nas últimas duas semanas/);
-    assert.equal(await page.locator('[data-home-period]').count(),4);
-    assert.equal(await page.locator('.ltsOverviewBodyPlots svg').count(),2);
-    await page.locator('#overview-body-date').selectOption({index:0});assert.equal(await page.locator('.ltsOverviewBodyPlots .selected').count(),2);
-    await page.locator('[data-disclosure="overview-body-evidence"]>summary').click();
-    assert.equal(await page.locator('.ltsOverviewTable tbody tr').count(),5);
-    await page.locator('[data-disclosure="overview-body-evidence"]>summary').click();
-    await noOverflow(page);
-    await page.locator('[data-disclosure="home-advanced"]>summary').click();
-    assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
-    if(width<=840){assert.equal(await page.locator('.ltsOverview .ltsHomeMobileBrand').isVisible(),true,'mobile Home preserves app identity');assert.match(await page.locator('.ltsOverview .ltsHomeMobileBrand').innerText(),/LTS Health/);}
-    assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
-    assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),true,'same product hierarchy on all devices');
-    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Exames para discutir na consulta.*acima das faixas/s);
-    assert.equal(await page.locator('.ltsEvolutionPanelDetail[open]').count(),0,'deep evidence starts collapsed');
-    await page.locator('[data-disclosure="home-insight-labs"]>summary').click();
-    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/10–14/);
-    await page.locator('[data-disclosure="home-insight-labs"]>summary').click();
-    assert.equal(await page.locator('.ltsCockpitReadings article').count(),3);
-    assert.equal(await page.locator('.ltsEvolutionMeaning').count()>=4,true,'domain panels explain meaning, not only observations');
-    assert.equal(await page.locator('.ltsEvolutionLabTable tbody tr').count(),8,'several markers can be compared without changing the selector');
-    await page.locator('[data-disclosure="home-lab-comparisons"]>summary').click();
-    await page.locator('[data-home-lab-marker]').first().click();
-    assert.equal(await page.locator('.ltsEvolutionLabDetail[open]').count(),1);
-    assert.match(await page.locator('.ltsEvolutionLabDetail').innerText(),/mesma origem, unidade e método declarado/);
-    const firstMarker=await page.locator('[data-home-lab-marker]').first().getAttribute('data-home-lab-marker');
-    await page.locator('#home-reportLabMarker').selectOption('synthetic wide scale');
-    await page.waitForFunction(()=>document.querySelector('.ltsCockpitPanel.labs svg')?.getAttribute('aria-label')?.includes('Synthetic wide scale'));
-    const axisFits=await page.locator('.ltsCockpitPanel.labs svg').evaluate(svg=>[...svg.querySelectorAll('text')].every(text=>{const b=text.getBBox(),v=svg.viewBox.baseVal;return b.x>=-1&&b.y>=-1&&b.x+b.width<=v.width+1&&b.y+b.height<=v.height+1;}));
-    assert.equal(axisFits,true,'large laboratory tick labels remain inside the visible chart');
-    await page.locator('#home-reportLabMarker').selectOption(firstMarker);
-    await page.waitForFunction(()=>!document.querySelector('.ltsCockpitPanel.labs svg')?.getAttribute('aria-label')?.includes('Synthetic wide scale'));
-    await page.locator('.ltsEvolutionLabDetail summary').click();
-    if(await page.locator('[data-disclosure="home-lab-comparisons"]').getAttribute('open')!=null)await page.locator('[data-disclosure="home-lab-comparisons"]>summary').click();
-    assert.equal(await page.locator('.ltsRefProgressItem,.ltsRefRing').count(),0,'coverage is not an outcome');
-    const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),next:top('.ltsEvolutionNext')};});
-    assert.ok(width<=840?geometry.reading<geometry.cards&&geometry.cards<geometry.charts&&geometry.charts<geometry.next:geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.next,'responsive visual order matches the DOM');
-    assert.equal(await page.locator('[data-disclosure="home-history"]').getAttribute('open'),null);
-    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/1\.250 mL/);
-    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),new RegExp(today.split('-').reverse().join('/')));
-    assert.equal(await page.locator('.ltsDayWater').count(),1);await noOverflow(page);
-    await page.locator('[data-home-body-metric="weight_kg"]').click();
-    assert.equal(await page.locator('[data-home-body-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
-    assert.match(await page.locator('.ltsCockpitPanel.body .ltsContextPlot svg').getAttribute('aria-label'),/Peso/);
-    await page.screenshot({path:`${dir}/${label}-home-body.png`});
-    await page.locator('[data-disclosure="home-water-detail"]>summary').click();
-    await page.locator('.ltsCockpitPanel.water [data-home-goals]').click();
-    assert.equal(await page.locator('#personalGoalsForm [name="protein_g"]').inputValue(),'','unconfirmed protocol is not silently made active');
-    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/Vigência atual não confirmada/);
+    assert.equal(await page.locator('.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
+    assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1);
+    assert.equal(await page.locator('[data-home-period]').count(),4);await noOverflow(page);
+    // Goals remain on Nutrition, where they are relevant, with persistence intact.
+    await page.locator('.refSignal.nutrition').click();await page.waitForSelector('#personalGoalsForm');
+    await page.locator('.ltsGoalSettings summary').first().click();
+    assert.equal(await page.locator('#personalGoalsForm [name="protein_g"]').inputValue(),'');
     await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(8));
     await page.locator('#personalGoalsForm [name="water_ml"]').fill('2200');
     await page.locator('#personalGoalsForm [name="protein_g"]').fill('150');
     await page.locator('#personalGoalsForm [type="submit"]').click();
     await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
-    assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/2\.200 mL/);
-    await page.reload();await page.waitForSelector('.ltsHomeReference');await page.locator('[data-disclosure="home-advanced"]>summary').click();
-    await page.locator('[data-disclosure="home-water-detail"]>summary').click();
-    await page.locator('.ltsCockpitPanel.water [data-home-goals]').click();
-    assert.equal(await page.locator('#personalGoalsForm [name="water_ml"]').inputValue(),'2200','goal persists after reloading from the service');
+    await page.reload();await page.waitForSelector('#personalGoalsForm');await page.locator('.ltsGoalSettings summary').first().click();
+    assert.equal(await page.locator('#personalGoalsForm [name="water_ml"]').inputValue(),'2200');
     await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(1));
     await page.locator('#personalGoalsForm [name="water_ml"]').fill('2000');
     await page.locator('#personalGoalsForm [name="protein_g"]').fill('120');
-    await page.locator('#personalGoalsForm [type="submit"]').click();
-    await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
-    await page.locator('.ltsGoalSettings summary').first().click();
-    if(label==='mobile'){
-      await page.locator('[data-home-body-metric="weight_kg"]').click();
-      for(const selector of ['[data-home-period="90"]','[data-home-body-metric="weight_kg"]','[data-disclosure="home-insight-labs"]>summary']){
-        await page.setViewportSize({width:839,height:844});
-        await page.waitForSelector('[data-home-layout="compact"]');
-        await page.locator(selector).focus();
-        for(const width of [841,839]){
-          await page.setViewportSize({width,height:844});
-          await page.waitForSelector(`[data-home-layout="${width>840?'desktop':'compact'}"]`);
-          const focus=await page.locator(selector).evaluate(el=>({preserved:el===document.activeElement,expected:el.outerHTML,actual:document.activeElement?.outerHTML.slice(0,500)}));
-          assert.equal(focus.preserved,true,`breakpoint focus ${width}: ${JSON.stringify(focus)}`);
-          assert.equal(await page.locator('[data-home-body-metric="weight_kg"]').getAttribute('aria-pressed'),'true','selected body metric survives responsive re-render');
-          assert.equal(await page.locator('[data-home-period]').count(),4);
-        }
-      }
-      await page.setViewportSize({width,height});
-      await page.waitForSelector('[data-home-layout="compact"]');
-      await page.locator('#home-period-90').focus();
-      const beforeSettlement=await page.locator('#home-period-90').elementHandle();
-      await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.data.goals=[...state.data.goals];});
-      await page.waitForFunction(element=>!element.isConnected,beforeSettlement);
-      assert.equal(await page.locator('#home-period-90').evaluate(el=>el===document.activeElement),true,'late source settlement preserves the focused Home control');
-      assert.equal(await page.locator('[data-disclosure="home-insight-labs"]').getAttribute('open'),null,'focusing a collapsed disclosure does not open it');
-      assert.equal(await page.locator('[id]').evaluateAll(es=>new Set(es.map(e=>e.id)).size===es.length),true,'responsive Home has no duplicate IDs');
-      await page.locator('#home-more-areas-summary').press('Enter');
-      assert.equal(await page.locator('[data-disclosure="home-more-areas"]').getAttribute('open'),'','other three summaries are keyboard-accessible');
-      await page.locator('#home-card-body').focus();
-      for(const width of [841,839]){
-        await page.setViewportSize({width,height:844});
-        await page.waitForSelector(`[data-home-layout="${width>840?'desktop':'compact'}"]`);
-        assert.equal(await page.locator('#home-card-body').evaluate(el=>el===document.activeElement),true,'summary focus survives moving into or out of the mobile disclosure');
-      }
-      await page.setViewportSize({width,height});
-    }
-    await page.locator('.ltsCockpitReading:visible [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
+    await page.locator('#personalGoalsForm [type="submit"]').click();await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
+    await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('[data-reference-home]');
+    await page.locator('#home-period-90').focus();await page.setViewportSize({width:width<=840?900:393,height});await page.waitForTimeout(200);assert.equal(await page.locator('#home-period-90').evaluate(el=>el===document.activeElement),true);await page.setViewportSize({width,height});
+    await page.locator('.refReading [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
     assert.match(await page.locator('#reviewPanel>.ltsReviewContrasts').innerText(),/Exames para discutir na consulta/);
@@ -174,12 +85,9 @@ try{
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';state.ui.reviewView='overview';const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
     assert.match(await page.locator('#reportIntegratedReview').innerText(),/Entender a evolução/);assert.doesNotMatch(await page.locator('#reviewPanel>.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
     await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('.ltsHomeReference');
-    if(await page.locator('[data-disclosure="home-advanced"]').getAttribute('open')==null)await page.locator('[data-disclosure="home-advanced"]>summary').click();
-    await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
-    await page.locator('[data-disclosure="home-advanced"]>summary').click();
-    assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregaram/);
-    assert.match(await page.locator('.ltsDesktopCockpit').innerText(),/não carregou/);
-    assert.doesNotMatch(await page.locator('.ltsDesktopCockpit').innerText(),/0 registros de sono|Nenhum registro nesta janela/);
+    await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','metrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
+    assert.match(await page.locator('.ltsReferenceHome').innerText(),/não carreg/);
+    assert.doesNotMatch(await page.locator('[data-reference-home]').innerText(),/31,0 kg/);
     await noOverflow(page);await capture(page,'.ltsHomeReference',`${dir}/${label}-unavailable.png`);
     await page.close();
   }

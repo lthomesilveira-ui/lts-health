@@ -1,3 +1,4 @@
+import {downloadReferencePeriodSummary} from './home-reference-experience.js';
 import {state,routes,fixtureMode,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData,downloadStructuredBackup} from './data-layer.js';
 import {renderBioHub} from './bio-screen.js';
@@ -11,7 +12,7 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js?v=overview-20261013.54';
+import {renderProductHomeReference} from './home-reference.js?v=reference-period-20261013.56';
 import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
@@ -202,6 +203,7 @@ function bindStaticEvents(){
     if(polarCheck){polarCheck.disabled=true;await checkPolarConnection();scheduleRender();return;}
     const polarAction=event.target.closest('[data-polar-action]');
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
+    if(event.target.closest('[data-reference-export]')){downloadReferencePeriodSummary();return;}
     const homeInsight=event.target.closest('[data-home-insight-details]');
     if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;state.ui.reviewView='overview';setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-refresh]')){refresh();return;}

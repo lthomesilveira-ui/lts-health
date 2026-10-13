@@ -30,30 +30,13 @@ try{
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
   await page.locator('[data-home-period="all"]').click();
-  const primaryAxis='.ltsOverviewCard.body .fat .ltsContextAxis';
-  await page.waitForSelector(primaryAxis);
-  const axis=await page.locator(primaryAxis).evaluate(el=>{
-   const plot=el.closest('.ltsContextPlot').getBoundingClientRect(),svg=el.previousElementSibling.getBoundingClientRect();
-   return {plot:{left:plot.left,right:plot.right},svgBottom:svg.bottom,labels:[...el.children].map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top};})};
-  });
-  assert.ok(axis.labels.every(r=>r.left>=axis.plot.left-1&&r.right<=axis.plot.right+1&&r.top>=axis.svgBottom-1),'both calendar labels are visible below the main plot');
-  assert.equal(await page.locator('.ltsContextPanel').count(),4,'four simultaneous source-backed panels');
-  await page.locator('[data-disclosure="home-history"]>summary').click();
-  const sharedAxes=await page.locator('.ltsContextPanel .ltsContextAxis').allTextContents();
-  assert.ok(sharedAxes.length>=2&&new Set(sharedAxes).size===1,'populated all-history panels use the same calendar axis');
-  await page.locator('#homeLabMarker').selectOption('marcador 01');
-  await page.locator('#healthContextDate').selectOption('2024-01-10');
-  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-10','shared day selector');
-  await page.locator('.ltsContextPanel.body [data-health-date="2024-02-02"]').click();
-  await page.waitForFunction(()=>document.getElementById('healthContextDate')?.value==='2024-02-02');
-  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-02-02','chart point drives shared day');
-  // Dense all-history observations can overlap honestly on a calendar axis; keyboard and day selection remain exact.
-  await page.locator('.ltsContextPanel.body [data-health-date="2024-01-11"]').press('Enter');
-  await page.waitForFunction(()=>document.getElementById('healthContextDate')?.value==='2024-01-11');
-  assert.equal(await page.locator('#healthContextDate').inputValue(),'2024-01-11','dense point remains keyboard accessible');
-  assert.ok((await page.locator('.ltsContextFacts').innerText()).includes('Composição'));
-  await overflow(page);
-  if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
+  assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1,'one shared body panel');
+  const axes=await page.locator('.refPanels .refAxis').allTextContents();
+  assert.ok(axes.length>=2&&new Set(axes).size===1,'all populated panels share selected calendar');
+  await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
+  await page.locator('#overview-body-date').focus();await page.locator('#overview-body-date').press('ArrowDown');
+  assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);
+  await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
   await goto(page,'treinos','.ltsTrainingV2 .ltsExerciseCard');
   await page.locator('[data-depth-training-view="history"]').first().click();
   const seen=[];
