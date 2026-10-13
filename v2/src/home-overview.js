@@ -3,7 +3,7 @@ import {contextChart} from './health-context.js';
 import {labResultText,labReferenceStatus} from './labs-layout-v2.js';
 
 const val=(n,u='',d=1)=>num(n)==null?'Sem dado':`${fmtNum(n,d)}${u?' '+u:''}`;
-const arrow='<span aria-hidden="true">↗</span>';
+const arrow='<svg class="ltsOverviewArrow" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></svg>';
 const icons={bio:'<circle cx="12" cy="4" r="2"/><path d="M8 9h8M9 9l-3 7m9-7 3 7m-8-7v6l-2 7m6-13v6l2 7"/>',analise:'<path d="M4 20V10m5 10V4m6 16v-7m5 7V7"/>',treinos:'<path d="M7 12h10M3 9v6m4-9v12m10-12v12m4-9v6"/>',saude:'<path d="M9 3h6m-5 0v7l-5 8q-1 3 3 3h8q4 0 3-3l-5-8V3M8 14h8"/>'};
 const head=(title,sub,route)=>`<header><div class="ltsOverviewSectionHeading"><span class="ltsOverviewIcon ${route}" aria-hidden="true"><svg viewBox="0 0 24 24">${icons[route]||icons.analise}</svg></span><div><h2>${esc(title)}</h2>${sub?`<p>${esc(sub)}</p>`:''}</div></div><button data-route="${route}" aria-label="Abrir ${esc(title)}">${arrow}</button></header>`;
 const facts=(rows)=>`<div class="ltsOverviewFacts">${rows.map(([l,v])=>`<div><small>${esc(l)}</small><strong>${esc(v)}</strong></div>`).join('')}</div>`;
