@@ -32,7 +32,7 @@ try{
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
     await page.screenshot({path:`${dir}/${label}-home.png`});
     const firstFold=await page.evaluate(()=>{
-      const box=s=>document.querySelector(s).getBoundingClientRect(),reading=box('.ltsOverviewReading'),plot=box('.ltsOverviewCard.body svg'),nav=document.querySelector('#mobileNav'),bottom=Math.min(innerHeight,nav&&getComputedStyle(nav).display!=='none'?nav.getBoundingClientRect().top:innerHeight);
+      const box=s=>document.querySelector(s).getBoundingClientRect(),reading=box('.ltsOverviewReading'),plot=box('.ltsOverviewBodyPlots svg'),nav=document.querySelector('#mobileNav'),bottom=Math.min(innerHeight,nav&&getComputedStyle(nav).display!=='none'?nav.getBoundingClientRect().top:innerHeight);
       return {readingVisible:reading.top>=0&&reading.bottom<=bottom,plotVisible:Math.max(0,Math.min(bottom,plot.bottom)-Math.max(0,plot.top)),advancedOpen:document.querySelector('.ltsHomeAdvanced').open,scroll:document.querySelector('#screenHost').scrollTop};
     });
     writeFileSync(`${dir}/${label}-first-fold.json`,JSON.stringify({viewport:{width,height},...firstFold},null,2));
