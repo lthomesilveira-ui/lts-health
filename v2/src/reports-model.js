@@ -108,7 +108,7 @@ export function segmentalReport(data,status,bounds,source='all',selectedRegion='
   const pair=measurementPair(selected,r=>identity(r).key);
   if(pair.available&&!ready(status,'body')&&(!pair.latest.device_name||!pair.previous.device_name)){pair.available=false;pair.reason='unavailable_context';}
   const region=segments.some(([k])=>k===selectedRegion)?selectedRegion:'right_arm',metric=['lean','fat'].includes(kind)?kind:'lean',field=`${metric}_${region}_kg`;
-  const parts=segments.map(([key,label,trainingRegion])=>({key,label,trainingRegion,current:num(pair.latest?.[`lean_${key}_kg`]),fat:num(pair.latest?.[`fat_${key}_kg`]),delta:pair.available?difference(pair.latest[`lean_${key}_kg`],pair.previous[`lean_${key}_kg`]):null,fatDelta:pair.available?difference(pair.latest[`fat_${key}_kg`],pair.previous[`fat_${key}_kg`]):null}));
+  const parts=segments.map(([key,label,trainingRegion])=>({key,label,trainingRegion,current:num(pair.latest?.[`lean_${key}_kg`]),previous:num(pair.previous?.[`lean_${key}_kg`]),fat:num(pair.latest?.[`fat_${key}_kg`]),previousFat:num(pair.previous?.[`fat_${key}_kg`]),delta:pair.available?difference(pair.latest[`lean_${key}_kg`],pair.previous[`lean_${key}_kg`]):null,fatDelta:pair.available?difference(pair.latest[`fat_${key}_kg`],pair.previous[`fat_${key}_kg`]):null}));
   const regionKey=segments.find(([k])=>k===region)?.[2];
   const interval=pair.available?{start:addDays(pair.start,1),end:pair.end}:null;
   const intervalDays=interval?days(interval.start,interval.end):null;
