@@ -6,6 +6,7 @@ import {goalComparison,goalForDate,historicalGoalReference} from './personal-goa
 import {normalizeMuscleGroup,addDays} from './integrated-analysis.js';
 import {bodySourceLabel} from './health-context.js';
 import {labReferenceStatus,labResultText} from './labs-layout-v2.js';
+import {trainingSetCounts,isSetExtension} from './training-session.js';
 
 const average=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
 const inWindow=(date,b)=>date&&(!b.start||date>=b.start)&&date<=b.end;
@@ -84,10 +85,11 @@ export function evolutionModel(data,status,m,r,ui={}){
   const exMap=new Map(exercises.map(e=>[e.source_record_id,e]));
   const sets=status.sets==='ready'&&status.exercises==='ready'?(data.sets||[]).filter(s=>workouts.has(s.workout_source_record_id)&&exMap.get(s.exercise_source_record_id)?.workout_source_record_id===s.workout_source_record_id):null;
   const groups=new Map();
-  for(const s of sets||[]){const group=normalizeMuscleGroup(exMap.get(s.exercise_source_record_id)?.muscle_group);groups.set(group,(groups.get(group)||0)+1);}
+  for(const s of sets||[]){if(isSetExtension(s))continue;const group=normalizeMuscleGroup(exMap.get(s.exercise_source_record_id)?.muscle_group);groups.set(group,(groups.get(group)||0)+1);}
   const trainingGroups=[...groups].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value||a.label.localeCompare(b.label));
   const lastWorkout=[...(m.training.rows||[])].sort((a,b)=>day(a.workout_date).localeCompare(day(b.workout_date))).at(-1)||null;
-  const latestSession=lastWorkout?{...lastWorkout,exerciseCount:status.exercises==='ready'?exercises.filter(e=>e.workout_source_record_id===lastWorkout.source_record_id).length:null,setCount:sets?sets.filter(s=>s.workout_source_record_id===lastWorkout.source_record_id).length:null}:null;
+  const latestCounts=sets&&lastWorkout?trainingSetCounts(sets.filter(s=>s.workout_source_record_id===lastWorkout.source_record_id)):null;
+  const latestSession=lastWorkout?{...lastWorkout,exerciseCount:status.exercises==='ready'?exercises.filter(e=>e.workout_source_record_id===lastWorkout.source_record_id).length:null,setCount:latestCounts?.primary??null,extensionCount:latestCounts?.extensions??null}:null;
   const latestExercises=latestSession?exercises.filter(e=>e.workout_source_record_id===latestSession.source_record_id).sort((a,b)=>(num(a.order_index)||0)-(num(b.order_index)||0)).map(exercise=>({...exercise,recordedSets:sets?.filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(num(a.set_index)||0)-(num(b.set_index)||0))||[]})):[];
   const load=insights.highlightLoad;
   const freshLoad=load&&(!latestSession||load.latest.date>=addDays(day(latestSession.workout_date),-14))?load:null;
@@ -123,3 +125,4 @@ export function evolutionModel(data,status,m,r,ui={}){
   const result={insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
   return {...result,...evolutionReadings(m,r,result)};
 }
+

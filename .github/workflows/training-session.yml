@@ -1,0 +1,25 @@
+name: LTS Health Training Session
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'v2/src/**'
+      - 'v2/training-session-test.mjs'
+      - '.github/workflows/training-session.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'v2/src/**'
+      - 'v2/training-session-test.mjs'
+      - '.github/workflows/training-session.yml'
+permissions:
+  contents: read
+jobs:
+  session:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node v2/training-session-test.mjs

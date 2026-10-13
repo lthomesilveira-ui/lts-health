@@ -1,6 +1,7 @@
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
 import {renderTrainingHistory,renderExerciseHistory} from './training-history.js';
 import {failed,errorCard} from './history-tools.js';
+import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './training-session.js';
 
 const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
 
@@ -26,8 +27,18 @@ function setText(set){
 
 function workoutCounts(workout){
   const exercises=failed(state,'exercises')?[]:exercisesFor(workout);
-  const setCount=failed(state,'sets')?null:exercises.reduce((sum,e)=>sum+setsFor(e).length,0);
-  return{exercises,setCount};
+  const counts=failed(state,'sets')||failed(state,'exercises')?null:trainingSetCounts(exercises.flatMap(e=>setsFor(e)));
+  return{exercises,setCount:counts?.primary??null,extensionCount:counts?.extensions??null};
+}
+
+function measurementNote(workout){
+  if(!hasReportedMeasurementIssue(workout,state.data.workoutEvidence||[]))return '';
+  return '<p class="ltsRefMeasurementNote">Você relatou possível mau posicionamento do sensor. A frequência cardíaca e as calorias foram preservadas como medidas pelo Polar, com confiabilidade limitada; não confirmam a intensidade real do treino.</p>';
+}
+
+function exerciseNotes(exercise,sets){
+  const notes=[...new Set([exercise.notes,...sets.map(set=>set.notes)].filter(Boolean))];
+  return notes.length?`<details class="ltsRefExerciseNotes"><summary>Observações registradas</summary>${notes.map(note=>`<p>${esc(note)}</p>`).join('')}</details>`:'';
 }
 
 function metric(value,unit,label){
@@ -67,7 +78,7 @@ function summaryExercisePreview(exercises){
 }
 
 function summaryView(workout){
-  const{exercises,setCount}=workoutCounts(workout);
+  const{exercises,setCount,extensionCount}=workoutCounts(workout);
   return `${sessionHero(workout)}
     <section class="ltsRefTrainMetrics">
       ${metric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min','Duração')}
@@ -75,10 +86,12 @@ function summaryView(workout){
       ${metric(num(workout.heart_rate_avg)!=null?fmtNum(workout.heart_rate_avg,0):'—','bpm',workout.telemetry_heart_rate_is_partial?'FC média · trecho':'FC média')}
       ${metric(setCount==null?'—':' '+setCount,'','Séries')}
     </section>
+    ${measurementNote(workout)}
     ${hrPanel(workout)}
     <section class="ltsRefTrainPanel ltsRefSessionOverview">
       <header><div><span>Estrutura</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
       <div class="ltsRefOverviewGrid"><div><b>${exercises.length}</b><span>exercícios estruturados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
+      ${extensionCount?`<p class="ltsRefExtensionNote">${extensionCount} prolongamento${extensionCount===1?'':'s'} por drop ou rest-pause, separado${extensionCount===1?'':'s'} das séries. Aquecimentos e ajustes informados entram na contagem das séries.</p>`:''}
       ${summaryExercisePreview(exercises)}
     </section>`;
 }
@@ -89,9 +102,11 @@ function exerciseCards(workout){
   if(!exercises.length)return `<div class="ltsRefTrainEmpty">Exercícios ainda não estruturados para esta sessão.</div>`;
   return `<div class="ltsRefExerciseList">${exercises.map((exercise,index)=>{
     const sets=failed(state,'sets')?[]:setsFor(exercise);
+    const counts=trainingSetCounts(sets);
     return `<article class="ltsExerciseCard ltsRefExerciseCard">
-      <header><div class="ltsRefExerciseNumber">${String(index+1).padStart(2,'0')}</div><div><b>${esc(exercise.exercise||'Exercício')}</b><small>${esc([exercise.machine,exercise.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'—':`${sets.length} séries`}</span></header>
-      <div class="ltsRefSetTable">${sets.length?sets.map((set,setIndex)=>{const t=setText(set);return `<div><span>S${setIndex+1}</span><b>${t.missing?'Dados não informados':esc(t.load)}</b><i>${t.missing?'':`× ${esc(t.reps)} reps`}</i>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</div>`;}).join(''):`<div class="ltsRefSetEmpty">${failed(state,'sets')?'As séries não carregaram agora.':esc(exercise.source_text||'Séries ainda não estruturadas.')}</div>`}</div>
+      <header><div class="ltsRefExerciseNumber">${String(index+1).padStart(2,'0')}</div><div><b>${esc(exercise.exercise||'Exercício')}</b><small>${esc([exercise.machine,exercise.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'—':`${counts.primary} séries${counts.extensions?` + ${counts.extensions} prolong.`:''}`}</span></header>
+      <div class="ltsRefSetTable">${sets.length?sets.map((set,setIndex)=>{const t=setText(set);return `<div><span>${esc(setStepLabel(sets,setIndex))}</span><b>${t.missing?'Dados não informados':esc(t.load)}</b><i>${t.missing?'':`× ${esc(t.reps)} reps`}</i>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</div>`;}).join(''):`<div class="ltsRefSetEmpty">${failed(state,'sets')?'As séries não carregaram agora.':esc(exercise.source_text||'Séries ainda não estruturadas.')}</div>`}</div>
+      ${exerciseNotes(exercise,sets)}
       <button type="button" class="ltsRefExerciseHistory" data-depth-exercise="${esc(exercise.source_record_id)}">Histórico deste exercício ›</button>
     </article>`;
   }).join('')}</div>`;
@@ -121,3 +136,4 @@ export function renderProductTraining(){
     ${failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Nenhum treino estruturado disponível.</div>'}
   </section>`;
 }
+

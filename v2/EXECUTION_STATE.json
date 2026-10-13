@@ -53,7 +53,8 @@
     "status": "in_progress",
     "goal": "Finish the owner-requested evolution dashboard against the actual authenticated product and supplied visual reference.",
     "task_ids": [
-      "LTS-EVOLUTION-FINAL-001"
+      "LTS-EVOLUTION-FINAL-001",
+      "LTS-TRAINING-SESSION-001"
     ],
     "completed_evidence": [
       "Owner requested autonomous final delivery on 2026-10-13.",
@@ -68,7 +69,8 @@
       "Candidate .47 adds shared plain-language synthesis, source-only conservative laboratory interval positions, prior/current regional context and safe untrusted source-unit rendering. Local semantic, source and privacy checks pass."
     ],
     "pending_evidence": [
-      "Complete .47 candidate responsive journeys and inspect their captures; promote normally, pass exact deployed gates and inspect the actual authenticated Home, evidence paths and consultation summary."
+      "Complete .47 candidate responsive journeys and inspect their captures; promote normally, pass exact deployed gates and inspect the actual authenticated Home, evidence paths and consultation summary.",
+      "Training-session counting and scoped telemetry caveat: candidate checks, normal publication and authenticated final inspection."
     ]
   },
   "last_verified_release": {
@@ -1443,6 +1445,26 @@
         "Normal PR 335 published .45 at 6b4c9f25b5fff897858747c786ecf4e5e4c9fb29. Exact authenticated public Home inspected; historical protocol reference restored only after matching frontend loaded."
       ],
       "next_action": "Implement and verify the coherent final evolution package.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-TRAINING-SESSION-001",
+      "area": "training",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Keep primary sets separate from drop/rest-pause extensions and display reported telemetry and execution limitations.",
+      "acceptance": [
+        "Home and Training session use the same count of primary sets; extension stages remain visible separately.",
+        "Source notes, fractional repetitions and the reported sensor-position limitation remain readable without modifying source values.",
+        "Synthetic contract tests, responsive candidate gates and exact authenticated published inspection pass."
+      ],
+      "evidence": [
+        "Private canonical workout, exercise, set-step and source-evidence writes independently reread successfully.",
+        "Authenticated public Training summary and exercise pages verified before the display fix.",
+        "Local training-session-test, final-evolution-test and evolution-product-test passed; all observations and source records preserved."
+      ],
+      "next_action": "Complete candidate checks, promote normally and inspect the exact published session and Home.",
       "blocker": null
     }
   ],
