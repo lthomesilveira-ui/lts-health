@@ -11,7 +11,7 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js?v=overview-20261013.54';
+import {renderProductHomeReference} from './home-reference.js?v=interval-20261013.55';
 import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
@@ -216,7 +216,7 @@ function bindStaticEvents(){
     const reportPage=event.target.closest('[data-report-page]');
     if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage','reviewDayPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
     const reviewView=event.target.closest('[data-review-view]');
-    if(reviewView&&['overview','day','consultation'].includes(reviewView.dataset.reviewView)){state.ui.reviewView=reviewView.dataset.reviewView;scheduleRender();return;}
+    if(reviewView&&['interval','overview','day','consultation'].includes(reviewView.dataset.reviewView)){state.ui.reviewView=reviewView.dataset.reviewView;scheduleRender();return;}
     const reviewDate=event.target.closest('[data-review-date]');
     if(reviewDate&&!reviewDate.disabled&&reviewDate.dataset.reviewDate){state.ui.reviewDate=reviewDate.dataset.reviewDate;state.ui.healthContextDate=state.ui.reviewDate;scheduleRender();return;}
     if(event.target.closest('[data-review-export]')){downloadIntegratedSummary();return;}
@@ -266,10 +266,11 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(['bodyIntervalStart','bodyIntervalEnd'].includes(event.target.id)){state.ui.bodyIntervalStart=document.querySelector('#bodyIntervalStart')?.value;state.ui.bodyIntervalEnd=document.querySelector('#bodyIntervalEnd')?.value;render();return;}
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
     if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
-    const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
+    const reportFields=new Set(['bodyIntervalStart','bodyIntervalEnd','reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
     if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;state.ui.reviewDate=event.target.value;scheduleRender();}
     if(event.target.id==='homeLabMarker'){state.ui.homeLabMarker=event.target.value;scheduleRender();}

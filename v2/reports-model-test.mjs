@@ -27,6 +27,20 @@ assert.equal(segmentIdentity({...data.segmental[1],source_file:'unrelated.pdf'},
 assert.equal(segmentalReport(data,{...status,body:'error'},current).reason,'unavailable_context');
 assert.equal(compositionReport({...data,body:[...data.body,data.body[1]]},status,current).reason,'ambiguous');
 assert.equal(trainingSummary(data,status,current).sessions,1);assert.equal(trainingSummary(data,status,current).sets,1);
+const phasedData={...data,sets:[...data.sets,...['working','warmup','drop','rest_pause','drop'].map(phase=>({exercise_source_record_id:'current-ex',workout_source_record_id:'current',phase}))]};
+const phased=trainingSummary(phasedData,status,current);
+assert.equal(phased.sets,3,'only primary sets contribute to the series count');
+assert.equal(phased.extensions,3,'drop and rest-pause remain explicit extensions');
+assert.equal(phased.totalSets,6,'all recorded steps are preserved separately');
+assert.equal(trainingSummary(phasedData,status,current,'arms').sets,3);
+assert.equal(trainingSummary(phasedData,status,current,'legs').totalSets,0,'region filters apply before counting');
+assert.equal(segmentalReport(phasedData,status,current).training.extensions,3,'segmental context uses the same primary/extension semantics');
+for(const key of ['workouts','exercises','sets']){
+  const failed=trainingSummary(phasedData,{...status,[key]:'error'},current);
+  assert.equal(failed.sets,null);assert.equal(failed.extensions,null);assert.equal(failed.totalSets,null,'unavailable detail is never zero');
+}
+const noSets=trainingSummary({...data,sets:[]},status,current);
+assert.equal(noSets.sets,0);assert.equal(noSets.extensions,0);assert.equal(noSets.totalSets,0);
 assert.equal(trainingSummary(data,{...status,exercises:'error'},current).sets,null);
 assert.equal(trainingSummary(data,{...status,workouts:'error'},current).sessions,null);
 assert.equal(trainingSummary({...data,workouts:[{...workout('current','2025-02-10'),duration_minutes:null}]},status,current).minutes,null);
@@ -48,6 +62,44 @@ assert.equal(usefulReports(waterData,status,{analysisPeriod:'30'},'2025-03-02').
 assert.equal(usefulReports({...waterData,nutrition:[{nutrition_date:'2025-02-15',water_ml:3000,source:null}]},status,{analysisPeriod:'30'},'2025-03-02').hydrationComparable,false,'unknown water provenance cannot be compared');
 assert.equal(nutritionSummary({...data,nutrition:[...data.nutrition,data.nutrition[0]]},status,current).counts.protein_g,0,'ambiguous daily records excluded');
 assert.equal(nutritionSummary({...data,nutrition:[{nutrition_date:'2025-02-10',protein_g:0,source:'Food A'}]},status,current).means.protein_g,0,'recorded zero remains zero');
+const mixedFood={...data,nutrition:[
+  {nutrition_date:'2025-02-10',protein_g:100,calories_kcal:1000,source:'Food A'},
+  {nutrition_date:'2025-02-11',protein_g:300,calories_kcal:3000,source:'Food B'},
+  {nutrition_date:'2025-02-12',protein_g:0,calories_kcal:null,source:' food a '},
+  {nutrition_date:'2025-01-20',protein_g:80,source:'Food A'}
+]};
+const mixedSnapshot=JSON.stringify(mixedFood),mixed=nutritionSummary(mixedFood,status,current);
+assert.equal(mixed.means.protein_g,null,'different-day origins cannot produce a pooled mean');
+assert.equal(mixed.means.calories_kcal,null);assert.equal(mixed.source,null);assert.equal(mixed.reason,'mixed_sources');
+assert.deepEqual(mixed.sources.map(s=>[s.key,s.means.protein_g,s.counts.protein_g,s.counts.calories_kcal,s.intervalDays]),[['food a',50,2,1,30],['food b',300,1,1,30]],'means and independent denominators remain source-specific');
+assert.equal(mixed.days,3);assert.equal(mixed.recordedDays,3);assert.equal(mixed.counts.protein_g,3,'coverage counts observations without averaging their origins');
+assert.equal(segmentalReport(mixedFood,status,current).nutrition.means.protein_g,null,'the between-measurement context also refuses pooled food means');
+assert.equal(usefulReports(mixedFood,status,{analysisPeriod:'30'},'2025-03-02').nutritionComparable,false);
+assert.equal(JSON.stringify(mixedFood),mixedSnapshot,'source partitioning does not mutate nutrition data');
+const unknownFood=nutritionSummary({...data,nutrition:[{nutrition_date:'2025-02-10',protein_g:999,source:'  '}]},status,current);
+assert.equal(unknownFood.means.protein_g,null);assert.equal(unknownFood.counts.protein_g,0);assert.equal(unknownFood.days,0);assert.equal(unknownFood.unknownDays,1);assert.equal(unknownFood.recordedDays,1);assert.equal(unknownFood.sources.length,0);
+const partlyUnknown=nutritionSummary({...data,nutrition:[data.nutrition[0],{nutrition_date:'2025-02-11',protein_g:999,source:null}]},status,current);
+assert.equal(partlyUnknown.means.protein_g,null,'an unidentified origin is not silently folded into a known one');
+assert.equal(partlyUnknown.sources[0].means.protein_g,100);assert.equal(partlyUnknown.unknownDays,1);
+const duplicatedFood=nutritionSummary({...data,nutrition:[
+  data.nutrition[0],{...data.nutrition[0],protein_g:900},
+  {nutrition_date:'2025-02-11',protein_g:50,source:'Food A'},
+  {nutrition_date:'2025-02-11',protein_g:50,source:'Food A'},
+  {nutrition_date:'2025-02-12',protein_g:60,source:'Food A'},
+  {nutrition_date:'2025-02-12',protein_g:60,source:'Food B'},
+  {nutrition_date:'2025-02-13',protein_g:80,source:'Food A'}
+]},status,current);
+assert.equal(duplicatedFood.ambiguousDays,3);assert.equal(duplicatedFood.duplicates.length,3);assert.equal(duplicatedFood.conflicts.length,2,'conflicting values or origins are reported explicitly');
+assert.deepEqual(duplicatedFood.conflicts.map(r=>r.date),['2025-02-10','2025-02-12']);
+assert.equal(duplicatedFood.duplicates[1].conflicting,false,'an identical replay remains explicitly ambiguous without inventing a merge rule');
+assert.equal(duplicatedFood.sources[0].means.protein_g,80);assert.equal(duplicatedFood.sources[0].ambiguousDays,3);assert.equal(duplicatedFood.sources[1].days,0);
+assert.equal(duplicatedFood.recordedDays,4);assert.equal(duplicatedFood.days,1);assert.equal(duplicatedFood.means.protein_g,null,'excluding ambiguous dates cannot hide another recorded origin');
+const invalidFood=nutritionSummary({...data,nutrition:[{nutrition_date:'2025-02-10',protein_g:-10,calories_kcal:null,source:'Food A'},{nutrition_date:'2025-02-30',protein_g:500,source:'Food A'},{nutrition_date:'2025-03-03',protein_g:600,source:'Food A'}]},status,current);
+assert.equal(invalidFood.means.protein_g,null);assert.equal(invalidFood.counts.protein_g,0);assert.equal(invalidFood.recordedDays,1);
+const missingFood=nutritionSummary(data,{...status,nutrition:'error'},current);
+assert.equal(missingFood.available,false);assert.equal(missingFood.days,null);assert.equal(missingFood.unknownDays,null);assert.deepEqual(missingFood.sources,[]);
+const emptyFood=nutritionSummary({...data,nutrition:[]},status,current);
+assert.equal(emptyFood.days,0);assert.equal(emptyFood.means.protein_g,null);assert.equal(emptyFood.counts.protein_g,0);assert.equal(emptyFood.reason,'empty');
 assert.equal(laboratoryReport(data,status,current).selected.delta,2);
 for(const altered of [
  {...data,labs:data.labs.map(r=>({...r,method:null}))},
@@ -82,4 +134,13 @@ let periodHtml=renderUsefulReports().match(/id="reportPeriods"[\s\S]*?<\/section
 assert.match(periodHtml,/30 min<small>1 de 2 sessões com duração · parcial/);assert.match(periodHtml,/Cobertura incompleta/);assert.match(periodHtml,/Água por dia registrado/);assert.match(periodHtml,/\+1\.000 mL/);
 state.domainStatus={...status,sourceMetrics:'error'};
 const unavailable=renderUsefulReports();assert.match(unavailable,/Fontes de água não verificadas/);assert.match(unavailable,/Não foi possível verificar todas as fontes de água/);assert.doesNotMatch(unavailable.match(/id="reportHydration"[\s\S]*?<\/section>/)?.[0]||'',/ltsContextPlot/);
-console.log('Useful reports: calendar windows, partial duration coverage, deduplicated hydration, source failures, segment/device boundaries, interval context, lab comparability and escaping passed.');
+state.data={...mixedFood,body:[body(addDays(today,-10)),body(today)],segmental:[segment(addDays(today,-10),3.2),segment(today,3)],nutrition:mixedFood.nutrition.map((r,i)=>({...r,nutrition_date:addDays(today,-i-1),source:r.source==='Food B'?'<img src=x onerror=bad>':r.source})),workouts:[workout('current',addDays(today,-3))],sets:phasedData.sets};state.domainStatus=status;state.ui={analysisPeriod:'30'};
+const sourceHtml=renderUsefulReports(),foodPeriod=sourceHtml.match(/id="reportPeriods"[\s\S]*?<\/section>/)?.[0]||'';
+assert.match(foodPeriod,/Origens separadas; sem média consolidada/);assert.match(foodPeriod,/&lt;img src=x onerror=bad&gt;/);assert.doesNotMatch(sourceHtml,/<img src=x onerror=bad>/);
+assert.match(foodPeriod,/Food A · 3 de 30 dias com valor/);assert.match(foodPeriod,/Séries principais/);assert.match(foodPeriod,/3 prolongamentos · 6 registros no total/);
+assert.match(sourceHtml,/3 séries principais \+ 3 prolongamentos \(6 registros no total\)/);
+assert.doesNotMatch(foodPeriod,/Não há proteína registrada/);
+state.data={...state.data,nutrition:[{nutrition_date:addDays(today,-1),source:'Food A',protein_g:100},{nutrition_date:addDays(today,-1),source:'Food A',protein_g:900},{nutrition_date:addDays(today,-2),source:null,protein_g:500}]};
+const ambiguousHtml=renderUsefulReports().match(/id="reportPeriods"[\s\S]*?<\/section>/)?.[0]||'';
+assert.match(ambiguousHtml,/1 data com duplicatas excluída \(1 com totais ou origens divergentes\)/);assert.match(ambiguousHtml,/1 data sem origem excluída/);assert.match(ambiguousHtml,/Sem dado/);assert.doesNotMatch(ambiguousHtml,/500 g|900 g|100 g/);
+console.log('Useful reports: primary/extension counts, source-specific food means and coverage, explicit duplicate conflicts, unknown origins, calendar windows, partial durations, hydration, source failures, interval context, lab comparability and escaping passed.');
