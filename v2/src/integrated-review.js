@@ -11,6 +11,11 @@ const average=values=>values.length?values.reduce((sum,value)=>sum+value,0)/valu
 const numeric=value=>num(value)!=null&&num(value)>=0?num(value):null;
 const order=rows=>rows.sort((a,b)=>a.date.localeCompare(b.date));
 const nutritionMetrics=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'];
+const recordedPhases={warmup:'aquecimento',working:'série de trabalho',drop:'drop set',rest_pause:'rest-pause',other:'outra fase informada'};
+export function recordedPhaseLabel(phase){
+  const key=norm(phase);
+  return !key?'fase não informada':Object.hasOwn(recordedPhases,key)?recordedPhases[key]:'fase anotada sem classificação';
+}
 
 function sourcesOf(rows,today){
   const groups=new Map();
@@ -115,8 +120,8 @@ export function consultationLines(review,reports,evolution=null){
     lines.push('','METAS INFORMADAS');
     if(evolution.goalReference){const {row,meta}=evolution.goalReference,b=meta.body_targets;lines.push(`Referências históricas documentadas em ${fmtDate(meta.documented_on)} · ${meta.source}: proteína > ${v(row.protein_g,'g/dia',0)}, energia mínima ${v(row.calories_kcal,'kcal/dia',0)}, água ${v(row.water_ml,'mL/dia',0)}. Vigência atual não confirmada; não entram como metas dos dias observados.`);if(b)lines.push(`Objetivo corporal aproximado informado para ${fmtDate(b.target_date)}: ${v(b.weight_kg_min,'',0)}–${v(b.weight_kg_max,'kg',0)}, músculo ${v(b.skeletal_muscle_mass_kg,'kg',0)}, gordura ${v(b.body_fat_pct,'%',0)}.`);}
     for(const[key,label,unit]of [['calories_kcal','Energia','kcal'],['protein_g','Proteína','g']]){const g=evolution.nutritionTargets[key];lines.push(g.count?`${label}: consumo médio ${v(g.actual,unit,0)} versus meta média vigente ${v(g.target,unit,0)} nos mesmos ${g.count} dias.`:`${label}: sem meta informada para os dias observados.`);}
-    const w=evolution.latestSession;if(w)lines.push('','ÚLTIMA SESSÃO',`${fmtDate(w.workout_date)} · ${w.workout_type||'Treino'} · ${w.location||'local não informado'} · ${v(w.duration_minutes,'min')} · ${w.exerciseCount??'—'} exercícios · ${w.setCount??'—'} séries anotadas.`,w.notes||'');
-    for(const ex of evolution.latestExercises||[])lines.push(`${ex.exercise} · ${ex.machine||'aparelho não informado'}: ${ex.recordedSets.map(set=>`${v(set.weight,set.weight_unit||'unidade não informada',Number.isInteger(num(set.weight))?0:1)} × ${num(set.reps_numeric)!=null?v(set.reps_numeric,'reps',Number.isInteger(num(set.reps_numeric))?0:1):set.reps_raw||'reps não informadas'} · ${set.phase||'fase não informada'}`).join('; ')||'séries não disponíveis'}.`);
+    const w=evolution.latestSession;if(w)lines.push('','ÚLTIMA SESSÃO',`${fmtDate(w.workout_date)} · ${w.workout_type||'Treino'} · ${w.location||'local não informado'} · ${v(w.duration_minutes,'min')} · ${w.exerciseCount??'—'} exercícios · ${w.setCount??'—'} séries${w.extensionCount?` principais + ${w.extensionCount} prolongamentos`:' anotadas'}.`,w.notes||'');
+    for(const ex of evolution.latestExercises||[])lines.push(`${ex.exercise} · ${ex.machine||'aparelho não informado'}: ${ex.recordedSets.map(set=>`${v(set.weight,set.weight_unit||'unidade não informada',Number.isInteger(num(set.weight))?0:1)} × ${num(set.reps_numeric)!=null?v(set.reps_numeric,'reps',Number.isInteger(num(set.reps_numeric))?0:1):set.reps_raw||'reps não informadas'} · ${recordedPhaseLabel(set.phase)}`).join('; ')||'séries não disponíveis'}.`);
     lines.push('','PROTOCOLOS NO CONTEXTO',...(evolution.recentTreatments.length?evolution.recentTreatments.map(t=>`${fmtDate(t.event_date)} · ${t.medication} · ${medicationContext(t)} · ${t.notes||''}`):['Sem evento de aplicação na janela ou fonte indisponível.']));
   }
   lines.push('', 'LIMITES E PERGUNTAS PARA A CONSULTA','Médias e cruzamentos excluem hoje; registros de hoje podem estar incompletos. Dias sem registro não significam zero, descanso confirmado ou diário completo.',
