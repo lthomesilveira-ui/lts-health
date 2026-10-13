@@ -1,6 +1,7 @@
 import {state,esc,fmtDate,norm,unique,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
 import {medicationContext} from './health-context.js';
+import {renderCareFollowup} from './care-followup.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus?.[key]==='error';
@@ -29,6 +30,7 @@ export function renderTreatmentHub(){
   for(const r of filteredEvents){const k=monthKey(r.event_date);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
   const regimenByName=new Map(allRegimens.map(r=>[r.medication,r]));
   return `${title('Protocolos','Contexto temporal dos registros existentes. Cadastros de contexto e eventos históricos ficam separados; o LTS Health não orienta uso nem infere situação atual.')}
+    ${renderCareFollowup(state.data.docs||[],state.domainStatus?.docs)}
     <div class="card sectionGap"><b>Últimas aplicações: ${dates.length?fmtDate(dates.at(-1)):'sem registros'}</b><p>Consulte abaixo horário, local e lado efetivamente registrados. Uma aplicação passada não define a próxima nem confirma um protocolo atual.</p></div>
     <section class="card sectionGap"><div class="cardHead"><div><b>Mapa de protocolos</b><small>Resumo por item, sem reconstruir orientação de uso ou situação atual.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar protocolo ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="protocolSummaryGrid">${filteredNames.map(name=>itemSummary(name,allEvents,regimenByName.get(name))).join('')||empty('Nenhum protocolo corresponde à busca.')}</div></section>
     <section class="card sectionGap"><div class="cardHead"><div><b>Linha do tempo de eventos</b><small>Somente ocorrências históricas efetivamente registradas.</small></div></div><div class="timelineGroups">${[...groups.entries()].map(([month,items])=>`<section class="timelineDay"><div class="timelineDate"><b>${esc(monthLabel(month))}</b><span>${countLabel(items.length,'registro','registros')}</span></div><div class="card timelineDayCard">${items.map(r=>`<div class="timelineItem rich"><span>${fmtDate(r.event_date)}</span><div><b>${esc(r.medication||'Registro de protocolo')}</b><em>${esc(medicationContext(r))}</em><details><summary>Detalhes do registro</summary><p>Data, horário e local são registros históricos, não recomendações.</p><small>${esc(r.source||'Origem não informada')}</small></details></div></div>`).join('')}</div></section>`).join('')||empty('Nenhum evento histórico corresponde à busca.')}</div></section>

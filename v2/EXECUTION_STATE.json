@@ -1528,6 +1528,26 @@
       ],
       "next_action": "Technical delivery complete. Preserve verified records and external source limitations; assess later owner feedback without treating engineering checks as physical-device acceptance.",
       "blocker": null
+    },
+    {
+      "id": "LTS-CARE-FOLLOWUP-001",
+      "area": "protocols",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show consultation follow-up, reported baseline, pending purchases, requested examinations and message drafts from a bounded private document projection.",
+      "acceptance": [
+        "Previously reported context is recovered with source dates.",
+        "A documented plan never becomes a confirmed start or a future administration instruction.",
+        "Missing purchase, arrival and start records remain unconfirmed.",
+        "Follow-up windows depend on confirmed starts; no date is inferred from the consultation.",
+        "Message content is escaped and no raw source payload or credential enters the screen.",
+        "The same view works on desktop and mobile and a document failure preserves the application history."
+      ],
+      "evidence": [
+        "Cross-screen privacy contract passed locally."
+      ],
+      "next_step": "Validate the isolated branch in CI, promote through a normal PR and inspect the exact authenticated published route."
     }
   ],
   "package_history": [
