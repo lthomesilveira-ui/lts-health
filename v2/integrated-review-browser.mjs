@@ -10,7 +10,7 @@ const date=offset=>{const d=new Date(`${today}T12:00:00Z`);d.setUTCDate(d.getUTC
 const db={health_workouts:[],health_daily_nutrition:[],health_source_daily_metrics:[]};
 db.health_body_composition=Array.from({length:5},(_,i)=>({measured_at:date(i*3+1),source_record_id:`body-${i}`,source:'Synthetic scan',device_name:'Synthetic device',weight_kg:80+i*.2,body_fat_pct:20+i*.1,fat_mass_kg:16+i*.1,skeletal_muscle_mass_kg:32}));
 db.health_lab_results=[{source_record_id:'lab-1',collection_date:date(2),biomarker:'Synthetic marker',unit:'u',result_numeric:12,result_raw:'12',source:'Synthetic lab',laboratory:'Synthetic lab',method:'Synthetic method'}];
-for(const [i,label] of ['Hemoglobina Glicada (A1C)','LDL-Colesterol','Triglicérides','Hemoglobina','Ferritina','Testosterona Total'].entries())for(const [suffix,offset,value] of [['prior',120,10+i],['current',2,12+i]])db.health_lab_results.push({source_record_id:`comparison-${i}-${suffix}`,collection_date:date(offset),biomarker:label,unit:'u',result_numeric:value,result_raw:String(value),laboratory:'Synthetic lab',source:'Synthetic lab',method:i%2?'':suffix==='prior'?'HPLC':'Cromatografia líquida de alta eficiência (HPLC)'});
+for(const [i,label] of ['Hemoglobina Glicada (A1C)','LDL-Colesterol','Triglicérides','Hemoglobina','Hematócrito','Ferritina','Testosterona Total','Estradiol'].entries())for(const [suffix,offset,value] of [['prior',120,10+i],['current',2,12+i]])db.health_lab_results.push({source_record_id:`comparison-${i}-${suffix}`,collection_date:date(offset),biomarker:label,unit:'u',result_numeric:value,result_raw:String(value),reference_range:['Hemoglobina','Hematócrito','Testosterona Total'].includes(label)?'Homens: 10 a 14 u':'Synthetic report reference',laboratory:'Synthetic lab',source:'Synthetic lab',method:i%2?'':suffix==='prior'?'HPLC':'Cromatografia líquida de alta eficiência (HPLC)'});
 db.health_personal_goals=[{effective_from:date(40),calories_kcal:1800,protein_g:120,water_ml:2000,notes:JSON.stringify({type:'historical_protocol',source:'Synthetic protocol',documented_on:date(40),current_validity:'unconfirmed'})}];
 for(let i=0;i<=16;i++){
   db.health_daily_nutrition.push({source_record_id:`n${i}`,nutrition_date:date(i),source:'Synthetic food',calories_kcal:i?2000:9000,protein_g:100});
@@ -36,8 +36,10 @@ try{
     if(width<=840){assert.equal(await page.locator('.ltsHomeMobileBrand').isVisible(),true,'mobile Home preserves app identity');assert.match(await page.locator('.ltsHomeMobileBrand').innerText(),/LTS Health/);}
     assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
     assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),true,'same product hierarchy on all devices');
-    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Gordura.*músculo/);
-    assert.equal(await page.locator('.ltsEvolutionLabTable tbody tr').count(),6,'several markers can be compared without changing the selector');
+    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Exames para discutir na consulta.*acima da faixa.*10–14/s);
+    assert.equal(await page.locator('.ltsCockpitReadings article').count(),3);
+    assert.equal(await page.locator('.ltsEvolutionMeaning').count()>=4,true,'domain panels explain meaning, not only observations');
+    assert.equal(await page.locator('.ltsEvolutionLabTable tbody tr').count(),8,'several markers can be compared without changing the selector');
     await page.locator('[data-home-lab-marker]').first().click();
     assert.equal(await page.locator('.ltsEvolutionLabDetail[open]').count(),1);
     assert.match(await page.locator('.ltsEvolutionLabDetail').innerText(),/mesma origem, unidade e método declarado/);
@@ -74,7 +76,9 @@ try{
     await page.locator('.ltsCockpitReading:visible [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
-    assert.match(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL.*1\.000 mL/s);
+    assert.match(await page.locator('#reviewPanel>.ltsReviewContrasts').innerText(),/Exames para discutir na consulta/);
+    await page.locator('[data-disclosure="review-numeric-contrasts"]>summary').click();
+    assert.match(await page.locator('#reviewPanel>details .ltsReviewContrasts').innerText(),/1\.200 mL.*1\.000 mL/s);
     assert.equal(await page.locator('.ltsReviewCoverage,.ltsReviewOverlap').count(),0);await noOverflow(page);
     assert.match(await page.locator('.ltsReviewContrast').last().innerText(),/7,0 h.*8,0 h/s);
     await capture(page,'#reportIntegratedReview',`${dir}/${label}-overview.png`);
@@ -101,7 +105,7 @@ try{
     await page.locator('#analysisPeriod').selectOption('90');await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='90');
     assert.equal(await page.locator('[data-review-view="consultation"]').getAttribute('aria-pressed'),'true','period change preserves the current task');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.domainStatus.sourceMetrics='error';state.ui.reviewView='overview';const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
-    assert.match(await page.locator('#reportIntegratedReview').innerText(),/Entender a evolução/);assert.doesNotMatch(await page.locator('.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
+    assert.match(await page.locator('#reportIntegratedReview').innerText(),/Entender a evolução/);assert.doesNotMatch(await page.locator('#reviewPanel>.ltsReviewContrasts').innerText(),/1\.200 mL/);await noOverflow(page);
     await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('.ltsHomeReference');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
     assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregaram/);

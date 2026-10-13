@@ -17,6 +17,22 @@ export function labResultText(row){
   if(num(row?.result_numeric)!=null)return `${fmtNum(row.result_numeric,2)}${u?` ${u}`:''}`;
   return 'Resultado não estruturado';
 }
+// Read only one explicit interval from this result's own report. Do not pick a
+// range from multiple populations, fasting conditions, risk targets or units.
+// This is a numerical position in the printed interval, never a diagnosis.
+export function labReferenceStatus(row){
+  const reference=String(row?.reference_range||'').trim();
+  const unknown={status:'unclassified',reference};
+  if(!exactNumeric(row)||!unit(row))return unknown;
+  const match=reference.match(/^(?:(Homens|Mulheres|Sexo masculino|Sexo feminino):\s*)?(\d+(?:[.,]\d+)?)\s+a\s+(\d+(?:[.,]\d+)?)(?:\s+([A-Za-zµμ%/0-9.^-]+))?(?:;\s*resultado confirmado após diluição)?$/i);
+  if(!match)return unknown;
+  if([match[2],match[3]].some(raw=>/^[1-9]\d{0,2}[.,]\d{3}$/.test(raw)))return unknown;
+  if(match[4]&&norm(match[4])!==norm(unit(row)))return unknown;
+  const low=Number(match[2].replace(',','.')),high=Number(match[3].replace(',','.')),result=num(row.result_numeric);
+  if(!Number.isFinite(low)||!Number.isFinite(high)||low>=high)return unknown;
+  return {status:result<low?'below':result>high?'above':'within',reference,low,high,lowRaw:match[2],highRaw:match[3],unit:unit(row),scope:match[1]||null};
+}
+export const labReferenceLabel=row=>({above:'Acima da faixa exibida no laudo',below:'Abaixo da faixa exibida no laudo',within:'Dentro da faixa exibida no laudo'})[labReferenceStatus(row).status]||'';
 export function labGroups(rows){
   const map=new Map();
   for(const [index,row] of rows.entries()){
@@ -65,7 +81,7 @@ function collectionOverview(rows){
   const date=dates.includes(state.ui.productLabCollection)?state.ui.productLabCollection:dates[0];
   const panels=[['Metabolismo e lipídios',['Hemoglobina Glicada (A1C)','Glicose','LDL-Colesterol','HDL-Colesterol','Triglicérides','Apolipoproteína B']],['Hemograma e reservas',['Hemoglobina','Hematócrito','Leucócitos','Ferritina','Vitamina B-12','25-OH Vitamina D Total']],['Hormônios e contexto',['Testosterona Total','Testosterona livre','Estradiol','SHBG','TSH','T4 Livre']]];
   const values=rows.filter(r=>validDay(r.collection_date)===date);
-  return `<section class="ltsLabCollection"><div class="ltsSectionHead"><div><span>RESULTADOS JUNTOS</span><h2>Coleta de ${esc(fmtDate(date))}</h2></div></div><label class="ltsField">Consultar coleta<select id="productLabCollection" data-depth-field="productLabCollection">${dates.map(d=>`<option value="${d}" ${d===date?'selected':''}>${fmtDate(d)}</option>`).join('')}</select></label>${panels.map(([title,names])=>{const cards=names.map(name=>{const matches=values.filter(r=>norm(r.biomarker)===norm(name));if(!matches.length)return '';return `<button type="button" class="ltsLabValueCard" data-lab-marker="${esc(norm(name))}"><span>${esc(name)}</span><strong>${esc(matches.length===1?labResultText(matches[0]):'Resultados distintos')}</strong><small>${esc(matches.length===1?matches[0].reference_range?`Referência do laudo: ${matches[0].reference_range}`:'Sem referência registrada':'Consulte cada resultado no histórico.')}</small><em>Histórico e detalhes ›</em></button>`;}).join('');return cards?`<h3>${esc(title)}</h3><div class="ltsLabValueGrid">${cards}</div>`:'';}).join('')}<p class="ltsDepthNote">Referências do laboratório não são metas individuais. Esta visão não classifica risco nem sugere ajustes de tratamento. Outros marcadores, métodos e resultados textuais continuam no seletor completo abaixo.</p></section>`;
+  return `<section class="ltsLabCollection"><div class="ltsSectionHead"><div><span>RESULTADOS JUNTOS</span><h2>Coleta de ${esc(fmtDate(date))}</h2></div></div><label class="ltsField">Consultar coleta<select id="productLabCollection" data-depth-field="productLabCollection">${dates.map(d=>`<option value="${d}" ${d===date?'selected':''}>${fmtDate(d)}</option>`).join('')}</select></label>${panels.map(([title,names])=>{const cards=names.map(name=>{const matches=values.filter(r=>norm(r.biomarker)===norm(name));if(!matches.length)return '';return `<button type="button" class="ltsLabValueCard" data-lab-marker="${esc(norm(name))}"><span>${esc(name)}</span><strong>${esc(matches.length===1?labResultText(matches[0]):'Resultados distintos')}</strong>${matches.length===1&&labReferenceLabel(matches[0])?`<small class="ltsLabReferencePosition">${esc(labReferenceLabel(matches[0]))}</small>`:''}<small>${esc(matches.length===1?matches[0].reference_range?`Referência do laudo: ${matches[0].reference_range}`:'Sem referência registrada':'Consulte cada resultado no histórico.')}</small><em>Histórico e detalhes ›</em></button>`;}).join('');return cards?`<h3>${esc(title)}</h3><div class="ltsLabValueGrid">${cards}</div>`:'';}).join('')}<p class="ltsDepthNote">A posição na faixa usa somente um intervalo explícito do próprio laudo, na mesma unidade. Referências não são metas individuais; estar dentro da faixa não garante saúde, e estar fora não define diagnóstico. Faixas com múltiplas condições exigem leitura do laudo. Outros marcadores, métodos e resultados textuais continuam no seletor completo abaixo.</p></section>`;
 }
 
 export function renderProductLabs(){

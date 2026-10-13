@@ -23,7 +23,7 @@ assert.doesNotMatch(renderHomeCockpit(c),/0 coletas|0 registros de sono|Nenhum r
 const ambiguous=structuredClone(data);ambiguous.body.push({...ambiguous.body[1],source:'Other scan'});
 c=homeCockpitModel(ambiguous,status,'30',{},'2025-04-20');assert.equal(c.body,null);assert.match(c.detail,/mais de uma medição candidata/);
 const changed=structuredClone(data);changed.body[1].device_name='B';
-c=homeCockpitModel(changed,status,'30',{},'2025-04-20');assert.match(c.detail,/origens ou aparelhos diferentes/);assert.doesNotMatch(c.title,/Peso -1/);
+c=homeCockpitModel(changed,status,'30',{},'2025-04-20');assert.match(c.detail,/origem e o aparelho não estão confirmados/);assert.doesNotMatch(c.title,/Peso -1/);
 const single=structuredClone(data);single.body=single.body.slice(1);
 c=homeCockpitModel(single,status,'30',{},'2025-04-20');assert.match(c.detail,/outra medição compatível/);
 const empty=Object.fromEntries(Object.keys(data).map(k=>[k,[]]));c=homeCockpitModel(empty,status,'30',{},'2025-04-20');
