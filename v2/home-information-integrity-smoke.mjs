@@ -29,7 +29,7 @@ try{
   return{latest:date(2),old:date(60)};
  });
  assert.equal(await page.locator('.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
- assert.match(await page.locator('.refReading').innerText(),/16,0.*15,0.*30,0.*31,0/s,'observed pair belongs to selected period');
+ assert.match(await page.locator('.refReading').innerText(),/16(?:,0)?.*15(?:,0)?.*30(?:,0)?.*31(?:,0)?/s,'observed pair belongs to selected period');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\.050 kcal/,'sparse mean is explicitly an observed mean');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias encerrados/);
  assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);

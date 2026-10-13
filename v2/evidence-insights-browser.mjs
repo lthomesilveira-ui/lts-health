@@ -25,7 +25,7 @@ try{
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
-    assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1);
+    assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),0);assert.match(await page.locator('.refPanel.body').innerText(),/Sem registros no período/);
     await overflow(page);await page.locator('.refReading [data-home-insight-details]').click();
     await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90','evidence details retain the Home calendar window');

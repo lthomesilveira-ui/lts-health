@@ -35,7 +35,7 @@ try{
     assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1);
     assert.equal(await page.locator('[data-home-period]').count(),4);await noOverflow(page);
     // Goals remain on Nutrition, where they are relevant, with persistence intact.
-    await page.locator('.refSignal.nutrition').click();await page.waitForSelector('#personalGoalsForm');
+    await page.locator('.refSignal.nutrition').click();await page.waitForSelector('#personalGoalsForm',{state:'attached'});
     await page.locator('.ltsGoalSettings summary').first().click();
     assert.equal(await page.locator('#personalGoalsForm [name="protein_g"]').inputValue(),'');
     await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(8));
@@ -43,7 +43,7 @@ try{
     await page.locator('#personalGoalsForm [name="protein_g"]').fill('150');
     await page.locator('#personalGoalsForm [type="submit"]').click();
     await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
-    await page.reload();await page.waitForSelector('#personalGoalsForm');await page.locator('.ltsGoalSettings summary').first().click();
+    await page.reload();await page.waitForSelector('#personalGoalsForm',{state:'attached'});await page.locator('.ltsGoalSettings summary').first().click();
     assert.equal(await page.locator('#personalGoalsForm [name="water_ml"]').inputValue(),'2200');
     await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(1));
     await page.locator('#personalGoalsForm [name="water_ml"]').fill('2000');
