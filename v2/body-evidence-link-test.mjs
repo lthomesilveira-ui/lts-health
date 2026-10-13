@@ -14,3 +14,9 @@ assert.equal(linkedSegmental(a,[a],[seg,{...seg}]).row,null);
 assert.equal(linkedSegmental(a,[a,{...a}],[seg]).row,null);
 assert.equal(linkedSegmental(a,[a],[{...seg,source_file:'different.pdf'}]).row,null);
 console.log('Body evidence: verified models, unknown-device boundaries and unambiguous original-file segment links passed.');
+
+const documentedBody={...a,source_record_id:'body-original',source_file:'legacy-seed'};
+const documentedSegment={...seg,body_source_record_id:'body-original',source_file:'comparison.pdf'};
+assert.equal(linkedSegmental(documentedBody,[documentedBody],[documentedSegment]).row,documentedSegment);
+assert.equal(linkedSegmental(documentedBody,[documentedBody],[{...documentedSegment,measured_at:'2020-01-02'}]).row,null);
+assert.equal(linkedSegmental(documentedBody,[documentedBody],[documentedSegment,{...documentedSegment}]).row,null);

@@ -7,7 +7,8 @@ const data={body:[{measured_at:'2025-04-01',fat_mass_kg:20,skeletal_muscle_mass_
 for(let i=1;i<=14;i++){const day=`2025-04-${String(i).padStart(2,'0')}`;data.nutrition.push({nutrition_date:day,source:'Synthetic food',protein_g:i<8?100:110,calories_kcal:i<8?2000:2100});}
 const copy=structuredClone(data),c=homeCockpitModel(data,status,'30',{},'2025-04-15'),html=renderHomeOverview(c);
 assert.match(html,/Sua evolução/);assert.match(html,/Rotina nas últimas duas semanas/);assert.match(html,/\+10 g\/d/);assert.match(html,/18,0 kg/);assert.match(html,/31,0 kg/);
-assert.match(html,/data-overview-body-metric="weight_kg"/);assert.match(html,/Valores e condições da comparação/);assert.match(html,/aparelho|Aparelho/);assert.doesNotMatch(html,/ganhou músculo|perdeu gordura|melhora da saúde|data-home-body-metric/);
+assert.match(html,/data-overview-body-date/);assert.equal((html.match(/class="ltsOverviewPlotTitle"/g)||[]).length,2);assert.match(html,/Escalas verticais independentes/);assert.match(html,/Variação entre semanas/);
+assert.match(html,/Valores e condições da comparação/);assert.match(html,/aparelho|Aparelho/);assert.doesNotMatch(html,/ganhou músculo|perdeu gordura|melhora da saúde|data-home-body-metric/);
 assert.ok(html.indexOf('ltsOverviewReading')<html.indexOf('ltsOverviewGrid'));
 assert.match(html,/data-home-workout|Nenhuma sessão registrada/);
 assert.deepEqual(copy,data,'renderer preserves all source records');

@@ -266,6 +266,7 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
     if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);

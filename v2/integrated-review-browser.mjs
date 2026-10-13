@@ -43,8 +43,8 @@ try{
     assert.equal(await page.locator('.ltsOverviewCard').count(),4);
     assert.match(await page.locator('.ltsOverviewCard.routine').innerText(),/Rotina nas últimas duas semanas/);
     assert.equal(await page.locator('[data-home-period]').count(),4);
-    await page.locator('[data-overview-body-metric="weight_kg"]').click();
-    assert.match(await page.locator('.ltsOverviewCard.body svg').getAttribute('aria-label'),/Peso/);
+    assert.equal(await page.locator('.ltsOverviewBodyPlots svg').count(),2);
+    await page.locator('#overview-body-date').selectOption({index:0});assert.equal(await page.locator('.ltsOverviewBodyPlots .selected').count(),2);
     await page.locator('[data-disclosure="overview-body-evidence"]>summary').click();
     assert.equal(await page.locator('.ltsOverviewTable tbody tr').count(),5);
     await page.locator('[data-disclosure="overview-body-evidence"]>summary').click();

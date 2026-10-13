@@ -30,6 +30,7 @@ try{
  });
  assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
  assert.equal(await page.locator('.ltsCockpitPanel').count(),6);
+ await page.locator('[data-disclosure="home-advanced"]>summary').click();
  const bodyEvidence=page.locator('[data-disclosure="home-insight-body"]');
  assert.equal(await bodyEvidence.evaluate(e=>e.open),false,'source values are progressively disclosed on the compact opening');
  await bodyEvidence.locator('summary').click();

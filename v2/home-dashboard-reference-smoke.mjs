@@ -20,6 +20,8 @@ try{
   assert.equal(await page.locator('.ltsCockpitPanel').count(),6);
   assert.equal(await page.locator('.ltsRefProgress,.ltsRefDomain').count(),0,'outcome product supersedes coverage rings');
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3));
+  assert.equal(await page.locator('.ltsOverviewBodyPlots svg').count(),2);
+  await page.locator('[data-disclosure="home-advanced"]>summary').click();
   const order=await page.locator('.ltsCockpitHeading,.ltsExecutiveCards,.ltsCockpitReading,.ltsCockpitGrid,.ltsEvolutionNext').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().top));
   assert.equal(order.length,5);assert.ok(order.every((v,i)=>i===0||v>=order[i-1]),'DOM and visual order stay aligned for the active viewport');
   assert.equal(await page.locator('[data-home-body-metric]').evaluateAll(es=>es.filter(e=>e.getClientRects().length).length),4,'all metric controls remain visible');

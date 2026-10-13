@@ -37,6 +37,11 @@ export function linkedSegmental(record,bodyRows,segmentalRows){
   // Same original file and date link domains even when their editorial labels differ.
   // A file-less legacy match still requires the same source and unambiguous date.
   const sameDay=segmentalRows.filter(r=>validDay(r.measured_at)===date);
+  const explicit=record.source_record_id?sameDay.filter(r=>r.body_source_record_id===record.source_record_id):[];
+  if(explicit.length){
+    const linkedBodies=bodyRows.filter(r=>validDay(r.measured_at)===date&&r.source_record_id===record.source_record_id);
+    return explicit.length===1&&linkedBodies.length===1?{row:explicit[0],reason:''}:{row:null,reason:'Vínculo documental ambíguo; nenhum registro escolhido automaticamente.'};
+  }
   const exactFile=record.source_file?sameDay.filter(r=>r.source_file===record.source_file):[];
   const candidates=exactFile.length?exactFile:sameDay.filter(r=>identity(r)===source&&(!record.source_file||!r.source_file));
   const bodySameDay=bodyRows.filter(r=>validDay(r.measured_at)===date);

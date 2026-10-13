@@ -31,9 +31,9 @@ try{
   const first=await page.evaluate(()=>{const r=document.querySelector('.ltsOverviewReading').getBoundingClientRect(),g=document.querySelector('.ltsOverviewCard.body svg').getBoundingClientRect(),n=document.querySelector('#mobileNav'),end=Math.min(innerHeight,getComputedStyle(n).display!=='none'?n.getBoundingClientRect().top:innerHeight);return {summary:r.bottom<=end,graph:Math.max(0,Math.min(g.bottom,end)-Math.max(g.top,0)),advanced:document.querySelector('.ltsHomeAdvanced').open,overflow:document.querySelector('#screenHost').scrollWidth-document.querySelector('#screenHost').clientWidth};});
   writeFileSync(`${dir}/${label}-geometry.json`,JSON.stringify(first,null,2));
   assert.equal(first.summary,true);assert.equal(first.advanced,false);assert.ok(first.overflow<=2);if(width<=840)assert.ok(first.graph>=64,`${label} chart exposed ${first.graph}px`);
-  await page.locator('[data-overview-body-metric="weight_kg"]').click();assert.match(await page.locator('.ltsOverviewCard.body svg').getAttribute('aria-label'),/Peso/);
-  await page.locator('[data-overview-body-metric="weight_kg"]').focus();await page.setViewportSize({width:width<=840?900:390,height});
-  await page.waitForTimeout(300);assert.equal(await page.locator('[data-overview-body-metric="weight_kg"]').evaluate(el=>el===document.activeElement),true);
+  assert.equal(await page.locator('.ltsOverviewBodyPlots svg').count(),2);await page.locator('#overview-body-date').selectOption({index:0});assert.equal(await page.locator('.ltsOverviewBodyPlots .selected').count(),2);
+  await page.locator('#overview-body-date').focus();await page.setViewportSize({width:width<=840?900:390,height});
+  await page.waitForTimeout(300);assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);
   await page.setViewportSize({width,height});await page.waitForTimeout(300);
   await page.locator('[data-disclosure="overview-body-evidence"]>summary').click();assert.equal(await page.locator('.ltsOverviewTable tbody tr').count(),5);
   await page.locator('[data-disclosure="overview-body-evidence"]>summary').click();
@@ -41,7 +41,7 @@ try{
   await page.locator('.ltsOverviewCard.routine').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-routine.png`});
   await page.locator('[data-disclosure="home-advanced"]>summary').click();assert.equal(await page.locator('[data-disclosure="home-advanced"]').getAttribute('open'),'');
   await page.locator('[data-disclosure="home-advanced"]>summary').click();
-  await page.locator('.ltsOverviewHeading [data-home-consultation]').click();await page.waitForSelector('[data-review-export]');
+  await page.locator('.ltsOverview [data-home-consultation]').click();await page.waitForSelector('[data-review-export]');
   await page.goBack();await page.waitForSelector('[data-home-overview]');
   assert.equal(await page.locator('[id]').evaluateAll(rows=>rows.length===new Set(rows.map(x=>x.id)).size),true);
   assert.deepEqual(errors,[]);await page.close();

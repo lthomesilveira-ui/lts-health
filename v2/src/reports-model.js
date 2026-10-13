@@ -29,7 +29,8 @@ function friendlyPolarSources(data){
 }
 export function segmentIdentity(row,body=[]){
   // Only the original file plus date can carry device identity across domains.
-  const linked=row.source_file?body.filter(b=>day(b.measured_at)===day(row.measured_at)&&b.source_file===row.source_file):[];
+  const explicit=row.body_source_record_id?body.filter(b=>day(b.measured_at)===day(row.measured_at)&&b.source_record_id===row.body_source_record_id):[];
+  const linked=row.body_source_record_id?explicit:row.source_file?body.filter(b=>day(b.measured_at)===day(row.measured_at)&&b.source_file===row.source_file):[];
   const device=String(row.device_name||((linked.length===1)?linked[0].device_name:'')||'').trim();
   return {key:(row.device_name||linked.length<2)?bodyEvidenceCohort({...row,device_name:device}):null,label:device||`${String(row.source||'Bioimpedância')} · modelo não informado`,device};
 }
