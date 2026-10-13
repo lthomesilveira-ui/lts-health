@@ -60,7 +60,7 @@ try{
   await page.locator('[data-depth-clear="training"]').click();await page.locator('#productTrainingYear').selectOption('2025');assert.equal(await page.locator('[data-training-total]').getAttribute('data-training-total'),'18');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-training-history.png`});
 
-  await goto(page,'saude','.ltsLabsV2 .ltsLabsHero');
+  await goto(page,'saude','.ltsLabsV2');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
   assert.equal(await page.locator('#productLabMarkerSelect option').count(),24,'all 23 markers plus placeholder');
   await page.locator('#productLabMarkerSelect').selectOption('marcador textual unico');
   assert.ok((await page.locator('.ltsLabsHero').innerText()).includes('Resultado textual sintético'));assert.equal(await page.locator('.ltsDepthLine').count(),0);
@@ -156,7 +156,7 @@ try{
   await page.evaluate(()=>{window.__failTable='';});
 
   // Explicit read failure is not a valid empty dataset and cannot show stale hero.
-  await goto(page,'saude','.ltsLabsV2 .ltsLabsHero');await page.evaluate(()=>{window.__failTable='health_lab_results';});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsDepthError');assert.equal(await page.locator('.ltsLabsHero').count(),0);
+  await goto(page,'saude','.ltsLabsV2');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');await page.evaluate(()=>{window.__failTable='health_lab_results';});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsDepthError');assert.equal(await page.locator('.ltsLabsHero').count(),0);
   await page.evaluate(()=>{window.__failTable='';window.__depthDb.health_lab_results=[];});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsEmptyCard');assert.equal(await page.locator('.ltsDepthError').count(),0);await overflow(page);
   await page.close();
  }

@@ -1,4 +1,4 @@
-import {state,fixtureMode} from './core.js';
+import {state,fixtureMode,setGlobalPeriod} from './core.js';
 import {isRouteReady} from './data-layer.js';
 import {renderProductTraining} from './training-reference-v2.js';
 import {renderProductHomeReference} from './home-reference.js';
@@ -102,8 +102,8 @@ if(!fixtureMode){
       const page=target.closest('[data-depth-page]');
       if(page&&pageFields.has(page.dataset.depthPage)&&!page.disabled){state.ui[page.dataset.depthPage]=Math.max(1,Number(page.dataset.page)||1);redraw();return;}
       const period=target.closest('[data-depth-period]');
-      if(period&&['productLabPeriod','productCompositionPeriod'].includes(period.dataset.depthPeriod)&&['recent','90','365','all'].includes(period.dataset.value)){
-        const key=period.dataset.depthPeriod;state.ui[key]=period.dataset.value;state.ui[key.replace('Period','Point')]=null;redraw();return;
+      if(period&&['productLabPeriod','productCompositionPeriod'].includes(period.dataset.depthPeriod)&&['30','90','365','all'].includes(period.dataset.value)){
+        const key=period.dataset.depthPeriod;setGlobalPeriod(period.dataset.value);state.ui[key.replace('Period','Point')]=null;redraw();return;
       }
       if(target.closest('[data-depth-clear="training"]')){state.ui.productTrainingQuery='';state.ui.productTrainingYear='all';state.ui.productTrainingPage=1;redraw();return;}
       const nav=target.closest('[data-route]');

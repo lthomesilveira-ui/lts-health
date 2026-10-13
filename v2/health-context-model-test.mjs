@@ -37,7 +37,7 @@ assert.match(contextChart([{date:'2025-02-02',value:1,cohort:'A'},{date:'2025-02
 assert.match(contextChart([{date:'2025-02-02',value:1}],{bar:true}),/<rect/);
 assert.match(pointChart([{date:'2025-02-02',value:1}]),/<circle/);
 assert.doesNotMatch(pointChart([{date:'2025-02-02',value:1},{date:'2025-02-03',value:2}],{connect:false}),/class="ltsDepthLine" d="M/);
-state.data=data;state.domainStatus={labs:'ready'};state.ui.productLabMarker=norm('Hemoglobina Glicada (A1C)');
+state.data=data;state.domainStatus={labs:'ready'};state.ui.productLabPeriod='all';state.ui.productLabMarker=norm('Hemoglobina Glicada (A1C)');
 assert.equal(labsModel().latest.collection_date,'2025-02-20');
 assert.equal(labsModel().recent.length,1);
 assert.match(renderProductLabs(),/RESULTADOS JUNTOS/);

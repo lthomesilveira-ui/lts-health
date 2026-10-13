@@ -278,12 +278,19 @@ function describe(model){
  * Previous windows have equal calendar duration. Today's open records are shown
  * but excluded from means. History has no invented previous period.
  */
-export function homePeriodModel(data={},status={},period='90',ui={},today=localToday()){
+export function selectedCalendar(data={},status={},period='90',today=localToday()){
   today=dayOf(today);if(!today)throw new RangeError('today must be a valid local calendar date');
   period=['30','90','365','all'].includes(String(period))?String(period):'90';
   const keys=[['body','measured_at'],['nutrition','nutrition_date'],['sourceMetrics','metric_date'],['metrics','measured_at'],['workouts','workout_date'],['labs','collection_date'],['treatments','event_date'],['polarSessions','workout_date']];
   const dates=keys.flatMap(([key,dateKey])=>ready(status,key)?(data[key]||[]).map(row=>dayOf(row[dateKey])).filter(date=>date&&date<=today):[]).sort();
   const bounds=makeBounds(period==='all'?dates[0]||today:addDays(today,1-Number(period)),today,today);
+  return {period,today,bounds};
+}
+
+export function homePeriodModel(data={},status={},period='90',ui={},today=localToday()){
+  const calendar=selectedCalendar(data,status,period,today);
+  ({period,today}=calendar);
+  const {bounds}=calendar;
   const previousBounds=period==='all'?null:makeBounds(addDays(bounds.start,-Number(period)),addDays(bounds.start,-1),today);
   const model=snapshot(data,status,bounds,ui,today);
   const previous=previousBounds?{period,today,label:`Anterior · ${period} dias`,...snapshot(data,status,previousBounds,{...ui,homeNutritionSource:model.nutrition.source?.key||ui.homeNutritionSource,homeSleepSource:model.sleep.source?.key||ui.homeSleepSource,homeWaterSource:model.water.source?.key||ui.homeWaterSource},today)}:null;
