@@ -15,3 +15,5 @@ console.log('Reference renderer: 5 signals, 6 desktop panels, compact mobile hie
 const duplicate=renderReferenceHome({...data,body:[{measured_at:'2025-03-15',fat_mass_kg:12,skeletal_muscle_mass_kg:40},{measured_at:'2025-03-15',fat_mass_kg:20,skeletal_muscle_mass_kg:35}]},status,'90',{},'2025-03-20');
 assert.doesNotMatch(duplicate,/value="2025-03-15"|Gordura <b>12,0 kg|Músculo <b>40,0 kg/);
 assert.match(duplicate,/Selecione uma data sem conflito/);
+
+const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'error'},'90',{},'2025-03-20');assert.match(failedCounts,/— séries · — prolongamentos/);assert.match(failedCounts,/— registros de marcadores/);
