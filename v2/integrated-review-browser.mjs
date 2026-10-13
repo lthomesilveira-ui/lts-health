@@ -77,7 +77,7 @@ try{
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
     assert.match(await page.locator('#reviewPanel>.ltsReviewContrasts').innerText(),/Exames para discutir na consulta/);
-    await page.locator('#reviewPanel>details').filter({hasText:'Comparações numéricas e cruzamentos'}).locator('summary').click();
+    await page.locator('[data-disclosure="review-numeric-contrasts"]>summary').click();
     assert.match(await page.locator('#reviewPanel>details .ltsReviewContrasts').innerText(),/1\.200 mL.*1\.000 mL/s);
     assert.equal(await page.locator('.ltsReviewCoverage,.ltsReviewOverlap').count(),0);await noOverflow(page);
     assert.match(await page.locator('.ltsReviewContrast').last().innerText(),/7,0 h.*8,0 h/s);
