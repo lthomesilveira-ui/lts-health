@@ -1,7 +1,7 @@
 import {state} from './core.js';
 import {healthContextModel,renderHealthContext} from './health-context.js';
 import {renderHomeDaySignals} from './integrated-review-view.js';
-import {renderHomeOverview} from './home-overview.js?v=overview-20261013.53';
+import {renderHomeOverview} from './home-overview.js?v=overview-20261013.54';
 import {homeCockpitModel,renderHomeCockpit} from './home-cockpit.js?v=mobile-insight-20261013.51';
 
 export function renderProductHomeReference(){

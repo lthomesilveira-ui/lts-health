@@ -11,7 +11,7 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js?v=overview-20261013.53';
+import {renderProductHomeReference} from './home-reference.js?v=overview-20261013.54';
 import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
