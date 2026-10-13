@@ -11,8 +11,8 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js?v=evolution-final-20261013.50';
-import {renderProductTraining} from './training-reference-v2.js?v=evolution-final-20261013.50';
+import {renderProductHomeReference} from './home-reference.js?v=mobile-insight-20261013.51';
+import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
 import {renderRecoveryDepth} from './recovery-layout-v2.js';
@@ -87,21 +87,35 @@ function disclosureKey(details){
   return String(summary?.querySelector('b')?.textContent||summary?.textContent||'').trim();
 }
 
+function renderFocusSelector(active){
+  if(!active)return null;
+  if(active.id)return `#${CSS.escape(active.id)}`;
+  if(active.matches('.ltsExecutiveCard'))return `.ltsExecutiveCard[data-route="${CSS.escape(active.dataset.route)}"]`;
+  if(active.hasAttribute('data-home-consultation'))return active.closest('.ltsCockpitHeading')?'.ltsCockpitHeading [data-home-consultation]':'.ltsEvolutionNext [data-home-consultation]';
+  for(const attribute of ['data-home-period','data-home-body-metric','data-home-consultation','data-home-insight-details']){
+    if(active.hasAttribute(attribute))return `[${attribute}="${CSS.escape(active.getAttribute(attribute))}"]`;
+  }
+  if(active.matches('summary')&&active.parentElement?.dataset.disclosure)return `[data-disclosure="${CSS.escape(active.parentElement.dataset.disclosure)}"]>summary`;
+  return null;
+}
+
 function captureRenderContext(host){
   const openDisclosures=[...host.querySelectorAll('details[open]')].map(disclosureKey).filter(Boolean);
   const active=host.contains(document.activeElement)?document.activeElement:null;
-  if(!active?.id)return{openDisclosures,focus:null};
+  const selector=renderFocusSelector(active);
+  if(!selector)return{openDisclosures,focus:null};
   let selectionStart=null,selectionEnd=null;
   try{selectionStart=active.selectionStart;selectionEnd=active.selectionEnd;}catch{}
-  return{openDisclosures,focus:{id:active.id,selectionStart,selectionEnd}};
+  return{openDisclosures,focus:{selector,selectionStart,selectionEnd}};
 }
 
 function restoreRenderContext(host,context){
   const open=new Set(context.openDisclosures||[]);
   for(const details of host.querySelectorAll('details'))if(open.has(disclosureKey(details)))details.open=true;
-  if(!context.focus?.id)return;
-  const active=$(context.focus.id);if(!active)return;
+  if(!context.focus?.selector)return;
+  const active=host.querySelector(context.focus.selector)||(context.focus.selector.includes('home-more-readings')?host.querySelector('[data-home-insight-details]'):null);if(!active)return;
   try{
+    for(let parent=active.parentElement;parent&&parent!==host;parent=parent.parentElement)if(parent.matches('details'))parent.open=true;
     active.focus({preventScroll:true});
     if(context.focus.selectionStart!=null&&typeof active.setSelectionRange==='function')active.setSelectionRange(context.focus.selectionStart,context.focus.selectionEnd);
   }catch{}
@@ -313,6 +327,9 @@ function bindStaticEvents(){
   window.addEventListener('hashchange',()=>{const route=routeFromLocation();if(route!==state.route)setRoute(route);});
   window.addEventListener('online',()=>setSync(state.loaded?'Online':'Conectado'));
   window.addEventListener('offline',()=>setSync('Sem conexão'));
+  window.matchMedia('(max-width:840px)').addEventListener('change',()=>{
+    if(!fixtureMode&&state.route==='hoje')scheduleRender();
+  });
 }
 
 async function boot(){

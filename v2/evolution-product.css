@@ -1,5 +1,5 @@
-/* One product hierarchy on desktop and mobile. The validated executive palette
-   is retained; outcome evidence replaces record coverage as the first reading. */
+/* One evidence model, with an insight-first mobile reading order. The October 7
+   reference retains the light executive palette and replaces coverage counts. */
 .ltsEvolutionHome{--evo-navy:#142b4b;--evo-muted:#52647a;color:var(--evo-navy)}
 body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolutionHome) .screenHost{background:#f4f7fb!important}
 .ltsEvolutionHome.ltsHomeReference{max-width:none;margin:0;color:#142b4b}
@@ -182,3 +182,42 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
 .ltsEvolutionHome .ltsCompactLatestSet article{border:0;padding:6px 0}.ltsEvolutionHome .ltsCompactLatestSet p{margin:4px 0}.ltsEvolutionHome .ltsCompactLatestSet small{font-size:10px;line-height:1.6}
 @media(min-width:841px){.ltsEvolutionHome .ltsExecutiveCard{min-height:128px;padding:14px}.ltsEvolutionHome .ltsCockpitPanel{padding:14px}.ltsEvolutionHome .ltsCockpitPanel>header{margin-bottom:6px}.ltsEvolutionHome .ltsCockpitPanel>header button{min-height:32px;margin-top:-4px}.ltsEvolutionHome .ltsCockpitPanel h2{font-size:14px}.ltsEvolutionHome .ltsCockpitPanel>.ltsCockpitFacts b{font-size:18px}.ltsEvolutionHome .ltsCockpitPanel>.ltsCockpitFacts small{font-size:10px}.ltsEvolutionHome .ltsEvolutionTabs button{min-height:40px}.ltsEvolutionHome .ltsCockpitReading{padding:14px 16px}.ltsEvolutionHome .ltsCockpitReading>header{margin-bottom:8px}.ltsEvolutionHome .ltsCockpitReadings p{font-size:11px;line-height:1.5}.ltsEvolutionHome .ltsCockpitReadings b{font-size:13px}}
 @media(max-width:840px){.ltsEvolutionHome .ltsCockpitReadings article>button,.ltsEvolutionHome .ltsCockpitReadings summary,.ltsEvolutionHome .ltsEvolutionPanelDetail>summary{min-height:44px}.ltsEvolutionHome .ltsEvolutionPanelDetail>summary{padding:12px 0;font-size:12px}.ltsEvolutionHome .ltsCockpitPanel>.ltsEvolutionConclusion{font-size:12px}.ltsEvolutionHome .ltsCompactLatestSet small{font-size:11px}}
+/* Initial mobile reading follows the October 7 concept. Content is ordered in
+   the renderer; these rules do not rearrange keyboard or screen-reader order. */
+.ltsHomeBodyValue{font-size:12px;margin:4px 0 8px;color:#52647a}.ltsHomeBodyValue b{font-size:19px;color:#203c58;margin-right:6px}
+.ltsHomeMoreReadings>summary{font-weight:650}.ltsHomeMoreReadings[open]>article{margin:10px 0 0;padding-top:10px;border-top:1px solid #e1e9f0}
+@media(max-width:840px){
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeading{margin-bottom:12px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeading h1{font-size:24px;margin:2px 0 4px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeading p{font-size:11px;line-height:1.4}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMobileBrand{margin-bottom:3px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeadingControls{display:flex;flex-direction:row;align-items:center;gap:8px;margin-top:8px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitWindow{flex:1;min-width:0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomePeriod{padding:2px;gap:2px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomePeriod button{padding:5px 4px;min-height:40px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeadingControls>.ltsEvolutionAction{flex:0 0 44px;min-width:44px;margin:0;padding:0;font-size:24px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading{padding:12px;margin:0 0 10px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading>header{margin-bottom:4px;gap:6px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading h2{font-size:14px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading>header button{padding:4px 8px;min-height:40px;font-size:11px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings{display:block}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings article{padding-left:0;border-left:0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings article>b{font-size:13px;line-height:1.4}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings article>p{font-size:12px;line-height:1.45;margin:4px 0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings details{margin-top:0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings article>button{margin-top:0;font-size:11px;padding:4px 6px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMoreReadings{display:block;border-top:1px solid #e1e9f0;margin:3px 0 0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMoreReadings>summary{padding:10px 0;min-height:44px;box-sizing:border-box}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 0 12px;padding-bottom:4px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard{flex:0 0 44%;min-height:0;padding:9px 10px;gap:3px;scroll-snap-align:start;border-radius:11px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard:last-child{min-height:0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard>span{font-size:11px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard strong{font-size:18px;line-height:1.2;margin:1px 0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard b,.ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard small{font-size:11px;line-height:1.4;margin:0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel{padding:12px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel h2{font-size:15px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel>header button{min-height:40px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body>.ltsCockpitCaption{font-size:11px;margin:3px 0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body .ltsEvolutionTabs{margin:6px 0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body .ltsEvolutionTabs button{min-height:40px;font-size:11px;padding:6px 8px}
+}
