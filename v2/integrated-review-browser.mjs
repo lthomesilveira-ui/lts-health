@@ -10,6 +10,7 @@ const date=offset=>{const d=new Date(`${today}T12:00:00Z`);d.setUTCDate(d.getUTC
 const db={health_workouts:[],health_daily_nutrition:[],health_source_daily_metrics:[]};
 db.health_body_composition=Array.from({length:5},(_,i)=>({measured_at:date(i*3+1),source_record_id:`body-${i}`,source:'Synthetic scan',device_name:'Synthetic device',weight_kg:80+i*.2,body_fat_pct:20+i*.1,fat_mass_kg:16+i*.1,skeletal_muscle_mass_kg:32}));
 db.health_lab_results=[{source_record_id:'lab-1',collection_date:date(2),biomarker:'Synthetic marker',unit:'u',result_numeric:12,result_raw:'12',source:'Synthetic lab',laboratory:'Synthetic lab',method:'Synthetic method'}];
+for(const [offset,n]of [[120,98765.43],[2,123456.78]])db.health_lab_results.push({source_record_id:`wide-${offset}`,collection_date:date(offset),biomarker:'Synthetic wide scale',unit:'u',result_numeric:n,result_raw:String(n),source:'Synthetic lab',laboratory:'Synthetic lab',method:'Synthetic method'});
 for(const [i,label] of ['Hemoglobina Glicada (A1C)','LDL-Colesterol','Triglicérides','Hemoglobina','Hematócrito','Ferritina','Testosterona Total','Estradiol'].entries())for(const [suffix,offset,value] of [['prior',120,10+i],['current',2,12+i]])db.health_lab_results.push({source_record_id:`comparison-${i}-${suffix}`,collection_date:date(offset),biomarker:label,unit:'u',result_numeric:value,result_raw:String(value),reference_range:['Hemoglobina','Hematócrito','Testosterona Total'].includes(label)?'Homens: 10 a 14 u':'Synthetic report reference',laboratory:'Synthetic lab',source:'Synthetic lab',method:i%2?'':suffix==='prior'?'HPLC':'Cromatografia líquida de alta eficiência (HPLC)'});
 db.health_personal_goals=[{effective_from:date(40),calories_kcal:1800,protein_g:120,water_ml:2000,notes:JSON.stringify({type:'historical_protocol',source:'Synthetic protocol',documented_on:date(40),current_validity:'unconfirmed'})}];
 for(let i=0;i<=16;i++){
@@ -36,14 +37,27 @@ try{
     if(width<=840){assert.equal(await page.locator('.ltsHomeMobileBrand').isVisible(),true,'mobile Home preserves app identity');assert.match(await page.locator('.ltsHomeMobileBrand').innerText(),/LTS Health/);}
     assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
     assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),true,'same product hierarchy on all devices');
-    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Exames para discutir na consulta.*acima da faixa.*10–14/s);
+    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Exames para discutir na consulta.*acima das faixas/s);
+    assert.equal(await page.locator('.ltsEvolutionPanelDetail[open]').count(),0,'deep evidence starts collapsed');
+    await page.locator('[data-disclosure="home-insight-labs"]>summary').click();
+    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/10–14/);
+    await page.locator('[data-disclosure="home-insight-labs"]>summary').click();
     assert.equal(await page.locator('.ltsCockpitReadings article').count(),3);
     assert.equal(await page.locator('.ltsEvolutionMeaning').count()>=4,true,'domain panels explain meaning, not only observations');
     assert.equal(await page.locator('.ltsEvolutionLabTable tbody tr').count(),8,'several markers can be compared without changing the selector');
+    await page.locator('[data-disclosure="home-lab-comparisons"]>summary').click();
     await page.locator('[data-home-lab-marker]').first().click();
     assert.equal(await page.locator('.ltsEvolutionLabDetail[open]').count(),1);
     assert.match(await page.locator('.ltsEvolutionLabDetail').innerText(),/mesma origem, unidade e método declarado/);
+    const firstMarker=await page.locator('[data-home-lab-marker]').first().getAttribute('data-home-lab-marker');
+    await page.locator('#home-reportLabMarker').selectOption('synthetic wide scale');
+    await page.waitForFunction(()=>document.querySelector('.ltsCockpitPanel.labs svg')?.getAttribute('aria-label')?.includes('Synthetic wide scale'));
+    const axisFits=await page.locator('.ltsCockpitPanel.labs svg').evaluate(svg=>[...svg.querySelectorAll('text')].every(text=>{const b=text.getBBox(),v=svg.viewBox.baseVal;return b.x>=-1&&b.y>=-1&&b.x+b.width<=v.width+1&&b.y+b.height<=v.height+1;}));
+    assert.equal(axisFits,true,'large laboratory tick labels remain inside the visible chart');
+    await page.locator('#home-reportLabMarker').selectOption(firstMarker);
+    await page.waitForFunction(()=>!document.querySelector('.ltsCockpitPanel.labs svg')?.getAttribute('aria-label')?.includes('Synthetic wide scale'));
     await page.locator('.ltsEvolutionLabDetail summary').click();
+    if(await page.locator('[data-disclosure="home-lab-comparisons"]').getAttribute('open')!=null)await page.locator('[data-disclosure="home-lab-comparisons"]>summary').click();
     assert.equal(await page.locator('.ltsRefProgressItem,.ltsRefRing').count(),0,'coverage is not an outcome');
     const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),next:top('.ltsEvolutionNext')};});
     assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.next);
@@ -54,7 +68,8 @@ try{
     await page.locator('[data-home-body-metric="weight_kg"]').click();
     assert.equal(await page.locator('[data-home-body-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
     assert.match(await page.locator('.ltsCockpitPanel.body .ltsContextPlot svg').getAttribute('aria-label'),/Peso/);
-    await page.screenshot({path:`${dir}/${label}-home.png`});
+    await page.screenshot({path:`${dir}/${label}-home-body.png`});
+    await page.locator('[data-disclosure="home-water-detail"]>summary').click();
     await page.locator('.ltsCockpitPanel.water [data-home-goals]').click();
     assert.equal(await page.locator('#personalGoalsForm [name="protein_g"]').inputValue(),'','unconfirmed protocol is not silently made active');
     assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/Vigência atual não confirmada/);
@@ -65,6 +80,7 @@ try{
     await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
     assert.match(await page.locator('.ltsCockpitPanel.water').innerText(),/2\.200 mL/);
     await page.reload();await page.waitForSelector('.ltsHomeReference');
+    await page.locator('[data-disclosure="home-water-detail"]>summary').click();
     await page.locator('.ltsCockpitPanel.water [data-home-goals]').click();
     assert.equal(await page.locator('#personalGoalsForm [name="water_ml"]').inputValue(),'2200','goal persists after reloading from the service');
     await page.locator('#personalGoalsForm [name="effective_from"]').fill(date(1));
