@@ -35,7 +35,10 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   if(workoutIds.length){const oldest=page.locator('[data-depth-workout]').last(),id=await oldest.getAttribute('data-depth-workout');await oldest.click();check(await page.locator('.ltsTrainingV2').getAttribute('data-workout-id')===id,'historical session did not open');await page.locator('[data-depth-training-view="history"]').first().click();}
   await noOverflow();await assertStableMobileShell('mobile Training full history');await page.screenshot({path:`${evidenceDir}/mobile-training-full-history.png`});
 
-  await goto('saude','.ltsLabsV2 .ltsLabsHero');
+  await goto('saude','.ltsLabsV2');
+  // Full-history audit explicitly chooses the global history window first.
+  await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();
+  await page.waitForSelector('.ltsLabsHero');
   const keys=await page.locator('#productLabMarkerSelect option').evaluateAll(es=>es.map(e=>e.value).filter(Boolean));
   check(truth.markerKeys.every(k=>keys.includes(k)),'some lab markers are unreachable');
   if(truth.largestMarker){
