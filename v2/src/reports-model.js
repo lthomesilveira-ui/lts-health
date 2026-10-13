@@ -4,6 +4,7 @@ import {localHealthDay,bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,labHi
 import {labGroups,labCohorts} from './labs-layout-v2.js';
 import {addDays,normalizeMuscleGroup} from './integrated-analysis.js';
 import {hydrationModel} from './hydration.js';
+import {trainingSetCounts} from './training-session.js';
 
 const ready=(status,key)=>status?.[key]==='ready';
 const ordered=(rows,key)=>rows.filter(r=>validDay(r[key])).slice().sort((a,b)=>day(a[key]).localeCompare(day(b[key])));
@@ -63,7 +64,7 @@ const regionFor=value=>{
   return null;
 };
 export function trainingSummary(data,status,bounds,region=null){
-  if(!ready(status,'workouts'))return {available:false,sessions:null,minutes:null,recordedMinutes:null,durationCoverage:null,durationTotal:null,durationComplete:false,sets:null,points:[]};
+  if(!ready(status,'workouts'))return {available:false,sessions:null,minutes:null,recordedMinutes:null,durationCoverage:null,durationTotal:null,durationComplete:false,sets:null,extensions:null,totalSets:null,points:[]};
   const workouts=(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'&&inside(r.workout_date,bounds));
   const ids=new Set(workouts.map(r=>r.source_record_id)),exercises=ready(status,'exercises')?(data.exercises||[]).filter(r=>ids.has(r.workout_source_record_id)&&(!region||regionFor(r.muscle_group)===region)):[];
   const exIds=new Set(exercises.map(r=>r.source_record_id));
@@ -75,7 +76,8 @@ export function trainingSummary(data,status,bounds,region=null){
   const points=[...groups].filter(([,list])=>list.every(r=>num(r.duration_minutes)!=null)).map(([date,list])=>({date,value:list.reduce((s,r)=>s+num(r.duration_minutes),0),cohort:'recorded-duration'})).sort((a,b)=>a.date.localeCompare(b.date));
   const recordedMinutes=knownDuration.length?knownDuration.reduce((s,r)=>s+num(r.duration_minutes),0):null;
   const durationComplete=selected.length>0&&knownDuration.length===selected.length;
-  return {available:true,sessions,sets:sets?.length??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
+  const counts=sets?trainingSetCounts(sets):null;
+  return {available:true,sessions,sets:counts?.primary??null,extensions:counts?.extensions??null,totalSets:counts?.total??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
 }
 export function hydrationSummary(data,status,bounds){
   // A failed overlapping source can hide a conflict; do not select the surviving one.
@@ -86,11 +88,32 @@ export function hydrationSummary(data,status,bounds){
   return {available:true,mean:mean(rows.map(r=>r.value)),days:rows.length,intervalDays:days(bounds.start,bounds.end),rows,conflicts:timeline.conflicts.filter(r=>inside(r.date,bounds)),origins};
 }
 export function nutritionSummary(data,status,bounds){
-  if(!ready(status,'nutrition'))return {available:false,days:null,means:{},counts:{},rows:[],origins:[]};
-  const rows=uniqueDates((data.nutrition||[]).filter(r=>inside(r.nutrition_date,bounds)),'nutrition_date');
-  const fields=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g','water_ml'],means={},counts={};
-  for(const k of fields){const values=rows.map(r=>num(r[k])).filter(v=>v!=null);means[k]=mean(values);counts[k]=values.length;}
-  return {available:true,days:rows.length,intervalDays:days(bounds.start,bounds.end),means,counts,rows,origins:[...new Set(rows.map(r=>norm(r.source)))]};
+  if(!ready(status,'nutrition'))return {available:false,reason:'unavailable',days:null,means:{},counts:{},rows:[],origins:[],sources:[],source:null,duplicates:[],conflicts:[],ambiguousDays:null,unknownDays:null,recordedDays:null};
+  const fields=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g','water_ml'];
+  const observed=ordered((data.nutrition||[]).filter(r=>inside(r.nutrition_date,bounds)),'nutrition_date'),byDay=new Map(),bySource=new Map();
+  for(const row of observed){
+    const date=day(row.nutrition_date),key=norm(row.source);
+    if(!byDay.has(date))byDay.set(date,[]);byDay.get(date).push(row);
+    if(key){if(!bySource.has(key))bySource.set(key,{key,label:String(row.source).trim(),rows:[]});bySource.get(key).rows.push(row);}
+  }
+  // Duplicate dates remain excluded, including identical replays. Without a
+  // validated daily-total identity, neither one row nor a sum can be chosen.
+  const duplicates=[...byDay].filter(([,rows])=>rows.length>1).map(([date,rows])=>({date,rows,origins:[...new Set(rows.map(r=>norm(r.source)))],conflicting:new Set(rows.map(r=>JSON.stringify([norm(r.source),...fields.map(k=>num(r[k]))]))).size>1}));
+  const conflicts=duplicates.filter(row=>row.conflicting),unknownDays=[...byDay.values()].filter(rows=>rows.some(r=>!norm(r.source))).length;
+  const rows=observed.filter(r=>norm(r.source)&&byDay.get(day(r.nutrition_date)).length===1),intervalDays=days(bounds.start,bounds.end);
+  const summarize=items=>{
+    const means={},counts={};
+    for(const key of fields){const values=items.map(r=>num(r[key])).filter(v=>v!=null&&v>=0);means[key]=mean(values);counts[key]=values.length;}
+    return {means,counts};
+  };
+  const sources=[...bySource.values()].map(({key,label,rows:sourceRows})=>{
+    const eligible=rows.filter(r=>norm(r.source)===key);
+    return {key,label,rows:eligible,days:eligible.length,intervalDays,recordedDays:new Set(sourceRows.map(r=>day(r.nutrition_date))).size,ambiguousDays:duplicates.filter(r=>r.origins.includes(key)).length,...summarize(eligible)};
+  }).sort((a,b)=>a.key.localeCompare(b.key));
+  // Compatibility fields expose a mean only for one completely identified
+  // origin. Source-specific means and denominators remain available otherwise.
+  const source=sources.length===1&&!unknownDays?sources[0]:null;
+  return {available:true,reason:sources.length>1?'mixed_sources':unknownDays?'unknown_source':rows.length?'single_source':duplicates.length?'ambiguous':'empty',days:rows.length,intervalDays,means:source?.means||Object.fromEntries(fields.map(key=>[key,null])),counts:Object.fromEntries(fields.map(key=>[key,sources.reduce((sum,s)=>sum+s.counts[key],0)])),rows,origins:[...new Set(observed.map(r=>norm(r.source)))],sources,source,duplicates,conflicts,ambiguousDays:duplicates.length,unknownDays,recordedDays:byDay.size};
 }
 export function polarTrainingSummary(data,status,bounds){
   if(!ready(status,'polarSessions'))return {available:false,rows:[],points:[]};

@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'?fixture=1'};
+const {renderBodyInterval}=await import('./src/body-interval-view.js');
+const status=Object.fromEntries(['body','segmental','nutrition','sourceMetrics','metrics','workouts','exercises','sets','labs'].map(k=>[k,'ready']));
+const data={body:[{source_record_id:'b1',measured_at:'2025-01-01',weight_kg:80,source:'<scan>'},{source_record_id:'b2',measured_at:'2025-02-01',weight_kg:79,source:'Other',device_name:'B'}],nutrition:[{nutrition_date:'2025-01-02',source:'Food<script>',protein_g:100},{nutrition_date:'2025-01-03',source:'Food<script>',protein_g:120}],workouts:[],exercises:[],sets:[],sourceMetrics:[],labs:[],segmental:[]};
+const html=renderBodyInterval(data,status,{},'2025-02-02');
+assert.match(html,/31 dias/);assert.match(html,/2\/31 dias/);assert.match(html,/110 g/);assert.match(html,/-1,0 kg/);assert.match(html,/Diferenças não confirmam ganho ou perda de tecido/);assert.doesNotMatch(html,/<script>/);assert.match(html,/Food&lt;script&gt;/);assert.match(html,/Sem água registrada/);assert.match(html,/sem interpretar|não explica/);
+const failed=renderBodyInterval(data,{...status,body:'error'},{},'2025-02-02');assert.doesNotMatch(failed,/-1,0 kg/);assert.match(failed,/não carregaram/);
+const mixed=renderBodyInterval({...data,nutrition:[...data.nutrition,{nutrition_date:'2025-01-04',source:'Second food',protein_g:300}]},status,{},'2025-02-02');assert.match(mixed,/110 g/);assert.match(mixed,/300 g/);assert.doesNotMatch(mixed,/173 g/);
+console.log('Interval renderer: sparse denominators, observed deltas, independent sources, missing/error states and escaping passed.');
