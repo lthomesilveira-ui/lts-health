@@ -1,3 +1,9 @@
+# Compact dashboard and training session verified — 2026-10-13
+
+Published build `training-evidence-20261013.49` preserves the concurrent compact Home, source/goal/history depth and chart label fix. Primary sets and extension steps stay distinct; recorded telemetry caveats and exercise observations are readable. Private canonical import was independently reread and linked to the received device session without duplicate canonical events.
+
+All ten runtime candidate gates passed; the corrected independent authenticated audit, deployment and public gates passed. Desktop authenticated Home, session, source notes and consultation preview were inspected, alongside digest-verified desktop/mobile/reduced/small synthetic evidence. The isolated public HTTP 503 passed one bounded unchanged retry. Technical tasks are done; external source limitations and owner physical-device acceptance remain separate. Authority: `EXECUTION_STATE.json`; release detail: `releases/TRAINING_SESSION_EVIDENCE_20261013.md`.
+
 # Produto publicado e verificado — 12/10/2026
 
 Pacote `PKG-EVOLUTION-PRODUCT-001` concluído tecnicamente. Build `evolution-product-20261012.43` publicado pelos PRs normais #324/#325, commit de execução `29a37577c3ec4798df3a147c248dbec4707c8314`. Os seis gates do candidato final e os dez workflows pós-publicação passaram, incluindo E2E autenticado `38290570154` e deploy `38290570232`.

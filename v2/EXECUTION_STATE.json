@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md"
+    "latest_release": "v2/releases/TRAINING_SESSION_EVIDENCE_20261013.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-EVOLUTION-DENSITY-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Finish the approved dashboard density: insights, indicators and charts first, complete source evidence progressively accessible.",
     "task_ids": [
       "LTS-EVOLUTION-DENSITY-001",
@@ -60,33 +60,38 @@
       "The fully verified .47 provides shared plain-language evolution and conservative evidence semantics.",
       "Reopening the supplied reference identified a remaining default-density gap: full comparison tables and repeated explanations preceded charts.",
       "Candidate .48 preserves the same models and consultation evidence, promotes charts and compact indicators, keeps all detailed comparisons/source/goal context behind disclosures and reserves space for long laboratory axis labels.",
-      "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass."
+      "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass.",
+      "All ten final runtime candidate workflows passed for 7c3d7825bdde13aa37c02dbcd641fc9f7cf7005c. Normal PR 339 published training-evidence-20261013.49 at 470b16b1d83c2852c67de058209908a078b4ba23, preserving the concurrent compact Home and wide laboratory label correction.",
+      "Source summary/detail audit corrected by normal PR 340 at 53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78. All six audit candidate workflows passed; exact-head authenticated E2E 38459035545, deployment 38459035742 and homologation 38459078886 passed.",
+      "Private canonical record import independently reread and matched every exercise and set-step field. Imported Polar event linked to the same canonical session; the live authenticated summary, full detail and Home were manually inspected.",
+      "Authenticated live Home verifies compact readings and six domain charts, with latest-session primary/extension count. Exercise observations, fractional repetitions and reported sensor caveat were opened and inspected.",
+      "Final runtime synthetic artifacts verified by SHA256 and inspected: functional-depth 11843898453 (c7ca2e8bc1314f167e89c34c4b6fc6e5ec388071791a1cc892a254902ed740ad), responsive domain 11844406277 (982fdb201b05259882e36949f697268f223dec7b41ac64fae6d8bc8f2400a881), compact Home/Training 11844646414 (e7af22f63f36cd6f971249afe04db858dd7faf288f0ccdb9304e50c4557af252). Desktop, mobile, reduced and small-screen source/goal/history journeys remain readable.",
+      "Owner visual/physical-device acceptance and independent external source limits are not inferred from technical verification.",
+      "Exact published Pages gate 38459078809 passed on one bounded retry after an isolated HTTP 503; the assertion and browser checks were unchanged. Consultation preview opened with real data and latest session preserved."
     ],
-    "pending_evidence": [
-      "Inspect default compact desktop/mobile captures and evidence disclosures; pass candidate workflows, normal promotion, exact deployed gates and authenticated final inspection.",
-      "Training-session source limitation and primary/extension count: complete responsive candidate and exact authenticated publication checks."
-    ]
+    "pending_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "evolution-final-20261013.47",
-    "main_commit": "5a07806a3df8099cb702a54db297483c51e29e26",
+    "build_id": "training-evidence-20261013.49",
+    "main_commit": "53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78",
     "published_on": "2026-10-13",
     "verified_on": "2026-10-13",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
     "manual_exact_public_verified_on": "2026-10-13",
     "manual_inspection_repeated": true,
-    "release_kind": "source_backed_plain_language_evolution_product",
+    "release_kind": "preserved_compact_evolution_and_training_source_structure",
     "evidence": [
-      "Final candidate bacdd89f2e3430192399118a002df59c72dd8b61 passed all eight applicable workflows; source/date/range/ambiguity/escaping/immutability and stable-versus-changed semantics verified.",
-      "Final synthetic artifact 11840032142 SHA256 0c3556bc008c3b15674e1c657d72ac6ebfb14edd8af39a3f65dc45d1b191d48a inspected at desktop, mobile, reduced viewport and 320px; charts and consultation remain readable.",
-      "Normal PR 337 published evolution-final-20261013.47 at main 5a07806a3df8099cb702a54db297483c51e29e26. All twelve exact-head post-merge workflows passed, including actual authenticated E2E 38449963600, deploy 38449963699, Pages 38450012847 and homologation 38450012828. The latter passed one bounded retry after a navigation timeout; no runtime check was waived.",
-      "Exact published authenticated .47 Home manually inspected: primary plain-language readings, dated source evidence, body uncertainty, annotated latest session and no horizontal overflow. Regional lean/fat before/current tables, laboratory reference/history navigation and the consultation preview were opened with real data.",
-      "The reference JPEG is locally available and has been used; a repeated attachment-loader message does not supersede the recovered reference or restart product scope.",
-      "Historical source and goal-vigency limits remain independent. Clinical interpretation, urgency, medication changes and owner physical-device visual acceptance are not inferred from technical checks."
+      "All ten final runtime candidate workflows passed for 7c3d7825bdde13aa37c02dbcd641fc9f7cf7005c. Normal PR 339 published training-evidence-20261013.49 at 470b16b1d83c2852c67de058209908a078b4ba23, preserving the concurrent compact Home and wide laboratory label correction.",
+      "Source summary/detail audit corrected by normal PR 340 at 53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78. All six audit candidate workflows passed; exact-head authenticated E2E 38459035545, deployment 38459035742 and homologation 38459078886 passed.",
+      "Private canonical record import independently reread and matched every exercise and set-step field. Imported Polar event linked to the same canonical session; the live authenticated summary, full detail and Home were manually inspected.",
+      "Authenticated live Home verifies compact readings and six domain charts, with latest-session primary/extension count. Exercise observations, fractional repetitions and reported sensor caveat were opened and inspected.",
+      "Final runtime synthetic artifacts verified by SHA256 and inspected: functional-depth 11843898453 (c7ca2e8bc1314f167e89c34c4b6fc6e5ec388071791a1cc892a254902ed740ad), responsive domain 11844406277 (982fdb201b05259882e36949f697268f223dec7b41ac64fae6d8bc8f2400a881), compact Home/Training 11844646414 (e7af22f63f36cd6f971249afe04db858dd7faf288f0ccdb9304e50c4557af252). Desktop, mobile, reduced and small-screen source/goal/history journeys remain readable.",
+      "Owner visual/physical-device acceptance and independent external source limits are not inferred from technical verification.",
+      "Exact published Pages gate 38459078809 passed on one bounded retry after an isolated HTTP 503; the assertion and browser checks were unchanged. Consultation preview opened with real data and latest session preserved."
     ],
-    "acceptance_note": "Implemented dashboard scope and exact authenticated runtime verified. Owner visual/physical-device acceptance is separate. Original water-history import and independently attributable automatic water recurrence remain unresolved; historical protocol validity and unidentified older body devices are not guessed."
+    "acceptance_note": "Compact evolution dashboard and private session import technically delivered and verified. Owner visual/physical-device acceptance remains separate. Original MFP water history, attributable automatic water recurrence, source identification and new laboratory format limits remain independent."
   },
   "tasks": [
     {
@@ -1451,7 +1456,7 @@
       "id": "LTS-EVOLUTION-DENSITY-001",
       "area": "product",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Make the default executive Home visually compact and graphic-first without losing verified insight or source depth.",
       "acceptance": [
@@ -1465,16 +1470,23 @@
         "The fully verified .47 provides shared plain-language evolution and conservative evidence semantics.",
         "Reopening the supplied reference identified a remaining default-density gap: full comparison tables and repeated explanations preceded charts.",
         "Candidate .48 preserves the same models and consultation evidence, promotes charts and compact indicators, keeps all detailed comparisons/source/goal context behind disclosures and reserves space for long laboratory axis labels.",
-        "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass."
+        "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass.",
+        "All ten final runtime candidate workflows passed for 7c3d7825bdde13aa37c02dbcd641fc9f7cf7005c. Normal PR 339 published training-evidence-20261013.49 at 470b16b1d83c2852c67de058209908a078b4ba23, preserving the concurrent compact Home and wide laboratory label correction.",
+        "Source summary/detail audit corrected by normal PR 340 at 53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78. All six audit candidate workflows passed; exact-head authenticated E2E 38459035545, deployment 38459035742 and homologation 38459078886 passed.",
+        "Private canonical record import independently reread and matched every exercise and set-step field. Imported Polar event linked to the same canonical session; the live authenticated summary, full detail and Home were manually inspected.",
+        "Authenticated live Home verifies compact readings and six domain charts, with latest-session primary/extension count. Exercise observations, fractional repetitions and reported sensor caveat were opened and inspected.",
+        "Final runtime synthetic artifacts verified by SHA256 and inspected: functional-depth 11843898453 (c7ca2e8bc1314f167e89c34c4b6fc6e5ec388071791a1cc892a254902ed740ad), responsive domain 11844406277 (982fdb201b05259882e36949f697268f223dec7b41ac64fae6d8bc8f2400a881), compact Home/Training 11844646414 (e7af22f63f36cd6f971249afe04db858dd7faf288f0ccdb9304e50c4557af252). Desktop, mobile, reduced and small-screen source/goal/history journeys remain readable.",
+        "Owner visual/physical-device acceptance and independent external source limits are not inferred from technical verification.",
+        "Exact published Pages gate 38459078809 passed on one bounded retry after an isolated HTTP 503; the assertion and browser checks were unchanged. Consultation preview opened with real data and latest session preserved."
       ],
-      "next_action": "Verify and publish the compact final dashboard candidate; retain .47 verification and independent source limits.",
+      "next_action": "Technical delivery complete. Preserve external source limits and collect any later owner feedback without treating automated checks as physical-device acceptance.",
       "blocker": null
     },
     {
       "id": "LTS-TRAINING-SESSION-001",
       "area": "training",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Keep primary sets separate from drop/rest-pause extensions and display reported telemetry and execution limitations.",
       "acceptance": [
@@ -1485,9 +1497,16 @@
       "evidence": [
         "Private canonical workout, exercise, set-step and source-evidence writes independently reread successfully.",
         "Authenticated public Training summary and exercise pages verified before the display fix.",
-        "Local training-session-test, final-evolution-test and evolution-product-test passed; all observations and source records preserved."
+        "Local training-session-test, final-evolution-test and evolution-product-test passed; all observations and source records preserved.",
+        "All ten final runtime candidate workflows passed for 7c3d7825bdde13aa37c02dbcd641fc9f7cf7005c. Normal PR 339 published training-evidence-20261013.49 at 470b16b1d83c2852c67de058209908a078b4ba23, preserving the concurrent compact Home and wide laboratory label correction.",
+        "Source summary/detail audit corrected by normal PR 340 at 53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78. All six audit candidate workflows passed; exact-head authenticated E2E 38459035545, deployment 38459035742 and homologation 38459078886 passed.",
+        "Private canonical record import independently reread and matched every exercise and set-step field. Imported Polar event linked to the same canonical session; the live authenticated summary, full detail and Home were manually inspected.",
+        "Authenticated live Home verifies compact readings and six domain charts, with latest-session primary/extension count. Exercise observations, fractional repetitions and reported sensor caveat were opened and inspected.",
+        "Final runtime synthetic artifacts verified by SHA256 and inspected: functional-depth 11843898453 (c7ca2e8bc1314f167e89c34c4b6fc6e5ec388071791a1cc892a254902ed740ad), responsive domain 11844406277 (982fdb201b05259882e36949f697268f223dec7b41ac64fae6d8bc8f2400a881), compact Home/Training 11844646414 (e7af22f63f36cd6f971249afe04db858dd7faf288f0ccdb9304e50c4557af252). Desktop, mobile, reduced and small-screen source/goal/history journeys remain readable.",
+        "Owner visual/physical-device acceptance and independent external source limits are not inferred from technical verification.",
+        "Exact published Pages gate 38459078809 passed on one bounded retry after an isolated HTTP 503; the assertion and browser checks were unchanged. Consultation preview opened with real data and latest session preserved."
       ],
-      "next_action": "Complete candidate checks, promote normally and inspect the exact published session and Home.",
+      "next_action": "Technical delivery complete. Preserve external source limits and collect any later owner feedback without treating automated checks as physical-device acceptance.",
       "blocker": null
     }
   ],
@@ -1837,24 +1856,24 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "evolution-final-20261013.47",
-    "main_commit": "5a07806a3df8099cb702a54db297483c51e29e26",
+    "build_id": "training-evidence-20261013.49",
+    "main_commit": "53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78",
     "published_on": "2026-10-13",
     "verified_on": "2026-10-13",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
     "manual_exact_public_verified_on": "2026-10-13",
     "manual_inspection_repeated": true,
-    "release_kind": "source_backed_plain_language_evolution_product",
+    "release_kind": "preserved_compact_evolution_and_training_source_structure",
     "evidence": [
-      "Final candidate bacdd89f2e3430192399118a002df59c72dd8b61 passed all eight applicable workflows; source/date/range/ambiguity/escaping/immutability and stable-versus-changed semantics verified.",
-      "Final synthetic artifact 11840032142 SHA256 0c3556bc008c3b15674e1c657d72ac6ebfb14edd8af39a3f65dc45d1b191d48a inspected at desktop, mobile, reduced viewport and 320px; charts and consultation remain readable.",
-      "Normal PR 337 published evolution-final-20261013.47 at main 5a07806a3df8099cb702a54db297483c51e29e26. All twelve exact-head post-merge workflows passed, including actual authenticated E2E 38449963600, deploy 38449963699, Pages 38450012847 and homologation 38450012828. The latter passed one bounded retry after a navigation timeout; no runtime check was waived.",
-      "Exact published authenticated .47 Home manually inspected: primary plain-language readings, dated source evidence, body uncertainty, annotated latest session and no horizontal overflow. Regional lean/fat before/current tables, laboratory reference/history navigation and the consultation preview were opened with real data.",
-      "The reference JPEG is locally available and has been used; a repeated attachment-loader message does not supersede the recovered reference or restart product scope.",
-      "Historical source and goal-vigency limits remain independent. Clinical interpretation, urgency, medication changes and owner physical-device visual acceptance are not inferred from technical checks."
+      "All ten final runtime candidate workflows passed for 7c3d7825bdde13aa37c02dbcd641fc9f7cf7005c. Normal PR 339 published training-evidence-20261013.49 at 470b16b1d83c2852c67de058209908a078b4ba23, preserving the concurrent compact Home and wide laboratory label correction.",
+      "Source summary/detail audit corrected by normal PR 340 at 53eed243a8c4c0ddf4e8c8377a0ac5ef2b3fda78. All six audit candidate workflows passed; exact-head authenticated E2E 38459035545, deployment 38459035742 and homologation 38459078886 passed.",
+      "Private canonical record import independently reread and matched every exercise and set-step field. Imported Polar event linked to the same canonical session; the live authenticated summary, full detail and Home were manually inspected.",
+      "Authenticated live Home verifies compact readings and six domain charts, with latest-session primary/extension count. Exercise observations, fractional repetitions and reported sensor caveat were opened and inspected.",
+      "Final runtime synthetic artifacts verified by SHA256 and inspected: functional-depth 11843898453 (c7ca2e8bc1314f167e89c34c4b6fc6e5ec388071791a1cc892a254902ed740ad), responsive domain 11844406277 (982fdb201b05259882e36949f697268f223dec7b41ac64fae6d8bc8f2400a881), compact Home/Training 11844646414 (e7af22f63f36cd6f971249afe04db858dd7faf288f0ccdb9304e50c4557af252). Desktop, mobile, reduced and small-screen source/goal/history journeys remain readable.",
+      "Owner visual/physical-device acceptance and independent external source limits are not inferred from technical verification.",
+      "Exact published Pages gate 38459078809 passed on one bounded retry after an isolated HTTP 503; the assertion and browser checks were unchanged. Consultation preview opened with real data and latest session preserved."
     ],
-    "acceptance_note": "Implemented dashboard scope and exact authenticated runtime verified. Owner visual/physical-device acceptance is separate. Original water-history import and independently attributable automatic water recurrence remain unresolved; historical protocol validity and unidentified older body devices are not guessed."
+    "acceptance_note": "Compact evolution dashboard and private session import technically delivered and verified. Owner visual/physical-device acceptance remains separate. Original MFP water history, attributable automatic water recurrence, source identification and new laboratory format limits remain independent."
   }
 }
-
