@@ -41,7 +41,7 @@ for(const config of [
   await page.waitForSelector('.ltsHomeReference');
   const home=await page.evaluate(()=>{
     const rect=selector=>document.querySelector(selector)?.getBoundingClientRect();
-    const app=rect('#app'),host=rect('#screenHost'),nav=rect('#mobileNav'),header=rect('.ltsCockpitWindow'),cards=rect('.ltsExecutiveCards');
+    const app=rect('#app'),host=rect('#screenHost'),nav=rect('#mobileNav'),header=rect('.ltsCockpitHeading'),cards=rect('.ltsExecutiveCards');
     const hostStyle=getComputedStyle(document.querySelector('#screenHost'));
     return{
       appHeight:app?.height,hostTop:host?.top,hostBottom:host?.bottom,navTop:nav?.top,
