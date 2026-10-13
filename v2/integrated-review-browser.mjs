@@ -176,6 +176,7 @@ try{
     await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('.ltsHomeReference');
     if(await page.locator('[data-disclosure="home-advanced"]').getAttribute('open')==null)await page.locator('[data-disclosure="home-advanced"]>summary').click();
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');for(const key of ['body','nutrition','sourceMetrics','workouts','labs'])state.domainStatus[key]='error';const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();});
+    await page.locator('[data-disclosure="home-advanced"]>summary').click();
     assert.match(await page.locator('.ltsCockpitReading:visible').innerText(),/não carregaram/);
     assert.match(await page.locator('.ltsDesktopCockpit').innerText(),/não carregou/);
     assert.doesNotMatch(await page.locator('.ltsDesktopCockpit').innerText(),/0 registros de sono|Nenhum registro nesta janela/);

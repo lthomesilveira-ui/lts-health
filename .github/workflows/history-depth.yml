@@ -35,6 +35,7 @@ jobs:
           node v2/integrated-review-test.mjs
           node v2/home-cockpit-test.mjs
           node v2/home-overview-test.mjs
+          node v2/body-evidence-link-test.mjs
           node v2/evolution-product-test.mjs
           node v2/final-evolution-test.mjs
           node v2/polar-contract-test.mjs
@@ -59,6 +60,9 @@ jobs:
       - name: Exercise source-specific evidence comparisons
         if: always() && steps.app-server.outcome == 'success'
         run: node v2/evidence-insights-browser.mjs
+      - name: Verify compact overview and collect all viewports
+        if: always() && steps.app-server.outcome == 'success'
+        run: node v2/home-overview-browser.mjs
       - name: Exercise integrated review, goals and export
         if: always() && steps.app-server.outcome == 'success'
         run: node v2/integrated-review-browser.mjs
@@ -71,5 +75,6 @@ jobs:
             v2/history-depth-evidence
             v2/evidence-insights-visual
             v2/integrated-review-visual
+            v2/overview-visual
           if-no-files-found: warn
           retention-days: 14
