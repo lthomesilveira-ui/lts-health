@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-12",
+  "updated_on": "2026-10-13",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/POLAR_BACKGROUND_20261012.md"
+    "latest_release": "v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,30 +49,23 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-INTEGRATION-CONTINUITY-001",
-    "status": "done",
-    "goal": "Clarify source receipts, activate a bounded independent hourly Polar update and close the verified Auth security warning.",
+    "id": "PKG-FLEURY-SOURCE-VALIDATION-001",
+    "status": "in_progress",
+    "goal": "Validate already supplied Fleury originals, repair source-proven omissions and preserve the current published product.",
     "task_ids": [
-      "LTS-INTEGRATION-STATUS-001",
-      "LTS-POLAR-BACKGROUND-001",
-      "LTS-AUTH-SECURITY-001"
+      "LTS-FLEURY-SOURCE-VALIDATION-001"
     ],
     "completed_evidence": [
-      "Source-status changes published and verified in .44.",
-      "All seven runtime candidate checks, six audit-fix candidate checks and eleven corrected post-merge workflows passed.",
-      "Exact authenticated public Sources and Home inspected; responsive synthetic artifact verified.",
-      "Original-source discovery and local background-handler tests completed without promotion, reimport or key changes.",
-      "Server publication recovered: health-polar-scheduled version 1 and JWT-protected health-polar-connection version 17 are deployed and source-verified.",
-      "Live scheduler calls without a ticket or with an invalid ticket returned 401. An owner-triggered sync completed through the public app; canonical duplicates remain absent.",
-      "Native migration 20261012213757 applied a bounded non-destructive single-use ticket slot; no private or credential rows were removed.",
-      "Column-scoped service grants and browser denial verified. Rolled-back first-use, replay, expiry and disabled-config checks passed.",
-      "A genuine cron-triggered HTTP/provider/database completion succeeded before opening the app. Repeated validation ticks were throttled; final schedule is active at 17 * * * * with interval_minutes 60.",
-      "A controlled live payload/replay sequence returned 400 then 401. Authenticated .44 shows the real scheduled-completion timestamp and hourly server mode.",
-      "Current source audit found no duplicate daily grain or negative supported measures. Existing paid bridge and latest laboratory records preserved; previously supplied Fleury originals were located without reimport.",
-      "Normal PR 331 promoted 7b1da169f2aec698e4500267868ff604621200de as main 0405d5e457029a3de45ca93d3578ee4db1922fda. All six candidate and ten triggered post-merge workflows succeeded; exact authenticated public Home was inspected again.",
-      "Secure administrative sign-in completed without model-visible credentials. Prevent use of leaked passwords enabled and saved in the dedicated Health project; the native security advisor no longer reports auth_leaked_password_protection. Other Auth settings were not changed."
+      "v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md",
+      "v2/fleury-source-audit.py",
+      "v2/fleury-source-audit-test.py",
+      "Private originals and representative rendered pages inspected; current result comparisons passed after bounded restoration.",
+      "Before/after snapshots preserved all existing record projections. A second execution inserted no records.",
+      "Local synthetic source-audit, lab quarantine/numeric/source, Polar/bridge, continuity and payload checks passed."
     ],
-    "pending_evidence": []
+    "pending_evidence": [
+      "Successful remote candidate and normal promotion workflow gates."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -88,12 +81,37 @@
       "All eleven corrected post-merge workflows passed at 2cb1d93e76252c221e3ceafed04be57952e17c01, including real authenticated E2E 38303227396 and deploy 38303227420.",
       "Synthetic artifact 11770862312 SHA256 8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511 verified; desktop and reduced-mobile outcome layouts inspected.",
       "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
-      "Disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked."
+      "Historical pre-activation .44 UI checkpoint: disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked. Superseded for server activation by POLAR_BACKGROUND_20261012.md."
     ],
     "acceptance_note": "Source-state UI and independent hourly Polar server activation are technically delivered and verified. Owner UX/physical-device acceptance is separate. Original MFP water history and independently attributable automatic water recurrence remain unresolved; server scheduling does not remove those source limits.",
     "verified_on": "2026-10-12"
   },
   "tasks": [
+    {
+      "id": "LTS-FLEURY-SOURCE-VALIDATION-001",
+      "area": "laboratory source fidelity",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Validate the known original Fleury layouts and repair only independently source-proven omitted results.",
+      "acceptance": [
+        "Compare known private originals with current source-linked laboratory records using digest, page, date, value and unit.",
+        "Keep censored and qualitative results outside numeric trends and distinguish references/history from current results.",
+        "Repair only missing source-proven rows, verify idempotency, and preserve every existing record.",
+        "Keep public outputs free of personal payloads and production laboratory routing quarantined.",
+        "Publish the offline audit tool and state through a normal PR with successful affected workflow gates."
+      ],
+      "evidence": [
+        "v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md",
+        "v2/fleury-source-audit.py",
+        "v2/fleury-source-audit-test.py",
+        "Private originals and representative rendered pages inspected; current result comparisons passed after bounded restoration.",
+        "Before/after snapshots preserved all existing record projections. A second execution inserted no records.",
+        "Local synthetic source-audit, lab quarantine/numeric/source, Polar/bridge, continuity and payload checks passed."
+      ],
+      "next_action": "Finish candidate and normal PR promotion checks, then record final publication evidence.",
+      "blocker": null
+    },
     {
       "id": "LTS-INTEGRATION-STATUS-001",
       "area": "Data and sources",
@@ -740,9 +758,10 @@
         "v2/DATA_AUDIT.md",
         "v2/src/health-screen.js",
         "Private Library lookup resolved previously supplied preliminary/final Fleury originals and an earlier report. The latest validated Fleury records are already in the dedicated app tables; no duplicated reimport or blanket missing-original claim is justified.",
-        "The current specialized-parser quarantine and strict numeric/source safety test passed. Existing source availability is distinct from releasing new-format automatic parsing."
+        "The current specialized-parser quarantine and strict numeric/source safety test passed. Existing source availability is distinct from releasing new-format automatic parsing.",
+        "Known Fleury layout validation and a bounded source-proven omission repair are tracked separately in LTS-FLEURY-SOURCE-VALIDATION-001. Production laboratory routing remains quarantined; existing records are preserved."
       ],
-      "next_action": "Use the privately located Fleury originals for a bounded specialized-parser validation package without asking the owner to resend them. Einstein samples and any direct integration still require actual authorized evidence; preserve the already imported laboratory history.",
+      "next_action": "Use the validated offline tool for the known originals. Production ingestion requires a separate authenticated file-to-preview/import validation package; Einstein or other formats still need representative originals and supported access. Do not request the same Fleury files again.",
       "blocker": "Broader automatic PDF extraction remains quarantined pending specialized format validation and representative Einstein evidence/direct-access support. Fleury originals have been located privately; the latest existing results are already imported, not missing."
     },
     {
@@ -1328,7 +1347,8 @@
       "evidence": [
         "The first actual bridge water delivery was independently verified; it followed an owner-triggered export.",
         "Phone automations and permissions are configured. That first receipt alone does not establish automatic recurrence.",
-        "Read-only restart and exact public inspection on 2026-10-12 confirm further genuine water observations beyond the first manual receipt. Multiple dates alone do not distinguish manual export from iOS automatic execution; do not guarantee cadence."
+        "Read-only restart and exact public inspection on 2026-10-12 confirm further genuine water observations beyond the first manual receipt. Multiple dates alone do not distinguish manual export from iOS automatic execution; do not guarantee cadence.",
+        "2026-10-13 restart: later actual bridge receipt with hydration rechecked. Receipt metadata does not independently identify a manual or background trigger; recurring automation remains unclaimed."
       ],
       "next_action": "Read the next genuine source/receiver update when it exists and distinguish it from manually triggered export. Preserve keys, selections and prior records.",
       "blocker": "A later independently identifiable automatic source update has not yet been observed; iOS background execution is best effort."
@@ -1654,6 +1674,32 @@
         "Synthetic artifact 11765770385 digest 1929ca482bb754adec64835a718f39c933b2db7ceb8bd726896f8856e25e7199 verified; desktop, phone, reduced and small-phone outcome/source/date/goal/export journeys inspected.",
         "All ten post-merge workflows passed, including deploy 38290570232, real authenticated E2E 38290570154, Functional Depth 38290570138, Pages 38290614186 and Homologation 38290614225.",
         "Exact .43 authenticated public desktop manually inspected: compatible recorded-load wording, current-day diary qualification, source selection, full day context, goals without defaults, travel session and consultation preview. Responsive automated verification is distinct from a physical-device owner review."
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "PKG-INTEGRATION-CONTINUITY-001",
+      "status": "done",
+      "goal": "Clarify source receipts, activate a bounded independent hourly Polar update and close the verified Auth security warning.",
+      "task_ids": [
+        "LTS-INTEGRATION-STATUS-001",
+        "LTS-POLAR-BACKGROUND-001",
+        "LTS-AUTH-SECURITY-001"
+      ],
+      "completed_evidence": [
+        "Source-status changes published and verified in .44.",
+        "All seven runtime candidate checks, six audit-fix candidate checks and eleven corrected post-merge workflows passed.",
+        "Exact authenticated public Sources and Home inspected; responsive synthetic artifact verified.",
+        "Original-source discovery and local background-handler tests completed without promotion, reimport or key changes.",
+        "Server publication recovered: health-polar-scheduled version 1 and JWT-protected health-polar-connection version 17 are deployed and source-verified.",
+        "Live scheduler calls without a ticket or with an invalid ticket returned 401. An owner-triggered sync completed through the public app; canonical duplicates remain absent.",
+        "Native migration 20261012213757 applied a bounded non-destructive single-use ticket slot; no private or credential rows were removed.",
+        "Column-scoped service grants and browser denial verified. Rolled-back first-use, replay, expiry and disabled-config checks passed.",
+        "A genuine cron-triggered HTTP/provider/database completion succeeded before opening the app. Repeated validation ticks were throttled; final schedule is active at 17 * * * * with interval_minutes 60.",
+        "A controlled live payload/replay sequence returned 400 then 401. Authenticated .44 shows the real scheduled-completion timestamp and hourly server mode.",
+        "Current source audit found no duplicate daily grain or negative supported measures. Existing paid bridge and latest laboratory records preserved; previously supplied Fleury originals were located without reimport.",
+        "Normal PR 331 promoted 7b1da169f2aec698e4500267868ff604621200de as main 0405d5e457029a3de45ca93d3578ee4db1922fda. All six candidate and ten triggered post-merge workflows succeeded; exact authenticated public Home was inspected again.",
+        "Secure administrative sign-in completed without model-visible credentials. Prevent use of leaked passwords enabled and saved in the dedicated Health project; the native security advisor no longer reports auth_leaked_password_protection. Other Auth settings were not changed."
       ],
       "pending_evidence": []
     }
