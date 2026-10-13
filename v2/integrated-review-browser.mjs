@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mkdirSync,readFileSync} from 'node:fs';
+import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 
 // Synthetic data only. Tests the real authenticated renderer, not a demo page.
@@ -37,6 +37,7 @@ try{
       const bottom=Math.min(viewportBottom,box('#screenHost').bottom,navVisible?nav.getBoundingClientRect().top:Infinity),plot=box('.ltsCockpitPanel.body .ltsContextPlot svg');
       return {bottom,title:box('.ltsCockpitReadings article>b'),meaning:box('.ltsCockpitReadings article>p'),plotVisible:Math.max(0,Math.min(bottom,plot.bottom)-Math.max(0,plot.top)),readingBeforeCards:Boolean(reading.compareDocumentPosition(cards)&Node.DOCUMENT_POSITION_FOLLOWING),scroll:document.querySelector('#screenHost').scrollTop,layout:document.querySelector('[data-home-layout]')?.dataset.homeLayout};
     });
+    writeFileSync(`${dir}/${label}-first-fold.json`,JSON.stringify({viewport:{width,height},build:await page.locator('meta[name="lts-build"]').getAttribute('content'),...firstFold},null,2));
     if(width<=840){
       assert.equal(firstFold.layout,'compact');
       assert.equal(firstFold.scroll,0,'first-fold evidence is captured before scrolling');
@@ -103,6 +104,7 @@ try{
     await page.waitForFunction(()=>document.querySelector('#personalGoalsMessage')?.textContent.includes('Metas salvas'));
     await page.locator('.ltsGoalSettings summary').first().click();
     if(label==='mobile'){
+      await page.locator('[data-home-body-metric="weight_kg"]').click();
       for(const selector of ['[data-home-period="90"]','[data-home-body-metric="weight_kg"]','[data-disclosure="home-insight-labs"]>summary']){
         await page.setViewportSize({width:839,height:844});
         await page.waitForSelector('[data-home-layout="compact"]');
@@ -110,7 +112,8 @@ try{
         for(const width of [841,839]){
           await page.setViewportSize({width,height:844});
           await page.waitForSelector(`[data-home-layout="${width>840?'desktop':'compact'}"]`);
-          assert.equal(await page.locator(selector).evaluate(el=>el===document.activeElement),true,'breakpoint re-render preserves keyboard focus');
+          const focus=await page.locator(selector).evaluate(el=>({preserved:el===document.activeElement,expected:el.outerHTML,actual:document.activeElement?.outerHTML.slice(0,500)}));
+          assert.equal(focus.preserved,true,`breakpoint focus ${width}: ${JSON.stringify(focus)}`);
           assert.equal(await page.locator('[data-home-body-metric="weight_kg"]').getAttribute('aria-pressed'),'true','selected body metric survives responsive re-render');
           assert.equal(await page.locator('[data-home-period]').count(),4);
         }

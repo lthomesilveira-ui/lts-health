@@ -195,7 +195,7 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitWindow{flex:1;min-width:0}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsHomePeriod{padding:2px;gap:2px}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsHomePeriod button{padding:5px 4px;min-height:40px}
- .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeadingControls>.ltsEvolutionAction{flex:0 0 44px;min-width:44px;margin:0;padding:0;font-size:24px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitHeadingControls>.ltsEvolutionAction{flex:0 0 68px;min-width:68px;margin:0;padding:0 5px;font-size:11px}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading{padding:12px;margin:0 0 10px}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading>header{margin-bottom:4px;gap:6px}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReading h2{font-size:14px}
@@ -208,9 +208,9 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitReadings article>button{margin-top:0;font-size:11px;padding:4px 6px}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMoreReadings{display:block;border-top:1px solid #e1e9f0;margin:3px 0 0}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMoreReadings>summary{padding:10px 0;min-height:44px;box-sizing:border-box}
- .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 0 12px;padding-bottom:4px}
- .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard{flex:0 0 44%;min-height:0;padding:9px 10px;gap:3px;scroll-snap-align:start;border-radius:11px}
- .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard:last-child{min-height:0}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard{min-height:0;padding:9px 10px;gap:3px;border-radius:11px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard:last-child{min-height:0;grid-column:auto}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard>span{font-size:11px}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard strong{font-size:18px;line-height:1.2;margin:1px 0}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard b,.ltsEvolutionHome [data-home-layout="compact"] .ltsExecutiveCard small{font-size:11px;line-height:1.4;margin:0}
@@ -220,4 +220,16 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body>.ltsCockpitCaption{font-size:11px;margin:3px 0}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body .ltsEvolutionTabs{margin:6px 0}
  .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body .ltsEvolutionTabs button{min-height:40px;font-size:11px;padding:6px 8px}
+}
+
+@media(max-width:840px){
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitGrid>.ltsHomeMoreReadings{padding:0 12px;margin:0;border:1px solid #dce5ee;border-radius:12px;background:#fff}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitGrid>.ltsHomeMoreReadings[open]{padding-bottom:12px}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsCockpitPanel.body .ltsContextPlotLabel{margin-top:6px}
+}
+
+@media(max-width:840px){
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMoreAreas{padding:0 12px;border:1px solid #dce5ee;border-radius:12px;background:#fff}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeMoreAreas>summary{font-size:12px;font-weight:650;line-height:1.5;min-height:44px;padding:12px 0;box-sizing:border-box;cursor:pointer}
+ .ltsEvolutionHome [data-home-layout="compact"] .ltsHomeExtraCards{display:grid;gap:8px;padding-bottom:12px}
 }

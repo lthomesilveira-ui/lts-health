@@ -113,7 +113,7 @@ function restoreRenderContext(host,context){
   const open=new Set(context.openDisclosures||[]);
   for(const details of host.querySelectorAll('details'))if(open.has(disclosureKey(details)))details.open=true;
   if(!context.focus?.selector)return;
-  const active=host.querySelector(context.focus.selector)||(context.focus.selector.includes('home-more-readings')?host.querySelector('[data-home-insight-details]'):null);if(!active)return;
+  const active=host.querySelector(context.focus.selector)||(context.focus.selector.includes('home-more-')?host.querySelector('[data-home-insight-details]'):null);if(!active)return;
   try{
     for(let parent=active.parentElement;parent&&parent!==host;parent=parent.parentElement)if(parent.matches('details'))parent.open=true;
     active.focus({preventScroll:true});
