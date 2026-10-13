@@ -33,7 +33,7 @@ try{
   assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1,'one shared body panel');
   const axes=await page.locator('.refPanels .refAxis').allTextContents();
   assert.ok(axes.length>=2&&new Set(axes).size===1,'all populated panels share selected calendar');
-  await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
+  await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
   await page.locator('#overview-body-date').focus();await page.locator('#overview-body-date').press('ArrowDown');
   assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});

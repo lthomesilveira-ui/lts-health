@@ -11,3 +11,27 @@
 .refMobileAttention{display:none}@media(max-width:840px){.refMobileAttention{display:block;color:#77551e;margin-top:6px;line-height:1.4;font-size:11px!important}}
 
 @media(min-width:841px){body:has(.ltsReferenceHome) .primaryNav{width:205px!important;min-width:0!important;box-sizing:border-box!important}}
+/* Compact desktop panels retain the full grid and its next actions. */
+@media(min-width:841px){
+ .ltsReferenceHome .refPanel{min-height:0;padding:10px 12px 9px}
+ .ltsReferenceHome .refPanel h2{color:#176ccc}
+ .ltsReferenceHome .refPanel>header{margin-bottom:5px}
+ .ltsReferenceHome .refPanel>header>.refIcon{width:32px;height:32px;min-width:32px}
+ .ltsReferenceHome .refPanel .refPlot svg{height:72px}
+ .ltsReferenceHome .refPanel.sleep .refPlot svg{height:52px}
+ .ltsReferenceHome .refDetail{margin-top:3px;padding:0;border:0;background:transparent}
+ .ltsReferenceHome .refDetail>summary{min-height:26px;margin:0;padding:0;font-size:11px}
+ .ltsReferenceHome .refFootnote,.ltsReferenceHome .refBodyDate>small,.ltsReferenceHome .refAxis{font-size:10px!important}
+ .ltsReferenceHome .refPanel>.refAction{min-height:27px;padding:4px 8px;margin-top:5px}
+ .ltsReferenceHome .refLabTimeline{min-height:66px;padding:5px 0}
+ .ltsReferenceHome .refWaterBody{padding:3px 0}
+ .ltsReferenceHome .refGlass{height:62px;width:47px}
+ .ltsReferenceHome .refBodyDate select{width:120px;max-width:120px;min-width:120px;padding:4px}
+ body:has(.ltsReferenceHome) .railBrand .brandMark{font-size:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important}
+ body:has(.ltsReferenceHome) .railBrand .brandMark:before{content:'';width:30px;height:30px;background:#2583ff;clip-path:polygon(42% 3%,4% 74%,49% 74%,49% 53%,35% 53%,45% 32%,60% 65%,53% 65%,53% 87%,96% 87%,63% 21%,50% 28%)}
+}
+.ltsReferenceHome .refBodyStamp{font-size:10px;margin-top:3px;color:#7384a4}
+.ltsReferenceHome .refBodyControls{margin:3px 0 0;padding:0;border:0;background:transparent;font-size:11px}
+.ltsReferenceHome .refBodyControls>summary{padding:0;margin:0;min-height:28px;display:flex;align-items:center;cursor:pointer;color:#326b9f;font-size:11px}
+.ltsReferenceHome .refBodyControls p{font-size:11px;color:#647a99;line-height:1.45;margin:7px 0}
+@media(max-width:840px){.ltsReferenceHome .refBodyStamp{font-size:11px}.ltsReferenceHome .refBodyControls>summary{min-height:36px}.ltsReferenceHome .refBodyControls .refBodyDate{margin:4px 0}}

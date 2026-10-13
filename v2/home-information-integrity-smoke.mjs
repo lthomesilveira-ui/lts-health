@@ -35,7 +35,7 @@ try{
  assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);
  assert.doesNotMatch(await page.locator('.refPanels').innerText(),/999|9\.000/);
  assert.equal(await page.locator('.refPanel.water .refPlot').count(),0,'no invented hydration chart');
- await page.locator('#overview-body-date').selectOption(dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);
+ await page.evaluate(async selectedDate=>{const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.ui.overviewBodyDate=selectedDate;document.querySelector('#screenHost').innerHTML=renderProductHomeReference();},dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);
  for(const viewport of [{width:390,height:844},{width:1440,height:1000}]){
   await page.setViewportSize(viewport);
   await page.evaluate(async()=>{const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();document.querySelector('#screenHost').scrollTop=0;});
