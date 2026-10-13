@@ -58,6 +58,7 @@ try{
  await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.domainStatus.nutrition='error';document.querySelector('#screenHost').innerHTML=renderProductHomeReference();
  });
+ await page.locator('[data-disclosure="home-advanced"]>summary').click();
  assert.match(await page.locator('.ltsExecutiveCard.nutrition').innerText(),/Indisponível/);
  assert.doesNotMatch(await page.locator('.ltsCockpitPanel.nutrition').innerText(),/150 g|2\.100/);
  await page.locator('[data-disclosure="home-history"] > summary').click();

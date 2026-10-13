@@ -12,3 +12,5 @@
 .ltsOverview .ltsHomePeriod button{min-height:40px}
 
 .ltsOverview .ltsContextPlot text{font-size:20px}
+
+.ltsOverviewCard.body .ltsOverviewBodyPlots svg{min-height:0}

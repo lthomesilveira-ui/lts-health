@@ -203,12 +203,12 @@ function bindStaticEvents(){
     const polarAction=event.target.closest('[data-polar-action]');
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
     const homeInsight=event.target.closest('[data-home-insight-details]');
-    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;state.ui.reviewView='overview';setRoute('analise');return;}
+    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;state.ui.reviewView='overview';setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-refresh]')){refresh();return;}
-    if(event.target.closest('[data-home-consultation]')){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reviewView='consultation';setRoute('analise');return;}
+    if(event.target.closest('[data-home-consultation]')){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reviewView='consultation';setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-goals]')){const details=document.querySelector('.ltsGoalSettings');if(details){details.open=true;details.scrollIntoView({block:'start',behavior:'auto'});details.querySelector('input')?.focus({preventScroll:true});}return;}
     const homeWorkout=event.target.closest('[data-home-workout]');
-    if(homeWorkout){state.ui.openWorkout=homeWorkout.dataset.homeWorkout;state.ui.productTrainingView='summary';setRoute('treinos');return;}
+    if(homeWorkout){state.ui.openWorkout=homeWorkout.dataset.homeWorkout;state.ui.productTrainingView='summary';setRoute('treinos',{replace:false});return;}
     const homeLab=event.target.closest('[data-home-lab-marker]');
     if(homeLab){state.ui.reportLabMarker=homeLab.dataset.homeLabMarker;render();const detail=document.querySelector('.ltsEvolutionLabDetail');if(detail){detail.open=true;detail.scrollIntoView({block:'nearest'});}return;}
     const bodyMetric=event.target.closest('[data-home-body-metric],[data-overview-body-metric]');
