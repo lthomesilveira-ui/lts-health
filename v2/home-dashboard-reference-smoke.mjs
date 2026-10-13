@@ -22,7 +22,8 @@ try{
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3));
   const order=await page.locator('.ltsCockpitHeading,.ltsExecutiveCards,.ltsCockpitReading,.ltsCockpitGrid,.ltsEvolutionNext').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().top));
   assert.equal(order.length,5);assert.ok(order.every((v,i)=>i===0||v>=order[i-1]),'question, snapshot, change, evidence, next review order');
-  const heights=await page.locator('.ltsEvolutionAction,.ltsHomePeriod button,.ltsEvolutionTabs button,.ltsExecutiveCard').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().height));
+  assert.equal(await page.locator('[data-home-body-metric]').evaluateAll(es=>es.filter(e=>e.getClientRects().length).length),4,'all metric controls remain visible');
+  const heights=await page.locator('.ltsEvolutionAction,.ltsHomePeriod button,.ltsEvolutionTabs button,.ltsExecutiveCard').evaluateAll(es=>es.filter(e=>e.getClientRects().length).map(e=>e.getBoundingClientRect().height));
   assert.ok(heights.every(h=>h>=40),'controls meet desktop/phone target size');
   assert.ok(await page.locator('.ltsCockpitPanel.body .ltsContextPlot').count()>0,'historical body values visible');
   await renderReference(page,'30','body_fat_pct');

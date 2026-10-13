@@ -49,50 +49,44 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-EVOLUTION-FINAL-001",
+    "id": "PKG-EVOLUTION-DENSITY-001",
     "status": "in_progress",
-    "goal": "Finish the owner-requested evolution dashboard against the actual authenticated product and supplied visual reference.",
+    "goal": "Finish the approved dashboard density: insights, indicators and charts first, complete source evidence progressively accessible.",
     "task_ids": [
-      "LTS-EVOLUTION-FINAL-001",
+      "LTS-EVOLUTION-DENSITY-001",
       "LTS-TRAINING-SESSION-001"
     ],
     "completed_evidence": [
-      "Owner requested autonomous final delivery on 2026-10-13.",
-      "Exact authenticated Home inspection identified stale training emphasis, single-marker laboratory reading and an oversized opening.",
-      "Implemented compact executive Home, recent-session set reading, freshness-first working load selection, multi-marker current/prior laboratory view and source-scoped closed-week routine comparisons.",
-      "Source protocol references are preserved separately from currently effective goals; private restoration is deliberately deferred until the matching frontend is published.",
-      "Private read-only snapshots and independent Decimal calculations reconciled the recent dietary comparisons; synthetic freshness, unknown phases, censored results, prior context, device/source and goal-vigency checks passed.",
-      "All nine final candidate gates passed for 9aec7ad09588693b6527630d47386df3e7d592fd; final desktop/mobile/reduced/320px synthetic captures inspected.",
-      "Normal PR 335 published .45 at 6b4c9f25b5fff897858747c786ecf4e5e4c9fb29. Exact authenticated public Home inspected; historical protocol reference restored only after matching frontend loaded.",
-      "Normal PR 336 published .46 at 60bfe6d645320e185523e68961b1fc2a069885ea; all eight candidate and twelve post-merge workflows passed, including actual authenticated E2E and deployment.",
-      "The complete historical audio transcript was supplied during final work. A written understood execution brief preceded further edits under the current autonomous delivery request.",
-      "Candidate .47 adds shared plain-language synthesis, source-only conservative laboratory interval positions, prior/current regional context and safe untrusted source-unit rendering. Local semantic, source and privacy checks pass."
+      "The fully verified .47 provides shared plain-language evolution and conservative evidence semantics.",
+      "Reopening the supplied reference identified a remaining default-density gap: full comparison tables and repeated explanations preceded charts.",
+      "Candidate .48 preserves the same models and consultation evidence, promotes charts and compact indicators, keeps all detailed comparisons/source/goal context behind disclosures and reserves space for long laboratory axis labels.",
+      "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass."
     ],
     "pending_evidence": [
-      "Complete .47 candidate responsive journeys and inspect their captures; promote normally, pass exact deployed gates and inspect the actual authenticated Home, evidence paths and consultation summary.",
-      "Training-session counting and scoped telemetry caveat: candidate checks, normal publication and authenticated final inspection."
+      "Inspect default compact desktop/mobile captures and evidence disclosures; pass candidate workflows, normal promotion, exact deployed gates and authenticated final inspection.",
+      "Training-session source limitation and primary/extension count: complete responsive candidate and exact authenticated publication checks."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "integration-continuity-20261012.44",
-    "main_commit": "2cb1d93e76252c221e3ceafed04be57952e17c01",
-    "published_on": "2026-10-12",
+    "build_id": "evolution-final-20261013.47",
+    "main_commit": "5a07806a3df8099cb702a54db297483c51e29e26",
+    "published_on": "2026-10-13",
+    "verified_on": "2026-10-13",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
+    "manual_exact_public_verified_on": "2026-10-13",
+    "manual_inspection_repeated": true,
+    "release_kind": "source_backed_plain_language_evolution_product",
     "evidence": [
-      "Normal PR 327 published .44; PR 328 corrected the release-manifest expectation without changing app runtime or data.",
-      "All seven final PR 327 checks passed for 92ffe5d66b8d8ddf24b0d30ac01b8ec703e0e18b, including responsive source UI, provider and privacy contracts.",
-      "All six PR 328 candidate checks passed for a45fcbb1338a8a5268b486c437aef80712b225d8.",
-      "All eleven corrected post-merge workflows passed at 2cb1d93e76252c221e3ceafed04be57952e17c01, including real authenticated E2E 38303227396 and deploy 38303227420.",
-      "Synthetic artifact 11770862312 SHA256 8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511 verified; desktop and reduced-mobile outcome layouts inspected.",
-      "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
-      "Historical pre-activation .44 UI checkpoint: disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked. Superseded for server activation by POLAR_BACKGROUND_20261012.md.",
-      "2026-10-13 source-validation promotion retained frontend .44. Exact-head authenticated E2E and all affected post-merge workflows passed after the bounded private laboratory repair; no new visual acceptance is inferred."
+      "Final candidate bacdd89f2e3430192399118a002df59c72dd8b61 passed all eight applicable workflows; source/date/range/ambiguity/escaping/immutability and stable-versus-changed semantics verified.",
+      "Final synthetic artifact 11840032142 SHA256 0c3556bc008c3b15674e1c657d72ac6ebfb14edd8af39a3f65dc45d1b191d48a inspected at desktop, mobile, reduced viewport and 320px; charts and consultation remain readable.",
+      "Normal PR 337 published evolution-final-20261013.47 at main 5a07806a3df8099cb702a54db297483c51e29e26. All twelve exact-head post-merge workflows passed, including actual authenticated E2E 38449963600, deploy 38449963699, Pages 38450012847 and homologation 38450012828. The latter passed one bounded retry after a navigation timeout; no runtime check was waived.",
+      "Exact published authenticated .47 Home manually inspected: primary plain-language readings, dated source evidence, body uncertainty, annotated latest session and no horizontal overflow. Regional lean/fat before/current tables, laboratory reference/history navigation and the consultation preview were opened with real data.",
+      "The reference JPEG is locally available and has been used; a repeated attachment-loader message does not supersede the recovered reference or restart product scope.",
+      "Historical source and goal-vigency limits remain independent. Clinical interpretation, urgency, medication changes and owner physical-device visual acceptance are not inferred from technical checks."
     ],
-    "acceptance_note": "Source-state UI and independent hourly Polar server activation are technically delivered and verified. Owner UX/physical-device acceptance is separate. Original MFP water history and independently attributable automatic water recurrence remain unresolved; server scheduling does not remove those source limits.",
-    "verified_on": "2026-10-12",
-    "latest_automated_verification_on": "2026-10-13"
+    "acceptance_note": "Implemented dashboard scope and exact authenticated runtime verified. Owner visual/physical-device acceptance is separate. Original water-history import and independently attributable automatic water recurrence remain unresolved; historical protocol validity and unidentified older body devices are not guessed."
   },
   "tasks": [
     {
@@ -1422,7 +1416,7 @@
       "id": "LTS-EVOLUTION-FINAL-001",
       "area": "product",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Complete useful health evolution readings across body, training, laboratories and daily routine.",
       "acceptance": [
@@ -1442,9 +1436,38 @@
         "Source protocol references are preserved separately from currently effective goals; private restoration is deliberately deferred until the matching frontend is published.",
         "Private read-only snapshots and independent Decimal calculations reconciled the recent dietary comparisons; synthetic freshness, unknown phases, censored results, prior context, device/source and goal-vigency checks passed.",
         "All nine final candidate gates passed for 9aec7ad09588693b6527630d47386df3e7d592fd; final desktop/mobile/reduced/320px synthetic captures inspected.",
-        "Normal PR 335 published .45 at 6b4c9f25b5fff897858747c786ecf4e5e4c9fb29. Exact authenticated public Home inspected; historical protocol reference restored only after matching frontend loaded."
+        "Normal PR 335 published .45 at 6b4c9f25b5fff897858747c786ecf4e5e4c9fb29. Exact authenticated public Home inspected; historical protocol reference restored only after matching frontend loaded.",
+        "Final candidate bacdd89f2e3430192399118a002df59c72dd8b61 passed all eight applicable workflows; source/date/range/ambiguity/escaping/immutability and stable-versus-changed semantics verified.",
+        "Final synthetic artifact 11840032142 SHA256 0c3556bc008c3b15674e1c657d72ac6ebfb14edd8af39a3f65dc45d1b191d48a inspected at desktop, mobile, reduced viewport and 320px; charts and consultation remain readable.",
+        "Normal PR 337 published evolution-final-20261013.47 at main 5a07806a3df8099cb702a54db297483c51e29e26. All twelve exact-head post-merge workflows passed, including actual authenticated E2E 38449963600, deploy 38449963699, Pages 38450012847 and homologation 38450012828. The latter passed one bounded retry after a navigation timeout; no runtime check was waived.",
+        "Exact published authenticated .47 Home manually inspected: primary plain-language readings, dated source evidence, body uncertainty, annotated latest session and no horizontal overflow. Regional lean/fat before/current tables, laboratory reference/history navigation and the consultation preview were opened with real data.",
+        "The reference JPEG is locally available and has been used; a repeated attachment-loader message does not supersede the recovered reference or restart product scope.",
+        "Historical source and goal-vigency limits remain independent. Clinical interpretation, urgency, medication changes and owner physical-device visual acceptance are not inferred from technical checks."
       ],
-      "next_action": "Implement and verify the coherent final evolution package.",
+      "next_action": "Preserve the verified release; reopen on new owner feedback or a reproducible defect. Keep missing source history, water recurrence and individual goal/device confirmation as separate limits.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-EVOLUTION-DENSITY-001",
+      "area": "product",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Make the default executive Home visually compact and graphic-first without losing verified insight or source depth.",
+      "acceptance": [
+        "Preserve five executive cards, three useful readings and six domain panels.",
+        "Default body/routine/laboratory graphs and compact values appear before detailed tables and long explanations.",
+        "Full comparisons, source selection, dated goals, regional values and consultation evidence remain accessible and consistent.",
+        "Wide laboratory labels stay inside the chart without shrinking typography or altering values/scales.",
+        "Responsive source/goal/evidence journeys, actual authenticated publication and exact manual inspection pass."
+      ],
+      "evidence": [
+        "The fully verified .47 provides shared plain-language evolution and conservative evidence semantics.",
+        "Reopening the supplied reference identified a remaining default-density gap: full comparison tables and repeated explanations preceded charts.",
+        "Candidate .48 preserves the same models and consultation evidence, promotes charts and compact indicators, keeps all detailed comparisons/source/goal context behind disclosures and reserves space for long laboratory axis labels.",
+        "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass."
+      ],
+      "next_action": "Verify and publish the compact final dashboard candidate; retain .47 verification and independent source limits.",
       "blocker": null
     },
     {
@@ -1781,29 +1804,57 @@
         "All twelve triggered post-merge workflows succeeded, including real authenticated E2E 38416744904, Functional Depth 38416744767, source audit 38416744961, deploy 38416744537 and public Pages 38416796518. Frontend .44 remains intact."
       ],
       "pending_evidence": []
+    },
+    {
+      "id": "PKG-EVOLUTION-FINAL-001",
+      "status": "done",
+      "goal": "Finish the owner-requested evolution dashboard against the actual authenticated product and supplied visual reference.",
+      "task_ids": [
+        "LTS-EVOLUTION-FINAL-001"
+      ],
+      "completed_evidence": [
+        "Owner requested autonomous final delivery on 2026-10-13.",
+        "Exact authenticated Home inspection identified stale training emphasis, single-marker laboratory reading and an oversized opening.",
+        "Implemented compact executive Home, recent-session set reading, freshness-first working load selection, multi-marker current/prior laboratory view and source-scoped closed-week routine comparisons.",
+        "Source protocol references are preserved separately from currently effective goals; private restoration is deliberately deferred until the matching frontend is published.",
+        "Private read-only snapshots and independent Decimal calculations reconciled the recent dietary comparisons; synthetic freshness, unknown phases, censored results, prior context, device/source and goal-vigency checks passed.",
+        "All nine final candidate gates passed for 9aec7ad09588693b6527630d47386df3e7d592fd; final desktop/mobile/reduced/320px synthetic captures inspected.",
+        "Normal PR 335 published .45 at 6b4c9f25b5fff897858747c786ecf4e5e4c9fb29. Exact authenticated public Home inspected; historical protocol reference restored only after matching frontend loaded.",
+        "Normal PR 336 published .46 at 60bfe6d645320e185523e68961b1fc2a069885ea; all eight candidate and twelve post-merge workflows passed, including actual authenticated E2E and deployment.",
+        "The complete historical audio transcript was supplied during final work. A written understood execution brief preceded further edits under the current autonomous delivery request.",
+        "Candidate .47 adds shared plain-language synthesis, source-only conservative laboratory interval positions, prior/current regional context and safe untrusted source-unit rendering. Local semantic, source and privacy checks pass.",
+        "Final candidate bacdd89f2e3430192399118a002df59c72dd8b61 passed all eight applicable workflows; source/date/range/ambiguity/escaping/immutability and stable-versus-changed semantics verified.",
+        "Final synthetic artifact 11840032142 SHA256 0c3556bc008c3b15674e1c657d72ac6ebfb14edd8af39a3f65dc45d1b191d48a inspected at desktop, mobile, reduced viewport and 320px; charts and consultation remain readable.",
+        "Normal PR 337 published evolution-final-20261013.47 at main 5a07806a3df8099cb702a54db297483c51e29e26. All twelve exact-head post-merge workflows passed, including actual authenticated E2E 38449963600, deploy 38449963699, Pages 38450012847 and homologation 38450012828. The latter passed one bounded retry after a navigation timeout; no runtime check was waived.",
+        "Exact published authenticated .47 Home manually inspected: primary plain-language readings, dated source evidence, body uncertainty, annotated latest session and no horizontal overflow. Regional lean/fat before/current tables, laboratory reference/history navigation and the consultation preview were opened with real data.",
+        "The reference JPEG is locally available and has been used; a repeated attachment-loader message does not supersede the recovered reference or restart product scope.",
+        "Historical source and goal-vigency limits remain independent. Clinical interpretation, urgency, medication changes and owner physical-device visual acceptance are not inferred from technical checks."
+      ],
+      "pending_evidence": [],
+      "release_state": "published_47; automated_actual_auth_and_responsive_plus_manual_exact_desktop_verified; owner_visual_acceptance_separate",
+      "public_build": "evolution-final-20261013.47"
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "integration-continuity-20261012.44",
-    "main_commit": "ce7340e44037087edebd3ce17e86cd29531d9417",
+    "build_id": "evolution-final-20261013.47",
+    "main_commit": "5a07806a3df8099cb702a54db297483c51e29e26",
     "published_on": "2026-10-13",
+    "verified_on": "2026-10-13",
     "automated_runtime_and_responsive_status": "verified",
     "manual_exact_public_status": "verified_desktop",
+    "manual_exact_public_verified_on": "2026-10-13",
+    "manual_inspection_repeated": true,
+    "release_kind": "source_backed_plain_language_evolution_product",
     "evidence": [
-      "Normal PR 327 published .44; PR 328 corrected the release-manifest expectation without changing app runtime or data.",
-      "All seven final PR 327 checks passed for 92ffe5d66b8d8ddf24b0d30ac01b8ec703e0e18b, including responsive source UI, provider and privacy contracts.",
-      "All six PR 328 candidate checks passed for a45fcbb1338a8a5268b486c437aef80712b225d8.",
-      "All eleven corrected post-merge workflows passed at 2cb1d93e76252c221e3ceafed04be57952e17c01, including real authenticated E2E 38303227396 and deploy 38303227420.",
-      "Synthetic artifact 11770862312 SHA256 8721883c4d6f63f442d0acd8f5f46f0623100668f6e468dc99d22e4dd8025511 verified; desktop and reduced-mobile outcome layouts inspected.",
-      "Exact public authenticated .44 source screen manually checked: receipt label, hydration/MFP distinction, on-open Polar state and no horizontal overflow. Home preserves five cards, six modules, consultation and source attribution.",
-      "Historical pre-activation .44 UI checkpoint: disabled scheduler/config, preserved authorizations, active paid bridge and no canonical workout duplicate were rechecked. Superseded for server activation by POLAR_BACKGROUND_20261012.md.",
-      "Normal PR 333; all seven candidate and twelve post-merge workflows passed, including exact-head authenticated E2E, deploy, public Pages and source-audit checks. Current UI .44 is preserved."
+      "Final candidate bacdd89f2e3430192399118a002df59c72dd8b61 passed all eight applicable workflows; source/date/range/ambiguity/escaping/immutability and stable-versus-changed semantics verified.",
+      "Final synthetic artifact 11840032142 SHA256 0c3556bc008c3b15674e1c657d72ac6ebfb14edd8af39a3f65dc45d1b191d48a inspected at desktop, mobile, reduced viewport and 320px; charts and consultation remain readable.",
+      "Normal PR 337 published evolution-final-20261013.47 at main 5a07806a3df8099cb702a54db297483c51e29e26. All twelve exact-head post-merge workflows passed, including actual authenticated E2E 38449963600, deploy 38449963699, Pages 38450012847 and homologation 38450012828. The latter passed one bounded retry after a navigation timeout; no runtime check was waived.",
+      "Exact published authenticated .47 Home manually inspected: primary plain-language readings, dated source evidence, body uncertainty, annotated latest session and no horizontal overflow. Regional lean/fat before/current tables, laboratory reference/history navigation and the consultation preview were opened with real data.",
+      "The reference JPEG is locally available and has been used; a repeated attachment-loader message does not supersede the recovered reference or restart product scope.",
+      "Historical source and goal-vigency limits remain independent. Clinical interpretation, urgency, medication changes and owner physical-device visual acceptance are not inferred from technical checks."
     ],
-    "acceptance_note": "Source-state UI and independent hourly Polar server activation are technically delivered and verified. Owner UX/physical-device acceptance is separate. Original MFP water history and independently attributable automatic water recurrence remain unresolved; server scheduling does not remove those source limits.",
-    "verified_on": "2026-10-13",
-    "release_kind": "source_validation_and_bounded_private_data_repair",
-    "manual_exact_public_verified_on": "2026-10-12",
-    "manual_inspection_repeated": false
+    "acceptance_note": "Implemented dashboard scope and exact authenticated runtime verified. Owner visual/physical-device acceptance is separate. Original water-history import and independently attributable automatic water recurrence remain unresolved; historical protocol validity and unidentified older body devices are not guessed."
   }
 }
+
