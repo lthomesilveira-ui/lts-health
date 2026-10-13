@@ -61,11 +61,11 @@ export function healthContextModel(data,bounds,requestedLab,requestedDate,additi
 }
 
 // Calendar-proportional axes; absent days are not zeroes. Never connect different cohorts.
-export function contextChart(points,{label='',unit='',digits=1,bounds=null,selectedDate=null,selectable=true,bar=false}={}){
+export function contextChart(points,{label='',unit='',digits=1,bounds=null,selectedDate=null,selectable=true,bar=false,showLabel=false}={}){
   const rows=points.filter(p=>p.date&&num(p.value)!=null).sort((a,b)=>a.date.localeCompare(b.date));
   if(!rows.length)return '<div class="ltsContextEmpty" role="status">Nenhum registro nesta janela.</div>';
   const values=rows.map(p=>p.value),low=bar?0:Math.min(...values),high=Math.max(...values),span=high-low||Math.max(Math.abs(high)*.05,.1),min=bar?0:low-span*.15,max=high+span*.15;
-  const width=600,height=160,left=55,right=12,top=12,bottom=25;
+  const width=600,height=160,left=showLabel?90:55,right=12,top=12,bottom=25;
   const start=bounds?.start||rows[0].date,end=bounds?.end||rows.at(-1).date,time=d=>Date.parse(`${day(d)}T12:00:00Z`),duration=time(end)-time(start);
   const x=p=>duration?left+(time(p.date)-time(start))/duration*(width-left-right):(left+width-right)/2;
   const y=v=>top+(max-v)/(max-min)*(height-top-bottom);
@@ -74,7 +74,7 @@ export function contextChart(points,{label='',unit='',digits=1,bounds=null,selec
   const marks=rows.map(p=>`${selectable?`<a href="#" data-health-date="${esc(p.date)}" aria-label="${esc(`${fmtDate(p.date)}: ${fmtNum(p.value,digits)} ${unit}; consultar este dia`)}">`:'<g>'}<circle class="${p.date===selectedDate?'selected':''}" cx="${x(p).toFixed(1)}" cy="${y(p.value).toFixed(1)}" r="${p.date===selectedDate?5:3.5}"><title>${esc(`${fmtDate(p.date)}: ${p.raw||`${fmtNum(p.value,digits)} ${unit}`} · ${p.context||label}`)}</title></circle>${selectable?'</a>':'</g>'}`).join('');
   const guide=selectedDate&&inHealthWindow(selectedDate,{start,end})?`<line class="ltsContextGuide" x1="${x({date:selectedDate})}" x2="${x({date:selectedDate})}" y1="${top}" y2="${height-bottom}"/>`:'';
   const bars=bar?rows.map(p=>`${selectable?`<a href="#" data-health-date="${esc(p.date)}" aria-label="${esc(`${fmtDate(p.date)}: ${fmtNum(p.value,digits)} ${unit}`)}">`:'<g>'}<rect x="${x(p)-9}" y="${y(p.value)}" width="18" height="${Math.max(1,y(0)-y(p.value))}" rx="3"><title>${esc(`${fmtDate(p.date)}: ${fmtNum(p.value,digits)} ${unit}`)}</title></rect>${selectable?'</a>':'</g>'}`).join(''):marks;
-  return `<div class="ltsContextPlot"><svg viewBox="0 0 ${width} ${height}" role="${selectable?'group':'img'}" aria-label="${esc(`${label}; ${rows.length} registros; ${unit}; intervalos proporcionais às datas`)}">${ticks.map(v=>`<line class="ltsContextGrid" x1="${left}" x2="${width-right}" y1="${y(v)}" y2="${y(v)}"/><text x="${left-7}" y="${y(v)+4}" text-anchor="end">${esc(fmtNum(v,digits))}</text>`).join('')}${guide}${lines}<g class="ltsRefTrendMarks">${bars}</g></svg><div class="ltsContextAxis"><span>${fmtDate(start)}</span><span>${fmtDate(end)}</span></div></div>`;
+  return `<div class="ltsContextPlot">${showLabel?`<div class="ltsContextPlotLabel"><span>${esc(label)}</span><b>${esc(unit)}</b></div>`:''}<svg viewBox="0 0 ${width} ${height}" role="${selectable?'group':'img'}" aria-label="${esc(`${label}; ${rows.length} registros; ${unit}; intervalos proporcionais às datas`)}">${ticks.map(v=>`<line class="ltsContextGrid" x1="${left}" x2="${width-right}" y1="${y(v)}" y2="${y(v)}"/><text x="${left-7}" y="${y(v)+4}" text-anchor="end">${esc(fmtNum(v,digits))}</text>`).join('')}${guide}${lines}<g class="ltsRefTrendMarks">${bars}</g></svg><div class="ltsContextAxis"><span>${fmtDate(start)}</span><span>${fmtDate(end)}</span></div></div>`;
 }
 export function renderHealthContext(m,status={},daySignals=''){
   const panels=[['body','Gordura corporal',m.body,'%',1,'bio'],['nutrition','Proteína registrada',m.protein,'g',0,'nutricao'],['workouts','Tempo de treino',m.training,'min',0,'treinos'],['labs',m.lab.label,m.lab.points,m.lab.unit,2,'saude']];

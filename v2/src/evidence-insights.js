@@ -72,7 +72,9 @@ export function workingLoadChanges(data={},status={},bounds={},today=localHealth
 export function evidenceInsights(data={},status={},bounds={},requestedSource='',today=localHealthDay()){
   const nutrition=nutritionTrainingContrast(data,status,bounds,requestedSource,today),loads=workingLoadChanges(data,status,bounds,today);
   const protein=nutrition.rows.find(row=>row.key==='protein_g'&&row.comparable),energy=nutrition.rows.find(row=>row.key==='calories_kcal'&&row.comparable);
-  const load=loads.rows.find(row=>row.delta!==0)||loads.rows[0]||null;
+  // Freshness comes before the direction of the change. An old changed load
+  // must not displace a more recent, unchanged comparison.
+  const load=loads.rows[0]||null;
   return{nutrition,loads,highlightNutrition:protein||energy||null,highlightLoad:load};
 }
 

@@ -10,6 +10,7 @@ const date=offset=>{const d=new Date(`${today}T12:00:00Z`);d.setUTCDate(d.getUTC
 const db={health_workouts:[],health_daily_nutrition:[],health_source_daily_metrics:[]};
 db.health_body_composition=Array.from({length:5},(_,i)=>({measured_at:date(i*3+1),source_record_id:`body-${i}`,source:'Synthetic scan',device_name:'Synthetic device',weight_kg:80+i*.2,body_fat_pct:20+i*.1,fat_mass_kg:16+i*.1,skeletal_muscle_mass_kg:32}));
 db.health_lab_results=[{source_record_id:'lab-1',collection_date:date(2),biomarker:'Synthetic marker',unit:'u',result_numeric:12,result_raw:'12',source:'Synthetic lab',laboratory:'Synthetic lab',method:'Synthetic method'}];
+for(const [i,label] of ['Hemoglobina Glicada (A1C)','LDL-Colesterol','Triglicérides','Hemoglobina','Ferritina','Testosterona Total'].entries())for(const [suffix,offset,value] of [['prior',120,10+i],['current',2,12+i]])db.health_lab_results.push({source_record_id:`comparison-${i}-${suffix}`,collection_date:date(offset),biomarker:label,unit:'u',result_numeric:value,result_raw:String(value),laboratory:'Synthetic lab',source:'Synthetic lab',method:i%2?'':suffix==='prior'?'HPLC':'Cromatografia líquida de alta eficiência (HPLC)'});
 for(let i=0;i<=16;i++){
   db.health_daily_nutrition.push({source_record_id:`n${i}`,nutrition_date:date(i),source:'Synthetic food',calories_kcal:i?2000:9000,protein_g:100});
   db.health_source_daily_metrics.push({source_record_id:`health_auto_export:w${i}`,metric_date:date(i),metric_type:'dietary_water_ml',unit:'mL',value:i===0?1250:i%2?1000:1200,source_name:'Synthetic water',source_family:'health_auto_export',canonical_status:'canonical',confidence:'authenticated_auto_export'},
@@ -32,7 +33,12 @@ try{
     assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
     assert.equal(await page.locator('.ltsCockpitGrid .ltsCockpitPanel').count(),6);
     assert.equal(await page.locator('.ltsDesktopCockpit').isVisible(),true,'same product hierarchy on all devices');
-    assert.match(await page.locator('.ltsCockpitReading h2').innerText(),/Gordura.*músculo/);
+    assert.match(await page.locator('.ltsCockpitReadings article').first().innerText(),/Gordura.*músculo/);
+    assert.equal(await page.locator('.ltsEvolutionLabTable tbody tr').count(),6,'several markers can be compared without changing the selector');
+    await page.locator('[data-home-lab-marker]').first().click();
+    assert.equal(await page.locator('.ltsEvolutionLabDetail[open]').count(),1);
+    assert.match(await page.locator('.ltsEvolutionLabDetail').innerText(),/mesma origem, unidade e método declarado/);
+    await page.locator('.ltsEvolutionLabDetail summary').click();
     assert.equal(await page.locator('.ltsRefProgressItem,.ltsRefRing').count(),0,'coverage is not an outcome');
     const geometry=await page.locator('.ltsDesktopCockpit').evaluate(el=>{const top=s=>el.querySelector(s).getBoundingClientRect().top;return {cards:top('.ltsExecutiveCards'),reading:top('.ltsCockpitReading'),charts:top('.ltsCockpitGrid'),next:top('.ltsEvolutionNext')};});
     assert.ok(geometry.cards<geometry.reading&&geometry.reading<geometry.charts&&geometry.charts<geometry.next);

@@ -24,7 +24,7 @@ assert.ok(index.includes(`./product-experience.css?v=${build}`),'responsive prod
 assert.match(experienceCss,/\.ltsExecutiveCards\{[^}]*grid-template-columns:repeat\(5/);
 assert.match(experienceCss,/\.ltsCockpitGrid\{[^}]*grid-template-columns:repeat\(3/);
 assert.match(home,/data-disclosure="home-history"/);
-assert.match(home,/renderHomeCockpit\(c\)/);
+assert.match(home,/renderHomeCockpit\(c,picker\)/);
 assert.ok(build,'public build identifier is missing');
 for(const asset of ['executive-shell.css','cockpit.css','home-reference.css'])assert.ok(index.includes(`./${asset}?v=${build}`),`canonical asset is not tied to build ${build}: ${asset}`);
 
@@ -48,7 +48,7 @@ assert.match(index,/data-route="evolucao">Evolução detalhada<\/button>/);
 
 const cockpit=await read('v2/src/home-cockpit.js'),evolutionCss=await read('v2/evolution-product.css');
 assert.match(home,/data-home-period/);assert.match(home,/ltsEvolutionHome/);assert.match(home,/renderHealthContext/);
-for(const phrase of ['Gordura, músculo e peso','Progressão no treino','Consumo e plano alimentar','Água consumida','Sono em contexto','Evolução dos exames','Preparar resumo de consulta'])assert.ok(cockpit.includes(phrase),phrase);
+for(const phrase of ['Gordura, músculo e peso','Progressão no treino','Consumo e plano alimentar','Água consumida','Sono em contexto','Evolução dos exames','Resumo para consulta'])assert.ok(cockpit.includes(phrase),phrase);
 assert.match(cockpit,/data-home-body-metric/);assert.match(cockpit,/data-home-goals/);assert.doesNotMatch(cockpit,/ltsRefRing|ltsReviewOverlap/);
 assert.match(evolutionCss,/repeat\(5/);assert.match(evolutionCss,/repeat\(3/);assert.match(evolutionCss,/ltsDesktopCockpit\{display:block!important/);
 assert.match(evolutionCss,/background:#f4f7fb!important/);assert.match(evolutionCss,/@media\(max-width:840px\)/);

@@ -4,6 +4,12 @@ import {validDay,pageOf,pager,searchField,periodControl,seriesWindow,pointChart,
 const origin=row=>String(row?.laboratory||row?.source||row?.source_file||'').trim();
 const unit=row=>String(row?.unit||'').trim();
 const method=row=>String(row?.method||'').trim();
+// Expand only this explicitly named abbreviation. Preserve the original label
+// in the result; missing methods and other chromatographic methods stay separate.
+export function labMethodKey(value){
+  const label=norm(value);
+  return ['hplc','cromatografia líquida de alta eficiência (hplc)'].map(norm).includes(label)?'hplc':label;
+}
 const exactNumeric=row=>num(row?.result_numeric)!=null&&!/[<>≤≥]|menor que|maior que|inferior a|superior a/i.test(String(row?.result_raw||''));
 export function labResultText(row){
   const raw=String(row?.result_raw??'').trim(),u=unit(row);
@@ -24,7 +30,7 @@ export function labCohorts(group){
   const map=new Map();
   for(const row of group?.rows||[]){
     // Unknown metadata stays available to read, but is never considered comparable.
-    const o=origin(row),u=unit(row),m=method(row),key=JSON.stringify([norm(o),u,norm(m)]);
+    const o=origin(row),u=unit(row),m=method(row),key=JSON.stringify([norm(o),u,labMethodKey(m)]);
     if(!map.has(key))map.set(key,{key,origin:o,unit:u,method:m,all:[]});
     map.get(key).all.push(row);
   }

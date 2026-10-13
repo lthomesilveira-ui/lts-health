@@ -113,3 +113,7 @@ A Home só pode ser considerada cockpit quando:
 - Antes de adicionar um card, gráfico ou métrica, responder: **qual pergunta do usuário isso resolve?**
 - Preservar esta visão em handoffs e lista-mestra; chats novos não podem reiniciar a definição do produto.
 - Infraestrutura já construída deve ser reutilizada como base, mas não pode determinar a experiência visual.
+
+## Final evolution package — 2026-10-13
+
+Home now scopes the period beside the title and surfaces several domain readings before the six panels. Current and prior laboratory values are simultaneously readable; an earlier collection may be outside the displayed window and must keep its real date. Only an exact declared method abbreviation is expanded; missing methods, different units/origins and censored results do not generate a delta. Current training context and annotated sets remain distinct from a historical working-load pair. A historical protocol document is a dated reference, not confirmation of current goal validity. Local calendar weeks exclude today, preserve nulls and use each metric's own observed denominator.
