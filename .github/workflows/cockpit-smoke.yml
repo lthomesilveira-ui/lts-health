@@ -76,6 +76,7 @@ jobs:
           node --check v2/src/today-screen.js
           node --check v2/src/home-reference.js
           node --check v2/src/treatment-screen.js
+          node --check v2/src/care-followup.js
           node --check v2/src/analysis-screen.js
           node --check v2/src/data-layer.js
           node --check v2/cockpit-smoke.mjs
@@ -90,6 +91,8 @@ jobs:
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-cockpit-server.log 2>&1 &
       - name: Cockpit desktop and mobile
         run: node v2/cockpit-smoke.mjs
+      - name: Consultation follow-up desktop and mobile
+        run: node v2/care-followup-browser-smoke.mjs
       - name: Home information integrity on mobile
         run: node v2/home-information-integrity-smoke.mjs
       - name: Approved Home dashboard on desktop and mobile
