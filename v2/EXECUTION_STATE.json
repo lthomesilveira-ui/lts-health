@@ -53,7 +53,8 @@
     "status": "in_progress",
     "goal": "Finish the approved dashboard density: insights, indicators and charts first, complete source evidence progressively accessible.",
     "task_ids": [
-      "LTS-EVOLUTION-DENSITY-001"
+      "LTS-EVOLUTION-DENSITY-001",
+      "LTS-TRAINING-SESSION-001"
     ],
     "completed_evidence": [
       "The fully verified .47 provides shared plain-language evolution and conservative evidence semantics.",
@@ -62,7 +63,8 @@
       "Local calculation, source, immutability, sparse/error, native-chart scale and privacy tests pass."
     ],
     "pending_evidence": [
-      "Inspect default compact desktop/mobile captures and evidence disclosures; pass candidate workflows, normal promotion, exact deployed gates and authenticated final inspection."
+      "Inspect default compact desktop/mobile captures and evidence disclosures; pass candidate workflows, normal promotion, exact deployed gates and authenticated final inspection.",
+      "Training-session source limitation and primary/extension count: complete responsive candidate and exact authenticated publication checks."
     ]
   },
   "last_verified_release": {
@@ -1467,6 +1469,26 @@
       ],
       "next_action": "Verify and publish the compact final dashboard candidate; retain .47 verification and independent source limits.",
       "blocker": null
+    },
+    {
+      "id": "LTS-TRAINING-SESSION-001",
+      "area": "training",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Keep primary sets separate from drop/rest-pause extensions and display reported telemetry and execution limitations.",
+      "acceptance": [
+        "Home and Training session use the same count of primary sets; extension stages remain visible separately.",
+        "Source notes, fractional repetitions and the reported sensor-position limitation remain readable without modifying source values.",
+        "Synthetic contract tests, responsive candidate gates and exact authenticated published inspection pass."
+      ],
+      "evidence": [
+        "Private canonical workout, exercise, set-step and source-evidence writes independently reread successfully.",
+        "Authenticated public Training summary and exercise pages verified before the display fix.",
+        "Local training-session-test, final-evolution-test and evolution-product-test passed; all observations and source records preserved."
+      ],
+      "next_action": "Complete candidate checks, promote normally and inspect the exact published session and Home.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -1835,3 +1857,4 @@
     "acceptance_note": "Implemented dashboard scope and exact authenticated runtime verified. Owner visual/physical-device acceptance is separate. Original water-history import and independently attributable automatic water recurrence remain unresolved; historical protocol validity and unidentified older body devices are not guessed."
   }
 }
+

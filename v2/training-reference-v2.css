@@ -315,6 +315,24 @@
   line-height: 1.45;
 }
 
+.ltsRefMeasurementNote, .ltsRefExtensionNote {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #e4d3ae;
+  border-radius: 12px;
+  background: #fff9ec;
+  color: #53452c;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.ltsRefExtensionNote { margin-top: 10px; border-color: #dde4ec; background: #f5f7fa; color: #536278; }
+.ltsRefExerciseNotes { margin-top: 10px; color: #536278; font-size: 12px; line-height: 1.5; }
+.ltsRefExerciseNotes summary { cursor: pointer; font-weight: 600; }
+.ltsRefExerciseNotes p { margin: 8px 0 0; overflow-wrap: anywhere; }
+.ltsRefExerciseCard > header > span { white-space: normal; max-width: 98px; text-align: right; }
+.ltsRefSetTable > div { grid-template-columns: 66px minmax(0, 1fr) minmax(0, 1fr); }
+
 .ltsRefOverviewGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -470,7 +488,7 @@
 
 .ltsRefSetTable > div {
   display: grid;
-  grid-template-columns: 34px minmax(100px, 1fr) minmax(90px, 1fr) auto;
+  grid-template-columns: 66px minmax(100px, 1fr) minmax(90px, 1fr) auto;
   gap: 8px;
   padding: 10px 0;
   border-bottom: 1px solid #edf1f4;
@@ -619,7 +637,7 @@
   }
 
   .ltsRefSetTable > div {
-    grid-template-columns: 30px minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: 66px minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .ltsRefSetTable em {
@@ -670,3 +688,4 @@
     justify-self: start;
   }
 }
+

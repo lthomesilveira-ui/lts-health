@@ -9,9 +9,9 @@ const [index,core,main,css,contract,browserGate,rawState,...screens]=await Promi
 ]);
 const state=JSON.parse(rawState),screenText=screens.join('\n');
 
-assert.match(index,/lts-build" content="evolution-final-20261013\.48/);
-assert.match(index,/ux-coherence\.css\?v=evolution-final-20261013\.48/);
-assert.match(index,/main\.js\?v=evolution-final-20261013\.48/);
+assert.match(index,/lts-build" content="training-evidence-20261013\.49/);
+assert.match(index,/ux-coherence\.css\?v=training-evidence-20261013\.49/);
+assert.match(index,/main\.js\?v=training-evidence-20261013\.49/);
 assert.doesNotMatch(index,/longitudinal-story/);
 assert.match(core,/export function setGlobalPeriod/);
 assert.match(main,/function resetRouteScroll\(\)/);
@@ -72,3 +72,4 @@ assert.ok(state.current_package.task_ids.length>0);
 for(const id of state.current_package.task_ids)assert.ok(state.tasks.some(task=>task.id===id),'current package references an unknown task');
 
 console.log('LTS Health UX coherence contract passed');
+

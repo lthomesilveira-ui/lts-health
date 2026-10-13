@@ -11,8 +11,8 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js';
-import {renderProductTraining} from './training-reference-v2.js';
+import {renderProductHomeReference} from './home-reference.js?v=training-evidence-20261013.49';
+import {renderProductTraining} from './training-reference-v2.js?v=training-evidence-20261013.49';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
 import {renderRecoveryDepth} from './recovery-layout-v2.js';
@@ -325,3 +325,4 @@ async function boot(){
 
 window.addEventListener('beforeunload',()=>authSubscription?.unsubscribe?.());
 boot();
+

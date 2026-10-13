@@ -19,12 +19,12 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="evolution-final-20261013\.48"/);
+assert.match(index,/name="lts-build" content="training-evidence-20261013\.49"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=evolution-final-20261013.48`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=training-evidence-20261013.49`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=evolution-final-20261013.48'),'physical iPhone remediation is not versioned with the current build');
-assert.ok(index.includes('./integrated-review.css?v=evolution-final-20261013.48'),'integrated review is not versioned with the current build');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=training-evidence-20261013.49'),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes('./integrated-review.css?v=training-evidence-20261013.49'),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }
@@ -94,3 +94,4 @@ assert.ok(canonicalSizes.length>30,'canonical responsive typography was not foun
 assert.ok(Math.min(...canonicalSizes)>=9.5,`canonical Home/Training contains type below 9.5px: ${Math.min(...canonicalSizes)}px`);
 
 console.log('LTS Health public-audit contract smoke passed');
+
