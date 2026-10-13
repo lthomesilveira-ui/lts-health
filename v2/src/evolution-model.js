@@ -1,6 +1,5 @@
 import {num,day,norm,fmtNum,fmtDate} from './core.js';
-import {compositionReport} from './reports-model.js';
-import {integratedReview} from './integrated-review.js';
+import {homePeriodModel} from './home-period-model.js';
 import {evidenceInsights,loadInsightUnits} from './evidence-insights.js';
 import {goalComparison,goalForDate,historicalGoalReference} from './personal-goals.js';
 import {normalizeMuscleGroup,addDays} from './integrated-analysis.js';
@@ -11,6 +10,8 @@ import {trainingSetCounts,isSetExtension} from './training-session.js';
 const average=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
 const inWindow=(date,b)=>date&&(!b.start||date>=b.start)&&date<=b.end;
 const signed=(v,d=1)=>`${v>0?'+':''}${fmtNum(v,d)}`;
+// Legacy local-week utility, retained for explicit local analyses only.
+// The global evolution model below never calls this function.
 // Two adjacent calendar weeks inside the selected window, from ONE selected
 // source. Five observed closed days per week is a display threshold, not proof
 // of complete diaries or statistical significance. Missing values stay null.
@@ -22,7 +23,7 @@ export function recentObservedChange(rows,key,bounds,today){
   return {comparable:eligible,current:average(a.map(r=>num(r[key]))),previous:average(b.map(r=>num(r[key]))),delta:eligible?average(a.map(r=>num(r[key])))-average(b.map(r=>num(r[key]))):null,currentDays:a.length,previousDays:b.length,currentBounds:current,previousBounds:previous};
 }
 const direction=delta=>delta>0?'aumentou':delta<0?'diminuiu':'ficou estável';
-const routineChange=(label,d,unit)=>d.delta===0?`${label} não mudou entre as semanas`:`${label} ${direction(d.delta)} ${fmtNum(Math.abs(d.delta),0)} ${unit}`;
+const routineChange=(label,d,unit)=>d.delta===0?`${label} não mudou entre os períodos`:`${label} ${direction(d.delta)} ${fmtNum(Math.abs(d.delta),0)} ${unit}`;
 function evolutionReadings(m,r,e){
   const readings={};
   const currentLabs=(m.labs.comparisons||[]).filter(row=>row.current),lastCollection=currentLabs.map(row=>day(row.current.collection_date)).sort().at(-1);
@@ -48,11 +49,14 @@ function evolutionReadings(m,r,e){
     const stable=combinations&&p.delta===0&&k.delta===0;
     const title=stable?'Proteína e energia registradas estáveis':combinations&&p.delta<0&&k.delta>0?'Menos proteína, mais energia registrada':combinations&&p.delta>0&&k.delta<0?'Mais proteína, menos energia registrada':combinations?'Seu registro alimentar mudou':`${p.comparable?'Proteína':'Energia'} registrada ${direction(p.comparable?p.delta:k.delta)}`;
     const d=p.comparable?p:k;
-    readings.nutrition={kind:'nutrition',priority:stable?6:2,title,meaning:[p.comparable?routineChange('A proteína média',p,'g/dia'):null,k.comparable?routineChange('a energia média',k,'kcal/dia'):null].filter(Boolean).join('; ')+'.',evidence:[p.comparable?`Proteína ${fmtNum(p.previous,0)} → ${fmtNum(p.current,0)} g/dia (${p.previousDays} e ${p.currentDays} dias)`:null,k.comparable?`energia ${fmtNum(k.previous,0)} → ${fmtNum(k.current,0)} kcal/dia (${k.previousDays} e ${k.currentDays} dias)`:null].filter(Boolean).join('; ')+`. ${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} → ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)} · ${r.nutrition.source.label}.`,limit:`Os diários podem ser parciais.${e.currentGoal?' Compare com o plano vigente nos mesmos dias.':' O plano atual ainda não tem vigência confirmada; não se conclui adequação ou déficit.'}`,route:'nutricao',action:'Ver alimentação e plano'};
+    readings.nutrition={kind:'nutrition',priority:stable?6:2,title,meaning:[p.comparable?routineChange('A proteína média',p,'g/dia'):null,k.comparable?routineChange('a energia média',k,'kcal/dia'):null].filter(Boolean).join('; ')+'.',evidence:[p.comparable?`Proteína ${fmtNum(p.previous,0)} → ${fmtNum(p.current,0)} g/dia (${p.previousDays}/${p.previousBounds.closedDays} e ${p.currentDays}/${p.currentBounds.closedDays} dias)`:null,k.comparable?`energia ${fmtNum(k.previous,0)} → ${fmtNum(k.current,0)} kcal/dia (${k.previousDays}/${k.previousBounds.closedDays} e ${k.currentDays}/${k.currentBounds.closedDays} dias)`:null].filter(Boolean).join('; ')+`. ${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} → ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)} · ${d.sourceLabel}.`,limit:`${d.rule.description} Os diários podem ser parciais.${e.currentGoal?' Compare com o plano vigente nos mesmos dias.':' O plano atual ainda não tem vigência confirmada; não se conclui adequação ou déficit.'}`,route:'nutricao',action:'Ver alimentação e plano'};
+  }
+  if(!readings.nutrition&&(p.current!=null||k.current!=null)){
+    readings.nutrition={kind:'nutrition',priority:8,title:'Alimentação observada no período',meaning:[p.current!=null?`Proteína média ${fmtNum(p.current,0)} g em ${p.currentDays}/${p.currentBounds.closedDays} dias encerrados`:null,k.current!=null?`energia média ${fmtNum(k.current,0)} kcal em ${k.currentDays}/${k.currentBounds.closedDays} dias encerrados`:null].filter(Boolean).join('; ')+'.',evidence:`${fmtDate(p.currentBounds.start)}–${fmtDate(p.currentBounds.end)} · ${p.sourceLabel||k.sourceLabel||'origem indisponível'}.`,limit:'Sem base equivalente suficiente para comparar períodos. Os diários observados podem estar incompletos.',route:'nutricao',action:'Ver alimentação e cobertura'};
   }
   if(e.latestSleep){
     const d=e.recent.sleep;
-    readings.sleep=d.comparable?{kind:'sleep',priority:3,title:d.delta<0?'Sono registrado mais curto':d.delta>0?'Sono registrado mais longo':'Duração média do sono estável',meaning:d.delta?`A média ${d.delta<0?'caiu':'subiu'} cerca de ${fmtNum(Math.abs(d.delta)*60,0)} minutos por registro entre as duas semanas.`:'A duração média não mudou entre as semanas observadas.',evidence:`${fmtNum(d.previous,1)} → ${fmtNum(d.current,1)} h · ${d.previousDays} e ${d.currentDays} dias · ${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} → ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)} · ${r.sleep.source.label}.`,limit:'É duração registrada, não uma medida de qualidade ou prontidão. Não se atribui a ela a mudança no treino.',route:'analise',action:'Ver rotina de sono'}:{kind:'sleep',priority:9,title:'Sono: falta base para comparar semanas',meaning:'A última duração está disponível, mas as duas semanas não têm observações suficientes na mesma origem.',evidence:`${fmtNum(e.latestSleep.value,1)} h · ${fmtDate(e.latestSleep.date)} · ${r.sleep.source.label}`,limit:'Dias sem registro não são zero horas de sono.',route:'analise',action:'Ver registros de sono'};
+    readings.sleep=d.comparable?{kind:'sleep',priority:3,title:d.delta<0?'Sono registrado mais curto':d.delta>0?'Sono registrado mais longo':'Duração média do sono estável',meaning:d.delta?`A média ${d.delta<0?'caiu':'subiu'} cerca de ${fmtNum(Math.abs(d.delta)*60,0)} minutos por registro entre os dois períodos.`:'A duração média não mudou entre os períodos observados.',evidence:`${fmtNum(d.previous,1)} → ${fmtNum(d.current,1)} h · ${d.previousDays}/${d.previousBounds.closedDays} e ${d.currentDays}/${d.currentBounds.closedDays} dias · ${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} → ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)} · ${d.sourceLabel}.`,limit:`${d.rule.description} É duração registrada, não uma medida de qualidade ou prontidão. Não se atribui a ela a mudança no treino.`,route:'analise',action:'Ver rotina de sono'}:{kind:'sleep',priority:9,title:'Sono: falta base para comparar períodos',meaning:d.current!=null?`Média observada de ${fmtNum(d.current,1)} h em ${d.currentDays}/${d.currentBounds.closedDays} dias encerrados. Falta base equivalente suficiente para comparar os períodos.`:'A última duração está disponível; falta uma origem equivalente verificada para comparar os períodos.',evidence:`${fmtNum(e.latestSleep.value,1)} h · ${fmtDate(e.latestSleep.date)} · ${r.sleep.source.label}`,limit:'Dias sem registro não são zero horas de sono.',route:'analise',action:'Ver registros de sono'};
   }
   if(e.latestSession){
     const l=e.freshLoad;
@@ -63,23 +67,35 @@ function evolutionReadings(m,r,e){
 }
 export function evolutionModel(data,status,m,r,ui={}){
   const insights=evidenceInsights(data,status,m.current,r.nutrition.source?.key,m.today);
-  const prior=m.previous?integratedReview(data,status,m.previous,{...ui,reportNutritionSource:r.nutrition.source?.key,reviewSleepSource:r.sleep.source?.key,reviewWaterSource:r.water.source?.key},m.today):null;
-  const bodyHistory=compositionReport(data,status,{start:null,end:m.today},ui.reportBodySource);
-  const body=m.body.latest||bodyHistory.latest||null;
+  // The selected global calendar and its equal-duration predecessor are the
+  // only time windows feeding synthesis. Never fall back to a fixed fortnight.
+  const period=['30','90','365','all'].includes(String(m.period))?String(m.period):String(m.current.days||'all');
+  const available=homePeriodModel(data,status,period,{},m.today);
+  const exactSource=(domain,legacy)=>{
+    if(!legacy)return '__no_selected_origin__';
+    let matches=available[domain].sources.filter(source=>norm(source.label)===norm(legacy.label));
+    if(domain==='nutrition')matches=matches.filter(source=>source.domain==='nutrition');
+    if(domain==='sleep'){
+      // Recovery's legacy key carries raw source identity even when its display
+      // label is a friendly device alias. Canonical/held/candidate are not pooled.
+      try{const [metric,family,name,unit]=JSON.parse(legacy.key);if(metric==='sleep_duration_h')matches=available.sleep.sources.filter(source=>source.domain==='sourceMetrics'&&norm(source.sourceFamily)===norm(family)&&norm(source.label)===norm(name)&&norm(source.unit)===norm(unit));}catch{}
+    }
+    return matches.length===1?matches[0].key:'__ambiguous_or_missing_origin__';
+  };
+  const periodModel=homePeriodModel(data,status,period,{...ui,homeNutritionSource:exactSource('nutrition',r.nutrition.source),homeSleepSource:exactSource('sleep',r.sleep.source),homeWaterSource:exactSource('water',r.water.source)},m.today);
+  const matchingWindow=periodModel.bounds.start===m.current.start&&periodModel.bounds.end===m.current.end;
+  const align=comparison=>matchingWindow?comparison:{...comparison,comparable:false,delta:null,reason:'window_mismatch'};
+  const body=m.body.latest||null;
   const bodyPairs=m.body.available?m.body:null;
-  const priorBodyRows=body?bodyHistory.rows.filter(row=>day(row.measured_at)<day(body.measured_at)):[],priorBodyDate=day(priorBodyRows.at(-1)?.measured_at);
-  const bodyPrevious=m.body.previous||(priorBodyRows.filter(row=>day(row.measured_at)===priorBodyDate).length===1?priorBodyRows.at(-1):null);
+  const bodyPrevious=m.body.previous||null;
   const latestFood=r.nutrition.rows.at(-1)||null,latestWater=r.water.rows.at(-1)||null,latestSleep=r.sleep.rows.at(-1)||null;
   const goals=status.goals==='ready'?data.goals||[]:[];
   const nutritionTargets=Object.fromEntries(['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'].map(k=>[k,goalComparison(r.nutrition.closedRows,goals,k)]));
   const currentGoal=goalForDate(goals,m.today);
   const goalReference=historicalGoalReference(goals,m.today);
-  const recent={nutrition:Object.fromEntries(['calories_kcal','protein_g','fiber_g'].map(key=>[key,recentObservedChange(r.nutrition.closedRows,key,m.current,m.today)])),sleep:recentObservedChange(r.sleep.closedRows,'value',m.current,m.today),water:recentObservedChange(r.water.closedRows,'value',m.current,m.today)};
-  const foodChange=key=>{
-    const a=r.nutrition,b=prior?.nutrition;
-    return a.available&&b?.available&&a.source?.key&&a.source.key===b.source?.key&&a.counts[key]>=5&&b.counts[key]>=5?{current:a.means[key],previous:b.means[key],delta:a.means[key]-b.means[key]}:null;
-  };
-  const sleepChange=r.sleep.available&&prior?.sleep.available&&r.sleep.source?.key===prior.sleep.source?.key&&r.sleep.closedRows.length>=5&&prior.sleep.closedRows.length>=5?{current:r.sleep.mean,previous:prior.sleep.mean,delta:r.sleep.mean-prior.sleep.mean}:null;
+  const recent={nutrition:Object.fromEntries(Object.entries(periodModel.nutrition.comparison).map(([key,value])=>[key,align(value)])),sleep:align(periodModel.sleep.comparison),water:align(periodModel.water.comparison)};
+  const foodChange=key=>recent.nutrition[key]?.comparable?recent.nutrition[key]:null;
+  const sleepChange=recent.sleep.comparable?recent.sleep:null;
   const workouts=new Map((m.training.rows||[]).map(w=>[w.source_record_id,w]));
   const exercises=status.exercises==='ready'?(data.exercises||[]).filter(e=>workouts.has(e.workout_source_record_id)):[];
   const exMap=new Map(exercises.map(e=>[e.source_record_id,e]));
@@ -105,10 +121,10 @@ export function evolutionModel(data,status,m,r,ui={}){
   }
   for(const l of insights.loads.rows.filter(l=>!latestSession||l.latest.date>=addDays(day(latestSession.workout_date),-14)).slice(0,3))findings.push({kind:'training',title:`${l.exercise}: ${fmtNum(l.previous.weight,1)} → ${fmtNum(l.latest.weight,1)} ${loadInsightUnits[l.unit]}`,text:`${l.reps} repetições · ${l.machine} · ${l.location}`,detail:`${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}. Variação da carga de trabalho nessas repetições; esforço e execução podem variar.`,route:'treinos',exerciseId:l.latest.exerciseId,unit:l.unit});
   for(const[key,label,unit]of [['protein_g','Proteína','g/dia'],['calories_kcal','Energia registrada','kcal/dia']]){
-    const d=recent.nutrition[key];if(d.comparable)findings.push({kind:'nutrition',title:`${label}: ${fmtNum(d.previous,0)} → ${fmtNum(d.current,0)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r.nutrition.source.label}`,detail:`${d.previousDays} e ${d.currentDays} dias com valor · ${r.nutrition.source.label}. Médias dos diários recebidos, sem inferir adequação ou déficit.`,route:'nutricao'});
+    const d=recent.nutrition[key];if(d.comparable)findings.push({kind:'nutrition',title:`${label}: ${fmtNum(d.previous,0)} → ${fmtNum(d.current,0)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r.nutrition.source.label}`,detail:`${d.previousDays}/${d.previousBounds.closedDays} e ${d.currentDays}/${d.currentBounds.closedDays} dias com valor · ${d.sourceLabel}. ${d.rule.description} Médias dos diários recebidos, sem inferir adequação ou déficit.`,route:'nutricao'});
   }
   for(const[key,label,unit,digits,route]of [['sleep','Sono registrado','h',1,'analise'],['water','Água registrada','mL/dia',0,'nutricao']]){
-    const d=recent[key];if(d.comparable)findings.push({kind:key,title:`${label}: ${fmtNum(d.previous,digits)} → ${fmtNum(d.current,digits)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r[key].source.label}`,detail:`${d.previousDays} e ${d.currentDays} dias com valor · ${r[key].source.label}. Dias ausentes não são zero.`,route});
+    const d=recent[key];if(d.comparable)findings.push({kind:key,title:`${label}: ${fmtNum(d.previous,digits)} → ${fmtNum(d.current,digits)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r[key].source.label}`,detail:`${d.previousDays}/${d.previousBounds.closedDays} e ${d.currentDays}/${d.currentBounds.closedDays} dias com valor · ${d.sourceLabel}. ${d.rule.description} Dias ausentes não são zero.`,route});
   }
   const foodContrast=insights.highlightNutrition;
   if(foodContrast)findings.push({kind:'nutrition',title:`${foodContrast.label}: ${fmtNum(foodContrast.withMean,0)} versus ${fmtNum(foodContrast.withoutMean,0)} ${foodContrast.unit}/dia`,text:'Dias com treino versus dias sem treino registrado, na mesma fonte alimentar.',detail:`${foodContrast.withDays} e ${foodContrast.withoutDays} dias com valor. Associação descritiva; ausência de treino não confirma descanso.`,route:'nutricao'});
@@ -117,12 +133,12 @@ export function evolutionModel(data,status,m,r,ui={}){
   for(const lab of m.labs.comparisons.filter(x=>x.comparable).slice(0,3))findings.push({kind:'labs',title:`${lab.group.label}: ${lab.previous.result_raw||fmtNum(lab.previous.result_numeric,2)} → ${lab.current.result_raw||fmtNum(lab.current.result_numeric,2)} ${lab.current.unit||''}`,text:`${fmtDate(lab.previous.collection_date)} → ${fmtDate(lab.current.collection_date)} · mesma origem, unidade e método declarado.`,summary:`${lab.current.laboratory||lab.current.source||'Origem no detalhe'} · método declarado`,detail:`${lab.baselineOutsideWindow?'A coleta anterior é contexto fora da janela. ':''}Referência do laboratório no detalhe; variação isolada não define diagnóstico.`,route:'saude'});
   const next=[];
   if(body&&!bodyPairs)next.push({title:'Condições da avaliação corporal',text:`${fmtDate(body.measured_at)} · ${bodySourceLabel(body)}. Confira o aparelho das avaliações anteriores antes de atribuir a diferença a gordura ou músculo.`,route:'bio'});
-  if(recent.sleep.comparable)next.push({title:'Sono nas últimas duas semanas',text:`${fmtNum(recent.sleep.previous,1)} → ${fmtNum(recent.sleep.current,1)} h em média. Abra as datas e a origem para conferir a rotina registrada.`,route:'analise'});
+  if(recent.sleep.comparable)next.push({title:'Sono nos períodos comparados',text:`${fmtNum(recent.sleep.previous,1)} → ${fmtNum(recent.sleep.current,1)} h em média. Abra as datas e a origem para conferir a rotina registrada.`,route:'analise'});
   if(latestSession&&!freshLoad)next.push({title:'Contexto do treino mais recente',text:`${fmtDate(latestSession.workout_date)} · ${latestSession.location||'Local não informado'}. Compare exercícios no mesmo aparelho; o histórico de carga pode ser anterior a esta sessão.`,route:'treinos'});
   else if(freshLoad)next.push({title:`Conferir ${freshLoad.exercise}`,text:`${fmtNum(freshLoad.previous.weight,1)} → ${fmtNum(freshLoad.latest.weight,1)} ${loadInsightUnits[freshLoad.unit]} em ${freshLoad.reps} reps. Confira execução e esforço nas duas sessões.`,route:'treinos'});
   if(!currentGoal&&status.goals==='ready')next.push({title:goalReference?'Vigência do plano alimentar':'Conferir suas metas',text:goalReference?`As referências do protocolo de ${fmtDate(goalReference.meta.documented_on)} foram recuperadas. A data de vigência do plano atual continua sem confirmação.`:'Registrar as referências do seu plano alimentar permite comparar consumo e objetivo.',kind:'goals'});
   next.push({title:'Preparar a próxima consulta',text:'Gerar um resumo de evolução com exames e contexto dos protocolos.',kind:'consultation'});
-  const result={insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
+  const result={periodModel,insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
   return {...result,...evolutionReadings(m,r,result)};
 }
 

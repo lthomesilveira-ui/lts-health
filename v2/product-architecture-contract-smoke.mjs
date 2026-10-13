@@ -23,11 +23,9 @@ const experienceCss=await read('v2/product-experience.css');
 assert.ok(index.includes(`./product-experience.css?v=${build}`),'responsive product stylesheet must match the active build');
 assert.match(experienceCss,/\.ltsExecutiveCards\{[^}]*grid-template-columns:repeat\(5/);
 assert.match(experienceCss,/\.ltsCockpitGrid\{[^}]*grid-template-columns:repeat\(3/);
-assert.match(home,/data-disclosure="home-history"/);
-assert.match(home,/renderHomeOverview\(c,picker\)/);
-assert.match(home,/data-disclosure="home-advanced"/);
-assert.match(home,/renderHomeCockpit\(c\)/);
-assert.ok(index.includes(`./home-overview.css?v=${build}`));
+assert.match(home,/renderReferenceHome\(state.data,state.domainStatus/);
+assert.doesNotMatch(home,/renderHomeOverview|renderHomeCockpit/);
+assert.ok(index.includes(`./home-reference-experience.css?v=${build}`));
 assert.ok(build,'public build identifier is missing');
 for(const asset of ['executive-shell.css','cockpit.css','home-reference.css'])assert.ok(index.includes(`./${asset}?v=${build}`),`canonical asset is not tied to build ${build}: ${asset}`);
 
@@ -50,7 +48,7 @@ assert.ok(!index.includes('data-route="evolucao">Evolução</button>'),'Evoluç�
 assert.match(index,/data-route="evolucao">Evolução detalhada<\/button>/);
 
 const cockpit=await read('v2/src/home-cockpit.js'),evolutionCss=await read('v2/evolution-product.css');
-assert.match(home,/data-home-period/);assert.match(home,/ltsEvolutionHome/);assert.match(home,/renderHealthContext/);
+assert.match(home,/ltsEvolutionHome/);assert.match(await read('v2/src/home-reference-experience.js'),/data-home-period/);
 for(const phrase of ['Gordura, músculo e peso','Progressão no treino','Consumo e plano alimentar','Água consumida','Sono em contexto','Evolução dos exames','Resumo para consulta'])assert.ok(cockpit.includes(phrase),phrase);
 assert.match(cockpit,/data-home-body-metric/);assert.match(cockpit,/data-home-goals/);assert.doesNotMatch(cockpit,/ltsRefRing|ltsReviewOverlap/);
 assert.match(evolutionCss,/repeat\(5/);assert.match(evolutionCss,/repeat\(3/);assert.match(evolutionCss,/ltsDesktopCockpit\{display:block!important/);

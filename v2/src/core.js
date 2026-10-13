@@ -69,6 +69,8 @@ export function setGlobalPeriod(value){
   state.ui.trainingPeriod=next;
   state.ui.nutritionPeriod=next;
   state.ui.homePeriod=next;
+  state.ui.productCompositionPeriod=next;
+  state.ui.productLabPeriod=next;
   return next;
 }
 export const since = days => { const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-Number(days)+1);return d.toISOString().slice(0,10); };

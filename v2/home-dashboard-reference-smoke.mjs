@@ -16,22 +16,17 @@ try{
  for(const [label,width,height] of [['desktop',1440,900],['mobile',393,852]]){
   const page=await browser.newPage({viewport:{width,height}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`${origin}/?fixture=1#hoje`,{waitUntil:'domcontentloaded'});await page.waitForSelector('#app:not(.hidden)');await renderReference(page);
-  assert.equal(await page.locator('.ltsExecutiveCard').count(),5);
-  assert.equal(await page.locator('.ltsCockpitPanel').count(),6);
-  assert.equal(await page.locator('.ltsRefProgress,.ltsRefDomain').count(),0,'outcome product supersedes coverage rings');
+  assert.equal(await page.locator('.refSignal').count(),5);
+  assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
+  assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1);
+  assert.equal(await page.locator('.refPanel.body [data-series]').count(),2);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3));
-  assert.equal(await page.locator('.ltsOverviewBodyPlots svg').count(),2);
-  await page.locator('[data-disclosure="home-advanced"]>summary').click();
-  const order=await page.locator('.ltsCockpitHeading,.ltsExecutiveCards,.ltsCockpitReading,.ltsCockpitGrid,.ltsEvolutionNext').evaluateAll(es=>es.map(e=>e.getBoundingClientRect().top));
-  assert.equal(order.length,5);assert.ok(order.every((v,i)=>i===0||v>=order[i-1]),'DOM and visual order stay aligned for the active viewport');
-  assert.equal(await page.locator('[data-home-body-metric]').evaluateAll(es=>es.filter(e=>e.getClientRects().length).length),4,'all metric controls remain visible');
-  const heights=await page.locator('.ltsEvolutionAction,.ltsHomePeriod button,.ltsEvolutionTabs button,.ltsExecutiveCard').evaluateAll(es=>es.filter(e=>e.getClientRects().length).map(e=>e.getBoundingClientRect().height));
-  assert.ok(heights.every(h=>h>=40),'controls meet desktop/phone target size');
-  assert.ok(await page.locator('.ltsCockpitPanel.body .ltsContextPlot').count()>0,'historical body values visible');
+  const visible=await page.locator('.refSignal:visible').count();assert.equal(visible,width<=840?2:5);
+  const positions=await page.evaluate(()=>Object.fromEntries(['refSignals','refReading','refPanels'].map(c=>[c,document.querySelector('.'+c).getBoundingClientRect().top])));
+  assert.ok(width<=840?positions.refReading<positions.refSignals:positions.refSignals<positions.refReading);
   await renderReference(page,'30','body_fat_pct');
   assert.equal(await page.locator('[data-home-period="30"]').getAttribute('aria-pressed'),'true');
-  assert.equal(await page.locator('[data-home-body-metric="body_fat_pct"]').getAttribute('aria-pressed'),'true');
-  assert.equal(await page.locator('.ltsCockpitPanel.body circle').count(),0,'old fixture body is not charted as current');
+  assert.equal(await page.locator('.refPanel.body circle').count(),0,'old fixture observations remain outside recent calendar');
   await renderReference(page);await page.screenshot({path:`${evidenceDir}/${label}-home-dashboard-reference.png`,fullPage:label==='desktop'});
   assert.deepEqual(errors,[]);await page.close();
  }

@@ -55,8 +55,8 @@ const preserved=JSON.stringify(state.data);
 for(const period of ['30','90','365','all']){
  state.ui.homePeriod=period;const home=renderProductHomeReference();
  assert.doesNotMatch(home,/ltsRefProgress|de 30 dias|de 90 dias|dias registrados no histórico/);
- assert.match(home,/Água consumida/);assert.match(home,/Investigar um dia no histórico/);
+ assert.match(home,/Consumo de água/);assert.match(home,/Fontes e limitações/);
 }
-state.data.nutrition=[];assert.match(renderProductHomeReference(),/Sem diário nesta janela/);
+state.data.nutrition=[];assert.match(renderProductHomeReference(),/Sem registros no período/);
 state.data.nutrition=JSON.parse(preserved).nutrition;assert.equal(JSON.stringify(state.data),preserved);
 console.log('Evidence insights: independent means, origins, ambiguity, working sets, no coverage outcomes and nonmutation passed.');

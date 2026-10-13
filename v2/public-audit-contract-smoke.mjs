@@ -19,12 +19,12 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="overview-20261013\.54"/);
+assert.match(index,/name="lts-build" content="reference-period-20261013\.56"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=overview-20261013.54`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=reference-period-20261013.56`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=overview-20261013.54'),'physical iPhone remediation is not versioned with the current build');
-assert.ok(index.includes('./integrated-review.css?v=overview-20261013.54'),'integrated review is not versioned with the current build');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=reference-period-20261013.56'),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes('./integrated-review.css?v=reference-period-20261013.56'),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }
@@ -37,7 +37,7 @@ assert.doesNotMatch(runtime,/from '\.\/product-layout-v2\.js'/);
 assert.match(runtime,/treinos:'\.ltsTrainingReference'/);
 
 const evolutionCss=read('./evolution-product.css'),cockpit=read('./src/home-cockpit.js');
-assert.match(home,/renderHomeOverview\(c,picker\)/);assert.match(home,/data-disclosure="home-history"/);assert.match(home,/ltsEvolutionHome/);
+assert.match(home,/renderReferenceHome\(state.data,state.domainStatus/);assert.match(home,/ltsEvolutionHome/);
 assert.match(cockpit,/Água consumida/);assert.match(cockpit,/evolutionModel/);assert.doesNotMatch(home,/ltsRefRing|ltsRefProgress/);
 assert.match(evolutionCss,/min-height:44px/);assert.match(evolutionCss,/outline:3px/);assert.match(evolutionCss,/ltsDesktopCockpit\{display:block!important/);
 assert.match(dataLayer,/async function loadRows\(key\)[\s\S]*attempt<2[\s\S]*await wait\(180\)/);

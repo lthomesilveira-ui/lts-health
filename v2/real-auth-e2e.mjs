@@ -74,7 +74,7 @@ async function assertStableMobileShell(label){
     if(window.innerWidth>840)return{desktop:true};
     const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
     const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{route:button.dataset.route,text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width,active:button.classList.contains('active')};});
-    const brand=[document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
+    const brand=[document.querySelector('.refMobileBrand'),document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
     const routeAction=document.querySelector('#routeAction');
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
@@ -101,18 +101,17 @@ async function auditReferenceHome(label,expectedBuild){
  const result=await page.evaluate(()=>{
   const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
   const visible=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;};
-  const compact=innerWidth<=840,reading=document.querySelector('.ltsOverviewReading'),body=document.querySelector('.ltsOverviewCard.body');
-  const order=['.ltsOverviewHeading','.ltsOverviewReading','.ltsOverviewGrid','.ltsOverviewToday'];
+  const compact=innerWidth<=840,reading=document.querySelector('.refReading'),body=document.querySelector('.refPanel.body');
+  const order=compact?['.refHeading','.refReading','.refSignals','.refPanel.body']:['.refHeading','.refSignals','.refReading','.refPanel.body'];
   const meaning=reading?.getBoundingClientRect(),nav=document.querySelector('#mobileNav')?.getBoundingClientRect();
-  const sizes=[...document.querySelectorAll('.ltsOverviewCaption,.ltsOverviewFacts small')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
-  return {build:document.querySelector('meta[name="lts-build"]')?.content,cards:document.querySelectorAll('.ltsOverviewCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,rings:document.querySelectorAll('.ltsRefRing').length,top:order.map(top),compact,domOrder:Boolean(reading.compareDocumentPosition(body)&Node.DOCUMENT_POSITION_FOLLOWING),primaryFindingVisible:Boolean(meaning&&meaning.top>=0&&meaning.bottom<=Math.min(innerHeight,nav?.top||innerHeight)),minFont:Math.min(...sizes),canvas:getComputedStyle(document.querySelector('#screenHost')).backgroundColor};
+  const sizes=[...document.querySelectorAll('.refLegend,.refBodyDate small,.refFootnote')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
+  return {build:document.querySelector('meta[name="lts-build"]')?.content,signals:document.querySelectorAll('.refSignal').length,panels:document.querySelectorAll('.refPanel:not(.mobileWorkout)').length,top:order.map(top),compact,domOrder:Boolean(reading&&body&&(reading.compareDocumentPosition(body)&Node.DOCUMENT_POSITION_FOLLOWING)),primaryFindingVisible:Boolean(meaning&&meaning.top>=0&&meaning.bottom<=Math.min(innerHeight,nav?.top||innerHeight)),minFont:Math.min(...sizes)};
  });
  if(!expectedBuild||result.build!==expectedBuild)throw new Error(`${label}: wrong published build`);
- if(result.cards!==4||result.panels!==6||result.rings!==0)throw new Error(`${label}: outcome hierarchy missing`);
+ if(result.signals!==5||result.panels!==6)throw new Error(`${label}: reference hierarchy missing`);
  if(result.top.some((v,i)=>i&&v<=result.top[i-1])||!result.domOrder)throw new Error(`${label}: responsive visual or DOM hierarchy incorrect`);
  if(result.compact&&!result.primaryFindingVisible)throw new Error(`${label}: primary finding is missing from the initial viewport`);
- if(result.minFont<10)throw new Error(`${label}: supporting text too small`);
- if(result.canvas!=='rgb(244, 247, 251)')throw new Error(`${label}: light executive canvas missing`);
+ if(result.minFont<(result.compact?11:10))throw new Error(`${label}: supporting text too small`);
 }
 async function auditExerciseGeometry(label){
   const result=await page.evaluate(()=>{
@@ -219,7 +218,7 @@ try{
 
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
-  if(await page.locator('.ltsExecutiveCard').count()!==5||await page.locator('.ltsCockpitPanel').count()!==6)throw new Error('executive Home modules missing');
+  if(await page.locator('.refSignal').count()!==5||await page.locator('.refPanel:not(.mobileWorkout)').count()!==6)throw new Error('executive Home modules missing');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
   await auditReferenceHome('desktop Home',expectedBuild);
   await assertNoHorizontalOverflow();

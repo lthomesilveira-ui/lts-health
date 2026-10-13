@@ -25,7 +25,7 @@ export function searchField(key,value,placeholder,label='Buscar'){
   return `<label class="ltsField ltsSearch">${esc(label)}<input id="${esc(key)}" data-depth-field="${esc(key)}" type="search" value="${esc(value||'')}" placeholder="${esc(placeholder)}" autocomplete="off"></label>`;
 }
 export function periodControl(key,value){
-  const options=[['recent','12 recentes'],['90','90 dias'],['365','1 ano'],['all','Todo o histórico']];
+  const options=[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Todo o histórico']];
   return `<div class="ltsPeriodControl" role="group" aria-label="Período da série">${options.map(([v,label])=>`<button type="button" data-depth-period="${esc(key)}" data-value="${v}" class="${value===v?'active':''}" aria-pressed="${value===v}">${label}</button>`).join('')}</div>`;
 }
 export function seriesWindow(rows,dateKey,period='recent'){
