@@ -1,6 +1,6 @@
 import {num,norm,day} from './core.js';
 import {validDay} from './history-tools.js';
-import {localHealthDay,bodySourceLabel,bodyMetricSeries,labHighlights} from './health-context.js';
+import {localHealthDay,bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,labHighlights} from './health-context.js';
 import {labGroups,labCohorts} from './labs-layout-v2.js';
 import {addDays,normalizeMuscleGroup} from './integrated-analysis.js';
 import {hydrationModel} from './hydration.js';
@@ -21,7 +21,7 @@ export function reportBounds(period='90',end=localHealthDay()){
   const previous=size?{start:addDays(current.start,-size),end:addDays(current.start,-1),days:size}:null;
   return {current,previous};
 }
-export const bodyCohort=row=>norm(row?.source)?JSON.stringify([norm(row.source),norm(row.device_name)]):null;
+export const bodyCohort=bodyEvidenceCohort;
 export const segments=[['right_arm','Braço direito','arms'],['left_arm','Braço esquerdo','arms'],['trunk','Tronco','trunk'],['right_leg','Perna direita','legs'],['left_leg','Perna esquerda','legs']];
 function friendlyPolarSources(data){
   const names=[...new Set([...(data.sourceMetrics||[]),...(data.polarSessions||[])].map(r=>r.source_name).filter(n=>/^Polar Flow · aparelho [a-f0-9]{10}$/.test(n||'')))].sort();
@@ -29,9 +29,10 @@ function friendlyPolarSources(data){
 }
 export function segmentIdentity(row,body=[]){
   // Only the original file plus date can carry device identity across domains.
-  const linked=row.source_file?body.filter(b=>day(b.measured_at)===day(row.measured_at)&&b.source_file===row.source_file):[];
+  const explicit=row.body_source_record_id?body.filter(b=>day(b.measured_at)===day(row.measured_at)&&b.source_record_id===row.body_source_record_id):[];
+  const linked=row.body_source_record_id?explicit:row.source_file?body.filter(b=>day(b.measured_at)===day(row.measured_at)&&b.source_file===row.source_file):[];
   const device=String(row.device_name||((linked.length===1)?linked[0].device_name:'')||'').trim();
-  return {key:norm(row.source)&&(row.device_name||linked.length<2)?JSON.stringify([norm(row.source),norm(device)]):null,label:device||`${String(row.source||'Bioimpedância')} · modelo não informado`,device};
+  return {key:(row.device_name||linked.length<2)?bodyEvidenceCohort({...row,device_name:device}):null,label:device||`${String(row.source||'Bioimpedância')} · modelo não informado`,device};
 }
 function measurementPair(rows,cohort,key='measured_at'){
   const sorted=ordered(rows,key),latestDate=day(sorted.at(-1)?.[key]);

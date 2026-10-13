@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'?fixture=1'};
+const {bodyCohort,compositionReport}=await import('./src/reports-model.js');
+const {linkedSegmental}=await import('./src/composition-layout-v2.js');
+const a={measured_at:'2020-01-01',source:'InBody report',device_name:'InBody270',source_file:'individual.pdf',fat_mass_kg:20};
+const b={...a,measured_at:'2020-02-01',source:'InBody bioimpedance scan',fat_mass_kg:19};
+assert.equal(bodyCohort(a),bodyCohort(b));
+assert.notEqual(bodyCohort(a),bodyCohort({...b,device_name:null}));
+assert.notEqual(bodyCohort(a),bodyCohort({...b,device_name:'InBody230'}));
+assert.equal(compositionReport({body:[a,b]},{body:'ready'},{start:null,end:'2020-02-01'}).changes.fat_mass_kg,-1);
+const seg={...a,source:'InBody segmental analysis',device_name:null};
+assert.equal(linkedSegmental(a,[a],[seg]).row,seg);
+assert.equal(linkedSegmental(a,[a],[seg,{...seg}]).row,null);
+assert.equal(linkedSegmental(a,[a,{...a}],[seg]).row,null);
+assert.equal(linkedSegmental(a,[a],[{...seg,source_file:'different.pdf'}]).row,null);
+console.log('Body evidence: verified models, unknown-device boundaries and unambiguous original-file segment links passed.');
+
+const documentedBody={...a,source_record_id:'body-original',source_file:'legacy-seed'};
+const documentedSegment={...seg,body_source_record_id:'body-original',source_file:'comparison.pdf'};
+assert.equal(linkedSegmental(documentedBody,[documentedBody],[documentedSegment]).row,documentedSegment);
+assert.equal(linkedSegmental(documentedBody,[documentedBody],[{...documentedSegment,measured_at:'2020-01-02'}]).row,null);
+assert.equal(linkedSegmental(documentedBody,[documentedBody],[documentedSegment,{...documentedSegment}]).row,null);

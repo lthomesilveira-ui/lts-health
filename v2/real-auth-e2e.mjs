@@ -101,14 +101,14 @@ async function auditReferenceHome(label,expectedBuild){
  const result=await page.evaluate(()=>{
   const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
   const visible=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;};
-  const compact=innerWidth<=840,reading=document.querySelector('.ltsCockpitReading'),cards=document.querySelector('.ltsExecutiveCards');
-  const order=compact?['.ltsCockpitReading','.ltsExecutiveCards','.ltsCockpitGrid','.ltsEvolutionNext']:['.ltsExecutiveCards','.ltsCockpitReading','.ltsCockpitGrid','.ltsEvolutionNext'];
-  const meaning=document.querySelector('.ltsCockpitReadings article>p')?.getBoundingClientRect(),nav=document.querySelector('#mobileNav')?.getBoundingClientRect();
-  const sizes=[...document.querySelectorAll('.ltsExecutiveCard small,.ltsCockpitCaption,.ltsCockpitFacts small')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
-  return {build:document.querySelector('meta[name="lts-build"]')?.content,cards:document.querySelectorAll('.ltsExecutiveCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,rings:document.querySelectorAll('.ltsRefRing').length,top:order.map(top),compact,domOrder:compact?Boolean(reading.compareDocumentPosition(cards)&Node.DOCUMENT_POSITION_FOLLOWING):Boolean(cards.compareDocumentPosition(reading)&Node.DOCUMENT_POSITION_FOLLOWING),primaryFindingVisible:Boolean(meaning&&meaning.top>=0&&meaning.bottom<=Math.min(innerHeight,nav?.top||innerHeight)),minFont:Math.min(...sizes),canvas:getComputedStyle(document.querySelector('#screenHost')).backgroundColor};
+  const compact=innerWidth<=840,reading=document.querySelector('.ltsOverviewReading'),body=document.querySelector('.ltsOverviewCard.body');
+  const order=['.ltsOverviewHeading','.ltsOverviewReading','.ltsOverviewGrid','.ltsOverviewToday'];
+  const meaning=reading?.getBoundingClientRect(),nav=document.querySelector('#mobileNav')?.getBoundingClientRect();
+  const sizes=[...document.querySelectorAll('.ltsOverviewCaption,.ltsOverviewFacts small')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
+  return {build:document.querySelector('meta[name="lts-build"]')?.content,cards:document.querySelectorAll('.ltsOverviewCard').length,panels:document.querySelectorAll('.ltsCockpitGrid .ltsCockpitPanel').length,rings:document.querySelectorAll('.ltsRefRing').length,top:order.map(top),compact,domOrder:Boolean(reading.compareDocumentPosition(body)&Node.DOCUMENT_POSITION_FOLLOWING),primaryFindingVisible:Boolean(meaning&&meaning.top>=0&&meaning.bottom<=Math.min(innerHeight,nav?.top||innerHeight)),minFont:Math.min(...sizes),canvas:getComputedStyle(document.querySelector('#screenHost')).backgroundColor};
  });
  if(!expectedBuild||result.build!==expectedBuild)throw new Error(`${label}: wrong published build`);
- if(result.cards!==5||result.panels!==6||result.rings!==0)throw new Error(`${label}: outcome hierarchy missing`);
+ if(result.cards!==4||result.panels!==6||result.rings!==0)throw new Error(`${label}: outcome hierarchy missing`);
  if(result.top.some((v,i)=>i&&v<=result.top[i-1])||!result.domOrder)throw new Error(`${label}: responsive visual or DOM hierarchy incorrect`);
  if(result.compact&&!result.primaryFindingVisible)throw new Error(`${label}: primary finding is missing from the initial viewport`);
  if(result.minFont<10)throw new Error(`${label}: supporting text too small`);

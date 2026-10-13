@@ -8,6 +8,12 @@ export function localHealthDay(value=new Date()){
   return `${get('year')}-${get('month')}-${get('day')}`;
 }
 export const inHealthWindow=(value,bounds)=>Boolean(day(value)&&(!bounds?.start||day(value)>=bounds.start)&&(!bounds?.end||day(value)<=bounds.end));
+// A documented model is stronger than editorial source labels; unknown devices stay separate.
+export function bodyEvidenceCohort(row){
+  const device=norm(row?.device_name);
+  const source=norm(row?.source);
+  return device?JSON.stringify(['documented-device',device]):source?JSON.stringify([source,'']):null;
+}
 export function bodySourceLabel(row){
   const device=String(row?.device_name||'').trim();
   if(device)return device;
@@ -42,7 +48,7 @@ function dailyUnique(rows,dateKey,valueKey,bounds,cohort=()=>null){
   for(const row of rows){if(!inHealthWindow(row[dateKey],bounds))continue;const key=day(row[dateKey]);if(!dates.has(key))dates.set(key,[]);dates.get(key).push(row);}
   return [...dates].filter(([,list])=>list.length===1&&num(list[0][valueKey])!=null).map(([date,[row]])=>({date,value:num(row[valueKey]),cohort:cohort(row),context:bodySourceLabel(row)})).sort((a,b)=>a.date.localeCompare(b.date));
 }
-export const bodyMetricSeries=(rows,key,bounds)=>dailyUnique(rows,'measured_at',key,bounds,row=>norm(row.source)?JSON.stringify([row.source,row.device_name||'']):null);
+export const bodyMetricSeries=(rows,key,bounds)=>dailyUnique(rows,'measured_at',key,bounds,bodyEvidenceCohort);
 export function healthContextModel(data,bounds,requestedLab,requestedDate,additionalDates=[]){
   const body=bodyMetricSeries(data.body||[],'body_fat_pct',bounds);
   const protein=dailyUnique(data.nutrition||[],'nutrition_date','protein_g',bounds,()=> 'daily-nutrition');

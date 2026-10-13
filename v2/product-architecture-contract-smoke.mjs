@@ -24,7 +24,10 @@ assert.ok(index.includes(`./product-experience.css?v=${build}`),'responsive prod
 assert.match(experienceCss,/\.ltsExecutiveCards\{[^}]*grid-template-columns:repeat\(5/);
 assert.match(experienceCss,/\.ltsCockpitGrid\{[^}]*grid-template-columns:repeat\(3/);
 assert.match(home,/data-disclosure="home-history"/);
-assert.match(home,/renderHomeCockpit\(c,picker\)/);
+assert.match(home,/renderHomeOverview\(c,picker\)/);
+assert.match(home,/data-disclosure="home-advanced"/);
+assert.match(home,/renderHomeCockpit\(c\)/);
+assert.ok(index.includes(`./home-overview.css?v=${build}`));
 assert.ok(build,'public build identifier is missing');
 for(const asset of ['executive-shell.css','cockpit.css','home-reference.css'])assert.ok(index.includes(`./${asset}?v=${build}`),`canonical asset is not tied to build ${build}: ${asset}`);
 
