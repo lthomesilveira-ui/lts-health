@@ -166,3 +166,5 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
 
 .ltsEvolutionHome .ltsEvolutionProtocolReference{background:#f7f9fc;border:1px solid #e2e9f0;border-radius:9px;padding:12px;margin:14px 0}.ltsEvolutionHome .ltsEvolutionProtocolReference b{font-size:11px;line-height:1.6;color:#52647a}.ltsEvolutionHome .ltsEvolutionProtocolReference p{font-size:12px;margin:6px 0;color:#203c58}.ltsEvolutionHome .ltsEvolutionProtocolReference small{display:block;font-size:11px;line-height:1.6;color:#52647a}
 @media(min-width:841px){.ltsEvolutionHome .ltsCockpitHeading{padding-right:88px!important}.ltsEvolutionHome .ltsCockpitHeadingControls{max-width:none;min-width:0}}
+
+.ltsEvolutionHome .ltsHomeMobileBrand{display:none}@media(max-width:840px){.ltsEvolutionHome .ltsHomeMobileBrand{display:block;margin:0 0 6px;font-size:11px;letter-spacing:.04em;color:#52647a}}

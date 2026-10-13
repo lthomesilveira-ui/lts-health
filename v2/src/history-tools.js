@@ -42,7 +42,7 @@ export const errorCard=text=>`<div class="ltsDepthError" role="alert"><b>${esc(t
 export const sourceLabel=row=>String(row?.source_name||row?.source||row?.laboratory||'Origem não informada').trim();
 export const failed=(state,key)=>state.domainStatus?.[key]==='error'||Boolean(state.errors?.[key]);
 export const valueText=(value,unit='',digits=1)=>num(value)==null?'Não informado':`${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
-export const differenceText=(a,b,unit='',digits=1)=>num(a)==null||num(b)==null?'Sem comparação':`${num(a)-num(b)>0?'+':''}${fmtNum(num(a)-num(b),digits)}${unit?` ${unit}`:''}`;
+export const differenceText=(a,b,unit='',digits=1)=>num(a)==null||num(b)==null?'Sem comparação':`${num(a)-num(b)>0?'+':''}${fmtNum(num(a)-num(b),digits)}${unit?` ${unit==='%'?'p.p.':unit}`:''}`;
 
 export function pointChart(points,{unit='',label='Evolução',scope='',selected=null,connect=true}={}){
   const clean=points.filter(p=>validDay(p.date)&&num(p.value)!=null).sort((a,b)=>validDay(a.date).localeCompare(validDay(b.date)));
