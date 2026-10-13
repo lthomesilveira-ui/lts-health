@@ -1,0 +1,38 @@
+name: LTS Health Fleury source audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'v2/fleury-source-audit*.py'
+      - 'v2/EXECUTION_STATE.json'
+      - 'v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md'
+      - '.github/workflows/fleury-source-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'v2/fleury-source-audit*.py'
+      - 'v2/EXECUTION_STATE.json'
+      - 'v2/releases/FLEURY_SOURCE_VALIDATION_20261013.md'
+      - '.github/workflows/fleury-source-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate read-only source extraction and held cases
+        run: |
+          python -m py_compile v2/fleury-source-audit.py v2/fleury-source-audit-test.py
+          python v2/fleury-source-audit-test.py
+          node v2/lab-parser-safety-smoke.mjs
+          node v2/lab-analysis-source-smoke.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs

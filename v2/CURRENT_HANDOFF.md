@@ -1,3 +1,11 @@
+# Original-source audit and bounded repair — 13/10/2026
+
+The restart recovered current main, .44, operational state and the visual reference. Independent metadata queries confirm continuing hourly Polar completions and a later real paid-bridge hydration receipt. Medications previously confirmed by the owner remain preserved. Do not reopen delivered scheduling, login, connection or layout work.
+
+Previously supplied Fleury PDFs were audited privately against current source-linked results. An omitted multi-result assay group was restored from the original page; a post-write source comparison, preservation comparison and idempotency replay passed. Existing results were unchanged. The new offline tool remains read-only; production PDF routing stays quarantined. No personal values, files or screenshots enter public source.
+
+Publication verification is in progress under `PKG-FLEURY-SOURCE-VALIDATION-001`; next action is to finish normal PR/affected workflow checks and record the evidence. Source: `releases/FLEURY_SOURCE_VALIDATION_20261013.md`; authority: `EXECUTION_STATE.json`. The UI build remains .44, with no new subjective or physical-device acceptance claim. Original MFP water history, independently attributable automatic recurrence and other external source/device limits remain explicit.
+
 # Polar automático ativado e verificado — 12/10/2026
 
 Proteção Auth também concluída: após o login administrativo seguro escolhido pelo proprietário, `Prevent use of leaked passwords` foi habilitado e salvo somente no projeto Health. O advisor nativo pós-gravação deixou de reportar `auth_leaked_password_protection`; os quatro avisos informativos de tabelas exclusivamente backend com RLS sem política de navegador são intencionais. Não repetir login ou alterar outras regras de autenticação.

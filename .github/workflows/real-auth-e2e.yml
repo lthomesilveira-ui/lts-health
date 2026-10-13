@@ -4,6 +4,7 @@ on:
     branches: [main, architecture-v2]
     paths:
       - 'v2/src/**'
+      - 'v2/fleury-source-audit*.py'
       - 'v2/*auth*.mjs'
       - 'v2/*visual*.mjs'
       - 'v2/qa-visual-public.pem'
