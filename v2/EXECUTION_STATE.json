@@ -50,11 +50,12 @@
   },
   "current_package": {
     "id": "PKG-EVOLUTION-DENSITY-001",
-    "status": "done",
+    "status": "in_progress",
     "goal": "Finish the approved dashboard density: insights, indicators and charts first, complete source evidence progressively accessible.",
     "task_ids": [
       "LTS-EVOLUTION-DENSITY-001",
-      "LTS-TRAINING-SESSION-001"
+      "LTS-TRAINING-SESSION-001",
+      "LTS-CARE-FOLLOWUP-001"
     ],
     "completed_evidence": [
       "The fully verified .47 provides shared plain-language evolution and conservative evidence semantics.",
@@ -1547,7 +1548,9 @@
       "evidence": [
         "Cross-screen privacy contract passed locally."
       ],
-      "next_step": "Validate the isolated branch in CI, promote through a normal PR and inspect the exact authenticated published route."
+      "next_action": "Validate the isolated branch in CI, promote through a normal PR and inspect the exact authenticated published route.",
+      "blocker": null,
+      "pull_request_url": "https://github.com/lthomesilveira-ui/lts-health/pull/345"
     }
   ],
   "package_history": [
