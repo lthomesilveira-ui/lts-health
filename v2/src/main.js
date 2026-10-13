@@ -115,7 +115,7 @@ function restoreRenderContext(host,context){
   if(!context.focus?.selector)return;
   const active=host.querySelector(context.focus.selector)||(context.focus.selector.includes('home-more-')?host.querySelector('[data-home-insight-details]'):null);if(!active)return;
   try{
-    for(let parent=active.parentElement;parent&&parent!==host;parent=parent.parentElement)if(parent.matches('details'))parent.open=true;
+    for(let parent=active.matches('summary')?active.parentElement?.parentElement:active.parentElement;parent&&parent!==host;parent=parent.parentElement)if(parent.matches('details'))parent.open=true;
     active.focus({preventScroll:true});
     if(context.focus.selectionStart!=null&&typeof active.setSelectionRange==='function')active.setSelectionRange(context.focus.selectionStart,context.focus.selectionEnd);
   }catch{}

@@ -12,7 +12,7 @@ export function renderProductHomeReference(){
   contextData.workouts=c.r.training.rows;
   contextData.nutrition=c.r.nutrition.rows.map(row=>({...row,nutrition_date:row.date}));
   const context=healthContextModel(contextData,c.m.current,state.ui.homeLabMarker,state.ui.healthContextDate,c.r.dates);
-  const picker=`<div class="ltsCockpitWindow"><span>Janela de análise</span><div class="ltsHomePeriod" role="group" aria-label="Janela de análise">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Histórico']].map(([key,label])=>`<button data-home-period="${key}" aria-pressed="${period===key}">${label}</button>`).join('')}</div></div>`;
+  const picker=`<div class="ltsCockpitWindow"><span>Janela de análise</span><div class="ltsHomePeriod" role="group" aria-label="Janela de análise">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Histórico']].map(([key,label])=>`<button id="home-period-${key}" data-home-period="${key}" aria-pressed="${period===key}">${label}</button>`).join('')}</div></div>`;
   return `<section class="ltsHomeV2 ltsHomeReference ltsProductExperience ltsEvolutionHome">${renderHomeCockpit(c,picker)}<details class="ltsHomeExplore" data-disclosure="home-history"><summary><span><b>Investigar um dia no histórico</b><small>Treino, alimentação, corpo, exames e protocolos na mesma data</small></span><i aria-hidden="true">＋</i></summary>${renderHealthContext(context,state.domainStatus,renderHomeDaySignals(c.r,context.selectedDate))}</details></section>`;
 }
 

@@ -119,6 +119,23 @@ try{
         }
       }
       await page.setViewportSize({width,height});
+      await page.waitForSelector('[data-home-layout="compact"]');
+      await page.locator('#home-period-90').focus();
+      const beforeSettlement=await page.locator('#home-period-90').elementHandle();
+      await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.data.goals=[...state.data.goals];});
+      await page.waitForFunction(element=>!element.isConnected,beforeSettlement);
+      assert.equal(await page.locator('#home-period-90').evaluate(el=>el===document.activeElement),true,'late source settlement preserves the focused Home control');
+      assert.equal(await page.locator('[data-disclosure="home-insight-labs"]').getAttribute('open'),null,'focusing a collapsed disclosure does not open it');
+      assert.equal(await page.locator('[id]').evaluateAll(es=>new Set(es.map(e=>e.id)).size===es.length),true,'responsive Home has no duplicate IDs');
+      await page.locator('#home-more-areas-summary').press('Enter');
+      assert.equal(await page.locator('[data-disclosure="home-more-areas"]').getAttribute('open'),'','other three summaries are keyboard-accessible');
+      await page.locator('#home-card-body').focus();
+      for(const width of [841,839]){
+        await page.setViewportSize({width,height:844});
+        await page.waitForSelector(`[data-home-layout="${width>840?'desktop':'compact'}"]`);
+        assert.equal(await page.locator('#home-card-body').evaluate(el=>el===document.activeElement),true,'summary focus survives moving into or out of the mobile disclosure');
+      }
+      await page.setViewportSize({width,height});
     }
     await page.locator('.ltsCockpitReading:visible [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
