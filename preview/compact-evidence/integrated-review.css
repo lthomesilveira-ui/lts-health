@@ -1,0 +1,59 @@
+.ltsReportJump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.ltsReportJump a{display:flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid #d4e1ed;border-radius:24px;background:#fff;color:#245d92;font-size:14px;font-weight:600;text-decoration:none}
+.ltsReportSection{scroll-margin-top:54px}
+.ltsIntegratedReview>header>span{font-size:12px;font-weight:700;letter-spacing:.08em;color:#51657b}
+.ltsIntegratedReview>header h2{margin:7px 0 8px}
+.ltsIntegratedReview>header p{font-size:16px;line-height:1.55;margin:0 0 18px;color:#51657b}
+.ltsReviewTabs{display:flex;flex-wrap:wrap;gap:6px;padding:6px;background:#edf3f9;border-radius:12px;margin:12px 0 18px}
+.ltsReviewTabs button{flex:1;min-height:44px;border:0;border-radius:9px;background:transparent;color:#405a75;font-size:15px;font-weight:600;padding:10px 14px;cursor:pointer}
+.ltsReviewTabs button.active{background:#203f60;color:#fff;box-shadow:0 2px 8px #203f6019}
+.ltsReviewSources{border-bottom:1px solid #e1e9f2;margin:0 0 20px;padding-bottom:8px}
+.ltsIntegratedReview summary{font-size:15px;font-weight:600;line-height:1.5;min-height:44px;padding:10px 0;cursor:pointer}
+.ltsReviewCoverage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ltsReviewCoverage article{min-width:0;border:1px solid #dce7f1;border-radius:12px;padding:16px;background:#f7fafd}
+.ltsReviewCoverage article:nth-child(3){background:#f0f9fd;border-color:#cae8f5}
+.ltsReviewCoverage article:nth-child(4){background:#f7f4fc;border-color:#e2d9f1}
+.ltsReviewCoverage span{display:block;font-size:14px;font-weight:600;color:#51657b}
+.ltsReviewCoverage b{display:block;font-size:24px;margin:8px 0;color:#213b59}
+.ltsReviewCoverage small{font-size:14px;line-height:1.5;display:block;overflow-wrap:anywhere;color:#51657b}
+.ltsReviewNote{font-size:14px;line-height:1.6;color:#51657b;margin:14px 0}
+.ltsReviewOverlap{display:flex;align-items:center;gap:16px;padding:18px 20px;background:#eaf3fa;border-radius:12px;margin:18px 0}
+.ltsReviewOverlap b{font-size:23px;white-space:nowrap}
+.ltsReviewOverlap span{font-size:15px;line-height:1.5}
+.ltsReviewContrasts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ltsReviewContrast{min-width:0;border:1px solid #dae4ee;border-radius:12px;padding:18px}
+.ltsReviewContrast p,.ltsReviewDay>details p{font-size:16px;line-height:1.6;margin:8px 0}
+.ltsReviewContrast small{font-size:14px;line-height:1.5;display:block;color:#51657b}
+.ltsReviewContrast details{margin-top:14px;border-top:1px solid #e2e9f1}
+.ltsReviewContrast details p{font-size:14px;overflow-wrap:anywhere}
+.ltsReviewPending{font-weight:600;color:#51657b}
+.ltsReviewDayControls{display:flex;align-items:end;gap:10px;margin-bottom:18px}
+.ltsReviewDayControls .ltsField{flex:1;margin:0;min-width:0}
+.ltsReviewDayControls button{width:44px;min-width:44px;height:44px;border:1px solid #bfd0e1;border-radius:9px;background:#f4f8fc;color:#245d92;font-size:24px;cursor:pointer}
+.ltsReviewDayControls button:disabled{opacity:.45;cursor:default}
+.ltsReviewDayFacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ltsReviewDayFacts button{background:#f5f8fc;border:1px solid #dce6f0;border-radius:12px;text-align:left;min-height:84px;padding:16px;color:#213b59;cursor:pointer;overflow-wrap:anywhere}
+.ltsReviewDayFacts b,.ltsReviewDayFacts span{display:block;font-size:16px;line-height:1.5}
+.ltsReviewDayFacts span{margin-top:6px;font-size:15px;color:#51657b}
+.ltsReviewDayFacts .ltsDayWater{background:#f0f9fd}
+.ltsReviewDayFacts .ltsDaySleep{background:#f7f4fc}
+.ltsReviewCalendar{margin-top:20px;border-top:1px solid #e2e9f1}
+.ltsReviewCalendar .ltsReportTable th,.ltsReviewCalendar .ltsReportTable td{min-width:0;font-size:14px}
+.ltsReviewCalendar .ltsReportTable button{min-height:44px}
+.ltsReviewDay details li{font-size:15px;line-height:1.6;margin:8px 0;overflow-wrap:anywhere}
+.ltsReviewExport{display:flex;align-items:start;gap:16px;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid #dae4ee;margin-bottom:18px}
+.ltsReviewExport p,.ltsConsultation section p{font-size:16px;line-height:1.6;margin:8px 0;color:#51657b;overflow-wrap:anywhere}
+.ltsReviewExport button{min-height:44px;padding:12px 16px;background:#245d92;color:#fff;border:0;border-radius:9px;font-size:15px;font-weight:600;white-space:nowrap;cursor:pointer}
+.ltsConsultation section{margin:22px 0;padding-bottom:12px;border-bottom:1px solid #e2e9f1}
+.ltsConsultation section h3{font-size:16px;letter-spacing:.02em}
+.ltsReportJump a:focus-visible{outline:3px solid #77a7db;outline-offset:3px}
+@media(max-width:760px){
+  .ltsReviewCoverage{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ltsReviewCoverage article{padding:14px}.ltsReviewCoverage b{font-size:22px}
+  .ltsReviewTabs button{flex:1 1 100%;font-size:15px}
+  .ltsReviewContrasts,.ltsReviewDayFacts{grid-template-columns:1fr}
+  .ltsReviewOverlap{align-items:start;flex-direction:column;gap:6px;padding:16px}
+  .ltsReviewExport{flex-direction:column}.ltsReviewExport button{width:100%}
+  .ltsReviewCalendar .ltsReportTableWrap{overflow:auto}
+  .ltsReviewCalendar .ltsReportTable{min-width:530px}
+}

@@ -1,0 +1,49 @@
+name: LTS Health Isolated Preview
+on:
+  pull_request:
+    paths:
+      - 'preview/compact-evidence/**'
+      - '.github/workflows/health-compact-preview.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'preview/compact-evidence/**'
+      - '.github/workflows/health-compact-preview.yml'
+permissions:
+  contents: read
+jobs:
+  preview-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LTS_HEALTH_BASE_URL: http://127.0.0.1:4173/preview/compact-evidence/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check isolated files and production entry
+        run: node preview/compact-evidence/tests/preview-contract.mjs
+      - name: Install existing pinned browser runtime
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve repository without changing production
+        run: |
+          python3 -m http.server 4173 >/tmp/health-preview-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
+      - name: Verify signed-out boundary
+        run: node preview/compact-evidence/tests/preview-auth-boundary.mjs
+      - name: Verify full histories in preview route
+        run: node preview/compact-evidence/tests/history-depth-browser.mjs
+      - name: Verify preview periods, sources, routes and responsive layout
+        run: node preview/compact-evidence/tests/home-reference-period-browser.mjs
+      - name: Upload synthetic-only preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: isolated-preview-synthetic-visual
+          path: |
+            v2/reference-period-visual
+            v2/history-depth-evidence
+          retention-days: 7

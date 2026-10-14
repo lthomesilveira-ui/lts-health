@@ -1,0 +1,648 @@
+/* Canonical corrections from the 2026-09-15 public-product audit. */
+
+/* Timeline and protocols: restore light surfaces, contrast and readable type. */
+.sourceStatus,
+.timelineStat,
+.timelineContextCard,
+.protocolSummaryCard {
+  border-color: #dfe6ed;
+  background: #fff;
+  color: #111a29;
+  box-shadow: 0 6px 20px rgba(20, 35, 55, .035);
+}
+
+.sourceStatus.ready {
+  border-color: #b9dfcf;
+  background: #f1faf6;
+}
+
+.sourceStatusTop b,
+.timelineContextHead > div:first-child b,
+.timelineDate b,
+.protocolSummaryHead h3,
+.protocolSummaryFacts b {
+  color: #111a29;
+}
+
+.sourceStatusTop b {
+  font-size: 13px;
+}
+
+.sourceStatus p {
+  color: #5f6f84;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.sourceStatus button,
+.loadMore button {
+  min-height: 38px;
+  border-color: #101b2d;
+  background: #101b2d;
+  color: #fff;
+  font-size: 11px;
+}
+
+.timelineStat {
+  min-height: 76px;
+}
+
+.timelineStat b {
+  color: #111a29;
+  font-size: 19px;
+}
+
+.timelineStat span,
+.timelineContextHead > div:first-child span,
+.timelineDate span,
+.timelineSummary,
+.timelineItem.rich em,
+.protocolSummaryHead span,
+.protocolSummaryFacts span,
+.protocolSummaryCard p,
+.protocolSummaryCard em {
+  color: #5f6f84;
+}
+
+.timelineStat span,
+.timelineContextHead > div:first-child span,
+.timelineDate span,
+.timelineSummary,
+.timelineItem.rich em,
+.protocolSummaryHead span,
+.protocolSummaryFacts span,
+.protocolSummaryCard em {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.timelineContextHead > div:first-child b,
+.timelineDate b {
+  font-size: 13px;
+}
+
+.timelineDomainChips span {
+  border-color: #b9dcec;
+  background: #edf8fc;
+  color: #176989;
+  font-size: 10px;
+}
+
+.timelineContextRows > div,
+.timelineContextJump {
+  border-color: #e5ebf1;
+}
+
+.timelineContextJump:hover,
+.timelineContextJump:focus-visible,
+.timelineLink:hover,
+.timelineLink:focus-visible {
+  background: #f3f7fa;
+}
+
+.timelineContextRows strong,
+.timelineItem.rich > span {
+  color: #216b8a;
+  font-size: 10.5px;
+}
+
+.timelineContextRows span {
+  color: #4f6075;
+  font-size: 11px;
+}
+
+.timelineContextCard > small {
+  color: #68778b;
+  font-size: 10.5px;
+}
+
+.timelineSummary b {
+  color: #111a29;
+  font-size: 16px;
+}
+
+.timelineItem.rich > div > b {
+  color: #111a29;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.protocolSummaryHead h3 {
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.protocolSummaryFacts b {
+  font-size: 13px;
+}
+
+.protocolSummaryCard p {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Data and provenance: remove dark-on-dark cards left by the previous theme. */
+.backupPanel,
+.reviewInbox,
+.reviewStat,
+.reviewTopic,
+.coverageRow,
+.processingDetail {
+  border-color: #dfe6ed;
+  background: #fff;
+  color: #111a29;
+}
+
+.reviewInbox {
+  background: radial-gradient(circle at 92% 6%, rgba(52, 169, 205, .10), transparent 34%), #fff;
+  box-shadow: 0 8px 26px rgba(20, 35, 55, .045);
+}
+
+.reviewInboxHero h2,
+.reviewStat strong,
+.reviewTopic b,
+.coverageIdentity b,
+.coveragePeriod b,
+.coverageUnit b,
+.backupPanel b,
+.uploadAuditRow b {
+  color: #111a29;
+}
+
+.reviewEyebrow,
+.reviewTopic strong,
+.coverageCount strong,
+.backupPanel > div:first-child > span {
+  color: #167797;
+}
+
+.reviewInboxHero p,
+.reviewStat span,
+.reviewStat small,
+.reviewTopic small,
+.coverageHead p,
+.coverageIdentity small,
+.coveragePeriod span,
+.coverageUnit span,
+.coverageCount span,
+.backupPanel p,
+.backupPanel small,
+.backupActions span,
+.uploadAuditRow time,
+.uploadAuditRow > div > small,
+.processingDetail > div > span:not(.pill),
+.processingDetail ul,
+.processingDetail > small,
+.processingMuted,
+.sourceScope,
+.sourceMore summary {
+  color: #5f6f84;
+}
+
+.reviewStat.attention {
+  border-color: #e3ca93;
+  background: #fff9ec;
+}
+
+.reviewSafeNote {
+  border-color: #b9dfcf;
+  background: #f1faf6;
+}
+
+.reviewSafeNote b {
+  color: #14704c;
+}
+
+.reviewSafeNote span {
+  color: #405269;
+}
+
+.sourceCapability,
+.sourceScope,
+.sourceMore summary,
+.backupPanel > div:first-child > span,
+.backupPanel p,
+.backupPanel small,
+.backupActions span,
+.uploadAuditRow time,
+.uploadAuditRow > div > small,
+.processingDetail > div > span:not(.pill),
+.processingDetail ul,
+.processingDetail > small,
+.processingMuted,
+.coveragePeriod span,
+.coverageUnit span,
+.coverageCount span {
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.uploadAuditRow b,
+.coveragePeriod b,
+.coverageUnit b {
+  font-size: 12px;
+}
+
+.sourceCapability {
+  border-color: #cad5df;
+  color: #405269;
+}
+
+/* Recovery and analysis: one light semantic system, no dark text on dark legacy panels. */
+.analysisLead,
+.analysisDigest,
+.analysisRegion,
+.analysisSleep,
+.limitationList > div,
+.analysisSafety,
+.analysisDigestCard {
+  border-color: #dfe6ed;
+  background: #fff;
+  color: #111a29;
+}
+
+.analysisLead,
+.analysisDigest {
+  background: linear-gradient(145deg, #f4fafc, #fff);
+}
+
+.analysisDigestCard.attention {
+  border-color: #e3ca93;
+  background: #fff9ec;
+}
+
+.analysisDigestCard.change {
+  border-color: #b9dfcf;
+}
+
+.analysisDigestCard.context {
+  border-color: #d3c8e8;
+}
+
+.analysisLeadHead h2,
+.analysisInterval b,
+.analysisRegionHead b,
+.analysisRegionFacts b,
+.analysisSleep b,
+.analysisPerformance b,
+.analysisDigestHead h2,
+.analysisDigestCard h3,
+.analysisSafety b {
+  color: #111a29;
+}
+
+.analysisLeadHead span,
+.analysisDigestHead span,
+.analysisDigestCard button {
+  color: #167797;
+}
+
+.analysisLeadHead > small,
+.analysisInterval span,
+.analysisRegionHead span,
+.analysisRegionHead small,
+.analysisRegionFacts span,
+.analysisRegion p,
+.analysisPerformance span,
+.analysisPerformance small,
+.analysisSleep span,
+.analysisBarRow > small,
+.analysisDigestHead small,
+.analysisDigestCard > span,
+.analysisDigestCard p,
+.limitationList > div,
+.analysisSafety span {
+  color: #5f6f84;
+}
+
+.analysisDigestCard > span,
+.analysisLeadHead span,
+.analysisDigestHead span,
+.analysisRegionHead span,
+.analysisRegionHead small,
+.analysisRegionFacts span,
+.analysisRegion p,
+.analysisPerformance span,
+.analysisSleep span,
+.analysisBarRow > small,
+.analysisDigestHead small,
+.analysisDigestCard p,
+.analysisDigestCard button,
+.limitationList > div,
+.analysisSafety b,
+.analysisSafety span {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.analysisBarRow > div {
+  background: #e4eaf0;
+}
+
+/* The approved detail routes keep their density, but labels remain readable on a phone. */
+@media (max-width: 840px) {
+  .ltsCompositionV2 .ltsSectionHead span,
+  .ltsLabsV2 .ltsSectionHead span,
+  .ltsCompositionMetric span,
+  .ltsLabsHeroContext span,
+  .ltsCompositionScale,
+  .ltsLabsScale,
+  .ltsCompositionAxis,
+  .ltsLabsAxis,
+  .ltsCompositionChangeGrid span,
+  .ltsCompositionHistoryRow time,
+  .ltsLabsHistoryRow time,
+  .ltsCompositionHistoryRow > span,
+  .ltsLabsHistoryRow > span,
+  .ltsLabsHeroTop > div > span,
+  .ltsLabsMarkerRail button small {
+    font-size: 10px !important;
+  }
+
+  .ltsCompositionV2 .ltsField,
+  .ltsLabsV2 .ltsField,
+  .ltsCompositionV2 .ltsDepthNote,
+  .ltsLabsV2 .ltsDepthNote,
+  .ltsCompositionHistoryRow small,
+  .ltsLabsHistoryRow small,
+  .ltsCompositionTrust p,
+  .ltsLabsTrust p,
+  .ltsLabsNoSeries,
+  .ltsHistoryContext {
+    font-size: 10.5px !important;
+  }
+
+  .ltsCompositionV2 .ltsField select,
+  .ltsLabsV2 .ltsField select,
+  .ltsLabsV2 .ltsField input,
+  .ltsCompositionHistoryRow b,
+  .ltsLabsHistoryRow b,
+  .ltsLabsMarkerRail button b {
+    font-size: 11.5px !important;
+  }
+
+  .timelineItem.rich {
+    grid-template-columns: 86px minmax(0, 1fr);
+  }
+
+  .reviewInbox {
+    padding: 17px;
+  }
+}
+
+@media (max-width: 430px) {
+  .timelineStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timelineContextRows > div,
+  .timelineContextJump,
+  .timelineItem.rich {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .protocolSummaryFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .protocolSummaryFacts > div:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Internal-route legibility from the authenticated public audit. */
+.topActionIcon {
+  display: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body:has(.ltsHomeReference) .topbar #routeAction,
+body:has(.hydrationImportPanel) .topbar #routeAction,
+body[data-product-route="hoje"] .topbar #routeAction,
+body[data-product-route="nutricao"] .topbar #routeAction {
+  display: none !important;
+}
+
+/* The structural mobile shell gives the contextual action an ID-level
+   display rule. Keep the application state authoritative on every route so a
+   hidden action can never leak the label from the previously visited screen. */
+.topbar #routeAction.hidden {
+  display: none !important;
+}
+
+/* Programmatic heading focus announces a changed view without painting a
+   browser-default rectangle over the page title. Interactive controls retain
+   the visible focus treatment from accessibility.css. */
+#screenHost h1[tabindex="-1"]:focus,
+#screenHost h1[tabindex="-1"]:focus-visible {
+  outline: none !important;
+}
+
+body[data-product-route="nutricao"] .hydrationSecondaryAction {
+  appearance: none;
+  min-height: 40px;
+  padding: 9px 14px;
+  border: 1px solid #cbd6e4;
+  border-radius: 10px;
+  background: #fff;
+  color: #173152;
+  box-shadow: 0 1px 2px rgba(20, 43, 75, .04);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+body[data-product-route="nutricao"] .hydrationSecondaryAction:hover {
+  border-color: #9fb5d2;
+  background: #f7faff;
+}
+
+body[data-product-route="nutricao"] .hydrationSecondaryAction:focus-visible {
+  outline: 3px solid rgba(47, 114, 220, .34);
+  outline-offset: 2px;
+}
+
+body[data-product-route="nutricao"] .nutritionMonthHead b,
+body[data-product-route="nutricao"] .mealDistributionRow b,
+body[data-product-route="nutricao"] .nutritionDays b,
+body[data-product-route="nutricao"] .mealRow b {
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+body[data-product-route="nutricao"] .nutritionMonthHead span,
+body[data-product-route="nutricao"] .nutritionMonthStats span,
+body[data-product-route="nutricao"] .mealDistributionRow small,
+body[data-product-route="nutricao"] .nutritionDays time,
+body[data-product-route="nutricao"] .nutritionDays small,
+body[data-product-route="nutricao"] .nutritionDayHead small,
+body[data-product-route="nutricao"] .macroGrid span,
+body[data-product-route="nutricao"] .mealRow small,
+body[data-product-route="nutricao"] .mealRow em,
+body[data-product-route="nutricao"] .yearGrid span,
+body[data-product-route="nutricao"] .yearGrid small {
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+body[data-product-route="nutricao"] .nutritionDayHead span {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+body[data-product-route="nutricao"] .mealRow > span {
+  font-size: 11.5px;
+}
+
+body[data-product-route="nutricao"] .nutritionMonth,
+body[data-product-route="nutricao"] .nutritionDays button,
+body[data-product-route="nutricao"] .mealRow {
+  min-height: 48px;
+}
+
+body[data-product-route="evolucao"] [data-evolution-metric],
+body[data-product-route="evolucao"] [data-segmental-date],
+body[data-product-route="evolucao"] .segmentCompareControl span,
+body[data-product-route="evolucao"] .segmentCompareControl select,
+body[data-product-route="evolucao"] .evoAxis,
+body[data-product-route="evolucao"] .evoDelta,
+body[data-product-route="evolucao"] .segmentPair span,
+body[data-product-route="evolucao"] .segmentTrunk span,
+body[data-product-route="evolucao"] .segmentPair strong,
+body[data-product-route="evolucao"] .segmentDelta b,
+body[data-product-route="evolucao"] .segmentDelta span,
+body[data-product-route="evolucao"] .segmentKindTitle small,
+body[data-product-route="evolucao"] .sideDifferenceHead small,
+body[data-product-route="evolucao"] .sideDifferenceGrid span,
+body[data-product-route="evolucao"] .segmentDeltaTitle small,
+body[data-product-route="evolucao"] .weeklyRhythm > div small,
+body[data-product-route="evolucao"] .weeklyRhythm > div span {
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+body[data-product-route="evolucao"] .evoAxis b,
+body[data-product-route="evolucao"] .evoDelta b,
+body[data-product-route="evolucao"] .segmentKindTitle b,
+body[data-product-route="evolucao"] .sideDifferenceHead b,
+body[data-product-route="evolucao"] .segmentDeltaGroup > div > b,
+body[data-product-route="evolucao"] .segmentDeltaTitle b {
+  font-size: 12px !important;
+  line-height: 1.35;
+}
+
+body[data-product-route="evolucao"] .sideDifferenceGrid b {
+  font-size: 14px;
+}
+
+body[data-product-route="evolucao"] .changeRow {
+  font-size: 11px;
+}
+
+body[data-product-route="evolucao"] .changeHead {
+  font-size: 10px;
+}
+
+body[data-product-route="evolucao"] .changeRow > * {
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+body[data-product-route="evolucao"] .screenHost .segmented button {
+  min-height: 34px;
+  padding: 7px 10px;
+}
+
+body[data-product-route="evolucao"] .evolutionLowerGrid {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+body[data-product-route="evolucao"] .evolutionLowerGrid > .card {
+  width: 100%;
+  align-self: start;
+}
+
+@media (max-width: 840px) {
+  .topbar #refreshBtn::before,
+  .topbar #logoutBtn::before {
+    content: none !important;
+  }
+
+  .topbar #refreshBtn .topActionIcon,
+  .topbar #logoutBtn .topActionIcon {
+    display: block;
+  }
+
+  body[data-product-route="nutricao"] .nutritionMonth {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px 0;
+  }
+
+  body[data-product-route="nutricao"] .nutritionMonthStats {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-left: 94px;
+    margin-top: -3px;
+  }
+
+  body[data-product-route="nutricao"] .nutritionDays button {
+    grid-template-columns: 82px minmax(0, 1fr);
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  body[data-product-route="evolucao"] .cardHead .segmented {
+    width: 100%;
+    margin-top: 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  body[data-product-route="evolucao"] .changeRow {
+    font-size: 11px;
+  }
+
+  body[data-product-route="evolucao"] .changeRow time,
+  body[data-product-route="evolucao"] .changeRow span,
+  body[data-product-route="evolucao"] .changeRow strong {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  body[data-product-route="evolucao"] .changeRow span::before,
+  body[data-product-route="evolucao"] .changeRow strong::before {
+    font-size: 9.5px !important;
+    line-height: 1.25;
+  }
+
+  body[data-product-route="evolucao"] .weeklyRhythm > div {
+    min-width: 48px;
+  }
+
+  body[data-product-route="evolucao"] .weeklyRhythm > div small {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 430px) {
+  body[data-product-route="nutricao"] .nutritionMonth {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  body[data-product-route="nutricao"] .nutritionMonthStats {
+    padding-left: 88px;
+  }
+
+  body[data-product-route="nutricao"] .nutritionDays button {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+}

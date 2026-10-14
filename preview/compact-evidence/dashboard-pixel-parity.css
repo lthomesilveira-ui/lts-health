@@ -1,0 +1,166 @@
+/* Pixel-parity refinement for the user-approved 1536x864 Dashboard reference. */
+@media (min-width:900px){
+  body:has(.cockpitV3) .primaryNav:before{
+    content:'LTS Health'!important;
+    top:20px!important;
+    left:18px!important;
+    right:14px!important;
+    min-height:34px!important;
+    padding-left:42px!important;
+    font-size:19px!important;
+    line-height:34px!important;
+    font-weight:800!important;
+    letter-spacing:-.025em!important;
+    background:
+      linear-gradient(150deg,transparent 0 32%,#58a0ff 33% 49%,transparent 50%) 0 0/32px 34px no-repeat,
+      linear-gradient(30deg,transparent 0 32%,#2e77e8 33% 49%,transparent 50%) 0 0/32px 34px no-repeat!important;
+  }
+  body:has(.cockpitV3) .primaryNav:after{
+    content:'Dados hoje. Saúde amanhã.'!important;
+    top:53px!important;
+    bottom:auto!important;
+    left:60px!important;
+    color:#9aa9bd!important;
+    font-size:8px!important;
+    font-weight:560!important;
+    letter-spacing:0!important;
+  }
+  body:has(.cockpitV3) .primaryNav button{position:relative!important;padding-left:43px!important}
+  body:has(.cockpitV3) .primaryNav button:before{
+    position:absolute!important;left:13px!important;top:50%!important;transform:translateY(-50%)!important;
+    width:18px!important;text-align:center!important;color:#90a2bd!important;font-size:16px!important;line-height:1!important;
+  }
+  body:has(.cockpitV3) .primaryNav button[data-route="hoje"]:before{content:'⌂'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="treinos"]:before{content:'↔'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="nutricao"]:before{content:'●'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="bio"]:before{content:'♙'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="analise"]:before{content:'☾'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="saude"]:before{content:'△'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="tratamentos"]:before{content:'▣'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="evolucao"]:before{content:'⌁'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="timeline"]:before{content:'◷'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="dados"]:before{content:'▰'!important}
+  body:has(.cockpitV3) .primaryNav button[data-route="mais"]{display:none!important}
+
+  body:has(.cockpitV3) .topbar{
+    left:15px!important;bottom:10px!important;width:181px!important;height:280px!important;display:block!important;pointer-events:none!important;
+  }
+  body:has(.cockpitV3) .topbar:before{
+    content:'Disciplina hoje,\A uma vida melhor amanhã.'!important;
+    white-space:pre!important;position:absolute!important;left:0!important;top:0!important;width:181px!important;height:118px!important;
+    box-sizing:border-box!important;padding:73px 14px 11px!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:9px!important;
+    color:#eef4fd!important;font-size:10px!important;line-height:1.35!important;font-weight:540!important;
+    background:
+      linear-gradient(180deg,rgba(8,16,30,.03) 0%,rgba(10,17,29,.08) 40%,rgba(10,17,29,.8) 100%),
+      linear-gradient(145deg,transparent 0 42%,#5c6a7e 43% 54%,transparent 55%) 0 12px/150px 65px no-repeat,
+      linear-gradient(35deg,transparent 0 44%,#33445c 45% 57%,transparent 58%) 46px 18px/150px 63px no-repeat,
+      linear-gradient(180deg,#26364c 0%,#1b2a40 55%,#142033 100%)!important;
+    box-shadow:inset 0 0 24px rgba(255,255,255,.025)!important;
+  }
+  body:has(.cockpitV3) .topbar:after{
+    content:'●  Privado · sincronizado\A     Última atualização: agora'!important;
+    white-space:pre!important;position:absolute!important;left:6px!important;top:132px!important;width:169px!important;
+    color:#96a6bc!important;font-size:8px!important;line-height:1.55!important;font-weight:560!important;
+  }
+  body:has(.cockpitV3) .topActions{
+    position:absolute!important;left:0!important;right:0!important;bottom:0!important;height:54px!important;display:block!important;
+    border-top:1px solid rgba(255,255,255,.06)!important;pointer-events:auto!important;
+  }
+  body:has(.cockpitV3) .topActions:before{
+    content:'L\A Sua conta'!important;white-space:pre!important;position:absolute!important;left:4px!important;top:9px!important;
+    min-height:34px!important;padding-left:40px!important;color:#b7c3d4!important;font-size:8px!important;line-height:17px!important;
+    background:radial-gradient(circle at 16px 17px,#31425e 0 16px,transparent 17px)!important;
+  }
+  body:has(.cockpitV3) .topActions #refreshBtn,
+  body:has(.cockpitV3) .topActions #logoutBtn{
+    position:absolute!important;top:14px!important;width:28px!important;height:28px!important;padding:0!important;border:0!important;background:transparent!important;color:#8798b0!important;font-size:0!important;
+  }
+  body:has(.cockpitV3) .topActions #refreshBtn{right:31px!important}
+  body:has(.cockpitV3) .topActions #refreshBtn:before{content:'↻';font-size:15px!important}
+  body:has(.cockpitV3) .topActions #logoutBtn{right:1px!important}
+  body:has(.cockpitV3) .topActions #logoutBtn:before{content:'⌄';font-size:16px!important}
+}
+
+.cockpitWelcome p{font-size:13px!important;color:#56667f!important}
+.executivePeriodControl{display:flex!important;align-items:flex-start!important;gap:14px!important}
+.executiveDateRange{display:flex!important;align-items:flex-start!important;gap:8px!important;min-width:122px!important;padding:4px 0 0 3px!important;color:#4e5d72!important}
+.executiveDateRange svg{width:18px!important;height:18px!important;margin-top:1px!important;stroke:#8292aa!important}
+.executiveDateRange span{display:flex!important;flex-direction:column!important;gap:1px!important;font-size:7.8px!important;line-height:1.3!important;white-space:nowrap!important}
+.executiveDateRange b{font-size:8px!important;color:#52627a!important;font-weight:650!important}
+.executivePeriodTabs{padding:3px!important;border-radius:8px!important}
+.executivePeriodTabs button{min-width:69px!important;padding:8px 10px!important;font-size:9.5px!important}
+
+.cockpitStatus{grid-template-columns:35px minmax(0,1fr) 64px!important}
+.cockpitIcon{display:grid!important;place-items:center!important;border-radius:50%!important}
+.cockpitIcon svg{width:20px!important;height:20px!important;display:block!important}
+.cockpitArrow{width:64px!important;height:38px!important;margin-top:20px!important;border:0!important;border-radius:0!important;transform:none!important;color:inherit!important;opacity:1!important}
+.cockpitArrow svg{width:64px!important;height:38px!important;display:block!important;overflow:visible!important}
+.cockpitMiniLine{fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.cockpitMiniDot{fill:currentColor!important}
+.cockpitMiniBar{fill:currentColor!important;opacity:.62!important}
+.cockpitMiniBase{stroke:currentColor!important;stroke-width:1!important;opacity:.22!important}
+
+.cockpitInsightHero b{font-size:13px!important;line-height:1.28!important}
+.cockpitInsightSupporting{display:block!important;margin-top:3px!important;color:#6b7890!important;font-size:8.7px!important;line-height:1.35!important;font-weight:520!important}
+.cockpitInsightHero .cockpitButton.primary{padding:10px 18px!important;font-size:9px!important}
+
+.cockpitModuleHead>div:first-child{position:relative!important;padding-left:32px!important;min-height:27px!important}
+.cockpitModuleHead>div:first-child:before{content:'';position:absolute;left:0;top:-3px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800}
+.cockpitModule.training .cockpitModuleHead>div:first-child:before{content:'↔';background:#e4f0ff;color:#2f80ed}
+.cockpitModule.nutrition .cockpitModuleHead>div:first-child:before{content:'●';background:#fff0df;color:#ef8746}
+.cockpitModule.body .cockpitModuleHead>div:first-child:before{content:'♙';background:#e3f1ff;color:#2b83df}
+.cockpitModule.recovery .cockpitModuleHead>div:first-child:before{content:'☾';background:#eee8ff;color:#8159d6}
+.cockpitModule.labs .cockpitModuleHead>div:first-child:before{content:'△';background:#eee8ff;color:#8051d1}
+.cockpitModule.hydration .cockpitModuleHead>div:first-child:before{content:'◆';background:#e3f2ff;color:#2f80ed}
+.cockpitModuleHead .cockpitButton{font-size:8.5px!important;color:#2f80ed!important}
+
+.cockpitBottomGrid .cockpitModuleHead>div:first-child{padding-left:24px!important;min-height:20px!important}
+.cockpitBottomGrid .cockpitModuleHead>div:first-child:before{width:18px!important;height:18px!important;top:-2px!important;background:#f2f5f9!important;color:#52647d!important;font-size:9px!important}
+.cockpitSummary .cockpitModuleHead>div:first-child:before{content:'▣'}
+.cockpitReview .cockpitModuleHead>div:first-child:before{content:'!'}
+.cockpitSources .cockpitModuleHead>div:first-child:before{content:'◎'}
+
+/* Second visual pass: keep the same measured geometry while matching the reference hierarchy more closely. */
+.executiveDateRange,.executiveDateRange *{text-transform:none!important;letter-spacing:0!important}
+.executiveDateRange{min-width:132px!important;gap:7px!important;padding-top:5px!important}
+.executiveDateRange span{font-size:8.2px!important;line-height:1.35!important;color:#718097!important}
+.executiveDateRange b{font-size:8.4px!important;color:#44536a!important;font-weight:650!important}
+.cockpitStatus{grid-template-columns:35px minmax(0,1fr) 54px!important;gap:8px!important}
+.cockpitStatusText b{font-size:18.5px!important;white-space:nowrap!important;letter-spacing:-.03em!important}
+.cockpitStatusText em{font-size:9.4px!important}
+.cockpitStatusText i{font-size:8.5px!important}
+.cockpitArrow,.cockpitArrow svg{width:54px!important}
+.cockpitInsightHero b{font-size:13.3px!important;line-height:1.24!important}
+.cockpitInsightSupporting{font-size:8.4px!important;margin-top:4px!important}
+.cockpitModule.training .cockpitMarks rect{fill:#5a91e8!important}
+.cockpitModule.nutrition .cockpitMarks rect{fill:#f0a158!important}
+.cockpitModule.nutrition .cockpitLine{stroke:#f0a158!important}
+.cockpitModule.body .cockpitLine{stroke:#4b79db!important}
+.cockpitModule.training .cockpitGroupBars{display:none!important}
+.cockpitTrainingMetrics{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:7px!important}
+.cockpitTrainingMetrics>div{padding:8px!important;border-radius:6px!important;background:#f4f7fb!important;min-width:0!important}
+.cockpitTrainingMetrics b{display:block!important;color:#17233c!important;font-size:12px!important;line-height:1.05!important;font-weight:780!important;white-space:nowrap!important}
+.cockpitTrainingMetrics span{display:block!important;margin-top:3px!important;color:#78869a!important;font-size:7.4px!important;line-height:1.2!important}
+.cockpitHydrationMissing>span{font-size:0!important;width:42px!important;height:52px!important;left:22px!important;top:16px!important;border:3px solid #91a3be!important;border-radius:55% 55% 60% 60% / 65% 65% 42% 42%!important;transform:rotate(42deg)!important;opacity:.9!important}
+.cockpitHydrationMissing>span:after{content:'';position:absolute;left:-7px;top:23px;width:56px;height:3px;border-radius:3px;background:#91a3be;transform:rotate(-88deg)}
+@media (min-width:900px){
+  body:has(.cockpitV3) .primaryNav:before{background:none!important}
+  .sidebarBrandGlyph{position:absolute!important;z-index:3!important;left:19px!important;top:22px!important;width:30px!important;height:30px!important;pointer-events:none!important}
+  .sidebarBrandGlyph svg{width:30px!important;height:30px!important;display:block!important}
+  body:has(.cockpitV3) .topbar:before{
+    background:
+      linear-gradient(180deg,rgba(8,16,30,.02) 0%,rgba(8,16,30,.05) 52%,rgba(8,16,30,.88) 100%),
+      url('./sidebar-mountain-reference.svg') center top/181px 78px no-repeat,
+      linear-gradient(180deg,#26364c 0%,#1b2a40 55%,#142033 100%)!important;
+  }
+}
+
+@media (max-width:899px){
+  .executivePeriodControl{display:block!important}
+  .executiveDateRange{margin-top:7px!important;padding-left:2px!important}
+  .cockpitStatus{grid-template-columns:32px minmax(0,1fr)!important}
+  .cockpitStatusText b{white-space:normal!important}
+  .cockpitArrow{display:none!important}
+  .cockpitModuleHead>div:first-child{padding-left:30px!important}
+  .cockpitTrainingMetrics{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
