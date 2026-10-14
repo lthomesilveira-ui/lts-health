@@ -77,7 +77,7 @@ const manifest={
     "src/home-cockpit.js": "e60175cf5de5d09efde96e81f583fdaa38600b706ef3ad6d7bce31a48adb0ef7",
     "src/home-evidence-insights.js": "16f1b40f892f41f038b4e852d604f1082f3b18679bcdad23016b7918ad496870",
     "src/home-overview.js": "2d08723ecce7f700f3dc3263706b75c20c85d08812ed9d3233138ae0ffdd5aa5",
-    "src/home-period-model.js": "ec1087e0deb60a24a08035a717ae3e7521cdf9c90ae77729561e27f26f442a8f",
+    "src/home-period-model.js": "8b679f78e06b25fdc08aaa142c2a2b1c2e5e43b732c0df52f4b5dfd74e206c29",
     "src/home-reference-experience.js": "08060c7d4e5ce3f524f4156034fa1ffdf95e040d139c7230b103cd108b3f9fcf",
     "src/home-reference.js": "f23182afbbdc87dd2861a3171951cae2fa5febe8f1affd2aa2df9ae987f78267",
     "src/hydration.js": "ac08d5f9c599e7937da7f6c73019d3faaf73b08c87039760d2c89cd2aeeb24ff",
