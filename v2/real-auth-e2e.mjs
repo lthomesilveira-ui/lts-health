@@ -51,9 +51,9 @@ async function waitForRoute(route){
       const rect=button.getBoundingClientRect(),style=getComputedStyle(button);
       return style.display!=='none'&&style.visibility!=='hidden'&&rect.width>=44&&rect.left>=-1&&rect.right<=window.innerWidth+1;
     });
-    const expectedMobileRoute=['hoje','bio','treinos','saude'].includes(value)?value:'mais';
+    const expectedMobileRoute=['hoje','treinos','analise'].includes(value)?value:'mais';
     const mobileActive=mobileButtons.filter(button=>button.classList.contains('active'));
-    const mobileShellReady=window.innerWidth>840||(mobileButtons.length===5&&mobileActive.length===1&&mobileActive[0].dataset.route===expectedMobileRoute);
+    const mobileShellReady=window.innerWidth>840||(mobileButtons.length===4&&mobileActive.length===1&&mobileActive[0].dataset.route===expectedMobileRoute);
     return location.hash===`#${value}`
       &&document.body.dataset.productRoute===value
       &&Boolean(document.querySelector('#screenHost h1'))
@@ -79,8 +79,8 @@ async function assertStableMobileShell(label){
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
   if(result.desktop)return;
-  if(result.buttons.length!==5||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
-  const expected=['hoje','bio','treinos','saude'].includes(result.route)?result.route:'mais';
+  if(result.buttons.map(button=>button.route).join(',')!=='hoje,treinos,analise,mais'||result.buttons.length!==4||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
+  const expected=['hoje','treinos','analise'].includes(result.route)?result.route:'mais';
   const active=result.buttons.filter(button=>button.active);
   if(active.length!==1||active[0].route!==expected)throw new Error(`${label}: mobile navigation has competing or incorrect active destinations ${JSON.stringify({route:result.route,expected,active})}`);
   if(!result.brand.includes('LTS Health'))throw new Error(`${label}: mobile brand is not visible`);
