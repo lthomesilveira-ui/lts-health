@@ -1,0 +1,90 @@
+/* Reference-language pass for the two primary evidence domains.
+   Presentation only: no health values, cohort rules, comparison rules or provenance semantics change. */
+@media (max-width:840px){
+  body[data-product-route="bio"] .screenHost,
+  body[data-product-route="saude"] .screenHost{
+    padding:10px 13px calc(102px + env(safe-area-inset-bottom))!important;
+    background:#f3f5f8!important;
+  }
+  .ltsCompositionV2,.ltsLabsV2{max-width:430px!important;margin:0 auto!important;color:#111a29!important}
+
+  /* Shared app-like domain header. */
+  .ltsCompositionV2>.ltsPageHeader,.ltsLabsV2>.ltsPageHeader{
+    min-height:58px!important;margin:0 0 10px!important;display:grid!important;grid-template-columns:42px minmax(0,1fr) 42px!important;gap:10px!important;align-items:center!important
+  }
+  .ltsCompositionV2>.ltsPageHeader>div,.ltsLabsV2>.ltsPageHeader>div{min-width:0!important}
+  .ltsCompositionV2>.ltsPageHeader .ltsEyebrow,.ltsLabsV2>.ltsPageHeader .ltsEyebrow{font-size:8.5px!important;letter-spacing:.11em!important;color:#738196!important}
+  .ltsCompositionV2>.ltsPageHeader h1,.ltsLabsV2>.ltsPageHeader h1{margin:2px 0 1px!important;font-size:24px!important;line-height:1.02!important;color:#111a29!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .ltsCompositionV2>.ltsPageHeader p,.ltsLabsV2>.ltsPageHeader p{font-size:9.5px!important;line-height:1.25!important;color:#7b899c!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .ltsCompositionV2>.ltsPageHeader .ltsBack,.ltsLabsV2>.ltsPageHeader .ltsBack{width:42px!important;min-width:42px!important;height:42px!important;border-radius:13px!important;font-size:27px!important;background:#fff!important;color:#26384d!important;border:1px solid #dfe6ee!important}
+  .ltsCompositionV2>.ltsPageHeader .ltsRoundAction,.ltsLabsV2>.ltsPageHeader .ltsRoundAction{width:42px!important;min-width:42px!important;height:42px!important;border-radius:13px!important;background:#101b2d!important;color:#fff!important;font-size:19px!important}
+
+  /* Composition: the latest measurement becomes a compact protagonist, not a dashboard slab. */
+  .ltsCompositionHero{padding:16px!important;border-radius:22px!important;background:linear-gradient(145deg,#10223a,#254c78)!important;box-shadow:0 13px 30px rgba(14,34,58,.14)!important}
+  .ltsCompositionHeroTop>div>span{font-size:8.5px!important;color:#bfd0e3!important;letter-spacing:.07em!important}
+  .ltsCompositionHeroTop strong{font-size:31px!important;margin-top:5px!important;color:#fff!important}
+  .ltsCompositionHeroTop small{font-size:9.5px!important;color:#dbe5ef!important;margin-top:5px!important}
+  .ltsCompositionGlyph{width:39px!important;height:39px!important;border-radius:12px!important;font-size:18px!important}
+  .ltsCompositionMetrics{margin-top:13px!important;gap:6px!important}
+  .ltsCompositionMetric{padding:9px 8px!important;border-radius:12px!important;background:rgba(255,255,255,.08)!important}
+  .ltsCompositionMetric span{font-size:7.5px!important;color:#bfd0e3!important}
+  .ltsCompositionMetric b{font-size:16px!important;color:#fff!important;margin-top:4px!important;white-space:nowrap!important}
+  .ltsCompositionMetric b small{font-size:8px!important;color:#dbe5ef!important}
+  .ltsCompositionHero>.ltsDepthLink{margin-top:11px!important;min-height:34px!important;padding:7px 10px!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:10px!important;background:rgba(255,255,255,.08)!important;color:#fff!important;font-size:9px!important}
+
+  .ltsCompositionV2 .ltsSection,.ltsLabsV2 .ltsSection{margin-top:14px!important}
+  .ltsCompositionV2 .ltsSectionHead,.ltsLabsV2 .ltsSectionHead{margin-bottom:8px!important}
+  .ltsCompositionV2 .ltsSectionHead span,.ltsLabsV2 .ltsSectionHead span{font-size:8px!important;letter-spacing:.08em!important;color:#7b899c!important}
+  .ltsCompositionV2 .ltsSectionHead h2,.ltsLabsV2 .ltsSectionHead h2{font-size:16px!important;line-height:1.1!important;color:#111a29!important;margin-top:2px!important}
+  .ltsCompositionV2 .ltsField,.ltsLabsV2 .ltsField{font-size:9px!important;color:#728096!important;margin-bottom:7px!important}
+  .ltsCompositionV2 .ltsField select,.ltsLabsV2 .ltsField select,.ltsLabsV2 .ltsField input{min-height:38px!important;border-radius:11px!important;font-size:10.5px!important;background:#fff!important;color:#19263a!important;border-color:#dfe6ee!important}
+
+  .ltsCompositionTabs{gap:5px!important;margin-right:-13px!important;padding-right:16px!important;padding-bottom:5px!important}
+  .ltsCompositionTabs button{min-height:31px!important;padding:6px 9px!important;font-size:9px!important;border-radius:999px!important;box-shadow:none!important}
+  .ltsCompositionChart,.ltsLabsChart{margin-top:3px!important;padding:10px 8px!important;border-radius:16px!important;box-shadow:none!important;border-color:#e1e7ee!important}
+  .ltsCompositionChart svg,.ltsLabsChart svg{height:154px!important}
+  .ltsCompositionChartBody,.ltsLabsChartBody{grid-template-columns:42px minmax(0,1fr)!important}
+  .ltsCompositionScale,.ltsLabsScale{font-size:7.5px!important}
+  .ltsCompositionAxis,.ltsLabsAxis{font-size:8px!important}
+  .ltsCompositionV2 .ltsDepthNote,.ltsLabsV2 .ltsDepthNote{margin:7px 2px 0!important;font-size:8.5px!important;line-height:1.35!important;color:#7b899c!important}
+
+  .ltsCompositionChangeCard{padding:12px!important;border-radius:15px!important;box-shadow:none!important}
+  .ltsCompositionChangeCard>p{font-size:10px!important}
+  .ltsCompositionChangeGrid{gap:5px!important;margin-top:9px!important;padding-top:9px!important}
+  .ltsCompositionChangeGrid>div{padding:8px 7px!important;border-radius:10px!important}
+  .ltsCompositionChangeGrid span{font-size:7px!important}.ltsCompositionChangeGrid b{font-size:12px!important;color:#111a29!important}
+  .ltsCompareDisclosure{margin-top:8px!important;border-radius:14px!important}
+  .ltsCompareDisclosure summary{font-size:9.5px!important}
+
+  .ltsCompositionHistoryList,.ltsLabsHistoryList{border-radius:16px!important;box-shadow:none!important}
+  .ltsCompositionHistoryRow,.ltsLabsHistoryRow{grid-template-columns:72px minmax(0,1fr)!important;gap:7px!important;padding:9px 10px!important}
+  .ltsCompositionHistoryRow time,.ltsLabsHistoryRow time{font-size:8.5px!important}
+  .ltsCompositionHistoryRow b,.ltsLabsHistoryRow b{font-size:11px!important;color:#111a29!important}
+  .ltsCompositionHistoryRow small,.ltsLabsHistoryRow small{font-size:8.5px!important;line-height:1.3!important}
+  .ltsCompositionHistoryRow>span,.ltsLabsHistoryRow>span{grid-column:2!important;justify-self:start!important;font-size:8px!important}
+  .ltsCompositionTrust,.ltsLabsTrust{margin-top:10px!important;padding:9px 10px!important;border-radius:13px!important}.ltsCompositionTrust p,.ltsLabsTrust p{font-size:8.5px!important;line-height:1.4!important}
+
+  /* Labs: one current result, then marker rail and longitudinal evidence. */
+  .ltsLabsHero{padding:16px!important;border-radius:22px!important;background:linear-gradient(145deg,#2b1930,#62354e)!important;box-shadow:0 13px 30px rgba(50,24,44,.13)!important}
+  .ltsLabsHeroTop>div>span{font-size:8.5px!important;color:#dec6d4!important;letter-spacing:.07em!important}
+  .ltsLabsHeroTop strong{font-size:27px!important;line-height:1.02!important;color:#fff!important;margin-top:5px!important}
+  .ltsLabsHeroTop small{font-size:9.5px!important;color:#ecdee7!important;margin-top:5px!important}
+  .ltsLabsGlyph{width:39px!important;height:39px!important;border-radius:12px!important;font-size:17px!important}
+  .ltsLabsHeroContext{grid-template-columns:1fr 1fr!important;gap:6px!important;margin-top:13px!important}
+  .ltsLabsHeroContext>div{padding:9px 8px!important;border-radius:11px!important;min-width:0!important}
+  .ltsLabsHeroContext span{font-size:7px!important;color:#dec6d4!important}.ltsLabsHeroContext b{font-size:9px!important;line-height:1.3!important;color:#fff!important}
+  .ltsLabsMarkers .ltsSectionHead,.ltsLabsTrend .ltsSectionHead{display:flex!important;align-items:flex-end!important}
+  .ltsLabsMarkers .ltsSectionHead>small,.ltsLabsTrend .ltsSectionHead>small{max-width:45%!important;margin:0!important;text-align:right!important;font-size:8px!important;color:#8491a3!important}
+  .ltsLabsMarkerRail{gap:6px!important;margin-right:-13px!important;padding:1px 16px 6px 1px!important}
+  .ltsLabsMarkerRail button{flex-basis:142px!important;min-height:52px!important;padding:8px 9px!important;border-radius:12px!important;box-shadow:none!important}
+  .ltsLabsMarkerRail button b{font-size:10px!important}.ltsLabsMarkerRail button small{font-size:8px!important;margin-top:3px!important}
+  .ltsLabsNoSeries{padding:10px!important;border-radius:12px!important;font-size:9px!important}
+  .ltsHistoryContext{padding:9px 10px!important;border-radius:12px!important;font-size:9px!important}
+  .ltsHistoryContext b{font-size:9.5px!important}
+}
+
+@media (max-width:390px){
+  .ltsCompositionHeroTop strong{font-size:29px!important}
+  .ltsLabsHeroTop strong{font-size:25px!important}
+  .ltsLabsHeroContext{grid-template-columns:1fr!important}
+}
