@@ -10,7 +10,7 @@ const render=(value,range,ui={})=>renderReferenceHome({...data,labs:[{collection
 const html=render(.3,'0.4 a 2');
 assert.match(html,/>0,0<\/text>/);assert.doesNotMatch(html,/[-−]0,0<\/text>/);assert.match(html,/0,3 u/);assert.match(html,/Laudo: 0,4–2,0 u/);
 assert.match(html,/1 fora da faixa/);assert.match(html,/Entre 1 avaliáveis · 1 resultados/);
-assert.match(html,/3\/89 dias únicos no conjunto/);assert.match(html,/2 dias sobrepostos no conjunto/);assert.match(html,/Sobreposição não confirma que as fontes sejam cópias/);assert.doesNotMatch(html,/Comparar origens \(3\)/);
+assert.match(html,/3\/89 dias recebidos · 86 ainda não recebidos/);assert.match(html,/2 dias sobrepostos no conjunto/);assert.match(html,/Sobreposição não confirma que as fontes sejam cópias/);assert.doesNotMatch(html,/Comparar origens \(3\)/);
 assert.match(html,/>Apple · exportação<\/option>/);assert.match(html,/>Apple · MyFitnessPal<\/option>/);assert.match(html,/>MyFitnessPal · arquivo<\/option>/);assert.match(html,/<b>Apple Saúde · MyFitnessPal \(Health Auto Export\)<\/b>/);
 const model=homePeriodModel(data,status,'90',{},'2025-03-20');
 for(const source of model.nutrition.sources){const selected=render(.3,'0.4 a 2',{reportNutritionSource:source.key});assert.ok(selected.includes(`value="${esc(source.key)}" selected`),'original source key and selection preserved');}

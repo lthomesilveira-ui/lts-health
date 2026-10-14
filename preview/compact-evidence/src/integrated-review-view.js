@@ -8,7 +8,7 @@ import {evolutionModel} from './evolution-model.js';
 import {renderBodyInterval} from './body-interval-view.js';
 
 const value=(v,unit='',digits=1)=>num(v)==null?'Sem valor registrado':`${fmtNum(v,digits)}${unit?` ${unit}`:''}`;
-const sourceLabel=s=>`${s.label}${s.status==='candidate'?' · fonte candidata':s.status==='held'?' · fonte em revisão':''}`;
+const sourceLabel=s=>`${s.label}${s.reviewVerified?' · arquivo conferido':s.status==='candidate'?' · fonte candidata':s.status==='held'?' · fonte em revisão':''}`;
 const select=(id,label,sources,selected,domain={})=>`<label class="ltsField">${esc(label)}<select id="${id}" data-report-field="${id}" ${sources.length?'':'disabled'}>${domain.requestedSourceMissing?`<option value="${esc(domain.requestedSource)}" selected disabled>Origem sem dados nesta janela</option>`:''}${sources.length?sources.map(s=>`<option value="${esc(s.key)}" ${s.key===selected?.key?'selected':''}>${esc(sourceLabel(s))} · ${s.rows.length} dias</option>`).join(''):domain.requestedSourceMissing?'':'<option value="">Sem origem disponível</option>'}</select></label>`;
 const note=text=>`<p class="ltsReviewNote">${esc(text)}</p>`;
 const unavailable='Leitura indisponível nesta atualização.';

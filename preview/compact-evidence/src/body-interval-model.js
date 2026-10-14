@@ -1,3 +1,4 @@
+import {nutritionSourceReview} from './nutrition-source-review.js';
 import {num,norm} from './core.js';
 import {validDay} from './history-tools.js';
 import {localHealthDay} from './health-context.js';
@@ -28,7 +29,7 @@ const bodyFields=[
 ];
 const segments=[['right_arm','Braço direito'],['left_arm','Braço esquerdo'],['trunk','Tronco'],['right_leg','Perna direita'],['left_leg','Perna esquerda']];
 const foodFields=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'];
-const candidateFoodFields={dietary_energy_kcal:['calories_kcal','kcal'],dietary_protein_g:['protein_g','g'],dietary_carbohydrates_g:['carbs_g','g'],dietary_fat_g:['fat_g','g'],dietary_fiber_g:['fiber_g','g']};
+const candidateFoodFields={dietary_energy_kcal:['calories_kcal','kcal'],dietary_protein_g:['protein_g','g'],dietary_carbohydrates_g:['carbs_g','g'],dietary_carbs_g:['carbs_g','g'],dietary_fat_g:['fat_g','g'],dietary_fiber_g:['fiber_g','g']};
 // Match the current Home's JSON source identity, without importing its selected
 // calendar or changing its state. The interval displays each source independently.
 const foodKey=(domain,label,status='canonical',family='')=>domain==='nutrition'?JSON.stringify([domain,norm(label),status]):JSON.stringify([domain,norm(family),norm(label),status]);
@@ -163,23 +164,24 @@ function metricNutrition(data,status,bounds,today){
   const observed=(data.sourceMetrics||[]).filter(row=>Object.hasOwn(candidateFoodFields,row.metric_type)&&acceptedStatus(row)&&inside(row.metric_date,bounds));
   const identified=observed.filter(row=>norm(row.source_name));
   const duplicates=[];
-  const sources=[...groupBy(identified,row=>foodKey('sourceMetrics',row.source_name,norm(row.canonical_status),row.source_family))].map(([key,items])=>{
+  const sources=[...groupBy(identified,row=>{const review=nutritionSourceReview(row);return JSON.stringify([...JSON.parse(foodKey('sourceMetrics',row.source_name,norm(row.canonical_status),row.source_family)),...(review.verified?[review.sourceHash]:[])]);})].map(([key,items])=>{
     const sourceDuplicates=[],rows=[];
     for(const[date,dayRows]of groupBy(items,row=>validDay(row.metric_date))){
-      const point={date,open:date===today,...Object.fromEntries(foodFields.map(field=>[field,null])),records:dayRows};
-      for(const[type,[field,unit]]of Object.entries(candidateFoodFields)){
-        const matches=dayRows.filter(row=>row.metric_type===type);
+      const reviews=dayRows.map(nutritionSourceReview),knownPartial=reviews.some(r=>r.partial);
+      const point={date,open:date===today,knownPartial,excludeFromClosedMeans:knownPartial||reviews.some(r=>r.state==='review_invalid'),reviewVerified:reviews.length>0&&reviews.every(r=>r.verified),exportedAt:reviews.find(r=>r.exportedAt)?.exportedAt||null,...Object.fromEntries(foodFields.map(field=>[field,null])),records:dayRows};
+      for(const[type,[field,unit]]of [...new Map(Object.entries(candidateFoodFields).map(([type,[field,unit]])=>[field,[type,[field,unit]]])).values()]){
+        const matches=dayRows.filter(row=>candidateFoodFields[row.metric_type]?.[0]===field);
         if(matches.length>1){const duplicate={date,metric:field,rows:matches,conflicting:new Set(matches.map(row=>JSON.stringify([num(row.value),norm(row.unit)]))).size>1};sourceDuplicates.push(duplicate);duplicates.push({...duplicate,source:key});}
         else if(matches.length===1&&norm(matches[0].unit)===unit)point[field]=numeric(matches[0].value);
       }
       rows.push(point);
     }
     rows.sort((a,b)=>a.date.localeCompare(b.date));
-    const closed=rows.filter(row=>!row.open),counts={},means={};
+    const closed=rows.filter(row=>!row.open&&!row.excludeFromClosedMeans),counts={},means={};
     for(const field of foodFields){const values=closed.map(row=>row[field]).filter(value=>value!=null);counts[field]=values.length;means[field]=mean(values);}
     const openRows=rows.filter(row=>row.open);
     return {key,domain:'sourceMetrics',label:String(items[0].source_name).trim(),status:norm(items[0].canonical_status),sourceFamily:items[0].source_family||null,
-      rows,counts,means,days:closed.filter(row=>foodFields.some(field=>row[field]!=null)).length,intervalDays:bounds.days,
+      rows,knownPartialRows:rows.filter(r=>r.knownPartial),reviewVerified:rows.length>0&&rows.every(r=>r.reviewVerified),counts,means,days:closed.filter(row=>foodFields.some(field=>row[field]!=null)).length,intervalDays:bounds.days,
       closedIntervalDays:bounds.closedDays,recordedDays:rows.length,ambiguousDays:new Set(sourceDuplicates.map(row=>row.date)).size,duplicates:sourceDuplicates,openRows,openDays:openRows.length};
   }).sort((a,b)=>a.key.localeCompare(b.key));
   return {available:true,reason:sources.length?'recorded':'empty',sources,duplicates,unknownRows:observed.length-identified.length};

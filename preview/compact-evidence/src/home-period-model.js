@@ -1,3 +1,4 @@
+import {nutritionSourceReview} from './nutrition-source-review.js';
 import {trainingSetCounts,isSetExtension} from './training-session.js';
 
 // A read-only calendar contract for the Home. This module intentionally has no
@@ -25,7 +26,7 @@ const inside=(value,bounds)=>{const date=dayOf(value);return Boolean(date&&date>
 const sourceStatus=row=>norm(row.canonical_status);
 const accepted=row=>['canonical','candidate','held'].includes(sourceStatus(row));
 const foodFields=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'];
-const candidateFood={dietary_energy_kcal:['calories_kcal','kcal'],dietary_protein_g:['protein_g','g'],dietary_carbohydrates_g:['carbs_g','g'],dietary_fat_g:['fat_g','g'],dietary_fiber_g:['fiber_g','g']};
+const candidateFood={dietary_energy_kcal:['calories_kcal','kcal'],dietary_protein_g:['protein_g','g'],dietary_carbohydrates_g:['carbs_g','g'],dietary_carbs_g:['carbs_g','g'],dietary_fat_g:['fat_g','g'],dietary_fiber_g:['fiber_g','g']};
 const bodyFields=['fat_mass_kg','skeletal_muscle_mass_kg','weight_kg','body_fat_pct'];
 const comparisonRule=Object.freeze({minimumDays:5,minimumCoverage:.7,description:'Critério descritivo: ao menos 5 dias com valor e 70% dos dias encerrados em cada janela, na mesma variável, unidade e origem. Não é teste estatístico nem prova de diário completo.'});
 
@@ -40,7 +41,7 @@ function statusOf(status,keys,count){
   return count?'ready':'empty';
 }
 function coverage(rows,bounds,today,available=true){
-  const dates=unique(rows.map(row=>row.date).filter(Boolean)).sort(),closed=dates.filter(date=>date<today);
+  const dates=unique(rows.map(row=>row.date).filter(Boolean)).sort(),closed=unique(rows.filter(row=>row.date<today&&!row.excludeFromClosedMeans).map(row=>row.date)).sort();
   return {recordedDays:available?dates.length:null,closedDays:available?closed.length:null,days:available?closed.length:null,
     expectedDays:bounds.closedDays,calendarDays:bounds.days,openDays:available?dates.filter(date=>date===today).length:null,
     fraction:available&&bounds.closedDays?closed.length/bounds.closedDays:null,firstDate:dates[0]||null,lastDate:dates.at(-1)||null,
@@ -61,7 +62,8 @@ function pickSource(sources,requested){
 function sourceStats(key,items,fields,bounds,today){
   const dates=groups(items,row=>row.date),rows=[],duplicates=[];
   for(const[date,list]of dates){
-    const row={date,open:date===today,source:key,context:items[0].label,cohort:key};
+    const reviews=list.map(item=>item.review).filter(Boolean);const knownPartial=reviews.some(r=>r.partial),reviewInvalid=reviews.some(r=>r.state==='review_invalid');
+    const row={date,open:date===today,knownPartial,excludeFromClosedMeans:knownPartial||reviewInvalid,reviewVerified:reviews.length===list.length&&reviews.length>0&&reviews.every(r=>r.verified),exportedAt:reviews.find(r=>r.exportedAt)?.exportedAt||null,source:key,context:items[0].label,cohort:key};
     for(const field of fields){
       const observations=list.filter(item=>Object.hasOwn(item.values,field));
       row[field]=observations.length===1?observations[0].values[field]:null;
@@ -69,7 +71,7 @@ function sourceStats(key,items,fields,bounds,today){
     }
     if(fields.some(field=>row[field]!=null))rows.push(row);
   }
-  const sorted=ordered(rows),closedRows=sorted.filter(row=>!row.open),means={},counts={},series={},metricCoverage={};
+  const sorted=ordered(rows),closedRows=sorted.filter(row=>!row.open&&!row.excludeFromClosedMeans),means={},counts={},series={},metricCoverage={};
   for(const field of fields){
     const closed=closedRows.filter(row=>row[field]!=null);
     counts[field]=closed.length;means[field]=average(closed.map(row=>row[field]));
@@ -78,7 +80,7 @@ function sourceStats(key,items,fields,bounds,today){
   }
   const first=items[0];
   return {key,label:first.label,status:first.status,unit:first.unit||null,domain:first.domain,sourceFamily:first.sourceFamily||null,
-    rows:sorted,closedRows,openRows:sorted.filter(row=>row.open),means,counts,series,duplicates,ambiguousDays:unique(duplicates.map(row=>row.date)).length,
+    receivedDates:unique(items.filter(item=>fields.some(field=>item.values[field]!=null)).map(item=>item.date)).sort(),rows:sorted,closedRows,knownPartialRows:sorted.filter(r=>r.knownPartial),reviewVerified:sorted.length>0&&sorted.every(r=>r.reviewVerified),openRows:sorted.filter(row=>row.open),means,counts,series,duplicates,ambiguousDays:unique(duplicates.map(row=>row.date)).length,
     coverage:coverage(sorted,bounds,today),metricCoverage,mean:means.value??null,count:counts.value??closedRows.length,
     points:series.value||[],latest:sorted.at(-1)||null};
 }
@@ -110,11 +112,11 @@ export function nutritionPeriodModel(data={},status={},bounds={},ui={},today=loc
   }
   if(ready(status,'sourceMetrics'))for(const row of data.sourceMetrics||[]){
     if(!accepted(row)||!candidateFood[row.metric_type]||!inside(row.metric_date,bounds))continue;
-    const[field,unit]=candidateFood[row.metric_type],point=metricObservation(row,'sourceMetrics',field,nonnegative(row.value));
+    const[field,unit]=candidateFood[row.metric_type],point=metricObservation(row,'sourceMetrics',field,nonnegative(row.value));point.review=nutritionSourceReview(row);
     if(!point.label){unknownRows++;continue;}if(norm(row.unit)!==unit){invalidRows++;continue;}
     // Units belong to the individual nutrient, not the source identity: protein
     // and energy from one origin must remain selectable together, without pooling.
-    point.key=JSON.stringify(['sourceMetrics',norm(row.source_family),norm(point.label),point.status]);point.unit=null;observed.push(point);
+    point.key=JSON.stringify(['sourceMetrics',norm(row.source_family),norm(point.label),point.status,...(point.review.verified?[point.review.sourceHash]:[])]);point.unit=null;observed.push(point);
   }
   const result=domainSources(observed,foodFields,status,['nutrition','sourceMetrics'],bounds,today,ui.homeNutritionSource||ui.reportNutritionSource);
   for(const source of result.sources){source.caloriesPoints=source.series.calories_kcal;source.proteinPoints=source.series.protein_g;}

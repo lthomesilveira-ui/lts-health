@@ -76,13 +76,14 @@ export function integratedReview(data={},status={},bounds={},ui={},today=localHe
 
 export function consultationLines(review,reports,evolution=null){
   const v=(value,unit='',digits=1)=>num(value)==null?'Sem dado':`${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
-  const coverage=(label,domain)=>`${label}: ${domain.closedRows.length} dias encerrados com registro · ${domain.source?.label||'sem origem disponível'}${domain.source?.status==='candidate'?' · fonte candidata':domain.source?.status==='held'?' · fonte em revisão':''}`;
+  const coverage=(label,domain)=>`${label}: ${domain.closedRows.length} dias encerrados com registro · ${domain.source?.label||'sem origem disponível'}${domain.source?.reviewVerified?' · arquivo conferido, totais observados':domain.source?.status==='candidate'?' · fonte candidata':domain.source?.status==='held'?' · fonte em revisão':''}`;
   const lines=['LTS Health · resumo para consulta',`Gerado em ${fmtDate(review.today)} · janela ${fmtDate(review.bounds.start)} a ${fmtDate(review.bounds.end)}`,
     'Resumo pessoal descritivo. Não é laudo, diagnóstico ou recomendação de tratamento. Nenhum envio a terceiros é feito pelo aplicativo.',
     '', 'LEITURA PARA A CONSULTA',...(evolution?.takeaways.length?evolution.takeaways.map(f=>`${f.title}. ${f.meaning} ${f.evidence} ${f.limit}`):['Sem síntese sustentada pelos registros disponíveis nesta janela.']),
     '', 'EVOLUÇÃO OBSERVADA',...(evolution?.findings.length?evolution.findings.map(f=>`${f.title}. ${f.text} ${f.detail}`):['Sem mudança comparável confirmada na janela escolhida. Valores e datas seguem abaixo.']),
     '', 'ALIMENTAÇÃO, ÁGUA E SONO',
     review.nutrition.requestedSourceMissing?`Alimentação: ${review.nutrition.selectionMessage}`:review.nutrition.available?coverage('Alimentação',review.nutrition):'Alimentação: leitura indisponível.',
+    ...(review.nutrition.source?.knownPartialRows?.length?[`Totais parciais fora das médias: ${review.nutrition.source.knownPartialRows.map(r=>fmtDate(r.date)).join(', ')}.`]:[]),
     `Energia média: ${v(review.nutrition.means.calories_kcal,'kcal',0)} · ${review.nutrition.counts.calories_kcal} dias com valor.`,
     `Proteína média: ${v(review.nutrition.means.protein_g,'g',0)} · ${review.nutrition.counts.protein_g} dias com valor.`,
     review.water.available?`Água: último total ${v(review.water.rows.at(-1)?.value,'mL',0)} em ${fmtDate(review.water.rows.at(-1)?.date)} · ${review.water.source?.label||'sem origem'}.${review.water.closedRows.length>=5?` Média dos dias encerrados com valor: ${v(review.water.mean,'mL',0)}.`:' Histórico curto; sem média de período.'}`:'Água: fontes não verificadas; valores ocultos.',
