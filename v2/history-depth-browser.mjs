@@ -29,7 +29,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
-  await page.locator('[data-home-period="all"]').click();
+  if(width<=840)await page.locator('[data-home-period-select]').selectOption('all');else await page.locator('[data-home-period="all"]').click();
   assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1,'one shared body panel');
   const axes=await page.locator('.refPanels .refAxis').allTextContents();
   assert.ok(axes.length>=2&&new Set(axes).size===1,'all populated panels share selected calendar');
