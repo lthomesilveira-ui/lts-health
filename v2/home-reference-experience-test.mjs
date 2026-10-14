@@ -23,3 +23,7 @@ assert.equal((unknown.match(/data-observed-link/g)||[]).length,2,'one observed u
 assert.match(unknown,/stroke-dasharray="4 3"/);assert.match(unknown,/Última: 01\/03\/2025/);assert.match(unknown,/condições não confirmadas/);assert.doesNotMatch(unknown,/perdeu músculo|causou/);
 
 for(const records of [[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{measured_at:'2025-02-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}],[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}]]){const result=renderReferenceHome({...data,body:records},status,'90',{},'2025-03-20');assert.doesNotMatch(result,/NaN|Infinity/);assert.match(result,/Músculo <b>30,0 → 30,0 kg/);}
+
+const invalidBody=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:-99,skeletal_muscle_mass_kg:true},{measured_at:'2025-02-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}]},status,'90',{},'2025-03-20');assert.doesNotMatch(invalidBody,/-99|−99|119,0|29,0 kg/);assert.match(invalidBody,/Músculo <b>30,0 → 30,0 kg/);
+
+const differentEnds=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{measured_at:'2025-02-01',source:'A',skeletal_muscle_mass_kg:30},{measured_at:'2025-03-01',source:'A',fat_mass_kg:19}]},status,'90',{},'2025-03-20');assert.match(differentEnds,/Gordura <b>20,0 → 19,0 kg/);assert.match(differentEnds,/Músculo <b>30,0 → 30,0 kg/);assert.match(differentEnds,/Último valor: 01\/02\/2025/);assert.match(differentEnds,/Músculo, 01\/02\/2025 até 01\/02\/2025/);
