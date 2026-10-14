@@ -112,13 +112,13 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  await page.locator('.refNext [data-home-consultation]').click();await page.waitForSelector('[data-review-export]');
  assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
  const exportText=await page.locator('.ltsConsultation').innerText();assert.match(exportText,/Synthetic earlier export/);assert.match(exportText,/42\/89/);assert.match(exportText,/Proteína média: 101 g · 42 dias com valor/);assert.match(exportText,/Energia média: 1\.821 kcal · 42 dias com valor/);assert.doesNotMatch(exportText,/Proteína média 12[0-9] g/);
- await page.getByRole('button',{name:'Voltar à visão geral',exact:true}).click();await page.waitForSelector('[data-reference-home]');
+ await page.locator('.domainHeader .domainHomeAction[data-route="hoje"]').click();await page.waitForSelector('[data-reference-home]');
  assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),selectedFoodKey);assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
  await setPeriod('30');assert.match(await page.locator('.refPanel.nutrition').innerText(),/A origem escolhida não tem registros nesta janela/);
  assert.equal(await page.locator('.refPanel.nutrition [data-series="energy"] rect').count(),0);assert.equal(await page.locator('[data-home-field="reportNutritionSource"] option:checked').innerText(),'Origem sem dados nesta janela');
  await page.locator('.refNext [data-home-consultation]').click();await page.waitForSelector('[data-review-export]');assert.equal(await page.locator('#analysisPeriod').inputValue(),'30');
  const missingExport=await page.locator('.ltsConsultation').innerText();assert.match(missingExport,/origem[^.]*sem dados/i);assert.match(missingExport,/Proteína média: Sem dado · 0 dias com valor/);assert.match(missingExport,/Energia média: Sem dado · 0 dias com valor/);assert.doesNotMatch(missingExport,/Proteína média 12[0-9] g|energia média 2\.20[0-9]/);
- await page.getByRole('button',{name:'Voltar à visão geral',exact:true}).click();await page.waitForSelector('[data-reference-home]');await setPeriod('90');assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),selectedFoodKey);assert.equal(await page.locator('.refPanel.nutrition [data-series="energy"] rect').count(),42);
+ await page.locator('.domainHeader .domainHomeAction[data-route="hoje"]').click();await page.waitForSelector('[data-reference-home]');await setPeriod('90');assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),selectedFoodKey);assert.equal(await page.locator('.refPanel.nutrition [data-series="energy"] rect').count(),42);
  assert.equal(await page.locator('[id]').evaluateAll(es=>es.length===new Set(es.map(e=>e.id)).size),true);assert.deepEqual(errors,[]);await page.close();
 }
 }finally{await browser.close();}
