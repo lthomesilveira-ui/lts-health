@@ -48,7 +48,14 @@ function coverage(rows,bounds,today,available=true){
     note:'Dias com registro não comprovam diário completo. Ausência não significa zero.'};
 }
 function pickSource(sources,requested){
-  if(requested)return sources.find(source=>source.key===requested||norm(source.label)===requested)||null;
+  if(requested){
+    const exact=sources.find(source=>source.key===requested);if(exact)return exact;
+    try{if(Array.isArray(JSON.parse(requested)))return null;}catch{}
+    // Legacy labels are accepted only when they identify exactly one source.
+    // Never choose among domains/statuses sharing the same display label.
+    const legacy=sources.filter(source=>norm(source.label)===norm(requested));
+    return legacy.length===1?legacy[0]:null;
+  }
   return sources.slice().sort((a,b)=>(b.rows.at(-1)?.date||'').localeCompare(a.rows.at(-1)?.date||'')||b.coverage.closedDays-a.coverage.closedDays||a.key.localeCompare(b.key))[0]||null;
 }
 function sourceStats(key,items,fields,bounds,today){
@@ -82,14 +89,18 @@ function domainSources(observed,fields,status,keys,bounds,today,requested){
     rows:source?.rows||[],closedRows:source?.closedRows||[],means:source?.means||empty,counts:source?.counts||Object.fromEntries(fields.map(field=>[field,0])),
     mean:source?.mean??null,count:source?.count??0,points:source?.points||[],latest:source?.latest||null,
     coverage:source?.coverage||coverage([],bounds,today,available),duplicates:sources.flatMap(item=>item.duplicates),
-    requestedSourceMissing:Boolean(requested&&!source),comparison:null};
+    requestedSource:requested||null,requestedSourceMissing:Boolean(requested&&!source),
+    selectionMessage:requested&&!source?'Origem escolhida sem dados disponíveis nesta janela. Amplie o período ou escolha outra origem; nenhuma substituição foi feita.':null,comparison:null};
 }
 function metricObservation(row,domain,field,value){
   const label=String(row.source_name||row.source||'').trim(),status=domain==='metrics'?'canonical':sourceStatus(row),unit=norm(row.unit);
   return {date:dayOf(domain==='metrics'?row.measured_at:row.metric_date),label,status,unit,sourceFamily:row.source_family||null,domain,
     key:JSON.stringify([domain,norm(row.source_family),norm(label),status,unit]),values:{[field]:value}};
 }
-function nutritionModel(data,status,bounds,ui,today){
+// Shared source contract for Home, integrated review and consultation/export.
+// It retains source domain/status, per-variable counts and today's open rows.
+export function nutritionPeriodModel(data={},status={},bounds={},ui={},today=localToday()){
+  bounds=makeBounds(bounds.start||selectedCalendar(data,status,'all',today).bounds.start,bounds.end&&bounds.end<today?bounds.end:today,today);
   const observed=[];let unknownRows=0,invalidRows=0;
   if(ready(status,'nutrition'))for(const row of data.nutrition||[]){
     if(!inside(row.nutrition_date,bounds))continue;
@@ -205,7 +216,7 @@ function simpleRows(data,status,key,dateKey,bounds,today){
   return {available,status:statusOf(status,[key],rows.length),rows,coverage:coverage(rows,bounds,today,available)};
 }
 function snapshot(data,status,bounds,ui,today){
-  const body=bodyModel(data,status,bounds,ui,today),training=trainingModel(data,status,bounds,today),nutrition=nutritionModel(data,status,bounds,ui,today),sleep=sleepModel(data,status,bounds,ui,today),water=waterModel(data,status,bounds,ui,today),labs=labsModel(data,status,bounds,today);
+  const body=bodyModel(data,status,bounds,ui,today),training=trainingModel(data,status,bounds,today),nutrition=nutritionPeriodModel(data,status,bounds,ui,today),sleep=sleepModel(data,status,bounds,ui,today),water=waterModel(data,status,bounds,ui,today),labs=labsModel(data,status,bounds,today);
   const treatments=simpleRows(data,status,'treatments','event_date',bounds,today),polar=simpleRows(data,status,'polarSessions','workout_date',bounds,today);
   const domains={body,training,nutrition,sleep,water,labs,treatments,polar};
   const dates=unique(Object.values(domains).flatMap(domain=>domain.sources?domain.sources.flatMap(source=>source.rows.map(row=>row.date)):domain.rows.map(row=>row.date))).sort();

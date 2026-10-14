@@ -1,4 +1,5 @@
 import {day,num,norm,fmtDate,fmtNum} from './core.js';
+import {nutritionPeriodModel} from './home-period-model.js';
 import {validDay} from './history-tools.js';
 import {hydrationModel} from './hydration.js';
 import {localHealthDay,bodySourceLabel,medicationContext} from './health-context.js';
@@ -8,9 +9,7 @@ import {labResultText} from './labs-layout-v2.js';
 const ready=(status,key)=>status?.[key]==='ready';
 const inside=(date,bounds)=>Boolean(date&&(!bounds.start||date>=bounds.start)&&(!bounds.end||date<=bounds.end));
 const average=values=>values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null;
-const numeric=value=>num(value)!=null&&num(value)>=0?num(value):null;
 const order=rows=>rows.sort((a,b)=>a.date.localeCompare(b.date));
-const nutritionMetrics=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'];
 const recordedPhases={warmup:'aquecimento',working:'série de trabalho',drop:'drop set',rest_pause:'rest-pause',other:'outra fase informada'};
 export function recordedPhaseLabel(phase){
   const key=norm(phase);
@@ -36,21 +35,8 @@ function selectSource(sources,requested){
 // Date joins are exact. Missing days are not zeroes; neither source interpolation
 // nor device pooling is allowed. The current calendar day is context, not a cohort.
 export function integratedReview(data={},status={},bounds={},ui={},today=localHealthDay()){
-  const nutritionDays=new Map();let ambiguousNutrition=0,unknownNutrition=0;
-  if(ready(status,'nutrition'))for(const row of data.nutrition||[]){
-    const date=validDay(row.nutrition_date);if(!inside(date,bounds))continue;
-    if(!nutritionDays.has(date))nutritionDays.set(date,[]);nutritionDays.get(date).push(row);
-  }
-  const food=[];
-  for(const[date,rows]of nutritionDays){
-    if(rows.length!==1){ambiguousNutrition++;continue;}
-    const row=rows[0];if(!norm(row.source)){unknownNutrition++;continue;}
-    const values=Object.fromEntries(nutritionMetrics.map(key=>[key,numeric(row[key])]));
-    if(Object.values(values).some(v=>v!=null))food.push({date,source:String(row.source).trim(),...values});
-  }
-  const nutritionSources=sourcesOf(food,today);
-  const nutritionSource=selectSource(nutritionSources,ui.reportNutritionSource);
-  const nutritionRows=nutritionSource?.rows||[];
+  const nutrition=nutritionPeriodModel(data,status,bounds,ui,today);
+  const nutritionRows=nutrition.rows;
   const waterAvailable=ready(status,'nutrition')&&ready(status,'sourceMetrics');
   const hydration=waterAvailable?hydrationModel(data):{rows:[],conflicts:[]};
   const waterSources=sourcesOf(hydration.rows.filter(row=>inside(validDay(row.date),bounds)),today);
@@ -71,7 +57,7 @@ export function integratedReview(data={},status={},bounds={},ui={},today=localHe
   const byDate=rows=>new Map(rows.map(r=>[r.date,r]));
   const nutritionByDate=byDate(nutritionRows),waterByDate=byDate(waterRows),sleepByDate=byDate(sleepRows);
   const days=dates.map(date=>({date,open:date>=today,nutrition:nutritionByDate.get(date)||null,water:waterByDate.get(date)||null,sleep:sleepByDate.get(date)||null,workouts:trainingDays.get(date)||[],body:body.filter(r=>day(r.measured_at)===date),labs:labs.filter(r=>day(r.collection_date)===date),treatments:treatments.filter(r=>day(r.event_date)===date)}));
-  const closed=days.filter(d=>!d.open),closedNutrition=nutritionRows.filter(r=>r.date<today),closedWater=waterRows.filter(r=>r.date<today),closedSleep=sleepRows.filter(r=>r.date<today);
+  const closed=days.filter(d=>!d.open),closedWater=waterRows.filter(r=>r.date<today),closedSleep=sleepRows.filter(r=>r.date<today);
   const contrast=(rows,available)=>{
     const withTraining=rows.filter(r=>r.date<today&&trainingDays.has(r.date)),withoutTraining=rows.filter(r=>r.date<today&&!trainingDays.has(r.date));
     const comparable=available&&withTraining.length>=5&&withoutTraining.length>=5;
@@ -80,7 +66,7 @@ export function integratedReview(data={},status={},bounds={},ui={},today=localHe
   };
   const intervalDays=bounds.start&&bounds.end?Math.max(1,Math.round((Date.parse(bounds.end)-Date.parse(bounds.start))/86400000)+1):null;
   return{bounds,today,intervalDays,dates,days,closed,selectedDate,selected:days.find(d=>d.date===selectedDate)||null,
-    nutrition:{available:ready(status,'nutrition'),sources:nutritionSources,source:nutritionSource,rows:nutritionRows,closedRows:closedNutrition,ambiguousDays:ambiguousNutrition,unknownDays:unknownNutrition,means:Object.fromEntries(nutritionMetrics.map(key=>[key,average(closedNutrition.map(r=>r[key]).filter(v=>v!=null))])),counts:Object.fromEntries(nutritionMetrics.map(key=>[key,closedNutrition.filter(r=>r[key]!=null).length]))},
+    nutrition:{...nutrition,ambiguousDays:new Set(nutrition.duplicates.map(row=>row.date)).size,unknownDays:nutrition.unknownRows},
     water:{available:waterAvailable,sources:waterSources,source:waterSource,rows:waterRows,closedRows:closedWater,mean:average(closedWater.map(r=>r.value)),conflicts:hydration.conflicts.filter(r=>inside(validDay(r.date),bounds))},
     sleep:{available:ready(status,'sourceMetrics'),sources:sleepSources,source:sleepSource,rows:sleepRows,closedRows:closedSleep,mean:average(closedSleep.map(r=>r.value))},
     training:{available:ready(status,'workouts'),rows:trainingRows,days:trainingDays.size,closedDays:closed.filter(d=>d.workouts.length).length},
@@ -90,13 +76,13 @@ export function integratedReview(data={},status={},bounds={},ui={},today=localHe
 
 export function consultationLines(review,reports,evolution=null){
   const v=(value,unit='',digits=1)=>num(value)==null?'Sem dado':`${fmtNum(value,digits)}${unit?` ${unit}`:''}`;
-  const coverage=(label,domain)=>`${label}: ${domain.closedRows.length} dias encerrados com registro · ${domain.source?.label||'sem origem disponível'}`;
+  const coverage=(label,domain)=>`${label}: ${domain.closedRows.length} dias encerrados com registro · ${domain.source?.label||'sem origem disponível'}${domain.source?.status==='candidate'?' · fonte candidata':domain.source?.status==='held'?' · fonte em revisão':''}`;
   const lines=['LTS Health · resumo para consulta',`Gerado em ${fmtDate(review.today)} · janela ${fmtDate(review.bounds.start)} a ${fmtDate(review.bounds.end)}`,
     'Resumo pessoal descritivo. Não é laudo, diagnóstico ou recomendação de tratamento. Nenhum envio a terceiros é feito pelo aplicativo.',
     '', 'LEITURA PARA A CONSULTA',...(evolution?.takeaways.length?evolution.takeaways.map(f=>`${f.title}. ${f.meaning} ${f.evidence} ${f.limit}`):['Sem síntese sustentada pelos registros disponíveis nesta janela.']),
     '', 'EVOLUÇÃO OBSERVADA',...(evolution?.findings.length?evolution.findings.map(f=>`${f.title}. ${f.text} ${f.detail}`):['Sem mudança comparável confirmada na janela escolhida. Valores e datas seguem abaixo.']),
     '', 'ALIMENTAÇÃO, ÁGUA E SONO',
-    review.nutrition.available?coverage('Alimentação',review.nutrition):'Alimentação: leitura indisponível.',
+    review.nutrition.requestedSourceMissing?`Alimentação: ${review.nutrition.selectionMessage}`:review.nutrition.available?coverage('Alimentação',review.nutrition):'Alimentação: leitura indisponível.',
     `Energia média: ${v(review.nutrition.means.calories_kcal,'kcal',0)} · ${review.nutrition.counts.calories_kcal} dias com valor.`,
     `Proteína média: ${v(review.nutrition.means.protein_g,'g',0)} · ${review.nutrition.counts.protein_g} dias com valor.`,
     review.water.available?`Água: último total ${v(review.water.rows.at(-1)?.value,'mL',0)} em ${fmtDate(review.water.rows.at(-1)?.date)} · ${review.water.source?.label||'sem origem'}.${review.water.closedRows.length>=5?` Média dos dias encerrados com valor: ${v(review.water.mean,'mL',0)}.`:' Histórico curto; sem média de período.'}`:'Água: fontes não verificadas; valores ocultos.',

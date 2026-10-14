@@ -4,6 +4,7 @@ import {localHealthDay,bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,labHi
 import {labGroups,labCohorts} from './labs-layout-v2.js';
 import {addDays,normalizeMuscleGroup} from './integrated-analysis.js';
 import {hydrationModel} from './hydration.js';
+import {nutritionPeriodModel} from './home-period-model.js';
 
 const ready=(status,key)=>status?.[key]==='ready';
 const ordered=(rows,key)=>rows.filter(r=>validDay(r[key])).slice().sort((a,b)=>day(a[key]).localeCompare(day(b[key])));
@@ -149,18 +150,22 @@ export function recoveryReport(data,status,bounds,requested=null){
   const selected=series.find(s=>s.key===requested)||series[0];
   return {available:true,series,selected,points:selected?.points||[]};
 }
+function selectedNutritionSummary(data,status,bounds,requested,today){
+  const n=nutritionPeriodModel(data,status,bounds,{reportNutritionSource:requested},today);
+  return {...n,days:n.available?n.closedRows.length:null,intervalDays:days(bounds.start,bounds.end),origins:n.source?[n.source.key]:[]};
+}
 export function usefulReports(data={},status={},ui={},today=localHealthDay()){
   const period=['30','90','365','all'].includes(ui.analysisPeriod)?ui.analysisPeriod:'90',windows=reportBounds(period,today);
   if(period==='all'){
     const dates=[['body','measured_at'],['segmental','measured_at'],['labs','collection_date'],['workouts','workout_date'],['polarSessions','workout_date'],['nutrition','nutrition_date'],['sourceMetrics','metric_date']].flatMap(([key,dateKey])=>ready(status,key)?(data[key]||[]).map(r=>validDay(r[dateKey])).filter(d=>d&&d<=today):[]).sort();
     windows.current.start=dates[0]||today;
   }
-  const bounds=windows.current,body=compositionReport(data,status,bounds,ui.reportBodySource),segmental=segmentalReport(data,status,bounds,ui.reportSegmentSource,ui.reportRegion,ui.reportSegmentMetric),labs=laboratoryReport(data,status,bounds,ui.reportLabMarker),training=trainingSummary(data,status,bounds),nutrition=nutritionSummary(data,status,bounds),recovery=recoveryReport(data,status,bounds,ui.reportRecoverySource);
+  const bounds=windows.current,body=compositionReport(data,status,bounds,ui.reportBodySource),segmental=segmentalReport(data,status,bounds,ui.reportSegmentSource,ui.reportRegion,ui.reportSegmentMetric),labs=laboratoryReport(data,status,bounds,ui.reportLabMarker),training=trainingSummary(data,status,bounds),nutrition=selectedNutritionSummary(data,status,bounds,ui.homeNutritionSource||ui.reportNutritionSource,today),recovery=recoveryReport(data,status,bounds,ui.reportRecoverySource);
   const hydration=hydrationSummary(data,status,bounds);
-  const prior=windows.previous?{training:trainingSummary(data,status,windows.previous),nutrition:nutritionSummary(data,status,windows.previous),hydration:hydrationSummary(data,status,windows.previous),recovery:recoveryReport(data,status,windows.previous,recovery.selected?.key)}:null;
+  const prior=windows.previous?{training:trainingSummary(data,status,windows.previous),nutrition:selectedNutritionSummary(data,status,windows.previous,nutrition.source?.key||nutrition.requestedSource||'__no_selected_origin__',today),hydration:hydrationSummary(data,status,windows.previous),recovery:recoveryReport(data,status,windows.previous,recovery.selected?.key)}:null;
   // A prior device is never substituted for the selected current device.
   if(prior?.recovery.selected?.key!==recovery.selected?.key&&prior?.recovery)prior.recovery={...prior.recovery,selected:null,points:[]};
-  const sourcesMatch=nutrition.origins.length===1&&nutrition.origins[0]&&prior?.nutrition.origins.length===1&&nutrition.origins[0]===prior.nutrition.origins[0];
+  const sourcesMatch=!nutrition.unknownRows&&!prior?.nutrition.unknownRows&&nutrition.origins.length===1&&nutrition.origins[0]&&prior?.nutrition.origins.length===1&&nutrition.origins[0]===prior.nutrition.origins[0];
   const waterSourcesMatch=hydration.origins.length===1&&hydration.origins[0]&&prior?.hydration.origins.length===1&&hydration.origins[0]===prior.hydration.origins[0];
-  return {period,today,...windows,body,segmental,labs,training,polar:polarTrainingSummary(data,status,bounds),nutrition,hydration,recovery,prior,nutritionComparable:Boolean(sourcesMatch),hydrationComparable:Boolean(waterSourcesMatch),lastNutrition:ordered(ready(status,'nutrition')?data.nutrition||[]:[],'nutrition_date').at(-1)?.nutrition_date||null,lastWorkout:ordered(ready(status,'workouts')?(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'):[],'workout_date').at(-1)?.workout_date||null};
+  return {period,today,...windows,body,segmental,labs,training,polar:polarTrainingSummary(data,status,bounds),nutrition,hydration,recovery,prior,nutritionComparable:Boolean(sourcesMatch),hydrationComparable:Boolean(waterSourcesMatch),lastNutrition:nutritionPeriodModel(data,status,{end:today},{reportNutritionSource:nutrition.source?.key||nutrition.requestedSource||'__no_selected_origin__'},today).latest?.date||null,lastWorkout:ordered(ready(status,'workouts')?(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'):[],'workout_date').at(-1)?.workout_date||null};
 }
