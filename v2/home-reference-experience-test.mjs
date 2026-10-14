@@ -20,6 +20,6 @@ const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'er
 
 const unknown=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30},{measured_at:'2025-02-01',source:'A',fat_mass_kg:19,skeletal_muscle_mass_kg:31},{measured_at:'2025-03-01',source:'A',device_name:'Known',fat_mass_kg:18,skeletal_muscle_mass_kg:32}]},status,'90',{},'2025-03-20');
 assert.equal((unknown.match(/data-observed-link/g)||[]).length,2,'one observed unknown-device segment per metric; known device breaks continuity');
-assert.match(unknown,/stroke-dasharray="4 3"/);assert.match(unknown,/Selecionada: 01\/03\/2025/);assert.match(unknown,/condições não confirmadas/);assert.doesNotMatch(unknown,/perdeu músculo|causou/);
+assert.match(unknown,/stroke-dasharray="4 3"/);assert.match(unknown,/Última: 01\/03\/2025/);assert.match(unknown,/condições não confirmadas/);assert.doesNotMatch(unknown,/perdeu músculo|causou/);
 
 for(const records of [[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{measured_at:'2025-02-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}],[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}]]){const result=renderReferenceHome({...data,body:records},status,'90',{},'2025-03-20');assert.doesNotMatch(result,/NaN|Infinity/);assert.match(result,/Músculo <b>30,0 → 30,0 kg/);}
