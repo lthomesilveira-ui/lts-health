@@ -33,7 +33,7 @@ export async function fetchAll(table,select='*',orderColumn=null,ascending=false
 }
 
 const loaders={
-  waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,water_reference:source_payload->water_reference_ui','document_date',false),
+  waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,water_reference:source_payload->water_reference_ui,clinical_baseline:source_payload->clinical_baseline','document_date',false),
   goals:()=>fetchAll('health_personal_goals','effective_from,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,notes','effective_from',true,null),
   polarSessions:()=>fetchAll('health_polar_sessions','source_record_id,workout_date,recorded_start,session_name,duration_minutes,heart_rate_avg,heart_rate_max,source_name','workout_date',false),
   body:()=>fetchAll('health_body_composition','source_record_id,measured_at,weight_kg,skeletal_muscle_mass_kg,fat_mass_kg,body_fat_pct,body_water_l,visceral_fat_level,score,waist_hip_ratio,bmr_kcal,source,source_file,confidence,notes,device_name:source_payload->>device','measured_at',true),
