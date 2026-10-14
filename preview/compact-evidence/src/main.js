@@ -212,7 +212,7 @@ function bindStaticEvents(){
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
     if(event.target.closest('[data-reference-export]')){downloadReferencePeriodSummary();return;}
     const homeInsight=event.target.closest('[data-home-insight-details]');
-    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;state.ui.reviewView='overview';setRoute('analise',{replace:false});return;}
+    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;const start=homeInsight.dataset.bodyStart,end=homeInsight.dataset.bodyEnd;if(start&&end&&start<end){state.ui.bodyIntervalStart=start;state.ui.bodyIntervalEnd=end;state.ui.reviewView='interval';}else{state.ui.reviewView='overview';}setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-refresh]')){refresh();return;}
     if(event.target.closest('[data-home-consultation]')){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reviewView='consultation';setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-goals]')){const details=document.querySelector('.ltsGoalSettings');if(details){details.open=true;details.scrollIntoView({block:'start',behavior:'auto'});details.querySelector('input')?.focus({preventScroll:true});}return;}
@@ -279,7 +279,7 @@ function bindStaticEvents(){
     if(event.target.hasAttribute('data-home-period-select')){setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
-    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
+    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker','homeTrainingContext'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
     if(['bodyIntervalStart','bodyIntervalEnd'].includes(event.target.id)){state.ui[event.target.id]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
     if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
