@@ -56,7 +56,9 @@ for(const config of [
   if(home.hostBottom>home.navTop+1)throw new Error(`${config.label}/home: content overlaps navigation`);
   if(home.hostPaddingBottom>30)throw new Error(`${config.label}/home: duplicate bottom reserve ${home.hostPaddingBottom}px`);
   if(home.overflow>3)throw new Error(`${config.label}/home: horizontal overflow ${home.overflow}px`);
-  if(home.cardsTop>500)throw new Error(`${config.label}/home: executive values fall below the first viewport at ${Math.round(home.cardsTop)}px`);
+  if(await page.locator('.refSignal:visible').count()!==5||await page.locator('.refPanels>.refPanel:visible').count()!==6)throw new Error(`${config.label}/home: mobile hides analytical content`);
+  for(const domain of ['body','training','nutrition','sleep','labs','water']){const header=page.locator('.refPanel.'+domain+'>header');await header.scrollIntoViewIfNeeded();const reachable=await header.evaluate(el=>{const r=el.getBoundingClientRect(),n=document.querySelector('#mobileNav').getBoundingClientRect();return r.height>0&&r.top>=0&&r.bottom<=n.top+1;});if(!reachable)throw new Error(`${config.label}/home: ${domain} header cannot be reached above navigation`);}
+  await page.locator('.refHeading').scrollIntoViewIfNeeded();
   await page.screenshot({path:`${evidenceDir}/${config.label}-home-physical-remediation.png`});
 
   await productRoute(page,'treinos','./src/training-reference-v2.js','renderProductTraining');
