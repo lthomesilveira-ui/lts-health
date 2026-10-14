@@ -55,6 +55,7 @@ export function waterGoal(data,status,date){
  const eligible=(data.goals||[]).filter(r=>day(r.effective_from)&&day(r.effective_from)<=date).sort((a,b)=>day(b.effective_from).localeCompare(day(a.effective_from)));
  if(!eligible.length)return null;const latest=eligible.filter(r=>day(r.effective_from)===day(eligible[0].effective_from));if(latest.length!==1||goalReferenceMeta(latest[0])||number(latest[0].water_ml)==null||number(latest[0].water_ml)<=0)return null;
  const doc=documentedWaterBase(latest[0]);
+ if(doc&&doc.documented_on!==day(latest[0].effective_from))return null;
  return {value:number(latest[0].water_ml),effectiveFrom:day(latest[0].effective_from),dateBasis:doc?'document_update':'personal_target',documentedOn:doc?.documented_on||null,notes:doc?`${doc.source}, página ${doc.source_page}. Data de atualização do documento; início clínico não explicitado. ${doc.exercise_addition||''}`:String(latest[0].notes||''),row:latest[0]};
 }
 export function homeEvidence(data,status,m){
