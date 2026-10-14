@@ -24,6 +24,11 @@ jobs:
           node-version: '22'
       - name: Check isolated files and production entry
         run: node preview/compact-evidence/tests/preview-contract.mjs
+      - name: Verify candidate analytical contracts with synthetic data
+        run: |
+          for test in body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation; do
+            node "preview/compact-evidence/tests/${test}-test.mjs"
+          done
       - name: Install existing pinned browser runtime
         run: |
           npm install --no-save playwright@1.56.1
@@ -38,6 +43,10 @@ jobs:
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
         run: node preview/compact-evidence/tests/home-reference-period-browser.mjs
+      - name: Verify interval navigation and complete contextual evidence
+        run: node preview/compact-evidence/tests/body-interval-browser.mjs
+      - name: Verify equivalent recorded training conditions
+        run: node preview/compact-evidence/tests/evidence-insights-browser.mjs
       - name: Upload synthetic-only preview evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -46,4 +55,6 @@ jobs:
           path: |
             v2/reference-period-visual
             v2/history-depth-evidence
+            v2/interval-visual
+            v2/evidence-insights-visual
           retention-days: 7

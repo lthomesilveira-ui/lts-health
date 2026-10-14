@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'?fixture=1'};
+const {state}=await import('../src/core.js');
+const {renderProductTraining}=await import('../src/training-reference-v2.js');
+const workout={source_record_id:'synthetic-session',workout_date:'2025-01-01',workout_type:'Synthetic workout',location:'Synthetic gym',is_canonical:true};
+const exercise={source_record_id:'synthetic-exercise',workout_source_record_id:workout.source_record_id,exercise:'Synthetic press',machine:'Synthetic station'};
+const sets=['warmup','other','working',null,'drop','rest_pause'].map((phase,i)=>({source_record_id:`synthetic-set-${i}`,workout_source_record_id:workout.source_record_id,exercise_source_record_id:exercise.source_record_id,phase,set_index:i+1,weight:20,reps_numeric:8,weight_unit:'kg',notes:phase==='other'?'Série de ajuste, conforme relato. <original>':null}));
+const data={workouts:[workout],exercises:[exercise],sets},snapshot=JSON.stringify(data);
+state.data=data;state.domainStatus={workouts:'ready',exercises:'ready',sets:'ready'};state.ui={openWorkout:workout.source_record_id,productTrainingView:'exercises'};
+const html=renderProductTraining();
+assert.match(html,/<em>aquec\.<\/em>/);assert.match(html,/<em>outra fase informada<\/em>/);assert.match(html,/<em>série de trabalho<\/em>/);assert.match(html,/<em>fase desconhecida<\/em>/);
+assert.match(html,/Série de ajuste, conforme relato\. &lt;original&gt;/);assert.match(html,/<summary>Observações registradas<\/summary>/);assert.match(html,/>Drop<\/span>/);assert.match(html,/>Rest-pause<\/span>/);
+assert.doesNotMatch(html,/<em>ajuste<\/em>/,'other does not imply adjustment');
+assert.equal(JSON.stringify(data),snapshot);
+console.log('Training phase labels: warmup, generic other, recorded working, explicit unknown, extensions and original escaped notes preserved without data mutation.');

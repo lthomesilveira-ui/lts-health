@@ -1,6 +1,7 @@
 import {num,day,norm,fmtNum,fmtDate} from './core.js';
 import {homePeriodModel} from './home-period-model.js';
 import {evidenceInsights,loadInsightUnits} from './evidence-insights.js';
+import {waterReferenceContext} from './water-reference-context.js';
 import {goalComparison,goalForDate,historicalGoalReference} from './personal-goals.js';
 import {normalizeMuscleGroup,addDays} from './integrated-analysis.js';
 import {bodySourceLabel} from './health-context.js';
@@ -60,7 +61,7 @@ function evolutionReadings(m,r,e){
   }
   if(e.latestSession){
     const l=e.freshLoad;
-    readings.training=l?{kind:'training',priority:1,title:`Carga de trabalho ${direction(l.delta)} neste exercício`,meaning:`${l.exercise}: a comparação usa ${l.reps} repetições no mesmo aparelho e local. Isso descreve este exercício, não melhora ou piora global do treino.`,evidence:`${fmtNum(l.previous.weight,1)} → ${fmtNum(l.latest.weight,1)} ${loadInsightUnits[l.unit]} · ${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}`,limit:'Execução e esforço podem variar; aquecimentos e séries com fase desconhecida não sustentam esta progressão.',route:'treinos',action:'Ver progressão no exercício'}:{kind:'training',priority:8,title:'Ainda não há conclusão de progressão recente',meaning:'As cargas e repetições da última sessão estão disponíveis. Falta um par recente de séries de trabalho com condições equivalentes para afirmar progressão.',evidence:`${fmtDate(e.latestSession.workout_date)} · ${e.latestSession.workout_type||'Treino'} · ${e.latestSession.location||'Local não informado'}`,limit:'Uma carga maior em outro aparelho, com outras repetições ou fase desconhecida não comprova melhora.',route:'treinos',action:'Conferir a sessão recente'};
+    readings.training=l?{kind:'training',priority:1,title:`Carga de trabalho ${direction(l.delta)} neste exercício`,meaning:`${l.exercise}: a comparação usa ${l.reps} repetições com a mesma descrição registrada de aparelho e local. Isso descreve este exercício, não melhora ou piora global do treino.`,evidence:`${fmtNum(l.previous.weight,1)} → ${fmtNum(l.latest.weight,1)} ${loadInsightUnits[l.unit]} · ${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}`,limit:'Execução e esforço podem variar; a diferença de carga registrada não confirma execução idêntica nem ganho de força.',route:'treinos',action:'Ver cargas registradas'}:{kind:'training',priority:8,title:'Comparação recente ainda limitada',meaning:'As cargas e repetições da última sessão estão disponíveis. Falta um par recente de séries de trabalho com condições registradas equivalentes.',evidence:`${fmtDate(e.latestSession.workout_date)} · ${e.latestSession.workout_type||'Treino'} · ${e.latestSession.location||'Local não informado'}`,limit:'Uma carga maior em outro aparelho, com outras repetições ou fase desconhecida não comprova melhora.',route:'treinos',action:'Conferir a sessão recente'};
   }
   if(e.latestWater)readings.water={kind:'water',priority:9,title:'O registro de água pode ser parcial',meaning:'O total recebido não comprova o consumo completo do dia. Ainda não é possível afirmar se a hidratação atingiu o plano.',evidence:`${fmtNum(e.latestWater.value,0)} mL · ${fmtDate(e.latestWater.date)} · ${r.water.source.label}`,limit:'Confira a completude do registro e a vigência da meta; dias ausentes ficam fora das médias.',route:'nutricao',action:'Conferir água e meta'};
   return {domainReadings:readings,takeaways:Object.values(readings).sort((a,b)=>a.priority-b.priority),labReferenceRows:outside};
@@ -139,7 +140,10 @@ export function evolutionModel(data,status,m,r,ui={}){
   else if(freshLoad)next.push({title:`Conferir ${freshLoad.exercise}`,text:`${fmtNum(freshLoad.previous.weight,1)} → ${fmtNum(freshLoad.latest.weight,1)} ${loadInsightUnits[freshLoad.unit]} em ${freshLoad.reps} reps. Confira execução e esforço nas duas sessões.`,route:'treinos'});
   if(!currentGoal&&status.goals==='ready')next.push({title:goalReference?'Vigência do plano alimentar':'Conferir suas metas',text:goalReference?`As referências do protocolo de ${fmtDate(goalReference.meta.documented_on)} foram recuperadas. A data de vigência do plano atual continua sem confirmação.`:'Registrar as referências do seu plano alimentar permite comparar consumo e objetivo.',kind:'goals'});
   next.push({title:'Preparar a próxima consulta',text:'Gerar um resumo de evolução com exames e contexto dos protocolos.',kind:'consultation'});
-  const result={periodModel,insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
+  const waterContext=waterReferenceContext(data,status,latestWater?.date||m.today);
+  const currentWaterDocument=waterReferenceContext(data,status,m.today).documented;
+  const waterReference=waterContext?.selected||currentWaterDocument||null,documentedWaterReference=currentWaterDocument||null;
+  const result={waterReference,documentedWaterReference,periodModel,insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
   return {...result,...evolutionReadings(m,r,result)};
 }
 
