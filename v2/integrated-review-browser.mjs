@@ -52,7 +52,7 @@ try{
     await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('[data-reference-home]');
     // Finish the route's compatibility settling pass before testing rotation focus.
     await page.waitForTimeout(350);
-    await page.locator('#home-period-90').focus();await page.setViewportSize({width:width<=840?900:393,height});await page.waitForTimeout(200);assert.equal(await page.locator('#home-period-90').evaluate(el=>el===document.activeElement),true);await page.setViewportSize({width,height});
+    await page.locator('[data-home-insight-details]').focus();await page.setViewportSize({width:width<=840?900:393,height});await page.waitForTimeout(200);assert.equal(await page.locator('[data-home-insight-details]').evaluate(el=>el===document.activeElement),true);await page.setViewportSize({width,height});
     await page.locator('.refReading [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');
     assert.equal(await page.locator('.ltsReportWorkspace[open]').count(),0,'history workspaces are progressive by default');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');

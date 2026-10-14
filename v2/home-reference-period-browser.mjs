@@ -17,10 +17,11 @@ for(const n of [20,60,200])db.health_lab_results.push({source_record_id:`lab-${n
 const service=`window.__reviewDb=${JSON.stringify(db)};window.__reviewDb.health_personal_goals=JSON.parse(localStorage.getItem('synthetic-review-goals')||JSON.stringify(window.__reviewDb.health_personal_goals||[]));window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-review-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={upsert(row){window.__reviewDb[table]=[...(window.__reviewDb[table]||[]).filter(r=>r.effective_from!==row.effective_from),row];if(table==='health_personal_goals')localStorage.setItem('synthetic-review-goals',JSON.stringify(window.__reviewDb[table]));q.saved=row;return q;},single:async()=>({data:q.saved,error:null}),select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__reviewDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true});
 try{
-for(const [label,width,height] of [['desktop',1440,900],['physical',393,650],['mobile',393,844],['small',320,650]]){
+for(const [label,width,height] of [['desktop',1440,900],['compact',500,835],['physical',393,650],['mobile',393,844],['small',320,650]]){
  const page=await browser.newPage({viewport:{width,height},acceptDownloads:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
  await page.goto(base+'#hoje');await page.waitForSelector('[data-reference-home]');
+ const setPeriod=async period=>{if(width<=840)await page.locator('[data-home-period-select]').selectOption(period);else await page.locator(`#home-period-${period}`).click();};
  await page.screenshot({path:`${dir}/${label}-top-full.png`});
  assert.equal(await page.locator('.refSignals>.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
  assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1);assert.equal(await page.locator('.refPanel.body [data-series]').count(),2);
@@ -30,11 +31,11 @@ for(const [label,width,height] of [['desktop',1440,900],['physical',393,650],['m
  if(width<=840){assert.ok(geometry.reading.top<geometry.signals.top&&geometry.signals.top<geometry.body.top);assert.ok(geometry.fonts.every(n=>n>=11));assert.equal(await page.locator('.refSignal:visible').count(),2);}else{assert.ok(geometry.signals.top<geometry.reading.top&&geometry.reading.top<geometry.body.top);assert.equal(new Set(geometry.panels.slice(0,3).map(p=>Math.round(p.top))).size,1);}
  writeFileSync(`${dir}/${label}-geometry.json`,JSON.stringify(geometry,null,2));
  const outputs=[];
- for(const period of ['30','90','365','all']){await page.locator(`#home-period-${period}`).click();outputs.push(await page.locator('#reference-period-evidence').textContent());const expectedStart=period==='all'?date(399):date(Number(period)-1);assert.ok((await page.locator('.refPeriod').innerText()).includes(expectedStart.split('-').reverse().join('/')));assert.equal(await page.locator(`[data-home-period="${period}"]`).getAttribute('aria-pressed'),'true');}
+ for(const period of ['30','90','365','all']){await setPeriod(period);outputs.push(await page.locator('#reference-period-evidence').textContent());const expectedStart=period==='all'?date(399):date(Number(period)-1);assert.ok((await page.locator('.refPeriod').textContent()).includes(expectedStart.split('-').reverse().join('/')));assert.equal(await page.locator(`[data-home-period="${period}"]`).getAttribute('aria-pressed'),'true');}
  assert.equal(new Set(outputs).size,4,'all periods must change substantive reading with distinct historical evidence');
- await page.locator('#home-period-90').click();await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption({index:0});const before=await page.locator('.refLegend').innerText();await page.locator('#overview-body-date').selectOption({index:1});assert.notEqual(await page.locator('.refLegend').innerText(),before);
- await page.locator('#home-period-90').focus();await page.setViewportSize({width:width<=840?900:393,height});await page.waitForTimeout(200);assert.equal(await page.locator('#home-period-90').evaluate(el=>el===document.activeElement),true);await page.setViewportSize({width,height});await page.waitForTimeout(300);
- await page.locator('.refNext').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-lower-full.png`});
+ await setPeriod('90');await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption({index:0});const before=await page.locator('.refLegend').innerText();await page.locator('#overview-body-date').selectOption({index:1});assert.notEqual(await page.locator('.refLegend').innerText(),before);
+ await page.locator('#overview-body-date').focus();await page.setViewportSize({width:width<=840?900:393,height});await page.waitForTimeout(200);assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);await page.setViewportSize({width,height});await page.waitForTimeout(300);
+ await page.locator(width<=840?'#reference-period-evidence':'.refNext').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-lower-full.png`});
  await page.locator('.refReading [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');assert.doesNotMatch(await page.locator('#reviewPanel').innerText(),/entre as duas semanas|comparar semanas/);
  await page.locator('#reviewTab-consultation').click();await page.waitForSelector('[data-review-export]');assert.match(await page.locator('.ltsReviewExport').innerText(),/90|janela/);assert.doesNotMatch(await page.locator('.ltsReviewExport').innerText(),/entre as duas semanas/);
  await page.goBack();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
@@ -46,8 +47,8 @@ for(const [label,width,height] of [['desktop',1440,900],['physical',393,650],['m
  await page.locator('[data-depth-period="productCompositionPeriod"][data-value="30"]').click();
  assert.equal(await page.locator('.ltsCompositionChart circle').count(),2);
  await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-30').getAttribute('aria-pressed'),'true');
- await page.locator('#home-period-90').click();
- await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="saude"]`).click();await page.waitForSelector('.ltsLabsV2');
+ await setPeriod('90');
+ if(width<=840){assert.equal(await page.locator('#mobileNav button').count(),4);await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="saude"]').click();}else await page.locator('.primaryNav [data-route="saude"]').click();await page.waitForSelector('.ltsLabsV2');
  assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#productLabCollection option').count(),2);
  await page.locator('.ltsLabsV2>.ltsPageHeader .ltsBack').click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
  await page.locator('.refPanel.water>header [data-route="nutricao"]').click();await page.waitForSelector('.ltsNutritionProduct');assert.equal(await page.locator('[data-period="90"]').getAttribute('aria-pressed'),'true');
@@ -55,7 +56,7 @@ for(const [label,width,height] of [['desktop',1440,900],['physical',393,650],['m
  // Sparse case: old records outside selected period, unknown device and candidate-only sleep.
  await page.evaluate(async()=>{const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.data.nutrition=state.data.nutrition.slice(1,16);state.data.sourceMetrics=state.data.sourceMetrics.filter(r=>r.metric_type==='sleep_duration_h').slice(1,6).map(r=>({...r,canonical_status:'candidate'}));state.data.body=state.data.body.slice(0,3).map((r,i)=>({...r,device_name:i===0?'Synthetic B':null}));document.querySelector('#screenHost').innerHTML=renderProductHomeReference();document.querySelector('#screenHost').scrollTop=0;});
  await page.screenshot({path:`${dir}/${label}-top-sparse.png`});assert.match(await page.locator('.refPanel.nutrition').innerText(),/15\/89/);assert.match(await page.locator('.refPanel.water').innerText(),/Sem registro/);assert.match(await page.locator('.refPanel.sleep').innerText(),/candidata/);
- await page.locator('.refNext').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-lower-sparse.png`});
+ await page.locator(width<=840?'#reference-period-evidence':'.refNext').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-lower-sparse.png`});
  assert.equal(await page.locator('[id]').evaluateAll(es=>es.length===new Set(es.map(e=>e.id)).size),true);assert.deepEqual(errors,[]);await page.close();
 }
 }finally{await browser.close();}
