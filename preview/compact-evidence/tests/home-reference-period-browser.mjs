@@ -98,7 +98,7 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  await page.locator('.refNext').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-lower-sparse.png`});
  // Two disjoint source windows: no recent-source shortcut may erase older coverage.
  await page.evaluate(async({older,recent})=>{const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.data.nutrition=[...older.map((date,i)=>({nutrition_date:date,source:'Synthetic earlier export',calories_kcal:1800+i,protein_g:80+i})),...recent.map((date,i)=>({nutrition_date:date,source:'Synthetic recent sync',calories_kcal:2200+i,protein_g:120+i}))];state.ui.reportNutritionSource=null;document.querySelector('#screenHost').innerHTML=renderProductHomeReference();},{older:Array.from({length:42},(_,i)=>date(88-i)),recent:Array.from({length:14},(_,i)=>date(14-i))});
- await page.waitForTimeout(400);assert.match(await page.locator('.refPanel.nutrition').innerText(),/56\/89 dias no conjunto/);
+ await page.waitForTimeout(400);assert.match(await page.locator('.refPanel.nutrition').innerText(),/56\/89 dias únicos no conjunto/);
  for(const source of [{label:'Synthetic earlier export',count:42,start:88,base:1800},{label:'Synthetic recent sync',count:14,start:14,base:2200}]){
    await page.locator('[data-home-field="reportNutritionSource"]').selectOption({label:source.label});
    const points=await page.locator('.refPanel.nutrition [data-series="energy"] rect').evaluateAll(es=>es.map(e=>[e.dataset.date,Number(e.dataset.value)]).sort((a,b)=>a[0].localeCompare(b[0])));

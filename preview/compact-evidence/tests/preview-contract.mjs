@@ -78,7 +78,7 @@ const manifest={
     "src/home-evidence-insights.js": "16f1b40f892f41f038b4e852d604f1082f3b18679bcdad23016b7918ad496870",
     "src/home-overview.js": "2d08723ecce7f700f3dc3263706b75c20c85d08812ed9d3233138ae0ffdd5aa5",
     "src/home-period-model.js": "093cd388410269a93348e0465dbf71c0b1c597b308834b443e9084274284dd3c",
-    "src/home-reference-experience.js": "766d84217bcafd45b914c5512125a000c6d562c9af2e8e6155e2a8655ba80b99",
+    "src/home-reference-experience.js": "4eb48444a9ecb4e047bb50b11e624fe19b5f6cf1faed2f6487db4add75af0bcf",
     "src/home-reference.js": "f23182afbbdc87dd2861a3171951cae2fa5febe8f1affd2aa2df9ae987f78267",
     "src/hydration.js": "ac08d5f9c599e7937da7f6c73019d3faaf73b08c87039760d2c89cd2aeeb24ff",
     "src/integrated-analysis.js": "3a32d46636af4853d20cf02a6692d1751c3351d9446cbf6cec7d405afc677ea4",
@@ -150,4 +150,5 @@ assert.ok(index.indexOf(guardTag)>index.indexOf('https://cdn.jsdelivr.net/npm/@s
 assert.match(index,/Prévia · somente leitura/);
 assert.equal(fs.existsSync(path.join(root,'manifest.json')),false,'no public manifest JSON');
 await import('./preview-readonly-test.mjs');
+await import('./preview-presentation-test.mjs');
 console.log('Isolated preview: exact runtime hashes, closed JS/CSS dependencies, read-only guard before modules, unchanged authentication/configuration and production build.');
