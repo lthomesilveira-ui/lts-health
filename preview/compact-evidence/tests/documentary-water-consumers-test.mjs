@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'?fixture=1'};
+const {waterReferenceContext}=await import('../src/water-reference-context.js');
+const {waterGoal}=await import('../src/home-evidence-insights.js');
+const {homeCockpitModel,waterPanel}=await import('../src/home-cockpit.js');
+const {integratedReview,consultationLines}=await import('../src/integrated-review.js');
+const {usefulReports}=await import('../src/reports-model.js');
+const {evolutionModel}=await import('../src/evolution-model.js');
+const hash='a'.repeat(64),doc={source_record_id:'synthetic-plan',document_date:'2025-03-13',document_type:'medical_plan',source_file:'Synthetic plan.pdf',source:'Synthetic prescription',checksum:hash,water_reference:{schema_version:1,type:'documented_water_base',base_ml_per_day:3000,source_page:3,documented_on:'2025-03-13',source_sha256:hash,date_basis:'document_update',clinical_start:'not_explicit',exercise_addition:'Adicional conforme exercício, não calculado automaticamente.'}};
+const status=Object.fromEntries(['body','segmental','nutrition','sourceMetrics','metrics','workouts','exercises','sets','labs','treatments','polarSessions','goals','meals','waterReferences'].map(k=>[k,'ready']));
+const data={body:[],segmental:[],nutrition:[{nutrition_date:'2025-03-15',source:'Synthetic diary',water_ml:2000}],sourceMetrics:[],metrics:[],workouts:[],exercises:[],sets:[],labs:[],treatments:[],goals:[],meals:[],waterReferences:[doc]};
+const before=structuredClone(data),date='2025-03-15';
+const c=waterReferenceContext(data,status,date);assert.equal(c.personal,null);assert.equal(c.documented.value,3000);assert.equal(c.selected.dateBasis,'document_update');assert.equal('effectiveFrom' in c.selected,false);assert.deepEqual(waterGoal(data,status,date),c.selected);
+assert.equal(waterGoal(data,status,'2025-03-12'),null);assert.equal(waterGoal(data,{...status,waterReferences:'error'},date),null);assert.equal(waterGoal({...data,waterReferences:[]},status,date),null);
+assert.equal(waterGoal({...data,waterReferences:[{...doc,checksum:'b'.repeat(64)}]},status,date),null);
+const today='2025-03-20',ui={homePeriod:'30',reportPeriod:'30'};
+const h=homeCockpitModel(data,status,'30',ui,today);assert.match(waterPanel(h),/Base documentada/);assert.match(waterPanel(h),/início clínico não explicitado/);
+const m=usefulReports(data,status,ui,today),r=integratedReview(data,status,m.current,ui,today),e=evolutionModel(data,status,m,r,ui),lines=consultationLines(r,m,e).join('\n');
+assert.match(lines,/BASE DOCUMENTAL DE ÁGUA/);assert.match(lines,/Synthetic plan.pdf/);assert.match(lines,/Não aplicada como meta clínica/);
+const personal={...data,goals:[{effective_from:'2025-03-14',water_ml:2500,notes:'User supplied target'}]},both=waterReferenceContext(personal,status,date);assert.equal(both.selected.dateBasis,'personal_target');assert.equal(both.documented.value,3000,'personal target does not erase documentary context');
+assert.deepEqual(data,before);console.log('Documentary water consumers: separate document domain, exact provenance, no clinical start or retroactivity, independent failures, personal target coexistence and consultation context passed.');
+const emptyData={...data,nutrition:[]},emptyCockpit=homeCockpitModel(emptyData,status,'30',ui,today);assert.match(waterPanel(emptyCockpit),/Base documentada/);assert.doesNotMatch(waterPanel(emptyCockpit),/diferença do total recebido/);assert.match(consultationLines(emptyCockpit.r,emptyCockpit.m,emptyCockpit.evo).join('\n'),/Sem total recebido nesta janela/);
+const oldData={...data,nutrition:[{...data.nutrition[0],nutrition_date:'2025-03-12'}]},oldCockpit=homeCockpitModel(oldData,status,'30',ui,today);assert.match(waterPanel(oldCockpit),/Base documentada/);assert.doesNotMatch(waterPanel(oldCockpit),/diferença do total recebido/,'later documentary reference is not numerically applied to earlier intake');
+console.log('Documentary context remains visible without eligible intake; no invented zero or retroactive difference.');
+
+const legacyDocumentaryGoal={effective_from:'2025-03-13',water_ml:9900,notes:JSON.stringify({type:'documented_water_base',source:'Synthetic legacy record.pdf',source_page:3,documented_on:'2025-03-13',date_basis:'document_update',clinical_start:'not_explicit'})};
+const withLegacy={...data,goals:[legacyDocumentaryGoal]};
+const isolated=waterReferenceContext(withLegacy,status,date);assert.equal(isolated.personal,null);assert.equal(isolated.selected.value,3000,'verified document wins over an obsolete documentary row in goals');
+for(const waterReferences of ['error','loading',undefined]){const failed=waterReferenceContext(withLegacy,{...status,waterReferences},date);assert.equal(failed.personal,null);assert.equal(failed.documented,null);assert.equal(failed.selected,null,'legacy goals metadata cannot bypass failed/missing document status');}
+assert.equal(waterGoal({...withLegacy,waterReferences:[]},status,date),null);
+assert.equal(waterReferenceContext(personal,{...status,waterReferences:'error'},date).selected.value,2500,'an ordinary personal goal is independent and still valid');
+console.log('Legacy documentary goals cannot bypass the independent document loading boundary.');
+
+const personalWithoutIntake={...personal,nutrition:[]},personalEmptyCockpit=homeCockpitModel(personalWithoutIntake,status,'30',ui,today);
+assert.doesNotThrow(()=>waterPanel(personalEmptyCockpit),'personal goal with no received intake must not dereference missing last value');
+assert.match(waterPanel(personalEmptyCockpit),/Meta informada para essa data/);
+assert.doesNotMatch(waterPanel(personalEmptyCockpit),/diferença registrada|diferença do total recebido/,'no intake means no numeric difference, for either reference kind');
+const failedWaterCockpit=homeCockpitModel(personalWithoutIntake,{...status,nutrition:'error',sourceMetrics:'error'},'30',ui,today);
+assert.doesNotThrow(()=>waterPanel(failedWaterCockpit),'failure presentation cannot crash because a personal goal exists');
+console.log('Personal references without intake or with failed water sources remain safe and do not invent differences.');

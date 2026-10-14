@@ -1,3 +1,4 @@
+import {bodyIntervalModel} from './body-interval-model.js';
 import {downloadReferencePeriodSummary} from './home-reference-experience.js';
 import {state,routes,fixtureMode,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData,downloadStructuredBackup} from './data-layer.js';
@@ -128,6 +129,12 @@ function render(){
   const host=$('screenHost');
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
   if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
+  // Store the displayed default pair once, before either field is edited.
+  // Refreshes must preserve that pair even when one date becomes ambiguous.
+  if(state.route==='analise'&&state.ui.reviewView==='interval'&&!state.ui.bodyIntervalStart&&!state.ui.bodyIntervalEnd){
+    const initial=bodyIntervalModel(state.data,state.domainStatus,state.ui);
+    if(initial.available){state.ui.bodyIntervalStart=initial.selection.start;state.ui.bodyIntervalEnd=initial.selection.end;}
+  }
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
   const routeChanged=renderedRoute!==state.route;
   const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
@@ -218,7 +225,7 @@ function bindStaticEvents(){
     const reportPage=event.target.closest('[data-report-page]');
     if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage','reviewDayPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
     const reviewView=event.target.closest('[data-review-view]');
-    if(reviewView&&['overview','day','consultation'].includes(reviewView.dataset.reviewView)){state.ui.reviewView=reviewView.dataset.reviewView;scheduleRender();return;}
+    if(reviewView&&['interval','overview','day','consultation'].includes(reviewView.dataset.reviewView)){state.ui.reviewView=reviewView.dataset.reviewView;scheduleRender();return;}
     const reviewDate=event.target.closest('[data-review-date]');
     if(reviewDate&&!reviewDate.disabled&&reviewDate.dataset.reviewDate){state.ui.reviewDate=reviewDate.dataset.reviewDate;state.ui.healthContextDate=state.ui.reviewDate;scheduleRender();return;}
     if(event.target.closest('[data-review-export]')){downloadIntegratedSummary();return;}
@@ -273,6 +280,7 @@ function bindStaticEvents(){
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
     if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
+    if(['bodyIntervalStart','bodyIntervalEnd'].includes(event.target.id)){state.ui[event.target.id]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
     if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;state.ui.reviewDate=event.target.value;scheduleRender();}

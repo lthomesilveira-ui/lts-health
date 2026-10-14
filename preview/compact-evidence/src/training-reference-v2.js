@@ -20,7 +20,7 @@ function setText(set){
   const load=weight!=null?`${fmtNum(weight,Number.isInteger(weight)?0:1)} ${set.weight_unit==='kg'?'kg':esc(set.weight_unit||'')}`:'—';
   const reps=repsValue==null||repsValue===''?'—':String(repsValue);
   const flags=[...new Set([
-    set.phase==='warmup'?'aquec.':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',set.technique||''
+    set.phase==='warmup'?'aquec.':set.phase==='working'?'série de trabalho':set.phase==='other'?'outra fase informada':!set.phase||set.phase==='unknown'?'fase desconhecida':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',set.technique||''
   ].map(normalizedFlag).filter(Boolean))];
   return{load,reps,flags,missing:load==='—'&&reps==='—'};
 }

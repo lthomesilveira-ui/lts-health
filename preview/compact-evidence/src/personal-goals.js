@@ -4,7 +4,16 @@ import {localHealthDay} from './health-context.js';
 
 export const goalFields=[['calories_kcal','Energia diária','kcal',20000],['protein_g','Proteína diária','g',2000],['carbs_g','Carboidratos diários','g',3000],['fat_g','Gorduras diárias','g',2000],['fiber_g','Fibra diária','g',500],['water_ml','Água diária','mL',30000]];
 export function documentedWaterBase(row){
-  try{const m=JSON.parse(row?.notes||'');return m.type==='documented_water_base'&&validDay(m.documented_on)&&m.date_basis==='document_update'&&m.clinical_start==='not_explicit'&&m.source&&m.source_page&&num(row.water_ml)>0?m:null;}catch{return null;}
+  try{const m=JSON.parse(row?.notes||'');return m.type==='documented_water_base'&&validDay(m.documented_on)&&validDay(row.effective_from)===validDay(m.documented_on)&&m.date_basis==='document_update'&&m.clinical_start==='not_explicit'&&typeof m.source==='string'&&m.source.trim()&&Number.isInteger(m.source_page)&&m.source_page>0&&typeof row.water_ml!=='boolean'&&num(row.water_ml)>0?m:null;}catch{return null;}
+}
+export function waterReferenceForDate(rows,date,status){
+  const dateKey=validDay(date);if(status!=='ready'||!dateKey)return null;
+  const numeric=v=>v==null||typeof v==='boolean'||String(v).trim()===''||!Number.isFinite(Number(v))?null:Number(v);
+  const eligible=(rows||[]).filter(r=>validDay(r.effective_from)&&validDay(r.effective_from)<=dateKey).sort((a,b)=>validDay(b.effective_from).localeCompare(validDay(a.effective_from)));
+  if(!eligible.length)return null;const latest=eligible.filter(r=>validDay(r.effective_from)===validDay(eligible[0].effective_from));
+  if(latest.length!==1||goalReferenceMeta(latest[0])||numeric(latest[0].water_ml)==null||numeric(latest[0].water_ml)<=0)return null;
+  const row=latest[0],doc=documentedWaterBase(row);if(isProtectedGoalReference(row)&&!doc)return null;
+  return {value:numeric(row.water_ml),effectiveFrom:validDay(row.effective_from),dateBasis:doc?'document_update':'personal_target',documentedOn:doc?.documented_on||null,notes:doc?`${doc.source}, página ${doc.source_page}. Data de atualização do documento; início clínico não explicitado. ${doc.exercise_addition||''}`:String(row.notes||''),row};
 }
 export function goalReferenceMeta(row){
   try{const m=JSON.parse(row?.notes||'');return m.type==='historical_protocol'&&validDay(m.documented_on)&&m.current_validity==='unconfirmed'?m:null;}catch{return null;}
