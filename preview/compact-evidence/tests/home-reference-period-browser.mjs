@@ -74,7 +74,7 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  await page.locator('#overview-body-date').focus();await page.setViewportSize({width:width<=840?900:393,height});await page.waitForTimeout(200);assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);await page.setViewportSize({width,height});await page.waitForTimeout(300);
  await page.locator('.refNext').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-lower-full.png`});
  await page.locator('.refReading [data-home-insight-details]').click();await page.waitForSelector('#reportIntegratedReview');assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');assert.doesNotMatch(await page.locator('#reviewPanel').innerText(),/entre as duas semanas|comparar semanas/);
- await page.locator('#reviewTab-consultation').click();await page.waitForSelector('[data-review-export]');assert.match(await page.locator('.ltsReviewExport').innerText(),/90|janela/);assert.doesNotMatch(await page.locator('.ltsReviewExport').innerText(),/entre as duas semanas/);
+ await page.locator('#reviewTab-consultation').click();await page.waitForSelector('[data-review-export]');assert.match(await page.locator('.ltsConsultation').innerText(),/90|janela/);assert.doesNotMatch(await page.locator('.ltsConsultation').innerText(),/entre as duas semanas/);
  await page.goBack();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
  // Global calendar must survive entry into each domain and its return path.
  await page.locator('.refPanel.body>header [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2');
@@ -111,13 +111,13 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  const selectedFoodKey=await page.locator('[data-home-field="reportNutritionSource"]').inputValue();
  await page.locator('.refNext [data-home-consultation]').click();await page.waitForSelector('[data-review-export]');
  assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');
- const exportText=await page.locator('.ltsReviewExport').innerText();assert.match(exportText,/Synthetic earlier export/);assert.match(exportText,/42\/89/);assert.doesNotMatch(exportText,/Proteína média 12[0-9] g/);
+ const exportText=await page.locator('.ltsConsultation').innerText();assert.match(exportText,/Synthetic earlier export/);assert.match(exportText,/42\/89/);assert.doesNotMatch(exportText,/Proteína média 12[0-9] g/);
  await page.getByRole('button',{name:'Voltar à visão geral',exact:true}).click();await page.waitForSelector('[data-reference-home]');
  assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),selectedFoodKey);assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
  await setPeriod('30');assert.match(await page.locator('.refPanel.nutrition').innerText(),/A origem escolhida não tem registros nesta janela/);
  assert.equal(await page.locator('.refPanel.nutrition [data-series="energy"] rect').count(),0);assert.equal(await page.locator('[data-home-field="reportNutritionSource"] option:checked').innerText(),'Origem sem dados nesta janela');
  await page.locator('.refNext [data-home-consultation]').click();await page.waitForSelector('[data-review-export]');assert.equal(await page.locator('#analysisPeriod').inputValue(),'30');
- const missingExport=await page.locator('.ltsReviewExport').innerText();assert.match(missingExport,/origem[^.]*sem dados/i);assert.doesNotMatch(missingExport,/Proteína média 12[0-9] g|energia média 2\.20[0-9]/);
+ const missingExport=await page.locator('.ltsConsultation').innerText();assert.match(missingExport,/origem[^.]*sem dados/i);assert.doesNotMatch(missingExport,/Proteína média 12[0-9] g|energia média 2\.20[0-9]/);
  await page.getByRole('button',{name:'Voltar à visão geral',exact:true}).click();await page.waitForSelector('[data-reference-home]');await setPeriod('90');assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),selectedFoodKey);assert.equal(await page.locator('.refPanel.nutrition [data-series="energy"] rect').count(),42);
  assert.equal(await page.locator('[id]').evaluateAll(es=>es.length===new Set(es.map(e=>e.id)).size),true);assert.deepEqual(errors,[]);await page.close();
 }

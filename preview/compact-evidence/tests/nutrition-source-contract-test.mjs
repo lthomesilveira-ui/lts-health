@@ -40,6 +40,8 @@ assert.equal(a.evolution.recent.nutrition.protein_g.current,204);
 // dates, individual denominators and averages through Home, summary and back.
 for(const source of initial.nutrition.sources)for(const period of ['30','90','365','all']){
   const m=models(period,source.key),n=m.home.nutrition,r=m.review.nutrition;
+  assert.deepEqual(m.reports.nutrition.rows,n.rows);assert.deepEqual(m.reports.nutrition.means,n.means);assert.deepEqual(m.reports.nutrition.counts,n.counts);assert.equal(m.reports.nutrition.source?.key,n.source?.key);
+  if(m.reports.prior?.nutrition.source)assert.equal(m.reports.prior.nutrition.source.key,n.source?.key||source.key);
   assert.deepEqual(r.rows,n.rows);assert.deepEqual(r.closedRows,n.closedRows);
   assert.deepEqual(r.means,n.means);assert.deepEqual(r.counts,n.counts);
   assert.equal(r.source?.key,n.source?.key);assert.equal(r.source?.status,n.source?.status);
