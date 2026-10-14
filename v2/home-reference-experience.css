@@ -85,3 +85,55 @@
  .refPanel.body>header p{display:block}
 }
 @media(max-width:350px){.refSignal>.refIcon{display:inline-flex}.refSignal strong{font-size:13px}}
+
+/* Mobile retains the full analytical dashboard, with readable vertical flow. */
+.refMobileTrainingAction{display:none}
+@media(max-width:840px){
+ .refSignals{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .refSignal.body,.refSignal.sleep,.refSignal.labs{display:grid}
+ .refSignal.labs{grid-column:1/-1}
+ .refSignalPlot{display:block;grid-column:1/-1;margin:5px 0 0;height:28px}
+ .refSignalPlot .refPlot.mini svg{height:28px}
+ .refSignal{min-height:0;padding:10px}
+ .refSignal strong{font-size:15px}
+ .refReading{display:grid;grid-template-columns:1fr;gap:9px;padding:12px}
+ .refReading h2{display:block;font-size:16px;margin:0 0 4px}
+ .refReadingMain>div{padding:0!important}
+ .refReadingMain>.refIcon{display:inline-flex;min-width:28px;width:28px;height:28px}
+ .refReading .refMobileAttention{display:none}
+ .refReadingDetail{display:block;min-width:0;padding-left:36px}
+ .refReadingDetail>b{font-size:12px;color:#233b60}
+ .refReadingDetail>p{font-size:13px;line-height:1.4;margin:2px 0 0}
+ .refReading>.refPrimary{position:static;width:100%;min-height:44px;font-size:13px!important;padding:8px 12px;justify-content:center;background:#167dff;color:#fff;border-radius:6px}
+ .refReading>.refPrimary svg{display:block}
+ .refPanel.training,.refPanel.nutrition,.refPanel.sleep,.refPanel.labs{display:flex;flex-direction:column}
+ .refPanels>.refPanel{order:initial!important;padding:12px}
+ .refPanels>.mobileWorkout{display:none}
+ .refPanel h2{font-size:17px}
+ .refPanel>header p{font-size:12px!important}
+ .refPanel .refPlot svg{height:100px}
+ .refPanel.body .refPlot svg{height:80px}
+ .refPanel .refMetricLine{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:5px 0 8px}
+ .refPanel .refMetricLine b{font-size:21px}
+ .refPanel .refMetricLine small{font-size:12px!important}
+ .refPanel .refFootnote{font-size:12px!important;line-height:1.4!important;margin-top:8px}
+ .refPanel .refDetail>summary{font-size:13px;min-height:40px}
+ .refPanel .refDetail p{font-size:13px;line-height:1.45}
+ .refPanel .refWorkoutInset{display:block;margin-top:8px;padding:9px}
+ .refWorkoutInset .refWorkoutLine{display:flex;gap:8px;margin:3px 0}
+ .refWorkoutInset .refWorkoutLine b{font-size:14px;line-height:1.3}
+ .refWorkoutInset .refWorkoutLine small{font-size:12px!important}
+ .refMobileTrainingAction{display:flex}
+ .refPanel>.refAction,.refWaterBody .refAction{display:flex;min-height:44px;font-size:13px!important;margin-top:8px;padding:7px 10px}
+ .refPanel .refLabTimeline{min-height:95px}
+ .refPanel .refLabTimeline b{font-size:12px}
+ .refPanel .refLabTimeline small{font-size:12px!important}
+ .refWaterBody{padding:6px 0;gap:14px}
+ .refGlass{width:42px;height:60px}
+ .refWaterBody b{font-size:22px}
+ .refNext{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:12px;margin-top:12px}
+ .refNext>div{display:grid;grid-template-columns:28px 1fr;gap:1px 8px;align-items:center}
+ .refNext>div>.refIcon{grid-row:1/3}.refNext>div>small{grid-column:2;font-size:12px}
+ .refNext>button{display:flex;min-height:44px;justify-content:space-between;font-size:13px}
+ .refPeriod>small{display:block;grid-column:1/-1;text-align:left;font-size:11px!important;max-width:180px}
+}

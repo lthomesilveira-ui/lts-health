@@ -105,7 +105,7 @@ async function auditReferenceHome(label,expectedBuild){
   const order=compact?['.refHeading','.refReading','.refSignals','.refPanel.body']:['.refHeading','.refSignals','.refReading','.refPanel.body'];
   const meaning=reading?.getBoundingClientRect(),nav=document.querySelector('#mobileNav')?.getBoundingClientRect();
   const sizes=[...document.querySelectorAll('.refLegend,.refBodyDate small,.refFootnote')].filter(visible).map(el=>parseFloat(getComputedStyle(el).fontSize));
-  return {build:document.querySelector('meta[name="lts-build"]')?.content,signals:document.querySelectorAll('.refSignal').length,panels:document.querySelectorAll('.refPanel:not(.mobileWorkout)').length,top:order.map(top),compact,domOrder:Boolean(reading&&body&&(reading.compareDocumentPosition(body)&Node.DOCUMENT_POSITION_FOLLOWING)),primaryFindingVisible:Boolean(meaning&&meaning.top>=0&&meaning.bottom<=Math.min(innerHeight,nav?.top||innerHeight)),minFont:Math.min(...sizes)};
+  return {build:document.querySelector('meta[name="lts-build"]')?.content,signals:[...document.querySelectorAll('.refSignal')].filter(visible).length,panels:[...document.querySelectorAll('.refPanel:not(.mobileWorkout)')].filter(visible).length,top:order.map(top),compact,domOrder:Boolean(reading&&body&&(reading.compareDocumentPosition(body)&Node.DOCUMENT_POSITION_FOLLOWING)),primaryFindingVisible:Boolean(meaning&&meaning.top>=0&&meaning.bottom<=Math.min(innerHeight,nav?.top||innerHeight)),minFont:Math.min(...sizes)};
  });
  if(!expectedBuild||result.build!==expectedBuild)throw new Error(`${label}: wrong published build`);
  if(result.signals!==5||result.panels!==6)throw new Error(`${label}: reference hierarchy missing`);
