@@ -21,3 +21,8 @@
 /* Scope shell and disclosure geometry so other routes cannot alter this dashboard. */
 .ltsReferenceHome details{padding:0;min-height:0;box-shadow:none}.ltsReferenceHome details>summary{padding:0;margin:0;line-height:1.35}.ltsReferenceHome .refReadingContext{margin:0;border:0;background:transparent}.ltsReferenceHome .refSignalPlot svg{width:100%;height:28px}.ltsReferenceHome .refPanel{min-height:0}.ltsReferenceHome .refBodyControls,.ltsReferenceHome .refDetail{padding:0;min-height:0}
 @media(min-width:841px){body:has(.ltsReferenceHome) .topbar{display:none!important}body:has(.ltsReferenceHome) .app{grid-template-columns:205px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;gap:0!important}body:has(.ltsReferenceHome) .primaryNav{grid-column:1!important;grid-row:1!important}body:has(.ltsReferenceHome) .screenHost{grid-column:2!important;grid-row:1!important}body:has(.ltsReferenceHome) .mobileNav{display:none!important}}
+
+.refLabSelect{display:block;font-size:12px;color:var(--ref-muted)}.refLabSelect select{display:block;width:100%;min-height:44px;padding:4px;border:1px solid var(--ref-line);background:white;border-radius:5px;color:var(--ref-ink);font-size:12px}.refLabOverview b{font-size:14px}.refLabOverview small{font-size:12px}.refLabValue>strong{font-size:19px}
+.ltsReferenceHome .refPanel>details{margin-top:0}.ltsReferenceHome .refPanel>details>summary{min-height:40px}.refReadingContext>summary{font-weight:500}.refBodyStamp{line-height:1.25!important}.refObservedWindow{font-size:11px!important}
+
+.refSourceSelect select{display:block;min-height:44px;width:100%;font-size:12px;border:1px solid var(--ref-line);border-radius:5px;background:white;color:var(--ref-ink);padding:4px}

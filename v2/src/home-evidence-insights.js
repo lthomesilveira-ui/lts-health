@@ -1,5 +1,5 @@
 import {labReferenceStatus} from './labs-layout-v2.js';
-import {goalReferenceMeta,documentedWaterBase} from './personal-goals.js';
+import {goalReferenceMeta,documentedWaterBase,isProtectedGoalReference} from './personal-goals.js';
 import {validDay} from './history-tools.js';
 import {isSetExtension} from './training-session.js';
 const norm=v=>String(v??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -38,27 +38,28 @@ export function observedTraining(m){
  examples.sort((a,b)=>Number(b.phase==='working')-Number(a.phase==='working')||b.points.length-a.points.length||b.lastDate.localeCompare(a.lastDate)||a.key.localeCompare(b.key));
  return {available:true,examples,selected:examples[0]||null,latestWorkout:t.latestWorkout,notes:'Mesmo nome, equipamento e local registrados; não confirma a mesma estação física nem ganho de força. Fase preservada como consta no registro.'};
 }
-export function labEvidence(m){
+export function labEvidence(m,selectedKey=null){
  const latest=m.labs.latestRows||[];
  const ambiguous=[];const candidates=[];
  for(const[key,rows]of group(latest,r=>JSON.stringify([norm(r.biomarker),norm(r.laboratory||r.source),norm(r.unit),norm(r.method)]))){
   if(rows.length!==1){ambiguous.push(key);continue;}const row=rows[0],range=labReferenceStatus(row);if(!['above','below','within'].includes(range.status))continue;
-  candidates.push({row,range,outside:range.status!=='within'});
+  candidates.push({key,row,range,outside:range.status!=='within'});
  }
  // Deterministic display order, not a clinical risk score. Unclassified results
  // remain available in the full laboratory route.
  candidates.sort((a,b)=>Number(b.outside)-Number(a.outside)||String(a.row.biomarker).localeCompare(String(b.row.biomarker),'pt-BR'));
- return {available:m.labs.available,candidates,selected:candidates[0]||null,ambiguous,selectionRule:'Resultado da última coleta com intervalo explícito do laudo; fora da faixa primeiro, depois ordem alfabética. Não é prioridade clínica.'};
+ return {available:m.labs.available,candidates,selected:candidates.find(c=>c.key===selectedKey)||candidates[0]||null,selectedByUser:candidates.some(c=>c.key===selectedKey),total:latest.length,withReference:candidates.length,outsideCount:candidates.filter(c=>c.outside).length,unclassified:latest.length-candidates.length,ambiguous,selectionRule:'Resultado da última coleta com intervalo explícito do laudo; fora da faixa primeiro, depois ordem alfabética. Não é prioridade clínica.'};
 }
 export function waterGoal(data,status,date){
  if(status.goals!=='ready'||!date)return null;
  const eligible=(data.goals||[]).filter(r=>day(r.effective_from)&&day(r.effective_from)<=date).sort((a,b)=>day(b.effective_from).localeCompare(day(a.effective_from)));
  if(!eligible.length)return null;const latest=eligible.filter(r=>day(r.effective_from)===day(eligible[0].effective_from));if(latest.length!==1||goalReferenceMeta(latest[0])||number(latest[0].water_ml)==null||number(latest[0].water_ml)<=0)return null;
  const doc=documentedWaterBase(latest[0]);
+ if(isProtectedGoalReference(latest[0])&&!doc)return null;
  if(doc&&doc.documented_on!==day(latest[0].effective_from))return null;
  return {value:number(latest[0].water_ml),effectiveFrom:day(latest[0].effective_from),dateBasis:doc?'document_update':'personal_target',documentedOn:doc?.documented_on||null,notes:doc?`${doc.source}, página ${doc.source_page}. Data de atualização do documento; início clínico não explicitado. ${doc.exercise_addition||''}`:String(latest[0].notes||''),row:latest[0]};
 }
-export function homeEvidence(data,status,m){
+export function homeEvidence(data,status,m,ui={}){
  const water=m.water,last=water.latest,goal=waterGoal(data,status,last?.date);
- return {nutrition:nutritionCoverage(m),training:observedTraining(m),labs:labEvidence(m),water:{goal,date:last?.date||null,delta:goal&&last?number(last.value)-goal.value:null,points:water.points||[],source:water.source}};
+ return {nutrition:nutritionCoverage(m),training:observedTraining(m),labs:labEvidence(m,ui.homeLabKey),water:{goal,date:last?.date||null,delta:goal&&last?number(last.value)-goal.value:null,points:water.points||[],source:water.source}};
 }
