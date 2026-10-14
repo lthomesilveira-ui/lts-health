@@ -58,7 +58,7 @@ const manifest={
     "src/backup-traceability.js": "0af8635ca3742a1c4c64e28aae92ae56965449fcd1751212e2f61428da429cc9",
     "src/bio-screen.js": "e9dab2b169bfb559db08d6248d741d1dac51a964caaf4f08e5e4e321c9704eed",
     "src/body-interval-model.js": "79f66a9d0e6422be7bf83f8c5a2963207f6950713552766b657974366726f56b",
-    "src/body-interval-view.js": "511d7cc0dc9002816f52d9f5d1427c800c239b97fa274436bcda81a64a4825d1",
+    "src/body-interval-view.js": "d4f7a5d35c35c5b3a3f9dab7c841b63b8ab08032daeaecfddccc783fd5018ebc",
     "src/care-followup.js": "be61c324f78294f759c901932c832ebb6e0ceb39ab5aef17adcea7c2fc8b3dcd",
     "src/composition-layout-v2.js": "88d23b8bb44c6d7bd42c57dd93b7ad4adf52eeb21231da1eb7714187e81d9b37",
     "src/core.js": "4a25b9092a380de5e8a7d359e1759d4c954d0f714026698168875e7431d8a83e",
