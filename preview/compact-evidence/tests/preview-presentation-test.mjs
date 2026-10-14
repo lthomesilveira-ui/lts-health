@@ -19,3 +19,5 @@ console.log('Preview presentation: nonnegative and negative domains, original re
 
 const collisionData={...data,nutrition:[...data.nutrition,{nutrition_date:'2025-03-16',source:'Apple Saúde · MyFitnessPal (Health Auto Export extra)',calories_kcal:2100,protein_g:110}]};
 const collision=renderReferenceHome(collisionData,status,'90',{},'2025-03-20');assert.match(collision,/>Apple · exportação \(1\)<\/option>/);assert.match(collision,/>Apple · exportação \(2\)<\/option>/);
+
+const missing=render(.3,'0.4 a 2',{reportNutritionSource:'["nutrition","unavailable source","canonical"]'});assert.match(missing,/<option value="" disabled selected>Origem sem dados nesta janela<\/option>/);assert.match(missing,/A origem escolhida não tem registros nesta janela/);const foodPanel=missing.split('<article class="refPanel nutrition">')[1].split('</article>')[0];assert.match(foodPanel,/<b>Sem dado<\/b>/);assert.doesNotMatch(foodPanel,/>2\.000 kcal\/dia/);

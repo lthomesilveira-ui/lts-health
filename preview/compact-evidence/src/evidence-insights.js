@@ -1,4 +1,5 @@
 import {num,norm,fmtNum,fmtDate} from './core.js';
+import {nutritionPeriodModel} from './home-period-model.js';
 import {validDay} from './history-tools.js';
 import {localHealthDay} from './health-context.js';
 
@@ -11,18 +12,11 @@ export const loadInsightUnits={kg:'kg',lb:'lb',lb_per_side:'lb por lado',plate_i
 
 // A descriptive display rule, not a significance test or proof of complete diaries.
 export function nutritionTrainingContrast(data={},status={},bounds={},requestedSource='',today=localHealthDay()){
-  if(!ready(status,['nutrition','workouts']))return{available:false,reason:'unavailable',sources:[],rows:[]};
-  const trainingDays=new Set(canonical(data).map(row=>validDay(row.workout_date)).filter(date=>inside(date,bounds,today)));
-  const byDay=new Map();
-  for(const row of data.nutrition||[]){const date=validDay(row.nutrition_date);if(!inside(date,bounds,today))continue;if(!byDay.has(date))byDay.set(date,[]);byDay.get(date).push(row);}
-  const sources=new Map();let ambiguousDays=0,unknownSourceDays=0;
-  for(const [date,items] of byDay){
-    if(items.length!==1){ambiguousDays++;continue;}
-    const row=items[0],key=norm(row.source);if(!key){unknownSourceDays++;continue;}
-    if(!sources.has(key))sources.set(key,{key,label:String(row.source).trim(),days:[]});
-    sources.get(key).days.push({date,row,withTraining:trainingDays.has(date)});
-  }
-  const ordered=[...sources.values()].map(source=>{
+  const nutrition=nutritionPeriodModel(data,status,bounds,{reportNutritionSource:requestedSource},today);
+  const availability=nutrition.available&&ready(status,['workouts']);
+  const trainingDays=new Set((ready(status,['workouts'])?canonical(data):[]).map(row=>validDay(row.workout_date)).filter(date=>inside(date,bounds,today)));
+  const ordered=nutrition.sources.map(origin=>{
+    const source={...origin,days:origin.closedRows.map(row=>({date:row.date,row,withTraining:trainingDays.has(row.date)}))};
     const rows=nutritionInsightMetrics.map(([key,label,unit])=>{
       const observed=source.days.filter(item=>num(item.row[key])!=null&&num(item.row[key])>=0);
       const withTraining=observed.filter(item=>item.withTraining),withoutTraining=observed.filter(item=>!item.withTraining);
@@ -32,9 +26,10 @@ export function nutritionTrainingContrast(data={},status={},bounds={},requestedS
     });
     return{...source,rows,comparisonCount:rows.filter(row=>row.comparable).length};
   }).sort((a,b)=>b.comparisonCount-a.comparisonCount||b.days.length-a.days.length||a.key.localeCompare(b.key));
-  const latest=[...ordered].sort((a,b)=>b.days.map(d=>d.date).sort().at(-1).localeCompare(a.days.map(d=>d.date).sort().at(-1))||b.days.length-a.days.length)[0];
-  const selected=requestedSource?ordered.find(source=>source.key===requestedSource)||null:latest||null;
-  return{available:true,sources:ordered,selected,rows:selected?.rows||[],ambiguousDays,unknownSourceDays,bounds,today};
+  const selected=ordered.find(source=>source.key===nutrition.source?.key)||null;
+  return{available:availability,reason:availability?null:'unavailable',sources:ordered,selected,
+    rows:availability?selected?.rows||[]:[],ambiguousDays:new Set(nutrition.duplicates.map(row=>row.date)).size,unknownSourceDays:nutrition.unknownRows,
+    requestedSource:nutrition.requestedSource,requestedSourceMissing:nutrition.requestedSourceMissing,selectionMessage:nutrition.selectionMessage,bounds,today};
 }
 
 // Compare recorded working loads at the SAME repetitions; never estimate strength,

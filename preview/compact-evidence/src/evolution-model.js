@@ -66,13 +66,14 @@ function evolutionReadings(m,r,e){
   return {domainReadings:readings,takeaways:Object.values(readings).sort((a,b)=>a.priority-b.priority),labReferenceRows:outside};
 }
 export function evolutionModel(data,status,m,r,ui={}){
-  const insights=evidenceInsights(data,status,m.current,r.nutrition.source?.key,m.today);
+  const insights=evidenceInsights(data,status,m.current,r.nutrition.source?.key||r.nutrition.requestedSource||'__no_selected_origin__',m.today);
   // The selected global calendar and its equal-duration predecessor are the
   // only time windows feeding synthesis. Never fall back to a fixed fortnight.
   const period=['30','90','365','all'].includes(String(m.period))?String(m.period):String(m.current.days||'all');
   const available=homePeriodModel(data,status,period,{},m.today);
   const exactSource=(domain,legacy)=>{
     if(!legacy)return '__no_selected_origin__';
+    const exact=available[domain].sources.find(source=>source.key===legacy.key);if(exact)return exact.key;
     let matches=available[domain].sources.filter(source=>norm(source.label)===norm(legacy.label));
     if(domain==='nutrition')matches=matches.filter(source=>source.domain==='nutrition');
     if(domain==='sleep'){
@@ -82,7 +83,7 @@ export function evolutionModel(data,status,m,r,ui={}){
     }
     return matches.length===1?matches[0].key:'__ambiguous_or_missing_origin__';
   };
-  const periodModel=homePeriodModel(data,status,period,{...ui,homeNutritionSource:exactSource('nutrition',r.nutrition.source),homeSleepSource:exactSource('sleep',r.sleep.source),homeWaterSource:exactSource('water',r.water.source)},m.today);
+  const periodModel=homePeriodModel(data,status,period,{...ui,homeNutritionSource:r.nutrition.source?.key||r.nutrition.requestedSource||'__no_selected_origin__',homeSleepSource:exactSource('sleep',r.sleep.source),homeWaterSource:exactSource('water',r.water.source)},m.today);
   const matchingWindow=periodModel.bounds.start===m.current.start&&periodModel.bounds.end===m.current.end;
   const align=comparison=>matchingWindow?comparison:{...comparison,comparable:false,delta:null,reason:'window_mismatch'};
   const body=m.body.latest||null;
@@ -109,7 +110,7 @@ export function evolutionModel(data,status,m,r,ui={}){
   const latestExercises=latestSession?exercises.filter(e=>e.workout_source_record_id===latestSession.source_record_id).sort((a,b)=>(num(a.order_index)||0)-(num(b.order_index)||0)).map(exercise=>({...exercise,recordedSets:sets?.filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(num(a.set_index)||0)-(num(b.set_index)||0))||[]})):[];
   const load=insights.highlightLoad;
   const freshLoad=load&&(!latestSession||load.latest.date>=addDays(day(latestSession.workout_date),-14))?load:null;
-  const meals=status.meals==='ready'?(data.meals||[]).filter(row=>inWindow(day(row.meal_date),m.current)&&day(row.meal_date)<m.today&&norm(row.source)===r.nutrition.source?.key&&r.nutrition.closedRows.some(d=>d.date===day(row.meal_date))&&row.meal_name):[];
+  const meals=status.meals==='ready'?(data.meals||[]).filter(row=>inWindow(day(row.meal_date),m.current)&&day(row.meal_date)<m.today&&r.nutrition.source?.domain==='nutrition'&&norm(row.source)===norm(r.nutrition.source.label)&&r.nutrition.closedRows.some(d=>d.date===day(row.meal_date))&&row.meal_name):[];
   const mealsByDay=new Map();for(const row of meals){const key=JSON.stringify([day(row.meal_date),norm(row.meal_name)]);if(!mealsByDay.has(key))mealsByDay.set(key,[]);mealsByDay.get(key).push(row);}
   const mealNames=new Map();for(const rows of mealsByDay.values()){if(rows.length!==1)continue;const row=rows[0];if(num(row.protein_g)==null)continue;const key=norm(row.meal_name);if(!mealNames.has(key))mealNames.set(key,{label:row.meal_name,values:[]});mealNames.get(key).values.push(num(row.protein_g));}
   const mealDistribution=[...mealNames.values()].map(g=>({label:g.label,value:average(g.values),days:g.values.length}));

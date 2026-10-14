@@ -63,10 +63,10 @@ const manifest={
     "src/data-layer.js": "e37d773309f215e23f90a65c749b424e3419167e177e74e96f625667525430ab",
     "src/data-screen.js": "95451df04f99f8a1f0c9cc7f8062d2da3dd19d04bac62df28e7a407d3ec2693f",
     "src/entry.js": "47bda0c131be40b18555c0f4b02285199094541a3ff47a9a22e1ffb28ddac925",
-    "src/evidence-insights-view.js": "dd958e5449666b24de752ebedb4d8093a03707688bbcc0e68d0271ab5493fe02",
-    "src/evidence-insights.js": "958fc63fab789353391d49bbde83928c03ef37f13c93b5028188875e41376989",
+    "src/evidence-insights-view.js": "a3924871f5eba1cd4bc72fb9077e9296af19790c489089ba6b17e143cc6edab0",
+    "src/evidence-insights.js": "14c5b7ec531924ac8a3b5d25e367638cfb4ece087e47442db2067d0865f60f36",
     "src/evidence-priority.js": "29094dbe0b34c3df50b74dae3e458d37ac53e72a94ceec237ea251a85c5dfdfd",
-    "src/evolution-model.js": "5bfe14064fbc7b53cce464172f9444fbd6df7cd8193b6b9cbe9f04e77175cfa8",
+    "src/evolution-model.js": "4a5dfef84935e134a906e53236933c4938bf9408c7b5d27455b1c1b6b9b7d1e8",
     "src/evolution-screen.js": "a9bd34f8ca95bc0305654ba8eba43623fcfb3cb2664cb7e38787a1219af4baba",
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/health-auto-export-connection.js": "da807104a4d207af93a10e526a21c7294912f6d4579b0d94955bfee52b8b77b5",
@@ -77,13 +77,13 @@ const manifest={
     "src/home-cockpit.js": "e60175cf5de5d09efde96e81f583fdaa38600b706ef3ad6d7bce31a48adb0ef7",
     "src/home-evidence-insights.js": "16f1b40f892f41f038b4e852d604f1082f3b18679bcdad23016b7918ad496870",
     "src/home-overview.js": "2d08723ecce7f700f3dc3263706b75c20c85d08812ed9d3233138ae0ffdd5aa5",
-    "src/home-period-model.js": "093cd388410269a93348e0465dbf71c0b1c597b308834b443e9084274284dd3c",
-    "src/home-reference-experience.js": "4eb48444a9ecb4e047bb50b11e624fe19b5f6cf1faed2f6487db4add75af0bcf",
+    "src/home-period-model.js": "ec1087e0deb60a24a08035a717ae3e7521cdf9c90ae77729561e27f26f442a8f",
+    "src/home-reference-experience.js": "08060c7d4e5ce3f524f4156034fa1ffdf95e040d139c7230b103cd108b3f9fcf",
     "src/home-reference.js": "f23182afbbdc87dd2861a3171951cae2fa5febe8f1affd2aa2df9ae987f78267",
     "src/hydration.js": "ac08d5f9c599e7937da7f6c73019d3faaf73b08c87039760d2c89cd2aeeb24ff",
     "src/integrated-analysis.js": "3a32d46636af4853d20cf02a6692d1751c3351d9446cbf6cec7d405afc677ea4",
-    "src/integrated-review-view.js": "eb865eff15debcbc332f69985af99e188bfbc08b2a472176e62470c25fc8da78",
-    "src/integrated-review.js": "f62990ed7f5b8c4694db283dc7c4c1fc150b8c87c24828f1cd9cda4920203d21",
+    "src/integrated-review-view.js": "6edb0a41177650a67bf9b4c80f5c749400460c3983139f240f92746d78fffbbd",
+    "src/integrated-review.js": "a24335e4fe77ec4735e68a14cbefbc8c757bca418b2ecad9b4bfbc87518c02f1",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
     "src/labs-layout-v2.js": "a7495755ae0d0d08f7b56dc46bafe196e7c84de6d33369fd3180ebcaba762ae1",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
@@ -101,7 +101,7 @@ const manifest={
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "da6021640c05bc1bf09628901b448126a8d89e1aedf21266b1ec5c7d1a52e390",
     "src/reports-model.js": "ef5c7d6000387cfe5bbe4a1b634319a182e53be3cc57f6ba13a1f1a2f9844e56",
-    "src/reports-screen.js": "9f89fc19afecb3586fc84faff5d64e8c1ecd800b8c6500152e3bce98209748ef",
+    "src/reports-screen.js": "73bddc10ba0ce5b2c8e709fea13bdd374d6df994878c65d248a409bb00f0b12d",
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-status.js": "f51f73a6d73d5880b0615b89101693ff2333a7d2021311d96bd80cf4a57b179f",
     "src/timeline-screen.js": "83b00def84ef265c53e9508fd5dbf2cd748da803a196e0e432b6eca42cbd0273",
@@ -151,4 +151,5 @@ assert.match(index,/Prévia · somente leitura/);
 assert.equal(fs.existsSync(path.join(root,'manifest.json')),false,'no public manifest JSON');
 await import('./preview-readonly-test.mjs');
 await import('./preview-presentation-test.mjs');
+await import('./nutrition-source-contract-test.mjs');
 console.log('Isolated preview: exact runtime hashes, closed JS/CSS dependencies, read-only guard before modules, unchanged authentication/configuration and production build.');
