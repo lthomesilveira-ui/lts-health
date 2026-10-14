@@ -39,7 +39,7 @@ try{
   const expected=rows=>rows.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
   assert.deepEqual(await plotted('.refPanel.body [data-series="fat"] circle'),expected(db.health_body_composition.map(r=>[r.measured_at,r.fat_mass_kg])),'body chart retains every eligible raw fat point');
   assert.deepEqual(await plotted('.refPanel.body [data-series="muscle"] circle'),expected(db.health_body_composition.map(r=>[r.measured_at,r.skeletal_muscle_mass_kg])),'body chart retains every eligible raw muscle point');
-  assert.deepEqual(await plotted('.refPanel.training [data-series="load"] circle'),expected(db.health_workout_sets.map(r=>[r.workout_date,r.weight])),'training observed-date zoom never truncates older eligible records');
+  assert.deepEqual(await plotted('.refPanel.training .refPlot circle'),expected(db.health_workout_sets.map(r=>[r.workout_date,r.weight])),'training observed-date zoom never truncates older eligible records');
   await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
   await page.locator('#overview-body-date').focus();await page.locator('#overview-body-date').press('ArrowDown');
   assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);
