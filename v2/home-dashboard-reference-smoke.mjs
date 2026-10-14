@@ -17,11 +17,11 @@ try{
   const page=await browser.newPage({viewport:{width,height}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`${origin}/?fixture=1#hoje`,{waitUntil:'domcontentloaded'});await page.waitForSelector('#app:not(.hidden)');await renderReference(page);
   assert.equal(await page.locator('.refSignal').count(),5);
-  assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
+  assert.equal(await page.locator('.refPanels>.refPanel:visible').count(),6);
   assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1);
   assert.equal(await page.locator('.refPanel.body [data-series]').count(),2);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3));
-  const visible=await page.locator('.refSignal:visible').count();assert.equal(visible,width<=840?2:5);
+  const visible=await page.locator('.refSignal:visible').count();assert.equal(visible,5);
   const positions=await page.evaluate(()=>Object.fromEntries(['refSignals','refReading','refPanels'].map(c=>[c,document.querySelector('.'+c).getBoundingClientRect().top])));
   assert.ok(width<=840?positions.refReading<positions.refSignals:positions.refSignals<positions.refReading);
   await renderReference(page,'30','body_fat_pct');
