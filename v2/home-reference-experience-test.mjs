@@ -16,7 +16,7 @@ const duplicate=renderReferenceHome({...data,body:[{measured_at:'2025-03-15',fat
 assert.doesNotMatch(duplicate,/value="2025-03-15"|Gordura <b>12,0 kg|Músculo <b>40,0 kg/);
 assert.match(duplicate,/Selecione uma data sem conflito/);
 
-const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'error'},'90',{},'2025-03-20');assert.match(failedCounts,/— séries · — prolongamentos/);assert.match(failedCounts,/— registros de marcadores/);
+const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'error'},'90',{},'2025-03-20');assert.match(failedCounts,/— séries principais · — prolongamentos/);assert.match(failedCounts,/Exames não carregaram/);assert.doesNotMatch(failedCounts,/0 registros de marcadores/);
 
 const unknown=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30},{measured_at:'2025-02-01',source:'A',fat_mass_kg:19,skeletal_muscle_mass_kg:31},{measured_at:'2025-03-01',source:'A',device_name:'Known',fat_mass_kg:18,skeletal_muscle_mass_kg:32}]},status,'90',{},'2025-03-20');
 assert.equal((unknown.match(/data-observed-link/g)||[]).length,2,'one observed unknown-device segment per metric; known device breaks continuity');
@@ -27,3 +27,6 @@ for(const records of [[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{mea
 const invalidBody=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:-99,skeletal_muscle_mass_kg:true},{measured_at:'2025-02-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}]},status,'90',{},'2025-03-20');assert.doesNotMatch(invalidBody,/-99|−99|119,0|29,0 kg/);assert.match(invalidBody,/Músculo <b>30,0 → 30,0 kg/);
 
 const differentEnds=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{measured_at:'2025-02-01',source:'A',skeletal_muscle_mass_kg:30},{measured_at:'2025-03-01',source:'A',fat_mass_kg:19}]},status,'90',{},'2025-03-20');assert.match(differentEnds,/Gordura <b>20,0 → 19,0 kg/);assert.match(differentEnds,/Músculo <b>30,0 → 30,0 kg/);assert.match(differentEnds,/Último valor: 01\/02\/2025/);assert.match(differentEnds,/Músculo, 01\/02\/2025 até 01\/02\/2025/);
+
+const hostileUnit=renderReferenceHome({...data,labs:[{collection_date:'2025-03-15',biomarker:'Synthetic <probe>',result_numeric:12,result_raw:'12',unit:'<span data-unit-probe="1">u</span>',reference_range:'2 a 10',laboratory:'Synthetic'}]},status,'90',{},'2025-03-20');
+assert.doesNotMatch(hostileUnit,/<span data-unit-probe|<probe>/);assert.match(hostileUnit,/&lt;span data-unit-probe/);
