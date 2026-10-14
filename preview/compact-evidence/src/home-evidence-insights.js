@@ -10,10 +10,12 @@ const distinct=values=>[...new Set(values)];
 const validFields=['calories_kcal','protein_g'];
 export function nutritionCoverage(m){
  const sources=(m.nutrition.sources||[]).map(s=>({...s,observedDates:distinct(s.closedRows.filter(r=>validFields.some(f=>number(r[f])!=null)).map(r=>r.date)).sort()}));
- const canonical=sources.filter(s=>s.status==='canonical');
+ const canonical=sources.filter(s=>s.status==='canonical'||s.reviewVerified);
  const byMetric=Object.fromEntries(validFields.map(f=>[f,distinct(canonical.flatMap(s=>s.closedRows.filter(r=>number(r[f])!=null).map(r=>r.date))).sort()]));
  const dates=distinct(canonical.flatMap(s=>s.observedDates)).sort(),overlapDates=[...group(canonical.flatMap(s=>s.observedDates.map(date=>({date,key:s.key}))),r=>r.date)].filter(([,rows])=>rows.length>1).map(([date])=>date);
- return {sources,canonical,dates,days:dates.length,byMetric,overlapDates,closedDays:m.bounds.closedDays,pooledMean:null,selectedKey:m.nutrition.source?.key||null};
+ const receivedDates=distinct(sources.flatMap(s=>(s.receivedDates||(s.rows||[]).filter(r=>validFields.some(f=>number(r[f])!=null)).map(r=>r.date)).filter(date=>date<m.today))).sort();
+ const partialDates=distinct(sources.flatMap(s=>(s.knownPartialRows||[]).map(r=>r.date)));
+ return {sources,canonical,receivedDates,receivedDays:receivedDates.length,missingDays:m.nutrition.partial||m.nutrition.available===false?null:Math.max(0,m.bounds.closedDays-receivedDates.length),partialDates,dates,days:dates.length,byMetric,overlapDates,closedDays:m.bounds.closedDays,pooledMean:null,selectedKey:m.nutrition.source?.key||null};
 }
 export function observedTraining(m){
  const t=m.training;if(!t.available||!t.detailsAvailable)return {available:false,examples:[],selected:null};

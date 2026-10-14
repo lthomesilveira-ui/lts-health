@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // Generic build hashes live in the test. No public JSON payload is introduced.
 const manifest={
-  "candidate_commit": "4432b96ec479ca43c4f97598f7a1d3558964cd0f",
-  "build": "analytics-candidate-20261014.60",
+  "candidate_commit": "23c8ebb374f1859b86c2192f7d68bd304f6e722f",
+  "build": "nutrition-reviewed-20261014.61",
   "files": {
     "accessibility.css": "fe77a056f36b55fa987367ac0899da57b613e2db4830c33781b8612f209bd3db",
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
@@ -33,7 +33,7 @@ const manifest={
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "da6ae5ccf5f16b5cb5885fe253d97fef9a151c6d5c11956e913a1011405e3004",
+    "index.html": "17f8cff2b4261865a80e199003778e531a42257910c472069be133ca5ae7bada",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "bbbf9acfa364c27edd8b09c8feb64dd64ec80a25b0b38e6b26102cc0ed3943f1",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
@@ -57,17 +57,17 @@ const manifest={
     "src/analysis-screen.js": "cfba98a4af94a8b2a8f7fe1c7d29e1bdc7bf51594158e221c4604112120ba041",
     "src/backup-traceability.js": "0af8635ca3742a1c4c64e28aae92ae56965449fcd1751212e2f61428da429cc9",
     "src/bio-screen.js": "e9dab2b169bfb559db08d6248d741d1dac51a964caaf4f08e5e4e321c9704eed",
-    "src/body-interval-model.js": "79f66a9d0e6422be7bf83f8c5a2963207f6950713552766b657974366726f56b",
-    "src/body-interval-view.js": "d4f7a5d35c35c5b3a3f9dab7c841b63b8ab08032daeaecfddccc783fd5018ebc",
+    "src/body-interval-model.js": "339fbc37a19b23af45e9987b5deaf9ddedf769df7fcd9bc95bd3218490fec923",
+    "src/body-interval-view.js": "7d96b8f3fa32cd4bfc1ff321bdf47c104b07ba71a173522164240f0db9fff9b0",
     "src/care-followup.js": "be61c324f78294f759c901932c832ebb6e0ceb39ab5aef17adcea7c2fc8b3dcd",
     "src/composition-layout-v2.js": "88d23b8bb44c6d7bd42c57dd93b7ad4adf52eeb21231da1eb7714187e81d9b37",
     "src/core.js": "4a25b9092a380de5e8a7d359e1759d4c954d0f714026698168875e7431d8a83e",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
-    "src/data-layer.js": "512825af562f65b3ce80fe85ea54ebe6385647362821bf47db379c6ac23c9cb8",
+    "src/data-layer.js": "d15b3672719daef359985a59eac188e7b2fc5128b70743fb53c9392493979156",
     "src/data-screen.js": "95451df04f99f8a1f0c9cc7f8062d2da3dd19d04bac62df28e7a407d3ec2693f",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
     "src/entry.js": "47bda0c131be40b18555c0f4b02285199094541a3ff47a9a22e1ffb28ddac925",
-    "src/evidence-insights-view.js": "f97ebda1d34fd27bd5c963e0bdbcce942e32809e5e07868332e94898a468f1bd",
+    "src/evidence-insights-view.js": "e5a0494442ab2571e08badcec78749731b324339d5193dab06dd87ad85e70e33",
     "src/evidence-insights.js": "46fd88e8c3d7be0ab6de361201581d5a6cab1c4ee785ebf3f53f2bac9387f1a3",
     "src/evidence-priority.js": "29094dbe0b34c3df50b74dae3e458d37ac53e72a94ceec237ea251a85c5dfdfd",
     "src/evolution-model.js": "c81d3bd55c01dcddf67a5e3b3c8b3cd691d0a5f88a7c610bb0292e6c359091b4",
@@ -78,16 +78,16 @@ const manifest={
     "src/health-context.js": "e10ce4cd0590d096828ad3a20978381f312da6a451853dc3870aa96a03338b10",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
     "src/history-tools.js": "a5308e26426b8681b55515a6434f67dc94a7c532b5225e904e619d7a442d9e88",
-    "src/home-cockpit.js": "4fb5ff57b3651619c37abf41090e89dd3682dc13676b9383dc8e604ec42a5ae1",
-    "src/home-evidence-insights.js": "584c93417e24d6866d5848022a5662f75c1d75914d81b7526d57ab133e958181",
+    "src/home-cockpit.js": "f6da2e0697124d605a875393921839564e55f2b426fdef81e63affcfa8943dcc",
+    "src/home-evidence-insights.js": "c1a3fe6a08e6271d7aec24940428215cfdfa2473a2006eecbb4d23c49cef95e7",
     "src/home-overview.js": "2d08723ecce7f700f3dc3263706b75c20c85d08812ed9d3233138ae0ffdd5aa5",
-    "src/home-period-model.js": "8b679f78e06b25fdc08aaa142c2a2b1c2e5e43b732c0df52f4b5dfd74e206c29",
-    "src/home-reference-experience.js": "004268ffe4c7817c92abaf44bf41676efd8fe087f3462e987de48d6665e3d0c2",
+    "src/home-period-model.js": "6f714f54ffc72e1daa847089d6c308dfd044774caf8109719e3aba952dd089be",
+    "src/home-reference-experience.js": "1f28d30a6cb200374e465b0ec5b9d86a04a00dd0770eabaeb6ff1b7b2d19adcb",
     "src/home-reference.js": "f23182afbbdc87dd2861a3171951cae2fa5febe8f1affd2aa2df9ae987f78267",
     "src/hydration.js": "ac08d5f9c599e7937da7f6c73019d3faaf73b08c87039760d2c89cd2aeeb24ff",
     "src/integrated-analysis.js": "3a32d46636af4853d20cf02a6692d1751c3351d9446cbf6cec7d405afc677ea4",
-    "src/integrated-review-view.js": "68b6c9c387186adbf0ed002c6440e1f301514d8346a20498ccf6c51c607db50c",
-    "src/integrated-review.js": "27da8381b486f5af12d4cacc6fa344a0a1f23f03ef49ddaacda537758f769a27",
+    "src/integrated-review-view.js": "6125da78ecdf85f55bd27761606df615ac3afb2a38bc9a5c8aa5609fb5e532da",
+    "src/integrated-review.js": "0a0962ec2ce1f92420aad649aa2a53a51cbc9f6a46fe6f92c330025574f73c8b",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
     "src/labs-layout-v2.js": "a7495755ae0d0d08f7b56dc46bafe196e7c84de6d33369fd3180ebcaba762ae1",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
@@ -95,8 +95,9 @@ const manifest={
     "src/main.js": "9b1cb1e0894b949090305decd54bb325d3f94f19f3a49fa0e244713d2fbe736f",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
     "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
-    "src/nutrition-product.js": "bd5b8ccb46cf0a285222a8d53176ebafdeeb7171ddbc297d3aaec8e1341d5006",
+    "src/nutrition-product.js": "196696f68e25595f333c3c7357c58052746e42b03affd8ae6699dfc8a8ce3dcc",
     "src/nutrition-screen.js": "25efdbf671db9358d6fbec292ae1fd6580869baf8731b4c0b3be634019434aba",
+    "src/nutrition-source-review.js": "724561e77c78d4f885216b257cf151e323d92d4d562551f6d799231eaf38eaf6",
     "src/personal-goals.js": "8451a8c46108fb01124e1774958f4319498a46b8dc991279bd49f381c03b6d3f",
     "src/polar-connection.js": "295a0a3323e73a5ef51295f99aa2ce6b535386250ac16442ff0ae098741ab49c",
     "src/preview-readonly.js": "ca267422b70a50f4bbddb3edfad7f5ed6d7d1bef8edad324e546f043a944a994",
@@ -131,7 +132,7 @@ const manifest={
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-assert.equal(manifest.build,'analytics-candidate-20261014.60');
+assert.equal(manifest.build,'nutrition-reviewed-20261014.61');
 for(const [relative,expected] of Object.entries(manifest.files)){
  assert.ok(/^(index\.html|[\w-]+\.(?:css|svg)|src\/[\w-]+\.js)$/.test(relative),'allowlisted generic source only');
  const file=path.join(root,relative),body=fs.readFileSync(file,'utf8');assert.equal(hash(body),expected,'preview manifest matches '+relative);
@@ -150,7 +151,7 @@ assert.equal(core,productionCore,'authentication/configuration is unchanged from
 assert.match(fs.readFileSync(path.join(production,'index.html'),'utf8'),/mobile-parity-20261014\.58/,'production remains on its published build');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=analytics-candidate-20261014.60"></script>';
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=nutrition-reviewed-20261014.61"></script>';
 assert.ok(index.includes(guardTag)&&index.indexOf(guardTag)<index.indexOf('<script type="module"'),'blocking classic guard loads before application modules');
 assert.ok(index.indexOf(guardTag)>index.indexOf('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'guard installs after SDK');
 assert.match(index,/Prévia · somente leitura/);
