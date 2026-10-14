@@ -156,3 +156,5 @@
  .refPanels{grid-template-columns:repeat(2,minmax(0,1fr))}
  .refSignal strong{overflow-wrap:anywhere}
 }
+
+.refSignal strong,.refSignal small{min-width:0;overflow-wrap:anywhere}
