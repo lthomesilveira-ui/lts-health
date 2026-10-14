@@ -137,7 +137,7 @@ function waterModel(data,status,bounds,ui,today){
 }
 
 function bodyModel(data,status,bounds,ui,today){
-  const available=ready(status,'body'),all=available?(data.body||[]).filter(row=>inside(row.measured_at,bounds)).map(row=>({...row,date:dayOf(row.measured_at)})):[];
+  const available=ready(status,'body'),all=available?(data.body||[]).filter(row=>inside(row.measured_at,bounds)).map(row=>({...row,...Object.fromEntries(bodyFields.map(field=>[field,nonnegative(row[field])])),date:dayOf(row.measured_at)})):[];
   const sourceKey=row=>JSON.stringify([norm(row.source),norm(row.device_name)]);
   const origins=[...groups(all,sourceKey)].map(([key,rows])=>({key,label:[rows[0].source||'Origem não informada',rows[0].device_name||'Modelo não informado'].join(' · ')}));
   const requested=ui.homeBodySource||ui.reportBodySource,rows=ordered(requested&&requested!=='all'?all.filter(row=>sourceKey(row)===requested):all);

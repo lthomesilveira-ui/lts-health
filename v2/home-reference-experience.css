@@ -46,3 +46,42 @@
  .ltsReferenceHome .refPanel .refPlot svg{height:55px}
  .ltsReferenceHome .refPanel.sleep .refPlot svg{height:44px}
 }
+/* Readable observational hierarchy, checked against the user's real records. */
+.refSignal strong{display:block;font-size:14px;line-height:1.3;font-weight:650;margin-top:3px}.refSignal small{font-size:12px}.refLegend em{font-style:normal;font-weight:700;margin-left:6px}.refBodyObserved text{font:11px system-ui}.refMobilePeriod{display:none}.refPanel.body{position:relative}.refPanel.body .refLegend{display:grid;gap:2px}.refReadingMain p{font-size:13px}.refReadingDetail p{font-size:12px}.refBodyControls>summary{font-size:12px}.refPanel.body .refBodyStamp{font-size:12px}.refPanel>header p:empty{display:none}
+@media(min-width:841px){.refSignalPlot{height:26px}.refReading{min-height:116px}.refReadingMain{flex:1.6}.refReadingDetail{flex:1}.refPanel.body .refBodyObserved svg{height:64px}.refSignal{padding:9px}.refSignal strong{font-size:13px}.refSignal small{font-size:11px}.refPanel.body .refLegend{font-size:12px}}
+@media(max-width:840px){
+ #mobileNav{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ body:has(.ltsReferenceHome) .screenHost{padding:12px 16px 24px!important}
+ .refHeading{grid-template-columns:1fr auto;gap:6px 8px;align-items:center;margin-bottom:12px}
+ .refMobileBrand{grid-column:1/-1;margin:0 0 2px;height:30px}
+ .refHeading h1{font-size:24px;line-height:1.2}.refHeading>div:has(h1){min-width:0}
+ .refPeriod>div,.refPeriod>small{display:none}.refMobilePeriod{display:block;min-height:40px;border:0;background:#f2f7ff;color:#325e95;border-radius:6px;padding:6px 8px;font:12px system-ui;max-width:112px}
+ .refReading{padding:11px 12px;margin-bottom:10px;gap:8px}
+ .refReading h2{font-size:14px;margin-bottom:4px}.refReading p{font-size:14px;line-height:1.35}.refReadingMain{gap:8px}.refReadingMain>div{padding-right:20px}.refReading .refMobileAttention{font-size:12px!important;line-height:1.3;margin-top:4px}.refReading>.refPrimary{width:36px;min-width:36px}
+ .refSignals{gap:10px;margin-bottom:10px}.refSignal{padding:9px 8px;gap:6px;min-height:76px;grid-template-columns:27px minmax(0,1fr)}.refSignal>.refIcon{width:27px;height:27px;min-width:27px}.refSignal b{font-size:11px}.refSignal strong{font-size:14px;line-height:1.25;margin-top:3px}.refSignal small{font-size:12px!important;margin-top:3px;line-height:1.3}
+ .refPanels{gap:10px}.refPanel{padding:9px 11px}.refPanel>header{align-items:center;margin:0 0 4px;gap:7px}.refPanel>header>.refIcon{width:28px;height:28px;min-width:28px}.refPanel>header>button{min-height:40px;min-width:36px}.refPanel h2{font-size:16px;line-height:1.2}.refPanel>header p{font-size:12px!important;line-height:1.2}
+ .refPanel.body .refLegend{font-size:12px!important;line-height:1.25;gap:2px;margin:0 0 3px}.refPanel.body .refLegend b{font-size:13px}.refPanel.body .refPlot svg{height:56px}.refAxis{font-size:12px!important;margin-top:0;line-height:1.2}.refPanel.body .refBodyStamp{font-size:12px;line-height:1.25;margin-top:3px;padding-right:85px}.refPanel.body .refBodyControls{margin:0}.refPanel.body .refBodyControls:not([open])>summary{position:absolute;right:10px;bottom:6px;min-height:32px;font-size:12px}.refPanel.body .refBodyControls[open]>summary{min-height:36px}
+ .mobileWorkout>header{margin-bottom:0}.mobileWorkout .refWorkoutLine{margin:1px 0;gap:6px}.mobileWorkout .refWorkoutLine .refIcon{width:20px;height:20px;min-width:20px}.mobileWorkout .refWorkoutLine b{font-size:14px;line-height:1.25}.mobileWorkout .refWorkoutLine small{font-size:12px!important;line-height:1.3}.mobileWorkout .refPrimary{min-height:40px;margin-top:5px;font-size:13px!important}.mobileWorkout .refWorkoutLine:nth-of-type(2){padding-left:26px}.mobileWorkout .refWorkoutLine:nth-of-type(2)>.refIcon{display:none}
+ .refWaterBody{padding:0;gap:10px}.refWaterBody b{font-size:17px;margin:0}.refWaterBody small{font-size:12px!important}.refWaterBody .refAction{display:none}.refGlass{width:34px;height:45px}.refPanel.water .refFootnote{font-size:12px!important;margin-top:3px;line-height:1.25!important}.refNext{display:none}.refPeriodEvidence{margin-top:10px!important;padding:0!important;border:0!important;background:transparent!important}.refPeriodEvidence>summary{min-height:40px;padding:8px!important;font-size:12px!important}
+}
+@media(max-width:350px){.refHeading h1{font-size:22px}.refSignal{grid-template-columns:1fr}.refSignal>.refIcon{display:none}.refPanel.body .refBodyStamp{padding-right:0}.refPanel.body .refBodyControls:not([open])>summary{position:static;min-height:32px}.refReadingMain>.refIcon{display:none}}
+@media(max-width:840px){
+ .refReading h2{display:none}.refReadingMain>div{padding-top:24px;padding-right:0}
+ .refReading>.refPrimary{font-size:13px!important;position:absolute;left:51px;right:auto;top:3px;min-height:34px;min-width:0;width:auto;padding:3px 0;font-weight:700;justify-content:flex-start}
+ .refReading>.refPrimary svg{display:none}
+}
+@media(max-width:350px){.refReading>.refPrimary{left:12px}}
+@media(max-width:840px){
+ .refPanel.body>header p{display:none}.refPanel.body>header{margin-bottom:2px}
+ .refPanel.body .refBodyStamp{font-size:12px;line-height:1.25}
+ .refSignal strong{font-size:14px}.refSignal small{font-size:12px!important}
+ .mobileWorkout .refWorkoutLine:nth-of-type(2){margin-top:0}.mobileWorkout>header{margin-bottom:0}.mobileWorkout .refPrimary{margin-top:3px}
+}
+@media(max-width:840px){
+ .refSignal{grid-template-columns:22px minmax(0,1fr);gap:3px 6px;padding:8px 9px;min-height:80px;align-content:start}
+ .refSignal>.refIcon{width:22px;height:22px;min-width:22px;grid-column:1;grid-row:1}
+ .refSignal>.refIcon svg{width:17px;height:17px}
+ .refSignal>div:not(.refSignalPlot){display:contents}.refSignal b{grid-column:2;align-self:center;margin:0}.refSignal strong,.refSignal small{grid-column:1/-1;margin:0;line-height:1.3}
+ .refPanel.body>header p{display:block}
+}
+@media(max-width:350px){.refSignal>.refIcon{display:inline-flex}.refSignal strong{font-size:13px}}

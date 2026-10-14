@@ -29,7 +29,8 @@ try{
   return{latest:date(2),old:date(60)};
  });
  assert.equal(await page.locator('.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
- assert.match(await page.locator('.refReading').innerText(),/16(?:,0)?.*15(?:,0)?.*30(?:,0)?.*31(?:,0)?/s,'observed pair belongs to selected period');
+ assert.match(await page.locator('.refReading').innerText(),/Gordura −1,0 kg · músculo \+1,0 kg nos registros/,'observed deltas belong to selected period');
+ assert.match(await page.locator('.refLegend').innerText(),/16(?:,0)?.*15(?:,0)?.*30(?:,0)?.*31(?:,0)?/s,'both endpoint values remain accessible in the chart legend');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\.050 kcal/,'sparse mean is explicitly an observed mean');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias encerrados/);
  assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);
@@ -47,7 +48,7 @@ try{
  await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.domainStatus.nutrition='error';document.querySelector('#screenHost').innerHTML=renderProductHomeReference();
  });
- assert.match(await page.locator('.refSignal.nutrition').innerText(),/Dados não carregaram|0\/29/);
+ assert.match(await page.locator('.refSignal.nutrition').innerText(),/Dados não carregaram|Sem média disponível/);
  assert.doesNotMatch(await page.locator('.refPanel.nutrition').innerText(),/150 g|2\.050/);
  assert.equal(await page.locator('.refPanel.nutrition rect').count(),0,'failed read cannot retain stale food points');
  console.log('Home integrity: shared calendar, compatible tissue deltas, latest actual nutrition, bounded labs, sparse water, read failures and responsive evidence passed.');

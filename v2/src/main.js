@@ -12,7 +12,7 @@ import {renderProductNutrition} from './nutrition-product.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
-import {renderProductHomeReference} from './home-reference.js?v=reference-period-20261013.56';
+import {renderProductHomeReference} from './home-reference.js?v=real-hierarchy-20261014.57';
 import {renderProductTraining} from './training-reference-v2.js?v=mobile-insight-20261013.51';
 import {renderProductComposition} from './composition-layout-v2.js';
 import {renderProductLabs} from './labs-layout-v2.js';
@@ -31,7 +31,7 @@ let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
 let renderedRoute=null;
-const mobileMoreRoutes=new Set(['timeline','nutricao','analise','tratamentos','evolucao','dados']);
+const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','evolucao','dados']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
 function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
@@ -268,6 +268,7 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-home-period-select')){setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
     if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}

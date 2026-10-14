@@ -19,12 +19,12 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="reference-period-20261013\.56"/);
+assert.match(index,/name="lts-build" content="real-hierarchy-20261014\.57"/);
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=reference-period-20261013.56`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=real-hierarchy-20261014.57`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=reference-period-20261013.56'),'physical iPhone remediation is not versioned with the current build');
-assert.ok(index.includes('./integrated-review.css?v=reference-period-20261013.56'),'integrated review is not versioned with the current build');
+assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=real-hierarchy-20261014.57'),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes('./integrated-review.css?v=real-hierarchy-20261014.57'),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }
@@ -53,7 +53,7 @@ assert.match(timeline,/Math\.min\(50,matching\.length-filtered\.length\)/);
 assert.match(analysis,/option value="365"\$\{selected\('365'\)\}/);
 assert.match(evolution,/grid sectionGap evolutionLowerGrid/);
 assert.match(evolution,/evolutionTrainingRhythm[\s\S]*evolutionSegmental/);
-assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','analise','tratamentos','evolucao','dados'\]\)/);
+assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','bio','saude','tratamentos','evolucao','dados'\]\)/);
 
 for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInbox','.analysisDigestCard']){
   assert.ok(internalCss.includes(selector),`audited readability reset is missing ${selector}`);

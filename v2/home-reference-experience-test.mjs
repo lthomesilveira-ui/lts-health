@@ -6,7 +6,7 @@ const data={body:[{measured_at:'2025-01-01',source_record_id:'a',source:'Scan<sc
 const html=renderReferenceHome(data,status,'90',{},'2025-03-20');
 assert.match(html,/18,0 kg/);assert.match(html,/31,0 kg/);assert.doesNotMatch(html,/>true</);assert.doesNotMatch(html,/<script>/);assert.match(html,/Food&lt;script&gt;/);
 assert.equal((html.match(/class="refSignal /g)||[]).length,5);assert.equal((html.match(/class="refPanel /g)||[]).length,7);
-assert.match(html,/escalas verticais independentes/);assert.match(html,/1\/89 dias encerrados/);assert.match(html,/Sem registro/);
+assert.match(html,/zero é a primeira observação/);assert.match(html,/1\/89 dias encerrados/);assert.match(html,/Sem registro/);
 assert.notEqual(referencePeriodSummary(data,status,'30',{},'2025-03-20'),referencePeriodSummary(data,status,'90',{},'2025-03-20'));
 const failed=renderReferenceHome(data,{...status,body:'error',nutrition:'error',sourceMetrics:'error'},'90',{},'2025-03-20');assert.match(failed,/não carreg/);assert.doesNotMatch(failed,/18,0 kg|2\.000 kcal/);
 const selected=renderReferenceHome(data,status,'90',{overviewBodyDate:'2025-01-01'},'2025-03-20');assert.match(selected,/20,0 kg/);
@@ -17,3 +17,13 @@ assert.doesNotMatch(duplicate,/value="2025-03-15"|Gordura <b>12,0 kg|Músculo <b
 assert.match(duplicate,/Selecione uma data sem conflito/);
 
 const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'error'},'90',{},'2025-03-20');assert.match(failedCounts,/— séries · — prolongamentos/);assert.match(failedCounts,/— registros de marcadores/);
+
+const unknown=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30},{measured_at:'2025-02-01',source:'A',fat_mass_kg:19,skeletal_muscle_mass_kg:31},{measured_at:'2025-03-01',source:'A',device_name:'Known',fat_mass_kg:18,skeletal_muscle_mass_kg:32}]},status,'90',{},'2025-03-20');
+assert.equal((unknown.match(/data-observed-link/g)||[]).length,2,'one observed unknown-device segment per metric; known device breaks continuity');
+assert.match(unknown,/stroke-dasharray="4 3"/);assert.match(unknown,/Última: 01\/03\/2025/);assert.match(unknown,/condições não confirmadas/);assert.doesNotMatch(unknown,/perdeu músculo|causou/);
+
+for(const records of [[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{measured_at:'2025-02-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}],[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}]]){const result=renderReferenceHome({...data,body:records},status,'90',{},'2025-03-20');assert.doesNotMatch(result,/NaN|Infinity/);assert.match(result,/Músculo <b>30,0 → 30,0 kg/);}
+
+const invalidBody=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:-99,skeletal_muscle_mass_kg:true},{measured_at:'2025-02-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30}]},status,'90',{},'2025-03-20');assert.doesNotMatch(invalidBody,/-99|−99|119,0|29,0 kg/);assert.match(invalidBody,/Músculo <b>30,0 → 30,0 kg/);
+
+const differentEnds=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20},{measured_at:'2025-02-01',source:'A',skeletal_muscle_mass_kg:30},{measured_at:'2025-03-01',source:'A',fat_mass_kg:19}]},status,'90',{},'2025-03-20');assert.match(differentEnds,/Gordura <b>20,0 → 19,0 kg/);assert.match(differentEnds,/Músculo <b>30,0 → 30,0 kg/);assert.match(differentEnds,/Último valor: 01\/02\/2025/);assert.match(differentEnds,/Músculo, 01\/02\/2025 até 01\/02\/2025/);
