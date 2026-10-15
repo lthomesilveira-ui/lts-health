@@ -25,9 +25,13 @@ function chart(input,color,unit,{bars=false,daily=true}={}){
 }
 function reading(b){
  const w=b.metrics.weight_kg,f=b.metrics.fat_mass_kg,s=b.metrics.skeletal_muscle_mass_kg;
- if(w.hasPair&&f.hasPair&&w.delta<0&&f.delta>=0)return 'O peso caiu. A gordura estimada não acompanhou.';
- if(f.hasPair&&s.hasPair&&f.delta<0&&s.delta<0)return 'Gordura e músculo estimados caíram entre as avaliações.';
- if(w.hasPair)return w.delta===0?'O peso registrado se manteve entre as avaliações.':`O peso registrado ${w.delta<0?'caiu':'subiu'} ${value(Math.abs(w.delta),'kg')} entre as avaliações.`;
+ const change=(name,d)=>d===0?`${name} se manteve`:`${name} ${d<0?'caiu':'subiu'} ${value(Math.abs(d),'kg')}`;
+ if(w.hasPair&&f.hasPair){
+  if(w.delta<0&&f.delta>=0)return `${change('Peso',w.delta)}; gordura estimada não caiu (${signed(f.delta)}).`;
+  return `${change('Peso',w.delta)}; ${change('gordura estimada',f.delta)}.`;
+ }
+ if(f.hasPair&&s.hasPair)return `${change('Gordura estimada',f.delta)}; ${change('músculo estimado',s.delta)}.`;
+ if(w.hasPair)return `${change('O peso registrado',w.delta)} entre as avaliações.`;
  return b.latest?'Uma avaliação disponível nesta janela.':'Ainda não há uma comparação corporal nesta janela.';
 }
 function bodyCard(b){
@@ -35,7 +39,7 @@ function bodyCard(b){
  if(!b.latest)return card('body','Corpo','',empty(b.text));
  if(!b.pair)return card('body','Corpo',date(b.latest.date),rows.map(r=>`<div class="studySingle"><b>${esc(r.label)}</b><strong>${value(r.latest,'kg')}</strong></div>`).join('')+`<p class="studyMeta">Uma avaliação nesta janela.</p>`+detail('Avaliação original',`<p>${esc(b.context)}</p>${button('bio','Abrir avaliação')}`,'body'));
  return card('body','Corpo','Antes → depois',
- `<div class="studyPairDates"><span></span><span>${date(b.first.date).slice(0,5)}</span><span>${date(b.latest.date).slice(0,5)}</span><span>Diferença</span></div>${rows.map(r=>`<div class="studyPair ${r.key}"><b>${esc(r.label)}</b><span>${value(r.first,'kg')}</span><strong>${value(r.latest,'kg')}</strong><em>${signed(r.delta)}</em></div>`).join('')}<p class="studyCaution">Condições das avaliações não confirmadas.</p>`+detail('Avaliações e contexto',`<p>${esc(b.context)}</p>${button('bio','Abrir avaliações originais')}`,'body'));
+ `<div class="studyPairDates"><span></span><span>${date(b.first.date).slice(0,5)}</span><span>${date(b.latest.date).slice(0,5)}</span><span>Diferença</span></div>${rows.map(r=>`<div class="studyPair ${r.key}"><b>${esc(r.label)}</b><span>${value(r.first,'kg')}</span><strong>${value(r.latest,'kg')}</strong><em>${signed(r.delta)}</em></div>`).join('')}`+detail('Avaliações e contexto',`<p>${esc(b.context)}</p>${button('bio','Abrir avaliações originais')}`,'body'));
 }
 function trainingCard(m){
  const t=m.useful.training,c=t.selected;

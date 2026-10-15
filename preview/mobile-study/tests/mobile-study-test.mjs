@@ -6,7 +6,7 @@ const status=Object.fromEntries(['body','workouts','exercises','sets','nutrition
 const data={body:[{source_record_id:'synthetic-a',measured_at:'2025-03-01',source:'Synthetic A',weight_kg:80,fat_mass_kg:20,skeletal_muscle_mass_kg:30},{source_record_id:'synthetic-b',measured_at:'2025-04-01',source:'Synthetic B',weight_kg:79,fat_mass_kg:21,skeletal_muscle_mass_kg:29}]};
 let html=renderMobileStudy(data,status,'90',{},'2025-05-03');
 assert.equal((html.match(/data-study-domain=/g)||[]).length,6);
-assert.match(html,/O peso caiu. A gordura estimada não acompanhou/);
+assert.match(html,/Peso caiu 1,0 kg; gordura estimada não caiu/);
 assert.match(html,/data-body-start="2025-03-01" data-body-end="2025-04-01"/);
 assert.match(html,/80,0 kg/);assert.match(html,/79,0 kg/);assert.match(html,/\+1,0 kg/);
 assert.doesNotMatch(html,/<text/);assert.doesNotMatch(html,/NaN|undefined/);
