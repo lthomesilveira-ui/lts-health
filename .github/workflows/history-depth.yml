@@ -36,6 +36,8 @@ jobs:
           node v2/home-cockpit-test.mjs
           node v2/home-overview-test.mjs
           node v2/home-period-model-test.mjs
+          node v2/home-evidence-insights-test.mjs
+          node v2/personal-goals-preservation-test.mjs
           node v2/evolution-period-contract-test.mjs
           node v2/domain-period-contract-test.mjs
           node v2/home-reference-experience-test.mjs

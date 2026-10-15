@@ -60,7 +60,7 @@ state.ui.reviewView='consultation';assert.match(renderIntegratedReview(m),/data-
 state.ui.reviewView='day';state.ui.reviewDate='2025-04-02';assert.match(renderIntegratedReview(m),/id="reviewDate"/);assert.match(renderIntegratedReview(m),/Mapa de registros/);
 const now=localHealthDay(),previous=new Date(`${now}T12:00:00Z`);previous.setUTCDate(previous.getUTCDate()-1);const yesterday=previous.toISOString().slice(0,10);
 state.data={nutrition:[],sourceMetrics:[water(now,1250),water(yesterday,1000)],workouts:[],body:[],labs:[],treatments:[]};state.ui={homePeriod:'30'};
-const home=renderProductHomeReference();assert.match(home,/1\.250 mL/);assert.doesNotMatch(home,/ltsRefProgressItem|2\/7/);assert.match(home,/Consumo de água/);
+const home=renderProductHomeReference();assert.match(home,/1\.250 mL/);assert.doesNotMatch(home,/ltsRefProgressItem|2\/7/);assert.match(home,/<h2>Água<\/h2>/);
 assert.ok(healthContextModel(state.data,{start:yesterday,end:now},null,null,[yesterday,now]).availableDates.includes(now),'water-only dates stay selectable');
 state.domainStatus=broken;const failedHome=renderProductHomeReference();assert.match(failedHome,/Uma fonte de água não carregou|Indisponível/);assert.doesNotMatch(failedHome,/1\.250 mL/);
 console.log('Integrated review: exact dates, closed-day means, independent denominators, sources/devices, sparse bases, conflicts, invalid observations, canonical training, partial failures, escaping, private summary and bridge hydration in Home passed.');

@@ -20,7 +20,31 @@ for(let i=0;i<=16;i++){
   if(i>0)db.health_source_daily_metrics.push({source_record_id:`other${i}`,metric_date:date(i),metric_type:'sleep_duration_h',unit:'h',value:20,source_name:'Other sleep',source_family:'synthetic',canonical_status:'candidate'});
   if(i>0&&i%2===0)db.health_workouts.push({source_record_id:`w${i}`,workout_date:date(i),workout_type:'Synthetic session',source:'Synthetic log',is_canonical:true,record_status:'validated',duration_minutes:40});
 }
-const service=`window.__reviewDb=${JSON.stringify(db)};window.__reviewDb.health_personal_goals=JSON.parse(localStorage.getItem('synthetic-review-goals')||JSON.stringify(window.__reviewDb.health_personal_goals||[]));window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-review-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={upsert(row){window.__reviewDb[table]=[...(window.__reviewDb[table]||[]).filter(r=>r.effective_from!==row.effective_from),row];if(table==='health_personal_goals')localStorage.setItem('synthetic-review-goals',JSON.stringify(window.__reviewDb[table]));q.saved=row;return q;},single:async()=>({data:q.saved,error:null}),select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__reviewDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
+const service=`window.__reviewDb=${JSON.stringify(db)};
+window.__reviewDb.health_personal_goals=JSON.parse(localStorage.getItem('synthetic-review-goals')||JSON.stringify(window.__reviewDb.health_personal_goals||[])).map(row=>({user_id:'synthetic-review-user',...row}));
+window.supabase={createClient:()=>({
+  auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-review-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},
+  functions:{invoke:async()=>({data:null,error:null})},
+  from(table){
+    let from=0,to=999,operation=null,payload=null;const filters=[];
+    const rows=()=> (window.__reviewDb[table]||[]).filter(row=>filters.every(([key,value])=>row[key]===value));
+    const persist=()=>{if(table==='health_personal_goals')localStorage.setItem('synthetic-review-goals',JSON.stringify(window.__reviewDb[table]));};
+    const q={
+      select(){return q;},eq(key,value){filters.push([key,value]);return q;},is(key,value){filters.push([key,value]);return q;},range(a,b){from=a;to=b;return q;},order(){return q;},
+      maybeSingle:async()=>{const found=rows();return found.length>1?{data:null,error:{message:'Multiple rows'}}:{data:found[0]?{...found[0]}:null,error:null};},
+      insert(row){operation='insert';payload=row;return q;},update(row){operation='update';payload=row;return q;},
+      single:async()=>{
+        if(operation==='insert'){
+          if((window.__reviewDb[table]||[]).some(row=>row.user_id===payload.user_id&&row.effective_from===payload.effective_from))return {data:null,error:{message:'Duplicate key'}};
+          (window.__reviewDb[table]??=[]).push({...payload});persist();return {data:{...payload},error:null};
+        }
+        const found=rows();if(operation!=='update'||found.length!==1)return {data:null,error:{message:'Missing or changed row'}};
+        Object.assign(found[0],payload);persist();return {data:{...found[0]},error:null};
+      },
+      then(resolve,reject){return Promise.resolve({data:rows().slice(from,to+1),error:null}).then(resolve,reject);}
+    };return q;
+  }
+})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
 const noOverflow=async page=>assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no document overflow');
