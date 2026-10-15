@@ -15,6 +15,7 @@ for(let n=0;n<400;n++){
 for(const[n,i]of [1,14,45,80,120,220,300].map((n,i)=>[n,i]))db.health_body_composition.push({source_record_id:`body-${n}`,measured_at:date(n),source:'Synthetic body',device_name:i<4?'Synthetic A':'Synthetic B',weight_kg:80+i,body_fat_pct:20+i,fat_mass_kg:16+i*.6,skeletal_muscle_mass_kg:34-i*.2});
 for(const n of [20,60,200])db.health_lab_results.push({source_record_id:`lab-${n}`,collection_date:date(n),biomarker:'Hemoglobina',result_numeric:12+n/100,result_raw:String(12+n/100),unit:'g/dL',laboratory:'Synthetic lab',source:'Synthetic lab',method:'Synthetic method',reference_range:'10 a 18'});
 db.health_lab_results.push({source_record_id:'lab-choice',collection_date:date(20),biomarker:'Synthetic second marker',result_numeric:25,result_raw:'25',unit:'u',laboratory:'Synthetic lab',source:'Synthetic lab',method:'Synthetic method',reference_range:'10 a 18'});
+db.health_lab_results.push({source_record_id:'lab-choice-before',collection_date:date(60),biomarker:'Synthetic second marker',result_numeric:27,result_raw:'27',unit:'u',laboratory:'Synthetic lab',source:'Synthetic lab',method:'Synthetic method',reference_range:'10 a 18'});
 db.health_daily_nutrition.push({source_record_id:'other-origin',nutrition_date:date(80),source:'Synthetic separate export',calories_kcal:1800,protein_g:80});
 const service=`window.__reviewDb=${JSON.stringify(db)};
 window.__reviewDb.health_personal_goals=JSON.parse(localStorage.getItem('synthetic-review-goals')||JSON.stringify(window.__reviewDb.health_personal_goals||[])).map(row=>({user_id:'synthetic-review-user',...row}));
@@ -59,16 +60,18 @@ try {
    assert.equal(await page.locator('[data-study-domain]:visible').count(),6);
    assert.equal(await page.locator('#screenHost').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(243, 247, 252)');
    assert.ok(await page.locator('.studyInsight').isVisible());
-   const findings=page.locator('[data-study-finding]');assert.ok(await findings.count()<=3,'at most three supported findings');
-   assert.ok(await page.locator('[data-study-finding="labs"]').isVisible(),'laboratory trajectory is surfaced without opening another route');
-   await page.locator('[data-study-finding="labs"] summary').click();assert.ok(await page.locator('[data-study-finding="labs"] [data-route="saude"]').isVisible());await page.locator('[data-study-finding="labs"] summary').click();assert.equal(await page.locator('.studyPair').count(),3);
+   assert.equal(await page.locator('.studyOtherLabs').count(),0,'no repeated support cards before domains');
+   assert.ok(await page.locator('.studyOtherLabs').isVisible());assert.ok(await page.locator('.studyLabTrajectory').count()<=2);
+   const selectedLab=await page.locator('[data-home-lab-select]').inputValue();
+   const extraKeys=await page.locator('.studyLabTrajectory').evaluateAll(es=>es.map(e=>e.dataset.studyLabKey));assert.ok(!extraKeys.includes(selectedLab),'additional trajectories exclude selected marker');
+   assert.equal(await page.locator('.studyPair').count(),3);
    assert.match(await page.locator('.studyCard.nutrition').innerText(),/proteína/);
    assert.equal(await page.locator('.studyCard.body svg text').count(),0,'body uses readable HTML values, no compressed SVG text');
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no horizontal overflow');
    await stableHome();await page.locator('#screenHost').evaluate(el=>{el.scrollTop=0;});await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-top.png`});
    await page.evaluate(()=>{window.__studyCaptureRoot=document.querySelector('[data-mobile-study]');});
    if(width>840)assert.ok(await page.locator('.studyBrand small').evaluate(el=>{const a=el.getBoundingClientRect();return ['refreshBtn','logoutBtn'].every(id=>{const b=document.getElementById(id)?.getBoundingClientRect();return !b||a.right<=b.left||a.left>=b.right||a.bottom<=b.top||a.top>=b.bottom;});}),'read-only label is not covered by header controls');
-   for(const selector of ['.studyInsight','.studyFindings','.studyCard.body','.studyCard.training','.studyCard.nutrition','.studyCard.labs','.studyCard.sleep','.studyCard.water']){
+   for(const selector of ['.studyInsight','.studyOtherLabs','.studyCard.body','.studyCard.training','.studyCard.nutrition','.studyCard.labs','.studyCard.sleep','.studyCard.water']){
     await stableHome();await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-${selector.split('.').at(-1)}.png`});assert.ok(await page.evaluate(()=>window.__studyCaptureRoot===document.querySelector('[data-mobile-study]')),'scrolling and capture must not replace the Home DOM');
    }
    await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-lower.png`});
@@ -91,8 +94,7 @@ try {
    const selectedA=await labChoice.locator('option').evaluateAll(es=>es.find(e=>e.textContent.includes('Synthetic second marker'))?.value);
    assert.ok(selectedA);await labChoice.selectOption(selectedA);
    await page.waitForFunction(()=>document.querySelector('.studyCard.labs h3')?.textContent==='Synthetic second marker');
-   await page.locator('[data-study-finding="labs"] summary').click();
-   await page.locator('[data-study-finding="labs"] [data-study-lab-context]').click();
+   await page.locator('.studyLabTrajectory [data-study-lab-context]').click();
    await page.waitForURL('**/#saude');await page.waitForSelector('#productLabMarkerSelect');
    assert.equal(await page.locator('#productLabMarkerSelect').inputValue(),'hemoglobina','finding opens cited marker B, not selected marker A');
    await page.locator(`${nav} [data-route="hoje"]`).click();await page.waitForSelector('[data-mobile-study]');

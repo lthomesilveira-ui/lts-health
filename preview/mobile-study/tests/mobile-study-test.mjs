@@ -70,9 +70,9 @@ const findingData={...data,labs:[
  {source_record_id:'synthetic-lab-after',collection_date:'2025-04-01',biomarker:'Synthetic marker',result_numeric:25,result_raw:'25',unit:'u',laboratory:'Synthetic lab',method:'Synthetic method',reference_range:'12 a 42'}]};
 const findingHtml=renderMobileStudy(findingData,status,'90',{},'2025-05-03');
 assert.ok((findingHtml.match(/data-study-finding=/g)||[]).length<=3);
-assert.match(findingHtml,/data-study-finding="labs"/);
-assert.match(findingHtml,/30 u → 25 u/);
-assert.match(findingHtml,/coleta anterior fora do período selecionado/);
+assert.doesNotMatch(findingHtml,/class="studyFindings"/);
+assert.match(findingHtml,/30,0 u/);assert.match(findingHtml,/25,0 u/);assert.match(findingHtml,/Diferença registrada: -5,0 u/);
+assert.match(findingHtml,/coleta anterior está fora do período selecionado/);
 assert.match(findingHtml,/Referência: 10 a 40/);assert.match(findingHtml,/Referência: 12 a 42/);
 assert.match(findingHtml,/data-study-lab-context=/);
 assert.match(findingHtml,/Ver Synthetic marker e laudo/);
@@ -89,7 +89,12 @@ const missingMethod=renderMobileStudy({...findingData,labs:findingData.labs.map(
 assert.doesNotMatch(missingMethod,/data-study-finding="labs"/);
 assert.doesNotMatch(missingMethod,/Diferença registrada:/,'card and finding use same known-method rule');
 
-const bodyIndex=findingHtml.indexOf('data-study-domain="body"'),supportIndex=findingHtml.indexOf('class="studyFindings"');
-assert.ok(bodyIndex>0&&supportIndex>bodyIndex,'body visual precedes supplemental findings on mobile');
-assert.ok(findingHtml.indexOf('data-study-domain="training"')>supportIndex,'support precedes remaining analytical domains');
+const bodyIndex=findingHtml.indexOf('data-study-domain="body"');
+assert.ok(bodyIndex>0&&findingHtml.indexOf('data-study-domain="training"')>bodyIndex);
+assert.doesNotMatch(findingHtml,/studyFindings|studyOtherLabs/,'no duplicate support or same-marker trajectory');
+const extraLabData={...findingData,labs:[...findingData.labs,...findingData.labs.map(r=>({...r,source_record_id:r.source_record_id+'-other',biomarker:'Synthetic other',result_numeric:r.result_numeric+2}))]};
+const extraLabHtml=renderMobileStudy(extraLabData,status,'90',{},'2025-05-03');
+const extraBlock=extraLabHtml.match(/<section class="studyOtherLabs"[\s\S]*?<\/section>/)?.[0];
+assert.ok(extraBlock);assert.match(extraBlock,/Synthetic other/);assert.doesNotMatch(extraBlock,/Synthetic marker:/,'selected marker is never duplicated among additional trajectories');
+assert.ok((extraBlock.match(/class="studyLabTrajectory"/g)||[]).length<=2);
 assert.match(findingHtml,/productLabPeriod/);assert.match(findingHtml,/productLabCohort/);
