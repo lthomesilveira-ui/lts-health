@@ -20,3 +20,5 @@ for(const ref of [...index.matchAll(/(?:src|href)="([^"?#]+)[^" ]*"/g)].map(m=>m
 const renderer=fs.readFileSync(new URL('src/mobile-study.js',root),'utf8');assert.doesNotMatch(renderer,/\b(fetch|XMLHttpRequest|createClient|localStorage|sessionStorage)\b/);
 console.log('Study renderer and isolated dependency/guard contract passed.');
 const single=renderMobileStudy({body:[data.body[0]]},status,'90',{},'2025-05-03');assert.equal((single.match(/class="studySingle"/g)||[]).length,3);assert.doesNotMatch(single,/class="studyPair /);
+
+assert.match(html,/class="studyHome ltsHomeReference"/,'shared compatibility controller must recognize ownership');

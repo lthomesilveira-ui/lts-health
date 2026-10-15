@@ -52,7 +52,7 @@ try {
    window.__reviewDb.health_source_daily_metrics=window.__reviewDb.health_source_daily_metrics.filter(r=>r.metric_type==='sleep_duration_h'&&[1,2,3,9,10,11].map(n=>new Date(Date.parse(${JSON.stringify(today)})-n*86400000).toISOString().slice(0,10)).includes(r.metric_date));`;
    await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service+(sparse?sparseSetup:'')}));
    await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');
-   const stableHome=()=>page.waitForFunction(()=>{const root=document.querySelector('[data-mobile-study]');if(!root||document.querySelector('#syncText')?.textContent!=='Atualizado')return false;if(window.__studyRenderedRoot!==root){window.__studyRenderedRoot=root;window.__studyStableFrames=0;}return ++window.__studyStableFrames>=3;});
+   const stableHome=()=>page.waitForFunction(()=>{const root=document.querySelector('[data-mobile-study]');if(!root||document.querySelector('#syncText')?.textContent!=='Atualizado'||document.querySelector('#screenHost')?.dataset.productLayoutRoute!=='hoje')return false;if(window.__studyRenderedRoot!==root){window.__studyRenderedRoot=root;window.__studyStableFrames=0;}return ++window.__studyStableFrames>=3;});
    await stableHome();
    await page.locator('[data-home-period-select]').selectOption('90');
    await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='90');
@@ -63,8 +63,9 @@ try {
    assert.equal(await page.locator('.studyCard.body svg text').count(),0,'body uses readable HTML values, no compressed SVG text');
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no horizontal overflow');
    await stableHome();await page.locator('#screenHost').evaluate(el=>{el.scrollTop=0;});await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-top.png`});
+   await page.evaluate(()=>{window.__studyCaptureRoot=document.querySelector('[data-mobile-study]');});
    for(const selector of ['.studyInsight','.studyCard.body','.studyCard.nutrition','.studyCard.labs','.studyCard.sleep','.studyCard.water']){
-    await stableHome();await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-${selector.split('.').at(-1)}.png`});
+    await stableHome();await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-${selector.split('.').at(-1)}.png`});assert.ok(await page.evaluate(()=>window.__studyCaptureRoot===document.querySelector('[data-mobile-study]')),'scrolling and capture must not replace the Home DOM');
    }
    await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-lower.png`});
    // Period changes reuse the existing model and controller, never a static study snapshot.
