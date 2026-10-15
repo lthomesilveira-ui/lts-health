@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+globalThis.location={search:'?fixture=1'};
+const {renderMobileStudy}=await import('../src/mobile-study.js');
+const status=Object.fromEntries(['body','workouts','exercises','sets','nutrition','sourceMetrics','metrics','labs','treatments','polarSessions','waterReferences'].map(k=>[k,'ready']));
+const data={body:[{source_record_id:'synthetic-a',measured_at:'2025-03-01',source:'Synthetic A',weight_kg:80,fat_mass_kg:20,skeletal_muscle_mass_kg:30},{source_record_id:'synthetic-b',measured_at:'2025-04-01',source:'Synthetic B',weight_kg:79,fat_mass_kg:21,skeletal_muscle_mass_kg:29}]};
+let html=renderMobileStudy(data,status,'90',{},'2025-05-03');
+assert.equal((html.match(/data-study-domain=/g)||[]).length,6);
+assert.match(html,/O peso caiu. A gordura estimada não acompanhou/);
+assert.match(html,/data-body-start="2025-03-01" data-body-end="2025-04-01"/);
+assert.match(html,/80,0 kg/);assert.match(html,/79,0 kg/);assert.match(html,/\+1,0 kg/);
+assert.doesNotMatch(html,/<text/);assert.doesNotMatch(html,/NaN|undefined/);
+assert.match(renderMobileStudy({},status,'30',{},'2025-05-03'),/Ainda não há uma comparação/);
+const root=new URL('../',import.meta.url),index=fs.readFileSync(new URL('index.html',root),'utf8');
+const map=JSON.parse(index.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
+assert.equal(map['../compact-evidence/src/home-reference.js?v=real-hierarchy-20261014.57'],'./src/mobile-study.js?v=study-20261015.1');
+assert.equal(map['../compact-evidence/src/core.js'],'../compact-evidence/src/core.js?v=useful-content-20261014.62');
+assert.ok(index.indexOf('preview-readonly.js')<index.indexOf('type="module"'));
+for(const ref of [...index.matchAll(/(?:src|href)="([^"?#]+)[^" ]*"/g)].map(m=>m[1]).filter(x=>x.startsWith('.'))){assert.ok(fs.existsSync(new URL(ref,root)),`dependency exists: ${ref}`);}
+const renderer=fs.readFileSync(new URL('src/mobile-study.js',root),'utf8');assert.doesNotMatch(renderer,/\b(fetch|XMLHttpRequest|createClient|localStorage|sessionStorage)\b/);
+console.log('Study renderer and isolated dependency/guard contract passed.');
+const single=renderMobileStudy({body:[data.body[0]]},status,'90',{},'2025-05-03');assert.equal((single.match(/class="studySingle"/g)||[]).length,3);assert.doesNotMatch(single,/class="studyPair /);
