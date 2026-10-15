@@ -60,7 +60,7 @@ try {
    assert.equal(await page.locator('[data-study-domain]:visible').count(),6);
    assert.equal(await page.locator('#screenHost').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(243, 247, 252)');
    assert.ok(await page.locator('.studyInsight').isVisible());
-   assert.equal(await page.locator('.studyOtherLabs').count(),0,'no repeated support cards before domains');
+   assert.equal(await page.locator('.studyFindings').count(),0,'no repeated support cards before domains');
    assert.ok(await page.locator('.studyOtherLabs').isVisible());assert.ok(await page.locator('.studyLabTrajectory').count()<=2);
    const selectedLab=await page.locator('[data-home-lab-select]').inputValue();
    const extraKeys=await page.locator('.studyLabTrajectory').evaluateAll(es=>es.map(e=>e.dataset.studyLabKey));assert.ok(!extraKeys.includes(selectedLab),'additional trajectories exclude selected marker');
