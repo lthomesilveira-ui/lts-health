@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
 
-// Exercises the production structural path with a synthetic service, not ?fixture.
+// Exercises the integrated preview renderer with a synthetic service, not ?fixture.
 // Real authenticated release proof is a separate mandatory gate.
-const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/v2/';
-const dir='v2/history-depth-evidence';mkdirSync(dir,{recursive:true});
+const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/preview/compact-evidence/';
+const dir='preview63-history-depth-evidence';mkdirSync(dir,{recursive:true});
 const db={};
 db.health_workouts=Array.from({length:36},(_,i)=>({source_record_id:`w-${i}`,workout_date:`${i<18?'2025':'2026'}-01-${String(i%18+1).padStart(2,'0')}`,workout_type:`Sessão sintética ${i}`,location:'Local sintético',duration_minutes:40,heart_rate_avg:100,heart_rate_min:60,heart_rate_max:120,is_canonical:true,record_status:'validated',source:'Teste',muscle_groups:['Grupo sintético']}));
 db.health_workout_exercises=db.health_workouts.map((w,i)=>({source_record_id:`ex-${i}`,workout_source_record_id:w.source_record_id,workout_date:w.workout_date,order_index:1,exercise:'Exercício sintético',machine:'Equipamento sintético',source:'Teste'}));
@@ -18,9 +18,24 @@ for(let j=1;j<4;j++)db.health_lab_results.push({source_record_id:`other-${j}`,bi
 const service=`window.__depthDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},from(table){let from=0,to=999,orders=[];const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(k,opt={}){orders.push([k,opt.ascending!==false]);return q;},then(resolve,reject){let rows=[...(window.__depthDb[table]||[])];rows.sort((a,b)=>{for(const[k,asc]of orders){const c=String(a[k]||'').localeCompare(String(b[k]||''));if(c)return asc?c:-c;}return 0;});return Promise.resolve({data:window.__failTable===table?null:rows.slice(from,to+1),error:window.__failTable===table?{message:'Synthetic read failure'}:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
+async function stableHome(page){
+  await page.waitForFunction(()=>{
+    const root=document.querySelector('[data-mobile-study]');
+    if(!root||document.querySelector('#syncText')?.textContent!=='Atualizado'||document.querySelector('#screenHost')?.dataset.productLayoutRoute!=='hoje')return false;
+    if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
+    return ++window.__gateHomeStableFrames>=3;
+  });
+}
 async function overflow(page){
   const result=await page.evaluate(()=>({doc:document.documentElement.scrollWidth-window.innerWidth,host:document.getElementById('screenHost').scrollWidth-document.getElementById('screenHost').clientWidth}));
   assert.ok(result.doc<=1&&result.host<=1,`horizontal overflow ${JSON.stringify(result)}`);
+}
+const displayedDate=value=>value.split('-').reverse().join('/');
+async function assertHistoricalPoints(page,selector,rows,dateKey,valueKey,unit,message){
+  const ordered=[...rows].sort((a,b)=>a[dateKey].localeCompare(b[dateKey]));
+  const expected=ordered.map(row=>`${displayedDate(row[dateKey])}: ${Number(row[valueKey]).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} ${unit}`);
+  assert.deepEqual(await page.locator(`${selector} .ltsDepthPlot circle title`).allTextContents(),expected,message);
+  assert.deepEqual(await page.locator(`${selector} .ltsDepthAxis span`).allTextContents(),[displayedDate(ordered[0][dateKey]),displayedDate(ordered.at(-1)[dateKey])],'observed-date chart exposes the complete first/last endpoints');
 }
 async function goto(page,route,selector){await page.evaluate(r=>{location.hash='#'+r;},route);await page.waitForSelector(selector);await page.waitForTimeout(150);}
 try{
@@ -28,21 +43,23 @@ try{
   const page=await browser.newPage({viewport:{width,height}});
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
-  await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
-  if(width<=840)await page.locator('[data-home-period-select]').selectOption('all');else await page.locator('[data-home-period="all"]').click();
-  assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1,'one shared body panel');
-  const axes=await page.locator('.refPanels .refPlot svg').evaluateAll(es=>es.map(e=>({start:e.dataset.periodStart,end:e.dataset.periodEnd,axisStart:e.dataset.axisStart,axisEnd:e.dataset.axisEnd})));
-  assert.ok(axes.length>=2&&new Set(axes.map(a=>a.start+'|'+a.end)).size===1,'all populated charts use the same global filter');
-  assert.ok(axes.every(a=>a.start&&a.end&&a.axisStart>=a.start&&a.axisEnd<=a.end&&a.axisStart<=a.axisEnd),'observed-date zoom stays within the selected calendar');
-  for(const e of await page.locator('.refPanels .refPlot').all()){assert.equal(await e.locator('.refAxis').count(),1,'observed chart retains visible date endpoints');}
-  const plotted=async selector=>page.locator(selector).evaluateAll(es=>es.map(e=>[e.dataset.date,Number(e.dataset.rawValue??e.dataset.value)]).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
-  const expected=rows=>rows.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
-  assert.deepEqual(await plotted('.refPanel.body [data-series="fat"] circle'),expected(db.health_body_composition.map(r=>[r.measured_at,r.fat_mass_kg])),'body chart retains every eligible raw fat point');
-  assert.deepEqual(await plotted('.refPanel.body [data-series="muscle"] circle'),expected(db.health_body_composition.map(r=>[r.measured_at,r.skeletal_muscle_mass_kg])),'body chart retains every eligible raw muscle point');
-  assert.deepEqual(await plotted('.refPanel.training .refPlot circle'),expected(db.health_workout_sets.map(r=>[r.workout_date,r.weight])),'training observed-date zoom never truncates older eligible records');
-  await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
-  await page.locator('#overview-body-date').focus();await page.locator('#overview-body-date').press('ArrowDown');
-  assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);
+  await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await overflow(page);
+  await page.locator('[data-home-period-select]').selectOption('all');
+  await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='all');await stableHome(page);
+  assert.equal(await page.locator('.studyCard.body').count(),1,'one shared body panel');
+  assert.equal(await page.locator('.studyCard.body .studyPair').count(),3,'Home summarizes the first and last body records');
+  assert.equal(await page.locator('.studyCard.body svg').count(),0,'body summary uses readable before/after values');
+  assert.deepEqual(await page.locator('.studyPairDates span').allTextContents(),['','01/01','02/02','Diferença']);
+  for(const [metric,first,last,delta] of [['weight_kg','70,0 kg','72,0 kg','+2,0 kg'],['fat_mass_kg','14,0 kg','14,0 kg','0,0 kg'],['skeletal_muscle_mass_kg','30,0 kg','30,0 kg','0,0 kg']]){
+   const row=page.locator(`.studyCard.body .studyPair.${metric}`);
+   assert.equal(await row.locator('span').innerText(),first);
+   assert.equal(await row.locator('strong').innerText(),last);
+   assert.equal(await row.locator('em').innerText(),delta);
+  }
+  const periods=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return ['homePeriod','analysisPeriod','trainingPeriod','nutritionPeriod','productCompositionPeriod','productLabPeriod'].map(key=>state.ui[key]);});
+  assert.deepEqual(periods,Array(6).fill('all'),'Home selection propagates one calendar to every domain');
+  await page.locator('.studyCard.body details>summary').click();
+  assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'original assessments remain reachable from the body summary');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
   await goto(page,'treinos','.ltsTrainingV2 .ltsExerciseCard');
   await page.locator('[data-depth-training-view="history"]').first().click();
@@ -58,6 +75,7 @@ try{
   await page.locator('[data-depth-training-view="exercises"]').first().click();
   await page.locator('[data-depth-exercise]').first().click();
   await page.waitForSelector('.ltsExerciseHistory');assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
+  await assertHistoricalPoints(page,'.ltsExerciseHistory',db.health_workout_sets,'workout_date','weight','kg','training history retains every older eligible load');
   await overflow(page);
   await page.locator('[data-depth-training-view="history"]').first().click();
   assert.equal(await page.locator('[data-depth-workout]').last().getAttribute('data-depth-workout'),'w-0','return preserves pagination');
@@ -83,7 +101,18 @@ try{
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-labs.png`});
 
   await goto(page,'bio','.ltsCompositionV2 .ltsCompositionHero');
+  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition inherits the Home historical calendar');
   await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),30);
+  // Home intentionally shows a readable pair. Full raw series live in Composition.
+  for(const [metric,label] of [['fat_mass_kg','fat'],['skeletal_muscle_mass_kg','muscle']]){
+   await page.locator(`[data-composition-metric="${metric}"]`).click();
+   await assertHistoricalPoints(page,'.ltsCompositionChart',db.health_body_composition,'measured_at',metric,'kg',`body history retains every eligible raw ${label} point`);
+  }
+  await page.locator('#productCompositionPoint').selectOption('9');
+  assert.equal(await page.locator('#productCompositionPoint').inputValue(),'9');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'10/01/2024','an older measurement can be selected directly');
+  await page.locator('#productCompositionPoint').focus();await page.locator('#productCompositionPoint').press('ArrowDown');
+  assert.equal(await page.locator('#productCompositionPoint').evaluate(el=>el===document.activeElement),true,'historical measurement selector retains keyboard focus');
   await page.locator('[data-composition-metric="weight_kg"]').click();assert.equal(await page.locator('[data-composition-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
   const ids=[];for(let i=0;i<4;i++){ids.push(...await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').evaluateAll(es=>es.map(e=>e.dataset.depthCompositionRecord)));if(i<3)await page.locator('[data-depth-page="productCompositionPage"]').last().click();}
   assert.equal(new Set(ids).size,30,'all body records past former 8 cap');await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().click();
@@ -167,5 +196,5 @@ try{
   await page.evaluate(()=>{window.__failTable='';window.__depthDb.health_lab_results=[];});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsEmptyCard');assert.equal(await page.locator('.ltsDepthError').count(),0);await overflow(page);
   await page.close();
  }
- assert.deepEqual(errors,[]);console.log('Production-path synthetic browser gate passed in desktop, 390px and 320px: all histories, filtering, selection, units, details, return and read failures.');
+ assert.deepEqual(errors,[]);console.log('Integrated preview synthetic browser gate passed in desktop, 390px and 320px: all histories, filtering, selection, units, details, return and read failures.');
 }finally{await browser.close();}

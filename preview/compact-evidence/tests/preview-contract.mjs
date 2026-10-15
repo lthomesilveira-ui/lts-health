@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // Generic build hashes live in the test. No public JSON payload is introduced.
 const manifest={
-  "candidate_commit": "6ed9bee9af11b1e9a609b3b14eb1988fe1095053",
-  "build": "useful-content-20261014.62",
+  "candidate_commit": "7b5af6c7a5613080521df9d8201e4ecd92dbc756",
+  "build": "integrated-home-20261015.63",
   "files": {
     "accessibility.css": "fe77a056f36b55fa987367ac0899da57b613e2db4830c33781b8612f209bd3db",
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
@@ -33,11 +33,12 @@ const manifest={
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "0d807f7210b46b31f6ccc3808ec331a4ed07b327ae61b34e986ae3054876a91f",
+    "index.html": "0e5a236c19fe68924644cfc921f541b7385737aec97032f567a7b84da74e7a1c",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "bbbf9acfa364c27edd8b09c8feb64dd64ec80a25b0b38e6b26102cc0ed3943f1",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
     "mfp-water-extractor.css": "a28f5aa6885b9605efd7294d485f8f2eec14b4bfee29901316acc753e933b590",
+    "mobile-study.css": "a834a6977c280b3142b9ac8c2f35784b63a4b4aa3a8d50fdab7cc38fd6ff041b",
     "model-convergence-shell.css": "01d76de76760cc0113db2e80b574a4a24039344b1e7d54029adfdab3fe52fb71",
     "nutrition.css": "9b3021736552698e90b9e1c80951b3fde8d52261edf769ed2363aed141423c76",
     "physical-iphone-remediation-20260915.css": "e2a023fa6648ebfa690c378eee42b41c711e10f7cb0d5443861d688d5ce4620b",
@@ -97,6 +98,7 @@ const manifest={
     "src/main.js": "a199db54d0924c66f99a4c8d23726867596ef8e091b613d50bd598895f567a97",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
     "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
+    "src/mobile-study.js": "deea8b46dd79319f4e7f608c505e7898465b870d7349dedf166c247be307b0c9",
     "src/nutrition-product.js": "196696f68e25595f333c3c7357c58052746e42b03affd8ae6699dfc8a8ce3dcc",
     "src/nutrition-screen.js": "25efdbf671db9358d6fbec292ae1fd6580869baf8731b4c0b3be634019434aba",
     "src/nutrition-source-review.js": "724561e77c78d4f885216b257cf151e323d92d4d562551f6d799231eaf38eaf6",
@@ -111,6 +113,7 @@ const manifest={
     "src/reports-screen.js": "0669ff30eba5133dcef6c447a8e92dd910e098d529b3bd8d45ec5e95a1dc3c7b",
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-status.js": "f51f73a6d73d5880b0615b89101693ff2333a7d2021311d96bd80cf4a57b179f",
+    "src/study-findings.js": "112a5925feb0fcb9267e6c1d5483f9b1ee1befcfc7444336cbe1b603ab550e80",
     "src/timeline-screen.js": "83b00def84ef265c53e9508fd5dbf2cd748da803a196e0e432b6eca42cbd0273",
     "src/today-screen.js": "0686db7acb46bd8147e9c5bf8aa6e30d2bd5f670fdfa0e1a1c5eab397bf4313c",
     "src/training-comparability.js": "29cbde79fed598028c4fffcf6789d8793909b7df64c9f7bec31c2a3a8919cc99",
@@ -134,7 +137,7 @@ const manifest={
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-assert.equal(manifest.build,'useful-content-20261014.62');
+assert.equal(manifest.build,'integrated-home-20261015.63');
 for(const [relative,expected] of Object.entries(manifest.files)){
  assert.ok(/^(index\.html|[\w-]+\.(?:css|svg)|src\/[\w-]+\.js)$/.test(relative),'allowlisted generic source only');
  const file=path.join(root,relative),body=fs.readFileSync(file,'utf8');assert.equal(hash(body),expected,'preview manifest matches '+relative);
@@ -153,7 +156,7 @@ assert.equal(core,productionCore,'authentication/configuration is unchanged from
 assert.match(fs.readFileSync(path.join(production,'index.html'),'utf8'),/mobile-parity-20261014\.58/,'production remains on its published build');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=useful-content-20261014.62"></script>';
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=integrated-home-20261015.63"></script>';
 assert.ok(index.includes(guardTag)&&index.indexOf(guardTag)<index.indexOf('<script type="module"'),'blocking classic guard loads before application modules');
 assert.ok(index.indexOf(guardTag)>index.indexOf('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'guard installs after SDK');
 assert.match(index,/Prévia · somente leitura/);

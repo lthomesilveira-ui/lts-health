@@ -26,7 +26,7 @@ jobs:
         run: node preview/compact-evidence/tests/preview-contract.mjs
       - name: Verify candidate analytical contracts with synthetic data
         run: |
-          for test in home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation; do
+          for test in mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation; do
             node "preview/compact-evidence/tests/${test}-test.mjs"
           done
       - name: Install existing pinned browser runtime
@@ -38,11 +38,11 @@ jobs:
           python3 -m http.server 4173 >/tmp/health-preview-server.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
       - name: Verify signed-out boundary
-        run: node preview/compact-evidence/tests/preview-auth-boundary.mjs
+        run: node preview/compact-evidence/tests/mobile-study-auth.mjs
       - name: Verify full histories in preview route
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
-        run: node preview/compact-evidence/tests/home-reference-period-browser.mjs
+        run: node preview/compact-evidence/tests/mobile-study-browser.mjs
       - name: Verify interval navigation and complete contextual evidence
         run: node preview/compact-evidence/tests/body-interval-browser.mjs
       - name: Verify equivalent recorded training conditions
@@ -53,8 +53,9 @@ jobs:
         with:
           name: isolated-preview-synthetic-visual
           path: |
+            mobile-study-visual
             v2/reference-period-visual
-            v2/history-depth-evidence
+            preview63-history-depth-evidence
             v2/interval-visual
-            v2/evidence-insights-visual
+            preview63-evidence-insights-visual
           retention-days: 7
