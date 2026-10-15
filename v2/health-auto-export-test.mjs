@@ -38,10 +38,10 @@ active=true;assert.equal((await receiveHealthExport(req(),db)).status,200);asser
 const savedWarn=console.warn,diagnostics=[];console.warn=message=>diagnostics.push(message);
 try{
  const unsupported=await receiveHealthExport(req(token,exportOf(metric('dietary_water','g',1234,'Private Source'))),db);
- assert.equal(unsupported.status,422);assert.deepEqual(await unsupported.json(),{error:'unsupported_unit',metric:'dietary_water',unit:'g'});assert.equal(writes,1,'unsupported units cannot ingest any partial batch');
+ assert.equal(unsupported.status,422);const unsupportedBody=await unsupported.json();assert.match(unsupportedBody.correlation_id,/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i);assert.deepEqual(unsupportedBody,{error:'unsupported_unit',metric:'dietary_water',unit:'g',correlation_id:unsupportedBody.correlation_id});assert.equal(writes,1,'unsupported units cannot ingest any partial batch');
  const privateUnit=await receiveHealthExport(req(token,exportOf(metric('protein',token,1234,'Private Source'))),db);
- assert.equal(privateUnit.status,422);assert.deepEqual(await privateUnit.json(),{error:'unsupported_unit',metric:'protein',unit:'unrecognized'});assert.equal(writes,1);
- assert.equal(diagnostics.length,2);assert.doesNotMatch(diagnostics.join(''),new RegExp(token+'|1234|Private Source|2026-10-03'));
+ assert.equal(privateUnit.status,422);const privateUnitBody=await privateUnit.json();assert.match(privateUnitBody.correlation_id,/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i);assert.deepEqual(privateUnitBody,{error:'unsupported_unit',metric:'protein',unit:'unrecognized',correlation_id:privateUnitBody.correlation_id});assert.equal(writes,1);
+ assert.equal(diagnostics.length,2);assert.equal(JSON.parse(diagnostics[0]).correlation_id,unsupportedBody.correlation_id);assert.equal(JSON.parse(diagnostics[1]).correlation_id,privateUnitBody.correlation_id);const diagnosticValues=diagnostics.map(message=>{const {correlation_id,...fields}=JSON.parse(message);return fields;});assert.doesNotMatch(JSON.stringify(diagnosticValues),new RegExp(token+'|1234|Private Source|2026-10-03'));
 }finally{console.warn=savedWarn;}
 assert.equal((await receiveHealthExport(req(token,exportOf(metric('protein','g',150)),'hour'),db)).status,422);assert.equal(writes,1);
 db.rpc=async()=>({data:{error:'unauthorized'}});assert.equal((await receiveHealthExport(req(),db)).status,401,'rotation between lookup and commit fails closed');
