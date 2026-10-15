@@ -20,6 +20,8 @@ jobs:
           node --check v2/src/main.js
           node --check v2/src/health-auto-export-connection.js
           node --check supabase/functions/_shared/health-auto-export-handler.mjs
+          node supabase/tests/receiver-observability-test.mjs
+          node supabase/tests/receiver-summary-test.mjs
           node v2/health-auto-export-test.mjs
           node v2/health-auto-export-ui-test.mjs
           node v2/hydration-contract-test.mjs
@@ -35,3 +37,4 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           node v2/health-auto-export-smoke.mjs
+

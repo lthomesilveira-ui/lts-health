@@ -1,0 +1,18 @@
+// Candidate summary for private receiver logs; no payload values, tokens or source names.
+const food=new Set(['dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_carbohydrates_g','dietary_fat_g','dietary_fiber_g']);
+const outcomes=new Set(['accepted','no_supported_data','validation_rejected','rate_limited','ingestion_failed']);
+const validationCodes=new Set(['json_required','daily_aggregation_required','invalid_date','invalid_source','invalid_value','unsupported_unit','invalid_payload','health_metrics_only','duplicate_daily_metric','too_many_points','payload_too_large']);
+const periods=new Set(['none','default','lastsync','today','yesterday','previous7days']);
+const count=n=>Number.isInteger(n)&&n>=0?n:0;
+const validDay=d=>{if(typeof d!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(d))return false;const x=new Date(`${d}T12:00:00Z`);return Number.isFinite(x.getTime())&&x.toISOString().slice(0,10)===d;};
+export function receiveSummary({outcome,metrics=[],ignoredPoints=0,acceptedMetrics=0,automationPeriod=null,correlationId=null,validationCode=null}={}){
+ const safeOutcome=outcomes.has(outcome)?outcome:'ingestion_failed';
+ const nutrientRows=metrics.filter(r=>food.has(r?.metric_type));
+ const days=[...new Set(nutrientRows.map(r=>r.metric_date).filter(validDay))].sort();
+ const origins=new Map();for(const row of nutrientRows){const key=JSON.stringify([row.source_family||null,row.source_name||null]);if(!origins.has(key))origins.set(key,[]);origins.get(key).push(row);}
+ const originSummaries=[...origins.values()].map((items,index)=>({origin_index:index+1,metrics:items.length,dates:[...new Set(items.map(r=>r.metric_date).filter(validDay))].length}));
+ return {validation_code:validationCodes.has(validationCode)?validationCode:null,correlation_id:typeof correlationId==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(correlationId)?correlationId:null,nutrition_origin_summaries:originSummaries,event:'health_export_receive_summary_v1',outcome:safeOutcome==='accepted'&&count(acceptedMetrics)===0?'accepted_without_writes':safeOutcome==='accepted'&&!nutrientRows.length?'accepted_without_nutrition':safeOutcome,
+  supported_metrics:count(metrics.length),ignored_points:count(ignoredPoints),accepted_metrics:safeOutcome==='accepted'?count(acceptedMetrics):0,
+  nutrition_metrics_observed:count(nutrientRows.length),nutrition_dates_observed:days.length,nutrition_first_date_observed:days[0]||null,nutrition_last_date_observed:days.at(-1)||null,
+  automation_period:periods.has(automationPeriod)?automationPeriod:'unknown',requested_interval:'unknown',coverage_verified:false};
+}

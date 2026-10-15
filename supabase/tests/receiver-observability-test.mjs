@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {receiveHealthExport} from '../functions/_shared/health-auto-export-handler.mjs';
+import {randomToken,KEY_HEADER} from '../functions/_shared/health-auto-export-contract.mjs';
+const token=randomToken(),events=[];let calls=0,result={data:{received:true,accepted_metrics:1}};
+const db={from:()=>({select:()=>({eq:()=>({eq:()=>({maybeSingle:async()=>({data:{active:true}})})})})}),rpc:async()=>{calls++;return result;}};
+const metric=(name='protein',qty=234.5)=>({name,units:name==='step_count'?'count':'g',data:[{qty,date:'2026-09-01',source:'PRIVATE_SOURCE'}]});
+const request=(metrics,key=token)=>new Request('https://example.test',{method:'POST',headers:{'content-type':'application/json',[KEY_HEADER]:key,'automation-aggregation':'Day','automation-period':'PRIVATE_HEADER'},body:JSON.stringify({data:{metrics}})});
+const run=async metrics=>{const response=await receiveHealthExport(request(metrics),db,{emit:x=>events.push(x)});return [response.status,await response.json(),events.at(-1)];};
+assert.equal((await receiveHealthExport(request([], 'bad'),db,{emit:x=>events.push(x)})).status,401);assert.equal(events.length,0);
+let [status,body,event]=await run([]);assert.equal(status,200);assert.equal(event.outcome,'no_supported_data');assert.equal(calls,0);
+[status,body,event]=await run([metric('step_count')]);assert.equal(status,200);assert.equal(event.outcome,'accepted_without_nutrition');
+[status,body,event]=await run([metric()]);assert.equal(event.nutrition_dates_observed,1);assert.equal(event.nutrition_first_date_observed,'2026-09-01');assert.equal(event.accepted_metrics,1);assert.equal(event.requested_interval,'unknown');assert.equal(event.coverage_verified,false);
+result={data:{error:'rate_limited'}};[status,body,event]=await run([metric()]);assert.equal(status,429);assert.equal(event.outcome,'rate_limited');assert.equal(body.correlation_id,event.correlation_id);assert.equal(event.accepted_metrics,0);
+result={error:{message:'PRIVATE_DB_ERROR'}};[status,body,event]=await run([metric()]);assert.equal(status,503);assert.equal(event.outcome,'ingestion_failed');assert.equal(body.correlation_id,event.correlation_id);
+[status,body,event]=await run([metric('protein',-1)]);assert.equal(status,422);assert.equal(event.outcome,'validation_rejected');assert.equal(body.correlation_id,event.correlation_id);
+const text=JSON.stringify(events);for(const secret of [token,'PRIVATE_SOURCE','PRIVATE_HEADER','PRIVATE_DB_ERROR','234.5'])assert.ok(!text.includes(secret));
+result={data:{received:true,accepted_metrics:1}};assert.equal((await receiveHealthExport(request([metric()]),db,{emit:()=>{throw Error('logging unavailable');}})).status,200);
+console.log('Receiver candidate: authenticated summaries, zero nutrition versus accepted payload, failure classification, no secret/value/source logging and logger failure isolation passed.');
+const wrongType=new Request('https://example.test',{method:'POST',headers:{[KEY_HEADER]:token,'content-type':'text/plain'},body:'{}'});
+const wrongResponse=await receiveHealthExport(wrongType,db,{emit:x=>events.push(x)});assert.equal(wrongResponse.status,415);assert.equal(events.at(-1).outcome,'validation_rejected');assert.ok((await wrongResponse.json()).correlation_id);
+[status,body,event]=await run([metric()]);assert.equal(body.correlation_id,event.correlation_id);assert.equal(body.nutrition_dates_observed,1);assert.equal(body.coverage_verified,false);assert.ok(!Object.hasOwn(event,'received_points'));
+// Transport acknowledgement and observed nutrients do not prove persisted nutrition.
+result={data:{received:true,accepted_metrics:0}};
+[status,body,event]=await run([metric()]);
+assert.equal(status,200);assert.equal(body.outcome,'accepted_without_writes');assert.equal(event.outcome,body.outcome);assert.equal(body.nutrition_metrics_observed,1);assert.equal(body.coverage_verified,false);
+result={data:{received:true,accepted_metrics:1}};
+[status,body,event]=await run([metric(),metric('step_count')]);
+assert.equal(body.outcome,'accepted');assert.equal(body.nutrition_metrics_observed,1);assert.equal(body.coverage_verified,false);assert.ok(!Object.hasOwn(body,'nutrition_metrics_persisted'));
+const originalWarn=console.warn; console.warn=()=>{throw Error('logging unavailable');};
+try{const invalid=metric();invalid.units='unsupported';const response=await receiveHealthExport(request([invalid]),db,{emit:()=>{throw Error('logging unavailable');}});assert.equal(response.status,422);assert.equal((await response.json()).error,'unsupported_unit');}finally{console.warn=originalWarn;}
+console.log('Zero writes, mixed batches and warning failure remain honest and response-safe.');
