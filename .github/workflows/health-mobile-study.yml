@@ -1,0 +1,48 @@
+name: LTS Health Mobile Study
+on:
+  pull_request:
+    paths:
+      - 'preview/mobile-study/**'
+      - '.github/workflows/health-mobile-study.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'preview/mobile-study/**'
+      - '.github/workflows/health-mobile-study.yml'
+permissions:
+  contents: read
+jobs:
+  mobile-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LTS_HEALTH_BASE_URL: http://127.0.0.1:4173/preview/mobile-study/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check isolated renderer and shared dependencies
+        run: |
+          node preview/mobile-study/tests/mobile-study-test.mjs
+          node preview/compact-evidence/tests/preview-contract.mjs
+          node preview/compact-evidence/tests/preview-readonly-test.mjs
+      - name: Install existing pinned browser runtime
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve generic repository files
+        run: |
+          python3 -m http.server 4173 >/tmp/health-study-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
+      - name: Verify anonymous boundary and blocked writes
+        run: node preview/mobile-study/tests/mobile-study-auth.mjs
+      - name: Verify actual study route with synthetic data
+        run: node preview/mobile-study/tests/mobile-study-browser.mjs
+      - name: Upload synthetic-only study evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-study-synthetic-visual
+          path: mobile-study-visual
+          retention-days: 7
