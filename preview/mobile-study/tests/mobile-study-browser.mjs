@@ -55,25 +55,30 @@ try {
    await page.locator('[data-home-period-select]').selectOption('90');
    await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='90');
    assert.equal(await page.locator('[data-study-domain]:visible').count(),6);
+   assert.equal(await page.locator('#screenHost').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(243, 247, 252)');
    assert.ok(await page.locator('.studyInsight').isVisible());assert.equal(await page.locator('.studyPair').count(),3);
    assert.match(await page.locator('.studyCard.nutrition').innerText(),/proteína/);
    assert.equal(await page.locator('.studyCard.body svg text').count(),0,'body uses readable HTML values, no compressed SVG text');
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no horizontal overflow');
+   await page.locator('#screenHost').evaluate(el=>{el.scrollTop=0;});await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-top.png`});
    for(const selector of ['.studyInsight','.studyCard.body','.studyCard.nutrition','.studyCard.labs','.studyCard.sleep','.studyCard.water']){
     await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-${selector.split('.').at(-1)}.png`});
    }
-   await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-page.png`,fullPage:true});
+   await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-lower.png`});
    // Period changes reuse the existing model and controller, never a static study snapshot.
    const initialBody=await page.locator('.studyCard.body').innerText();
    await page.locator('[data-home-period-select]').selectOption('30');
    await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='30');
    assert.notEqual(await page.locator('.studyCard.body').innerText(),initialBody);
-   await page.locator('[data-home-period-select]').selectOption('90');
+   for(const period of ['365','all','90']){await page.locator('[data-home-period-select]').selectOption(period);await page.waitForFunction(p=>document.querySelector('[data-home-period-select]')?.value===p,period);assert.equal(await page.locator('[data-study-domain]:visible').count(),6);}
+   await page.locator('.studyCard.nutrition details>summary').click();
+   const source=page.locator('[data-home-field="reportNutritionSource"]');const sourceOptions=await source.locator('option:not([disabled])').evaluateAll(es=>es.map(e=>e.value));const chosen=sourceOptions.at(-1);if(chosen)await source.selectOption(chosen);
    await page.locator('[data-home-insight-details]').click();
    await page.waitForURL('**/#analise');await page.waitForSelector('.ltsIntegratedReview,.ltsRecoveryDepth,.ltsEvolution');
    const nav=width<=840?'#mobileNav':'#primaryNav';await page.locator(`${nav} [data-route="hoje"]`).click();await page.waitForSelector('[data-mobile-study]');
    assert.equal(await page.locator('[data-home-period-select]').inputValue(),'90');
    assert.equal(await page.locator('.studyCard.body').innerText(),initialBody);
+   if(chosen)assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),chosen,'selected nutrition source survives interval and return');
    const blocked=await page.evaluate(()=>{try{window.supabase.createClient('synthetic','synthetic').from('synthetic').insert({});return false;}catch(e){return e.code==='preview_read_only';}});assert.equal(blocked,true);
    assert.deepEqual(errors,[]);await page.close();
   }

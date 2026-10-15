@@ -27,7 +27,7 @@ function reading(b){
  const w=b.metrics.weight_kg,f=b.metrics.fat_mass_kg,s=b.metrics.skeletal_muscle_mass_kg;
  if(w.hasPair&&f.hasPair&&w.delta<0&&f.delta>=0)return 'O peso caiu. A gordura estimada não acompanhou.';
  if(f.hasPair&&s.hasPair&&f.delta<0&&s.delta<0)return 'Gordura e músculo estimados caíram entre as avaliações.';
- if(w.hasPair)return `O peso registrado mudou ${signed(w.delta)} entre as avaliações.`;
+ if(w.hasPair)return w.delta===0?'O peso registrado se manteve entre as avaliações.':`O peso registrado ${w.delta<0?'caiu':'subiu'} ${value(Math.abs(w.delta),'kg')} entre as avaliações.`;
  return b.latest?'Uma avaliação disponível nesta janela.':'Ainda não há uma comparação corporal nesta janela.';
 }
 function bodyCard(b){
@@ -49,7 +49,9 @@ function nutritionCard(m){
  const n=m.useful.nutrition,e=m.evidence.nutrition,k=n.metrics.calories_kcal.overall,p=n.metrics.protein_g.overall;
  const samples=k.samples,range=samples.length?`${value(Math.min(...samples.map(x=>x.value)),'',0)} a ${value(Math.max(...samples.map(x=>x.value)),'kcal/dia',0)}`:null;
  const origin=m.nutrition.source,sourceText=origin?.reviewVerified?'Arquivo conferido':origin?.status==='candidate'?'Origem ainda não validada':origin?.status==='held'?'Origem em revisão':'Origem selecionada';
- const options=e.sources.map((s,i)=>`<option value="${esc(s.key)}" ${s.key===origin?.key?'selected':''}>${s.observedDates.length?`${date(s.observedDates[0])}–${date(s.observedDates.at(-1))}`:`Origem ${i+1}`} · ${s.observedDates.length} dias</option>`).join('');
+ const sourceName=(s,i)=>/auto export/i.test(s.label)?'Apple · automático':/myfitnesspal.*export|myfitnesspal.*arquivo/i.test(s.label)?'MyFitnessPal · arquivo':/apple|saúde/i.test(s.label)?'Saúde · arquivo':`Diário ${i+1}`;
+ const names=e.sources.map(sourceName);
+ const options=e.sources.map((s,i)=>`<option value="${esc(s.key)}" ${s.key===origin?.key?'selected':''}>${esc(names[i])}${names.filter(n=>n===names[i]).length>1?` ${i+1}`:''} · ${s.observedDates.length} dias</option>`).join('');
  const picker=`<label class="studySelect">Período e origem do diário<select data-home-field="reportNutritionSource" aria-label="Origem alimentar">${n.requestedSourceMissing?'<option selected disabled>Origem sem dados nesta janela</option>':''}${options}</select></label>`;
  const visual=k.count?`<div class="studyMetric"><strong>${value(k.mean,'',0)}</strong><span>kcal/dia · média registrada</span></div><p class="studyLead"><b>${value(p.mean,'g de proteína/dia',0)}</b>${range?` · energia de ${range}`:''}</p>${chart(samples,'#e99854','kcal',{bars:true})}<p class="studyMeta">Média dos ${k.count} dias registrados · ${date(k.firstDate)} a ${date(k.lastDate)}. ${origin?.status==='candidate'&&!origin?.reviewVerified?'Origem ainda não validada.':''}</p>`:empty(n.text);
  return card('nutrition','Alimentação',`${k.count} dias observados`,visual+detail('Diário, origens e cobertura',picker+`<p>${esc(n.context)}</p><p>${e.receivedDays??'—'} dias recebidos no conjunto; ${e.missingDays??'—'} ainda não recebidos. A ausência de integração não significa ausência de alimentação.</p>${e.sources.map(s=>`<p><b>${esc(s.label)}</b>: ${s.observedDates.length} dias · ${value(s.means.calories_kcal,'kcal/dia',0)} · ${value(s.means.protein_g,'g de proteína/dia',0)}</p>`).join('')}<p>Origens sobrepostas não são somadas. Médias permanecem separadas.</p>${button('nutricao','Ver diário completo')}`,'nutrition')); 
