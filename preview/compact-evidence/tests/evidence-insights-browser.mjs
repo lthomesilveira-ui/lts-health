@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
 
-// Synthetic service on the production renderer; never a copy of private records.
+// Synthetic service on the integrated preview renderer; never a copy of private records.
 // Complete technique/effort fields exercise equivalent recorded conditions.
 // A separate incomplete-effort case must block the strict comparison, not history.
-const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/v2/';
-const dir='v2/evidence-insights-visual';mkdirSync(dir,{recursive:true});
+const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/preview/compact-evidence/';
+const dir='preview63-evidence-insights-visual';mkdirSync(dir,{recursive:true});
 const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const date=offset=>{const value=new Date(`${today}T12:00:00Z`);value.setUTCDate(value.getUTCDate()-offset);return value.toISOString().slice(0,10);};
 const db={health_workouts:[],health_workout_exercises:[],health_workout_sets:[],health_daily_nutrition:[]};
@@ -21,14 +21,30 @@ for(const i of [2,4])for(let e=1;e<=10;e++){
 const service=`window.__insightDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__insightDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
+async function stableHome(page){
+  await page.waitForFunction(()=>{
+    const root=document.querySelector('[data-mobile-study]');
+    if(!root||document.querySelector('#syncText')?.textContent!=='Atualizado'||document.querySelector('#screenHost')?.dataset.productLayoutRoute!=='hoje')return false;
+    if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
+    return ++window.__gateHomeStableFrames>=3;
+  });
+}
 async function overflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no document horizontal overflow');}
 try{
   for(const [label,width,height] of [['desktop',1440,1000],['mobile',390,844],['small',320,740]]){
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
-    await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeReference');
-    assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),0);assert.match(await page.locator('.refPanel.body').innerText(),/Sem registros no período/);
-    await overflow(page);await page.locator('.refReading [data-home-insight-details]').click();
+    await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);
+    assert.equal(await page.locator('.studyCard.body svg').count(),0);assert.match(await page.locator('.studyCard.body').innerText(),/Sem avaliação corporal inequívoca nesta janela/);
+    assert.equal(await page.locator('.studyCard.body .studyPair').count(),0,'missing body records cannot create a comparison');
+    assert.equal(await page.locator('.studyInsight [data-home-insight-details]').count(),0,'no body pair means no invented interval CTA');
+    assert.ok(await page.locator('.studyInsight [data-route="bio"]').isVisible(),'empty-body hero links to the original assessments');
+    await overflow(page);
+    // Without a body pair the hero opens Composition. Recovery remains reachable
+    // through the existing navigation and keeps the same global calendar.
+    await page.locator('.studyInsight [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2 .ltsEmptyCard');
+    const nav=width<=840?'#mobileNav':'#primaryNav';
+    await page.locator(`${nav} [data-route="analise"]`).click();
     await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90','evidence details retain the Home calendar window');
     assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food a','canonical']));
@@ -64,5 +80,5 @@ try{
     await page.close();
   }
   assert.deepEqual(errors,[],'no uncaught errors');
-  console.log('Evidence insights production UI: 1440/390/320px, calculated means/counts, source selection, pagination/reset, exercise evidence navigation and partial failures passed.');
+  console.log('Evidence insights integrated preview UI: 1440/390/320px, calculated means/counts, source selection, pagination/reset, exercise evidence navigation and partial failures passed.');
 }finally{await browser.close();}
