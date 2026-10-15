@@ -11,3 +11,8 @@ body:has(.studyHome) .screenHost{background:#f3f7fc!important;overflow-x:hidden!
 body:has(.studyHome) .mobileNav{background:#fff!important;border-top:1px solid #dce7f4!important}
 body:has(.studyHome) .mobileNav button.active{color:#1479f8!important;background:transparent!important}
 body:has(.studyHome) .mobileNav button:before,body:has(.studyHome) .mobileNav button:after{display:none!important}
+.studyTrainingOverview>section+section{border-top:1px solid #e5edf4;margin-top:12px;padding-top:12px}.studyTrainingOverview h3{font-size:15px}.studyTrainingOverview .studyLead{font-weight:650}.studyTrainingOverview .studyMeta{margin-top:3px!important}
+.studyTrainingPair{display:block;margin:7px 0}.studyTrainingPair small{display:block;font-weight:400;margin-top:2px}
+@media(min-width:841px){.studyBrand{padding-right:94px}}
+
+.studyFindings{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-content:start}.studyFinding{min-width:0;border:1px solid #d7e3ef;border-radius:12px;background:#fff;padding:12px 14px}.studyFinding>small{display:block;color:#266caf}.studyFinding>p{font-size:15px;line-height:1.4;margin-top:5px}.studyFinding details{margin-top:6px}.studyLoad>b small{display:block;font-size:11px;font-weight:400;margin-top:3px}@media(max-width:840px){.studyFindings{grid-template-columns:1fr}}

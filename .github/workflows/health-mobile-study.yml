@@ -25,6 +25,7 @@ jobs:
       - name: Check isolated renderer and shared dependencies
         run: |
           node preview/mobile-study/tests/mobile-study-test.mjs
+          node preview/mobile-study/tests/study-findings-test.mjs
           node preview/compact-evidence/tests/preview-contract.mjs
           node preview/compact-evidence/tests/preview-readonly-test.mjs
       - name: Install existing pinned browser runtime

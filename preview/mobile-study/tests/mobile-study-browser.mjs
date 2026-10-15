@@ -43,7 +43,7 @@ window.supabase={createClient:()=>({
 })};`;
 const browser=await chromium.launch({headless:true});
 try {
- for(const[label,width,height]of[['desktop',1440,900],['mobile',393,844],['small',320,740]]){
+ for(const[label,width,height]of[['desktop',1440,900],['desktopNarrow',1180,757],['mobile',393,844],['small',320,740]]){
   for(const sparse of [false,true]){
    const page=await browser.newPage({viewport:{width,height}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
    const sparseSetup=`window.__reviewDb.health_body_composition=window.__reviewDb.health_body_composition.filter(r=>[${JSON.stringify(date(20))},${JSON.stringify(date(60))}].includes(r.measured_at));
@@ -58,13 +58,17 @@ try {
    await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='90');
    assert.equal(await page.locator('[data-study-domain]:visible').count(),6);
    assert.equal(await page.locator('#screenHost').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(243, 247, 252)');
-   assert.ok(await page.locator('.studyInsight').isVisible());assert.equal(await page.locator('.studyPair').count(),3);
+   assert.ok(await page.locator('.studyInsight').isVisible());
+   const findings=page.locator('[data-study-finding]');assert.ok(await findings.count()<=3,'at most three supported findings');
+   assert.ok(await page.locator('[data-study-finding="labs"]').isVisible(),'laboratory trajectory is surfaced without opening another route');
+   await page.locator('[data-study-finding="labs"] summary').click();assert.ok(await page.locator('[data-study-finding="labs"] [data-route="saude"]').isVisible());await page.locator('[data-study-finding="labs"] summary').click();assert.equal(await page.locator('.studyPair').count(),3);
    assert.match(await page.locator('.studyCard.nutrition').innerText(),/proteína/);
    assert.equal(await page.locator('.studyCard.body svg text').count(),0,'body uses readable HTML values, no compressed SVG text');
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no horizontal overflow');
    await stableHome();await page.locator('#screenHost').evaluate(el=>{el.scrollTop=0;});await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-top.png`});
    await page.evaluate(()=>{window.__studyCaptureRoot=document.querySelector('[data-mobile-study]');});
-   for(const selector of ['.studyInsight','.studyCard.body','.studyCard.nutrition','.studyCard.labs','.studyCard.sleep','.studyCard.water']){
+   if(width>840)assert.ok(await page.locator('.studyBrand small').evaluate(el=>{const a=el.getBoundingClientRect();return ['refreshBtn','logoutBtn'].every(id=>{const b=document.getElementById(id)?.getBoundingClientRect();return !b||a.right<=b.left||a.left>=b.right||a.bottom<=b.top||a.top>=b.bottom;});}),'read-only label is not covered by header controls');
+   for(const selector of ['.studyInsight','.studyFindings','.studyCard.body','.studyCard.training','.studyCard.nutrition','.studyCard.labs','.studyCard.sleep','.studyCard.water']){
     await stableHome();await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-${selector.split('.').at(-1)}.png`});assert.ok(await page.evaluate(()=>window.__studyCaptureRoot===document.querySelector('[data-mobile-study]')),'scrolling and capture must not replace the Home DOM');
    }
    await page.screenshot({path:`${dir}/${label}-${sparse?'sparse':'full'}-lower.png`});
@@ -76,12 +80,25 @@ try {
    for(const period of ['365','all','90']){await page.locator('[data-home-period-select]').selectOption(period);await page.waitForFunction(p=>document.querySelector('[data-home-period-select]')?.value===p,period);assert.equal(await page.locator('[data-study-domain]:visible').count(),6);}
    await page.locator('.studyCard.nutrition details>summary').click();
    const source=page.locator('[data-home-field="reportNutritionSource"]');const sourceOptions=await source.locator('option:not([disabled])').evaluateAll(es=>es.map(e=>e.value));const chosen=sourceOptions.at(-1);if(chosen)await source.selectOption(chosen);
-   await page.locator('[data-home-insight-details]').click();
+   await page.locator('.studyInsight [data-home-insight-details]').click();
    await page.waitForURL('**/#analise');await page.waitForSelector('.ltsIntegratedReview,.ltsRecoveryDepth,.ltsEvolution');
    const nav=width<=840?'#mobileNav':'#primaryNav';await page.locator(`${nav} [data-route="hoje"]`).click();await page.waitForSelector('[data-mobile-study]');
    assert.equal(await page.locator('[data-home-period-select]').inputValue(),'90');
    assert.equal(await page.locator('.studyCard.body').innerText(),initialBody);
    if(chosen)assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),chosen,'selected nutrition source survives interval and return');
+   await page.locator('.studyCard.labs details>summary').click();
+   const labChoice=page.locator('[data-home-lab-select]');
+   const selectedA=await labChoice.locator('option').evaluateAll(es=>es.find(e=>e.textContent.includes('Synthetic second marker'))?.value);
+   assert.ok(selectedA);await labChoice.selectOption(selectedA);
+   await page.waitForFunction(()=>document.querySelector('.studyCard.labs h3')?.textContent==='Synthetic second marker');
+   await page.locator('[data-study-finding="labs"] summary').click();
+   await page.locator('[data-study-finding="labs"] [data-study-lab-context]').click();
+   await page.waitForURL('**/#saude');await page.waitForSelector('#productLabMarkerSelect');
+   assert.equal(await page.locator('#productLabMarkerSelect').inputValue(),'hemoglobina','finding opens cited marker B, not selected marker A');
+   await page.locator(`${nav} [data-route="hoje"]`).click();await page.waitForSelector('[data-mobile-study]');
+   assert.equal(await page.locator('[data-home-lab-select]').inputValue(),selectedA,'Home retains original marker A on return');
+   assert.equal(await page.locator('[data-home-period-select]').inputValue(),'90');
+   if(chosen)assert.equal(await page.locator('[data-home-field="reportNutritionSource"]').inputValue(),chosen);
    const blocked=await page.evaluate(()=>{try{window.supabase.createClient('synthetic','synthetic').from('synthetic').insert({});return false;}catch(e){return e.code==='preview_read_only';}});assert.equal(blocked,true);
    assert.deepEqual(errors,[]);await page.close();
   }
