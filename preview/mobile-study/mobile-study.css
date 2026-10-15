@@ -11,3 +11,8 @@ body:has(.studyHome) .screenHost{background:#f3f7fc!important;overflow-x:hidden!
 body:has(.studyHome) .mobileNav{background:#fff!important;border-top:1px solid #dce7f4!important}
 body:has(.studyHome) .mobileNav button.active{color:#1479f8!important;background:transparent!important}
 body:has(.studyHome) .mobileNav button:before,body:has(.studyHome) .mobileNav button:after{display:none!important}
+.studyTrainingOverview>section+section{border-top:1px solid #e5edf4;margin-top:12px;padding-top:12px}.studyTrainingOverview h3{font-size:15px}.studyTrainingOverview .studyLead{font-weight:650}.studyTrainingOverview .studyMeta{margin-top:3px!important}
+.studyTrainingPair{display:block;margin:7px 0}.studyTrainingPair small{display:block;font-weight:400;margin-top:2px}
+@media(min-width:841px){.studyBrand{padding-right:94px}}
+
+.studyOtherLabs{border-top:1px solid #e5edf4;margin-top:12px;padding-top:12px}.studyOtherLabs h3{font-size:13px;color:#58718b}.studyLabTrajectory+.studyLabTrajectory{border-top:1px solid #e5edf4;margin-top:6px;padding-top:8px}.studyLabTrajectory>p{font-size:14px}.studyLoad>b small{display:block;font-size:11px;font-weight:400;margin-top:3px}
