@@ -200,6 +200,14 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const dashboardMode=event.target.closest('[data-dashboard-mode]');
+    if(dashboardMode){state.ui.dashboardMode=dashboardMode.dataset.dashboardMode;render();return;}
+    const dashboardChart=event.target.closest('[data-dashboard-chart]');
+    if(dashboardChart){const box=dashboardChart.getBoundingClientRect(),start=dashboardChart.dataset.start,end=dashboardChart.dataset.end;const span=Math.round((Date.parse(end)-Date.parse(start))/86400000),fraction=Math.min(1,Math.max(0,((event.clientX-box.left)/box.width*286-5)/276));state.ui.dashboardMode='day';state.ui.dashboardDate=event.detail===0?dashboardChart.dataset.last:new Date(Date.parse(start)+Math.round(fraction*span)*86400000).toISOString().slice(0,10);render();document.getElementById('dashboard-date')?.focus({preventScroll:true});resetRouteScroll();return;}
+    const dashboardDay=event.target.closest('[data-dashboard-day]');
+    if(dashboardDay){state.ui.dashboardMode='day';state.ui.dashboardDate=dashboardDay.dataset.dashboardDay;render();document.getElementById('dashboard-date')?.focus({preventScroll:true});resetRouteScroll();return;}
+    const dashboardLab=event.target.closest('[data-dashboard-lab]');
+    if(dashboardLab){try{Object.assign(state.ui,JSON.parse(dashboardLab.dataset.dashboardLab));}catch{event.preventDefault();return;}}
     const haeCheck=event.target.closest('[data-hae-check]');
     if(haeCheck){haeCheck.disabled=true;await checkAutoExportConnection();if(state.autoExportConnection?.received)await refreshData(state.route,setSync);scheduleRender();return;}
     const haeAction=event.target.closest('[data-hae-action]');
@@ -265,6 +273,7 @@ function bindStaticEvents(){
     const markerButton=event.target.closest('[data-marker]');if(markerButton){state.ui.selectedBiomarker=markerButton.dataset.marker;scheduleRender();return;}
   });
 
+  document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('[data-dashboard-chart]')){event.preventDefault();event.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
   document.addEventListener('input',event=>{
     if(event.target.matches('[data-report-search]')){state.ui.reportLabQuery=event.target.value;state.ui.reportLabPage=1;scheduleRender();}
     if(event.target.id==='trainingQuery'){state.ui.trainingQuery=event.target.value;scheduleRender();}
@@ -275,6 +284,9 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-dashboard-period')){state.ui.dashboardPeriod=event.target.value;state.ui.dashboardMode='period';if(['30','90','all'].includes(event.target.value))setGlobalPeriod(event.target.value);render();return;}
+    if(event.target.hasAttribute('data-dashboard-date')){const v=event.target.value;if(/^\d{4}-\d{2}-\d{2}$/.test(v)){state.ui.dashboardDate=v;state.ui.dashboardMode='day';render();}return;}
+    if(event.target.hasAttribute('data-dashboard-source')){state.ui.dashboardSources={...(state.ui.dashboardSources||{}),[event.target.dataset.dashboardSource]:event.target.value};render();return;}
     if(event.target.hasAttribute('data-home-lab-select')){state.ui.homeLabKey=event.target.value;render();return;}
     if(event.target.hasAttribute('data-home-period-select')){setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}

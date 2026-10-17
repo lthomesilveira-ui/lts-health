@@ -313,3 +313,22 @@ export function homePeriodModel(data={},status={},period='90',ui={},today=localT
   const result={period,today,label:period==='all'?'Histórico':`${period} dias`,...model,previousBounds,previous,comparisonRule};
   return {...result,...describe(result)};
 }
+
+/** Read-only snapshot using caller-supplied calendar bounds. This does not alter
+ * the legacy Home calendar, source selection or comparison contract. */
+export function homePeriodSnapshot(data={},status={},bounds={},ui={},today=localToday(),previousBounds=null){
+  today=dayOf(today);
+  if(!today||!dayOf(bounds.start)||!dayOf(bounds.end))throw new RangeError('Explicit valid calendar bounds and today are required');
+  bounds=makeBounds(bounds.start,bounds.end,today);
+  if(previousBounds){
+    if(!dayOf(previousBounds.start)||!dayOf(previousBounds.end))throw new RangeError('Invalid previous calendar bounds');
+    previousBounds=makeBounds(previousBounds.start,previousBounds.end,today);
+  }
+  const model=snapshot(data,status,bounds,ui,today);
+  const previous=previousBounds?snapshot(data,status,previousBounds,{...ui,homeNutritionSource:model.nutrition.source?.key||ui.homeNutritionSource,homeSleepSource:model.sleep.source?.key||ui.homeSleepSource,homeWaterSource:model.water.source?.key||ui.homeWaterSource},today):null;
+  model.nutrition.comparison=Object.fromEntries(foodFields.map(field=>[field,compareMetric(model.nutrition,previous?.nutrition,field,bounds,previousBounds)]));
+  model.sleep.comparison=compareMetric(model.sleep,previous?.sleep,'value',bounds,previousBounds);
+  model.water.comparison=compareMetric(model.water,previous?.water,'value',bounds,previousBounds);
+  const result={period:String(ui.dashboardPeriod||'custom'),today,label:`${displayDate(bounds.start)} a ${displayDate(bounds.end)}`,...model,previousBounds,previous,comparisonRule};
+  return {...result,...describe(result)};
+}

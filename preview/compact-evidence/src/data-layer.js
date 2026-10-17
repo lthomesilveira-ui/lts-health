@@ -10,7 +10,7 @@ const routeDomains={
   evolucao:[],
   analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences'],
   tratamentos:['treatments','regimens','docs'],
-  hoje:['nutrition','meals','metrics','sourceMetrics','labs','uploads','treatments','regimens','goals','waterReferences'],
+  hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
   nutricao:['nutrition','meals','sourceMetrics','goals','waterReferences'],
@@ -167,6 +167,7 @@ export async function ensureRouteData(route,onProgress=()=>{}){
   const keys=routeDomains[route]||[],missing=keys.filter(k=>state.domainStatus[k]!=='ready'&&state.domainStatus[k]!=='error');
   if(!missing.length)return;
   onProgress('Carregando…');await Promise.all(missing.map(k=>loadKey(k)));
+  state.ui.dashboardLoadedAt=new Date().toISOString();
   onProgress(missing.some(k=>state.domainStatus[k]==='error')?'Alguns dados não carregaram':'Atualizado');
 }
 

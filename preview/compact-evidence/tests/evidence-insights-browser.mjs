@@ -34,15 +34,15 @@ try{
   for(const [label,width,height] of [['desktop',1440,1000],['mobile',390,844],['small',320,740]]){
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
-    await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);
+    await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await page.locator('[data-dashboard-period]').selectOption('90');await stableHome(page);
     assert.equal(await page.locator('.studyCard.body svg').count(),0);assert.match(await page.locator('.studyCard.body').innerText(),/Sem avaliação corporal inequívoca nesta janela/);
     assert.equal(await page.locator('.studyCard.body .studyPair').count(),0,'missing body records cannot create a comparison');
     assert.equal(await page.locator('.studyInsight [data-home-insight-details]').count(),0,'no body pair means no invented interval CTA');
-    assert.ok(await page.locator('.studyInsight [data-route="bio"]').isVisible(),'empty-body hero links to the original assessments');
+    assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'empty-body hero links to the original assessments');
     await overflow(page);
     // Without a body pair the hero opens Composition. Recovery remains reachable
     // through the existing navigation and keeps the same global calendar.
-    await page.locator('.studyInsight [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2 .ltsEmptyCard');
+    await page.locator('.studyCard.body [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2 .ltsEmptyCard');
     const nav=width<=840?'#mobileNav':'#primaryNav';
     await page.locator(`${nav} [data-route="analise"]`).click();
     await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');

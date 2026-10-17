@@ -26,7 +26,7 @@ jobs:
         run: node preview/compact-evidence/tests/preview-contract.mjs
       - name: Verify candidate analytical contracts with synthetic data
         run: |
-          for test in mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation; do
+          for test in health-dashboard-model health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation; do
             node "preview/compact-evidence/tests/${test}-test.mjs"
           done
       - name: Install existing pinned browser runtime
@@ -42,7 +42,7 @@ jobs:
       - name: Verify full histories in preview route
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
-        run: node preview/compact-evidence/tests/mobile-study-browser.mjs
+        run: node preview/compact-evidence/tests/health-dashboard-browser.mjs
       - name: Verify interval navigation and complete contextual evidence
         run: node preview/compact-evidence/tests/body-interval-browser.mjs
       - name: Verify equivalent recorded training conditions
@@ -53,7 +53,7 @@ jobs:
         with:
           name: isolated-preview-synthetic-visual
           path: |
-            mobile-study-visual
+            health-dashboard-visual
             v2/reference-period-visual
             preview63-history-depth-evidence
             v2/interval-visual
