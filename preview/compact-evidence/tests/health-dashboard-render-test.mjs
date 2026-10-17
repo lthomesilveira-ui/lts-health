@@ -80,6 +80,10 @@ export async function runRenderTests(){
       assert.ok(content.includes(dateLabel(f.date(7)))&&content.includes(dateLabel(f.date(1))));
       assert.match(content,/Origens separadas não são somadas/);
     }
+    if(!sparse){
+      assert.match(card(html,'sleep'),/Variação menor que 0,1 h/, 'small nonzero changes are not displayed as a directional zero');
+      assert.doesNotMatch(card(html,'sleep'),/[↑↓] 0,0 h/);
+    }
     assert.deepEqual(f.data,before,'pure renderer leaves supplied records unchanged');
     assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);
     const current=renderHealthDashboard(f.data,f.status,{dashboardMode:'day'},f.today);
