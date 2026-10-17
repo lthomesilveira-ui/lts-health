@@ -66,7 +66,7 @@ async function quality(page,label){
 async function capture(page,name,selector){
   await stableHome(page);
   const handle=await page.locator('[data-health-dashboard]').elementHandle();
-  if(selector)await page.locator(selector).scrollIntoViewIfNeeded();
+  if(selector)await page.locator(selector).first().scrollIntoViewIfNeeded();
   else await page.evaluate(()=>{document.querySelector('#screenHost').scrollTop=0;window.scrollTo(0,0);});
   await page.screenshot({path:`${dir}/${name}.png`,animations:'disabled'});
   assert.ok(await page.evaluate(root=>root===document.querySelector('[data-health-dashboard]'),handle),'scrolling/screenshots must not replace the dashboard DOM');
