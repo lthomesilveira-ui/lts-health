@@ -1,11 +1,17 @@
-# Isolated Health validation preview
+# Isolated Health dashboard preview
 
-Generic app code copied from candidate e960481eb41562dc6abe6d07e6584623dd7c3099, build compact-evidence-20261014.59.
+Build health-dashboard-20261017.64. This authenticated, read-only preview keeps production /v2/ unchanged.
 
-This directory does not replace /v2/. It uses the same existing Supabase project, publishable client configuration, session and row-level security. It contains no private records, screenshots, database migration, credentials or new access grant. Signed-out access shows the normal login screen. Demonstration mode remains explicitly opt-in through the existing fixture query parameter.
+## Dashboard
+- Day mode with Today or any historical date; today is explicitly partial.
+- Period mode: 7, 30, 60 and 90 complete days, six calendar months, one calendar year, and received history. Periods end yesterday. Every dashboard section uses the same bounds; older laboratory/protocol context keeps its actual date and outside-period label.
+- Water, protein, ingested energy, active energy, explicit total expenditure, steps and sleep retain independent source identities. Means show observed days over calendar days. Unknown values never become zero, and different device/source totals are never added.
+- Comparisons require the same source, unit, eligible-day positions, at least five days and 70% coverage in both equal-duration windows. Known partials and ambiguous duplicates are excluded. Combined device provenance remains identified and cannot support a trend until deduplication is established.
+- Recorded training sessions, duration coverage, named muscle groups and historical gaps remain distinct from exercise/set counts or actual adherence.
+- Laboratory values preserve raw qualifiers, precision, reference ranges and methods. Reference movement is descriptive and does not assert clinical improvement or diagnosis.
+- Documented protocols retain dates without implying present use. Water/protein guidance pairs registered targets with the exact same observed days; historical or documentary-only references do not become current targets.
 
-Browser tests intercept the service with synthetic data only. They verify this preview path rather than the production path. Real-data review is performed separately through an already authenticated cloud browser; synthetic screenshots are not evidence of real-data validation.
+## Isolation and validation
+The preview uses existing Supabase session/RLS and the unchanged publishable client configuration. No private data, credentials, migration or new access grant is committed. The classic preview guard precedes modules, permits authentication/read queries and blocks mutations, RPC and edge functions. This is not a replacement for server authorization.
 
-The preview-only guard runs after the SDK and before app modules. It preserves authentication and read queries, blocks database/storage mutations, RPC and edge-function invocation (including automatic Polar sync), and disables known write forms. This is an application validation guard, not a change to server authorization or RLS. Expected generic asset hashes are embedded in tests/preview-contract.mjs; no JSON manifest or private payload is published.
-
-The renderer includes the separately reviewed display refinements (Corpo title, compact source control and collection-date heading). Source clinical records and production files are unchanged.
+Tests use synthetic fixtures only. The dashboard browser gate covers 320, 393, 1180 and 1440 pixel viewports, period/day navigation, origins, accessible day detail, context, route return and empty/error states. Existing domain-history, interval, analytic and auth/guard gates remain. Screenshots from these tests do not establish real-data or physical iPhone/Safari validation.
