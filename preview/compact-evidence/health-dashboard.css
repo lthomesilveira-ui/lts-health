@@ -14,3 +14,6 @@
 .healthAvailability{font-size:12px;line-height:1.45;color:#8b5a24;background:#fff6e8;padding:8px;border-radius:7px;margin:8px 0!important}
 
 .healthDashboard .healthDayControl button{min-width:44px}
+
+/* Additional evidence lives inside the approved cards, without a new layout. */
+.healthTrainingLabel,.healthPolar h3{font-size:14px;margin:10px 0}.healthTrainingDetailCount{font-size:13px;line-height:1.5;color:#426580}.healthPolar{border-top:1px solid #dbe7f2;margin-top:16px;padding-top:8px}.healthPolar>p{font-size:13px;line-height:1.5}.healthPolarSession{padding:8px 0;border-top:1px solid #edf2f7}.healthPolarSession b{font-size:13px}.healthPolarSession p{font-size:12px;color:#58748e}.healthExercise{padding:8px 0;border-top:1px solid #e7eef5;font-size:12px;overflow-wrap:anywhere}.healthExercise p{font-size:12px;line-height:1.5}.healthRecentSessions details{font-size:12px}.healthLabItem .studyMeta,.healthLabItem b{overflow-wrap:anywhere}

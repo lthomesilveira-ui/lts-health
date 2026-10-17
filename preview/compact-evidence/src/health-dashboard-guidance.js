@@ -28,6 +28,14 @@ function goalSource(row){
   if(!notes)return 'Meta pessoal cadastrada';
   try{const metadata=JSON.parse(notes);return text(metadata?.source)||'Meta pessoal cadastrada';}catch{return notes;}
 }
+function historicalGoalReference(row,definition,date){
+  if(referenceType(row)!=='historical_protocol')return null;
+  let metadata;try{metadata=JSON.parse(row.notes);}catch{return null;}
+  const value=numeric(row[definition.field]),documentedOn=day(metadata.documented_on),source=text(metadata.source);
+  if(value==null||value<=0||value>definition.maximum||!documentedOn||documentedOn>date||!source)return null;
+  const rule=definition.field==='protein_g'?metadata.protein_rule:null;
+  return {value,unit:definition.unit,documentedOn,source,rule:rule==='gt'?'gt':'reference',isDailyTarget:false,currentValidity:'unconfirmed'};
+}
 function goalAt(rows,status,date,definition){
   if(status!=='ready')return {status:'unavailable',reason:'goals_unavailable',value:null};
   if(!day(date))return {status:'unconfirmed',reason:'invalid_date',value:null};
@@ -39,7 +47,7 @@ function goalAt(rows,status,date,definition){
   // previous target. Each date is evaluated independently across the period.
   if(latest.length!==1)return {status:'unconfirmed',reason:'ambiguous_goal',value:null,effectiveFrom:latestDate};
   const row=latest[0],protectedType=referenceType(row),value=numeric(row[definition.field]);
-  if(protectedType)return {status:'unconfirmed',reason:protectedType,value:null,effectiveFrom:latestDate};
+  if(protectedType)return {status:'unconfirmed',reason:protectedType,value:null,effectiveFrom:latestDate,reference:historicalGoalReference(row,definition,date)};
   if(value==null||value<=0||value>definition.maximum)return {status:'unconfirmed',reason:'missing_or_invalid_target',value:null,effectiveFrom:latestDate};
   return {status:'confirmed',reason:null,value,effectiveFrom:latestDate,source:goalSource(row),unit:definition.unit};
 }
@@ -85,7 +93,7 @@ function goalComparison(data,status,dashboard,key,bounds,today){
     versions:distinct(pairs.map(pair=>JSON.stringify([pair.effectiveFrom,pair.target,pair.goalSource]))).map(version=>{const[effectiveFrom,value,source]=JSON.parse(version);return {effectiveFrom,value,source,unit:definition.unit};}),
     missingRecordDays:observed.available?Math.max(0,targetDays-observed.points.length):null,excludedRecordedDays:observed.points.length-eligible.length};
 }
-function nutritionInsight(goal,dashboard,bounds){
+function nutritionInsight(goal,dashboard,bounds,context={}){
   const {key,label,unit,current,pairs}=goal,period=dashboard.mode==='period';
   const windowLabel=dateRange(bounds),point=goal.points[0],paired=pairs[0];
   const evidenceItems=pairs.length?pairs.map(pair=>({date:pair.date,value:pair.actual,unit,source:pair.source,target:pair.target,effectiveFrom:pair.effectiveFrom,goalSource:pair.goalSource,partial:pair.partial})):goal.points.map(point=>({date:point.date,value:point.value,unit,source:point.source,target:null,partial:point.partial}));
@@ -98,7 +106,14 @@ function nutritionInsight(goal,dashboard,bounds){
   if(!pairs.length){
     if(!period&&current.status==='confirmed')return {...base,title:`${label}: confira o registro`,text:`Nenhum valor numérico único foi registrado para este dia. A meta cadastrada é ${fmt(current.value)} ${unit}/dia; ausência de registro não significa zero.`};
     if(period&&goal.observedCount===0&&current.status==='confirmed')return {...base,title:`${label}: confira os registros`,text:'Sem dias completos com valor único para comparar nesta janela. Ausência de registro não significa zero; confira o diário.'};
-    return {...base,text:`Meta não confirmada ${period?'para os dias com registros elegíveis nesta janela':'para este dia'}. Revise o plano com seu profissional antes de avaliar o registro.${!point&&!period?' Ausência de registro não significa zero.':''}`};
+    const historical=current.reference,water=key==='water'?context.documentedWater:null,care=context.care;
+    const historicalLabel=historical?`${historical.rule==='gt'?'mais de ':''}${fmt(historical.value)} ${unit}/dia`:null;
+    const historyText=historical?`Referência histórica: ${historicalLabel}, documentada em ${fmtDate(historical.documentedOn)}. `:'';
+    const historyEvidence=historical?` · Referência histórica: ${historicalLabel} · ${fmtDate(historical.documentedOn)} · ${historical.source}; vigência atual não confirmada`:'';
+    const pendingNutrition=key==='protein'&&care?.available&&care.nutritionPlanPending;
+    if(water)return {...base,title:'Água: referência no plano',text:`O documento de ${fmtDate(water.documentedOn)} registra ${fmt(water.value)} mL/dia como base, com ajuste por exercício. A data de início não está explícita. Meta não confirmada para calcular cumprimento nos dias selecionados.${!point&&!period?' Ausência de registro não significa zero.':''}`,evidence:`${base.evidence} · Referência documental: ${fmt(water.value)} mL/dia · ${fmtDate(water.documentedOn)} · ${water.sourceFile}, página ${water.sourcePage}.${historyEvidence}`,action:{route:'nutricao',label:'Ver referência e registros'}};
+    if(historical||pendingNutrition)return {...base,title:pendingNutrition?'Proteína: plano alimentar aguardado':`${label}: referência histórica`,text:`${historyText}${pendingNutrition?`O acompanhamento de ${fmtDate(care.date)} registra o plano alimentar como aguardado. `:''}Meta não confirmada para os dias selecionados; ${historical?'a referência histórica não foi marcada como vigente':'não há valor diário vigente cadastrado'}.${!point&&!period?' Ausência de registro não significa zero.':''}`,evidence:`${base.evidence}${historyEvidence}${pendingNutrition?` · Plano alimentar aguardado conforme ${fmtDate(care.date)} · ${care.source}`:''}`,action:{route:pendingNutrition?'tratamentos':'nutricao',label:pendingNutrition?'Ver acompanhamento do plano':'Ver referência e registros'}};
+    return {...base,text:`Meta não confirmada ${period?'para os dias com registros elegíveis nesta janela':'para este dia'}: não há um valor vigente e inequívoco cadastrado.${!point&&!period?' Ausência de registro não significa zero.':''}`,action:{route:'nutricao',label:'Conferir meta e registros'}};
   }
   if(!period){
     if(paired.achieved)return {...base,tone:'positive',title:`${label}: registro alcança a meta`,text:`O registro de ${fmt(paired.actual)} ${unit}${dashboard.date===dashboard.today?' até agora':''} alcança a meta cadastrada de ${fmt(paired.target)} ${unit}. Isso descreve o diário, sem avaliar adequação clínica.`};
@@ -108,7 +123,7 @@ function nutritionInsight(goal,dashboard,bounds){
   const all=goal.achievedCount===pairs.length;
   return {...base,tone:all?'positive':'attention',title:all?`${label}: registros alcançam as metas`:`${label}: compare com o plano`,text:`${goal.achievedCount}/${pairs.length} dias pareados alcançam a meta vigente naquele dia. Média registrada: ${fmt(goal.meanActual)} ${unit}/dia; média das metas dos mesmos dias: ${fmt(goal.meanTarget)} ${unit}/dia.${goal.unconfirmedDates.length?` ${goal.unconfirmedDates.length} dia(s) com valor e sem meta confirmada ficaram fora.`:''} ${all?'Isso descreve os registros, sem avaliar adequação clínica.':'Confira os registros e revise o plano se a diferença se repetir.'}`};
 }
-const eventLabels={taken:'Uso registrado',administered:'Aplicação registrada',applied:'Aplicação registrada',injection:'Aplicação registrada',started:'Início relatado',stopped:'Interrupção registrada',prescribed:'Prescrição registrada',planned:'Planejamento registrado',skipped:'Omissão registrada',missed:'Omissão registrada',reported:'Relato registrado'};
+const eventLabels={taken:'Uso registrado',application:'Aplicação registrada',administered:'Aplicação registrada',applied:'Aplicação registrada',injection:'Aplicação registrada',started:'Início relatado',stopped:'Interrupção registrada',prescribed:'Prescrição registrada',planned:'Planejamento registrado',skipped:'Omissão registrada',missed:'Omissão registrada',reported:'Relato registrado'};
 const documentLabels={medical_plan:'Plano documentado',care_followup:'Acompanhamento documentado',prescription:'Prescrição documentada',treatment_plan:'Plano de tratamento documentado',medication_protocol:'Protocolo documentado'};
 function documentItem(row,bounds){
   const date=day(row?.document_date),type=text(row?.document_type);
@@ -124,7 +139,8 @@ function careContext(documents,bounds){
   const followups=list(care.followups).map((item,index)=>({id:text(item.key)||`care:${index}`,label:text(item.label)||'Pendência documentada',status:text(item.status)||'Registro pendente',resolved:item.resolved===true,dueDate:day(item.due_date),window:text(item.window)||null,documentDate:date}));
   const products=list(care.products).map(item=>({name:text(item.name)||'Item documentado',status:text(item.status)||'Situação não informada',purchaseStatus:text(item.purchase_status)||null,receivedDate:asOf(day(item.received_date),bounds)?item.received_date:null,startDate:asOf(day(item.start_date),bounds)?item.start_date:null,documentDate:date}));
   const baseline=list(care.baseline).filter(item=>!day(item.source_date)||asOf(day(item.source_date),bounds)).map(item=>({name:text(item.name)||'Protocolo relatado',date:day(item.source_date),type:'reported_history'}));
-  return {available:true,status:'documented',date,consultationDate:asOf(day(care.consultation_date),bounds)?care.consultation_date:null,title:text(care.title)||'Acompanhamento da consulta',source:source(document),inPeriod:inside(date,bounds),followups,pending:followups.filter(item=>!item.resolved),pendingCount:followups.filter(item=>!item.resolved).length,products,baseline,temporalContext:`Situação conforme documento de ${fmtDate(date)}; atualização posterior não confirmada.`};
+  const nutritionPlanPending=followups.some(item=>item.id==='nutrition_plan'&&!item.resolved);
+  return {available:true,status:'documented',date,consultationDate:asOf(day(care.consultation_date),bounds)?care.consultation_date:null,title:text(care.title)||'Acompanhamento da consulta',source:source(document),inPeriod:inside(date,bounds),followups,pending:followups.filter(item=>!item.resolved),pendingCount:followups.filter(item=>!item.resolved).length,nutritionPlanPending,products,baseline,temporalContext:`Situação conforme documento de ${fmtDate(date)}; atualização posterior não confirmada.`};
 }
 function protocolContext(data,status,bounds){
   const domains=['treatments','regimens','docs'],availableDomains=domains.filter(key=>status[key]==='ready'),available=availableDomains.length>0;
@@ -140,9 +156,12 @@ function protocolContext(data,status,bounds){
     return {...latest,id:`protocol:${name}`,kind:'protocol',events:latestEvents,eventLabel:distinct(latestEvents.map(event=>event.eventLabel)).join(' · '),eventCount:history.length,inPeriodCount:history.filter(event=>event.inPeriod).length,temporalContext:latest.inPeriod?'Última ocorrência no período':'Última ocorrência antes do período',currentUseConfirmed:false};
   });
   if(status.regimens==='ready')for(const row of list(data.regimens)){
-    const date=day(row.document_date)||day(row.effective_from)||day(row.start_date),name=text(row.medication)||'Protocolo cadastrado';
+    const confirmedStart=row.started_by_user_confirmation===true?day(row.start_date):null;
+    const date=day(row.document_date)||day(row.effective_from)||confirmedStart,name=text(row.medication)||'Protocolo cadastrado';
     if((date&&!asOf(date,bounds))||names.includes(name))continue;
-    items.push({id:text(row.source_record_id)||`regimen:${name}`,kind:'regimen',name,title:name,date,type:'regimen',eventType:'regimen',eventLabel:'Cadastro de protocolo',source:source(row),sourceFile:text(row.source_file)||null,inPeriod:date?inside(date,bounds):false,temporalContext:date?(inside(date,bounds)?'Cadastro no período':'Cadastro anterior ao período'):'Cadastro sem data; vigência no período não confirmada',events:[],eventCount:0,inPeriodCount:0,currentUseConfirmed:false});
+    const recordedStatus=text(row.recorded_status),startDate=asOf(confirmedStart,bounds)?confirmedStart:null;
+    const eventLabel=startDate?'Início relatado; contexto documentado':recordedStatus==='planned_start_unconfirmed'?'Plano documentado · início não registrado':recordedStatus.startsWith('documented_')?'Plano documentado · atualização de uso não confirmada':'Cadastro de protocolo';
+    items.push({id:text(row.source_record_id)||`regimen:${name}`,kind:'regimen',name,title:name,date,type:'regimen',eventType:'regimen',eventLabel,recordedStatus:recordedStatus||null,startDate,source:source(row),sourceFile:text(row.source_file)||null,inPeriod:date?inside(date,bounds):false,temporalContext:day(row.document_date)?`Documento de ${fmtDate(date)}; não é data de início de uso`:date?(inside(date,bounds)?'Cadastro no período':'Cadastro anterior ao período'):'Cadastro sem data; vigência no período não confirmada',events:[],eventCount:0,inPeriodCount:0,currentUseConfirmed:false});
   }
   const documents=status.docs==='ready'?list(data.docs).map(row=>documentItem(row,bounds)).filter(Boolean).sort((a,b)=>b.date.localeCompare(a.date)||a.id.localeCompare(b.id)):[];
   const care=status.docs==='ready'?careContext(list(data.docs),bounds):{available:false,status:status.docs||'unavailable',date:null,followups:[],pending:[],products:[],baseline:[]};
@@ -178,6 +197,7 @@ export function dashboardGuidance(data={},status={},dashboard={},context={}){
   const goals={available:status.goals==='ready',status:status.goals||'unavailable',water:goalComparison(data,status,dashboard,'water',bounds,today),protein:goalComparison(data,status,dashboard,'protein',bounds,today),documentedWater:documentedWaterReferenceForDate(data.waterReferences,bounds.end,status.waterReferences)};
   if(goals.documentedWater)goals.documentedWater={...goals.documentedWater,unit:'mL/dia',isDailyTarget:false,context:'Referência documental separada. Data de atualização do documento; início clínico não explicitado. Não é meta diária confirmada.'};
   const protocols=protocolContext(data,status,bounds);
-  const insights=[nutritionInsight(goals.water,dashboard,bounds),nutritionInsight(goals.protein,dashboard,bounds),careInsight(protocols),laboratoryInsight(data,status,bounds,context),trainingInsight(context,bounds)].filter(Boolean).slice(0,4);
+  const nutritionContext={documentedWater:goals.documentedWater,care:protocols.care};
+  const insights=[nutritionInsight(goals.water,dashboard,bounds,nutritionContext),nutritionInsight(goals.protein,dashboard,bounds,nutritionContext),careInsight(protocols),laboratoryInsight(data,status,bounds,context),trainingInsight(context,bounds)].filter(Boolean).slice(0,4);
   return {protocols,insights,goals,bounds,contextOnly:true};
 }

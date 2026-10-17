@@ -184,3 +184,55 @@ test('Latest same-day protocol documents are preserved and care ambiguity never 
   const result=run({docs},dashboard({mode:'period'}));
   assert.equal(result.protocols.items.length,2);assert.equal(result.protocols.care.available,false);assert.equal(result.protocols.care.status,'ambiguous');assert.equal(result.insights.some(item=>item.id==='care-followup'),false);
 });
+
+test('Historical numeric references remain visible with date and source, never as effective targets',()=>{
+  const row={...historical(),notes:JSON.stringify({type:'historical_protocol',documented_on:'2025-03-10',current_validity:'unconfirmed',source:'Synthetic archived plan',protein_rule:'gt'})};
+  const result=run({goals:[row]},dashboard({protein:[point(today,90)],water:[point(today,1200)]}));
+  assert.deepEqual(result.goals.protein.current.reference,{value:160,unit:'g',documentedOn:'2025-03-10',source:'Synthetic archived plan',rule:'gt',isDailyTarget:false,currentValidity:'unconfirmed'});
+  assert.match(insight(result,'protein').text,/mais de 160 g\/dia/);assert.match(insight(result,'protein').text,/10\/03\/2025/);
+  assert.match(insight(result,'protein').evidence,/Synthetic archived plan/);assert.doesNotMatch(insight(result,'protein').text,/Revise o plano com seu profissional|alcança a meta|abaixo da meta/);
+  assert.equal(result.goals.protein.target,null);assert.equal(result.goals.protein.delta,null);assert.equal(result.goals.protein.count,0);
+  assert.equal(result.goals.water.current.reference.value,3000);assert.equal(result.goals.water.target,null);
+});
+
+test('Historical references obey latest-version ambiguity, cleared values and documentary dates',()=>{
+  const old=historical();
+  for(const goals of [[old,{...old}],[old,target('2025-03-19',null,null)],[old,{...historical(),effective_from:'2025-03-19',notes:JSON.stringify({type:'historical_protocol',source:'Synthetic newer source',documented_on:'2025-03-25'})}]]){
+    const result=run({goals});
+    assert.equal(result.goals.protein.current.reference??null,null);assert.doesNotMatch(insight(result,'protein').text,/160 g\/dia/);assert.equal(result.goals.protein.target,null);
+  }
+  for(const value of [true,0,-1,2001])assert.equal(run({goals:[{...old,protein_g:value}]}).goals.protein.current.reference,null);
+});
+
+test('Awaited nutrition plan is explained from the latest dated follow-up, without inventing a new target',()=>{
+  const docs=[{document_date:'2025-03-18',document_type:'care_followup',source:'Synthetic visit',care_context:{schema_version:1,followups:[{key:'nutrition_plan',label:'Receive nutrition plan',resolved:false}]}}];
+  const result=run({goals:[historical()],docs},dashboard({protein:[point(today,90)]}));
+  const item=insight(result,'protein');assert.equal(item.title,'Proteína: plano alimentar aguardado');assert.match(item.text,/18\/03\/2025/);assert.match(item.text,/160 g\/dia/);assert.match(item.text,/plano alimentar como aguardado/);assert.equal(item.action.route,'tratamentos');assert.equal(result.goals.protein.target,null);
+  assert.doesNotMatch(insight(run({goals:[historical()],docs},dashboard({date:'2025-03-17'})),'protein').text,/plano alimentar como aguardado/);
+  docs[0].care_context.followups[0].resolved=true;
+  assert.doesNotMatch(insight(run({goals:[historical()],docs}),'protein').text,/plano alimentar como aguardado/);
+  docs[0].care_context.followups[0].resolved=false;
+  assert.doesNotMatch(insight(run({goals:[historical()],docs},dashboard(),{...status,docs:'error'}),'protein').text,/plano alimentar como aguardado/);
+});
+
+test('New water document is identified while the historical reference cannot become a daily goal',()=>{
+  const result=run({goals:[historical()],waterReferences:[waterDocument()]},dashboard({water:[point(today,1700)]}));
+  const item=insight(result,'water');assert.equal(item.title,'Água: referência no plano');assert.match(item.text,/3\.000 mL\/dia como base/);assert.match(item.text,/data de início não está explícita/);assert.match(item.evidence,/Synthetic prescription.pdf, página 3/);assert.match(item.evidence,/Referência histórica/);assert.equal(result.goals.water.target,null);assert.equal(result.goals.water.count,0);assert.equal(result.goals.water.delta,null);
+});
+
+test('Application alias is descriptive and never confirms current use or a dose',()=>{
+  const result=run({treatments:[{source_record_id:'synthetic-application',event_date:'2025-03-19',medication:'Synthetic protocol',event_type:'application',source:'Synthetic diary'}]},dashboard({mode:'period'}));
+  const item=result.protocols.items[0];assert.equal(item.eventLabel,'Aplicação registrada');assert.equal(item.eventType,'application');assert.equal(item.currentUseConfirmed,false);assert.equal(Object.hasOwn(item,'dose'),false);
+});
+
+test('Regimen documentary dates and statuses remain separate from explicitly confirmed start dates',()=>{
+  const regimen={source_record_id:'synthetic-plan',medication:'Synthetic plan item',document_date:'2025-03-17',recorded_status:'planned_start_unconfirmed',start_date:'2025-03-18',started_by_user_confirmation:false,source:'Synthetic document'};
+  const item=run({regimens:[regimen]},dashboard({mode:'period'})).protocols.items[0];
+  assert.equal(item.date,'2025-03-17');assert.equal(item.startDate,null);assert.equal(item.eventLabel,'Plano documentado · início não registrado');assert.match(item.temporalContext,/não é data de início/);assert.equal(item.currentUseConfirmed,false);
+  const confirmed=run({regimens:[{...regimen,started_by_user_confirmation:true}]}).protocols.items[0];
+  assert.equal(confirmed.date,'2025-03-17');assert.equal(confirmed.startDate,'2025-03-18');assert.match(confirmed.eventLabel,/Início relatado/);assert.equal(confirmed.currentUseConfirmed,false);
+  for(const value of [false,'true',null])assert.equal(run({regimens:[{...regimen,started_by_user_confirmation:value}]}).protocols.items[0].startDate,null);
+  assert.equal(run({regimens:[{...regimen,started_by_user_confirmation:true,start_date:'2025-03-25'}]}).protocols.items[0].startDate,null);
+  assert.equal(run({regimens:[{...regimen,document_date:'2025-03-25'}]}).protocols.items.length,0);
+  const undated=run({regimens:[{...regimen,document_date:null}]}).protocols.items[0];assert.equal(undated.date,null);assert.equal(undated.startDate,null);
+});
