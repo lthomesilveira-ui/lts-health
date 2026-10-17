@@ -195,6 +195,11 @@ export async function runRenderTests(){
   const conflictingEvidence=makeDashboardFixture();conflictingEvidence.data.workoutEvidence=['Synthetic A','Synthetic B'].map(source_name=>({source_record_id:'synthetic-conflicting-evidence',workout_source_record_id:conflictingEvidence.data.workouts[1].source_record_id,workout_date:conflictingEvidence.date(1),source_name,evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}));assert.match(panel(renderHealthDashboard(conflictingEvidence.data,conflictingEvidence.status,{},conflictingEvidence.today),'training'),/vínculos de telemetria conflitantes/);
   const qualifiers=makeDashboardFixture();qualifiers.data.sets.forEach(row=>{row.reps_raw='8+2';row.reps_numeric=8;row.weight=4;row.weight_unit='plate_index';});
   const qualifiedTraining=panel(renderHealthDashboard(qualifiers.data,qualifiers.status,{},qualifiers.today),'training');assert.match(qualifiedTraining,/8\+2 repetições registradas/);assert.match(qualifiedTraining,/índice de placa/);
+  for(const [weight,expected] of [[40,'40 kg'],[4.125,'4,125 kg'],[0.00001,'0,00001 kg']]){
+    const precision=makeDashboardFixture();precision.data.sets.forEach(row=>{row.weight=weight;row.weight_unit='kg';});
+    const text=panel(renderHealthDashboard(precision.data,precision.status,{},precision.today),'training');
+    assert.ok(text.includes(expected),'recorded load retains significant decimal precision');assert.doesNotMatch(text,/40,0000000000 kg/,'no artificial trailing decimal zeros');
+  }
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));
