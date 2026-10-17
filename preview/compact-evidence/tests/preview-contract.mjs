@@ -84,7 +84,7 @@ const manifest={
     "src/health-dashboard-labs.js": "61b333c0c708c1beef2f31d3b80def5ac5b56fea95d8c64f62b6410a8d797465",
     "src/health-dashboard-model.js": "3fa97ff1f28dff85b96cdf888622622bd1057372d44d025ca4503393f57dc7f8",
     "src/health-dashboard-training.js": "548f883e15132a7ea2416d4c0c7a7bd81761dcd7a3d476c0295c518a984b2613",
-    "src/health-dashboard.js": "f6a095465d7591da99f07fcd9f36cee544df2e8a9a0238450ce0f2091b483773",
+    "src/health-dashboard.js": "c3a3954db59b3d4e883e4d4f3f51862ef43944fafd6e74efabb5eb40507f8f66",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
     "src/history-tools.js": "a5308e26426b8681b55515a6434f67dc94a7c532b5225e904e619d7a442d9e88",
     "src/home-cockpit.js": "f6da2e0697124d605a875393921839564e55f2b426fdef81e63affcfa8943dcc",

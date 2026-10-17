@@ -200,6 +200,7 @@ export async function runRenderTests(){
     const text=panel(renderHealthDashboard(precision.data,precision.status,{},precision.today),'training');
     assert.ok(text.includes(expected),'recorded load retains significant decimal precision');assert.doesNotMatch(text,/40,0000000000 kg/,'no artificial trailing decimal zeros');
   }
+  const candidateFixture=makeDashboardFixture();candidateFixture.data.sourceMetrics.forEach(row=>{row.canonical_status='candidate';});const candidateHtml=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{},candidateFixture.today);assert.match(candidateHtml,/Recebido; ainda não comparado com a origem/);assert.doesNotMatch(candidateHtml,/Origem ainda não validada/);
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));
