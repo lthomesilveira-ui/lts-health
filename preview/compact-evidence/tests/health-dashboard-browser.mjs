@@ -145,13 +145,20 @@ try{
       for(const [section,selector] of [['metrics','.healthMetricGrid'],['guidance','.healthGuidance'],['training','[data-study-domain="training"]'],['labs','[data-study-domain="labs"]'],['protocols','[data-study-domain="protocols"]'],['body','[data-study-domain="body"]']])await capture(page,`${name}-${section}`,selector);
       const training=page.locator('[data-study-domain="training"]'),laboratory=page.locator('[data-study-domain="labs"]'),protocols=page.locator('[data-study-domain="protocols"]');
       assert.deepEqual(await training.locator('.healthTrainingCounts strong').evaluateAll(nodes=>nodes.map(node=>Number(node.firstChild.textContent.trim()))),sparse?[0,0]:[3,2]);
-      if(!sparse){await openDetails(page,'[data-disclosure="dashboard-groups"]');assert.match(await training.innerText(),/Peito · 3 sessões em 2 dias/);assert.match(await training.innerText(),/Pernas: sem registro nesta janela/);}
+      assert.match(await training.innerText(),/Registros Polar/);
+      assert.match(await training.innerText(),/Os totais não são somados/);
+      assert.match(await laboratory.innerText(),/Última coleta:/);
+      if(sparse)assert.match(await training.innerText(),/último conhecido, fora do período/);
+      if(!sparse){assert.match(await training.innerText(),/9 exercícios/);assert.match(await training.innerText(),/9 séries registradas/);await openDetails(page,'[data-disclosure="dashboard-groups"]');assert.match(await training.innerText(),/Peito · 3 sessões em 2 dias/);assert.match(await training.innerText(),/Pernas: sem registro nesta janela/);}
+      const exerciseDetail=training.locator('details[data-disclosure^="dashboard-workout-"]').first();
+      if(await exerciseDetail.count()){await exerciseDetail.locator(':scope > summary').click();assert.ok(await exerciseDetail.locator('.healthExercise').count()>0);await quality(page,`${name}/exercise-detail`);await capture(page,`${name}-training-exercises`,'.healthExercise');}
+      await capture(page,`${name}-training-polar`,'.healthPolar');
       assert.match(await laboratory.innerText(),/Último resultado conhecido · fora do período/);
       assert.match(await laboratory.innerText(),/aproximou da referência/);
       const firstLab=laboratory.locator('[data-dashboard-lab-item]').first();
       await firstLab.locator('details > summary').click();
       for(const age of [20,60])assert.ok((await firstLab.innerText()).includes(`${dateLabel(fixture.date(age))} · referência: 10 a 18`));
-      assert.match(await protocols.innerText(),/Histórico não confirma uso atual/);
+      assert.match(await protocols.innerText(),/Cadastro de plano não confirma início ou uso atual/);
       assert.ok(!(await protocols.innerText()).includes('Synthetic today protocol'));
       await openDetails(page,'[data-disclosure="dashboard-metric-water"]');
       const sourceControl=page.locator('[data-dashboard-source="water"]');

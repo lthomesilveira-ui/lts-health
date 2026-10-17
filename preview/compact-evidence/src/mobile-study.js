@@ -40,7 +40,7 @@ function reading(b){
 export function bodyCard(b){
  const rows=Object.values(b.metrics);
  if(!b.latest)return card('body','Corpo','',empty(b.text)+button('bio','Ver avaliações originais')); 
- if(!b.pair)return card('body','Corpo',date(b.latest.date),rows.map(r=>`<div class="studySingle"><b>${esc(r.label)}</b><strong>${value(r.latest,'kg')}</strong></div>`).join('')+`<p class="studyMeta">Uma avaliação nesta janela.</p>`+detail('Avaliação original',`<p>${esc(b.context)}</p>${button('bio','Abrir avaliação')}`,'body'));
+ if(!b.pair)return card('body','Corpo',date(b.latest.date),rows.map(r=>`<div class="studySingle"><b>${esc(r.label)}</b><strong>${value(r.latest,'kg')}</strong></div>`).join('')+`<p class="studyMeta">${esc(b.periodLabel||'Uma avaliação nesta janela.')}</p>`+detail('Avaliação original',`<p>${esc(b.context)}</p>${button('bio','Abrir avaliação')}`,'body'));
  return card('body','Corpo','Antes → depois',
  `<div class="studyPairDates"><span></span><span>${date(b.first.date).slice(0,5)}</span><span>${date(b.latest.date).slice(0,5)}</span><span>Diferença</span></div>${rows.map(r=>`<div class="studyPair ${r.key}"><b>${esc(r.label)}</b><span>${value(r.first,'kg')}</span><strong>${value(r.latest,'kg')}</strong><em>${signed(r.delta)}</em></div>`).join('')}`+detail('Avaliações e contexto',`<p>${esc(b.context)}</p>${button('bio','Abrir avaliações originais')}`,'body'));
 }

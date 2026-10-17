@@ -81,8 +81,8 @@ test('clear numeric ranges parse decimal comma and negative bounds conservativel
   const comma=model({labs:[lab('2025-04-20',2.5,{result_raw:'2,5',reference_range:'2,2 a 8,2'})]}).labs.items[0];assert.equal(comma.referencePosition,'within');
   const negative=model({labs:[lab('2025-04-20',-2,{reference_range:'-5 a -1'})]}).labs.items[0];assert.equal(negative.referencePosition,'within');
 });
-test('sex, age, multiple ranges, thresholds with advice and ambiguous separators are not parsed',()=>{
-  for(const reference of ['Homens: 2 a 8','Mulheres: 2 a 8','18 a 60 anos: 2 a 8','2 a 8; idosos: 3 a 9','Desejável: < 8','2 a 8 mg/dL','1.000 a 2.000','2 a 8 (em jejum)','2 a 8 / 3 a 9','2 a 8; resultado confirmado após diluição']){
+test('multiple populations, advice, unit mismatches and ambiguous separators are not parsed',()=>{
+  for(const reference of ['Homens: 2 a 8; Mulheres: 3 a 9','18 a 60 anos: 2 a 8; idosos: 3 a 9','2 a 8; idosos: 3 a 9','Desejável: < 8','2 a 8 mg/dL','1.000 a 2.000','2 a 8 (em jejum)','2 a 8 / 3 a 9','2 a 8; resultado confirmado após diluição; alvo < 4']){
     const item=pair(10,9,{reference_range:reference});assert.equal(item.referencePosition,'unknown',reference);assert.equal(item.rangeComparable,false);
     assert.equal(item.label,'sem comparação');assert.equal(item.attention,false);assert.equal(item.reference,reference);
   }

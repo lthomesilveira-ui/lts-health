@@ -1,17 +1,13 @@
-# Isolated Health dashboard preview
+# Health read-only preview
 
-Build health-dashboard-20261017.64. This authenticated, read-only preview keeps production /v2/ unchanged.
+Build `health-dashboard-20261017.65`. Production `/v2` and the authentication boundary remain unchanged.
 
-## Dashboard
-- Day mode with Today or any historical date; today is explicitly partial.
-- Period mode: 7, 30, 60 and 90 complete days, six calendar months, one calendar year, and received history. Periods end yesterday. Every dashboard section uses the same bounds; older laboratory/protocol context keeps its actual date and outside-period label.
-- Water, protein, ingested energy, active energy, explicit total expenditure, steps and sleep retain independent source identities. Means show observed days over calendar days. Unknown values never become zero, and different device/source totals are never added.
-- Comparisons require the same source, unit, eligible-day positions, at least five days and 70% coverage in both equal-duration windows. Known partials and ambiguous duplicates are excluded. Combined device provenance remains identified and cannot support a trend until deduplication is established.
-- Recorded training sessions, duration coverage, named muscle groups and historical gaps remain distinct from exercise/set counts or actual adherence.
-- Laboratory values preserve raw qualifiers, precision, reference ranges and methods. Reference movement is descriptive and does not assert clinical improvement or diagnosis.
-- Documented protocols retain dates without implying present use. Water/protein guidance pairs registered targets with the exact same observed days; historical or documentary-only references do not become current targets.
+The approved daily/period card layout is preserved. This revision restores source-backed context within those cards:
+- Detailed training sessions, exercise and set counts, recorded set qualifiers, and explicit linked telemetry. Polar device records remain separate and are never added to canonical session counts.
+- Latest laboratory collection separated from older marker histories, current reference position distinct from historical comparability, and human-readable reasons for unavailable comparisons. Only unambiguous report ranges are classified.
+- Documentary dates for protocol entries, recorded applications, historical targets distinguished from current goals, and latest-known body assessments clearly outside the selected window.
 
-## Isolation and validation
-The preview uses existing Supabase session/RLS and the unchanged publishable client configuration. No private data, credentials, migration or new access grant is committed. The classic preview guard precedes modules, permits authentication/read queries and blocks mutations, RPC and edge functions. This is not a replacement for server authorization.
+All automated fixtures are synthetic. No real health records, documents or screenshots are committed. The preview blocks data writes and integration actions.
 
-Tests use synthetic fixtures only. The dashboard browser gate covers 320, 393, 1180 and 1440 pixel viewports, period/day navigation, origins, accessible day detail, context, route return and empty/error states. Existing domain-history, interval, analytic and auth/guard gates remain. Screenshots from these tests do not establish real-data or physical iPhone/Safari validation.
+## Validation
+Run `.github/workflows/health-compact-preview.yml`: exact runtime hashes, source/analytical contracts, signed-out and read-only boundaries, complete histories, interval navigation and responsive browser tests. The browser suite covers full and sparse data at 320, 393, 1180 and 1440 CSS pixels, day/period/source changes and route return.

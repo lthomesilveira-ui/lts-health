@@ -34,12 +34,13 @@ export function makeDashboardFixture(today=FIXED_TODAY,{sparse=false}={}){
     data.workouts.push({source_record_id:id,workout_date:date(age),workout_type:`Synthetic session ${index}`,location:'Synthetic gym',source:'Synthetic training log',is_canonical:true,record_status:'validated',duration_minutes:index===2?null:40,muscle_groups:[group]});
     for(let exercise=0;exercise<3;exercise++){
       const eid=`${id}-exercise-${exercise}`;
-      data.exercises.push({source_record_id:eid,workout_source_record_id:id,workout_date:date(age),exercise:`Synthetic exercise ${exercise}`,order_index:exercise+1,machine:'Synthetic equipment',muscle_group:exercise===2?'Ombros':group});
+      data.exercises.push({source_record_id:eid,workout_source_record_id:id,workout_date:date(age),exercise:`Synthetic exercise ${exercise} — equipamento com descrição estendida`,order_index:exercise+1,machine:'Synthetic equipment',muscle_group:exercise===2?'Ombros':group});
       data.sets.push({source_record_id:`${eid}-set`,workout_source_record_id:id,exercise_source_record_id:eid,workout_date:date(age),set_index:1,phase:'working',weight:40,reps_numeric:8,weight_unit:'kg'});
     }
   });
   const lab=(marker,age,value,reference='10 a 18',method='Synthetic method')=>({source_record_id:`synthetic-lab-${marker}-${age}`,collection_date:date(age),report_date:date(age),biomarker:marker,result_numeric:value,result_raw:String(value),unit:'u',laboratory:'Synthetic laboratory',source:'Synthetic lab report',method,reference_range:reference});
   data.labs=[lab('Synthetic A marker',60,22),lab('Synthetic A marker',20,16),lab('Synthetic B changed reference',60,20,'10 a 18'),lab('Synthetic B changed reference',20,15,'5 a 20'),lab('Synthetic C unknown method',60,12,'10 a 18',''),lab('Synthetic C unknown method',20,13,'10 a 18','')];
+  data.polarSessions=(sparse?[0,40]:[0,0,1,2,4,10,20,40]).map((age,index)=>({source_record_id:`synthetic-polar-${index}`,workout_date:date(age),recorded_start:`${date(age)}T${String(8+index).padStart(2,'0')}:00:00Z`,session_name:`Synthetic Polar session ${index}`,duration_minutes:index===2?null:35,heart_rate_avg:120,heart_rate_max:160,source_name:'Synthetic Polar'}));
   data.treatments=[{source_record_id:'synthetic-protocol-old',event_date:date(60),medication:'Synthetic protocol',event_type:'reported',source:'Synthetic protocol history'},{source_record_id:'synthetic-protocol-recent',event_date:date(2),medication:'Synthetic protocol',event_type:'planned',source:'Synthetic protocol history'},{source_record_id:'synthetic-protocol-today',event_date:today,medication:'Synthetic today protocol',event_type:'reported',source:'Synthetic protocol history'}];
   data.regimens=[{source_record_id:'synthetic-undated-regimen',medication:'Synthetic undated context',source:'Synthetic regimen register'}];
   data.docs=[{source_record_id:'synthetic-care-document',document_date:date(3),document_type:'care_followup',title:'Synthetic follow-up document',source:'Synthetic care report',care_context:{schema_version:1,title:'Synthetic care context',followups:[{key:'synthetic-pending',label:'Synthetic documented follow-up',status:'Registro pendente',resolved:false}]}}];
@@ -123,14 +124,23 @@ export async function runRenderTests(){
       assert.equal(context.training.groups.find(group=>group.label==='Ombros').sessions,3);
       assert.match(panel(html,'training'),/3<span>sessões registradas/);assert.match(panel(html,'training'),/2<span>dias com treino registrado/);
       assert.match(panel(html,'training'),/Pernas: sem registro nesta janela/);
+      assert.match(panel(html,'training'),/9 exercícios/);
+      assert.match(panel(html,'training'),/9 séries registradas/);
+      assert.match(panel(html,'training'),/Registros Polar/);
+      assert.match(panel(html,'training'),/Synthetic Polar session/);
+      assert.match(panel(html,'training'),/Os totais não são somados/);
+      assert.match(panel(html,'training'),/Synthetic exercise 0/);
+    }else{
+      assert.match(panel(html,'training'),/último conhecido, fora do período/);
+      assert.match(panel(html,'body'),/Última avaliação conhecida · fora do período/);
     }
     const labs=panel(html,'labs');
-    assert.match(labs,/Último resultado conhecido · fora do período/);assert.match(labs,/aproximou da referência/);assert.match(labs,/Referência: 10 a 18/);
+    assert.match(labs,/Último resultado conhecido · fora do período/);assert.match(labs,/aproximou da referência/);assert.match(labs,/Referência: 10 a 18/);assert.match(labs,/Última coleta:/);assert.match(labs,/resultados recebidos em 2 coletas/);
     for(const age of [20,60])assert.ok(labs.includes(dateLabel(f.date(age))));
     assert.equal(context.labs.items.find(item=>item.biomarker==='Synthetic B changed reference').comparable,false);
     assert.equal(context.labs.items.find(item=>item.biomarker==='Synthetic C unknown method').comparable,false);
     const protocols=panel(html,'protocols');
-    assert.match(protocols,/Synthetic protocol/);assert.match(protocols,/Histórico não confirma uso atual/);assert.doesNotMatch(protocols,/Synthetic today protocol/);
+    assert.match(protocols,/Synthetic protocol/);assert.match(protocols,/Cadastro de plano não confirma início ou uso atual/);assert.doesNotMatch(protocols,/Synthetic today protocol/);
     const past=renderHealthDashboard(f.data,f.status,{dashboardMode:'day',dashboardDate:f.date(40)},f.today);
     assert.ok(panel(past,'labs').includes(dateLabel(f.date(60))));assert.ok(!panel(past,'labs').includes(dateLabel(f.date(20))),'historical day hides later lab collections');
     assert.ok(!panel(past,'protocols').includes(dateLabel(f.date(2))),'historical day hides later protocol events');
@@ -181,6 +191,10 @@ export async function runRenderTests(){
   assert.match(renderedLabs,/>4(?:[.,]0)? u</,'first ambiguous observation is readable');
   assert.match(renderedLabs,/>9(?:[.,]0)? u</,'second ambiguous observation is readable');
   assert.doesNotMatch(renderedLabs,/Diferença registrada/,'ambiguous collection never gets a fabricated delta');
+  const missingEvidence=makeDashboardFixture();const evidenceWarning=panel(renderHealthDashboard(missingEvidence.data,{...missingEvidence.status,workoutEvidence:'error'},{},missingEvidence.today),'training');assert.match(evidenceWarning,/vínculos de telemetria não carregaram/);assert.match(evidenceWarning,/9 exercícios/);assert.match(evidenceWarning,/Registros Polar/);
+  const conflictingEvidence=makeDashboardFixture();conflictingEvidence.data.workoutEvidence=['Synthetic A','Synthetic B'].map(source_name=>({source_record_id:'synthetic-conflicting-evidence',workout_source_record_id:conflictingEvidence.data.workouts[1].source_record_id,workout_date:conflictingEvidence.date(1),source_name,evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}));assert.match(panel(renderHealthDashboard(conflictingEvidence.data,conflictingEvidence.status,{},conflictingEvidence.today),'training'),/vínculos de telemetria conflitantes/);
+  const qualifiers=makeDashboardFixture();qualifiers.data.sets.forEach(row=>{row.reps_raw='8+2';row.reps_numeric=8;row.weight=4;row.weight_unit='plate_index';});
+  const qualifiedTraining=panel(renderHealthDashboard(qualifiers.data,qualifiers.status,{},qualifiers.today),'training');assert.match(qualifiedTraining,/8\+2 repetições registradas/);assert.match(qualifiedTraining,/índice de placa/);
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));
