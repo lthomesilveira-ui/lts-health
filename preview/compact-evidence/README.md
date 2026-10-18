@@ -1,8 +1,8 @@
 # Health read-only preview
 
-Build `health-dashboard-20261017.65`. Production `/v2` and the authentication boundary remain unchanged.
+Build `health-dashboard-20261018.67`. Production `/v2` and the authentication boundary remain unchanged.
 
-The approved daily/period card layout is preserved. This revision restores source-backed context within those cards:
+The approved daily/period card layout is preserved. This revision adds a tightly bounded, read-only interpretation of reviewed hemoglobin/hematocrit table footnotes. Original raw values remain visible, stored data is unchanged, and other markers, censored values, aliases, methods and references retain their existing boundaries. The prior contextual improvements remain:
 - Detailed training sessions, exercise and set counts, recorded set qualifiers, and explicit linked telemetry. Polar device records remain separate and are never added to canonical session counts.
 - Latest laboratory collection separated from older marker histories, current reference position distinct from historical comparability, and human-readable reasons for unavailable comparisons. Only unambiguous report ranges are classified.
 - Documentary dates for protocol entries, recorded applications, historical targets distinguished from current goals, and latest-known body assessments clearly outside the selected window.
