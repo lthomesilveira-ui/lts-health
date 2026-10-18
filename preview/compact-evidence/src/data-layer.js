@@ -10,17 +10,18 @@ const routeDomains={
   evolucao:[],
   analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences'],
   tratamentos:['treatments','regimens','docs'],
-  hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','polarSessions'],
+  hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
-  nutricao:['nutrition','meals','sourceMetrics','goals','waterReferences'],
+  nutricao:['nutrition','meals','sourceMetrics','goals','waterReferences','nutritionPlans'],
   dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens','polarSessions']
 };
 
-export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb){
+export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb,filters={}){
   const pageSize=1000,rows=[];
   for(let from=0;;from+=pageSize){
     let q=client.from(table).select(select).range(from,from+pageSize-1);
+    for(const [column,value] of Object.entries(filters))q=q.eq(column,value);
     if(orderColumn)q=q.order(orderColumn,{ascending});
     if(tieBreaker&&tieBreaker!==orderColumn)q=q.order(tieBreaker,{ascending:true});
     const{data,error}=await q;
@@ -32,7 +33,12 @@ export async function fetchAll(table,select='*',orderColumn=null,ascending=false
   return rows;
 }
 
+export function fetchNutritionPlans(client=sb){
+  return fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,nutrition_plan:source_payload->nutrition_plan_ui','document_date',false,'source_record_id',client,{document_type:'nutrition_plan'});
+}
+
 const loaders={
+  nutritionPlans:()=>fetchNutritionPlans(),
   waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,water_reference:source_payload->water_reference_ui,clinical_baseline:source_payload->clinical_baseline','document_date',false),
   goals:()=>fetchAll('health_personal_goals','effective_from,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,notes','effective_from',true,null),
   polarSessions:()=>fetchAll('health_polar_sessions','source_record_id,workout_date,recorded_start,session_name,duration_minutes,heart_rate_avg,heart_rate_max,source_name','workout_date',false),
@@ -53,7 +59,7 @@ const loaders={
   meals:()=>fetchAll('health_nutrition_meals','source_record_id,meal_date,meal_name,calories_kcal,protein_g,carbs_g,fat_g,source,source_file,confidence,record_status','meal_date',false),
   activity:()=>fetchAll('health_activity_records','source_record_id,activity_date,activity_name,activity_type,calories_kcal,duration_minutes,steps,source,source_file,confidence,record_status,is_adjustment','activity_date',false),
   metrics:()=>fetchAll('health_metrics','source_record_id,measured_at,metric_type,value,unit,source,source_file,confidence,notes','measured_at',false),
-  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file,nutrition_review:source_payload->nutrition_review','metric_date',false)
+  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file,updated_at,nutrition_review:source_payload->nutrition_review','metric_date',false)
 };
 
 const backupLoaders={...loaders};
@@ -115,7 +121,7 @@ function enforceStructuredWorkoutBoundary(){
 }
 
 function setFixture(){
-  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens};state.errors={};state.domainStatus={};
+  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,nutritionPlans:[]};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
   if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
     state.data[fixtureError]=[];
@@ -189,7 +195,7 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[]};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[],nutritionPlans:[]};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);
