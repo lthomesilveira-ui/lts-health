@@ -27,7 +27,7 @@ const psqlEnv = {
 const fixture = readFileSync(new URL('./fixtures/nutrition-document-synthetic.sql', import.meta.url), 'utf8');
 const tables = ['health_documents', 'health_personal_goals', 'health_lab_results', 'health_medication_prescriptions', 'health_daily_nutrition', 'health_source_daily_metrics'];
 function run(sql, success = true) {
-  const result = spawnSync('psql', ['-X', '-v', 'ON_ERROR_STOP=1', '-At', '-q'], {
+  const result = spawnSync('psql', ['-X', '-v', 'ON_ERROR_STOP=1', '-v', 'VERBOSITY=terse', '-At', '-q'], {
     input: `SET timezone='UTC'; SET datestyle='ISO, YMD';\n${sql}`,
     env: psqlEnv, encoding: 'utf8', timeout: 45_000, maxBuffer: 8_000_000,
   });
@@ -52,9 +52,11 @@ function prepare() {
   return manifest;
 }
 function failWithoutChange(sql, errorPattern) {
+  assert.ok(errorPattern instanceof RegExp, 'Every rejection case must name its intended guard');
   const before = snapshot();
   const result = run(sql, false);
-  if (errorPattern) assert.match(result.stderr, errorPattern);
+  assert.doesNotMatch(result.stderr, /syntax error at|does not exist|could not connect|connection to server/, 'Compilation/connection failures are not successful guard tests');
+  assert.match(result.stderr, errorPattern);
   assert.deepEqual(snapshot(), before, 'Failure must roll back every synthetic data table');
 }
 function tamperEncodedManifest(sql, mutate) {
@@ -123,30 +125,30 @@ test('new source identity already used by another owner is rejected', () => {
 
 test('SQL independently rejects corrupted schema, identity, dates, hash, pages and clinical start', () => {
   const mutations = [
-    m => { m.newRow.document_type = 'medical_plan'; },
-    m => { m.newRow.user_id = syntheticOtherOwner; },
-    m => { m.newRow.source_file = ''; },
-    m => { m.newRow.document_date = '2025-02-30'; },
-    m => { m.newRow.checksum = 'f'.repeat(64); },
-    m => { m.newRow.source_payload.nutrition_plan_ui.source_record_id = 'synthetic:wrong'; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.documented_on = '2025-02-11'; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.received_on = '2025-02-30'; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.schema_version = 2; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.clinical_start = '2025-02-12'; },
-    m => { delete m.newRow.source_payload.nutrition_plan_ui.clinical_start; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.clinical_start_status = 'confirmed'; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.verification = null; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.verification.pages = [1, 1]; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.verification.pages = [1, 3]; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.daily_targets.protein_g.value = -1; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.daily_targets.water_ml.unit = 'g'; },
-    m => { m.newRow.source_payload.nutrition_plan_ui.daily_targets.fiber_g.pages = [3]; },
-    m => { m.newRow.source_record_id = "synthetic:new'; DROP TABLE public.health_documents; --"; },
-    m => { m.ownerUserId = "'; SELECT 1; --"; },
+    [m => { m.newRow.document_type = 'medical_plan'; }, /Invalid nutrition document metadata/],
+    [m => { m.newRow.user_id = syntheticOtherOwner; }, /Invalid nutrition document row fields/],
+    [m => { m.newRow.source_file = ''; }, /Missing nutrition document metadata/],
+    [m => { m.newRow.document_date = '2025-02-30'; }, /date\/time field value out of range/],
+    [m => { m.newRow.checksum = 'f'.repeat(64); }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.source_record_id = 'synthetic:wrong'; }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.documented_on = '2025-02-11'; }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.received_on = '2025-02-30'; }, /date\/time field value out of range/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.schema_version = 2; }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.clinical_start = '2025-02-12'; }, /Invalid or unbound nutrition plan projection/],
+    [m => { delete m.newRow.source_payload.nutrition_plan_ui.clinical_start; }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.clinical_start_status = 'confirmed'; }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.verification = null; }, /Invalid or unbound nutrition plan projection/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.verification.pages = [1, 1]; }, /Incomplete source verification/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.verification.pages = [1, 3]; }, /Invalid source verification page/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.daily_targets.protein_g.value = -1; }, /Invalid nutrition documentary target/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.daily_targets.water_ml.unit = 'g'; }, /Invalid nutrition documentary target/],
+    [m => { m.newRow.source_payload.nutrition_plan_ui.daily_targets.fiber_g.pages = [3]; }, /Invalid nutrition target page/],
+    [m => { m.newRow.source_record_id = "synthetic:new'; DROP TABLE public.health_documents; --"; }, /Invalid nutrition document metadata/],
+    [m => { m.ownerUserId = "'; SELECT 1; --"; }, /Invalid nutrition document manifest/],
   ];
-  for (const mutate of mutations) {
+  for (const [mutate, intendedGuard] of mutations) {
     const manifest = prepare();
-    failWithoutChange(tamperEncodedManifest(buildNutritionPlanInsertSql(manifest), mutate));
+    failWithoutChange(tamperEncodedManifest(buildNutritionPlanInsertSql(manifest), mutate), intendedGuard);
   }
 });
 

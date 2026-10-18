@@ -155,7 +155,7 @@ BEGIN
   FOREACH field_name IN ARRAY ARRAY['calories_kcal','protein_g','carbs_g','fat_g','fiber_g','water_ml'] LOOP
     IF jsonb_typeof(projection->'daily_targets'->field_name->'value') IS DISTINCT FROM 'number'
       OR (projection->'daily_targets'->field_name->>'value')::numeric <= 0
-      OR projection->'daily_targets'->field_name->>'unit' IS DISTINCT FROM CASE field_name WHEN 'calories_kcal' THEN 'kcal' WHEN 'water_ml' THEN 'mL' ELSE 'g' END
+      OR projection->'daily_targets'->field_name->>'unit' IS DISTINCT FROM (CASE field_name WHEN 'calories_kcal' THEN 'kcal' WHEN 'water_ml' THEN 'mL' ELSE 'g' END)
       OR jsonb_typeof(projection->'daily_targets'->field_name->'pages') IS DISTINCT FROM 'array'
       OR jsonb_array_length(projection->'daily_targets'->field_name->'pages') < 1
     THEN RAISE EXCEPTION 'Invalid nutrition documentary target'; END IF;

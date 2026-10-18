@@ -18,7 +18,10 @@ const executablePath=process.env.LTS_LOCAL_CHROMIUM_EXECUTABLE;
 assert.ok(!process.env.CI||!executablePath,'CI uses the pinned Playwright browser, without a local override');
 const dir=process.env.LTS_NUTRITION_PLAN_EVIDENCE_DIR||'nutrition-plan-visual';mkdirSync(dir,{recursive:true});
 const fields=nutritionPlanFields.map(field=>field.key),results=[];
-const format=value=>value.toLocaleString('pt-BR',{maximumFractionDigits:10});
+const format=value=>value.toLocaleString('pt-BR',{maximumSignificantDigits:21});
+const visuallyRounded=value=>value!=null&&Number(value.toLocaleString('en-US',{useGrouping:false,maximumFractionDigits:2}))!==value;
+const observedLabel=(value,unit,isDelta=false)=>value==null?'Sem dado':`${visuallyRounded(value)?'≈ ':''}${isDelta&&value>0?'+':''}${value.toLocaleString('pt-BR',{maximumFractionDigits:2})} ${unit}`;
+const exactLabel=(value,unit,isDelta=false)=>`${isDelta&&value>0?'+':''}${format(value)} ${unit}`;
 const sourceKey=label=>JSON.stringify(['nutrition',label.toLowerCase(),'canonical']);
 const injection='<img src="synthetic-invalid" onerror="globalThis.__planInjection=1">';
 
@@ -84,12 +87,30 @@ function expected(f,key,{source='Synthetic A food',waterSource=source,mode='peri
 async function assertPlan(page,f,ui={}){
   const card=page.locator('[data-nutrition-plan]');assert.equal(await card.getAttribute('data-plan-state'),'ready');
   assert.deepEqual(await card.locator('[data-plan-metric]').evaluateAll(nodes=>nodes.map(node=>node.dataset.planMetric)),fields);
-  for(const {key,unit} of nutritionPlanFields){
-    const metric=card.locator(`[data-plan-metric="${key}"]`),e=expected(f,key,ui),target=f.data.nutritionPlans.at(-1).nutrition_plan.daily_targets[key].value;
-    assert.equal(await metric.locator(':scope > div:nth-child(2) > b').innerText(),e.value==null?'Sem dado':`${format(e.value)} ${unit}`,`${key}: independent observed value, never summed with mirrors`);
+  const actual=await page.evaluate(async today=>{const {state}=await import('./src/core.js');const {nutritionPlanComparison}=await import('./src/nutrition-plan-comparison.js');return nutritionPlanComparison(state.data,state.domainStatus,state.ui,today);},FIXED_TODAY);
+  const precision=[];
+  for(const {key,label,unit} of nutritionPlanFields){
+    const metric=card.locator(`[data-plan-metric="${key}"]`),e=expected(f,key,ui),target=f.data.nutritionPlans.at(-1).nutrition_plan.daily_targets[key].value,raw=actual.metrics.find(metric=>metric.key===key),delta=e.value==null?null:e.value-target;
+    assert.equal(raw.value,e.value,`${key}: exact independent arithmetic remains unchanged by display rounding`);assert.equal(raw.target,target);assert.equal(raw.delta,delta);assert.equal(raw.percent,e.value==null?null:e.value/target*100);assert.equal(raw.days,e.count);assert.equal(raw.expectedDays,e.expectedDays);
+    const chosen=key==='water_ml'?(ui.waterSource||ui.source||'Synthetic A food'):(ui.source||'Synthetic A food');
+    assert.equal(raw.sourceKey,JSON.stringify(['nutrition',chosen.toLowerCase(),'canonical',...(key==='water_ml'?['ml']:[])]),`${key}: the chosen source is never pooled with its mirror or another origin`);
+    assert.equal(await metric.locator(':scope > div:nth-child(2) > b').innerText(),observedLabel(e.value,unit),`${key}: independently rounded observed label`);
     assert.match(await metric.innerText(),new RegExp(`${e.count}/${e.expectedDays} dias com valor elegível`),`${key}: own observed-day coverage`);
     assert.ok((await metric.locator(':scope > div:first-child').innerText()).includes(`Referência diária: ${format(target)} ${unit}`));
-    if(e.value!=null){const percentage=(e.value/target*100).toLocaleString('pt-BR',{maximumFractionDigits:1}),delta=e.value-target;assert.ok((await metric.innerText()).includes(`${percentage}% da referência`));assert.ok((await metric.innerText()).includes(`diferença ${delta>0?'+':''}${format(delta)} ${unit}`));}
+    if(e.value!=null){
+      const percentage=(e.value/target*100).toLocaleString('pt-BR',{maximumFractionDigits:1});assert.ok((await metric.innerText()).includes(`${percentage}% da referência`));assert.ok((await metric.innerText()).includes(`diferença ${observedLabel(delta,unit,true)}`));
+      const expectedTitles=[...(visuallyRounded(e.value)?[`Valor sem arredondamento: ${exactLabel(e.value,unit)}`]:[]),...(visuallyRounded(delta)?[`Valor sem arredondamento: ${exactLabel(delta,unit,true)}`]:[])];
+      assert.deepEqual(await metric.locator('[title]').evaluateAll(nodes=>nodes.map(node=>node.title)),expectedTitles,`${key}: rounded labels preserve exact values in tooltips`);
+      if(expectedTitles.length)precision.push(`${label}: ${exactLabel(e.value,unit)} · diferença ${exactLabel(delta,unit,true)}`);
+    }
+  }
+  const disclosure=card.locator('[data-disclosure="nutrition-plan-precision"]');
+  assert.equal(await disclosure.count(),precision.length?1:0,'precision disclosure exists exactly when a calculated value is visually rounded');
+  if(precision.length){
+    const wasOpen=await disclosure.evaluate(el=>el.open);await open(page,'nutrition-plan-precision');
+    assert.deepEqual(await disclosure.locator('li').allTextContents(),precision,'full numeric values and differences remain available without display rounding');
+    assert.match(await disclosure.innerText(),/≈ indica arredondamento visual para até duas casas decimais/);
+    if(!wasOpen)await disclosure.locator(':scope > summary').click();
   }
 }
 async function quality(page,label){

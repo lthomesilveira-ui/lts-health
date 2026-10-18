@@ -150,6 +150,24 @@ test('Source-metric timestamps are read independently from review exports and cr
   const model=compare(data);assert.equal(model.lastUpdatedAt,'2024-03-08T12:00:00Z');assert.equal(get(model,'protein_g').updatedAt,'2024-03-08T11:00:00Z');assert.equal(get(model,'water_ml').updatedAt,'2024-03-08T12:00:00Z');assert.equal(get(model,'protein_g').exportedAt,null);
   const created=fill(1);created.nutrition[0].created_at='2024-03-08T15:00:00Z';assert.equal(compare(created).lastUpdatedAt,null);
 });
+test('An overall update timestamp requires complete provenance for all received food and water observations',()=>{
+  const data=fill(2);data.sourceMetrics=[sourceMetric(date(1),'dietary_water_ml',2000,{updated_at:'2024-03-08T12:00:00Z'})];
+  const waterKey=JSON.stringify(['sourceMetrics','synthetic','synthetic metric origin','candidate','ml']),ui={dashboardSources:{water:waterKey}};
+  const model=compare(data,ui);
+  assert.equal(model.lastUpdatedAt,null,'Water timestamp cannot imply that untimestamped food is current');
+  assert.equal(get(model,'protein_g').updatedAt,null);assert.equal(get(model,'protein_g').updateTimeComplete,false);
+  assert.equal(get(model,'water_ml').updatedAt,'2024-03-08T12:00:00Z');assert.equal(get(model,'water_ml').updateTimeComplete,true);
+  data.nutrition[0].updated_at='2024-03-08T13:00:00Z';
+  const partial=compare(data,ui);assert.equal(partial.lastUpdatedAt,null,'A timestamp on only one observed day is not complete provenance');assert.equal(get(partial,'protein_g').updatedAt,'2024-03-08T13:00:00Z');
+  data.nutrition[1].updated_at='2024-03-08T14:00:00Z';
+  assert.equal(compare(data,ui).lastUpdatedAt,'2024-03-08T14:00:00Z');
+  data.sourceMetrics.push(sourceMetric(date(2),'dietary_water_ml',1800));
+  const partialWater=compare(data,ui);assert.equal(partialWater.lastUpdatedAt,null);assert.equal(get(partialWater,'water_ml').updatedAt,'2024-03-08T12:00:00Z');assert.equal(get(partialWater,'water_ml').updateTimeComplete,false);
+  data.sourceMetrics[1].updated_at='2024-03-08T15:00:00Z';
+  assert.equal(compare(data,ui).lastUpdatedAt,'2024-03-08T15:00:00Z');
+  data.nutrition.push(foodRow(date(1)));assert.equal(compare(data,ui).lastUpdatedAt,null,'An untimestamped duplicate is still received evidence');
+  assert.equal(compare(syntheticData()).lastUpdatedAt,null,'No observations cannot manufacture an update');
+});
 test('Inputs remain untouched and source strings remain inert data',()=>{
   const data=fill();data.nutrition[0].source='<img src=x onerror=alert(1)>';data.nutritionPlans[0].nutrition_plan.author.name='<script>Synthetic name</script>';
   const before=structuredClone(data),status=syntheticStatus(),ui={nutritionPlanRetrospective:true};const previousUI=structuredClone(ui);

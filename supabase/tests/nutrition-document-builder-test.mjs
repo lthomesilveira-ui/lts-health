@@ -15,6 +15,9 @@ test('builds one bounded transactional insert without database calls or dynamic 
   assert.doesNotMatch(sql.replace(/^--.*$/gm, ''), /\b(?:UPDATE|DELETE|CREATE|ALTER|DROP|TRUNCATE|EXECUTE|ON CONFLICT)\b/);
   assert.doesNotMatch(sql, /health_personal_goals|health_lab_results|health_medication_prescriptions|health_daily_nutrition|health_source_daily_metrics/);
   assert.match(sql, /WHERE d\.id <> inserted_id/);
+  // Parentheses keep CASE's THEN tokens inside the SQL expression rather than
+  // terminating PL/pgSQL's IF condition during compilation.
+  assert.match(sql, /IS DISTINCT FROM \(CASE field_name [^\n]+ END\)/);
 });
 
 test('serializes Unicode, quotes, backslashes, dollar tags and SQL-looking text as inert JSON', () => {

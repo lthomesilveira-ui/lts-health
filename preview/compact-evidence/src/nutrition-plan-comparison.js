@@ -47,7 +47,7 @@ function collectFood(data,status,today){
     const rowsByField=new Map(foodFields.map(field=>[field.key,[...group(items.filter(row=>row.field===field.key),row=>row.date)].map(([date,list])=>{
       const ambiguous=list.length>1,knownPartial=list.some(row=>row.knownPartial),reviewInvalid=list.some(row=>row.reviewInvalid);
       const value=ambiguous?null:list[0].value;
-      return {date,value,partial:knownPartial||date===today,knownPartial,ambiguous,reviewInvalid,exportedAt:list.find(row=>row.exportedAt)?.exportedAt||null,updatedAt:latestTimestamp(list.map(row=>row.updatedAt)),
+      return {date,value,partial:knownPartial||date===today,knownPartial,ambiguous,reviewInvalid,exportedAt:list.find(row=>row.exportedAt)?.exportedAt||null,updatedAt:latestTimestamp(list.map(row=>row.updatedAt)),hasRecord:true,updateTimeComplete:list.every(row=>row.updatedAt!==null),
         eligible:value!=null&&!ambiguous&&!reviewInvalid&&date<today&&!list.some(row=>row.excludeFromClosedMeans)};
     }).sort((a,b)=>a.date.localeCompare(b.date))]));
     const rows=[...rowsByField.values()].flat(),valid=rows.filter(row=>row.value!=null);
@@ -66,7 +66,7 @@ function calendarPoints(rows,calendar){
   const byDate=new Map((rows||[]).map(row=>[row.date,row]));
   return Array.from({length:calendar.bounds.days},(_,index)=>{
     const date=new Date(Date.parse(`${calendar.bounds.start}T12:00:00Z`)+index*DAY).toISOString().slice(0,10);
-    return byDate.get(date)||{date,value:null,partial:date===calendar.today,knownPartial:false,ambiguous:false,reviewInvalid:false,eligible:false,exportedAt:null,updatedAt:null};
+    return byDate.get(date)||{date,value:null,partial:date===calendar.today,knownPartial:false,ambiguous:false,reviewInvalid:false,eligible:false,exportedAt:null,updatedAt:null,hasRecord:false,updateTimeComplete:false};
   });
 }
 
@@ -80,7 +80,8 @@ function waterUpdates(data,status,source,today){
       if(!date||date>today||!label)continue;
       const key=domain==='nutrition'?JSON.stringify(['nutrition',norm(label),'canonical','ml']):JSON.stringify(['sourceMetrics',norm(row.source_family),norm(label),norm(row.canonical_status),norm(row.unit)]);
       if(key!==source.key)continue;
-      updates.set(date,latestTimestamp([updates.get(date),row.updated_at]));
+      const prior=updates.get(date);
+      updates.set(date,{updatedAt:latestTimestamp([prior?.updatedAt,row.updated_at]),updateTimeComplete:(prior?.updateTimeComplete??true)&&timestamp(row.updated_at)!==null});
     }
   }
   return updates;
@@ -99,7 +100,7 @@ function detailAvailability(data,status,source,calendar){
 }
 function metricModel(definition,target,source,rows,calendar,requestedMissing,blocked){
   const points=calendarPoints(rows,calendar),eligible=points.filter(point=>point.eligible),observed=points.filter(point=>point.value!=null&&!point.reviewInvalid);
-  const dayPoint=calendar.mode==='day'?points[0]:null;
+  const received=points.filter(point=>point.hasRecord),dayPoint=calendar.mode==='day'?points[0]:null;
   let value=calendar.mode==='day'?(dayPoint?.reviewInvalid?null:dayPoint?.value??null):mean(eligible.map(point=>point.value));
   const days=calendar.mode==='day'?(value!=null?1:0):eligible.length,expectedDays=calendar.mode==='day'?1:calendar.bounds.closedDays;
   const ambiguity=points.filter(point=>point.ambiguous).length,knownPartial=points.some(point=>point.knownPartial),invalidReview=points.some(point=>point.reviewInvalid);
@@ -109,7 +110,7 @@ function metricModel(definition,target,source,rows,calendar,requestedMissing,blo
     days:blocked?0:days,expectedDays,partial:calendar.mode==='day'?Boolean(dayPoint?.partial):knownPartial,
     latestDate:observed.at(-1)?.date||null,sourceLabel:source?.label||null,sourceKey:source?.key||null,reason,
     points:blocked?[]:points.map(point=>({...point})),aggregation:calendar.mode==='day'?'recorded_day':'observed_mean',
-    knownPartial,ambiguousDays:ambiguity,exportedAt:observed.at(-1)?.exportedAt||null,updatedAt:latestTimestamp(points.map(point=>point.updatedAt))};
+    knownPartial,ambiguousDays:ambiguity,exportedAt:observed.at(-1)?.exportedAt||null,updatedAt:latestTimestamp(points.map(point=>point.updatedAt)),receivedDays:received.length,updateTimeComplete:received.length>0&&received.every(point=>point.updateTimeComplete===true)};
 }
 
 /** One documentary reference, one stable food origin, and independent water.
@@ -131,9 +132,14 @@ export function nutritionPlanComparison(data={},status={},ui={},today){
   const waterUpdatedAt=waterUpdates(data,status,waterSource,calendar.today);
   const metrics=nutritionPlanFields.map(definition=>{
     const isWater=definition.key==='water_ml',source=isWater?waterSource:foodSource;
-    const rows=isWater?water.points.map(point=>({...point,updatedAt:waterUpdatedAt.get(point.date)||null})):food?.rowsByField.get(definition.key)||[];
+    const rows=isWater?water.points.map(point=>({...point,updatedAt:waterUpdatedAt.get(point.date)?.updatedAt||null,hasRecord:waterUpdatedAt.has(point.date),updateTimeComplete:waterUpdatedAt.get(point.date)?.updateTimeComplete===true})):food?.rowsByField.get(definition.key)||[];
     return metricModel(definition,plan.daily_targets[definition.key].value,source,rows,calendar,isWater?water.requestedSourceMissing:Boolean(requested&&!food),blocked);
   });
+  // An overall update must not borrow water's timestamp to imply that food
+  // intake is equally current. Unknown timestamps on any received observation
+  // suppress the headline; known per-metric timestamps remain inspectable.
+  const receivedMetrics=metrics.filter(metric=>metric.receivedDays>0);
+  const lastUpdatedAt=receivedMetrics.length&&receivedMetrics.every(metric=>metric.updateTimeComplete)?latestTimestamp(receivedMetrics.map(metric=>metric.updatedAt)):null;
   const notes=[
     'Referência documental, sem confirmação de início de uso ou adesão ao plano.',
     calendar.mode==='day'?'O valor é o registro do dia; hoje é parcial. Registros observados não comprovam diário completo.':'Média por dia encerrado com valor, com cobertura própria por nutriente. Dias ausentes não são zero; dias sabidamente parciais ficam fora da média.',
@@ -143,5 +149,5 @@ export function nutritionPlanComparison(data={},status={},ui={},today){
   if(['nutrition','sourceMetrics'].some(domain=>status[domain]!=='ready'))notes.push('Parte das origens de consumo ainda não está disponível nesta atualização. Somente origens carregadas são exibidas.');
   return {...base,state:blocked?'retrospective_required':'ready',isRetrospective,
     comparisonLabel:isRetrospective?`Retrospectiva com o plano recebido ${displayDate(plan.received_on)}; não indica adesão passada`:base.comparisonLabel,
-    foodSource,waterSource,foodSources:foods.map(sourceView),metrics,lastUpdatedAt:latestTimestamp(metrics.map(metric=>metric.updatedAt)),detailAvailability:detailAvailability(data,status,foodSource,calendar),notes};
+    foodSource,waterSource,foodSources:foods.map(sourceView),metrics,lastUpdatedAt,detailAvailability:detailAvailability(data,status,foodSource,calendar),notes};
 }
