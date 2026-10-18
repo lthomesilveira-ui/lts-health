@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // Generic build hashes live in the test. No public JSON payload is introduced.
 const manifest={
-  "candidate_commit": "25473bf46723ac8faf7a0075cbe2a144c0093e2f",
-  "build": "health-dashboard-20261017.65",
+  "candidate_commit": "f21ff6700051ed80763fe31441ba75ddcf9f7d1c",
+  "build": "health-dashboard-20261017.66",
   "files": {
     "accessibility.css": "fe77a056f36b55fa987367ac0899da57b613e2db4830c33781b8612f209bd3db",
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
@@ -34,7 +34,7 @@ const manifest={
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "f7b5a21a2798ed5ff6ee01049476461fb4cd5743837760acd9ab93bc8fb0afa6",
+    "index.html": "05d70f181f08b3b1638c63db04657209c6e8df0eb05155ee5dc78a7f93279cfd",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "bbbf9acfa364c27edd8b09c8feb64dd64ec80a25b0b38e6b26102cc0ed3943f1",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
@@ -84,7 +84,7 @@ const manifest={
     "src/health-dashboard-labs.js": "61b333c0c708c1beef2f31d3b80def5ac5b56fea95d8c64f62b6410a8d797465",
     "src/health-dashboard-model.js": "3fa97ff1f28dff85b96cdf888622622bd1057372d44d025ca4503393f57dc7f8",
     "src/health-dashboard-training.js": "548f883e15132a7ea2416d4c0c7a7bd81761dcd7a3d476c0295c518a984b2613",
-    "src/health-dashboard.js": "307d710bda12928c558cd657e18ffbe041017617bf8ecf6471c4614a75612c73",
+    "src/health-dashboard.js": "c3a3954db59b3d4e883e4d4f3f51862ef43944fafd6e74efabb5eb40507f8f66",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
     "src/history-tools.js": "a5308e26426b8681b55515a6434f67dc94a7c532b5225e904e619d7a442d9e88",
     "src/home-cockpit.js": "f6da2e0697124d605a875393921839564e55f2b426fdef81e63affcfa8943dcc",
@@ -145,7 +145,7 @@ const manifest={
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-assert.equal(manifest.build,'health-dashboard-20261017.65');
+assert.equal(manifest.build,'health-dashboard-20261017.66');
 for(const [relative,expected] of Object.entries(manifest.files)){
  assert.ok(/^(index\.html|[\w-]+\.(?:css|svg)|src\/[\w-]+\.js)$/.test(relative),'allowlisted generic source only');
  const file=path.join(root,relative),body=fs.readFileSync(file,'utf8');assert.equal(hash(body),expected,'preview manifest matches '+relative);
@@ -164,7 +164,7 @@ assert.equal(core,productionCore,'authentication/configuration is unchanged from
 assert.match(fs.readFileSync(path.join(production,'index.html'),'utf8'),/mobile-parity-20261014\.58/,'production remains on its published build');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261017.65"></script>';
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261017.66"></script>';
 assert.ok(index.includes(guardTag)&&index.indexOf(guardTag)<index.indexOf('<script type="module"'),'blocking classic guard loads before application modules');
 assert.ok(index.indexOf(guardTag)>index.indexOf('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'guard installs after SDK');
 assert.match(index,/Prévia · somente leitura/);
