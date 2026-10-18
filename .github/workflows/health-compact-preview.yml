@@ -43,6 +43,8 @@ jobs:
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
         run: node preview/compact-evidence/tests/health-dashboard-browser.mjs
+      - name: Verify reviewed blood-count readings and raw values
+        run: node preview/compact-evidence/tests/reviewed-blood-count-browser.mjs
       - name: Verify interval navigation and complete contextual evidence
         run: node preview/compact-evidence/tests/body-interval-browser.mjs
       - name: Verify equivalent recorded training conditions
@@ -54,6 +56,7 @@ jobs:
           name: isolated-preview-synthetic-visual
           path: |
             health-dashboard-visual
+            health-reviewed-blood-count-visual
             v2/reference-period-visual
             preview63-history-depth-evidence
             v2/interval-visual

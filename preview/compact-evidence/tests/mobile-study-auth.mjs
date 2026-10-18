@@ -26,7 +26,7 @@ try{
  assert.match(await signedIn.locator('#personalGoalsForm [data-preview-readonly-warning]').textContent(),/Prévia somente leitura/);
  assert.equal(await signedIn.evaluate(()=>document.querySelector('#personalGoalsForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))),false,'submit is stopped before application mutation');
  const blocked=await signedIn.evaluate(async()=>{
-   const {sb}=await import('./src/core.js?v=health-dashboard-20261017.66');const attempts=[()=>sb.from('synthetic').insert({}),()=>sb.from('synthetic').update({}),()=>sb.from('synthetic').upsert({}),()=>sb.from('synthetic').delete(),()=>sb.rpc('synthetic'),()=>sb.storage.from('synthetic').upload('fixture',{}),()=>sb.functions.invoke('health-polar-connection',{body:{action:'sync'}})];
+   const {sb}=await import('./src/core.js?v=health-dashboard-20261018.67');const attempts=[()=>sb.from('synthetic').insert({}),()=>sb.from('synthetic').update({}),()=>sb.from('synthetic').upsert({}),()=>sb.from('synthetic').delete(),()=>sb.rpc('synthetic'),()=>sb.storage.from('synthetic').upload('fixture',{}),()=>sb.functions.invoke('health-polar-connection',{body:{action:'sync'}})];
    return attempts.map(run=>{try{run();return false;}catch(error){return error.code==='preview_read_only';}});
  });
  assert.ok(blocked.every(Boolean));const counters=await signedIn.evaluate(()=>window.__previewBackend);assert.ok(counters.reads>0);assert.equal(counters.writes,0);assert.equal(counters.functions,0,'automatic Polar status/sync never reaches backend');

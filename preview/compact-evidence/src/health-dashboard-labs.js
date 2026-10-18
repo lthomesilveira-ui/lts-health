@@ -1,4 +1,5 @@
 // Read-only laboratory context. Each result keeps its own report and collection.
+import {reviewedHemogramFootnoteValue} from './health-lab-reviewed-numeric.js';
 const text=value=>typeof value==='string'?value.trim().replace(/\s+/g,' '):'';
 const norm=value=>text(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const known=value=>Boolean(text(value)&&!['unknown','unknown method','not informed','not provided','not available','unreported','nao informado','nao informada','nao disponivel','nao consta','metodo nao informado','metodo desconhecido','desconhecido','desconhecida','n/a','na','null','none','—','-'].includes(norm(value)));
@@ -83,6 +84,9 @@ function exactValue(row){
   const reviewedKind=norm(row.numeric_kind||row.source_payload?.numeric_kind);
   if(reviewedKind&&reviewedKind!=='exact')return null;
   const raw=text(row.result_raw);if(!raw)return value;
+  // Only an existing, row-bound documentary Hb/Ht review can interpret (1).
+  // The original raw result remains visible; no source value is rewritten.
+  if(raw.endsWith('(1)'))return reviewedHemogramFootnoteValue(row);
   // Grouped whole counts need an explicitly reviewed exact extraction, a
   // count unit and agreement with the structured number. Generic 1.234 remains
   // ambiguous; censored values, suffixes and conflicting numbers never qualify.
