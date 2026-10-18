@@ -1,0 +1,48 @@
+name: Synthetic 67-row lab metadata SQL
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'health-lab-metadata67-synthetic-test/**'
+      - '.github/workflows/health-lab-metadata67-synthetic.yml'
+  pull_request:
+    paths:
+      - 'health-lab-metadata67-synthetic-test/**'
+      - '.github/workflows/health-lab-metadata67-synthetic.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres-synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: synthetic_reviewer
+          POSTGRES_PASSWORD: synthetic_ci_only
+          POSTGRES_DB: synthetic_lab_review
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U synthetic_reviewer -d synthetic_lab_review"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      HEALTH_SYNTHETIC_PG: '1'
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: synthetic_reviewer
+      PGPASSWORD: synthetic_ci_only
+      PGDATABASE: synthetic_lab_review
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check local client and shell syntax
+        run: |
+          command -v psql
+          psql --version
+          bash -n health-lab-metadata67-synthetic-test/run-checks.sh
+      - name: Test apply and rollback with invented rows
+        run: bash health-lab-metadata67-synthetic-test/run-checks.sh
