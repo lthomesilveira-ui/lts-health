@@ -1,4 +1,5 @@
 import {documentedWaterReferenceForDate} from './documented-water-reference.js';
+import {selectDocumentedNutritionPlan} from './documented-nutrition-plan.js';
 
 // Read-only guidance: dates and recorded values are evidence, never proof of
 // intake completeness, adherence, current medication use or clinical adequacy.
@@ -111,7 +112,9 @@ function nutritionInsight(goal,dashboard,bounds,context={}){
     const historyText=historical?`Referência histórica: ${historicalLabel}, documentada em ${fmtDate(historical.documentedOn)}. `:'';
     const historyEvidence=historical?` · Referência histórica: ${historicalLabel} · ${fmtDate(historical.documentedOn)} · ${historical.source}; vigência atual não confirmada`:'';
     const pendingNutrition=key==='protein'&&care?.available&&care.nutritionPlanPending;
+    const receivedNutrition=pendingNutrition&&context.receivedNutritionPlan?.referenceDate>care.date?context.receivedNutritionPlan:null;
     if(water)return {...base,title:'Água: referência no plano',text:`O documento de ${fmtDate(water.documentedOn)} registra ${fmt(water.value)} mL/dia como base, com ajuste por exercício. A data de início não está explícita. Meta não confirmada para calcular cumprimento nos dias selecionados.${!point&&!period?' Ausência de registro não significa zero.':''}`,evidence:`${base.evidence} · Referência documental: ${fmt(water.value)} mL/dia · ${fmtDate(water.documentedOn)} · ${water.sourceFile}, página ${water.sourcePage}.${historyEvidence}`,action:{route:'nutricao',label:'Ver referência e registros'}};
+    if(receivedNutrition)return {...base,title:'Proteína: plano alimentar recebido',text:`Plano recebido em ${fmtDate(receivedNutrition.received_on)}; início de uso não informado. O acompanhamento anterior de ${fmtDate(care.date)} registrava o plano como aguardado. ${historyText}A comparação documental aparece separadamente; o recebimento não confirma uma meta clínica para os dias selecionados.`,evidence:`${base.evidence}${historyEvidence} · Plano aguardado conforme documento de ${fmtDate(care.date)} · ${care.source} · Plano recebido em ${fmtDate(receivedNutrition.received_on)} · ${receivedNutrition.source_file}`,action:{route:'nutricao',label:'Ver plano recebido e registros'}};
     if(historical||pendingNutrition)return {...base,title:pendingNutrition?'Proteína: plano alimentar aguardado':`${label}: referência histórica`,text:`${historyText}${pendingNutrition?`O acompanhamento de ${fmtDate(care.date)} registra o plano alimentar como aguardado. `:''}Meta não confirmada para os dias selecionados; ${historical?'a referência histórica não foi marcada como vigente':'não há valor diário vigente cadastrado'}.${!point&&!period?' Ausência de registro não significa zero.':''}`,evidence:`${base.evidence}${historyEvidence}${pendingNutrition?` · Plano alimentar aguardado conforme ${fmtDate(care.date)} · ${care.source}`:''}`,action:{route:pendingNutrition?'tratamentos':'nutricao',label:pendingNutrition?'Ver acompanhamento do plano':'Ver referência e registros'}};
     return {...base,text:`Meta não confirmada ${period?'para os dias com registros elegíveis nesta janela':'para este dia'}: não há um valor vigente e inequívoco cadastrado.${!point&&!period?' Ausência de registro não significa zero.':''}`,action:{route:'nutricao',label:'Conferir meta e registros'}};
   }
@@ -197,7 +200,8 @@ export function dashboardGuidance(data={},status={},dashboard={},context={}){
   const goals={available:status.goals==='ready',status:status.goals||'unavailable',water:goalComparison(data,status,dashboard,'water',bounds,today),protein:goalComparison(data,status,dashboard,'protein',bounds,today),documentedWater:documentedWaterReferenceForDate(data.waterReferences,bounds.end,status.waterReferences)};
   if(goals.documentedWater)goals.documentedWater={...goals.documentedWater,unit:'mL/dia',isDailyTarget:false,context:'Referência documental separada. Data de atualização do documento; início clínico não explicitado. Não é meta diária confirmada.'};
   const protocols=protocolContext(data,status,bounds);
-  const nutritionContext={documentedWater:goals.documentedWater,care:protocols.care};
+  const receivedNutritionPlan=selectDocumentedNutritionPlan(data.nutritionPlans||[],today,status.nutritionPlans).plan;
+  const nutritionContext={documentedWater:goals.documentedWater,care:protocols.care,receivedNutritionPlan};
   const insights=[nutritionInsight(goals.water,dashboard,bounds,nutritionContext),nutritionInsight(goals.protein,dashboard,bounds,nutritionContext),careInsight(protocols),laboratoryInsight(data,status,bounds,context),trainingInsight(context,bounds)].filter(Boolean).slice(0,4);
   return {protocols,insights,goals,bounds,contextOnly:true};
 }

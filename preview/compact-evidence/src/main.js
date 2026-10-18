@@ -200,6 +200,8 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const planRetrospective=event.target.closest('[data-plan-retrospective]');
+    if(planRetrospective){state.ui.nutritionPlanRetrospective=planRetrospective.dataset.planRetrospective==='true';render();return;}
     const dashboardMode=event.target.closest('[data-dashboard-mode]');
     if(dashboardMode){state.ui.dashboardMode=dashboardMode.dataset.dashboardMode;render();return;}
     const dashboardChart=event.target.closest('[data-dashboard-chart]');
@@ -284,6 +286,7 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-plan-food-source')){state.ui.nutritionPlanFoodSource=event.target.value;render();return;}
     if(event.target.hasAttribute('data-dashboard-period')){state.ui.dashboardPeriod=event.target.value;state.ui.dashboardMode='period';if(['30','90','all'].includes(event.target.value))setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-dashboard-date')){const v=event.target.value;if(/^\d{4}-\d{2}-\d{2}$/.test(v)){state.ui.dashboardDate=v;state.ui.dashboardMode='day';render();}return;}
     if(event.target.hasAttribute('data-dashboard-source')){state.ui.dashboardSources={...(state.ui.dashboardSources||{}),[event.target.dataset.dashboardSource]:event.target.value};render();return;}
