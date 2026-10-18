@@ -1,6 +1,6 @@
 import {state,esc,fmtDate,fmtNum,norm} from './core.js';
 import {healthDashboardModel} from './health-dashboard-model.js';
-import {nutritionArchiveModel} from './nutrition-archive.js';
+import {nutritionArchiveModel,nutritionArchiveSourceLabel} from './nutrition-archive.js';
 import {dashboardContext} from './health-dashboard-context.js';
 import {dashboardGuidance} from './health-dashboard-guidance.js';
 import {dashboardBody} from './health-dashboard-body.js';
@@ -85,7 +85,7 @@ function archiveDayAccess(data,status,ui,d){
  const selected=new Set(d.metrics.filter(metric=>['protein','energy'].includes(metric.key)).map(metric=>metric.source?.key));
  const archive=nutritionArchiveModel(data,status,ui,d.today),origins=archive.sources.filter(source=>source.dates.includes(d.date)&&!selected.has(source.key));
  if(!origins.length)return '';
- return `<aside class="healthArchiveAccess" aria-label="Alimentação disponível em outra origem"><p>Há registros alimentares de ${date(d.date)} em outra origem. Abra o diário para consultar os valores recebidos.</p>${origins.map(source=>`<button type="button" data-nutrition-archive-open="${esc(source.key)}" data-nutrition-archive-date="${d.date}" data-nutrition-archive-route="nutricao">Abrir diário · ${esc(source.label)}${source.domain==='sourceMetrics'?' · métricas por origem':''}${source.status!=='canonical'?' · em conferência':''}</button>`).join('')}</aside>`;
+ return `<aside class="healthArchiveAccess" aria-label="Alimentação disponível em outra origem"><p>Há registros alimentares de ${date(d.date)} em outra origem. Abra o diário para consultar os valores recebidos.</p>${origins.map(source=>`<button type="button" data-nutrition-archive-open="${esc(source.key)}" data-nutrition-archive-date="${d.date}" data-nutrition-archive-route="nutricao">Abrir diário · ${esc(nutritionArchiveSourceLabel(source))}</button>`).join('')}</aside>`;
 }
 export function renderHealthDashboard(data={},status={},ui={},today){
  const d=healthDashboardModel(data,status,ui,today),c=dashboardContext(data,status,{bounds:d.bounds,today:d.today,mode:d.mode}),g=dashboardGuidance(data,status,d,c);

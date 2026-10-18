@@ -19,6 +19,7 @@ const attr=(name,value)=>`[${name}=${JSON.stringify(value)}]`;
 const writeResults=()=>writeFileSync(`${dir}/results.json`,JSON.stringify({syntheticOnly:true,today:HISTORY_TODAY,fixture:{dailyDates:f.historicalDays,historicalMeals:f.historicalMeals,missingYear:'2022',allNutritionRows:f.data.nutrition.length,allMealRows:f.data.meals.length},results},null,2));
 
 async function stable(page,route='nutricao'){
+  await page.evaluate(()=>{window.__historyStableRoot=null;window.__historyStableFrames=0;});
   await page.waitForFunction(route=>{
     const root=document.querySelector(route==='nutricao'?'.ltsNutritionProduct':route==='timeline'?'.timelineGroups':'[data-health-dashboard]');
     if(!root||location.hash!==`#${route}`||document.querySelector('#screenHost .loadingState'))return false;
@@ -47,10 +48,22 @@ async function assertDiary(page,date,source=HISTORY_SOURCE){
   else assert.equal(await metrics.count(),0,'missing or wholly ambiguous daily totals are not synthesized from meals');
   assert.doesNotMatch(await page.locator('#nutritionArchiveDiary').innerText(),/\b(?:NaN|undefined|Infinity)\b/);
 }
+async function buttonQuality(page,label,selector){
+  const issues=await page.locator(selector).evaluateAll(buttons=>buttons.filter(button=>button.checkVisibility({checkVisibilityCSS:true})).flatMap(button=>{const style=getComputedStyle(button),parent=getComputedStyle(button.parentElement),radii=[style.borderTopLeftRadius,style.borderTopRightRadius,style.borderBottomLeftRadius,style.borderBottomRightRadius];return radii.every(value=>parseFloat(value)>=8)&&style.fontFamily===parent.fontFamily?[]:[{text:button.textContent.trim(),radii,font:style.fontFamily,parentFont:parent.fontFamily}];}));
+  assert.deepEqual(issues,[],`${label}: new archive actions use the rounded, inherited-font app styling`);
+  const buttons=page.locator(selector);let target=null;
+  for(let index=0;index<await buttons.count();index++)if(await buttons.nth(index).isVisible()){target=buttons.nth(index);break;}
+  if(target){
+    await target.focus();await target.press('Tab');await page.keyboard.press('Shift+Tab');
+    const focus=await target.evaluate(element=>{const style=getComputedStyle(element);return {active:document.activeElement===element,visible:element.matches(':focus-visible'),width:parseFloat(style.outlineWidth),style:style.outlineStyle};});
+    assert.ok(focus.active&&focus.visible&&focus.width>=2&&focus.style!=='none',`${label}: keyboard focus is visibly outlined ${JSON.stringify(focus)}`);
+  }
+}
 async function quality(page,label,{archive=true}={}){
   const measurement=await page.evaluate(()=>{const host=document.querySelector('#screenHost');return {width:innerWidth,document:document.documentElement.scrollWidth,body:document.body.scrollWidth,host:{width:host.clientWidth,scroll:host.scrollWidth},regions:[...document.querySelectorAll('.ltsNutritionArchive,.ltsNutritionDiary')].map(el=>({class:el.className,width:el.clientWidth,scroll:el.scrollWidth}))};});
   assert.ok(measurement.document<=measurement.width+1&&measurement.body<=measurement.width+1&&measurement.host.scroll<=measurement.host.width+1&&measurement.regions.every(region=>region.scroll<=region.width+1),`${label}: no horizontal overflow ${JSON.stringify(measurement)}`);
-  if(!archive)return measurement;
+  if(!archive){await buttonQuality(page,label,'.healthArchiveAccess button');return measurement;}
+  await buttonQuality(page,label,'.ltsNutritionArchive button,.ltsNutritionDiary [data-nutrition-archive-open]');
   const issues=await page.evaluate(()=>{
     const roots=[...document.querySelectorAll('.ltsNutritionArchive,.ltsNutritionDiary')],controls=[],text=[];
     for(const root of roots){
@@ -98,7 +111,7 @@ async function serviceChecks(page,external,networkWrites,errors){
   return {readCount:observed.reads.length,writeCount:0,externalRequestCount:0};
 }
 async function contextFor(browser,width,height,serviceOptions={}){
-  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,isMobile:width<=840,hasTouch:width<=840,timezoneId:'America/Sao_Paulo',serviceWorkers:'block'}),external=[],networkWrites=[],errors=[];
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,isMobile:width<=840,hasTouch:width<=840,timezoneId:'America/Sao_Paulo',locale:'pt-BR',serviceWorkers:'block'}),external=[],networkWrites=[],errors=[];
   await context.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.hostname==='cdn.jsdelivr.net'&&url.pathname==='/npm/@supabase/supabase-js@2'&&request.method()==='GET')return route.fulfill({status:200,contentType:'application/javascript',body:nutritionHistoryService(f.db,serviceOptions)});if(url.origin===origin.origin&&['GET','HEAD'].includes(request.method()))return route.continue();if(!['GET','HEAD'].includes(request.method()))networkWrites.push({url:request.url(),method:request.method()});else external.push(request.url());return route.abort('blockedbyclient');});
   const page=await context.newPage();page.setDefaultTimeout(30000);page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error'&&!message.text().includes('net::ERR_BLOCKED_BY_CLIENT'))errors.push(message.text());});await page.clock.setFixedTime(new Date(`${HISTORY_TODAY}T15:00:00Z`));
   return {context,page,external,networkWrites,errors};
@@ -119,6 +132,10 @@ try{
       await assertDiary(page,FIRST_HISTORY_DAY);assert.equal(await page.locator('.ltsNutritionProduct [data-period="90"]').getAttribute('aria-pressed'),'true');
       assert.equal(await page.locator('#nutritionDateProduct').inputValue(),FIRST_HISTORY_DAY);assert.equal(await page.locator('#nutritionArchiveYear').inputValue(),'2018');assert.equal(await page.locator('#nutritionArchiveMonth').inputValue(),'2018-02');
       assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article > b').last().innerText(),'0 g','literal zero is retained');
+      const alternateLabels=await page.locator('#nutritionArchiveDiary [data-nutrition-archive-open]').allTextContents();
+      assert.equal(alternateLabels.length,4);assert.equal(new Set(alternateLabels).size,alternateLabels.length,'same aliases remain distinguishable by source domain/status');
+      const originLabels=await page.locator('#nutritionArchiveSource option').allTextContents();assert.equal(new Set(originLabels).size,originLabels.length,'source options distinguish canonical, candidate and review identities');
+      assert.equal(await page.locator('#nutritionArchiveMonth option:checked').textContent(),'fevereiro','month fits narrow controls without repeating the adjacent year');
       await quality(page,`${label}/earliest`);await capture(page,`${label}-earliest`);
       // Existing summary selector and the archive use one explicit choice.
       const summaryDetail=page.locator('[data-disclosure="home-nutrition-detail"]');
@@ -165,6 +182,8 @@ try{
       const timelineTarget=page.locator('[data-timeline-ref="synthetic-history-day-0"]').first();
       assert.equal(await timelineTarget.getAttribute('data-timeline-source'),historyKey);assert.equal(await timelineTarget.getAttribute('data-timeline-date'),FIRST_HISTORY_DAY);
       assert.equal(await page.locator('[data-timeline-ref="synthetic-current-day-0"]').first().getAttribute('data-timeline-source'),currentKey,'identical display aliases retain distinct source identity');
+      assert.equal(await page.locator('#timelineDate').inputValue(),FIRST_HISTORY_DAY);
+      assert.deepEqual(await page.locator('.timelineGroups .timelineDay .timelineDate > b').allTextContents(),[dateLabel(FIRST_HISTORY_DAY)],'selected date filter has rendered before capturing the Timeline tile');
       await quality(page,`${label}/timeline`,{archive:false});await tile(page,`${label}-timeline-oldest`,timelineTarget);
       // Even a stale or altered button must be verified against loaded identity.
       await timelineTarget.evaluate((element,key)=>{element.dataset.timelineSource=key;},currentKey);
@@ -192,7 +211,7 @@ try{
       await homeTarget.click();await stable(page);await assertDiary(page,target);
       await chooseDate(page,FIRST_HISTORY_DAY);await assertDiary(page,FIRST_HISTORY_DAY);
       const readProof=await serviceChecks(page,external,networkWrites,errors);
-      results.push({name:label,width,height,status:'passed',syntheticOnly:true,...readProof,originalResolutionScreenshots:true,covered:['all-pages','earliest','summary-source-sync','home-old-day-link','year-month-day','missing-year','explicit-missing','meal-only','duplicate','source-mirrors','timeline-identity','back-repeat','home-return','44px-controls','text-no-overlap']});writeResults();console.log(`${label}: historical loader pagination, origin/calendar/meal integrity, Timeline back/repeat and responsive archive passed.`);
+      results.push({name:label,width,height,status:'passed',syntheticOnly:true,...readProof,originalResolutionScreenshots:true,covered:['all-pages','earliest','summary-source-sync','home-old-day-link','year-month-day','missing-year','explicit-missing','meal-only','duplicate','source-mirrors','timeline-identity','back-repeat','home-return','44px-controls','rounded-inherited-font-controls','visible-keyboard-focus','qualified-origin-labels','text-no-overlap']});writeResults();console.log(`${label}: historical loader pagination, origin/calendar/meal integrity, Timeline back/repeat and responsive archive passed.`);
     }catch(error){await page.screenshot({path:`${dir}/${label}-failure.png`,animations:'disabled'}).catch(()=>{});results.push({name:label,width,height,status:'failed',error:String(error.message),pageErrors:errors,blockedExternal:external,networkWrites});writeResults();throw error;}finally{await context.close();}
   }
   // Pause a genuine second loader page. A partial page is never presented as

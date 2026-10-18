@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {nutritionArchiveModel,nutritionArchiveSelection,nutritionArchiveSourceKey,nutritionTimelineSelection} from '../src/nutrition-archive.js';
+import {nutritionArchiveModel,nutritionArchiveSelection,nutritionArchiveSourceKey,nutritionArchiveSourceLabel,nutritionTimelineSelection} from '../src/nutrition-archive.js';
 globalThis.location={search:'?fixture=1'};
 const {state}=await import('../src/core.js');
 const {renderProductNutrition}=await import('../src/nutrition-product.js');
@@ -122,4 +122,18 @@ test('Raw duplicate daily records preserve original fractional scalars without r
   assert.match(html,/Histórico alimentar salvo/);assert.match(diary(html),/Consulta de um dia, independente da janela de médias acima/);assert.doesNotMatch(html,/Histórico alimentar completo|Dia do arquivo completo/);
   data.nutrition[0].calories_kcal='<synthetic-value>';
   const escaped=diary(render(data,{reportNutritionSource:oldKey,nutritionDate:'2017-02-06'}));assert.match(escaped,/&lt;synthetic-value&gt; kcal/);assert.doesNotMatch(escaped,/<synthetic-value>/);
+});
+
+
+test('Same-alias archive sources are visibly distinct by domain and status in controls, alternatives, context and Home',async()=>{
+  const data=fixture();data.sourceMetrics=['canonical','candidate','held'].map((canonical_status,index)=>({source_record_id:`alias-${canonical_status}`,metric_date:'2017-02-06',metric_type:'dietary_protein_g',value:80+index,unit:'g',source_name:'Synthetic archive',source_family:'synthetic',canonical_status}));
+  const archive=nutritionArchiveModel(data,status,{},today),shared=archive.sources.filter(source=>source.label==='Synthetic archive'),labels=shared.map(nutritionArchiveSourceLabel);
+  assert.deepEqual(new Set(labels),new Set(['Synthetic archive · totais diários · canônica','Synthetic archive · métricas por origem · canônica','Synthetic archive · métricas por origem · candidata','Synthetic archive · métricas por origem · em revisão']));
+  const html=render(data,{reportNutritionSource:newKey,nutritionDate:'2017-02-06'}),select=html.match(/<select id="nutritionArchiveSource"[\s\S]*?<\/select>/)[0],details=html.match(/<details data-disclosure="nutrition-archive-origins">[\s\S]*?<\/details>/)[0],selected=diary(render(data,{reportNutritionSource:oldKey,nutritionDate:'2017-02-06'}));
+  for(const label of labels){assert.ok(select.includes(label));assert.ok(details.includes(label));assert.ok(diary(html).includes(`>${label}</button>`));}
+  assert.ok(selected.includes('Synthetic archive · totais diários · canônica. Consulta de um dia'));
+  const {renderHealthDashboard}=await import('../src/health-dashboard.js');
+  const home=renderHealthDashboard(data,status,{dashboardMode:'day',dashboardDate:'2017-02-06',dashboardSources:{protein:newKey,energy:newKey}},today);
+  for(const label of labels)assert.ok(home.includes(`Abrir diário · ${label}</button>`));
+  const calendar=render(data,{reportNutritionSource:oldKey,nutritionDate:'2017-02-06'});assert.match(calendar,/<option value="2017-02" selected>fevereiro<\/option>/);assert.match(calendar,/aria-label="Mês do histórico alimentar de 2017"/);
 });

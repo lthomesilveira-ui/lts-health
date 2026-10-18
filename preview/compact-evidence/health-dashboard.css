@@ -23,3 +23,5 @@
 @media(max-width:840px){.nutritionPlanCard{padding:14px 12px}.nutritionPlanTargets{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.nutritionPlanMetrics{grid-template-columns:minmax(0,1fr)}.nutritionPlanTitle strong{font-size:14px}}
 
 .healthArchiveAccess{margin:16px 0;padding:14px 16px;border:1px solid #dce5ed;border-radius:12px;background:#f5f8fb}.healthArchiveAccess p{margin:0 0 8px;font-size:13px;line-height:1.5}.healthArchiveAccess button{min-height:44px;max-width:100%;margin:4px 8px 4px 0;white-space:normal;overflow-wrap:anywhere;text-align:left}
+
+.healthArchiveAccess button{appearance:none;min-height:44px;max-width:100%;border:1px solid #b9cfe3;border-radius:8px;background:#fff;color:#176ac1;font:inherit;line-height:1.4;padding:8px 12px;box-shadow:none;cursor:pointer;white-space:normal;overflow-wrap:anywhere}.healthArchiveAccess button:hover{background:#f2f6fa}.healthArchiveAccess button:focus-visible{outline:3px solid #2187e8;outline-offset:3px}
