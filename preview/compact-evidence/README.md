@@ -1,6 +1,6 @@
 # Health read-only preview
 
-Build `health-dashboard-20261018.68`. Production `/v2` and the authentication boundary remain unchanged.
+Build `health-dashboard-20261018.69`. Production `/v2` and the authentication boundary remain unchanged.
 
 The approved daily/period card layout is preserved. This revision adds a tightly bounded, read-only interpretation of reviewed hemoglobin/hematocrit table footnotes. Original raw values remain visible, stored data is unchanged, and other markers, censored values, aliases, methods and references retain their existing boundaries. The prior contextual improvements remain:
 - Detailed training sessions, exercise and set counts, recorded set qualifiers, and explicit linked telemetry. Polar device records remain separate and are never added to canonical session counts.
@@ -15,3 +15,9 @@ Run `.github/workflows/health-compact-preview.yml`: exact runtime hashes, source
 ## Documentary nutrition reference
 
 The preview reads a bounded, authenticated nutrition-plan projection and compares one food origin plus the selected water origin with its declared daily references. Document receipt does not establish clinical start or adherence. Earlier windows require an explicit retrospective comparison. Meals and alternatives are documentary detail, not consumed-food records. Fixtures and SQL tests are synthetic; no private document or real manifest belongs in this repository.
+
+## Historical dietary access
+
+The full saved archive is independent of the summary window, with explicit source, year, month and date navigation. Historical meal summaries retain the source domain and date; mirrored metric origins never acquire canonical meals. Requested missing dates and failed source reads remain visible instead of jumping to the latest entry. Timeline links verify the loaded record identity, and the daily overview offers explicit access when another food origin has records for that day. No historical data is rewritten or invented.
+
+Synthetic archive checks exceed two thousand daily dates and five thousand meal records, exercise real pagination, missing years, fractional originals, ambiguous records, source failures and recovery, route persistence and narrow-screen controls.

@@ -10,6 +10,7 @@ import {renderTreatmentHub} from './treatment-screen.js';
 import {renderHealthHub} from './health-screen.js';
 import {renderNutritionHub} from './nutrition-screen.js';
 import {renderProductNutrition} from './nutrition-product.js';
+import {nutritionArchiveModel,nutritionArchiveSelection,nutritionTimelineSelection} from './nutrition-archive.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
@@ -193,13 +194,28 @@ function openTimelineTarget(button){
   const route=button.dataset.timelineRoute,kind=button.dataset.timelineKind,ref=button.dataset.timelineRef||'',date=button.dataset.timelineDate||'';
   if(kind==='workout'){setGlobalPeriod('all');state.ui.openWorkout=ref;}
   else if(kind==='body'){state.ui.selectedBodyDate=ref||date;}
-  else if(kind==='nutrition'){setGlobalPeriod('all');state.ui.nutritionYear=String(date).slice(0,4);state.ui.nutritionDate=date;}
+  else if(kind==='nutrition'){
+    setGlobalPeriod('all');
+    const selection=nutritionTimelineSelection(state.data,state.domainStatus,button.dataset.timelineSource,date,ref);
+    if(selection)Object.assign(state.ui,selection);
+    else Object.assign(state.ui,{nutritionDate:date,nutritionYear:String(date).slice(0,4),nutritionMonth:String(date).slice(0,7),homeNutritionSource:'__unavailable_timeline_origin__',reportNutritionSource:'__unavailable_timeline_origin__'});
+  }
   else if(kind==='labs'){state.ui.selectedCollection=ref;state.ui.labQuery='';}
   if(route)setRoute(route,{replace:false});
 }
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const archiveOpen=event.target.closest('[data-nutrition-archive-open]');
+    if(archiveOpen){
+      const archive=nutritionArchiveModel(state.data,state.domainStatus,state.ui),key=archiveOpen.dataset.nutritionArchiveOpen,date=archiveOpen.dataset.nutritionArchiveDate,source=archive.sources.find(item=>item.key===key);
+      if(source?.dates.includes(date)){
+        Object.assign(state.ui,nutritionArchiveSelection(archive,'source',key),nutritionArchiveSelection(archive,'date',date));
+        if(archiveOpen.dataset.nutritionArchiveRoute==='nutricao'){setRoute('nutricao',{replace:false});return;}
+      }
+      render();return;
+    }
+
     const planRetrospective=event.target.closest('[data-plan-retrospective]');
     if(planRetrospective){state.ui.nutritionPlanRetrospective=planRetrospective.dataset.planRetrospective==='true';render();return;}
     const dashboardMode=event.target.closest('[data-dashboard-mode]');
@@ -286,6 +302,12 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-nutrition-archive-field')){
+      const archive=nutritionArchiveModel(state.data,state.domainStatus,state.ui),selection=nutritionArchiveSelection(archive,event.target.dataset.nutritionArchiveField,event.target.value);
+      if(selection)Object.assign(state.ui,selection);
+      render();return;
+    }
+
     if(event.target.hasAttribute('data-plan-food-source')){state.ui.nutritionPlanFoodSource=event.target.value;render();return;}
     if(event.target.hasAttribute('data-dashboard-period')){state.ui.dashboardPeriod=event.target.value;state.ui.dashboardMode='period';if(['30','90','all'].includes(event.target.value))setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-dashboard-date')){const v=event.target.value;if(/^\d{4}-\d{2}-\d{2}$/.test(v)){state.ui.dashboardDate=v;state.ui.dashboardMode='day';render();}return;}
@@ -294,10 +316,10 @@ function bindStaticEvents(){
     if(event.target.hasAttribute('data-home-period-select')){setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
-    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker','homeTrainingContext'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
+    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker','homeTrainingContext'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;if(event.target.dataset.homeField==='reportNutritionSource')state.ui.homeNutritionSource=event.target.value;render();return;}
     if(['bodyIntervalStart','bodyIntervalEnd'].includes(event.target.id)){state.ui[event.target.id]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
-    if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
+    if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportNutritionSource')state.ui.homeNutritionSource=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;state.ui.reviewDate=event.target.value;scheduleRender();}
     if(event.target.id==='homeLabMarker'){state.ui.homeLabMarker=event.target.value;scheduleRender();}
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}

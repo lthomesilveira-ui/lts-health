@@ -1,5 +1,6 @@
 import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
+import {nutritionArchiveSourceKey} from './nutrition-archive.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
@@ -118,10 +119,11 @@ function events(){
   }
   if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
   if(!failed('nutrition')){
-    const rows=state.data.nutrition||[],ambiguous=ambiguousDateSet(rows,'nutrition_date');
+    const rows=state.data.nutrition||[],counts=new Map();
+    for(const row of rows){const key=JSON.stringify([day(row.nutrition_date),nutritionArchiveSourceKey(row.source)]);counts.set(key,(counts.get(key)||0)+1);}
     for(const n of rows){
-      const review=ambiguous.has(String(n.nutrition_date||''));
-      out.push({date:n.nutrition_date,domain:'Alimentação',title:review?'Alimentação em revisão':n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:review?'Mais de um total diário nesta data; valores preservados sem escolha automática.':n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'',source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
+      const sourceKey=String(n.source||'').trim()?nutritionArchiveSourceKey(n.source):'',review=counts.get(JSON.stringify([day(n.nutrition_date),sourceKey]))>1;
+      out.push({date:n.nutrition_date,domain:'Alimentação',title:review?'Alimentação em revisão':n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:review?'Mais de um total diário nesta data; valores preservados sem escolha automática.':n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'',source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.source_record_id||'',sourceKey});
     }
   }
   if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:sourceDisplay(a.source)});}
@@ -132,7 +134,7 @@ function events(){
 }
 function item(e){
   const body=`<span>${esc(e.domain)}</span><div><b>${esc(e.title)}</b>${e.sub?`<small>${esc(e.sub)}</small>`:''}${e.source?`<em>${esc(e.source)}</em>`:''}</div>`;
-  return e.route?`<button type="button" class="timelineItem rich timelineLink" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}">${body}</button>`:`<div class="timelineItem rich">${body}</div>`;
+  return e.route?`<button type="button" class="timelineItem rich timelineLink" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" data-timeline-source="${esc(e.sourceKey||'')}">${body}</button>`:`<div class="timelineItem rich">${body}</div>`;
 }
 function crossDomainDays(rows){
   const evidenceRows=rows.filter(e=>!String(e.domain||'').endsWith(' em conferência')&&!contextualDomains.has(e.domain));
@@ -142,7 +144,7 @@ function crossDomainDays(rows){
 }
 function contextRow(e){
   const body=`<strong>${esc(e.domain)}</strong><span>${esc(e.title)}</span>`;
-  return e.route?`<button type="button" class="timelineContextJump" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" aria-label="Abrir ${esc(e.domain)} de ${esc(fmtDate(e.date))}">${body}</button>`:`<div>${body}</div>`;
+  return e.route?`<button type="button" class="timelineContextJump" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" data-timeline-source="${esc(e.sourceKey||'')}" aria-label="Abrir ${esc(e.domain)} de ${esc(fmtDate(e.date))}">${body}</button>`:`<div>${body}</div>`;
 }
 function crossDomainCard(entry){
   const preview=[...entry.rows].sort((a,b)=>Number(!!b.route)-Number(!!a.route)||String(a.domain).localeCompare(String(b.domain),'pt-BR')).slice(0,4);
