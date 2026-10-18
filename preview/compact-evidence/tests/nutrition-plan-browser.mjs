@@ -118,6 +118,16 @@ async function quality(page,label){
   assert.ok(layout.document<=layout.viewport+1&&layout.body<=layout.viewport+1&&layout.card.scroll<=layout.card.width+1&&layout.host.scroll<=layout.host.width+1,`${label}: no horizontal overflow ${JSON.stringify(layout)}`);
   const small=await page.locator('[data-nutrition-plan]').evaluate(root=>[...root.querySelectorAll('button,select,summary')].filter(el=>!el.disabled&&el.checkVisibility({checkVisibilityCSS:true})).flatMap(el=>{const r=el.getBoundingClientRect();return r.width>=43.5&&r.height>=43.5?[]:[{tag:el.tagName,id:el.id,width:r.width,height:r.height}];}));
   assert.deepEqual(small,[],`${label}: all visible plan controls are at least 44 × 44 CSS pixels`);
+  const overlaps=await page.locator('[data-plan-metric]').evaluateAll(metrics=>metrics.filter(metric=>metric.checkVisibility({checkVisibilityCSS:true})).flatMap(metric=>{
+    const children=[...metric.children].map((element,index)=>{const range=document.createRange(),box=element.getBoundingClientRect(),style=getComputedStyle(element);range.selectNodeContents(element);return {index,tag:element.tagName,text:element.textContent.trim(),box:{left:box.left,right:box.right,top:box.top,bottom:box.bottom,width:box.width,height:box.height},style:{fontSize:style.fontSize,lineHeight:style.lineHeight,fontFamily:style.fontFamily,margin:style.margin,textSizeAdjust:style.textSizeAdjust,gridRow:style.gridRow},rects:[...range.getClientRects()].filter(rect=>rect.width>0&&rect.height>0).map(rect=>({left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom}))};}),collisions=[];
+    for(let a=0;a<children.length;a++)for(let b=a+1;b<children.length;b++){
+      const first=children[a],second=children[b],intersects=first.rects.some(one=>second.rects.some(two=>Math.min(one.right,two.right)-Math.max(one.left,two.left)>1&&Math.min(one.bottom,two.bottom)-Math.max(one.top,two.top)>1));
+      if(intersects)collisions.push({metric:metric.dataset.planMetric,first,second});
+    }
+    return collisions;
+  }));
+  if(overlaps.length)writeFileSync(`${dir}/${label.replace(/[^a-z0-9-]/gi,'-')}-text-overlap.json`,JSON.stringify(overlaps,null,2));
+  assert.deepEqual(overlaps,[],`${label}: labels, recorded values, reasons and coverage must never overlap`);
   assert.doesNotMatch(await page.locator('[data-nutrition-plan]').innerText(),/\b(?:NaN|undefined|Infinity)\b/);
   assert.equal(await page.locator('[data-nutrition-plan] img,[data-nutrition-plan] script').count(),0,'document text is never executable markup');
   assert.equal(await page.evaluate(()=>globalThis.__planInjection),undefined);
