@@ -123,7 +123,35 @@ async function quality(page,label){
   assert.equal(await page.evaluate(()=>globalThis.__planInjection),undefined);
   return layout;
 }
-async function capture(page,name){await page.locator('[data-nutrition-plan]').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${name}-viewport.png`,animations:'disabled'});await page.locator('[data-nutrition-plan]').screenshot({path:`${dir}/${name}-card.png`,animations:'disabled'});}
+async function captureTile(page,name,target){
+  await target.evaluate(element=>element.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+  const visible=await target.evaluate(element=>{const r=element.getBoundingClientRect(),nav=document.querySelector('#mobileNav'),navRect=nav?.getBoundingClientRect(),bottom=nav&&nav.checkVisibility({checkVisibilityCSS:true})?Math.min(innerHeight,navRect.top):innerHeight;return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,viewportWidth:innerWidth,visibleBottom:bottom};});
+  assert.ok(visible.top>=-1&&visible.bottom<=visible.visibleBottom+1&&visible.left>=-1&&visible.right<=visible.viewportWidth+1,`${name}: screenshot focus must be fully visible ${JSON.stringify(visible)}`);
+  await page.screenshot({path:`${dir}/${name}.png`,animations:'disabled'});
+}
+async function capture(page,name){
+  const card=page.locator('[data-nutrition-plan]'),comparison=card.locator('[data-disclosure="nutrition-plan-comparison"]'),expanded=await comparison.count()&&await comparison.evaluate(element=>element.open);
+  await captureTile(page,`${name}-viewport`,expanded?comparison.locator(':scope > summary'):card);
+  // A tall element screenshot is clipped by the mobile app's scroll container.
+  // Capture actual viewport tiles centered on content, without changing styles.
+  if(!expanded){await card.screenshot({path:`${dir}/${name}-card.png`,animations:'disabled'});return;}
+  for(const [label,selector] of [['source','[data-plan-food-source]'],['first-metrics','[data-plan-metric="calories_kcal"]'],['middle-metrics','[data-plan-metric="carbs_g"]'],['last-metrics','[data-plan-metric="fiber_g"]'],['water-metric','[data-plan-metric="water_ml"]']]){
+    const target=card.locator(selector);if(await target.count())await captureTile(page,`${name}-${label}`,target);
+  }
+  const precision=card.locator('[data-disclosure="nutrition-plan-precision"]');
+  if(await precision.count()){const wasOpen=await precision.evaluate(element=>element.open);await open(page,'nutrition-plan-precision');await captureTile(page,`${name}-precision`,precision.locator('ul'));if(!wasOpen)await precision.locator(':scope > summary').click();}
+  const meals=card.locator('[data-disclosure="nutrition-plan-meals"]');
+  if(await meals.count()&&await meals.evaluate(element=>element.open)){
+    const entries=meals.locator('.nutritionPlanMeal');for(let index=0;index<await entries.count();index++)await captureTile(page,`${name}-meal-${index+1}`,entries.nth(index));
+  }
+  const provenance=card.locator('[data-disclosure="nutrition-plan-provenance"]');
+  if(await provenance.count()&&await provenance.evaluate(element=>element.open)){
+    await captureTile(page,`${name}-source-document`,provenance.locator(':scope > p').nth(1));
+    await captureTile(page,`${name}-source-author`,provenance.locator(':scope > p').nth(2));
+    await captureTile(page,`${name}-source-targets`,provenance.locator(':scope > ul'));
+  }
+  if(name.endsWith('-details')){const notes=card.locator('[data-disclosure="nutrition-plan-notes"]');if(await notes.count()){const wasOpen=await notes.evaluate(element=>element.open);await open(page,'nutrition-plan-notes');await captureTile(page,`${name}-source-notes`,notes);if(!wasOpen)await notes.locator(':scope > summary').click();}}
+}
 async function probeStates(page,f){
   for(const [state,status,rows] of [['loading','loading',f.data.nutritionPlans],['error','error',f.data.nutritionPlans],['empty','ready',[]],['invalid','ready',[f.data.nutritionPlans[0],{...f.data.nutritionPlans[1],checksum:'invalid'}]]]){
     await page.evaluate(async({status,rows})=>{const {state}=await import('./src/core.js');const {renderHealthDashboard}=await import('./src/health-dashboard.js');state.domainStatus.nutritionPlans=status;state.data.nutritionPlans=rows;document.querySelector('#screenHost').innerHTML=renderHealthDashboard(state.data,state.domainStatus,state.ui);},{status,rows});
