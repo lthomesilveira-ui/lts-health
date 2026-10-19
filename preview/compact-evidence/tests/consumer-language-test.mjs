@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import {mkdirSync,writeFileSync} from 'node:fs';
+import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {makeConsumerLanguageFixture,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey,consumerLanguageService} from './consumer-language-fixture.mjs';
 import {htmlText,technicalMatches} from './consumer-language-html.mjs';
 import {visibleTextGeometry} from './consumer-language-geometry.mjs';
+import {consumerRouteSettled,consumerDomainSettled} from './consumer-language-readiness.mjs';
 import {healthDashboardModel} from '../src/health-dashboard-model.js';
 import {nutritionArchiveModel} from '../src/nutrition-archive.js';
 
@@ -39,6 +40,28 @@ state.loaded=true;state.loading=false;state.domainStatus={nutrition:'loading',me
 assert.equal(isRouteReady('nutricao'),false,'route remains pending after one request fails while another still loads');
 state.domainStatus.nutrition='ready';assert.equal(isRouteReady('nutricao'),true,'settled error is a displayable route, not an endless loading state');
 state.loaded=previousLoad.loaded;state.loading=previousLoad.loading;state.domainStatus=previousLoad.status;
+// Guard the actual functions serialized into Playwright, including the exact
+// false/false/true polling sequence. No browser or socket is needed for this.
+const savedGlobals={window:globalThis.window,document:globalThis.document,location:globalThis.location};
+const syntheticRoot={},oldRoot={},mockState={loaded:true,loading:false,route:'nutricao',domainStatus:{meals:'loading'}};
+let routeReady=false,loadingNode=null;
+globalThis.window={__languageApp:{state:mockState,isRouteReady:()=>routeReady},__languageBeforeRefreshRoot:oldRoot};
+globalThis.document={querySelector:selector=>selector==='#screenHost .loadingState'?loadingNode:syntheticRoot};
+globalThis.location={hash:'#nutricao'};
+const predicateArgs={route:'nutricao',selector:'.ltsNutritionProduct',afterRefresh:true};
+assert.equal(consumerRouteSettled.constructor.name,'Function');assert.equal(consumerDomainSettled.constructor.name,'Function');
+assert.equal(consumerDomainSettled({domain:'meals',status:'error'}),false);
+mockState.domainStatus.meals='error';assert.equal(consumerDomainSettled({domain:'meals',status:'error'}),true);
+assert.equal(consumerRouteSettled(predicateArgs),false,'settled domain does not imply settled route');
+routeReady=true;
+assert.equal(consumerRouteSettled(predicateArgs),false);assert.equal(consumerRouteSettled(predicateArgs),false);assert.equal(consumerRouteSettled(predicateArgs),true,'only the third real polling call succeeds');
+window.__languageBeforeRefreshRoot=syntheticRoot;assert.equal(consumerRouteSettled(predicateArgs),false,'old root never qualifies after refresh');
+window.__languageBeforeRefreshRoot=oldRoot;loadingNode={};assert.equal(consumerRouteSettled(predicateArgs),false,'loading view cannot be accepted as an error state');
+for(const [key,value] of Object.entries(savedGlobals)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}
+const workflow=readFileSync(new URL('../../../.github/workflows/health-compact-preview.yml',import.meta.url),'utf8');
+const workflowScripts=[...workflow.matchAll(/\brun:\s*node\s+(preview\/compact-evidence\/tests\/[\w-]+\.mjs)/g)].map(match=>match[1]);
+assert.ok(workflowScripts.some(path=>path.endsWith('consumer-language-browser.mjs')));
+for(const path of workflowScripts)assert.doesNotMatch(readFileSync(new URL(`../../../${path}`,import.meta.url),'utf8'),/\bwaitForFunction\s*\(\s*async\b/,`${path}: Promise predicates bypass Playwright polling; import first, then poll synchronously`);
 
 for(const kind of ['complete','partial','empty','conflict']){
   const f=makeConsumerLanguageFixture(kind),before=structuredClone(f.data);

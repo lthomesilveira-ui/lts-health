@@ -4,6 +4,7 @@ import {chromium} from 'playwright';
 import {makeConsumerLanguageFixture,consumerLanguageService,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey} from './consumer-language-fixture.mjs';
 import {technicalMatches} from './consumer-language-html.mjs';
 import {visibleTextGeometry} from './consumer-language-geometry.mjs';
+import {consumerRouteSettled,consumerDomainSettled} from './consumer-language-readiness.mjs';
 
 // Production-shaped application startup and real navigation. Only the SDK and
 // auth identity are synthetic. No ?fixture, runtime DOM replacement, real data,
@@ -15,9 +16,34 @@ const dir=process.env.LTS_CONSUMER_LANGUAGE_EVIDENCE_DIR||'consumer-language-vis
 const results=[],captures=[],inventories=[],failures=[];
 const roots={hoje:'[data-health-dashboard]',nutricao:'.ltsNutritionProduct',timeline:'.timelineGroups',treinos:'.ltsTrainingReference',saude:'.ltsLabsV2',tratamentos:'.screenTitle',dados:'.screenTitle',bio:'.ltsCompositionV2',evolucao:'#screenHost > :first-child',analise:'#screenHost > :first-child'};
 const save=()=>writeFileSync(`${dir}/results.json`,JSON.stringify({syntheticOnly:true,authenticatedWithRealAccount:false,fixedDate:LANGUAGE_TODAY,deviceScaleFactor:1,originalResolutionScreenshots:true,results,captures,failures},null,2));
+async function installAppProbe(page){
+  await page.evaluate(async()=>{
+    if(window.__languageApp)return;
+    const {state}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');
+    const imports=JSON.parse(document.querySelector('script[type="importmap"]').textContent).imports,coreUrl=new URL(imports['./src/core.js'],document.baseURI).href;
+    if(state!==(await import(coreUrl)).state)throw new Error('Synthetic QA imported a different core state than the application importmap');
+    window.__languageApp={state,isRouteReady};window.__languageTrace=[];
+    const ids=new WeakMap();let nextId=0;const id=node=>node?(ids.has(node)?ids.get(node):(ids.set(node,++nextId),nextId)):null;
+    window.__languageRecord=(reason,extra={})=>{
+      if(!window.__languageTraceEnabled)return;
+      const host=document.querySelector('#screenHost'),root=host?.firstElementChild,reads=window.__historyQA.reads;
+      window.__languageTrace.push({time:performance.now(),reason,...extra,coreUrl,route:state.route,hash:location.hash,loaded:state.loaded,loading:state.loading,routeReady:isRouteReady(state.route),domainStatus:{...state.domainStatus},rootId:id(root),rootClass:root?.className,stableRootId:id(window.__languageStableRoot),beforeRefreshRootId:id(window.__languageBeforeRefreshRoot),syncText:document.querySelector('#syncText')?.textContent,readCount:reads.length,lastRead:reads.at(-1),text:host?.innerText.slice(0,300)});
+    };
+    new MutationObserver(()=>window.__languageRecord('render')).observe(document.querySelector('#screenHost'),{childList:true});
+    // Instrument only the synthetic SDK's in-memory read log. No app state,
+    // data source, loader, DOM or backend operation is replaced by this probe.
+    const reads=window.__historyQA.reads;
+    reads.push=function(...items){const length=Array.prototype.push.apply(this,items);window.__languageRecord('sdk-read');return length;};
+  });
+}
+async function saveTrace(page,label){
+  const trace=await page.evaluate(()=>({events:window.__languageTrace||[],reads:window.__historyQA?.reads||[]}));
+  writeFileSync(`${dir}/${label}-refresh-trace.json`,JSON.stringify({syntheticOnly:true,...trace},null,2));
+}
 async function stable(page,route,{afterRefresh=false}={}){
+  await installAppProbe(page);
   await page.evaluate(()=>{window.__languageStableRoot=null;window.__languageFrames=0;});
-  await page.waitForFunction(async({route,selector,afterRefresh})=>{const{state}=await import('./src/core.js');const{isRouteReady}=await import('./src/data-layer.js');const root=document.querySelector(selector);if(!root||state.loading||!state.loaded||!isRouteReady(route)||state.route!==route||location.hash!==`#${route}`||document.querySelector('#screenHost .loadingState')||(afterRefresh&&root===window.__languageBeforeRefreshRoot))return false;if(window.__languageStableRoot!==root){window.__languageStableRoot=root;window.__languageFrames=0;}return ++window.__languageFrames>=3;},{route,selector:roots[route],afterRefresh});
+  assert.equal(await (await page.waitForFunction(consumerRouteSettled,{route,selector:roots[route],afterRefresh})).jsonValue(),true,'settled predicate must actually resolve true');
 }
 async function navigate(page,route,width){
   const nav=width<=840?'#mobileNav':'#primaryNav',direct=page.locator(`${nav} [data-route="${route}"]`);
@@ -30,6 +56,7 @@ async function disclose(page,key,open=true){
   assert.equal(await details.evaluate(el=>el.open),open,`${key}: native expansion works`);
 }
 async function primary(page,label){
+  await page.evaluate(label=>window.__languageRecord?.('primary-read',{label}),label);
   const text=await page.locator('#screenHost').innerText(),options=await page.locator('#screenHost select option').allTextContents();
   assert.deepEqual(technicalMatches(text),[],`${label}: no technical vocabulary in actual visible primary text`);
   assert.deepEqual(technicalMatches(options.join('\n')),[],`${label}: all source options have human labels`);
@@ -150,13 +177,14 @@ async function refreshCase(page,f,label,route,width,table,domain){
   // Refresh has two phases: initial domains, then this route's dependencies.
   // state.loading=false alone does not mean the route has finished. Require
   // its readiness plus a newly rendered root, never the previous ready screen.
-  await page.evaluate(({table,selector})=>{window.__historyQA.failTable=table;window.__languageBeforeRefreshRoot=document.querySelector(selector);},{table,selector:roots[route]});await page.locator('#refreshBtn').click();
-  await page.waitForFunction(async domain=>{const{state}=await import('./src/core.js');return state.domainStatus[domain]==='error'&&!state.loading;},domain);await stable(page,route,{afterRefresh:true});
+  await page.evaluate(({table,selector,domain})=>{window.__historyQA.failTable=table;window.__languageBeforeRefreshRoot=document.querySelector(selector);window.__languageTraceEnabled=true;window.__languageRecord('before-refresh',{domain,expectedStatus:'error'});},{table,selector:roots[route],domain});await page.locator('#refreshBtn').click();
+  assert.equal(await (await page.waitForFunction(consumerDomainSettled,{domain,status:'error'})).jsonValue(),true);await stable(page,route,{afterRefresh:true});
   const text=await primary(page,`${label}-refresh-${domain}`);assert.match(text,/n[aã]o.*carreg|indispon[ií]v|atualiz|parcial|n[aã]o.*poss[ií]vel/i);assert.ok(!text.includes(LANGUAGE_ERROR));
   const diagnostics=await page.evaluate(async domain=>{const{state}=await import('./src/core.js');return state.errors[domain];},domain);assert.ok(diagnostics.includes(LANGUAGE_ERROR),'technical error remains in diagnostic state');
   if(route==='nutricao'){assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),f.date(1));assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),foodSourceKey('Synthetic A food'));if(domain==='meals'){assert.equal(await page.locator('.ltsNutritionMeals article').count(),0);assert.equal(await page.locator('.ltsNutritionDiaryMetrics article > b').first().innerText(),'2.010 kcal');}else if(domain==='nutrition')assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article').count(),0);}
   await capture(page,`${label}-refresh-${domain}`,route==='nutricao'?'.ltsNutritionDiaryContext':null);
-  await page.evaluate(selector=>{window.__historyQA.failTable=null;window.__languageBeforeRefreshRoot=document.querySelector(selector);},roots[route]);await page.locator('#refreshBtn').click();await page.waitForFunction(async domain=>{const{state}=await import('./src/core.js');return state.domainStatus[domain]==='ready'&&!state.loading;},domain);await stable(page,route,{afterRefresh:true});await primary(page,`${label}-recovered-${domain}`);
+  await page.evaluate(({selector,domain})=>{window.__historyQA.failTable=null;window.__languageBeforeRefreshRoot=document.querySelector(selector);window.__languageRecord('before-refresh',{domain,expectedStatus:'ready'});},{selector:roots[route],domain});await page.locator('#refreshBtn').click();assert.equal(await (await page.waitForFunction(consumerDomainSettled,{domain,status:'ready'})).jsonValue(),true);await stable(page,route,{afterRefresh:true});await primary(page,`${label}-recovered-${domain}`);
+  await saveTrace(page,label);
 }
 async function securityChecks(page,traffic){
   const proof=await page.evaluate(async()=>{const{state,fixtureMode}=await import('./src/core.js');const client=window.supabase.createClient('synthetic','synthetic'),guard=[];for(const operation of [()=>client.from('synthetic').insert({}),()=>client.from('synthetic').update({}),()=>client.from('synthetic').delete(),()=>client.rpc('synthetic'),()=>client.functions.invoke('synthetic'),()=>client.storage.from('synthetic').upload('synthetic',new Blob(['synthetic']))]){try{operation();guard.push(false);}catch(error){guard.push(error.code==='preview_read_only');}}return {fixtureMode,user:state.session?.user?.id,reads:window.__historyQA.reads,writes:window.__historyQA.writes,guard};});
@@ -193,7 +221,7 @@ try{
         if(width===393)for(const [route,table,domain] of [['timeline','health_activity_records','activity'],['treinos','health_workouts','workouts'],['saude','health_lab_results','labs'],['tratamentos','health_medication_events','treatments'],['dados','health_daily_nutrition','nutrition']])await refreshCase(page,f,label,route,width,table,domain);
       }
       const proof=await securityChecks(page,traffic);results.push({name:label,width,height,kind,status:failures.length===failureStart?'passed':'failed',routes:LANGUAGE_ROUTES,...proof});save();console.log(`${label}: ${failures.length===failureStart?'passed':'issues recorded'}; primary language, disclosures, clinical originals and responsive layout captured.`);
-    }catch(error){await page.screenshot({path:`${dir}/${label}-failure.png`,animations:'disabled'}).catch(()=>{});failures.push({name:label,message:String(error.message),...traffic});results.push({name:label,width,height,kind,status:'failed'});save();}finally{await context.close();}
+    }catch(error){await saveTrace(page,label);await page.screenshot({path:`${dir}/${label}-failure.png`,animations:'disabled'}).catch(()=>{});failures.push({name:label,message:String(error.message),...traffic});results.push({name:label,width,height,kind,status:'failed'});save();}finally{await context.close();}
   }
   // A real unresolved SDK read must show loading, never a complete empty state.
   const f=makeConsumerLanguageFixture('partial'),{context,page,traffic}=await contextFor(browser,f,393,844,{pauseTable:'health_nutrition_meals'});
