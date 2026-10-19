@@ -179,6 +179,12 @@ try{
       // Restore the newest source before Timeline: a correct jump must override it.
       await choose(page,'#nutritionArchiveSource',currentKey);await chooseDate(page,HISTORY_TODAY);
       await navigate(page,'timeline',width);await page.locator('#timelinePeriod').selectOption('all');await stable(page,'timeline');await page.locator('#timelineYear').selectOption('2018');await stable(page,'timeline');await page.locator('#timelineMonth').selectOption('02');await stable(page,'timeline');await page.locator('#timelineDate').selectOption(FIRST_HISTORY_DAY);await stable(page,'timeline');
+      // The select changes before main.js's scheduled render. Root stability
+      // alone cannot prove the selected day has replaced the month's groups.
+      assert.equal(await (await page.waitForFunction(({date,label})=>{
+        const dates=[...document.querySelectorAll('.timelineGroups .timelineDay .timelineDate > b')];
+        return location.hash==='#timeline'&&document.querySelector('#timelineDate')?.value===date&&dates.length===1&&dates[0].textContent===label;
+      },{date:FIRST_HISTORY_DAY,label:dateLabel(FIRST_HISTORY_DAY)})).jsonValue(),true);
       const timelineTarget=page.locator('[data-timeline-ref="synthetic-history-day-0"]').first();
       assert.equal(await timelineTarget.getAttribute('data-timeline-source'),historyKey);assert.equal(await timelineTarget.getAttribute('data-timeline-date'),FIRST_HISTORY_DAY);
       assert.equal(await page.locator('[data-timeline-ref="synthetic-current-day-0"]').first().getAttribute('data-timeline-source'),currentKey,'identical display aliases retain distinct source identity');
