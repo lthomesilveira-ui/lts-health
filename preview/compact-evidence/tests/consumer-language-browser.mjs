@@ -199,6 +199,7 @@ async function visibleRefresh(page,label,targetRoute,width,table,domain,status){
 async function refreshCase(page,f,label,route,width,table,domain){
   await navigate(page,route,width);
   if(route==='nutricao'){await chooseArchiveSource(page,foodSourceKey('Synthetic A food'));await chooseArchiveDate(page,f.date(1));}
+  const nutritionBefore=route==='nutricao'&&domain==='nutrition'?await page.locator('.ltsCockpitPanel.nutrition').innerText():null;
   // Refresh has two phases: initial domains, then this route's dependencies.
   // state.loading=false alone does not mean the route has finished. Require
   // its readiness plus a newly rendered root, never the previous ready screen.
@@ -206,8 +207,19 @@ async function refreshCase(page,f,label,route,width,table,domain){
   const text=await primary(page,`${label}-refresh-${domain}`);assert.match(text,/n[aã]o.*carreg|indispon[ií]v|atualiz|parcial|n[aã]o.*poss[ií]vel/i);assert.ok(!text.includes(LANGUAGE_ERROR));
   const diagnostics=await page.evaluate(async domain=>{const{state}=await import('./src/core.js');return state.errors[domain];},domain);assert.ok(diagnostics.includes(LANGUAGE_ERROR),'technical error remains in diagnostic state');
   if(route==='nutricao'){assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),f.date(1));assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),foodSourceKey('Synthetic A food'));if(domain==='meals'){assert.equal(await page.locator('.ltsNutritionMeals article').count(),0);assert.equal(await page.locator('.ltsNutritionDiaryMetrics article > b').first().innerText(),'2.010 kcal');}else if(domain==='nutrition')assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article').count(),0);}
+  if(nutritionBefore!==null){
+    const panel=await page.locator('.ltsCockpitPanel.nutrition').innerText();
+    assert.match(panel,/n[aã]o.*carreg/i,'the selected failed source is explicitly unavailable in its own summary card');
+    assert.doesNotMatch(panel,/Sem diário nesta janela|Não há dados do diário escolhido/i,'a failed read cannot be presented as confirmed absence');
+    assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article > b').first().innerText(),'Refeição sintética registrada');
+    assert.match(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article > p').first().innerText(),/424 kcal/,'independently loaded meals remain visible');
+    const sources=await page.locator('#nutritionArchiveSource option').evaluateAll(options=>options.map(option=>option.value));
+    for(const status of ['candidate','held'])assert.ok(sources.includes(candidateSourceKey(status)),'other successfully loaded source identities remain selectable');
+    await capture(page,`${label}-refresh-nutrition-summary`,'.ltsCockpitPanel.nutrition');
+  }
   await capture(page,`${label}-refresh-${domain}`,route==='nutricao'?'.ltsNutritionDiaryContext':null);
   await visibleRefresh(page,label,route,width,table,domain,'ready');await primary(page,`${label}-recovered-${domain}`);
+  if(nutritionBefore!==null)assert.equal(await page.locator('.ltsCockpitPanel.nutrition').innerText(),nutritionBefore,'recovery restores the same selected summary and values');
   await saveTrace(page,label);
 }
 async function securityChecks(page,traffic){
@@ -249,7 +261,17 @@ try{
   }
   // A real unresolved SDK read must show loading, never a complete empty state.
   const f=makeConsumerLanguageFixture('partial'),{context,page,traffic}=await contextFor(browser,f,393,844,{pauseTable:'health_nutrition_meals'});
-  try{await page.goto(base+'#nutricao');await page.waitForFunction(()=>window.__historyQA?.reads.some(read=>read.table==='health_nutrition_meals'));assert.equal(await page.locator('#screenHost .loadingState').count(),1);assert.equal(await page.locator('.ltsNutritionArchive').count(),0);await capture(page,'mobile-loading','#screenHost .loadingState b');await page.evaluate(()=>window.__releaseHistoryReads());await stable(page,'nutricao');await primary(page,'mobile-loading-resolved');const proof=await securityChecks(page,traffic);results.push({name:'mobile-loading-recovery',status:'passed',...proof});save();}finally{await context.close();}
+  try{
+    await page.goto(base+'#nutricao');await installAppProbe(page);
+    assert.equal(await (await page.waitForFunction(()=>{
+      const qa=window.__historyQA,loading=document.querySelector('#screenHost .loadingState');
+      return Boolean(qa?.pauseTable==='health_nutrition_meals'&&!qa.pauseReleased&&qa.reads.some(read=>read.table==='health_nutrition_meals')&&window.__languageApp.state.domainStatus.meals==='loading'&&loading?.checkVisibility({checkVisibilityCSS:true}));
+    })).jsonValue(),true,'the unresolved synthetic read must have reached the visible loading render');
+    assert.equal(await page.locator('#screenHost .loadingState').count(),1);assert.equal(await page.locator('.ltsNutritionArchive').count(),0);
+    await capture(page,'mobile-loading','#screenHost .loadingState b');
+    assert.equal(await page.evaluate(()=>window.__historyQA.pauseReleased),false,'the read stays paused throughout loading capture');
+    await page.evaluate(()=>window.__releaseHistoryReads());await stable(page,'nutricao');await primary(page,'mobile-loading-resolved');const proof=await securityChecks(page,traffic);results.push({name:'mobile-loading-recovery',status:'passed',...proof});save();
+  }finally{await context.close();}
 }finally{writeFileSync(`${dir}/visible-language-inventory.json`,JSON.stringify({syntheticOnly:true,inventories},null,2));await browser.close();}
 assert.equal(failures.length,0,`Consumer-language QA found ${failures.length} failures; inspect results.json and original-resolution evidence.`);
 console.log('Consumer-language browser: synthetic production path, ten routes, four widths and full/partial/empty/conflict/failure/recovery states. No real authenticated QA was performed.');
