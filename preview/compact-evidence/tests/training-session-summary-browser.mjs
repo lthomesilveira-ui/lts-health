@@ -22,7 +22,7 @@ assert.equal(origin.search,'','Use production startup, never a fixture query');
 assert.equal(origin.hash,'');
 const dir='training-session-summary-visual';
 mkdirSync(dir,{recursive:true});
-const results=[],captures=[],failures=[],refreshProof=[];
+const results=[],captures=[],failures=[],refreshProof=[],literalTextEvidence=[];
 const roots={treinos:'.ltsTrainingReference',hoje:'[data-health-dashboard]',nutricao:'.ltsNutritionProduct'};
 const trainingSelector=(view='summary',id=SUMMARY_IDS.current)=>`${roots.treinos}[data-training-view="${view}"][data-workout-id="${id}"]`;
 const disclosureKey=(kind,id=SUMMARY_IDS.current)=>`training-${kind}-${id}`;
@@ -31,7 +31,7 @@ function save(){
   writeFileSync(`${dir}/results.json`,JSON.stringify({
     syntheticOnly:true,authenticatedReal:false,authenticatedWithRealAccount:false,
     fixedDate:SUMMARY_TODAY,deviceScaleFactor:1,originalResolutionScreenshots:true,
-    viewportWidths:[320,393,1180,1440],results,captures,refreshProof,failures
+    viewportWidths:[320,393,1180,1440],results,captures,refreshProof,literalTextEvidence,failures
   },null,2));
 }
 
@@ -146,9 +146,35 @@ async function literalText(page,selector,expected,{mustWrap=false}={}){
   assert.equal(await paragraph.locator('*').count(),0,'HTML-looking text creates no child markup');
   const geometry=await paragraph.evaluate(el=>{
     const b=el.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);
-    const rects=[...range.getClientRects()].filter(r=>r.width>0&&r.height>0);
-    return {lineCount:new Set(rects.map(r=>r.top)).size,overflow:rects.some(r=>r.left<b.left-1||r.right>b.right+1),whiteSpace:getComputedStyle(el).whiteSpace};
+    const rectangle=r=>({left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height});
+    const positive=r=>r.width>0&&r.height>0;
+    const outside=r=>positive(r)&&(r.left<b.left-1||r.right>b.right+1);
+    const rects=[...range.getClientRects()].map(rectangle),characters=[];
+    const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let node,nodeIndex=0;
+    while(node=walker.nextNode()){
+      let offset=0;
+      for(const character of node.textContent){
+        // DOM offsets are UTF-16, while iteration preserves surrogate pairs.
+        range.setStart(node,offset);range.setEnd(node,offset+character.length);
+        characters.push({nodeIndex,offset,character,whitespace:/^\s$/u.test(character),rects:[...range.getClientRects()].map(rectangle)});
+        offset+=character.length;
+      }
+      nodeIndex++;
+    }
+    // pre-wrap may give a hanging end-of-line space its own Range rectangle
+    // beyond the paragraph. It paints no glyph. Keep that raw evidence, but
+    // require every non-whitespace character (including the long token) to fit
+    // the same paragraph bounds with the unchanged 1px rounding tolerance.
+    const ink=characters.filter(character=>!character.whitespace);
+    const overflowingCharacters=ink.filter(character=>character.rects.some(outside));
+    return {viewport:{width:innerWidth,height:innerHeight},workoutId:el.closest('[data-workout-id]')?.dataset.workoutId,
+      paragraph:rectangle(b),rects,characters,rawOverflowingRects:rects.filter(outside),overflowingCharacters,
+      lineCount:new Set(ink.flatMap(character=>character.rects.filter(positive).map(r=>r.top))).size,
+      overflow:overflowingCharacters.length>0,whiteSpace:getComputedStyle(el).whiteSpace};
   });
+  const evidence=`literal-text-${String(literalTextEvidence.length+1).padStart(3,'0')}-${geometry.viewport.width}-${geometry.workoutId}.json`;
+  writeFileSync(`${dir}/${evidence}`,JSON.stringify({syntheticOnly:true,authenticatedReal:false,selector,...geometry},null,2));
+  literalTextEvidence.push({evidence,selector,viewport:geometry.viewport,workoutId:geometry.workoutId,lineCount:geometry.lineCount,rawOverflowRectCount:geometry.rawOverflowingRects.length,overflowingCharacterCount:geometry.overflowingCharacters.length});save();
   assert.equal(geometry.overflow,false,'Long unbroken original text wraps within its paragraph');
   if(mustWrap)assert.ok(geometry.lineCount>=3,'The long comment is wrapped across real rendered lines');
   assert.match(geometry.whiteSpace,/pre-wrap|break-spaces/,'Original newlines remain readable');
