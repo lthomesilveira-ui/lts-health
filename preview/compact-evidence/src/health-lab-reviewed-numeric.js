@@ -95,3 +95,5 @@ export function reviewedHemogramFootnoteValue(row){
   if(dateLines.length!==1||dateLines[0].toUpperCase()!==`RECEBIDO/COLETADO EM: ${printedDate}`)return null;
   return value;
 }
+
+export {sha256 as documentaryEvidenceSha256};
