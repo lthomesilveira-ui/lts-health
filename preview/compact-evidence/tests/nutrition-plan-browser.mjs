@@ -164,8 +164,17 @@ async function capture(page,name){
 }
 async function probeStates(page,f){
   for(const [state,status,rows] of [['loading','loading',f.data.nutritionPlans],['error','error',f.data.nutritionPlans],['empty','ready',[]],['invalid','ready',[f.data.nutritionPlans[0],{...f.data.nutritionPlans[1],checksum:'invalid'}]]]){
-    await page.evaluate(async({status,rows})=>{const {state}=await import('./src/core.js');const {renderHealthDashboard}=await import('./src/health-dashboard.js');state.domainStatus.nutritionPlans=status;state.data.nutritionPlans=rows;document.querySelector('#screenHost').innerHTML=renderHealthDashboard(state.data,state.domainStatus,state.ui);},{status,rows});
+    await page.evaluate(async({status,rows})=>{const {state}=await import('./src/core.js');const {renderHealthDashboard}=await import('./src/health-dashboard.js');state.domainStatus.nutritionPlans=status;state.data.nutritionPlans=rows;document.querySelector('#screenHost').innerHTML=renderHealthDashboard(state.data,state.domainStatus,state.ui);window.__qaPlanProbeCard=document.querySelector('[data-nutrition-plan]');},{status,rows});
     await page.waitForSelector(`[data-nutrition-plan][data-plan-state="${state}"]`);
+    // The compatibility controller sees these changed inputs on its next 250 ms
+    // poll. Await that real replacement before screenshots, not just the injected
+    // card's selector. Loading deliberately keeps the injected view: the route
+    // readiness guard prevents a runtime render until its sources have settled.
+    if(status!=='loading')await page.waitForFunction(expected=>{
+      const card=document.querySelector('[data-nutrition-plan]');
+      return card?.dataset.planState===expected&&card!==window.__qaPlanProbeCard&&!window.__qaPlanProbeCard.isConnected;
+    },state);
+    await stableHome(page);
     assert.equal(await page.locator('[data-plan-metric]').count(),0,`${state}: stale comparison is withheld`);
     assert.equal(await page.locator('[data-dashboard-card]').count(),7,`${state}: existing dashboard remains available`);
     await quality(page,`state/${state}`);

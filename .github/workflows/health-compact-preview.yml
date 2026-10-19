@@ -39,6 +39,8 @@ jobs:
           for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
       - name: Verify signed-out boundary
         run: node preview/compact-evidence/tests/mobile-study-auth.mjs
+      - name: Verify plain-language health screens and failure states
+        run: node preview/compact-evidence/tests/consumer-language-browser.mjs
       - name: Verify full histories in preview route
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
@@ -47,8 +49,6 @@ jobs:
         run: node preview/compact-evidence/tests/nutrition-plan-browser.mjs
       - name: Verify full dietary archive, historical routes and responsive navigation
         run: node preview/compact-evidence/tests/nutrition-history-access-browser.mjs
-      - name: Verify plain-language health screens and failure states
-        run: node preview/compact-evidence/tests/consumer-language-browser.mjs
       - name: Verify reviewed blood-count readings and raw values
         run: node preview/compact-evidence/tests/reviewed-blood-count-browser.mjs
       - name: Verify interval navigation and complete contextual evidence
