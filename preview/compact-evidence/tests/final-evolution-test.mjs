@@ -32,14 +32,36 @@ assert.doesNotMatch(c.evo.findings.map(f=>f.title).join(' '),/Old changed/);
 assert.match(html,/Comparação histórica · 02\/04\/2025/);assert.match(html,/42,5 kg × 8/);
 assert.match(html,/Fase das séries não informada/);
 
-const result=(date,method,value,extra={})=>({collection_date:date,biomarker:'Synthetic A',laboratory:'Synthetic lab',unit:'u',method,result_numeric:value,result_raw:String(value),...extra});
-const labs=[result('2025-01-02','HPLC',10),result('2025-03-01',null,11),result('2025-04-20','Cromatografia líquida de alta eficiência (HPLC)',12)];
+const result=(date,method,value,extra={})=>({collection_date:date,biomarker:'Synthetic A',laboratory:'Synthetic lab',unit:'u',method,reference_range:'0 a 20',result_numeric:value,result_raw:String(value),...extra});
+const labs=[result('2025-01-02','HPLC',10),result('2025-04-20','HPLC',12)];
 let l=laboratoryReport({labs},status,bounds);
 assert.equal(l.selected.comparable,true);assert.equal(l.selected.previous.collection_date,'2025-01-02');
 assert.equal(l.selected.delta,2);assert.equal(l.selected.baselineOutsideWindow,true);
 assert.equal(l.rows.length,1,'plot and current marker scope remain inside the chosen window');
-l=laboratoryReport({labs:[...labs.slice(0,2),result('2025-04-20','HPLC-MS',12)]},status,bounds);
+const interruptedLabs=[labs[0],result('2025-03-01',null,11),result('2025-04-20','Cromatografia líquida de alta eficiência (HPLC)',12)];
+l=laboratoryReport({labs:interruptedLabs},status,bounds);
+assert.equal(l.selected.comparable,false);assert.equal(l.selected.delta,null);
+assert.equal(l.selected.previous.collection_date,'2025-03-01','the immediately preceding collection is preserved even when its method is unknown');
+assert.equal(l.selected.previous.result_numeric,11);assert.equal(l.selected.comparisonReason,'unknown_method');
+l=laboratoryReport({labs:[labs[0],result('2025-03-01',null,11),labs[1]]},status,bounds);
+assert.equal(l.selected.comparable,false);assert.equal(l.selected.delta,null,'an older compatible method cannot bypass an intervening unknown method');
+assert.equal(l.selected.previous.collection_date,'2025-03-01');
+l=laboratoryReport({labs:[labs[0],result('2025-04-20','Cromatografia líquida de alta eficiência (HPLC)',12)]},status,bounds);
+assert.equal(l.selected.comparable,false);assert.equal(l.selected.delta,null,'method aliases are not automatically equivalent');
+assert.equal(l.selected.comparisonReason,'different_method');
+l=laboratoryReport({labs:[labs[0],result('2025-04-20','HPLC-MS',12)]},status,bounds);
 assert.equal(l.selected.comparable,false,'other chromatographic methods cannot be aliased');
+for(const reference_range of ['0 a 30',null]){
+ l=laboratoryReport({labs:[labs[0],result('2025-04-20','HPLC',12,{reference_range})]},status,bounds);
+ assert.equal(l.selected.comparable,false);assert.equal(l.selected.delta,null,'changed or missing references cannot produce a delta');
+ assert.equal(l.selected.comparisonReason,'different_or_missing_reference');
+}
+for(const changedIndex of [0,1]){
+ const conflicting=labs.map((row,index)=>index===changedIndex?{...row,result_raw:'99'}:row);
+ l=laboratoryReport({labs:conflicting},status,bounds);
+ assert.equal(l.selected.comparable,false);assert.equal(l.selected.delta,null,'contradictory raw results block either side of the pair');
+ assert.equal(l.selected.comparisonReason,'non_exact_value');
+}
 l=laboratoryReport({labs:[result('2025-03-01',null,11),result('2025-04-20',null,12)]},status,bounds);
 assert.equal(l.selected.previous.result_numeric,11);assert.equal(l.selected.delta,null,'unknown-method observations remain readable, without delta');
 l=laboratoryReport({labs:[labs[0],result('2025-04-20','HPLC',null,{result_raw:'<12'})]},status,bounds);
@@ -77,10 +99,14 @@ const ranged=(value,reference_range,extra={})=>result('2025-04-20','Synthetic me
 assert.equal(labReferenceStatus(ranged(120,'Homens: 10 a 100 u; resultado confirmado após diluição')).status,'above');
 assert.equal(labReferenceStatus(ranged(9,'10 a 100')).status,'below');
 for(const n of [10,50,100])assert.equal(labReferenceStatus(ranged(n,'10 a 100 u')).status,'within','endpoints are included');
-for(const reference of ['10 a 100 mg/dL','Homens: 10 a 100 u; mulheres: 5 a 50 u','Adultos: 10 a 100 u','Jejum: <100; sem jejum: <120','ótimo <100; alto >200','100 a 10 u','10 a 10 u','10 a 100 u; alvos dependem de risco','3.800 a 9.800 u','1,250 a 2,500 u'])assert.equal(labReferenceStatus(ranged(120,reference)).status,'unclassified',`no invented interpretation: ${reference}`);
+const adultRange=labReferenceStatus(ranged(120,'Adultos: 10 a 100 u'));
+assert.equal(adultRange.status,'above');assert.equal(adultRange.scope,'Adultos','a single explicitly qualified range retains its source scope');
+assert.equal(adultRange.low,10);assert.equal(adultRange.high,100);
+for(const reference of ['10 a 100 mg/dL','Homens: 10 a 100 u; mulheres: 5 a 50 u','Adultos: 10 a 100 u; crianças: 5 a 50 u','Jejum: <100; sem jejum: <120','ótimo <100; alto >200','100 a 10 u','10 a 10 u','10 a 100 u; alvos dependem de risco','3.800 a 9.800 u','1,250 a 2,500 u'])assert.equal(labReferenceStatus(ranged(120,reference)).status,'unclassified',`no invented interpretation: ${reference}`);
 assert.equal(labReferenceStatus(ranged(120,'0,45 a 99,95 u')).lowRaw,'0,45','source range precision is retained');
 assert.equal(labReferenceStatus(ranged(120,'10 a 100 u',{result_raw:'<120'})).status,'unclassified');
 assert.equal(labReferenceStatus(ranged(null,'10 a 100 u',{result_raw:'Detectável'})).status,'unclassified');
+assert.equal(labReferenceStatus(ranged(50,'10 a 100 u',{result_raw:'120'})).status,'unclassified','a numeric projection cannot override a contradictory raw result');
 
 const routineRows=Array.from({length:60},(_,age)=>({date:new Date(Date.parse(`${today}T12:00:00Z`)-age*86400000).toISOString().slice(0,10),previous:age>=30}));
 const meaningful={...stale,labs:[ranged(120,'10 a 100 u',{biomarker:'Synthetic signal'}),ranged(50,'10 a 100 u',{biomarker:'Synthetic stable'})],nutrition:routineRows.map(row=>({nutrition_date:row.date,source:'Synthetic diary',protein_g:row.previous?130:100,calories_kcal:row.previous?2000:2100})),sourceMetrics:routineRows.map(row=>({metric_date:row.date,metric_type:'sleep_duration_h',value:row.previous?7:6.5,unit:'h',source_family:'synthetic',source_name:'Synthetic sleep',canonical_status:'candidate'})),body:[{measured_at:'2025-04-01',source:'Synthetic scan',device_name:null,weight_kg:80},{measured_at:'2025-04-20',source:'Synthetic scan',device_name:'Synthetic device',weight_kg:79}],segmental:[{measured_at:'2025-04-01',source:'Synthetic regional scan',device_name:null,lean_right_arm_kg:4,fat_right_arm_kg:.4},{measured_at:'2025-04-20',source:'Synthetic regional scan',device_name:'Synthetic device',lean_right_arm_kg:3.9,fat_right_arm_kg:.5}]};

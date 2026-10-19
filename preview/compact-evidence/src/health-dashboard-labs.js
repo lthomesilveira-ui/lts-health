@@ -147,6 +147,43 @@ function compareLabs(current,previous,ambiguous){
     delta:comparable?Number((current.exactValue-previous.exactValue).toPrecision(12)):null,
     comparisonLabel:comparable?'Mesmo laboratório, unidade, método e referência registrados':'Valores separados; comparação não estabelecida'};
 }
+
+// Shared read-only contract for consumers of raw laboratory rows. Keep these
+// wrappers on the dashboard's existing interpretation; they neither normalize
+// source values nor invent documentary evidence for an ambiguous result.
+export const knownLabMetadata=known;
+export function labResultReading(row={}){
+  return laboratoryObservation(row??{},{});
+}
+export function labHistoryConflicts(rows=[]){
+  const observed=rows.map(labResultReading);
+  const review=deduplicate(observed,row=>row.sourceRecordId||row.key,row=>row);
+  const conflicting=new Set(review.duplicates.filter(row=>row.conflicting).map(row=>row.key));
+  const unverified=new Set([...groups(observed.filter(row=>!row.sourceRecordId),row=>row.key)].filter(([,list])=>list.length>1).map(([key])=>key));
+  return new Set(rows.filter((row,index)=>row.identityConflict||conflicting.has(observed[index].sourceRecordId||observed[index].key)||unverified.has(observed[index].key)));
+}
+export function compareLabResults(currentRow,previousRow,{ambiguous=false}={}){
+  const current=labResultReading(currentRow),previous=previousRow==null?null:labResultReading(previousRow);
+  // The dashboard establishes identity, chronology and collection ambiguity
+  // while grouping whole histories. A pairwise consumer must establish them
+  // explicitly, and pass ambiguity found elsewhere in the collection.
+  const conflict=Boolean(currentRow?.identityConflict||previousRow?.identityConflict||currentRow?.ambiguous||previousRow?.ambiguous||
+    (previous&&current.sourceRecordId&&current.sourceRecordId===previous.sourceRecordId));
+  const reason=ambiguous||conflict?'ambiguous_collection':!previous?null:
+    !current.markerKnown||!previous.markerKnown?'unknown_biomarker':
+    norm(current.biomarker)!==norm(previous.biomarker)?'different_biomarker':
+    !known(current.laboratory)||!known(previous.laboratory)?'unknown_laboratory':
+    norm(current.laboratory)!==norm(previous.laboratory)?'different_laboratory':
+    !known(current.unit)||!known(previous.unit)?'unknown_unit':current.unit!==previous.unit?'different_unit':
+    !current.date||!previous.date?'invalid_collection_date':current.date<=previous.date?'non_chronological_collections':null;
+  const comparison=compareLabs(current,previous,Boolean(reason));
+  if(!reason)return comparison;
+  const labels={unknown_biomarker:'Marcador não informado em uma das coletas.',different_biomarker:'Os marcadores registrados são diferentes.',
+    different_laboratory:'Os laboratórios registrados são diferentes.',different_unit:'As unidades registradas são diferentes.',
+    invalid_collection_date:'Data de coleta ausente ou inválida em um dos resultados.',
+    non_chronological_collections:'A coleta anterior precisa ter uma data válida anterior à coleta atual.'};
+  return {...comparison,comparisonReason:reason,comparisonReasonLabel:labels[reason]||comparisonReasonLabel(reason,current,previous)};
+}
 export function dashboardLabs(data={},status={},bounds={}){
   const available=status.labs==='ready',observed=available?(data.labs||[]).filter(row=>day(row?.collection_date)&&day(row.collection_date)<=bounds.end).map(row=>laboratoryObservation(row,bounds)):[];
   const canonical=deduplicate(observed,row=>row.sourceRecordId||row.key,row=>row);
