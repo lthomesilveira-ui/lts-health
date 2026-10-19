@@ -171,19 +171,43 @@ async function evolutionChecks(page,label){
   await capture(page,`${label}-evolution-scroll-end`,'[data-evolution-metric="body_fat_pct"]');
   await page.locator('[data-evolution-metric]').first().evaluate(el=>el.closest('.segmented').scrollTo({left:0,behavior:'instant'}));
 }
+async function visibleRefresh(page,label,targetRoute,width,table,domain,status){
+  // The approved mobile Home hides the global header; several legacy mobile
+  // routes also omit its refresh control. Nutrition has a visible user action.
+  // A global refresh clears readiness, so returning to the requested route
+  // loads its dependencies normally. Never click a CSS-hidden control.
+  const actionRoute=await page.locator('#refreshBtn').isVisible()?targetRoute:'nutricao';
+  if(actionRoute!==targetRoute)await navigate(page,actionRoute,width);
+  assert.equal(await page.locator('#refreshBtn').isVisible(),true,`${label}: ${actionRoute} exposes the real refresh action`);
+  const readsBefore=await page.evaluate(({table,selector,domain,status,actionRoute,targetRoute})=>{
+    window.__historyQA.failTable=status==='error'?table:null;
+    window.__languageBeforeRefreshRoot=document.querySelector(selector);window.__languageTraceEnabled=true;
+    window.__languageRecord('before-refresh',{domain,expectedStatus:status,actionRoute,targetRoute});
+    return window.__historyQA.reads.length;
+  },{table,selector:roots[actionRoute],domain,status,actionRoute,targetRoute});
+  if(actionRoute!==targetRoute)await capture(page,`${label}-${domain}-${status}-refresh-via-${actionRoute}`,'#refreshBtn');
+  await page.locator('#refreshBtn').click();await stable(page,actionRoute,{afterRefresh:true});
+  if(actionRoute!==targetRoute)await navigate(page,targetRoute,width);
+  assert.equal(await (await page.waitForFunction(consumerDomainSettled,{domain,status})).jsonValue(),true);
+  const proof=await page.evaluate(({table,readsBefore,domain,status,actionRoute,targetRoute})=>{
+    const read=window.__historyQA.reads.slice(readsBefore).find(item=>item.table===table);
+    window.__languageRecord('refresh-target-settled',{domain,expectedStatus:status,actionRoute,targetRoute,newTargetRead:!!read});
+    return {newTargetRead:!!read,route:window.__languageApp.state.route,status:window.__languageApp.state.domainStatus[domain]};
+  },{table,readsBefore,domain,status,actionRoute,targetRoute});
+  assert.equal(proof.newTargetRead,true,`${label}: user refresh/navigation really re-read ${domain}`);assert.equal(proof.route,targetRoute);assert.equal(proof.status,status);
+}
 async function refreshCase(page,f,label,route,width,table,domain){
   await navigate(page,route,width);
   if(route==='nutricao'){await chooseArchiveSource(page,foodSourceKey('Synthetic A food'));await chooseArchiveDate(page,f.date(1));}
   // Refresh has two phases: initial domains, then this route's dependencies.
   // state.loading=false alone does not mean the route has finished. Require
   // its readiness plus a newly rendered root, never the previous ready screen.
-  await page.evaluate(({table,selector,domain})=>{window.__historyQA.failTable=table;window.__languageBeforeRefreshRoot=document.querySelector(selector);window.__languageTraceEnabled=true;window.__languageRecord('before-refresh',{domain,expectedStatus:'error'});},{table,selector:roots[route],domain});await page.locator('#refreshBtn').click();
-  assert.equal(await (await page.waitForFunction(consumerDomainSettled,{domain,status:'error'})).jsonValue(),true);await stable(page,route,{afterRefresh:true});
+  await visibleRefresh(page,label,route,width,table,domain,'error');
   const text=await primary(page,`${label}-refresh-${domain}`);assert.match(text,/n[aã]o.*carreg|indispon[ií]v|atualiz|parcial|n[aã]o.*poss[ií]vel/i);assert.ok(!text.includes(LANGUAGE_ERROR));
   const diagnostics=await page.evaluate(async domain=>{const{state}=await import('./src/core.js');return state.errors[domain];},domain);assert.ok(diagnostics.includes(LANGUAGE_ERROR),'technical error remains in diagnostic state');
   if(route==='nutricao'){assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),f.date(1));assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),foodSourceKey('Synthetic A food'));if(domain==='meals'){assert.equal(await page.locator('.ltsNutritionMeals article').count(),0);assert.equal(await page.locator('.ltsNutritionDiaryMetrics article > b').first().innerText(),'2.010 kcal');}else if(domain==='nutrition')assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article').count(),0);}
   await capture(page,`${label}-refresh-${domain}`,route==='nutricao'?'.ltsNutritionDiaryContext':null);
-  await page.evaluate(({selector,domain})=>{window.__historyQA.failTable=null;window.__languageBeforeRefreshRoot=document.querySelector(selector);window.__languageRecord('before-refresh',{domain,expectedStatus:'ready'});},{selector:roots[route],domain});await page.locator('#refreshBtn').click();assert.equal(await (await page.waitForFunction(consumerDomainSettled,{domain,status:'ready'})).jsonValue(),true);await stable(page,route,{afterRefresh:true});await primary(page,`${label}-recovered-${domain}`);
+  await visibleRefresh(page,label,route,width,table,domain,'ready');await primary(page,`${label}-recovered-${domain}`);
   await saveTrace(page,label);
 }
 async function securityChecks(page,traffic){
