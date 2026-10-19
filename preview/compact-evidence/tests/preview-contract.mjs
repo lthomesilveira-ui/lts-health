@@ -6,8 +6,8 @@ import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // Generic build hashes live in the test. No public JSON payload is introduced.
 const manifest={
-  "candidate_commit": "40dcf27a061d7e6176e0f18803d0e190bd18605c",
-  "build": "health-dashboard-20261019.71",
+  "candidate_commit": "79e23905b9c4a106a979942020dac3cd1f1a0976",
+  "build": "health-dashboard-20261019.72",
   "files": {
     "accessibility.css": "9ee0d8b2fd8bc00d1c039e9dcf8598f695a273cea119614e14181cb4f1879389",
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
@@ -30,11 +30,11 @@ const manifest={
     "health-auto-export.css": "de23cf04121625dfa1ce4dd60039708903e0cc8348e27e11099e51441433cb6a",
     "health-dashboard.css": "a7b8010a601bf179117fbbbd267883edaef677f377656768e81c1962c1f503fd",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
-    "history-depth.css": "c8ced015cc32ed0487678cb7998b4984981971c97d168749a65fc58fecf692db",
+    "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "3ed8aa5314d7e973f75993f69f0f95b2a2d617e7e3f4eb619cd622fee4b92328",
+    "index.html": "8105f79beee4eab0bf6d00ab54556ff443b6e38c58f9d3ecf057cec43db76f76",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "bbbf9acfa364c27edd8b09c8feb64dd64ec80a25b0b38e6b26102cc0ed3943f1",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
@@ -73,23 +73,23 @@ const manifest={
     "src/evidence-insights-view.js": "b2dababf8c8ae008af62c3f49362e9e2f62173653eb566dec5504c28a58a6141",
     "src/evidence-insights.js": "46fd88e8c3d7be0ab6de361201581d5a6cab1c4ee785ebf3f53f2bac9387f1a3",
     "src/evidence-priority.js": "a35801fda348552067a5e334643b364ad75304db92c72494325f2c83b275a47a",
-    "src/evolution-model.js": "7a281361a0a7decb6c4594b697920057e8b529230a106ffe50a18a1ae97aadc3",
+    "src/evolution-model.js": "c95f4f64ff555f51c04cc10e233da9b83cc5e0e9871567791e5f444353486f49",
     "src/evolution-screen.js": "4b0e1328954de031c8c8a7ade77bb839c3b11f4cf2b9b0564c53b7005d74d57e",
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/health-auto-export-connection.js": "2cac80a8e2936e40aa6f39c806d635d965b6c30fe5e451c097c375f6bd7f1dae",
     "src/health-auto-export-data.js": "241dd41d8a5372f25dbd7c395028c51ebb43b25490f135a22b5fcffde5b415f2",
-    "src/health-context.js": "e10ce4cd0590d096828ad3a20978381f312da6a451853dc3870aa96a03338b10",
+    "src/health-context.js": "26af9d2436d1145f0e4b155eb1ea26c7138adf6a68db12e26d7dd7fe4c359bf7",
     "src/health-dashboard-body.js": "29c26568e4f0cca387df73a40b1cc157d22bd46e73476e5eb156a70416134f42",
     "src/health-dashboard-context.js": "af6986230dab59649a4fe68e226e5a7e4f543c2e1c155ee2d6efb25368cdb12c",
     "src/health-dashboard-guidance.js": "40383b198066d52e5e4f8d3b725747b49ae1024815dfd219dd2baaf5244a191a",
-    "src/health-dashboard-labs.js": "322b76d0951a3736c4e0eefc2f6f74fd32dca75f7995e0b48174b6f1d1c67679",
+    "src/health-dashboard-labs.js": "45262b82d63fffb723c06e44a80c7cf6daffc96fd20f3f132c8e600f8410e3ee",
     "src/health-dashboard-model.js": "3fa97ff1f28dff85b96cdf888622622bd1057372d44d025ca4503393f57dc7f8",
     "src/health-dashboard-training.js": "309e7137ba62c5e44797a31fa70968cf6fb30484bce436254e840c0178d8925d",
     "src/health-dashboard.js": "97ab1d4549d1dc16195537629af575da5d386167dda6ef1f31d3a89bacdba800",
     "src/health-lab-reviewed-numeric.js": "71070a17d4925105c654cf4ca2530e248ae60bd399bc5f33a88f2df95cbcb7cc",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
     "src/history-tools.js": "1f89aa73bf582b91a36a163a770a8dc9f6be4ca1c52935986e2e989b328251f3",
-    "src/home-cockpit.js": "602abfb615cb6d19042a2ad7c4475076bed2605912342d091df5f792d3487916",
+    "src/home-cockpit.js": "9388bdddf4aed2528a3536629e94ff8a98f130785eccfdb18017652c38b84c6f",
     "src/home-evidence-insights.js": "c1a3fe6a08e6271d7aec24940428215cfdfa2473a2006eecbb4d23c49cef95e7",
     "src/home-lab-history.js": "c2382d0762ef86dc15a2ed2887c4ea94d08341b0b94e2bc94d179ad627d9e91c",
     "src/home-overview.js": "2d08723ecce7f700f3dc3263706b75c20c85d08812ed9d3233138ae0ffdd5aa5",
@@ -100,9 +100,9 @@ const manifest={
     "src/hydration.js": "ac08d5f9c599e7937da7f6c73019d3faaf73b08c87039760d2c89cd2aeeb24ff",
     "src/integrated-analysis.js": "3a32d46636af4853d20cf02a6692d1751c3351d9446cbf6cec7d405afc677ea4",
     "src/integrated-review-view.js": "c2d7a62cd2e0178942176685c2143c55c69f6623f71836f593aa6c63cadec485",
-    "src/integrated-review.js": "288e3424ecaf2905db2b397077ec62979484359bec9e47f4d0639023ec809801",
+    "src/integrated-review.js": "0a2b5f6414b706e06fa385bed405b9108ddca7c41140207a8b3908fef508b631",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
-    "src/labs-layout-v2.js": "9adaf96fe2f50216729b59c4b38db7de1f271fb4cf21bbc841ed69a0e249aa71",
+    "src/labs-layout-v2.js": "6092306cde0fc2aa00ae5fa4c75544be5adcf2eebba57ece43afb2334afa2a74",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
     "src/longitudinal-story.js": "d2b764d06c1073f0ae57e49290c8e39609ea2095ce6533cc9e8f99ade0c35c12",
     "src/main.js": "232d1db871fafe174f3057374e23103dfc41a2d791af4b9f6d61bad2740ce1d1",
@@ -122,8 +122,8 @@ const manifest={
     "src/product-layout-v2.js": "39ced48a76c7a6b01556c7c5c54d73de279bdc06d5f08dabce692d00dd0b1f05",
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "4e49271bb7d60a68952c2b122bf34662ed52052dbf3e034c3cff11b62234d720",
-    "src/reports-model.js": "030fda1f1571f4319f33c056bdc068780df07f610a3bb5769ef8a2413ead1997",
-    "src/reports-screen.js": "9706af57de78f28e011b92ea131c6c8ec40078eddbee95070eb39a76adfb8f8f",
+    "src/reports-model.js": "e79d30443cff18c5ddfd53ca1481f8133ab8783c951ec8cdeefe89a900cf17ae",
+    "src/reports-screen.js": "5601d46a0a55b201ec87c43089e725b5e3a50db72fbd35a285763e2b0bafdd26",
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-display.js": "9e1e68fa7382145291a3fc339ba7c2b118038e3ec68e0943f6f985ad52e87d00",
     "src/source-status.js": "f51f73a6d73d5880b0615b89101693ff2333a7d2021311d96bd80cf4a57b179f",
@@ -153,7 +153,7 @@ const manifest={
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-assert.equal(manifest.build,'health-dashboard-20261019.71');
+assert.equal(manifest.build,'health-dashboard-20261019.72');
 for(const [relative,expected] of Object.entries(manifest.files)){
  assert.ok(/^(index\.html|[\w-]+\.(?:css|svg)|src\/[\w-]+\.js)$/.test(relative),'allowlisted generic source only');
  const file=path.join(root,relative),body=fs.readFileSync(file,'utf8');assert.equal(hash(body),expected,'preview manifest matches '+relative);
@@ -172,7 +172,7 @@ assert.equal(core,productionCore,'authentication/configuration is unchanged from
 assert.match(fs.readFileSync(path.join(production,'index.html'),'utf8'),/mobile-parity-20261014\.58/,'production remains on its published build');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.71"></script>';
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.72"></script>';
 assert.ok(index.includes(guardTag)&&index.indexOf(guardTag)<index.indexOf('<script type="module"'),'blocking classic guard loads before application modules');
 assert.ok(index.indexOf(guardTag)>index.indexOf('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'guard installs after SDK');
 assert.match(index,/Prévia · somente leitura/);

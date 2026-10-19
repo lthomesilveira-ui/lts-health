@@ -28,9 +28,15 @@ const documentGoal={effective_from:'2024-03-05',water_ml:1600,notes:JSON.stringi
 assert.equal(documentedWaterBase(documentGoal).date_basis,'document_update');assert.equal(goalForDate([documentGoal],'2024-03-08'),null,'document reference is not silently treated as active clinical start');assert.equal(waterGoal({goals:[documentGoal]},status,'2024-03-04'),null);assert.equal(waterGoal({goals:[documentGoal]},status,'2024-03-05'),null,'documentary values in goals cannot bypass the independent document domain');
 const effort={...data,sets:data.sets.map((r,i)=>({...r,failure:i===0?true:i===1?false:null}))};assert.equal(homeEvidence(effort,status,model(effort)).training.selected,null,'known effort and unknown effort do not share a context');
 
-const labMany={...data,labs:[...data.labs,{...data.labs[0],biomarker:'Synthetic B',result_numeric:5},{...data.labs[0],biomarker:'Synthetic C',reference_range:'Varies by context'}]};
+const labMany={...data,labs:[...data.labs,{...data.labs[0],biomarker:'Synthetic B',result_numeric:5,result_raw:'5'},{...data.labs[0],biomarker:'Synthetic C',reference_range:'Varies by context'}]};
 const labs=homeEvidence(labMany,status,model(labMany)).labs;assert.equal(labs.total,3);assert.equal(labs.withReference,2);assert.equal(labs.outsideCount,1);assert.equal(labs.unclassified,1);
 const selectedLab=homeEvidence(labMany,status,model(labMany),{homeLabKey:labs.candidates[1].key}).labs;assert.equal(selectedLab.selected.row.biomarker,'Synthetic B');assert.equal(selectedLab.selectedByUser,true);assert.equal(homeEvidence(labMany,status,model(labMany),{homeLabKey:'missing'}).labs.selectedByUser,false);
+assert.equal(selectedLab.selected.range.status,'within','consistent raw and numeric results can be classified against the source range');
+const divergentRaw={...labMany,labs:labMany.labs.map(row=>row.biomarker==='Synthetic B'?{...row,result_raw:'12'}:row)};
+const divergentLabs=homeEvidence(divergentRaw,status,model(divergentRaw),{homeLabKey:labs.candidates[1].key}).labs;
+assert.equal(divergentLabs.total,3);assert.equal(divergentLabs.withReference,1);assert.equal(divergentLabs.outsideCount,1);assert.equal(divergentLabs.unclassified,2);
+assert.equal(divergentLabs.candidates.some(candidate=>candidate.row.biomarker==='Synthetic B'),false,'contradictory raw and numeric values cannot create a reference reading');
+assert.equal(divergentLabs.selectedByUser,false,'an invalid source reading cannot be selected by its former candidate key');
 assert.equal(waterGoal({goals:[{...documentGoal,effective_from:'2024-03-04'}]},status,'2024-03-05'),null,'document date cannot silently become clinical start');
 
 const incompleteReference={effective_from:'2024-03-05',water_ml:1600,notes:JSON.stringify({type:'documented_water_base'})};assert.equal(goalForDate([incompleteReference],'2024-03-08'),null);assert.equal(waterGoal({goals:[incompleteReference]},status,'2024-03-08'),null,'incomplete source metadata cannot become a personal clinical target');

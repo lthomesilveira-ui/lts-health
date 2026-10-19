@@ -1,6 +1,6 @@
 # Health read-only preview
 
-Build `health-dashboard-20261019.71`. Production `/v2` and the authentication boundary remain unchanged.
+Build `health-dashboard-20261019.72`. Production `/v2` and the authentication boundary remain unchanged.
 
 The approved daily/period card layout is preserved. This revision adds a tightly bounded, read-only interpretation of reviewed hemoglobin/hematocrit table footnotes. Original raw values remain visible, stored data is unchanged, and other markers, censored values, aliases, methods and references retain their existing boundaries. The prior contextual improvements remain:
 - Detailed training sessions, exercise and set counts, recorded set qualifiers, and explicit linked telemetry. Polar device records remain separate and are never added to canonical session counts.
@@ -29,3 +29,7 @@ The primary experience uses plain language for missing days, partial periods, so
 ## Recorded training context
 
 The existing session summary now shows explicitly recorded completion comments, the original report behind a disclosure, and the distribution of recorded sets by each exercise’s literal group label. Extensions, recorded working/warm-up phases and reported failures remain separate. Unknown phases are not promoted to working sets; the distribution is not muscle activation, exclusive physiological volume or a training prescription. Conflicting/orphaned details stay out of the summary; unavailable reads are not zero. No stored workout, prescription or existing historical comparison is changed. Public fixtures are invented.
+
+## Consistent laboratory readings (.72)
+
+The detailed laboratory history and report consumers share the dashboard's conservative read-only contract. Raw results remain visible. Notes, limits, unknown metadata and incompatible intermediate collections never become automatic differences or connected curves. Existing documentary blood-count proof is reused without creating new reviews. Tests and visual evidence use synthetic records only.
