@@ -87,7 +87,8 @@ const panelFor=(key,st=status,d=data,period='90')=>{
 for(const [key,domain]of [[recent,'nutrition'],[candidate,'sourceMetrics']]){
   const html=panelFor(key,{...status,[domain]:'error'});
   assert.match(html,/Diário indisponível nesta atualização/);assert.match(html,/Não foi possível carregar o diário escolhido/);assert.match(html,/Sua escolha foi preservada/);
-  assert.doesNotMatch(html,/Sem diário nesta janela|Não há dados do diário escolhido|O diário escolhido não tem dados|Sem registros neste período/);
+  assert.doesNotMatch(html,/Sem diário nesta janela|Não há dados do diário escolhido|O diário escolhido não tem dados|Sem registros neste período|Nenhum registro nesta janela/);
+  assert.match(html,/<div class="ltsContextEmpty" role="status">O gráfico não está disponível nesta atualização\.<\/div>/);
   assert.match(html,/id="home-reportNutritionSource"/,'other sources remain explicitly selectable');
 }
 assert.match(panelFor(candidate,{...status,nutrition:'error'}),/120 g/,'valid source metrics remain visible when nutrition fails');
@@ -95,7 +96,7 @@ assert.match(panelFor(recent,{...status,sourceMetrics:'error'}),/225 g/,'valid d
 for(const st of [status,{...status,sourceMetrics:'error'}]){
   const html=panelFor(archived,st,data,'30');assert.match(html,/Sem diário nesta janela/);assert.match(html,/Não há dados do diário escolhido neste período/);assert.doesNotMatch(html,/Não foi possível carregar o diário escolhido/);
 }
-const emptyPanel=panelFor(null,status,{...data,nutrition:[],sourceMetrics:[]});assert.match(emptyPanel,/Sem diário nesta janela/);assert.doesNotMatch(emptyPanel,/indisponível|Não foi possível carregar/);
+const emptyPanel=panelFor(null,status,{...data,nutrition:[],sourceMetrics:[]});assert.match(emptyPanel,/Sem diário nesta janela/);assert.match(emptyPanel,/<div class="ltsContextEmpty" role="status">Nenhum registro nesta janela\.<\/div>/);assert.doesNotMatch(emptyPanel,/indisponível|Não foi possível carregar/);
 const unknownPanel=panelFor(null,{...status,nutrition:'error'},{...data,nutrition:[],sourceMetrics:[]});assert.match(unknownPanel,/Não foi possível carregar todos os diários/);assert.doesNotMatch(unknownPanel,/Sem diário nesta janela|Sem registros neste período/);
 // Duplicates affect only their metric and source; other origins on the same date stay usable.
 const duplicate=structuredClone(data),dup=duplicate.sourceMetrics.find(row=>row.canonical_status==='candidate'&&row.metric_type==='dietary_protein_g'&&row.metric_date===date(1));duplicate.sourceMetrics.push({...dup,value:999});

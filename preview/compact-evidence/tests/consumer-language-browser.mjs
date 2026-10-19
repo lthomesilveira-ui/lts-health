@@ -220,7 +220,7 @@ async function refreshCase(page,f,label,route,width,table,domain){
   if(nutritionBefore!==null){
     const panel=await page.locator('.ltsCockpitPanel.nutrition').innerText();
     assert.match(panel,/n[aã]o.*carreg/i,'the selected failed source is explicitly unavailable in its own summary card');
-    assert.doesNotMatch(panel,/Sem diário nesta janela|Não há dados do diário escolhido/i,'a failed read cannot be presented as confirmed absence');
+    assert.doesNotMatch(panel,/Sem diário nesta janela|Não há dados do diário escolhido|Nenhum registro nesta janela/i,'a failed read cannot be presented as confirmed absence');
     assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article > b').first().innerText(),'Refeição sintética registrada');
     assert.match(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article > p').first().innerText(),/424 kcal/,'independently loaded meals remain visible');
     const sources=await page.locator('#nutritionArchiveSource option').evaluateAll(options=>options.map(option=>option.value));

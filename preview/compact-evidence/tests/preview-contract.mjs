@@ -89,7 +89,7 @@ const manifest={
     "src/health-lab-reviewed-numeric.js": "71070a17d4925105c654cf4ca2530e248ae60bd399bc5f33a88f2df95cbcb7cc",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
     "src/history-tools.js": "1f89aa73bf582b91a36a163a770a8dc9f6be4ca1c52935986e2e989b328251f3",
-    "src/home-cockpit.js": "1d2cd9b7a4d42cf9c851451ec0abfa80c257e91f2037d11c083dd3ea506352bd",
+    "src/home-cockpit.js": "602abfb615cb6d19042a2ad7c4475076bed2605912342d091df5f792d3487916",
     "src/home-evidence-insights.js": "c1a3fe6a08e6271d7aec24940428215cfdfa2473a2006eecbb4d23c49cef95e7",
     "src/home-lab-history.js": "c2382d0762ef86dc15a2ed2887c4ea94d08341b0b94e2bc94d179ad627d9e91c",
     "src/home-overview.js": "2d08723ecce7f700f3dc3263706b75c20c85d08812ed9d3233138ae0ffdd5aa5",
