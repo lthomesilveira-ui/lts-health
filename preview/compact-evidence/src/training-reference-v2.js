@@ -2,6 +2,7 @@ import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './c
 import {renderTrainingHistory,renderExerciseHistory} from './training-history.js';
 import {failed,errorCard} from './history-tools.js';
 import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './training-session.js';
+import {trainingSessionSummary} from './training-session-summary.js';
 
 const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
 
@@ -26,9 +27,8 @@ function setText(set){
 }
 
 function workoutCounts(workout){
-  const exercises=failed(state,'exercises')?[]:exercisesFor(workout);
-  const counts=failed(state,'sets')||failed(state,'exercises')?null:trainingSetCounts(exercises.flatMap(e=>setsFor(e)));
-  return{exercises,setCount:counts?.primary??null,extensionCount:counts?.extensions??null};
+  const summary=trainingSessionSummary(workout,state.data,state.domainStatus);
+  return{exercises:summary.acceptedExercises||[],acceptedSets:summary.acceptedSets||[],setsAvailable:summary.setsAvailable,exerciseCount:summary.counts?.exercises??null,setCount:summary.counts?.primary??null,extensionCount:summary.counts?.extensions??null};
 }
 
 function measurementNote(workout){
@@ -71,14 +71,33 @@ function hrPanel(workout){
   </section>`;
 }
 
-function summaryExercisePreview(exercises){
+function summaryExercisePreview(exercises,acceptedSets=[],setsAvailable=false){
   if(!exercises.length)return'';
-  const exercise=exercises[0],sets=failed(state,'sets')?[]:setsFor(exercise);
-  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${sets.length?`${sets.length} séries registradas`:'Ainda não há séries detalhadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
+  const exercise=exercises[0],sets=acceptedSets.filter(set=>set.exercise_source_record_id===exercise.source_record_id),counts=trainingSetCounts(sets);
+  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${!setsAvailable?'Séries indisponíveis agora':sets.length?`${counts.primary} séries registradas${counts.extensions?` + ${counts.extensions} prolong.`:''}`:'Ainda não há séries detalhadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
+}
+
+function recordedSessionContext(workout){
+  const model=trainingSessionSummary(workout,state.data,state.domainStatus);
+  if(!model.sessionAvailable)return '';
+  const comment=model.sessionComment?`<div class="ltsRefSessionComment"><b>Como você terminou</b><p>${esc(model.sessionComment)}</p></div>`:'';
+  const groupRows=[...(model.muscleGroups||[]),...(model.unknownMuscleGroup?.exercises?[{...model.unknownMuscleGroup,label:'Grupo não informado'}]:[])];
+  const countText=row=>row.primary==null?'Séries indisponíveis agora':row.total===0?'Sem séries detalhadas':`${row.primary} ${row.primary===1?'série registrada':'séries registradas'}${row.extensions?` + ${row.extensions} prolong.`:''}`;
+  const phases=model.phases||{},effort=model.effort||{};
+  const qualifiers=[
+    phases.working>0?`${phases.working} séries identificadas como trabalho`:null,
+    phases.warmup>0?`${phases.warmup} de aquecimento`:null,
+    phases.other>0?`${phases.other} com outro tipo informado`:null,
+    phases.unknown>0?`${phases.unknown} sem tipo informado`:null
+  ].filter(Boolean);
+  const failure=effort.failure>0?`<p class="ltsRefSessionContextNote">Falha relatada em ${effort.failure} ${effort.failure===1?'série principal':'séries principais'}. É uma observação registrada, sem avaliação de intensidade ou recuperação.</p>`:'';
+  const distribution=`<details class="ltsRefSessionContext" data-disclosure="training-distribution-${esc(workout.source_record_id)}"><summary>Distribuição das séries desta sessão</summary>${model.partial?'<p class="ltsRefSessionContextNote">Parte dos detalhes desta sessão não está disponível. A distribuição mostra somente os detalhes disponíveis.</p>':''}${groupRows.length?`<ul class="ltsRefSessionGroups">${groupRows.map(row=>`<li><b>${esc(row.label)}</b><span>${esc(countText(row))}</span><small>${row.exercises} ${row.exercises===1?'exercício':'exercícios'}</small></li>`).join('')}</ul>`:`<p class="ltsRefSessionContextNote">${model.counts?.exercises==null?'Os exercícios não carregaram nesta atualização.':'Ainda não há exercícios com séries detalhadas para distribuir.'}</p>`}${qualifiers.length?`<p class="ltsRefSessionContextNote">${esc(qualifiers.join(' · '))}. Séries sem tipo informado não são classificadas como séries de trabalho.</p>`:''}${failure}<p class="ltsRefSessionContextNote">Cada série aparece uma vez, no grupo informado para seu exercício. O registro não distingue a participação principal e secundária dos músculos. A distribuição não indica, sozinha, necessidade de aumentar ou reduzir o treino.</p></details>`;
+  const original=model.originalReport?`<details class="ltsRefSessionContext" data-disclosure="training-original-${esc(workout.source_record_id)}"><summary>Relato original deste treino</summary><p class="ltsRefSessionOriginal">${esc(model.originalReport)}</p></details>`:'';
+  return `${comment}${distribution}${original}`;
 }
 
 function summaryView(workout){
-  const{exercises,setCount,extensionCount}=workoutCounts(workout);
+  const{exercises,acceptedSets,setsAvailable,exerciseCount,setCount,extensionCount}=workoutCounts(workout);
   return `${sessionHero(workout)}
     <section class="ltsRefTrainMetrics">
       ${metric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min','Duração')}
@@ -90,9 +109,10 @@ function summaryView(workout){
     ${hrPanel(workout)}
     <section class="ltsRefTrainPanel ltsRefSessionOverview">
       <header><div><span>Seu treino</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
-      <div class="ltsRefOverviewGrid"><div><b>${exercises.length}</b><span>exercícios registrados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
+      <div class="ltsRefOverviewGrid"><div><b>${exerciseCount==null?'—':exerciseCount}</b><span>exercícios registrados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
       ${extensionCount?`<p class="ltsRefExtensionNote">${extensionCount} prolongamento${extensionCount===1?'':'s'} por drop ou rest-pause, separado${extensionCount===1?'':'s'} das séries. Aquecimentos e ajustes informados entram na contagem das séries.</p>`:''}
-      ${summaryExercisePreview(exercises)}
+      ${recordedSessionContext(workout)}
+      ${summaryExercisePreview(exercises,acceptedSets,setsAvailable)}
     </section>`;
 }
 
