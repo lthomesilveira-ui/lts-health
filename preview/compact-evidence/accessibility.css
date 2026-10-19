@@ -1,5 +1,11 @@
 :where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 :where(button,a,input,select,textarea,[tabindex]):focus:not(:focus-visible){outline:none}
+/* Keep the existing light error banners readable, using the same text colors
+   as the training/lab error cards. No geometry or other routes are changed. */
+body[data-product-route="timeline"] #screenHost .errorState,
+body[data-product-route="tratamentos"] #screenHost .errorState{color:#632e36}
+body[data-product-route="timeline"] #screenHost .errorState span,
+body[data-product-route="tratamentos"] #screenHost .errorState span{color:#654f56}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   .spinner{animation:none!important;border-top-color:var(--line2)}

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {makeConsumerLanguageFixture,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey,consumerLanguageService} from './consumer-language-fixture.mjs';
 import {htmlText,technicalMatches} from './consumer-language-html.mjs';
-import {visibleTextGeometry} from './consumer-language-geometry.mjs';
+import {visibleTextGeometry,contrastRatio} from './consumer-language-geometry.mjs';
 import {consumerRouteSettled,consumerDomainSettled} from './consumer-language-readiness.mjs';
 import {healthDashboardModel} from '../src/health-dashboard-model.js';
 import {nutritionArchiveModel} from '../src/nutrition-archive.js';
@@ -32,6 +32,17 @@ assert.equal(visibleTextGeometry([box(1,0,100),box(1,0,100)],320).visibleText.le
 assert.equal(visibleTextGeometry([box(1,300,350)],320).overflowingText.length,1,'unclipped text outside the viewport still fails');
 assert.equal(visibleTextGeometry([box(1,300,350,[clipping])],320).visibleText.length,0,'offscreen scroll content is retained as clipped evidence, not counted as painted ink');
 assert.equal(visibleTextGeometry([box(1,300,350,[clipping])],320).clippedText.length,1);
+assert.equal(contrastRatio([0,0,0],[255,255,255]),21);
+assert.ok(contrastRatio([240,170,170],[255,247,248])<4.5,'the previous light error text fails normal-text contrast');
+const accessibility=readFileSync(new URL('../accessibility.css',import.meta.url),'utf8');
+const bannerRules=[...accessibility.matchAll(/(body\[data-product-route="timeline"\][^{]+)\{([^}]+)\}/g)];
+assert.equal(bannerRules.length,2);
+for(const [index,[,selectors,declaration]] of bannerRules.entries()){
+  const suffix=index?' span':'';
+  assert.deepEqual(selectors.split(',').map(value=>value.trim()),['timeline','tratamentos'].map(route=>`body[data-product-route="${route}"] #screenHost .errorState${suffix}`),'contrast change is restricted to the two observed error banners');
+  const hex=index?'654f56':'632e36';assert.equal(declaration,`color:#${hex}`,'contrast patch changes color only, never geometry or visibility');
+  const rgb=hex.match(/../g).map(value=>parseInt(value,16));assert.ok(contrastRatio(rgb,[255,247,248])>=4.5);
+}
 assert.ok(consumerLanguageService({}).includes(LANGUAGE_ERROR),'synthetic SQL failure is actually injected into the replacement SDK');
 // The initial loader clears state.loading before lazy route domains settle.
 // A failed meal request must not make the remaining loading domains look ready.

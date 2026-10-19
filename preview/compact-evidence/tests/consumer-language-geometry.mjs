@@ -21,3 +21,8 @@ export function visibleTextGeometry(raw,width){
   }
   return {visibleText:visible,clippedText:clipped,overflowingText:visible.filter(rect=>rect.left<-1||rect.right>width+1),overlaps};
 }
+export function contrastRatio(foreground,background){
+  const luminance=rgb=>rgb.map(value=>value/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4).reduce((sum,value,index)=>sum+value*[.2126,.7152,.0722][index],0);
+  const a=luminance(foreground),b=luminance(background);
+  return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+}

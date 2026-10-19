@@ -3,7 +3,7 @@ import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 import {makeConsumerLanguageFixture,consumerLanguageService,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey} from './consumer-language-fixture.mjs';
 import {technicalMatches} from './consumer-language-html.mjs';
-import {visibleTextGeometry} from './consumer-language-geometry.mjs';
+import {visibleTextGeometry,contrastRatio} from './consumer-language-geometry.mjs';
 import {consumerRouteSettled,consumerDomainSettled} from './consumer-language-readiness.mjs';
 
 // Production-shaped application startup and real navigation. Only the SDK and
@@ -97,6 +97,7 @@ async function layout(page,label){
   return report;
 }
 async function capture(page,name,selector=null){
+  assert.ok(!captures.some(capture=>capture.name===name),`${name}: evidence names are unique; never overwrite a prior route`);
   if(selector){const target=page.locator(selector).first();assert.ok(await target.isVisible(),`${name}: evidence is not hidden by CSS`);await target.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));}
   else await page.evaluate(()=>{window.scrollTo(0,0);document.querySelector('#screenHost')?.scrollTo(0,0);});
   await page.screenshot({path:`${dir}/${name}.png`,animations:'disabled',scale:'css'});
@@ -196,15 +197,24 @@ async function visibleRefresh(page,label,targetRoute,width,table,domain,status){
   },{table,readsBefore,domain,status,actionRoute,targetRoute});
   assert.equal(proof.newTargetRead,true,`${label}: user refresh/navigation really re-read ${domain}`);assert.equal(proof.route,targetRoute);assert.equal(proof.status,status);
 }
+async function errorContrast(page,label){
+  const rows=await page.locator('#screenHost .errorState').evaluateAll(banners=>banners.flatMap(banner=>[...banner.querySelectorAll('b,span')].map(el=>({text:el.innerText,color:getComputedStyle(el).color,background:getComputedStyle(banner).backgroundColor,visible:el.checkVisibility({checkVisibilityCSS:true})}))));
+  assert.ok(rows.length>=2,`${label}: error title and explanation are both present`);
+  const rgb=value=>{const match=value.match(/^rgba?\(([^)]+)\)$/);assert.ok(match,`${label}: measurable sRGB color ${value}`);const parts=match[1].split(',').map(Number);assert.ok(parts.length===3||parts[3]===1,`${label}: contrast must use an opaque background and text`);return parts.slice(0,3);};
+  for(const row of rows){assert.equal(row.visible,true);row.ratio=contrastRatio(rgb(row.color),rgb(row.background));assert.ok(row.ratio>=4.5,`${label}: normal-size error text needs at least 4.5:1 contrast, got ${row.ratio}`);}
+  writeFileSync(`${dir}/${label}-contrast.json`,JSON.stringify(rows,null,2));
+}
 async function refreshCase(page,f,label,route,width,table,domain){
+  const refreshLabel=`${label}-${route}`;
   await navigate(page,route,width);
   if(route==='nutricao'){await chooseArchiveSource(page,foodSourceKey('Synthetic A food'));await chooseArchiveDate(page,f.date(1));}
   const nutritionBefore=route==='nutricao'&&domain==='nutrition'?await page.locator('.ltsCockpitPanel.nutrition').innerText():null;
   // Refresh has two phases: initial domains, then this route's dependencies.
   // state.loading=false alone does not mean the route has finished. Require
   // its readiness plus a newly rendered root, never the previous ready screen.
-  await visibleRefresh(page,label,route,width,table,domain,'error');
-  const text=await primary(page,`${label}-refresh-${domain}`);assert.match(text,/n[aã]o.*carreg|indispon[ií]v|atualiz|parcial|n[aã]o.*poss[ií]vel/i);assert.ok(!text.includes(LANGUAGE_ERROR));
+  await visibleRefresh(page,refreshLabel,route,width,table,domain,'error');
+  const text=await primary(page,`${refreshLabel}-refresh-${domain}`);assert.match(text,/n[aã]o.*carreg|indispon[ií]v|atualiz|parcial|n[aã]o.*poss[ií]vel/i);assert.ok(!text.includes(LANGUAGE_ERROR));
+  if(['timeline','tratamentos'].includes(route))await errorContrast(page,`${refreshLabel}-refresh-${domain}`);
   const diagnostics=await page.evaluate(async domain=>{const{state}=await import('./src/core.js');return state.errors[domain];},domain);assert.ok(diagnostics.includes(LANGUAGE_ERROR),'technical error remains in diagnostic state');
   if(route==='nutricao'){assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),f.date(1));assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),foodSourceKey('Synthetic A food'));if(domain==='meals'){assert.equal(await page.locator('.ltsNutritionMeals article').count(),0);assert.equal(await page.locator('.ltsNutritionDiaryMetrics article > b').first().innerText(),'2.010 kcal');}else if(domain==='nutrition')assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article').count(),0);}
   if(nutritionBefore!==null){
@@ -215,10 +225,10 @@ async function refreshCase(page,f,label,route,width,table,domain){
     assert.match(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article > p').first().innerText(),/424 kcal/,'independently loaded meals remain visible');
     const sources=await page.locator('#nutritionArchiveSource option').evaluateAll(options=>options.map(option=>option.value));
     for(const status of ['candidate','held'])assert.ok(sources.includes(candidateSourceKey(status)),'other successfully loaded source identities remain selectable');
-    await capture(page,`${label}-refresh-nutrition-summary`,'.ltsCockpitPanel.nutrition');
+    await capture(page,`${refreshLabel}-refresh-nutrition-summary`,'.ltsCockpitPanel.nutrition');
   }
-  await capture(page,`${label}-refresh-${domain}`,route==='nutricao'?'.ltsNutritionDiaryContext':null);
-  await visibleRefresh(page,label,route,width,table,domain,'ready');await primary(page,`${label}-recovered-${domain}`);
+  await capture(page,`${refreshLabel}-refresh-${domain}`,route==='nutricao'?'.ltsNutritionDiaryContext':null);
+  await visibleRefresh(page,refreshLabel,route,width,table,domain,'ready');await primary(page,`${refreshLabel}-recovered-${domain}`);
   if(nutritionBefore!==null)assert.equal(await page.locator('.ltsCockpitPanel.nutrition').innerText(),nutritionBefore,'recovery restores the same selected summary and values');
   await saveTrace(page,label);
 }

@@ -9,7 +9,7 @@ const manifest={
   "candidate_commit": "9d6fc60f4d01e7501fea52b36bb813847cadb004",
   "build": "health-dashboard-20261019.70",
   "files": {
-    "accessibility.css": "fe77a056f36b55fa987367ac0899da57b613e2db4830c33781b8612f209bd3db",
+    "accessibility.css": "9ee0d8b2fd8bc00d1c039e9dcf8598f695a273cea119614e14181cb4f1879389",
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
     "bio.css": "9ec3191e86f2e53cbc29486c01303a480e021b0d9d6a9efba0078938a4732562",
     "body-interval.css": "ea7509f603febe4147f6411737b7e015b336cdaea3ddc13f15b9e17abd16061e",
