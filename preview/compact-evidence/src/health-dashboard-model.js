@@ -47,6 +47,22 @@ function allDates(data,status,today){
  * anniversary of today; preceding windows have equal actual day counts. */
 export function healthDashboardCalendar(data={},status={},ui={},today=todayInSaoPaulo()){
   today=dayOf(today);if(!today)throw new RangeError('today must be a valid local calendar date');
+  // Calendar reports supply their own bounded, explicit calendar. Recompute
+  // all derived counts; caller-provided coverage or flags are never trusted.
+  // This branch is opt-in and leaves every existing dashboard window unchanged.
+  if(ui.dashboardCalendar!==undefined){
+    const explicit=ui.dashboardCalendar;
+    const validate=(value,name)=>{
+      const start=typeof value?.start==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.start)?dayOf(value.start):null;
+      const end=typeof value?.end==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.end)?dayOf(value.end):null;
+      if(!start||!end||start>end||end>today)throw new RangeError(`Invalid explicit ${name} calendar bounds`);
+      return boundsFor(start,end,today);
+    };
+    const bounds=validate(explicit?.bounds,'current');
+    const previousBounds=explicit.previousBounds==null?null:validate(explicit.previousBounds,'previous');
+    if(previousBounds&&(previousBounds.end>=bounds.start||previousBounds.closedDays!==bounds.closedDays))throw new RangeError('Explicit comparison windows must be disjoint and have equal closed day counts');
+    return {mode:'period',period:'calendar',date:today,today,emptyHistory:false,bounds,previousBounds,periodBounds:bounds,periodPreviousBounds:previousBounds};
+  }
   const mode=ui.dashboardMode==='day'?'day':'period';
   const period=['7','30','60','90','6m','1y','all'].includes(String(ui.dashboardPeriod))?String(ui.dashboardPeriod):'7';
   const requestedDate=dayOf(ui.dashboardDate),date=requestedDate&&requestedDate<=today?requestedDate:today;
