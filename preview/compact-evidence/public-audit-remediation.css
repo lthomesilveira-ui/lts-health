@@ -376,9 +376,13 @@
   .ltsLabsV2 .ltsField select,
   .ltsLabsV2 .ltsField input,
   .ltsCompositionHistoryRow b,
-  .ltsLabsHistoryRow b,
   .ltsLabsMarkerRail button b {
     font-size: 11.5px !important;
+  }
+
+  /* Preserve readable original laboratory values in the existing mobile rows. */
+  .ltsLabsHistoryRow b {
+    font-size: 12px !important;
   }
 
   .timelineItem.rich {

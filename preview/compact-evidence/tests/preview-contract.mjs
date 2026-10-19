@@ -49,7 +49,7 @@ const manifest={
     "product-finish.css": "0c4c95bf4c12f1e25a44433862393a7c54267ee8591ee5d4f8525eecaa7ac2f3",
     "product-layout-v2.css": "9d9dc8724c6e3b4a459174eaeef6784a08609272aa7406aec0332fd3492d4997",
     "product-redesign-v1.css": "0467e4407f7b1e86c470ad7f4714616709febaa95b356957d527de76f70f7a20",
-    "public-audit-remediation.css": "86adc0ef1372e08c0dd07d42f68009b70f4da1bfc354e35dae0f5776e2421c62",
+    "public-audit-remediation.css": "d4e988460ec5ba1390aa4cb9aa4bed9621faac756ad74faee2e22894a9c76332",
     "reference-parity-20260914.css": "80a5ca60b66b069a311f49826de103259ffe852b40e18f244b8e3f2946eed781",
     "reports.css": "b84d3cb7f5e47d108fd50b0b90462ecda9ea362878ff11f43dfff5a0fd392688",
     "secondary.css": "c1d5252112baa6a353640f2474ffcc7e7f8ffeb9d3e492a28e0c45db6fdfd231",
