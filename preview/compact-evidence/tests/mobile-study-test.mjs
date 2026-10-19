@@ -13,8 +13,8 @@ assert.doesNotMatch(html,/<text/);assert.doesNotMatch(html,/NaN|undefined/);
 assert.match(renderMobileStudy({},status,'30',{},'2025-05-03'),/Ainda não há uma comparação/);
 const root=new URL('../',import.meta.url),index=fs.readFileSync(new URL('index.html',root),'utf8');
 const map=JSON.parse(index.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
-assert.equal(map['./src/home-reference.js?v=real-hierarchy-20261014.57'],'./src/health-dashboard.js?v=health-dashboard-20261019.73');
-assert.equal(map['./src/core.js'],'./src/core.js?v=health-dashboard-20261019.73');
+assert.equal(map['./src/home-reference.js?v=real-hierarchy-20261014.57'],'./src/health-dashboard.js?v=health-dashboard-20261019.74');
+assert.equal(map['./src/core.js'],'./src/core.js?v=health-dashboard-20261019.74');
 assert.ok(index.indexOf('preview-readonly.js')<index.indexOf('type="module"'));
 for(const ref of [...index.matchAll(/(?:src|href)="([^"?#]+)[^" ]*"/g)].map(m=>m[1]).filter(x=>x.startsWith('.'))){assert.ok(fs.existsSync(new URL(ref,root)),`dependency exists: ${ref}`);}
 const renderer=fs.readFileSync(new URL('src/mobile-study.js',root),'utf8');assert.doesNotMatch(renderer,/\b(fetch|XMLHttpRequest|createClient|localStorage|sessionStorage)\b/);

@@ -1,3 +1,4 @@
+import {printCalendarReport,updateCalendarReportSelection} from './calendar-report-view.js';
 import {userFacingError} from './user-facing-errors.js';
 import {bodyIntervalModel} from './body-interval-model.js';
 import {downloadReferencePeriodSummary} from './home-reference-experience.js';
@@ -207,6 +208,9 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const calendarPrint=event.target.closest('[data-calendar-print]');if(calendarPrint){printCalendarReport();return;}
+    const calendarMode=event.target.closest('[data-calendar-mode]');if(calendarMode){const patch=updateCalendarReportSelection(state.ui,'mode',calendarMode.dataset.calendarMode);if(patch)Object.assign(state.ui,patch);render();return;}
+    const calendarStep=event.target.closest('[data-calendar-step]');if(calendarStep&&!calendarStep.disabled){const patch=updateCalendarReportSelection(state.ui,'step',calendarStep.dataset.calendarStep);if(patch)Object.assign(state.ui,patch);render();return;}
     const archiveOpen=event.target.closest('[data-nutrition-archive-open]');
     if(archiveOpen){
       const archive=nutritionArchiveModel(state.data,state.domainStatus,state.ui),key=archiveOpen.dataset.nutritionArchiveOpen,date=archiveOpen.dataset.nutritionArchiveDate,source=archive.sources.find(item=>item.key===key);
@@ -303,6 +307,8 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-calendar-control')){const patch=updateCalendarReportSelection(state.ui,event.target.dataset.calendarControl,event.target.value);if(patch){Object.assign(state.ui,patch);render();}return;}
+    if(event.target.hasAttribute('data-calendar-source')){state.ui.calendarReportSources={...(state.ui.calendarReportSources||{}),[event.target.dataset.calendarSource]:event.target.value};render();return;}
     if(event.target.hasAttribute('data-nutrition-archive-field')){
       const archive=nutritionArchiveModel(state.data,state.domainStatus,state.ui),selection=nutritionArchiveSelection(archive,event.target.dataset.nutritionArchiveField,event.target.value);
       if(selection)Object.assign(state.ui,selection);

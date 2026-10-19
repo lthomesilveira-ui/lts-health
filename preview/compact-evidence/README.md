@@ -1,6 +1,6 @@
 # Health read-only preview
 
-Build `health-dashboard-20261019.73`. Production `/v2` and the authentication boundary remain unchanged.
+Build `health-dashboard-20261019.74`. Production `/v2` and the authentication boundary remain unchanged.
 
 The approved daily/period card layout is preserved. This revision adds a tightly bounded, read-only interpretation of reviewed hemoglobin/hematocrit table footnotes. Original raw values remain visible, stored data is unchanged, and other markers, censored values, aliases, methods and references retain their existing boundaries. The prior contextual improvements remain:
 - Detailed training sessions, exercise and set counts, recorded set qualifiers, and explicit linked telemetry. Polar device records remain separate and are never added to canonical session counts.
@@ -37,3 +37,9 @@ The detailed laboratory history and report consumers share the dashboard's conse
 ## Bound documentary numeric readings (.73)
 
 An additive, authenticated, exact-record proof can support reading a report footnote or locally documented thousands notation. The original result remains visible. Missing or conflicting proof, censored observations, unknown metadata and incompatible methods/references still prevent unsupported differences. The generic SQL preparation utility only adds the one proof key to explicitly reviewed complete pre/postimages; it is not an application write path. Real manifests, source excerpts and generated SQL remain private and must never be committed or uploaded to CI.
+
+## Calendar reports and local PDF (.74)
+
+Weekly summaries use complete Monday–Sunday weeks by default; monthly summaries use calendar months. Current periods are explicitly partial. Period means retain their own observed coverage, while differences use equivalent closed-day windows from the same origin. Historical source choices remain explicit. Existing daily dashboards, period controls, training, laboratory history, protocols and nutrition-plan views remain available.
+
+Reports are assembled read-only in the signed-in browser. Printing/PDF uses the local system print flow and a separate print layout; no report is uploaded or sent automatically. Browser acceptance tests use invented data only, including their generated PDFs. Chromium PDF and WebKit engine checks do not establish physical iPhone or authenticated production visual testing.
