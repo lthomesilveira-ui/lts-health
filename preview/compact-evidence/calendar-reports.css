@@ -27,7 +27,7 @@
   #calendarPrintRoot .ltsCalendarToday ul,#calendarPrintRoot .ltsCalendarTrainingCounts,#calendarPrintRoot .ltsCalendarGroups,#calendarPrintRoot .ltsCalendarPlanMetrics{display:block}
   #calendarPrintRoot .ltsCalendarTrainingCounts p{display:inline-block;vertical-align:top;width:31%;margin:0 1% 8pt 0}#calendarPrintRoot .ltsCalendarTrainingCounts b{font-size:16pt}#calendarPrintRoot .ltsCalendarTrainingCounts span{font-size:9pt}
   #calendarPrintRoot .ltsCalendarGroups li,#calendarPrintRoot .ltsCalendarPlanMetrics li{background:#fff;border:0;border-bottom:1px solid #ccc;border-radius:0;padding:6pt 0;break-inside:avoid;page-break-inside:avoid}
-  #calendarPrintRoot .ltsCalendarSession,#calendarPrintRoot .ltsCalendarLabRow{break-inside:auto;page-break-inside:auto}#calendarPrintRoot .ltsCalendarLabRow p,#calendarPrintRoot .ltsCalendarSession li li{break-inside:avoid;page-break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarSession,#calendarPrintRoot .ltsCalendarLabRow,#calendarPrintRoot .ltsCalendarLabs .ltsCalendarEvidence>ul>li{break-inside:avoid;page-break-inside:avoid}#calendarPrintRoot .ltsCalendarLabRow p,#calendarPrintRoot .ltsCalendarSession li li{break-inside:avoid;page-break-inside:avoid}
   #calendarPrintRoot .ltsCalendarDays{display:block}#calendarPrintRoot .ltsCalendarDays li{display:block;border-color:#ddd;padding:4pt 0;break-inside:avoid;page-break-inside:avoid}#calendarPrintRoot .ltsCalendarDays li>span{display:inline-block;width:25%}#calendarPrintRoot .ltsCalendarDays li>b{display:inline-block;text-align:left;width:32%}#calendarPrintRoot .ltsCalendarDays li>small{display:inline;font-size:8pt}
   #calendarPrintRoot .ltsCalendarAllEvidence{break-before:page;page-break-before:always}#calendarPrintRoot .ltsCalendarAllEvidence>.ltsCalendarEvidence{break-inside:auto;page-break-inside:auto}
   #calendarPrintRoot ul{padding-left:14pt}#calendarPrintRoot li{orphans:2;widows:2}#calendarPrintRoot .ltsCalendarPrintFooter{font-size:8pt;break-inside:avoid}
@@ -45,6 +45,7 @@
   /* Keep the full selected calendar period readable at 320 CSS pixels. */
   .ltsCalendarControls{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end}
   .ltsCalendarModes{grid-column:1;grid-row:1;min-width:0}
+  .ltsCalendarModes button{padding-inline:8px;white-space:nowrap}
   .ltsCalendarArrows{grid-column:2;grid-row:1}
   .ltsCalendarControls>label{grid-column:1/-1;width:100%;max-width:none;min-width:0}
 }
@@ -54,4 +55,7 @@
   html:has(body.ltsCalendarPrinting){height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;background:#fff!important}
   body.ltsCalendarPrinting{min-height:0!important;max-height:none!important}
   #calendarPrintRoot .ltsCalendarSource span::before{content:' · '}
+  /* Preserve searchable/copyable words: PDF text extractors treat the screen
+     eyebrow's tracking as spaces inside LTS, HEALTH and RELATÓRIO. */
+  #calendarPrintRoot .ltsCalendarEyebrow{letter-spacing:normal}
 }

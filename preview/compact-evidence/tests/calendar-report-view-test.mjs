@@ -49,10 +49,27 @@ assert.match(card(partiallyFailedHtml,'water'),/803 mL/);assert.match(card(parti
 const failedPrint=renderCalendarReportPrint(partiallyFailed);assert.match(card(failedPrint,'steps'),/Falha ao carregar/);assert.match(failedPrint,/Os dias deste período não puderam ser verificados/);assert.match(failedPrint,/Cobertura indisponível/);
 const pendingHtml=renderCalendarReport(f.data,{...f.status,sourceMetrics:'loading'},{},f.today);assert.match(card(pendingHtml,'steps'),/Carregando/);assert.match(card(pendingHtml,'steps'),/Cobertura indisponível/);
 const print=renderCalendarReportPrint(model);assert.match(print,/LTS HEALTH/);assert.match(print,/data-calendar-comparison-table/);assert.match(print,/Dias, origens e limites/);assert.match(print,/70%/);assert.match(print,/mesmo treino pode aparecer/);assert.match(print,/Arquivo criado localmente/);
+assert.match(print,/<p class="ltsCalendarEyebrow">LTS HEALTH · RELATÓRIO SEMANAL<\/p>/);
+assert.match(renderCalendarReportPrint(calendarReport(f.data,f.status,{calendarReportMode:'month'},f.today)),/<p class="ltsCalendarEyebrow">LTS HEALTH · RELATÓRIO MENSAL<\/p>/);
 assert.doesNotMatch(print,/<details|<summary|<button|<select|<input|data-calendar-print|ltsCalendarToday|undefined|NaN|Infinity/);
 for(const metric of model.metrics)for(const point of metric.points)assert.ok(print.includes(`data-calendar-day="${point.date}"`));
 assert.match(print,/13,4567 u\/L/);assert.match(print,/&lt;4 u\/L/);assert.match(print,/referência/i);assert.match(print,/Método sintético/);
 assert.equal(calendarReportPrintTitle(model),'LTS Health - Relatório semanal - 2026-10-05 a 2026-10-11');
+// A historical date alone is not opt-in to compare against a later plan.
+const retrospectiveUI={calendarReportMode:'month',nutritionPlanRetrospective:true},retrospectiveModel=calendarReport(f.data,f.status,retrospectiveUI,f.today);
+assert.equal(model.nutritionPlan.state,'retrospective_required');assert.equal(retrospectiveModel.nutritionPlan.state,'ready');
+for(const markup of [html,print]){
+  assert.match(markup,/Este período inclui datas anteriores ao documento ou ao recebimento do plano/);
+  assert.match(markup,/Esta janela inclui datas anteriores ao plano recebido 17\/10\/2026\./);
+  assert.match(markup,/comparação retrospectiva está desativada/);
+  assert.doesNotMatch(markup,/A comparação é retrospectiva com a versão mais recente|class="ltsCalendarPlanMetrics"/);
+}
+for(const markup of [renderCalendarReport(f.data,f.status,retrospectiveUI,f.today),renderCalendarReportPrint(retrospectiveModel)]){
+  assert.match(markup,/A comparação é retrospectiva com a versão mais recente; não indica adesão passada/);
+  assert.match(markup,/Comparação retrospectiva; não indica adesão passada/);
+  assert.match(markup,/class="ltsCalendarPlanMetrics"/);assert.doesNotMatch(markup,/comparação retrospectiva está desativada/);
+}
+assert.match(model.nutritionPlan.notes[0],/A comparação é retrospectiva/,'view leaves inherited model immutable');
 const large=capture(model);large.metrics[0].points=Array.from({length:120},(_,i)=>({date:`2025-${String(Math.floor(i/28)+1).padStart(2,'0')}-${String(i%28+1).padStart(2,'0')}`,value:i,eligible:true}));
 assert.equal((renderCalendarReportPrint(large).match(/data-calendar-evidence="water"[\s\S]*?<\/section>/)?.[0].match(/data-calendar-day=/g)||[]).length,120,'print never truncates evidence to a preview limit');
 
@@ -79,6 +96,11 @@ delete globalThis.document;delete globalThis.window;
 
 const css=readFileSync(new URL('../calendar-reports.css',import.meta.url),'utf8'),source=readFileSync(new URL('../src/calendar-report-view.js',import.meta.url),'utf8'),main=readFileSync(new URL('../src/main.js',import.meta.url),'utf8'),reports=readFileSync(new URL('../src/reports-screen.js',import.meta.url),'utf8');
 assert.match(css,/body\.ltsCalendarPrinting>\*:not\(#calendarPrintRoot\)\{display:none!important\}/);assert.match(css,/@page\{size:A4/);assert.match(css,/html:has\(body\.ltsCalendarPrinting\)\{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important/);assert.match(css,/ltsCalendarSourcePicker select\{[^}]*appearance:none;[^}]*text-overflow:ellipsis/);assert.match(css,/ltsCalendarControls>label\{grid-column:1\/-1;width:100%/);assert.match(css,/max-width:600px/);assert.match(css,/page-break-inside:avoid/);assert.match(css,/thead\{display:table-header-group/);
+// CI2 PDF: tracked letters were visible but extracted as separate words; keep
+// each clinical observation/reference and short session summary together.
+assert.match(css,/#calendarPrintRoot \.ltsCalendarEyebrow\{letter-spacing:normal\}/);
+assert.match(css,/#calendarPrintRoot \.ltsCalendarSession,#calendarPrintRoot \.ltsCalendarLabRow,#calendarPrintRoot \.ltsCalendarLabs \.ltsCalendarEvidence>ul>li\{break-inside:avoid;page-break-inside:avoid\}/);
+assert.match(css,/\.ltsCalendarModes button\{padding-inline:8px;white-space:nowrap\}/);
 assert.doesNotMatch(source,/\blocalStorage\b|\bsessionStorage\b|\bfetch\s*\(|console\.|window\.open|navigator\.sendBeacon/);
 assert.match(main,/state\.ui\.calendarReportSources=/);assert.match(reports,/renderCalendarReport\(\)/);assert.match(reports,/Explorar outras janelas/);assert.match(reports,/renderIntegratedReview\(m\)/);assert.match(reports,/renderEvidenceInsights/);
 console.log('Calendar report view: independent windows, all five metric values/coverage, chart gaps and zero, origin isolation, dated labs, training and plan limits, escaped full print evidence, A4/mobile CSS, synchronous print/cancel/error/repeat lifecycle, and preserved old workspaces passed. Browser layout and native iPhone saving require separate acceptance tests.');
