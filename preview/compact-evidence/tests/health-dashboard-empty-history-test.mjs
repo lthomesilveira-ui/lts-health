@@ -27,7 +27,7 @@ for(const data of [empty(),future])for(const state of [status,Object.fromEntries
   assert.doesNotMatch(html,/01\/03\/2024 a 29\/02\/2024/);
   assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity|invalid_calendar)\b/);
   assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7);
-  assert.ok([...html.matchAll(/<div class="healthMetricValue"><strong>(.*?)<\/strong>/g)].every(match=>match[1]==='Sem dado'));
+  assert.ok([...html.matchAll(/<div class="healthMetricValue"><strong>(.*?)<\/strong>/g)].every(match=>match[1]==='—'));
   assert.deepEqual(data,before);
 }
 // Today-only data is still separate and partial, not a fabricated closed day.

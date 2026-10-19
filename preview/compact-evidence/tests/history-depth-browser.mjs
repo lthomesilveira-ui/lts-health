@@ -187,7 +187,7 @@ try{
   await overflow(page);
   if(label!=='small'){await page.locator('#reportPeriods').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-duration-water.png`});}
   await page.evaluate(()=>{window.__failTable='health_source_daily_metrics';});await page.locator('#refreshBtn').click();
-  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível verificar todas as fontes de água'));
+  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível atualizar os registros de água'));
   assert.equal(await page.locator('#reportHydration .ltsContextPlot').count(),0,'failed source must hide stale water');
   await page.evaluate(()=>{window.__failTable='';});
 

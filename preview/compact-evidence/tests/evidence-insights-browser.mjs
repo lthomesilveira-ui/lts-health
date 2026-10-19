@@ -35,7 +35,7 @@ try{
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await page.locator('[data-dashboard-period]').selectOption('90');await stableHome(page);
-    assert.equal(await page.locator('.studyCard.body svg').count(),0);assert.match(await page.locator('.studyCard.body').innerText(),/Sem avaliação corporal inequívoca nesta janela/);
+    assert.equal(await page.locator('.studyCard.body svg').count(),0);assert.match(await page.locator('.studyCard.body').innerText(),/Sem avaliação corporal sem conflito nesta janela/);
     assert.equal(await page.locator('.studyCard.body .studyPair').count(),0,'missing body records cannot create a comparison');
     assert.equal(await page.locator('.studyInsight [data-home-insight-details]').count(),0,'no body pair means no invented interval CTA');
     assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'empty-body hero links to the original assessments');
@@ -57,10 +57,14 @@ try{
     await page.waitForFunction(()=>document.querySelectorAll('[data-report-exercise]').length===8);
     await page.waitForTimeout(300); // exercise the compatibility controller's settling pass
     assert.equal(await page.locator('[data-disclosure="report-workspace-routine"]').getAttribute('open'),'','period/pagination and settling preserve the current workspace');
-    await page.locator('#reportNutritionSource').selectOption({label:'Synthetic Food B'});
+    assert.match(await page.locator('#reportNutritionSource').innerText(),/Synthetic Food B · Histórico alimentar/);
+    await page.locator('#reportNutritionSource').selectOption(JSON.stringify(['nutrition','synthetic food b','canonical']));
+    assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food b','canonical']));
     await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('5 dias com valor'));
     assert.match(await protein.innerText(),/5 dias com valor/s,'source switch recalculates denominators');
-    await page.locator('#reportNutritionSource').selectOption({label:'Synthetic Food A'});
+    assert.match(await page.locator('#reportNutritionSource').innerText(),/Synthetic Food A · Histórico alimentar/);
+    await page.locator('#reportNutritionSource').selectOption(JSON.stringify(['nutrition','synthetic food a','canonical']));
+    assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food a','canonical']));
     await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('10 dias com valor'));
     await overflow(page);await page.evaluate(()=>document.querySelector('#reportNutritionSource').scrollIntoView({block:'center'}));
     await page.screenshot({path:`${dir}/synthetic-${label}-insights.png`,fullPage:false});

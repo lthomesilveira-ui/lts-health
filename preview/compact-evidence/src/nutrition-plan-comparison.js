@@ -88,14 +88,14 @@ function waterUpdates(data,status,source,today){
 }
 
 function detailAvailability(data,status,source,calendar){
-  if(status.meals!=='ready')return {latestMealDate:null,hasRecentMeals:false,note:status.meals==='error'?'O detalhamento de refeições não carregou nesta atualização. A comparação por alimento ou refeição está indisponível.':'O detalhamento de refeições ainda não está disponível; a comparação por alimento ou refeição está indisponível.'};
+  if(status.meals!=='ready')return {latestMealDate:null,hasRecentMeals:false,note:status.meals==='error'?'O detalhamento de refeições não carregou nesta atualização. A comparação por alimento ou refeição está indisponível.':'Os detalhes das refeições ainda não estão disponíveis. Não é possível comparar os alimentos ou as refeições.'};
   const rows=(data.meals||[]).map(row=>({row,date:day(row.meal_date)})).filter(item=>item.date&&item.date<=calendar.today);
   const latestMealDate=rows.map(item=>item.date).sort().at(-1)||null;
   // The meal table supplies direct-food details, not a verified join to a
   // source-metric export. A matching display label alone cannot bridge domains.
   const matched=source?.domain==='nutrition'?rows.filter(item=>norm(item.row.source)===norm(source.label)&&item.date>=calendar.bounds.start&&item.date<=calendar.bounds.end):[];
   const hasRecentMeals=matched.length>0;
-  const note=hasRecentMeals?'Há totais por refeição da origem escolhida nesta janela; eles não comprovam alimentos ou quantidades consumidos. Comparação por item prescrito indisponível.':`A origem alimentar escolhida não forneceu refeições detalhadas nesta janela. Comparação por alimento ou refeição indisponível.${latestMealDate?` Último detalhamento recebido: ${displayDate(latestMealDate)}; pode pertencer a outra origem.`:''}`;
+  const note=hasRecentMeals?'Há totais por refeição neste diário e período, mas eles não identificam todos os alimentos e quantidades consumidos. Não é possível comparar cada alimento com o plano.':`Não há detalhes das refeições neste diário e período. Não é possível comparar os alimentos ou as refeições.${latestMealDate?` Última data com detalhes das refeições: ${displayDate(latestMealDate)}; pode pertencer a outro diário.`:''}`;
   return {latestMealDate,hasRecentMeals,note};
 }
 function metricModel(definition,target,source,rows,calendar,requestedMissing,blocked){
@@ -104,7 +104,7 @@ function metricModel(definition,target,source,rows,calendar,requestedMissing,blo
   let value=calendar.mode==='day'?(dayPoint?.reviewInvalid?null:dayPoint?.value??null):mean(eligible.map(point=>point.value));
   const days=calendar.mode==='day'?(value!=null?1:0):eligible.length,expectedDays=calendar.mode==='day'?1:calendar.bounds.closedDays;
   const ambiguity=points.filter(point=>point.ambiguous).length,knownPartial=points.some(point=>point.knownPartial),invalidReview=points.some(point=>point.reviewInvalid);
-  let reason=requestedMissing?'A origem escolhida está indisponível; nenhuma outra origem foi usada.':!source?'Sem origem com registros para esta variável.':ambiguity?'Dias com registros duplicados ou ambíguos foram excluídos desta variável.':invalidReview?'Registros sem conferência válida foram excluídos desta variável.':calendar.mode==='period'&&knownPartial?'Dias sabidamente parciais foram excluídos da média.':value==null?'Sem valor inequívoco da origem escolhida nesta janela.':null;
+  let reason=requestedMissing?'O diário escolhido não está disponível. Nenhum outro diário foi usado.':!source?'Não há registros deste nutriente.':ambiguity?'Dias com valores repetidos ou conflitantes ficam fora deste cálculo.':invalidReview?'Alguns valores não puderam ser confirmados e ficam fora deste cálculo.':calendar.mode==='period'&&knownPartial?'Dias com registros incompletos ficam fora da média.':value==null?'Não há um único valor disponível neste diário e período.':null;
   if(blocked){value=null;reason='Ative a comparação retrospectiva para usar este plano como referência nesta janela.';}
   return {...definition,target,value,delta:value==null||target==null?null:value-target,percent:value==null||target==null?null:value/target*100,
     days:blocked?0:days,expectedDays,partial:calendar.mode==='day'?Boolean(dayPoint?.partial):knownPartial,

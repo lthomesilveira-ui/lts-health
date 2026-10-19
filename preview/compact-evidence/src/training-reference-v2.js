@@ -54,13 +54,13 @@ function sessionHero(workout){
 
 function hrPanel(workout){
   const min=num(workout.heart_rate_min),avg=num(workout.heart_rate_avg),max=num(workout.heart_rate_max);
-  if(min==null&&avg==null&&max==null)return `<section class="ltsRefTrainPanel"><header><div><span>Telemetria</span><h2>Frequência cardíaca</h2></div></header><div class="ltsRefTrainEmpty">Sem telemetria de frequência cardíaca registrada para esta sessão.</div></section>`;
+  if(min==null&&avg==null&&max==null)return `<section class="ltsRefTrainPanel"><header><div><span>Medidas do aparelho</span><h2>Frequência cardíaca</h2></div></header><div class="ltsRefTrainEmpty">Ainda não há frequência cardíaca registrada para esta sessão.</div></section>`;
   const values=[min,avg,max].filter(v=>v!=null),lo=Math.min(...values),hi=Math.max(...values),span=Math.max(hi-lo,1);
   const avgPos=avg==null?null:Math.max(0,Math.min(100,((avg-lo)/span)*100));
   const sourceLabel=workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada';
   const telemetryLabel=workout.telemetry_heart_rate_is_partial?`Trecho parcial · ${sourceLabel}`:sourceLabel;
   return `<section class="ltsRefTrainPanel ltsRefHrPanel">
-    <header><div><span>Telemetria</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>
+    <header><div><span>Medidas do aparelho</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>
     <div class="ltsRefHrNumbers">
       <div><small>Mín.</small><b>${min!=null?fmtNum(min,0):'—'}</b><span>bpm</span></div>
       <div><small>Média</small><b>${avg!=null?fmtNum(avg,0):'—'}</b><span>bpm</span></div>
@@ -74,7 +74,7 @@ function hrPanel(workout){
 function summaryExercisePreview(exercises){
   if(!exercises.length)return'';
   const exercise=exercises[0],sets=failed(state,'sets')?[]:setsFor(exercise);
-  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${sets.length?`${sets.length} séries registradas`:'Séries ainda não estruturadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
+  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${sets.length?`${sets.length} séries registradas`:'Ainda não há séries detalhadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
 }
 
 function summaryView(workout){
@@ -89,8 +89,8 @@ function summaryView(workout){
     ${measurementNote(workout)}
     ${hrPanel(workout)}
     <section class="ltsRefTrainPanel ltsRefSessionOverview">
-      <header><div><span>Estrutura</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
-      <div class="ltsRefOverviewGrid"><div><b>${exercises.length}</b><span>exercícios estruturados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
+      <header><div><span>Seu treino</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
+      <div class="ltsRefOverviewGrid"><div><b>${exercises.length}</b><span>exercícios registrados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
       ${extensionCount?`<p class="ltsRefExtensionNote">${extensionCount} prolongamento${extensionCount===1?'':'s'} por drop ou rest-pause, separado${extensionCount===1?'':'s'} das séries. Aquecimentos e ajustes informados entram na contagem das séries.</p>`:''}
       ${summaryExercisePreview(exercises)}
     </section>`;
@@ -99,13 +99,13 @@ function summaryView(workout){
 function exerciseCards(workout){
   if(failed(state,'exercises'))return errorCard('Os exercícios não carregaram agora.');
   const exercises=exercisesFor(workout);
-  if(!exercises.length)return `<div class="ltsRefTrainEmpty">Exercícios ainda não estruturados para esta sessão.</div>`;
+  if(!exercises.length)return `<div class="ltsRefTrainEmpty">Ainda não há exercícios detalhados para esta sessão.</div>`;
   return `<div class="ltsRefExerciseList">${exercises.map((exercise,index)=>{
     const sets=failed(state,'sets')?[]:setsFor(exercise);
     const counts=trainingSetCounts(sets);
     return `<article class="ltsExerciseCard ltsRefExerciseCard">
       <header><div class="ltsRefExerciseNumber">${String(index+1).padStart(2,'0')}</div><div><b>${esc(exercise.exercise||'Exercício')}</b><small>${esc([exercise.machine,exercise.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'—':`${counts.primary} séries${counts.extensions?` + ${counts.extensions} prolong.`:''}`}</span></header>
-      <div class="ltsRefSetTable">${sets.length?sets.map((set,setIndex)=>{const t=setText(set);return `<div><span>${esc(setStepLabel(sets,setIndex))}</span><b>${t.missing?'Dados não informados':esc(t.load)}</b><i>${t.missing?'':`× ${esc(t.reps)} reps`}</i>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</div>`;}).join(''):`<div class="ltsRefSetEmpty">${failed(state,'sets')?'As séries não carregaram agora.':esc(exercise.source_text||'Séries ainda não estruturadas.')}</div>`}</div>
+      <div class="ltsRefSetTable">${sets.length?sets.map((set,setIndex)=>{const t=setText(set);return `<div><span>${esc(setStepLabel(sets,setIndex))}</span><b>${t.missing?'Dados não informados':esc(t.load)}</b><i>${t.missing?'':`× ${esc(t.reps)} reps`}</i>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</div>`;}).join(''):`<div class="ltsRefSetEmpty">${failed(state,'sets')?'As séries não carregaram agora.':esc(exercise.source_text||'Ainda não há séries detalhadas.')}</div>`}</div>
       ${exerciseNotes(exercise,sets)}
       <button type="button" class="ltsRefExerciseHistory" data-depth-exercise="${esc(exercise.source_record_id)}">Histórico deste exercício ›</button>
     </article>`;
@@ -129,11 +129,11 @@ export function renderProductTraining(){
   const requested=state.ui.productTrainingView;
   const view=['summary','exercises','history','exercise'].includes(requested)?requested:(requested==='session'?'summary':'summary');
   const heading=view==='history'?'Treinos':view==='exercise'?'Histórico do exercício':selected?safe(selected.workout_type,'Sessão'):'Treinos';
-  const subtitle=view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Ocorrências e cargas preservadas por contexto comparável.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
+  const subtitle=view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Cargas e repetições no mesmo exercício e aparelho.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
   return `<section class="ltsTrainingV2 ltsTrainingReference" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
     <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino">+</button></header>
     ${view==='exercise'?exerciseNav():tabs(view)}
-    ${failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Nenhum treino estruturado disponível.</div>'}
+    ${failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Ainda não há treinos registrados.</div>'}
   </section>`;
 }
 

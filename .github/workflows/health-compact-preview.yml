@@ -26,7 +26,7 @@ jobs:
         run: node preview/compact-evidence/tests/preview-contract.mjs
       - name: Verify candidate analytical contracts with synthetic data
         run: |
-          for test in health-dashboard-model health-dashboard-body health-dashboard-labs health-dashboard-training health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation documented-nutrition-plan nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-archive nutrition-history-access; do
+          for test in health-dashboard-model health-dashboard-body health-dashboard-labs health-dashboard-training health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation documented-nutrition-plan nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-archive nutrition-history-access consumer-health-copy consumer-diagnostics consumer-language; do
             node "preview/compact-evidence/tests/${test}-test.mjs"
           done
       - name: Install existing pinned browser runtime
@@ -39,6 +39,8 @@ jobs:
           for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
       - name: Verify signed-out boundary
         run: node preview/compact-evidence/tests/mobile-study-auth.mjs
+      - name: Verify plain-language health screens and failure states
+        run: node preview/compact-evidence/tests/consumer-language-browser.mjs
       - name: Verify full histories in preview route
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
@@ -61,6 +63,7 @@ jobs:
           path: |
             nutrition-plan-visual
             nutrition-history-access-visual
+            consumer-language-visual
             health-dashboard-visual
             health-reviewed-blood-count-visual
             v2/reference-period-visual

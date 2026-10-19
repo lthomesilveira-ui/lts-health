@@ -82,7 +82,7 @@ test('Source choices are stable across windows and missing selections never sile
   const model=compare(data);assert.equal(model.foodSource.label,'Synthetic new food');assert.equal(get(model,'protein_g').value,null);
   const key=model.foodSource.key;for(const period of ['7','30','60','90','6m','1y','all'])assert.equal(compare(data,{dashboardPeriod:period,nutritionPlanRetrospective:true}).foodSource.key,key);
   for(const ui of [{nutritionPlanFoodSource:'missing-origin'},{dashboardSources:{energy:'missing-origin'}},{homeNutritionSource:'missing-origin'}]){
-    const missing=compare(data,ui);assert.equal(missing.foodSource,null);assert.ok(missing.metrics.slice(0,5).every(metric=>metric.value===null));assert.match(get(missing,'protein_g').reason,/nenhuma outra origem/);
+    const missing=compare(data,ui);assert.equal(missing.foodSource,null);assert.ok(missing.metrics.slice(0,5).every(metric=>metric.value===null));assert.match(get(missing,'protein_g').reason,/Nenhum outro diário/);
   }
 });
 test('Canonical/candidate/held origins, families and mirrored tables stay separate',()=>{
@@ -131,8 +131,8 @@ test('Loading or failed consumption origins never expose stale data from those d
   const allFailed=compare(data,{}, {...syntheticStatus(),sourceMetrics:'error',nutrition:'error'});assert.equal(allFailed.state,'ready');assert.ok(allFailed.metrics.every(metric=>metric.value===null));
 });
 test('Meal detail availability cannot turn old or different-origin totals into item comparisons',()=>{
-  const data=fill();data.meals=[{meal_date:'2023-12-01',meal_name:'Synthetic old meal',source:'Synthetic archive'}];let model=compare(data);assert.equal(model.detailAvailability.latestMealDate,'2023-12-01');assert.equal(model.detailAvailability.hasRecentMeals,false);assert.match(model.detailAvailability.note,/01\/12\/2023/);assert.match(model.detailAvailability.note,/indisponível/);
-  data.meals.push({meal_date:date(1),meal_name:'Synthetic current meal',source:'Synthetic food origin'});model=compare(data);assert.equal(model.detailAvailability.hasRecentMeals,true);assert.match(model.detailAvailability.note,/não comprovam alimentos/);assert.match(model.detailAvailability.note,/item prescrito indisponível/);
+  const data=fill();data.meals=[{meal_date:'2023-12-01',meal_name:'Synthetic old meal',source:'Synthetic archive'}];let model=compare(data);assert.equal(model.detailAvailability.latestMealDate,'2023-12-01');assert.equal(model.detailAvailability.hasRecentMeals,false);assert.match(model.detailAvailability.note,/01\/12\/2023/);assert.match(model.detailAvailability.note,/Não é possível comparar/);
+  data.meals.push({meal_date:date(1),meal_name:'Synthetic current meal',source:'Synthetic food origin'});model=compare(data);assert.equal(model.detailAvailability.hasRecentMeals,true);assert.match(model.detailAvailability.note,/não identificam todos os alimentos/);assert.match(model.detailAvailability.note,/Não é possível comparar cada alimento com o plano/);
   assert.equal(compare(data,{}, {...syntheticStatus(),meals:'error'}).detailAvailability.latestMealDate,null);
   data.sourceMetrics=[sourceMetric(date(1),'dietary_energy_kcal',1700,{source_name:'Synthetic food origin'})];
   const mirror=compare(data).foodSources.find(source=>source.domain==='sourceMetrics');assert.equal(compare(data,{nutritionPlanFoodSource:mirror.key}).detailAvailability.hasRecentMeals,false,'Matching labels do not prove a join to another source domain');

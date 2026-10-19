@@ -1,3 +1,4 @@
+import {userFacingError} from './user-facing-errors.js';
 import {bodyIntervalModel} from './body-interval-model.js';
 import {downloadReferencePeriodSummary} from './home-reference-experience.js';
 import {state,routes,fixtureMode,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
@@ -81,7 +82,7 @@ function routeFromLocation(){
   return'hoje';
 }
 
-function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;}
+function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Aguarde um instante.</span></div>`;}
 
 function disclosureKey(details){
   const explicit=details?.dataset?.disclosure;
@@ -265,7 +266,7 @@ function bindStaticEvents(){
     if(backupButton){
       const msg=$('backupExportMsg');backupButton.disabled=true;if(msg)msg.textContent='Preparando backup…';
       try{const result=await downloadStructuredBackup(text=>{if(msg)msg.textContent=text;setSync(text);});if(msg)msg.textContent=`Backup criado: ${result.filename}`;setSync('Atualizado');}
-      catch(error){console.error(error);if(msg)msg.textContent='Não foi possível criar o backup agora.';setSync('Falha no backup');}
+      catch(error){console.error(error);if(msg)msg.textContent='Não foi possível criar o backup agora.';setSync('Não foi possível criar o backup');}
       finally{backupButton.disabled=false;}
       return;
     }
@@ -347,7 +348,7 @@ function bindStaticEvents(){
     if(event.target.id==='personalGoalsForm'){
       event.preventDefault();const form=event.target,button=form.querySelector('[type="submit"]'),msg=form.querySelector('#personalGoalsMessage');button.disabled=true;msg.textContent='Salvando metas…';
       try{await saveGoals(form);state.ui.personalGoalsMessage='Metas salvas. As comparações usam a versão vigente em cada data.';render();const details=document.querySelector('.ltsGoalSettings');if(details)details.open=true;}
-      catch(error){msg.textContent=error.message;button.disabled=false;}return;
+      catch(error){console.error(error);msg.textContent=userFacingError(error,'Não foi possível salvar suas metas agora. Tente novamente.');button.disabled=false;}return;
     }
     if(event.target.id!=='uploadForm')return;event.preventDefault();
     const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',msg=$('uploadMsg'),button=event.target.querySelector('button[type="submit"]');

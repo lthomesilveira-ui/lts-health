@@ -1,3 +1,4 @@
+import {sourceDisplayLabel} from './source-display.js';
 import {nutritionPeriodModel} from './home-period-model.js';
 import {nutritionSourceReview} from './nutrition-source-review.js';
 
@@ -7,11 +8,8 @@ const localToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paul
 const ready=(status,key)=>status?.[key]==='ready';
 const unique=values=>[...new Set(values)].sort();
 export const nutritionArchiveSourceKey=label=>JSON.stringify(['nutrition',norm(label),'canonical']);
-export function nutritionArchiveSourceLabel(source){
-  if(!source)return 'Origem indisponível';
-  const domain=source.domain==='nutrition'?'totais diários':source.domain==='sourceMetrics'?'métricas por origem':'origem não informada';
-  const status={canonical:'canônica',candidate:'candidata',held:'em revisão'}[source.status]||'status não informado';
-  return `${source.label} · ${domain} · ${status}`;
+export function nutritionArchiveSourceLabel(source,sources=[]){
+  return sourceDisplayLabel(source,sources);
 }
 
 /** Full read-only archive; summary windows never remove selectable old dates.

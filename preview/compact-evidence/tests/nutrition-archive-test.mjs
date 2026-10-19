@@ -38,7 +38,7 @@ test('All-history source/year/month/day access reaches 2017 and 2023 outside a 3
 test('Explicit missing dates and absent sources are retained; another origin is never substituted',()=>{
   const data=fixture(),ui={reportNutritionSource:newKey,nutritionDate:'2017-02-06'},a=nutritionArchiveModel(data,status,ui,today);
   assert.equal(a.source.key,newKey);assert.equal(a.date,'2017-02-06');assert.equal(a.food,null);assert.equal(a.hasDate,false);assert.equal(a.meals.length,0);assert.ok(a.otherSources.some(source=>source.key===oldKey));
-  const html=diary(render(data,ui));assert.match(html,/Sem registro de alimentação em 06\/02\/2017 nesta origem/);assert.match(html,/data-nutrition-archive-open=/);assert.doesNotMatch(html,/2\.300 kcal/);
+  const html=diary(render(data,ui));assert.match(html,/Sem registro de alimentação em 06\/02\/2017 neste diário/);assert.match(html,/data-nutrition-archive-open=/);assert.doesNotMatch(html,/2\.300 kcal/);
   const missing=nutritionArchiveModel(data,status,{reportNutritionSource:'missing-origin',nutritionDate:'2023-04-19'},today);
   assert.equal(missing.source,null);assert.equal(missing.date,'2023-04-19');assert.equal(missing.requestedSourceMissing,true);
   assert.match(diary(render(data,{reportNutritionSource:'missing-origin',nutritionDate:'2023-04-19'})),/Sua escolha foi preservada/);
@@ -60,14 +60,14 @@ test('Meal-only historical days remain reachable without manufacturing a daily t
   const data=fixture();data.meals.push({source_record_id:'meal-only',meal_date:'2016-01-03',source:'Synthetic archive',meal_name:'Only received meal',calories_kcal:700});
   const ui={reportNutritionSource:oldKey,nutritionDate:'2016-01-03'},archive=nutritionArchiveModel(data,status,ui,today);
   assert.equal(archive.firstDate,'2016-01-03');assert.equal(archive.hasDate,true);assert.equal(archive.food,null);assert.equal(archive.meals.length,1);
-  const html=diary(render(data,ui));assert.match(html,/Only received meal/);assert.match(html,/não são somadas para inventar um total/);assert.doesNotMatch(html,/ltsNutritionDiaryMetrics/);
+  const html=diary(render(data,ui));assert.match(html,/Only received meal/);assert.match(html,/não são somadas para formar um total/);assert.doesNotMatch(html,/ltsNutritionDiaryMetrics/);
 });
 
 test('Ambiguous daily totals are not picked; failed and loading sources cannot expose stale meals or totals',()=>{
   const data=fixture();data.nutrition.push({...data.nutrition[0],source_record_id:'duplicate',protein_g:999});
   const ui={reportNutritionSource:oldKey,nutritionDate:'2017-02-06'},a=nutritionArchiveModel(data,status,ui,today);
   assert.equal(a.food,null);assert.equal(a.dailyRecords.length,2);assert.ok(a.duplicates.length);assert.equal(a.meals.length,1);
-  const html=diary(render(data,ui));assert.match(html,/totais repetidos ou conflitantes/);assert.match(html,/Totais originais recebidos/);
+  const html=diary(render(data,ui));assert.match(html,/totais repetidos ou conflitantes/);assert.match(html,/Conferir os totais deste dia/);
   for(const failure of ['error','loading']){
     const st={...status,nutrition:failure,sourceMetrics:failure,meals:failure},failed=nutritionArchiveModel(data,st,ui,today);
     assert.equal(failed.source,null);assert.equal(failed.meals.length,0);assert.equal(failed.food,null);assert.equal(failed.date,'2017-02-06');assert.equal(failed.unavailable.length,3);
@@ -91,7 +91,7 @@ test('Conflicting same-origin source metrics retain their raw values and cannot 
   const initial=nutritionArchiveModel(data,status,{},today),key=initial.sources.find(source=>source.domain==='sourceMetrics').key;
   const ui={reportNutritionSource:key,nutritionDate:'2017-02-06'},a=nutritionArchiveModel(data,status,ui,today);
   assert.equal(a.food,null);assert.equal(a.metricRecords.length,2);assert.equal(a.meals.length,0);
-  const html=diary(render(data,ui));assert.match(html,/Valores originais recebidos/);assert.match(html,/900 g/);assert.match(html,/901 g/);assert.match(html,/&lt;synthetic-file&gt;/);assert.doesNotMatch(html,/Synthetic historical lunch/);
+  const html=diary(render(data,ui));assert.match(html,/Conferir os valores deste dia/);assert.match(html,/900 g/);assert.match(html,/901 g/);assert.match(html,/&lt;synthetic-file&gt;/);assert.doesNotMatch(html,/Synthetic historical lunch/);
 });
 
 test('Historical Home day offers an explicit source/date verified archive link without changing seven cards or the chosen origin',async()=>{
@@ -127,13 +127,55 @@ test('Raw duplicate daily records preserve original fractional scalars without r
 
 test('Same-alias archive sources are visibly distinct by domain and status in controls, alternatives, context and Home',async()=>{
   const data=fixture();data.sourceMetrics=['canonical','candidate','held'].map((canonical_status,index)=>({source_record_id:`alias-${canonical_status}`,metric_date:'2017-02-06',metric_type:'dietary_protein_g',value:80+index,unit:'g',source_name:'Synthetic archive',source_family:'synthetic',canonical_status}));
-  const archive=nutritionArchiveModel(data,status,{},today),shared=archive.sources.filter(source=>source.label==='Synthetic archive'),labels=shared.map(nutritionArchiveSourceLabel);
-  assert.deepEqual(new Set(labels),new Set(['Synthetic archive · totais diários · canônica','Synthetic archive · métricas por origem · canônica','Synthetic archive · métricas por origem · candidata','Synthetic archive · métricas por origem · em revisão']));
+  const archive=nutritionArchiveModel(data,status,{},today),shared=archive.sources.filter(source=>source.label==='Synthetic archive'),labels=shared.map(source=>nutritionArchiveSourceLabel(source,archive.sources));
+  assert.deepEqual(new Set(labels),new Set(['Synthetic archive · Histórico alimentar','Synthetic archive · Diário importado','Synthetic archive · Registro adicional','Synthetic archive · Registro com limitações']));
   const html=render(data,{reportNutritionSource:newKey,nutritionDate:'2017-02-06'}),select=html.match(/<select id="nutritionArchiveSource"[\s\S]*?<\/select>/)[0],details=html.match(/<details data-disclosure="nutrition-archive-origins">[\s\S]*?<\/details>/)[0],selected=diary(render(data,{reportNutritionSource:oldKey,nutritionDate:'2017-02-06'}));
   for(const label of labels){assert.ok(select.includes(label));assert.ok(details.includes(label));assert.ok(diary(html).includes(`>${label}</button>`));}
-  assert.ok(selected.includes('Synthetic archive · totais diários · canônica. Consulta de um dia'));
+  assert.ok(selected.includes('Synthetic archive · Histórico alimentar.</p>'));assert.match(selected,/<details data-disclosure="nutrition-diary-about"><summary>Sobre estes dados<\/summary>/);
   const {renderHealthDashboard}=await import('../src/health-dashboard.js');
   const home=renderHealthDashboard(data,status,{dashboardMode:'day',dashboardDate:'2017-02-06',dashboardSources:{protein:newKey,energy:newKey}},today);
   for(const label of labels)assert.ok(home.includes(`Abrir diário · ${label}</button>`));
   const calendar=render(data,{reportNutritionSource:oldKey,nutritionDate:'2017-02-06'});assert.match(calendar,/<option value="2017-02" selected>fevereiro<\/option>/);assert.match(calendar,/aria-label="Mês do histórico alimentar de 2017"/);
+});
+
+
+test('Consumer labels preserve distinct source identities and raw meal notes without backend labels in controls',()=>{
+  const data=fixture();
+  const row=data.sourceMetrics[0];
+  data.sourceMetrics.push({...row,source_record_id:'same-name-other-family',source_family:'synthetic-other',value:901});
+  data.meals[0].notes='Synthetic raw note: candidate is a quoted label; keep the original wording.';
+  const ui={reportNutritionSource:oldKey,nutritionDate:'2017-02-06'},before=structuredClone(data),archive=nutritionArchiveModel(data,status,ui,today);
+  const aliases=archive.sources.filter(source=>source.domain==='sourceMetrics'),labels=aliases.map(source=>nutritionArchiveSourceLabel(source,archive.sources));
+  assert.equal(new Set(labels).size,aliases.length);assert.ok(labels.every(label=>/Registro adicional [12]$/.test(label)));
+  const html=render(data,ui),select=html.match(/<select id="nutritionArchiveSource"[\s\S]*?<\/select>/)[0];
+  const visibleOptions=[...select.matchAll(/<option[^>]*>(.*?)<\/option>/g)].map(match=>match[1]).join(' ');
+  assert.doesNotMatch(visibleOptions,/canonical|candidate|held|canônica|candidata|métricas por origem|totais diários/i);
+  assert.match(diary(html),/Synthetic raw note: candidate is a quoted label; keep the original wording\./);
+  for(const source of aliases){
+    const chosen=nutritionArchiveModel(data,status,{...ui,reportNutritionSource:source.key},today);
+    assert.equal(chosen.source.key,source.key);assert.equal(chosen.meals.length,0);assert.equal(chosen.food.protein_g,source.sourceFamily==='synthetic-other'?901:900);
+    assert.ok(html.includes(nutritionArchiveSourceLabel(source,archive.sources)));
+  }
+  const failed=render(data,ui,{...status,nutrition:'error',meals:'error',sourceMetrics:'error'});
+  assert.match(failed,/Parte do histórico não carregou/);assert.match(failed,/Não foi possível abrir o diário escolhido/);
+  assert.doesNotMatch(failed,/origem.*indisponível nesta leitura|métricas por origem|registros recebidos/);
+  assert.deepEqual(data,before);
+});
+
+
+test('Reviewed exports with the same visible name keep distinct human labels and exact file identities',()=>{
+  const data=fixture();data.nutrition=[];data.meals=[];
+  data.sourceMetrics=['a','b'].map((letter,index)=>{
+    const id=`synthetic-reviewed-${letter}`,value=100+index,date='2017-02-06',file=`synthetic-${letter}.zip`;
+    return {source_record_id:id,metric_date:date,metric_type:'dietary_protein_g',value,unit:'g',source_family:'myfitnesspal',source_name:'MyFitnessPal via Apple Health',source_file:file,canonical_status:'candidate',nutrition_review:{schema:'apple_nutrition_source_review_v1',method:'sum_distinct_meal_samples_v1',status:'verified',source_record_id:id,metric_date:date,metric_type:'dietary_protein_g',unit:'g',verified_value:value,source_file:file,source_sha256:letter.repeat(64),original_source:'MyFitnessPal',exported_at:'2017-02-07T15:00:00-03:00',sample_count:1,duplicate_count:0}};
+  });
+  const before=structuredClone(data),archive=nutritionArchiveModel(data,status,{},today),labels=archive.sources.map(source=>nutritionArchiveSourceLabel(source,archive.sources));
+  assert.equal(archive.sources.length,2);assert.equal(new Set(labels).size,2);assert.ok(labels.every(label=>/Registro adicional [12]$/.test(label)));
+  for(const source of archive.sources){
+    const selected=nutritionArchiveModel(data,status,{reportNutritionSource:source.key,nutritionDate:'2017-02-06'},today);
+    assert.equal(selected.source.key,source.key);assert.equal(selected.source.status,'candidate');assert.equal(selected.source.reviewVerified,true);
+    assert.equal(selected.metricRecords.length,1);assert.equal(selected.food.protein_g,selected.metricRecords[0].value);assert.equal(selected.meals.length,0);
+    assert.match(diary(render(data,{reportNutritionSource:source.key,nutritionDate:'2017-02-06'})),new RegExp(labels[archive.sources.indexOf(source)].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  }
+  assert.deepEqual(data,before);
 });

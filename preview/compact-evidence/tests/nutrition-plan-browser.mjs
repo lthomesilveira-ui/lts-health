@@ -95,7 +95,7 @@ async function assertPlan(page,f,ui={}){
     const chosen=key==='water_ml'?(ui.waterSource||ui.source||'Synthetic A food'):(ui.source||'Synthetic A food');
     assert.equal(raw.sourceKey,JSON.stringify(['nutrition',chosen.toLowerCase(),'canonical',...(key==='water_ml'?['ml']:[])]),`${key}: the chosen source is never pooled with its mirror or another origin`);
     assert.equal(await metric.locator(':scope > div:nth-child(2) > b').innerText(),observedLabel(e.value,unit),`${key}: independently rounded observed label`);
-    assert.match(await metric.innerText(),new RegExp(`${e.count}/${e.expectedDays} dias com valor elegível`),`${key}: own observed-day coverage`);
+    assert.match(await metric.innerText(),new RegExp(`${e.count}/${e.expectedDays} dias com registro`),`${key}: own observed-day coverage`);
     assert.ok((await metric.locator(':scope > div:first-child').innerText()).includes(`Referência diária: ${format(target)} ${unit}`));
     if(e.value!=null){
       const percentage=(e.value/target*100).toLocaleString('pt-BR',{maximumFractionDigits:1});assert.ok((await metric.innerText()).includes(`${percentage}% da referência`));assert.ok((await metric.innerText()).includes(`diferença ${observedLabel(delta,unit,true)}`));
@@ -164,8 +164,17 @@ async function capture(page,name){
 }
 async function probeStates(page,f){
   for(const [state,status,rows] of [['loading','loading',f.data.nutritionPlans],['error','error',f.data.nutritionPlans],['empty','ready',[]],['invalid','ready',[f.data.nutritionPlans[0],{...f.data.nutritionPlans[1],checksum:'invalid'}]]]){
-    await page.evaluate(async({status,rows})=>{const {state}=await import('./src/core.js');const {renderHealthDashboard}=await import('./src/health-dashboard.js');state.domainStatus.nutritionPlans=status;state.data.nutritionPlans=rows;document.querySelector('#screenHost').innerHTML=renderHealthDashboard(state.data,state.domainStatus,state.ui);},{status,rows});
+    await page.evaluate(async({status,rows})=>{const {state}=await import('./src/core.js');const {renderHealthDashboard}=await import('./src/health-dashboard.js');state.domainStatus.nutritionPlans=status;state.data.nutritionPlans=rows;document.querySelector('#screenHost').innerHTML=renderHealthDashboard(state.data,state.domainStatus,state.ui);window.__qaPlanProbeCard=document.querySelector('[data-nutrition-plan]');},{status,rows});
     await page.waitForSelector(`[data-nutrition-plan][data-plan-state="${state}"]`);
+    // The compatibility controller sees these changed inputs on its next 250 ms
+    // poll. Await that real replacement before screenshots, not just the injected
+    // card's selector. Loading deliberately keeps the injected view: the route
+    // readiness guard prevents a runtime render until its sources have settled.
+    if(status!=='loading')await page.waitForFunction(expected=>{
+      const card=document.querySelector('[data-nutrition-plan]');
+      return card?.dataset.planState===expected&&card!==window.__qaPlanProbeCard&&!window.__qaPlanProbeCard.isConnected;
+    },state);
+    await stableHome(page);
     assert.equal(await page.locator('[data-plan-metric]').count(),0,`${state}: stale comparison is withheld`);
     assert.equal(await page.locator('[data-dashboard-card]').count(),7,`${state}: existing dashboard remains available`);
     await quality(page,`state/${state}`);
@@ -192,7 +201,7 @@ try{
       await page.locator('[data-plan-retrospective]').click();await stableHome(page);await assertPlan(page,f);await assertGrid(page,f);
       assert.match(await page.locator('[data-nutrition-plan]').innerText(),/Retrospectiva com o plano recebido.*não indica adesão passada/);
       assert.equal(await page.locator('[data-plan-retrospective]').getAttribute('aria-pressed'),'true');
-      assert.match(await page.locator('.nutritionPlanDetailNotice').innerText(),/Comparação por alimento ou refeição indisponível/);assert.ok((await page.locator('.nutritionPlanDetailNotice').innerText()).includes(dateLabel(f.date(40))));
+      assert.match(await page.locator('.nutritionPlanDetailNotice').innerText(),/Não é possível comparar os alimentos ou as refeições/);assert.ok((await page.locator('.nutritionPlanDetailNotice').innerText()).includes(dateLabel(f.date(40))));
       await quality(page,`${label}/period-expanded`);await capture(page,`${label}-expanded`);
       await open(page,'nutrition-plan-meals');await open(page,'nutrition-plan-provenance');
       assert.equal(await page.locator('.nutritionPlanMeal').count(),3,'two prescribed meals plus one alternative, never a combined meal');
@@ -214,7 +223,7 @@ try{
       await assertPlan(page,f,{mode:'day'});await assertGrid(page,f,{dashboardMode:'day',dashboardDate:FIXED_TODAY});
       assert.match(await page.locator('.nutritionPlanTitle').innerText(),new RegExp(`Comparação com o plano recebido ${dateLabel(FIXED_TODAY)}`));assert.match(await page.locator('.nutritionPlanWindow').innerText(),/hoje parcial/);
       assert.equal(await page.locator('[data-plan-metric="fiber_g"] > div:nth-child(2) > b').innerText(),'0 g','literal zero remains observed, with 1/1 coverage');
-      for(const key of fields)assert.match(await page.locator(`[data-plan-metric="${key}"] > small`).innerText(),/1\/1 dias com valor elegível · parcial/);
+      for(const key of fields)assert.match(await page.locator(`[data-plan-metric="${key}"] > small`).innerText(),/1\/1 dias com registro · parcial/);
       await quality(page,`${label}/today-partial`);await capture(page,`${label}-today-partial`);
       await open(page,'dashboard-metric-water');const d=healthDashboardModel(f.data,f.status,{},FIXED_TODAY),waterB=d.metricsByKey.water.sources.find(source=>source.label==='Synthetic B food').key;
       await page.locator('[data-dashboard-source="water"]').selectOption(waterB);await stableHome(page);await assertPlan(page,f,{mode:'day',waterSource:'Synthetic B food'});await assertGrid(page,f,{dashboardMode:'day',dashboardDate:FIXED_TODAY,dashboardSources:{water:waterB}});

@@ -50,7 +50,7 @@ function setSummary(rows,available){
 function coverage(available,sourceStatus,rows,sessions,total){
   return {available,status:available?(rows.length?'ready':'empty'):sourceStatus,count:available?rows.length:null,sessions:available?sessions:null,total:available?total:null,
     fraction:available&&total?sessions/total:null,allSessionsHaveRecords:available&&total>0&&sessions===total,complete:false,
-    note:'Cobertura dos registros recebidos; não confirma que todos os exercícios ou séries tenham sido registrados.'};
+    note:'Cobertura dos registros disponíveis; não confirma que todos os exercícios ou séries tenham sido registrados.'};
 }
 function telemetryEvidence(rows,available,sourceStatus){
   const confirmed=rows.filter(row=>norm(row.evidence_status)==='confirmed'&&norm(row.evidence_kind)==='telemetry');
@@ -132,14 +132,14 @@ export function enrichDashboardTraining(base,data={},status={},bounds={}){
     sets:coverage(setsAvailable,!base.available?base.status:!exercisesAvailable?sourceState(status,'exercises'):sourceState(status,'sets'),periodSets,rows.filter(row=>row.setRecordCount>0).length,rows.length)};
   return {...base,rows,history,latest,lastRegistered:latest,latestWorkout:latest,latestUnambiguous:mapped(base.latestUnambiguous),lastRecordAmbiguous,
     daysSinceLast:lastRecordAmbiguous?null:base.daysSinceLast,gapLabel:lastRecordAmbiguous?null:base.gapLabel,
-    notices:[...(base.notices||[]),...(latestDateAmbiguous&&!base.lastRecordAmbiguous?['A data mais recente inclui uma sessão com identidade conflitante; o último treino e seu intervalo não são escolhidos automaticamente.']:[])],
+    notices:[...(base.notices||[]),...(latestDateAmbiguous&&!base.lastRecordAmbiguous?['A data mais recente inclui uma sessão com informações conflitantes; o último treino e seu intervalo não são escolhidos automaticamente.']:[])],
     latestSessions,lastSessions:latestSessions,recentSessions,
     historicalSessions:(base.historicalSessions||[]).map(mapped),historicalCount:base.available?history.length:null,
     exerciseCount:exercisesAvailable?periodExercises.length:null,setCount:counts.primary,extensionCount:counts.extensions,setRecordCount:counts.total,unknownPhaseCount:counts.unknownPhaseCount,setCounts:counts,
     detailsAvailable:exercisesAvailable,setsAvailable,detailsStatus:!base.available?base.status:detailsPartial?'partial':periodExercises.length||periodSets.length?'ready':'empty',detailsPartial,detailsCoverage,
     detailDuplicates:[...exercises.duplicates,...sets.duplicates],unidentifiedDetails:{exercises:exercises.unidentified,sets:sets.unidentified},
     detailNotices:[...(!exercisesAvailable&&base.available?['Exercícios indisponíveis nesta atualização.']:[]),...(!setsAvailable&&exercisesAvailable?['Séries indisponíveis nesta atualização.']:[]),
-      ...(conflicting(exercises)||conflicting(sets)?['Detalhes com identidade ausente ou conflitante foram excluídos das contagens.']:[])],
+      ...(conflicting(exercises)||conflicting(sets)?['Exercícios ou séries que não puderam ser identificados com segurança ficaram fora das contagens.']:[])],
     evidence:{available:evidenceAvailable,status:!evidenceAvailable?sourceState(status,'workoutEvidence'):conflicting(evidence)?'partial':evidence.rows.length?'ready':'empty',
       confirmedTelemetrySessions:evidenceAvailable?rows.filter(row=>row.telemetryEvidence.confirmedCount>0).length:null,duplicates:evidence.duplicates},
     polar:polarContext(data,status,bounds)};

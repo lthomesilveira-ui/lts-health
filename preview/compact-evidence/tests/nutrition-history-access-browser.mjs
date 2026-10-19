@@ -161,12 +161,12 @@ try{
       assert.equal(await page.locator('#nutritionDateProduct option:not([disabled])').count(),0);
       await quality(page,`${label}/missing-year`);await capture(page,`${label}-missing-year`);
       await chooseDate(page,HISTORY_TODAY);await assertDiary(page,HISTORY_TODAY);
-      assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/Há registros nesta data em outras origens/);
+      assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/Há outros diários para esta data/);
       await page.locator(`#nutritionArchiveDiary ${attr('data-nutrition-archive-open',currentKey)}`).click();await stable(page);await assertDiary(page,HISTORY_TODAY,CURRENT_SOURCE);
       await choose(page,'#nutritionArchiveSource',historyKey);await assertDiary(page,HISTORY_TODAY);
       // Every summary-window switch must preserve an explicit missing archive day.
       for(const period of ['30','all','90']){await page.locator(`.ltsNutritionProduct [data-period="${period}"]`).click();await stable(page);await assertDiary(page,HISTORY_TODAY);}
-      await chooseDate(page,f.mealOnlyDay);await assertDiary(page,f.mealOnlyDay);assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/Refeições recebidas não são somadas para inventar um total/);await quality(page,`${label}/meal-only`);await capture(page,`${label}-meal-only`);
+      await chooseDate(page,f.mealOnlyDay);await assertDiary(page,f.mealOnlyDay);assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/As refeições abaixo não são somadas para formar um total/);await quality(page,`${label}/meal-only`);await capture(page,`${label}-meal-only`);
       await chooseDate(page,f.ambiguousDay);await assertDiary(page,f.ambiguousDay);assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/totais repetidos ou conflitantes/);await page.locator('[data-disclosure="nutrition-archive-raw"] > summary').click();assert.equal(await page.locator('[data-disclosure="nutrition-archive-raw"] > p').count(),2);await quality(page,`${label}/ambiguous`);
       await chooseDate(page,FIRST_HISTORY_DAY);
       for(const [status,energy] of [['canonical',9001],['candidate',9101],['held',9201]]){
@@ -179,6 +179,12 @@ try{
       // Restore the newest source before Timeline: a correct jump must override it.
       await choose(page,'#nutritionArchiveSource',currentKey);await chooseDate(page,HISTORY_TODAY);
       await navigate(page,'timeline',width);await page.locator('#timelinePeriod').selectOption('all');await stable(page,'timeline');await page.locator('#timelineYear').selectOption('2018');await stable(page,'timeline');await page.locator('#timelineMonth').selectOption('02');await stable(page,'timeline');await page.locator('#timelineDate').selectOption(FIRST_HISTORY_DAY);await stable(page,'timeline');
+      // The select changes before main.js's scheduled render. Root stability
+      // alone cannot prove the selected day has replaced the month's groups.
+      assert.equal(await (await page.waitForFunction(({date,label})=>{
+        const dates=[...document.querySelectorAll('.timelineGroups .timelineDay .timelineDate > b')];
+        return location.hash==='#timeline'&&document.querySelector('#timelineDate')?.value===date&&dates.length===1&&dates[0].textContent===label;
+      },{date:FIRST_HISTORY_DAY,label:dateLabel(FIRST_HISTORY_DAY)})).jsonValue(),true);
       const timelineTarget=page.locator('[data-timeline-ref="synthetic-history-day-0"]').first();
       assert.equal(await timelineTarget.getAttribute('data-timeline-source'),historyKey);assert.equal(await timelineTarget.getAttribute('data-timeline-date'),FIRST_HISTORY_DAY);
       assert.equal(await page.locator('[data-timeline-ref="synthetic-current-day-0"]').first().getAttribute('data-timeline-source'),currentKey,'identical display aliases retain distinct source identity');
@@ -189,7 +195,7 @@ try{
       await timelineTarget.evaluate((element,key)=>{element.dataset.timelineSource=key;},currentKey);
       await timelineTarget.click();await stable(page);
       assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),FIRST_HISTORY_DAY,'unverified Timeline identity keeps the requested date');
-      assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/A origem escolhida não está disponível/);
+      assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/Não foi possível abrir o diário escolhido/);
       assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article,#nutritionArchiveDiary .ltsNutritionMeals article').count(),0,'unverified identity fails closed without exposing another diary');
       await page.goBack();await stable(page,'timeline');
       assert.equal(await timelineTarget.getAttribute('data-timeline-source'),historyKey,'return reconstructs the verified original Timeline identity');
@@ -223,14 +229,17 @@ try{
       assert.equal(await page.locator('.ltsNutritionArchive').count(),0);assert.equal(await page.locator('#screenHost .loadingState').count(),1);
       await tile(page,'mobile-loading',page.locator('#screenHost .loadingState b'));
       await page.evaluate(()=>window.__releaseHistoryReads());await stable(page);await choose(page,'#nutritionArchiveSource',historyKey);await chooseDate(page,FIRST_HISTORY_DAY);await assertDiary(page,FIRST_HISTORY_DAY);
+      // Import once before polling: waitForFunction needs a synchronous
+      // boolean predicate, not the truthy Promise returned by an async function.
+      await page.evaluate(async()=>{window.__historyAppState=(await import('./src/core.js')).state;});
       // Failure on refresh preserves requested origin/day, withholds stale
       // meal details, and makes the missing source explicit without zeros.
-      await page.evaluate(()=>{window.__historyQA.failTable='health_nutrition_meals';});await page.locator('#refreshBtn').click();await stable(page);await page.waitForFunction(async()=>{const{state}=await import('./src/core.js');return state.domainStatus.meals==='error';});await stable(page);
-      assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),FIRST_HISTORY_DAY);assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),historyKey);assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article').count(),0);assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/Refeições indisponíveis nesta atualização/);assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article > b').first().innerText(),'1.800 kcal');
+      await page.evaluate(()=>{window.__historyQA.failTable='health_nutrition_meals';});await page.locator('#refreshBtn').click();await stable(page);await page.waitForFunction(()=>window.__historyAppState.domainStatus.meals==='error');await stable(page);
+      assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),FIRST_HISTORY_DAY);assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),historyKey);assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article').count(),0);assert.match(await page.locator('#nutritionArchiveDiary').innerText(),/Não foi possível carregar as refeições/);assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article > b').first().innerText(),'1.800 kcal');
       await quality(page,'mobile/meals-error');await capture(page,'mobile-meals-error');
-      await page.evaluate(()=>{window.__historyQA.failTable='health_daily_nutrition';});await page.locator('#refreshBtn').click();await page.waitForFunction(async()=>{const{state}=await import('./src/core.js');return state.domainStatus.nutrition==='error'&&state.domainStatus.meals==='ready';});await stable(page);
+      await page.evaluate(()=>{window.__historyQA.failTable='health_daily_nutrition';});await page.locator('#refreshBtn').click();await page.waitForFunction(()=>window.__historyAppState.domainStatus.nutrition==='error'&&window.__historyAppState.domainStatus.meals==='ready');await stable(page);
       assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),FIRST_HISTORY_DAY);assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article').count(),0);assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionMeals article').count(),3,'successful meal read stays useful when the independent totals read fails');await quality(page,'mobile/totals-error');await capture(page,'mobile-totals-error');
-      await page.evaluate(()=>{window.__historyQA.failTable=null;});await page.locator('#refreshBtn').click();await page.waitForFunction(async()=>{const{state}=await import('./src/core.js');return state.domainStatus.nutrition==='ready'&&state.domainStatus.meals==='ready';});await stable(page);await assertDiary(page,FIRST_HISTORY_DAY);
+      await page.evaluate(()=>{window.__historyQA.failTable=null;});await page.locator('#refreshBtn').click();await page.waitForFunction(()=>window.__historyAppState.domainStatus.nutrition==='ready'&&window.__historyAppState.domainStatus.meals==='ready');await stable(page);await assertDiary(page,FIRST_HISTORY_DAY);
       const proof=await serviceChecks(page,external,networkWrites,errors);results.push({name:'loading-error-recovery',width:393,height:844,status:'passed',syntheticOnly:true,...proof,states:['real-paginated-loading','meals-error','totals-error','successful-retry']});writeResults();
     }catch(error){await page.screenshot({path:`${dir}/loading-error-failure.png`,animations:'disabled'}).catch(()=>{});results.push({name:'loading-error-recovery',status:'failed',error:String(error.message),pageErrors:errors});writeResults();throw error;}finally{await context.close();}
   }
