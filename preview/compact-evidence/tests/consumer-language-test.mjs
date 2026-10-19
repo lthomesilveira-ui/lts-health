@@ -10,6 +10,7 @@ const NativeDate=Date;
 globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[`${LANGUAGE_TODAY}T15:00:00Z`]));}static now(){return NativeDate.parse(`${LANGUAGE_TODAY}T15:00:00Z`);}};
 globalThis.location={search:'?fixture=1'};
 const {state}=await import('../src/core.js');
+const {isRouteReady}=await import('../src/data-layer.js');
 const renderers={hoje:(await import('../src/health-dashboard.js')).renderProductHomeReference,nutricao:(await import('../src/nutrition-product.js')).renderProductNutrition,timeline:(await import('../src/timeline-screen.js')).renderTimelineHub,treinos:(await import('../src/training-reference-v2.js')).renderProductTraining,saude:(await import('../src/labs-layout-v2.js')).renderProductLabs,tratamentos:(await import('../src/treatment-screen.js')).renderTreatmentHub,dados:(await import('../src/data-screen.js')).renderDataHub,bio:(await import('../src/composition-layout-v2.js')).renderProductComposition,evolucao:(await import('../src/evolution-screen.js')).renderEvolutionHub,analise:(await import('../src/recovery-layout-v2.js')).renderRecoveryDepth};
 const initial=structuredClone(state.ui),inventory=[];
 const renderUsefulReports=(await import('../src/reports-screen.js')).renderUsefulReports;
@@ -31,6 +32,13 @@ assert.equal(visibleTextGeometry([box(1,300,350)],320).overflowingText.length,1,
 assert.equal(visibleTextGeometry([box(1,300,350,[clipping])],320).visibleText.length,0,'offscreen scroll content is retained as clipped evidence, not counted as painted ink');
 assert.equal(visibleTextGeometry([box(1,300,350,[clipping])],320).clippedText.length,1);
 assert.ok(consumerLanguageService({}).includes(LANGUAGE_ERROR),'synthetic SQL failure is actually injected into the replacement SDK');
+// The initial loader clears state.loading before lazy route domains settle.
+// A failed meal request must not make the remaining loading domains look ready.
+const previousLoad={loaded:state.loaded,loading:state.loading,status:state.domainStatus};
+state.loaded=true;state.loading=false;state.domainStatus={nutrition:'loading',meals:'error',sourceMetrics:'ready',goals:'ready',waterReferences:'ready',nutritionPlans:'ready'};
+assert.equal(isRouteReady('nutricao'),false,'route remains pending after one request fails while another still loads');
+state.domainStatus.nutrition='ready';assert.equal(isRouteReady('nutricao'),true,'settled error is a displayable route, not an endless loading state');
+state.loaded=previousLoad.loaded;state.loading=previousLoad.loading;state.domainStatus=previousLoad.status;
 
 for(const kind of ['complete','partial','empty','conflict']){
   const f=makeConsumerLanguageFixture(kind),before=structuredClone(f.data);

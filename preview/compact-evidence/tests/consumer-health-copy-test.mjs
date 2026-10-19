@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {makeDashboardFixture} from './health-dashboard-render-test.mjs';
 import {sourceDisplayLabel,sourceDisplayNote,displaySource} from '../src/source-display.js';
 import {userFacingError} from '../src/user-facing-errors.js';
@@ -85,3 +86,7 @@ for(const status of ['candidate','held']){
 }
 assert.deepEqual(insightData,insightBefore);
 console.log('Consumer health copy: seven cards, empty/partial/conflicting/failed reads, source aliases, exact clinical text, latest labs, workouts and Timeline passed.');
+
+const mainSource=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
+assert.match(mainSource,/loadingState[\s\S]*?<span>Aguarde um instante\.<\/span>/,'loading copy is brief and consumer-facing');
+assert.doesNotMatch(mainSource,/Os dados já carregados continuam preservados/);

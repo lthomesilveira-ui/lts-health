@@ -82,7 +82,7 @@ function routeFromLocation(){
   return'hoje';
 }
 
-function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;}
+function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Aguarde um instante.</span></div>`;}
 
 function disclosureKey(details){
   const explicit=details?.dataset?.disclosure;

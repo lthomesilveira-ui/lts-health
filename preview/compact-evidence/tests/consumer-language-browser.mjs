@@ -15,9 +15,9 @@ const dir=process.env.LTS_CONSUMER_LANGUAGE_EVIDENCE_DIR||'consumer-language-vis
 const results=[],captures=[],inventories=[],failures=[];
 const roots={hoje:'[data-health-dashboard]',nutricao:'.ltsNutritionProduct',timeline:'.timelineGroups',treinos:'.ltsTrainingReference',saude:'.ltsLabsV2',tratamentos:'.screenTitle',dados:'.screenTitle',bio:'.ltsCompositionV2',evolucao:'#screenHost > :first-child',analise:'#screenHost > :first-child'};
 const save=()=>writeFileSync(`${dir}/results.json`,JSON.stringify({syntheticOnly:true,authenticatedWithRealAccount:false,fixedDate:LANGUAGE_TODAY,deviceScaleFactor:1,originalResolutionScreenshots:true,results,captures,failures},null,2));
-async function stable(page,route){
+async function stable(page,route,{afterRefresh=false}={}){
   await page.evaluate(()=>{window.__languageStableRoot=null;window.__languageFrames=0;});
-  await page.waitForFunction(async({route,selector})=>{const{state}=await import('./src/core.js');const root=document.querySelector(selector);if(!root||state.loading||!state.loaded||state.route!==route||location.hash!==`#${route}`||document.querySelector('#screenHost .loadingState'))return false;if(window.__languageStableRoot!==root){window.__languageStableRoot=root;window.__languageFrames=0;}return ++window.__languageFrames>=3;},{route,selector:roots[route]});
+  await page.waitForFunction(async({route,selector,afterRefresh})=>{const{state}=await import('./src/core.js');const{isRouteReady}=await import('./src/data-layer.js');const root=document.querySelector(selector);if(!root||state.loading||!state.loaded||!isRouteReady(route)||state.route!==route||location.hash!==`#${route}`||document.querySelector('#screenHost .loadingState')||(afterRefresh&&root===window.__languageBeforeRefreshRoot))return false;if(window.__languageStableRoot!==root){window.__languageStableRoot=root;window.__languageFrames=0;}return ++window.__languageFrames>=3;},{route,selector:roots[route],afterRefresh});
 }
 async function navigate(page,route,width){
   const nav=width<=840?'#mobileNav':'#primaryNav',direct=page.locator(`${nav} [data-route="${route}"]`);
@@ -147,13 +147,16 @@ async function evolutionChecks(page,label){
 async function refreshCase(page,f,label,route,width,table,domain){
   await navigate(page,route,width);
   if(route==='nutricao'){await chooseArchiveSource(page,foodSourceKey('Synthetic A food'));await chooseArchiveDate(page,f.date(1));}
-  await page.evaluate(table=>{window.__historyQA.failTable=table;},table);await page.locator('#refreshBtn').click();
-  await page.waitForFunction(async domain=>{const{state}=await import('./src/core.js');return state.domainStatus[domain]==='error'&&!state.loading;},domain);await stable(page,route);
+  // Refresh has two phases: initial domains, then this route's dependencies.
+  // state.loading=false alone does not mean the route has finished. Require
+  // its readiness plus a newly rendered root, never the previous ready screen.
+  await page.evaluate(({table,selector})=>{window.__historyQA.failTable=table;window.__languageBeforeRefreshRoot=document.querySelector(selector);},{table,selector:roots[route]});await page.locator('#refreshBtn').click();
+  await page.waitForFunction(async domain=>{const{state}=await import('./src/core.js');return state.domainStatus[domain]==='error'&&!state.loading;},domain);await stable(page,route,{afterRefresh:true});
   const text=await primary(page,`${label}-refresh-${domain}`);assert.match(text,/n[aã]o.*carreg|indispon[ií]v|atualiz|parcial|n[aã]o.*poss[ií]vel/i);assert.ok(!text.includes(LANGUAGE_ERROR));
   const diagnostics=await page.evaluate(async domain=>{const{state}=await import('./src/core.js');return state.errors[domain];},domain);assert.ok(diagnostics.includes(LANGUAGE_ERROR),'technical error remains in diagnostic state');
   if(route==='nutricao'){assert.equal(await page.locator('#nutritionArchiveDate').inputValue(),f.date(1));assert.equal(await page.locator('#nutritionArchiveSource').inputValue(),foodSourceKey('Synthetic A food'));if(domain==='meals'){assert.equal(await page.locator('.ltsNutritionMeals article').count(),0);assert.equal(await page.locator('.ltsNutritionDiaryMetrics article > b').first().innerText(),'2.010 kcal');}else if(domain==='nutrition')assert.equal(await page.locator('#nutritionArchiveDiary .ltsNutritionDiaryMetrics article').count(),0);}
   await capture(page,`${label}-refresh-${domain}`,route==='nutricao'?'.ltsNutritionDiaryContext':null);
-  await page.evaluate(()=>{window.__historyQA.failTable=null;});await page.locator('#refreshBtn').click();await page.waitForFunction(async domain=>{const{state}=await import('./src/core.js');return state.domainStatus[domain]==='ready'&&!state.loading;},domain);await stable(page,route);await primary(page,`${label}-recovered-${domain}`);
+  await page.evaluate(selector=>{window.__historyQA.failTable=null;window.__languageBeforeRefreshRoot=document.querySelector(selector);},roots[route]);await page.locator('#refreshBtn').click();await page.waitForFunction(async domain=>{const{state}=await import('./src/core.js');return state.domainStatus[domain]==='ready'&&!state.loading;},domain);await stable(page,route,{afterRefresh:true});await primary(page,`${label}-recovered-${domain}`);
 }
 async function securityChecks(page,traffic){
   const proof=await page.evaluate(async()=>{const{state,fixtureMode}=await import('./src/core.js');const client=window.supabase.createClient('synthetic','synthetic'),guard=[];for(const operation of [()=>client.from('synthetic').insert({}),()=>client.from('synthetic').update({}),()=>client.from('synthetic').delete(),()=>client.rpc('synthetic'),()=>client.functions.invoke('synthetic'),()=>client.storage.from('synthetic').upload('synthetic',new Blob(['synthetic']))]){try{operation();guard.push(false);}catch(error){guard.push(error.code==='preview_read_only');}}return {fixtureMode,user:state.session?.user?.id,reads:window.__historyQA.reads,writes:window.__historyQA.writes,guard};});
