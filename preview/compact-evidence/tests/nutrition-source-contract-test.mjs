@@ -55,7 +55,7 @@ for(const source of initial.nutrition.sources)for(const period of ['30','90','36
     const expected={canonical:110,candidate:120,held:130}[source.status];
     assert.equal(n.means.protein_g,expected);assert.equal(n.counts.protein_g,10);
     assert.equal(n.means.fiber_g,0);assert.equal(n.counts.fiber_g,1);
-    if(source.status!=='canonical')assert.match(m.lines,source.status==='candidate'?/fonte candidata/:/fonte em revisão/);
+    if(source.status!=='canonical')assert.match(m.lines,source.status==='candidate'?/Synthetic same label · Registro adicional/:/Synthetic same label · Registro com limitações/);
   }
 }
 // An absent selection never substitutes a more recent origin, even in insights.

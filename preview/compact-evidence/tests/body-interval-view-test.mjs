@@ -10,7 +10,7 @@ const failed=renderBodyInterval(data,{...status,body:'error'},{},'2025-02-02');a
 const mixed=renderBodyInterval({...data,nutrition:[...data.nutrition,{nutrition_date:'2025-01-04',source:'Second food',protein_g:300}]},status,{},'2025-02-02');assert.match(mixed,/110 g/);assert.match(mixed,/300 g/);assert.doesNotMatch(mixed,/173 g/);
 console.log('Interval renderer: sparse denominators, observed deltas, independent sources, missing/error states and escaping passed.');
 
-const held=renderBodyInterval({...data,sourceMetrics:[{metric_date:'2025-01-04',metric_type:'dietary_protein_g',unit:'g',value:180,source_name:'Review source',canonical_status:'held'}]},status,{},'2025-02-02');assert.match(held,/Origem em revisão/);assert.doesNotMatch(held,/Origem ainda não validada/);
+const held=renderBodyInterval({...data,sourceMetrics:[{metric_date:'2025-01-04',metric_type:'dietary_protein_g',unit:'g',value:180,source_name:'Review source',canonical_status:'held'}]},status,{},'2025-02-02');assert.match(held,/Registro com limitações/);assert.doesNotMatch(held,/Registro adicional/);
 
 const openData={...data,body:[data.body[0],{...data.body[1],measured_at:'2025-02-02'}],nutrition:[
  {nutrition_date:'2025-01-02',source:'Daily food',protein_g:100,calories_kcal:2000,water_ml:1000},
@@ -100,6 +100,6 @@ initialize(defaultState,()=>{throw new Error('an explicit pair must not be defau
 assert.deepEqual(defaultState.ui,{reviewView:'interval',...chosen});
 console.log('Interval integration regression: ambiguous/deleted/unavailable dates remain explicit; handler changes one field; initial model pair is pinned without refresh fallback.');
 
-const plainOrigin=renderBodyInterval({...data,sourceMetrics:[{metric_date:'2025-01-04',metric_type:'sleep_duration_h',unit:'h',value:7,source_name:'Synthetic watch',source_family:'healthkit_candidate',canonical_status:'candidate'}]},status,{},'2025-02-02');assert.match(plainOrigin,/Origem ainda não validada/);assert.match(plainOrigin,/Via Apple Saúde/);assert.doesNotMatch(plainOrigin,/class="source-label">[^<]*healthkit_candidate/);
+const plainOrigin=renderBodyInterval({...data,sourceMetrics:[{metric_date:'2025-01-04',metric_type:'sleep_duration_h',unit:'h',value:7,source_name:'Synthetic watch',source_family:'healthkit_candidate',canonical_status:'candidate'}]},status,{},'2025-02-02');assert.match(plainOrigin,/Registro adicional/);assert.match(plainOrigin,/Via Apple Saúde/);assert.doesNotMatch(plainOrigin,/class="source-label">[^<]*healthkit_candidate/);
 
-const distinctFamilies=renderBodyInterval({...data,sourceMetrics:['Unmapped A','Unmapped B'].map(source_family=>({metric_date:'2025-01-04',metric_type:'sleep_duration_h',unit:'h',value:7,source_name:'Same watch label',source_family,canonical_status:'candidate'}))},status,{},'2025-02-02');assert.match(distinctFamilies,/Unmapped A/);assert.match(distinctFamilies,/Unmapped B/);
+const distinctFamilies=renderBodyInterval({...data,sourceMetrics:['Unmapped A','Unmapped B'].map(source_family=>({metric_date:'2025-01-04',metric_type:'sleep_duration_h',unit:'h',value:7,source_name:'Same watch label',source_family,canonical_status:'candidate'}))},status,{},'2025-02-02');assert.match(distinctFamilies,/Same watch label · Registro adicional 1/);assert.match(distinctFamilies,/Same watch label · Registro adicional 2/);

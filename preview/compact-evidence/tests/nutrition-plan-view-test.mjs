@@ -17,7 +17,7 @@ test('Compact summary preserves six references; details use neutral comparisons 
   assert.match(html,/Início de uso não informado/);assert.match(html,/hoje parcial/);
   assert.match(html,/90% da referência/);assert.match(html,/diferença -200 kcal/);
   assert.match(html,/0% da referência · diferença -30 g/);assert.match(html,/>0 g<\/b>/,'zero is an observation');
-  assert.match(html,/1\/1 dias com valor elegível · parcial/);
+  assert.match(html,/1\/1 dias com registro · parcial/);
   assert.match(html,/<details data-disclosure="nutrition-plan-comparison">/,'comparison is initially collapsed');
   assert.match(html,/<details data-disclosure="nutrition-plan-meals">/);
   assert.match(html,/<details data-disclosure="nutrition-plan-provenance">/);
@@ -38,7 +38,7 @@ test('Historical comparison is opt-in, has no inferred values, and remains visib
   const enabled=renderNutritionPlanComparison(nutritionPlanComparison(data,status,{...ui,nutritionPlanRetrospective:true},testToday));
   assert.match(enabled,/data-plan-state="ready"/);assert.match(enabled,/data-plan-retrospective="false" aria-pressed="true"/);
   assert.match(enabled,/Retrospectiva com o plano recebido/);assert.match(enabled,/não indica adesão passada/);
-  assert.match(enabled,/1\/30 dias com valor elegível/);assert.match(enabled,/Média dos dias observados/);
+  assert.match(enabled,/1\/30 dias com registro/);assert.match(enabled,/Média dos dias observados/);
 });
 
 test('All unavailable states fail closed, with no stale source plan or comparison values',()=>{
@@ -88,7 +88,7 @@ test('Documentary quantities retain decimal precision and exclusions stay visibl
 
 test('Meal detail absence is explicit and the last detailed date remains visible',()=>{
   const m=model();m.detailAvailability={latestMealDate:'2024-01-02',hasRecentMeals:false,note:'Sem refeições detalhadas na origem atual. Comparação por item indisponível.'};
-  const html=renderNutritionPlanComparison(m);assert.match(html,/Comparação por item indisponível/);assert.match(html,/Última data de refeições detalhadas recebida: 02\/01\/2024/);
+  const html=renderNutritionPlanComparison(m);assert.match(html,/Comparação por item indisponível/);assert.match(html,/Última data com detalhes das refeições: 02\/01\/2024/);
 });
 
 globalThis.location={search:'?fixture=1'};

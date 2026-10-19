@@ -10,7 +10,7 @@ export const FIXED_TODAY='2026-10-17';
 export const METRIC_KEYS=['water','protein','energy','activeEnergy','totalEnergy','steps','sleep'];
 export const dateBefore=(today,age)=>new Date(Date.parse(`${today}T12:00:00Z`)-age*86400000).toISOString().slice(0,10);
 export const dateLabel=date=>date.split('-').reverse().join('/');
-export const numberLabel=(value,key)=>value==null?'Sem dado':Number(value).toLocaleString('pt-BR',{minimumFractionDigits:key==='sleep'?1:0,maximumFractionDigits:key==='sleep'?1:0});
+export const numberLabel=(value,key)=>value==null?'—':Number(value).toLocaleString('pt-BR',{minimumFractionDigits:key==='sleep'?1:0,maximumFractionDigits:key==='sleep'?1:0});
 const domains=['nutrition','sourceMetrics','metrics','body','segmental','workouts','workoutEvidence','exercises','sets','labs','treatments','regimens','docs','goals','waterReferences','polarSessions','meals','uploads'];
 export function makeDashboardFixture(today=FIXED_TODAY,{sparse=false}={}){
   const date=age=>dateBefore(today,age),data=Object.fromEntries(domains.map(key=>[key,[]])),status=Object.fromEntries(domains.map(key=>[key,'ready']));
@@ -77,7 +77,7 @@ export async function runRenderTests(){
       assert.ok(content,key);assert.equal(metric.count,expected.count,`${key}: actual n`);
       assert.ok(metric.value===expected.value||Math.abs(metric.value-expected.value)<1e-10,`${key}: arithmetic mean`);
       assert.ok(content.includes(`<strong>${numberLabel(expected.value,key)}</strong>`),`${key}: displayed mean`);
-      assert.match(content,new RegExp(`${expected.count}/7 dias com valor elegível`));
+      assert.match(content,new RegExp(`${expected.count}/7 dias usados na média`));
       assert.ok(content.includes(dateLabel(f.date(7)))&&content.includes(dateLabel(f.date(1))));
       assert.match(content,/Origens separadas não são somadas/);
     }
@@ -101,7 +101,7 @@ export async function runRenderTests(){
       for(const key of METRIC_KEYS){
         const expected=expectedMetric(f,key,d.bounds),content=card(output,key);
         assert.ok(content.includes(`<strong>${numberLabel(expected.value,key)}</strong>`),`${period}/${key}: selected-period value`);
-        assert.ok(content.includes(`${expected.count}/${d.bounds.days} dias com valor elegível`),`${period}/${key}: selected-period coverage`);
+        assert.ok(content.includes(`${expected.count}/${d.bounds.days} dias usados na média`),`${period}/${key}: selected-period coverage`);
         assert.ok(content.includes(dateLabel(d.bounds.start)),`${period}/${key}: selected-period date`);
       }
       assert.ok(panel(output,'training').includes(dateLabel(d.bounds.start)),`${period}: training period`);
@@ -115,8 +115,8 @@ export async function runRenderTests(){
     assert.equal(card(alternative,'protein'),card(html,'protein'),'changing water source does not change protein');
     const old=model.metricsByKey.water.sources.find(item=>item.label==='Synthetic older water').key;
     const older=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{water:old}},f.today),'water');
-    assert.match(older,/<strong>Sem dado<\/strong>/);
-    assert.match(older,new RegExp(`Última data recebida: ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date survives an empty selected period');
+    assert.match(older,/<strong>—<\/strong>/);
+    assert.match(older,new RegExp(`Último registro: ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date survives an empty selected period');
     const context=dashboardContext(f.data,f.status,{bounds:model.bounds,today:f.today,mode:model.mode});
     assert.equal(context.training.sessions,sparse?0:3);assert.equal(context.training.recordedDays,sparse?0:2);
     if(!sparse){
@@ -135,7 +135,7 @@ export async function runRenderTests(){
       assert.match(panel(html,'body'),/Última avaliação conhecida · fora do período/);
     }
     const labs=panel(html,'labs');
-    assert.match(labs,/Último resultado conhecido · fora do período/);assert.match(labs,/aproximou da referência/);assert.match(labs,/Referência: 10 a 18/);assert.match(labs,/Última coleta:/);assert.match(labs,/resultados recebidos em 2 coletas/);
+    assert.match(labs,/Último resultado conhecido · fora do período/);assert.match(labs,/aproximou da referência/);assert.match(labs,/Referência: 10 a 18/);assert.match(labs,/Última coleta:/);assert.match(labs,/resultados registrados em 2 coletas/);
     for(const age of [20,60])assert.ok(labs.includes(dateLabel(f.date(age))));
     assert.equal(context.labs.items.find(item=>item.biomarker==='Synthetic B changed reference').comparable,false);
     assert.equal(context.labs.items.find(item=>item.biomarker==='Synthetic C unknown method').comparable,false);
@@ -151,12 +151,12 @@ export async function runRenderTests(){
   const unavailable=Object.fromEntries(Object.keys(empty.status).map(key=>[key,'error']));
   for(const status of [empty.status,unavailable])for(const dashboardPeriod of ['7','all']){
     const html=renderHealthDashboard(empty.data,status,{dashboardPeriod},empty.today);
-    assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7);assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);assert.match(html,/Sem dado/);
+    assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7);assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);assert.match(html,/(?:Sem registro|Ainda não há|Não foi possível|Cobertura indisponível)/);
   }
   const failedFixture=makeDashboardFixture();
   const failedHtml=renderHealthDashboard(failedFixture.data,{...failedFixture.status,metrics:'error',sourceMetrics:'error'}, {},failedFixture.today);
   assert.match(card(failedHtml,'steps'),/(?:falh|não (?:carreg|foi possível)|indisponível)/i,'failed metric reads are labelled distinctly from no observations');
-  assert.match(card(failedHtml,'steps'),/<strong>Sem dado<\/strong>/,'failed sources never show stale recorded values');
+  assert.match(card(failedHtml,'steps'),/<strong>—<\/strong>/,'failed sources never show stale recorded values');
   const emptyHtml=renderHealthDashboard(empty.data,empty.status,{},empty.today);
   assert.doesNotMatch(card(emptyHtml,'steps'),/(?:leitura falhou|falha de leitura)/i,'a successful empty read is not described as a failure');
   const conflictingTraining=makeDashboardFixture();
@@ -169,8 +169,8 @@ export async function runRenderTests(){
   conflictingMetric.data.nutrition=[100,900].map((water_ml,index)=>({source_record_id:`synthetic-conflicting-water-${index}`,nutrition_date:conflictingMetric.date(1),source:'Synthetic conflicting diary',water_ml}));
   conflictingMetric.data.sourceMetrics=[];
   const conflictingMetricHtml=card(renderHealthDashboard(conflictingMetric.data,conflictingMetric.status,{},conflictingMetric.today),'water');
-  assert.match(conflictingMetricHtml,/<strong>Sem dado<\/strong>/);
-  assert.match(conflictingMetricHtml,/(?:conflit|amb[ií]gu|duplicad)/i,'ambiguous daily metric is visibly distinguished from an absent day');
+  assert.match(conflictingMetricHtml,/<strong>—<\/strong>/);
+  assert.match(conflictingMetricHtml,/(?:conflit|amb[ií]gu|duplicad|mais de um valor)/i,'ambiguous daily metric is visibly distinguished from an absent day');
   assert.match(conflictingMetricHtml,/100 mL/,'first ambiguous metric value stays available for review');
   assert.match(conflictingMetricHtml,/900 mL/,'second ambiguous metric value stays available for review');
   // Laboratory displays preserve reported notation and precision. A numeric
@@ -191,8 +191,8 @@ export async function runRenderTests(){
   assert.match(renderedLabs,/>4(?:[.,]0)? u</,'first ambiguous observation is readable');
   assert.match(renderedLabs,/>9(?:[.,]0)? u</,'second ambiguous observation is readable');
   assert.doesNotMatch(renderedLabs,/Diferença registrada/,'ambiguous collection never gets a fabricated delta');
-  const missingEvidence=makeDashboardFixture();const evidenceWarning=panel(renderHealthDashboard(missingEvidence.data,{...missingEvidence.status,workoutEvidence:'error'},{},missingEvidence.today),'training');assert.match(evidenceWarning,/vínculos de telemetria não carregaram/);assert.match(evidenceWarning,/9 exercícios/);assert.match(evidenceWarning,/Registros Polar/);
-  const conflictingEvidence=makeDashboardFixture();conflictingEvidence.data.workoutEvidence=['Synthetic A','Synthetic B'].map(source_name=>({source_record_id:'synthetic-conflicting-evidence',workout_source_record_id:conflictingEvidence.data.workouts[1].source_record_id,workout_date:conflictingEvidence.date(1),source_name,evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}));assert.match(panel(renderHealthDashboard(conflictingEvidence.data,conflictingEvidence.status,{},conflictingEvidence.today),'training'),/vínculos de telemetria conflitantes/);
+  const missingEvidence=makeDashboardFixture();const evidenceWarning=panel(renderHealthDashboard(missingEvidence.data,{...missingEvidence.status,workoutEvidence:'error'},{},missingEvidence.today),'training');assert.match(evidenceWarning,/Não foi possível atualizar as medidas do aparelho/);assert.match(evidenceWarning,/9 exercícios/);assert.match(evidenceWarning,/Registros Polar/);
+  const conflictingEvidence=makeDashboardFixture();conflictingEvidence.data.workoutEvidence=['Synthetic A','Synthetic B'].map(source_name=>({source_record_id:'synthetic-conflicting-evidence',workout_source_record_id:conflictingEvidence.data.workouts[1].source_record_id,workout_date:conflictingEvidence.date(1),source_name,evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}));assert.match(panel(renderHealthDashboard(conflictingEvidence.data,conflictingEvidence.status,{},conflictingEvidence.today),'training'),/medidas do aparelho que não puderam ser associadas/);
   const qualifiers=makeDashboardFixture();qualifiers.data.sets.forEach(row=>{row.reps_raw='8+2';row.reps_numeric=8;row.weight=4;row.weight_unit='plate_index';});
   const qualifiedTraining=panel(renderHealthDashboard(qualifiers.data,qualifiers.status,{},qualifiers.today),'training');assert.match(qualifiedTraining,/8\+2 repetições registradas/);assert.match(qualifiedTraining,/índice de placa/);
   for(const [weight,expected] of [[40,'40 kg'],[4.125,'4,125 kg'],[0.00001,'0,00001 kg']]){
@@ -200,7 +200,7 @@ export async function runRenderTests(){
     const text=panel(renderHealthDashboard(precision.data,precision.status,{},precision.today),'training');
     assert.ok(text.includes(expected),'recorded load retains significant decimal precision');assert.doesNotMatch(text,/40,0000000000 kg/,'no artificial trailing decimal zeros');
   }
-  const candidateFixture=makeDashboardFixture();candidateFixture.data.sourceMetrics.forEach(row=>{row.canonical_status='candidate';});const candidateHtml=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{},candidateFixture.today);assert.match(candidateHtml,/Recebido; ainda não comparado com a origem/);assert.doesNotMatch(candidateHtml,/Origem ainda não validada/);
+  const candidateFixture=makeDashboardFixture();candidateFixture.data.sourceMetrics.forEach(row=>{row.canonical_status='candidate';});const candidateHtml=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{},candidateFixture.today);assert.match(candidateHtml,/versão adicional do registro/);assert.doesNotMatch(candidateHtml,/Origem ainda não validada/);
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));

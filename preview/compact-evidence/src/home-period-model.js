@@ -121,7 +121,7 @@ export function nutritionPeriodModel(data={},status={},bounds={},ui={},today=loc
   const result=domainSources(observed,foodFields,status,['nutrition','sourceMetrics'],bounds,today,ui.homeNutritionSource||ui.reportNutritionSource);
   for(const source of result.sources){source.caloriesPoints=source.series.calories_kcal;source.proteinPoints=source.series.protein_g;}
   return {...result,unknownRows,invalidRows,caloriesPoints:result.source?.caloriesPoints||[],proteinPoints:result.source?.proteinPoints||[],
-    note:'Médias dos dias encerrados com valor, por variável e origem. Fontes candidatas permanecem identificadas; não são somadas.'};
+    note:'Médias dos dias encerrados com valor, por variável e origem. Versões adicionais permanecem separadas; não são somadas.'};
 }
 function sleepModel(data,status,bounds,ui,today){
   const observed=[];let invalidRows=0,unknownRows=0;
@@ -247,7 +247,7 @@ function describe(model){
   const add=(kind,title,text,evidence,attention='')=>insights.push({kind,title,text,evidence,attention,isAttention:Boolean(attention)});
   if(body.rows.length){
     const pair=body.first&&body.latest&&body.first.date!==body.latest.date;
-    add('body',`${body.rows.length} avaliações no período`,pair?`Gordura estimada: ${format(body.first.fat_mass_kg,1)} → ${format(body.latest.fat_mass_kg,1)} kg; músculo estimado: ${format(body.first.skeletal_muscle_mass_kg,1)} → ${format(body.latest.skeletal_muscle_mass_kg,1)} kg.`:`Última avaliação inequívoca: ${displayDate(body.latest?.date)}.`,pair?`${displayDate(body.first.date)} → ${displayDate(body.latest.date)}. ${body.comparability.note}`:body.comparability.note);
+    add('body',`${body.rows.length} avaliações no período`,pair?`Gordura estimada: ${format(body.first.fat_mass_kg,1)} → ${format(body.latest.fat_mass_kg,1)} kg; músculo estimado: ${format(body.first.skeletal_muscle_mass_kg,1)} → ${format(body.latest.skeletal_muscle_mass_kg,1)} kg.`:`Última avaliação sem conflito: ${displayDate(body.latest?.date)}.`,pair?`${displayDate(body.first.date)} → ${displayDate(body.latest.date)}. ${body.comparability.note}`:body.comparability.note);
   }
   if(training.available&&training.sessions)add('training',`${training.sessions} sessões registradas`,training.primarySets==null?'Detalhes das séries indisponíveis.':`${training.primarySets} séries principais e ${training.extensions} prolongamentos registrados.`,`${range}. ${training.note}`);
   for(const[domain,field,label,unit,digits,kind]of [[nutrition,'protein_g','Proteína','g',0,'nutrition'],[nutrition,'calories_kcal','Energia','kcal',0,'nutrition'],[sleep,'value','Sono','h',1,'sleep'],[water,'value','Água','mL',0,'water']]){
