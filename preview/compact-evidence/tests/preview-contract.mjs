@@ -70,7 +70,7 @@ const manifest={
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
     "src/entry.js": "47bda0c131be40b18555c0f4b02285199094541a3ff47a9a22e1ffb28ddac925",
-    "src/evidence-insights-view.js": "e5a0494442ab2571e08badcec78749731b324339d5193dab06dd87ad85e70e33",
+    "src/evidence-insights-view.js": "b2dababf8c8ae008af62c3f49362e9e2f62173653eb566dec5504c28a58a6141",
     "src/evidence-insights.js": "46fd88e8c3d7be0ab6de361201581d5a6cab1c4ee785ebf3f53f2bac9387f1a3",
     "src/evidence-priority.js": "a35801fda348552067a5e334643b364ad75304db92c72494325f2c83b275a47a",
     "src/evolution-model.js": "7a281361a0a7decb6c4594b697920057e8b529230a106ffe50a18a1ae97aadc3",

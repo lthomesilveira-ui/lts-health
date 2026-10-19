@@ -7,6 +7,8 @@ const {renderHealthDashboard}=await import('../src/health-dashboard.js');
 const {renderProductTraining}=await import('../src/training-reference-v2.js');
 const {renderProductLabs}=await import('../src/labs-layout-v2.js');
 const {renderTimelineHub}=await import('../src/timeline-screen.js');
+const {renderEvidenceInsights}=await import('../src/evidence-insights-view.js');
+const {nutritionTrainingContrast}=await import('../src/evidence-insights.js');
 const {state}=await import('../src/core.js');
 const text=html=>html.replace(/<[^>]*>/g,' ');
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-dashboard-card="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
@@ -68,4 +70,18 @@ assert.doesNotMatch(text(primary(training)),blocked);
 const timeline=renderTimelineHub();assert.match(timeline,/Acompanhamento de saúde/);assert.doesNotMatch(text(timeline),/care_followup/);
 state.domainStatus.workouts='error';
 assert.match(renderProductTraining(),/treinos não carregaram/);
+// The analysis library is closed by default, but its select options are live
+// and must use the same human labels as the Home and nutrition selectors.
+const insightData={...f.data,sourceMetrics:['candidate','held'].flatMap(status=>[1,2].map(index=>({source_record_id:`synthetic-insight-${status}-${index}`,source_name:'Apple Saúde · MyFitnessPal (Health Auto Export)',source_family:'synthetic-insights',canonical_status:status,metric_date:f.date(index),metric_type:'dietary_energy_kcal',unit:'kcal',value:1234.5})))};
+const insightBefore=structuredClone(insightData),bounds={start:f.date(7),end:f.date(1)};
+const origins=nutritionTrainingContrast(insightData,f.status,bounds,'',f.today).sources;
+for(const status of ['candidate','held']){
+ const origin=origins.find(source=>source.status===status);assert.ok(origin);
+ const html=renderEvidenceInsights(insightData,f.status,bounds,{reportNutritionSource:origin.key});
+ assert.doesNotMatch(text(html.match(/<select id="reportNutritionSource"[\s\S]*?<\/select>/)?.[0]||''),/fonte candidata|fonte em revisão|arquivo conferido|Health Auto Export/);
+ assert.ok(html.includes(`value="${origin.key.replaceAll('&','&amp;').replaceAll('"','&quot;')}" selected`),'source identity and requested selection survive presentation');
+ assert.match(html,status==='candidate'?/Registro adicional/:/Registro com limitações/);
+ assert.match(html,/Nome informado pela origem: Apple Saúde · MyFitnessPal \(Health Auto Export\)/,'full source name is retained in source details');
+}
+assert.deepEqual(insightData,insightBefore);
 console.log('Consumer health copy: seven cards, empty/partial/conflicting/failed reads, source aliases, exact clinical text, latest labs, workouts and Timeline passed.');

@@ -3,6 +3,7 @@ import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 import {makeConsumerLanguageFixture,consumerLanguageService,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey} from './consumer-language-fixture.mjs';
 import {technicalMatches} from './consumer-language-html.mjs';
+import {visibleTextGeometry} from './consumer-language-geometry.mjs';
 
 // Production-shaped application startup and real navigation. Only the SDK and
 // auth identity are synthetic. No ?fixture, runtime DOM replacement, real data,
@@ -37,17 +38,25 @@ async function primary(page,label){
 }
 async function layout(page,label){
   const report=await page.evaluate(()=>{
-    const host=document.querySelector('#screenHost'),r=host.getBoundingClientRect(),nodes=[],smallControls=[];
-    const walker=document.createTreeWalker(host,NodeFilter.SHOW_TEXT);let node;
+    const host=document.querySelector('#screenHost'),r=host.getBoundingClientRect(),rawText=[],smallControls=[];
+    const walker=document.createTreeWalker(host,NodeFilter.SHOW_TEXT);let node,nodeId=0;
     while(node=walker.nextNode()){
+      nodeId++;
       const el=node.parentElement;if(!node.textContent.trim()||!el||el.closest('svg,select,option,script,style')||!el.checkVisibility({checkVisibilityCSS:true,checkOpacity:true}))continue;
+      const clips=[];
+      for(let parent=el;parent;parent=parent.parentElement){
+        const css=getComputedStyle(parent),x=/^(hidden|clip|scroll|auto)$/.test(css.overflowX),y=/^(hidden|clip|scroll|auto)$/.test(css.overflowY);
+        if((!x&&!y)||css.display==='inline'||css.display==='contents')continue;
+        const box=parent.getBoundingClientRect(),left=box.left+parent.clientLeft,top=box.top+parent.clientTop;
+        clips.push({tag:parent.tagName,id:parent.id,className:parent.className,x,y,left,right:left+parent.clientWidth,top,bottom:top+parent.clientHeight,overflowX:css.overflowX,overflowY:css.overflowY,scrollLeft:parent.scrollLeft,scrollWidth:parent.scrollWidth,clientWidth:parent.clientWidth});
+      }
       const range=document.createRange();range.selectNodeContents(node);
-      for(const rect of range.getClientRects())if(rect.width>0&&rect.height>0&&rect.bottom>Math.max(0,r.top)&&rect.top<Math.min(innerHeight,r.bottom))nodes.push({text:node.textContent.trim().slice(0,100),left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom});
+      for(const rect of range.getClientRects())if(rect.width>0&&rect.height>0&&rect.bottom>Math.max(0,r.top)&&rect.top<Math.min(innerHeight,r.bottom))rawText.push({nodeId,text:node.textContent.trim().slice(0,100),rect:{left:rect.left,right:rect.right,top:rect.top,bottom:rect.bottom},clips});
     }
     for(const el of host.querySelectorAll('button,summary,select,input')){if(el.disabled||!el.checkVisibility({checkVisibilityCSS:true}))continue;const box=el.getBoundingClientRect();if(box.width<43.5||box.height<43.5)smallControls.push({tag:el.tagName,id:el.id,text:el.textContent.trim().slice(0,100),width:box.width,height:box.height});}
-    const overlaps=[];for(let a=0;a<nodes.length;a++)for(let b=a+1;b<nodes.length;b++){const x=nodes[a],y=nodes[b];if(Math.min(x.right,y.right)-Math.max(x.left,y.left)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>1)overlaps.push({first:x,second:y});}
-    return {viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,host:{width:host.clientWidth,scrollWidth:host.scrollWidth},overflowingText:nodes.filter(rect=>rect.left<-1||rect.right>innerWidth+1),overlaps,smallControls};
+    return {viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,host:{width:host.clientWidth,scrollWidth:host.scrollWidth},rawText,smallControls};
   });
+  Object.assign(report,visibleTextGeometry(report.rawText,report.viewport.width));
   writeFileSync(`${dir}/${label}-layout.json`,JSON.stringify(report,null,2));
   const issues=[];
   if(report.documentWidth>report.viewport.width+1||report.bodyWidth>report.viewport.width+1||report.host.scrollWidth>report.host.width+1)issues.push('horizontal overflow');
@@ -118,6 +127,23 @@ async function labChecks(page,f,label){
   await page.locator('#productLabMarkerSelect').selectOption('hemoglobina');await stable(page,'saude');const history=await page.locator('.ltsLabsHistoryList').innerText();assert.ok(history.includes('<4 g/dL'));assert.ok(history.includes('1,2345 g/dL'));if(f.kind==='conflict'){assert.ok(history.includes('7,8901 g/dL'));assert.match(await page.locator('.ltsLabsHero').innerText(),/2 resultados|mais de um/i);}
   await primary(page,`${label}-lab-raw`);await capture(page,`${label}-lab-original-values`,'.ltsLabsHistoryList');
 }
+async function evolutionChecks(page,label){
+  const metrics=['weight_kg','skeletal_muscle_mass_kg','fat_mass_kg','body_fat_pct'],proof=[];
+  assert.equal(await page.locator('[data-evolution-metric]').count(),metrics.length);
+  for(const key of metrics){
+    const control=page.locator(`[data-evolution-metric="${key}"]`);
+    const result=await control.evaluate(el=>{
+      const strip=el.closest('.segmented'),before=strip.scrollLeft;
+      el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});
+      const b=el.getBoundingClientRect(),s=strip.getBoundingClientRect(),left=Math.max(0,s.left+strip.clientLeft),right=Math.min(innerWidth,s.left+strip.clientLeft+strip.clientWidth),hit=document.elementFromPoint((b.left+b.right)/2,(b.top+b.bottom)/2);
+      return {key:el.dataset.evolutionMetric,text:el.innerText,before,after:strip.scrollLeft,scrollWidth:strip.scrollWidth,clientWidth:strip.clientWidth,overflowX:getComputedStyle(strip).overflowX,box:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},clip:{left,right},fullyReachable:b.left>=left-1&&b.right<=right+1&&b.top>=0&&b.bottom<=innerHeight&&!!hit&&(hit===el||el.contains(hit))};
+    });
+    proof.push(result);assert.equal(result.fullyReachable,true,`${label}: metric ${key} remains fully visible and hit-testable after native scroll`);
+  }
+  writeFileSync(`${dir}/${label}-evolution-scroll.json`,JSON.stringify(proof,null,2));
+  await capture(page,`${label}-evolution-scroll-end`,'[data-evolution-metric="body_fat_pct"]');
+  await page.locator('[data-evolution-metric]').first().evaluate(el=>el.closest('.segmented').scrollTo({left:0,behavior:'instant'}));
+}
 async function refreshCase(page,f,label,route,width,table,domain){
   await navigate(page,route,width);
   if(route==='nutricao'){await chooseArchiveSource(page,foodSourceKey('Synthetic A food'));await chooseArchiveDate(page,f.date(1));}
@@ -154,6 +180,7 @@ try{
         if(route==='treinos')await trainingChecks(page,f,label);
         if(route==='saude')await labChecks(page,f,label);
         if(route==='dados')await dataChecks(page,f,label);
+        if(route==='evolucao')await evolutionChecks(page,label);
       }
       if(kind==='complete'){
         // Repeated route/back transitions retain the explicit diary selection.
