@@ -1,5 +1,6 @@
 // Read-only laboratory context. Each result keeps its own report and collection.
 import {reviewedHemogramFootnoteValue} from './health-lab-reviewed-numeric.js';
+import {hasDocumentaryNumericProof,reviewedDocumentaryNumericReading} from './health-lab-documentary-numeric.js';
 const text=value=>typeof value==='string'?value.trim().replace(/\s+/g,' '):'';
 const norm=value=>text(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const known=value=>Boolean(text(value)&&!['unknown','unknown method','not informed','not provided','not available','unreported','nao informado','nao informada','nao disponivel','nao consta','metodo nao informado','metodo desconhecido','desconhecido','desconhecida','n/a','na','null','none','—','-'].includes(norm(value)));
@@ -77,12 +78,15 @@ function distanceToRange(value,range){
   return 0;
 }
 const intervalKey=range=>range?JSON.stringify([range.lower,range.upper,range.lowerInclusive,range.upperInclusive,range.unit,norm(range.scope)]):null;
-function exactValue(row){
+function exactValue(row,documentaryReading){
   const value=number(row.result_numeric);if(value==null)return null;
   // A reported non-exact extraction must not become exact merely because the
   // raw qualifier is missing or the numeric projection resembles a plain value.
+  if([row.numeric_kind,row.source_payload?.numeric_kind].some(kind=>kind!=null&&kind!==''&&(typeof kind!=='string'||kind.trim().toLowerCase()!=='exact')))return null;
   const reviewedKind=norm(row.numeric_kind||row.source_payload?.numeric_kind);
-  if(reviewedKind&&reviewedKind!=='exact')return null;
+  // An explicit invalid additive proof cannot fall back to an older review or
+  // the generic numeric reader. Absence preserves the legacy Hb/Ht contract.
+  if(hasDocumentaryNumericProof(row))return documentaryReading?.value??null;
   const raw=text(row.result_raw);if(!raw)return value;
   // Only an existing, row-bound documentary Hb/Ht review can interpret (1).
   // The original raw result remains visible; no source value is rewritten.
@@ -105,12 +109,14 @@ function reportedFlag(flag){
   return !['normal','n','within','within range','dentro da referencia','dentro da faixa','sem alteracao','sem alteracoes','sem flag','false','false flag','0','no','nao'].includes(norm(flag));
 }
 function laboratoryObservation(row,bounds){
-  const date=day(row.collection_date),unit=text(row.unit),value=number(row.result_numeric),exact=exactValue(row),reference=text(row.reference_range)||null;
+  const documentaryReading=reviewedDocumentaryNumericReading(row);
+  const date=day(row.collection_date),unit=text(row.unit),value=number(row.result_numeric),exact=exactValue(row,documentaryReading),reference=text(row.reference_range)||null;
   const interval=referenceInterval(reference,unit),position=referencePosition(exact,interval),flag=reportedFlag(row.flag);
   return {key:text(row.source_record_id)||fingerprint([date,row.biomarker,row.laboratory,unit,row.method,row.result_raw,row.result_numeric,reference]),
     sourceRecordId:text(row.source_record_id)||null,date,collection_date:date,biomarker:text(row.biomarker)||'Marcador não informado',markerKnown:known(row.biomarker),laboratory:text(row.laboratory)||null,
     value,rawValue:text(row.result_raw)||null,unit:unit||null,reference,method:text(row.method)||null,source:text(row.source)||null,
     sourceFile:text(row.source_file)||null,reportDate:day(row.report_date),numericKind:text(row.numeric_kind||row.source_payload?.numeric_kind)||null,
+    ...(documentaryReading?{documentaryNumericReading:documentaryReading}:{}),
     exactValue:exact,interval,referencePosition:position,referenceLabel:position==='within'?'dentro da referência':['below','above'].includes(position)?'fora da referência':null,
     referenceScope:interval?.scope||null,currentReferenceLabel:position==='unknown'?null:`${({within:'Dentro da faixa transcrita no laudo',below:'Abaixo da faixa transcrita no laudo',above:'Acima da faixa transcrita no laudo'})[position]}${interval?.scope?' · '+interval.scope:''}`,
     flag:typeof row.flag==='string'?text(row.flag):row.flag===true?true:null,reportedFlag:flag,attention:flag||['below','above'].includes(position),
@@ -209,6 +215,9 @@ export function dashboardLabs(data={},status={},bounds={}){
       Object.assign(item,{value:null,rawValue:null,exactValue:null,reference:null,interval:null,referencePosition:'unknown',referenceLabel:null,currentReferenceLabel:null,referenceScope:null,method:null,
         attention:latest.some(row=>row.attention),attentionLabel:latest.some(row=>row.attention)?'atenção ao laudo':null,
         flag:null,reportedFlag:latest.some(row=>row.reportedFlag),comparisonLabel:'Múltiplos resultados na mesma data; consulte cada observação'});
+      // A collection summary must not expose one arbitrarily chosen derived
+      // value; each original observation retains its own documentary reading.
+      delete item.documentaryNumericReading;
     }
     items.push(item);
   }

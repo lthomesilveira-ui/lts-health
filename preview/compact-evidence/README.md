@@ -1,6 +1,6 @@
 # Health read-only preview
 
-Build `health-dashboard-20261019.72`. Production `/v2` and the authentication boundary remain unchanged.
+Build `health-dashboard-20261019.73`. Production `/v2` and the authentication boundary remain unchanged.
 
 The approved daily/period card layout is preserved. This revision adds a tightly bounded, read-only interpretation of reviewed hemoglobin/hematocrit table footnotes. Original raw values remain visible, stored data is unchanged, and other markers, censored values, aliases, methods and references retain their existing boundaries. The prior contextual improvements remain:
 - Detailed training sessions, exercise and set counts, recorded set qualifiers, and explicit linked telemetry. Polar device records remain separate and are never added to canonical session counts.
@@ -33,3 +33,7 @@ The existing session summary now shows explicitly recorded completion comments, 
 ## Consistent laboratory readings (.72)
 
 The detailed laboratory history and report consumers share the dashboard's conservative read-only contract. Raw results remain visible. Notes, limits, unknown metadata and incompatible intermediate collections never become automatic differences or connected curves. Existing documentary blood-count proof is reused without creating new reviews. Tests and visual evidence use synthetic records only.
+
+## Bound documentary numeric readings (.73)
+
+An additive, authenticated, exact-record proof can support reading a report footnote or locally documented thousands notation. The original result remains visible. Missing or conflicting proof, censored observations, unknown metadata and incompatible methods/references still prevent unsupported differences. The generic SQL preparation utility only adds the one proof key to explicitly reviewed complete pre/postimages; it is not an application write path. Real manifests, source excerpts and generated SQL remain private and must never be committed or uploaded to CI.

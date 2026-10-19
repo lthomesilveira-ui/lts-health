@@ -7,7 +7,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 // Generic build hashes live in the test. No public JSON payload is introduced.
 const manifest={
   "candidate_commit": "79e23905b9c4a106a979942020dac3cd1f1a0976",
-  "build": "health-dashboard-20261019.72",
+  "build": "health-dashboard-20261019.73",
   "files": {
     "accessibility.css": "9ee0d8b2fd8bc00d1c039e9dcf8598f695a273cea119614e14181cb4f1879389",
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
@@ -34,7 +34,7 @@ const manifest={
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "8105f79beee4eab0bf6d00ab54556ff443b6e38c58f9d3ecf057cec43db76f76",
+    "index.html": "9dfa3039344d3ab79d1976fc6c8be4987b8034bc48c5998ea724e37f7728f304",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "bbbf9acfa364c27edd8b09c8feb64dd64ec80a25b0b38e6b26102cc0ed3943f1",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
@@ -49,7 +49,7 @@ const manifest={
     "product-finish.css": "0c4c95bf4c12f1e25a44433862393a7c54267ee8591ee5d4f8525eecaa7ac2f3",
     "product-layout-v2.css": "9d9dc8724c6e3b4a459174eaeef6784a08609272aa7406aec0332fd3492d4997",
     "product-redesign-v1.css": "0467e4407f7b1e86c470ad7f4714616709febaa95b356957d527de76f70f7a20",
-    "public-audit-remediation.css": "86adc0ef1372e08c0dd07d42f68009b70f4da1bfc354e35dae0f5776e2421c62",
+    "public-audit-remediation.css": "d4e988460ec5ba1390aa4cb9aa4bed9621faac756ad74faee2e22894a9c76332",
     "reference-parity-20260914.css": "80a5ca60b66b069a311f49826de103259ffe852b40e18f244b8e3f2946eed781",
     "reports.css": "b84d3cb7f5e47d108fd50b0b90462ecda9ea362878ff11f43dfff5a0fd392688",
     "secondary.css": "c1d5252112baa6a353640f2474ffcc7e7f8ffeb9d3e492a28e0c45db6fdfd231",
@@ -65,7 +65,7 @@ const manifest={
     "src/composition-layout-v2.js": "cc924b0e94c64b2938d6bc4b9a6e1f5df93955bcaa2414034a2fe3be1127b12c",
     "src/core.js": "4a25b9092a380de5e8a7d359e1759d4c954d0f714026698168875e7431d8a83e",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
-    "src/data-layer.js": "85434da5419c3276f354e34abfbbdc03d586a9125b83e5a795e74fac6a920717",
+    "src/data-layer.js": "aa1152aa34ed22f22ddf93de78cef389003bba046c3da6eafbc8bc995b0947a1",
     "src/data-screen.js": "e6702fa0101b5a5e16b437dbf3ba8384c1558a2bb78813c77f0ae6ff624810de",
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
@@ -82,11 +82,12 @@ const manifest={
     "src/health-dashboard-body.js": "29c26568e4f0cca387df73a40b1cc157d22bd46e73476e5eb156a70416134f42",
     "src/health-dashboard-context.js": "af6986230dab59649a4fe68e226e5a7e4f543c2e1c155ee2d6efb25368cdb12c",
     "src/health-dashboard-guidance.js": "40383b198066d52e5e4f8d3b725747b49ae1024815dfd219dd2baaf5244a191a",
-    "src/health-dashboard-labs.js": "45262b82d63fffb723c06e44a80c7cf6daffc96fd20f3f132c8e600f8410e3ee",
+    "src/health-dashboard-labs.js": "ff872dce35a698e382bbe557bd33d169edb6d6825aa15cb22736eddd5fd86bdf",
     "src/health-dashboard-model.js": "3fa97ff1f28dff85b96cdf888622622bd1057372d44d025ca4503393f57dc7f8",
     "src/health-dashboard-training.js": "309e7137ba62c5e44797a31fa70968cf6fb30484bce436254e840c0178d8925d",
     "src/health-dashboard.js": "97ab1d4549d1dc16195537629af575da5d386167dda6ef1f31d3a89bacdba800",
-    "src/health-lab-reviewed-numeric.js": "71070a17d4925105c654cf4ca2530e248ae60bd399bc5f33a88f2df95cbcb7cc",
+    "src/health-lab-documentary-numeric.js": "d6ffaced7ecd6e09c78b37b79019fce42573155690c844ce3490ef37dca61b7e",
+    "src/health-lab-reviewed-numeric.js": "d3ee1812c2df272d579c791df3abeb0458960cb24e02dfc7695bf5d3d1509b66",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
     "src/history-tools.js": "1f89aa73bf582b91a36a163a770a8dc9f6be4ca1c52935986e2e989b328251f3",
     "src/home-cockpit.js": "9388bdddf4aed2528a3536629e94ff8a98f130785eccfdb18017652c38b84c6f",
@@ -153,7 +154,7 @@ const manifest={
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-assert.equal(manifest.build,'health-dashboard-20261019.72');
+assert.equal(manifest.build,'health-dashboard-20261019.73');
 for(const [relative,expected] of Object.entries(manifest.files)){
  assert.ok(/^(index\.html|[\w-]+\.(?:css|svg)|src\/[\w-]+\.js)$/.test(relative),'allowlisted generic source only');
  const file=path.join(root,relative),body=fs.readFileSync(file,'utf8');assert.equal(hash(body),expected,'preview manifest matches '+relative);
@@ -172,7 +173,7 @@ assert.equal(core,productionCore,'authentication/configuration is unchanged from
 assert.match(fs.readFileSync(path.join(production,'index.html'),'utf8'),/mobile-parity-20261014\.58/,'production remains on its published build');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
-const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.72"></script>';
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.73"></script>';
 assert.ok(index.includes(guardTag)&&index.indexOf(guardTag)<index.indexOf('<script type="module"'),'blocking classic guard loads before application modules');
 assert.ok(index.indexOf(guardTag)>index.indexOf('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'guard installs after SDK');
 assert.match(index,/Prévia · somente leitura/);

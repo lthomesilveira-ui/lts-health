@@ -1,0 +1,58 @@
+name: LTS Health synthetic lab numeric proof SQL
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/tests/lab-numeric-proof-*.mjs'
+      - 'supabase/tests/support/lab-numeric-proof-sql.mjs'
+      - '.github/workflows/health-lab-numeric-proof.yml'
+  pull_request:
+    paths:
+      - 'supabase/tests/lab-numeric-proof-*.mjs'
+      - 'supabase/tests/support/lab-numeric-proof-sql.mjs'
+      - '.github/workflows/health-lab-numeric-proof.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-lab-numeric-proof-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: lab_numeric_proof_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: synthetic-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lab_numeric_proof_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    # Invented credentials for an isolated service; no application configuration,
+    # account, source document, real manifest or generated private SQL is loaded.
+    # Private access must stay disabled (false); no app configuration is changed.
+    env:
+      LAB_NUMERIC_PROOF_SYNTHETIC_TEST: '1'
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGDATABASE: lab_numeric_proof_test
+      PGUSER: postgres
+      PGPASSWORD: synthetic-ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify PostgreSQL client
+        run: psql --version
+      - name: Validate generic builder using invented manifests
+        run: |
+          node --check supabase/tests/support/lab-numeric-proof-sql.mjs
+          node --check supabase/tests/lab-numeric-proof-postgres-test.mjs
+          node --test supabase/tests/lab-numeric-proof-builder-test.mjs
+      - name: Compile and exercise atomic updates in disposable PostgreSQL 17
+        run: node --test supabase/tests/lab-numeric-proof-postgres-test.mjs

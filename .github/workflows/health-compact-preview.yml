@@ -26,7 +26,7 @@ jobs:
         run: node preview/compact-evidence/tests/preview-contract.mjs
       - name: Verify candidate analytical contracts with synthetic data
         run: |
-          for test in health-dashboard-model health-dashboard-body health-dashboard-labs health-dashboard-training health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation documented-nutrition-plan nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-archive nutrition-history-access consumer-health-copy consumer-diagnostics consumer-language training-session-summary training-session-summary-view lab-shared-reading lab-consumer-consistency lab-history-conflicts; do
+          for test in health-dashboard-model health-dashboard-body health-dashboard-labs health-dashboard-training health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation documented-nutrition-plan nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-archive nutrition-history-access consumer-health-copy consumer-diagnostics consumer-language training-session-summary training-session-summary-view lab-shared-reading lab-consumer-consistency lab-history-conflicts documentary-numeric-reading; do
             node "preview/compact-evidence/tests/${test}-test.mjs"
           done
       - name: Install existing pinned browser runtime
@@ -45,6 +45,8 @@ jobs:
         run: node preview/compact-evidence/tests/training-session-summary-browser.mjs
       - name: Verify consistent laboratory readings and original histories
         run: node preview/compact-evidence/tests/lab-reading-consistency-browser.mjs
+      - name: Verify bound documentary readings without changing original results
+        run: node preview/compact-evidence/tests/documentary-numeric-reading-browser.mjs
       - name: Verify full histories in preview route
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
@@ -70,6 +72,7 @@ jobs:
             consumer-language-visual
             training-session-summary-visual
             lab-reading-consistency-visual
+            documentary-numeric-reading-visual
             health-dashboard-visual
             health-reviewed-blood-count-visual
             v2/reference-period-visual
