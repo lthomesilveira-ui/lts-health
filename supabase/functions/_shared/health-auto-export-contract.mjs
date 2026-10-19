@@ -75,7 +75,7 @@ export function normalizeExport(payload,{aggregation,today=localToday()}={}){
   const metrics=payload?.data?.metrics;
   if(!Array.isArray(metrics)||metrics.length>80)throw Error('invalid_payload');
   for(const [type,entries] of Object.entries(payload.data))if(type!=='metrics'&&(!Array.isArray(entries)||entries.length))throw Error('health_metrics_only');
-  const rows=new Map();let ignored=0,points=0;
+  const rows=new Map();let ignored=0,points=0,ignoredBasalBlocks=0,ignoredBasalPoints=0;
   function add(type,unit,value,date,originalSource,name){
     const id='health_auto_export:'+JSON.stringify([type,date,originalSource]);
     const row={source_record_id:id,metric_date:date,metric_type:type,value,unit,source_name:`Apple Saúde · ${originalSource}`,source_family:FAMILY,canonical_status:(nutritionTypes.has(type)||type==='dietary_water_ml')?'canonical':'candidate',confidence:CONFIDENCE,source_payload:{transport:'health_auto_export',export_version:2,aggregation:'day',original_source:originalSource,export_metric:name}};
@@ -89,7 +89,11 @@ export function normalizeExport(payload,{aggregation,today=localToday()}={}){
     if(!metric||typeof metric.name!=='string'||!Array.isArray(metric.data))throw Error('invalid_payload');
     points+=metric.data.length;if(points>2500)throw Error('too_many_points');
     const def=definitions[metric.name];
-    if(!def&&metric.name!=='sleep_analysis'){ignored+=metric.data.length;continue;}
+    if(!def&&metric.name!=='sleep_analysis'){
+      // Private presence counters only: never inspect or log unsupported point content.
+      if(metric.name==='basal_energy_burned'){ignoredBasalBlocks++;ignoredBasalPoints+=metric.data.length;}
+      ignored+=metric.data.length;continue;
+    }
     for(const point of metric.data){
       if(!point||typeof point!=='object'||point.startDate||point.endDate)throw Error('daily_aggregation_required');
       const date=pointDay(point.date,today),originalSource=source(point);
@@ -102,5 +106,5 @@ export function normalizeExport(payload,{aggregation,today=localToday()}={}){
       }
     }
   }
-  return {metrics:[...rows.values()],ignored_points:ignored};
+  return {metrics:[...rows.values()],ignored_points:ignored,ignored_basal_blocks:ignoredBasalBlocks,ignored_basal_points:ignoredBasalPoints};
 }

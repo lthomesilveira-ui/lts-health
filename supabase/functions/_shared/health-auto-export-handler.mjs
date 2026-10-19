@@ -15,7 +15,7 @@ export async function boundedJson(req,max=MAX_BODY_BYTES){
 export async function receiveHealthExport(req,db,{emit=event=>console.info(JSON.stringify(event))}={}){
   let authenticated=false,batch=null;
   const correlationId=crypto.randomUUID();
-  const record=(outcome,acceptedMetrics=0,validationCode=null)=>{if(authenticated)try{emit(receiveSummary({outcome,metrics:batch?.metrics||[],ignoredPoints:batch?.ignored_points||0,acceptedMetrics,correlationId,validationCode,automationPeriod:req.headers.get('automation-period')}));}catch{/* Logging cannot change ingestion. */}};
+  const record=(outcome,acceptedMetrics=0,validationCode=null)=>{if(authenticated)try{emit(receiveSummary({outcome,metrics:batch?.metrics||[],ignoredPoints:batch?.ignored_points||0,ignoredBasalBlocks:batch?.ignored_basal_blocks,ignoredBasalPoints:batch?.ignored_basal_points,acceptedMetrics,correlationId,validationCode,automationPeriod:req.headers.get('automation-period')}));}catch{/* Logging cannot change ingestion. */}};
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   if(req.method!=='POST')return json({error:'method_not_allowed'},405);
   const token=req.headers.get(KEY_HEADER);if(!validToken(token))return json({error:'unauthorized'},401);
