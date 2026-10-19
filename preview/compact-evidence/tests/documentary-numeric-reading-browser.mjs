@@ -140,7 +140,15 @@ async function layout(page,name,target){
       if(/^(hidden|clip|scroll|auto)$/.test(css.overflowY)){visibleTop=Math.max(visibleTop,b.top+p.clientTop);visibleBottom=Math.min(visibleBottom,b.top+p.clientTop+p.clientHeight);}
       if(/^(hidden|clip|scroll|auto)$/.test(css.overflowX)){visibleLeft=Math.max(visibleLeft,b.left+p.clientLeft);visibleRight=Math.min(visibleRight,b.left+p.clientLeft+p.clientWidth);}
     }
-    const targetBox=el.getBoundingClientRect(),targetText=[];
+    const targetBox=el.getBoundingClientRect(),targetText=[],chromeOccluders=[];
+    for(const chrome of document.querySelectorAll('.topbar,#primaryNav,#mobileNav')){
+      if(!chrome.checkVisibility({checkVisibilityCSS:true,checkOpacity:true})||!['fixed','sticky'].includes(getComputedStyle(chrome).position))continue;
+      const b=chrome.getBoundingClientRect();
+      if(b.width<=0||b.height<=0||b.right<=targetBox.left||b.left>=targetBox.right)continue;
+      chromeOccluders.push({tag:chrome.tagName,id:chrome.id,className:chrome.className,...box(b)});
+      if(b.top<=visibleTop+1&&b.bottom>visibleTop)visibleTop=Math.min(visibleBottom,b.bottom);
+      if(b.bottom>=visibleBottom-1&&b.top<visibleBottom)visibleBottom=Math.max(visibleTop,b.top);
+    }
     const targetWalker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
     while(node=targetWalker.nextNode()){
       if(!node.textContent.trim()||!node.parentElement.checkVisibility({checkVisibilityCSS:true,checkOpacity:true})||node.parentElement.closest('select,option,svg,script,style'))continue;
@@ -149,7 +157,7 @@ async function layout(page,name,target){
     }
     return {viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,
       hostWidth:host.clientWidth,hostScrollWidth:host.scrollWidth,rootWidth:root.clientWidth,rootScrollWidth:root.scrollWidth,
-      target:{box:box(targetBox),height:targetBox.height,visibleTop,visibleBottom,coveredStart:Math.max(0,visibleTop-targetBox.top),coveredEnd:Math.min(targetBox.height,visibleBottom-targetBox.top),text:targetText.join(' ')},rawText,hardClippedText};
+      target:{box:box(targetBox),height:targetBox.height,visibleTop,visibleBottom,chromeOccluders,coveredStart:Math.max(0,visibleTop-targetBox.top),coveredEnd:Math.min(targetBox.height,visibleBottom-targetBox.top),text:targetText.join(' ')},rawText,hardClippedText};
   });
   Object.assign(report,visibleTextGeometry(report.rawText,report.viewport.width));
   writeFileSync(`${dir}/${name}-layout.json`,JSON.stringify({...flags,...report},null,2));
@@ -170,13 +178,26 @@ async function captureTiles(page,name,target){
     assert.ok(index<100,'A target must remain reachable through its real scroll container');
     await target.evaluate((el,offset)=>{
       el.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
+      let visibleTop=0,visibleBottom=innerHeight;
+      for(let p=el.parentElement;p;p=p.parentElement){
+        if(!/^(hidden|clip|scroll|auto)$/.test(getComputedStyle(p).overflowY))continue;
+        const b=p.getBoundingClientRect();visibleTop=Math.max(visibleTop,b.top+p.clientTop);visibleBottom=Math.min(visibleBottom,b.top+p.clientTop+p.clientHeight);
+      }
+      const targetBox=el.getBoundingClientRect();
+      for(const chrome of document.querySelectorAll('.topbar,#primaryNav,#mobileNav')){
+        if(!chrome.checkVisibility({checkVisibilityCSS:true,checkOpacity:true})||!['fixed','sticky'].includes(getComputedStyle(chrome).position))continue;
+        const b=chrome.getBoundingClientRect();
+        if(b.width<=0||b.height<=0||b.right<=targetBox.left||b.left>=targetBox.right)continue;
+        if(b.top<=visibleTop+1&&b.bottom>visibleTop)visibleTop=Math.min(visibleBottom,b.bottom);
+        if(b.bottom>=visibleBottom-1&&b.top<visibleBottom)visibleBottom=Math.max(visibleTop,b.top);
+      }
+      const top=visibleTop+12;
       for(let p=el.parentElement;p;p=p.parentElement){
         if(/^(auto|scroll)$/.test(getComputedStyle(p).overflowY)&&p.scrollHeight>p.clientHeight){
-          const top=Math.max(0,p.getBoundingClientRect().top+p.clientTop)+12;
           p.scrollTop+=el.getBoundingClientRect().top-top+offset;return;
         }
       }
-      window.scrollBy({top:el.getBoundingClientRect().top-12+offset,left:0,behavior:'instant'});
+      window.scrollBy({top:el.getBoundingClientRect().top-top+offset,left:0,behavior:'instant'});
     },offset);
     const tile=`${name}-tile-${++index}`;
     assert.ok(!captures.some(capture=>capture.name===tile),'Preserve every original evidence image');
@@ -185,7 +206,7 @@ async function captureTiles(page,name,target){
     assert.equal(buffer.subarray(1,4).toString(),'PNG');assert.equal(buffer.readUInt32BE(16),viewport.width);assert.equal(buffer.readUInt32BE(20),viewport.height);
     assert.ok(buffer.length>2000,'The original-resolution capture must contain rendered content');
     const report=await layout(page,tile,target),range=report.target;
-    captures.push({name:tile,viewport,originalResolution:true,bytes:buffer.length,sha256:createHash('sha256').update(buffer).digest('hex'),coveredStart:range.coveredStart,coveredEnd:range.coveredEnd,targetHeight:range.height,visibleTargetText:range.text,...flags});
+    captures.push({name:tile,viewport,originalResolution:true,bytes:buffer.length,sha256:createHash('sha256').update(buffer).digest('hex'),coveredStart:range.coveredStart,coveredEnd:range.coveredEnd,targetHeight:range.height,visibleTop:range.visibleTop,visibleBottom:range.visibleBottom,chromeOccluders:range.chromeOccluders,visibleTargetText:range.text,...flags});
     assert.ok(range.coveredStart<=covered+1,'Viewport tiles leave no unseen vertical gap in the target');
     assert.ok(range.coveredEnd>covered,'Each tile exposes additional target content');
     covered=range.coveredEnd;finished=covered>=range.height-1;
@@ -193,20 +214,68 @@ async function captureTiles(page,name,target){
   }
 }
 
+function literalCharacterClipping({box,characters,clippingAncestors}){
+  const ink=characters.filter(character=>!/^\s$/u.test(character.character));
+  const positive=rect=>rect.width>0&&rect.height>0;
+  const horizontalOverflowCharacters=ink.filter(character=>character.rects.some(rect=>positive(rect)&&(rect.left<box.left-1||rect.right>box.right+1)));
+  const clippedCharacters=ink.filter(character=>character.rects.some(rect=>{
+    if(!positive(rect))return false;
+    const painted={...rect};
+    for(const clip of clippingAncestors){
+      if((clip.hardX&&(painted.left<clip.left-1||painted.right>clip.right+1))||(clip.hardY&&(painted.top<clip.top-1||painted.bottom>clip.bottom+1)))return true;
+      // Only genuine scroll-ports make the remaining ink available in another
+      // tile. A hidden/clip boundary never removes evidence before this check.
+      if(clip.scrollX){painted.left=Math.max(painted.left,clip.left);painted.right=Math.min(painted.right,clip.right);}
+      if(clip.scrollY){painted.top=Math.max(painted.top,clip.top);painted.bottom=Math.min(painted.bottom,clip.bottom);}
+      if(painted.right<=painted.left||painted.bottom<=painted.top)break;
+    }
+    return false;
+  }));
+  return {horizontalOverflowCharacters,clippedCharacters};
+}
+
+function verifyLiteralClippingDetector(){
+  const box={left:0,right:100,top:0,bottom:25.5};
+  const character=rect=>({character:'7',rects:[{...rect,width:rect.right-rect.left,height:rect.bottom-rect.top}]});
+  const vertical={box,characters:[character({left:10,right:25,top:-2,bottom:26})],clippingAncestors:[]};
+  assert.equal(literalCharacterClipping(vertical).clippedCharacters.length,0,'Visible font ink may extend past the line box');
+  for(const overflowY of ['hidden','clip']){
+    assert.equal(literalCharacterClipping({...vertical,clippingAncestors:[{...box,overflowY,hardY:true}]}).clippedCharacters.length,1,`${overflowY} must still reject the same vertical Range`);
+  }
+  const horizontal={box,characters:[character({left:95,right:103,top:2,bottom:20})],clippingAncestors:[]};
+  assert.equal(literalCharacterClipping(horizontal).horizontalOverflowCharacters.length,1,'Horizontal tails still fail even with visible overflow');
+  assert.equal(literalCharacterClipping({...horizontal,clippingAncestors:[{...box,overflowX:'hidden',hardX:true}]}).clippedCharacters.length,1,'An actual horizontal clip still fails');
+  results.push({name:'literal-clipping-detector-regression',status:'passed',visibleVerticalInkAccepted:true,hiddenAndClipRejected:true,horizontalTailRejected:true,...flags});
+}
+
 async function literal(page,target,expected,name){
   assert.equal(await target.count(),1);assert.equal(await target.textContent(),expected,'Preserve the complete raw string, notation and precision');
   assert.equal(await target.locator('*').count(),0,'The original result remains escaped plain text');
+  await target.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
   const evidence=await target.evaluate(el=>{
-    const b=el.getBoundingClientRect(),characters=[],range=document.createRange(),walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let node;
+    const b=el.getBoundingClientRect(),characters=[],clippingAncestors=[],range=document.createRange(),walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let node;
     while(node=walker.nextNode())for(let offset=0;offset<node.textContent.length;){
       const character=String.fromCodePoint(node.textContent.codePointAt(offset));range.setStart(node,offset);range.setEnd(node,offset+character.length);
       characters.push({character,offset,rects:[...range.getClientRects()].map(r=>({left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}))});offset+=character.length;
     }
-    const bad=characters.filter(c=>!/^\s$/u.test(c.character)&&c.rects.some(r=>r.width>0&&r.height>0&&(r.left<b.left-1||r.right>b.right+1||r.top<b.top-1||r.bottom>b.bottom+1)));
-    return {box:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},fontSize:parseFloat(getComputedStyle(el).fontSize),characters,clippedCharacters:bad};
+    for(let p=el;p;p=p.parentElement){
+      const css=getComputedStyle(p);if(['inline','contents'].includes(css.display))continue;
+      const bounds=p.getBoundingClientRect(),left=bounds.left+p.clientLeft,top=bounds.top+p.clientTop;
+      clippingAncestors.push({tag:p.tagName,id:p.id,className:p.className,overflowX:css.overflowX,overflowY:css.overflowY,
+        hardX:/^(hidden|clip)$/.test(css.overflowX),hardY:/^(hidden|clip)$/.test(css.overflowY),
+        scrollX:/^(auto|scroll)$/.test(css.overflowX),scrollY:/^(auto|scroll)$/.test(css.overflowY),
+        left,right:left+p.clientWidth,top,bottom:top+p.clientHeight});
+    }
+    const css=getComputedStyle(el);
+    return {box:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},fontSize:parseFloat(css.fontSize),lineHeight:css.lineHeight,overflowX:css.overflowX,overflowY:css.overflowY,characters,clippingAncestors};
   });
+  // Font ink may extend vertically beyond a line box when overflow is visible.
+  // That is not a cut. Preserve the exact horizontal-tail guard and test every
+  // character against the actual clipping ancestors instead of the line box.
+  Object.assign(evidence,literalCharacterClipping(evidence));
   writeFileSync(`${dir}/${name}-literal.json`,JSON.stringify({...flags,expected,...evidence},null,2));
-  assert.equal(evidence.clippedCharacters.length,0,'Every original character fits its own box, with no hidden tail');
+  assert.equal(evidence.horizontalOverflowCharacters.length,0,'Every original character fits horizontally, with no hidden tail');
+  assert.equal(evidence.clippedCharacters.length,0,'No original character is cut by an actual hidden/clip boundary');
   assert.ok(evidence.fontSize>=12,'Original numerical results remain legible at native viewport resolution');
 }
 
@@ -314,6 +383,7 @@ async function recordFailure(page,name,error,traffic){
   failures.push({name,message:String(error.message)});results.push({name,status:'failed',...flags});save();
 }
 
+verifyLiteralClippingDetector();save();
 const browser=await chromium.launch({headless:true});
 try{
   for(const [width,height] of sizes){
