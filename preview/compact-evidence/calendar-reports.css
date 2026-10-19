@@ -36,3 +36,22 @@
 @media print{#calendarPrintRoot .ltsCalendarChart{margin:5pt 0;break-inside:avoid}#calendarPrintRoot .ltsCalendarChart svg{height:42pt;fill:#555}#calendarPrintRoot .ltsCalendarChart figcaption{font-size:7pt}#calendarPrintRoot .ltsCalendarPrintComparison{break-before:page;page-break-before:always}#calendarPrintRoot table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt;margin:10pt 0}#calendarPrintRoot th,#calendarPrintRoot td{vertical-align:top;text-align:left;border:1px solid #aaa;padding:6pt;overflow-wrap:anywhere}#calendarPrintRoot th:first-child{width:23%}#calendarPrintRoot th:nth-child(2){width:23%}#calendarPrintRoot th:nth-child(3){width:37%}#calendarPrintRoot th:last-child{width:17%}#calendarPrintRoot table small{display:block;margin-top:5pt;font-size:7pt!important}#calendarPrintRoot thead{display:table-header-group}#calendarPrintRoot tr{break-inside:avoid;page-break-inside:avoid}}
 .ltsCalendarChart .ltsCalendarChartScale{font-size:11px;line-height:1.4;color:var(--calendar-muted);margin:0 0 3px}
 @media print{#calendarPrintRoot .ltsCalendarChart .ltsCalendarChartScale{font-size:7pt}}
+/* Native WebKit menu controls can contribute their internal option width to a
+   disclosure's scroll width. Size the control itself, leaving the full source
+   name and every evidence paragraph outside it readable and wrapping. */
+.ltsCalendarSourcePicker{width:100%;max-width:100%;min-width:0}
+.ltsCalendarSourcePicker select{box-sizing:border-box;width:100%;max-width:100%;min-width:0;appearance:none;-webkit-appearance:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:32px;background-image:linear-gradient(45deg,transparent 50%,#51657b 50%),linear-gradient(135deg,#51657b 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+@media(max-width:600px){
+  /* Keep the full selected calendar period readable at 320 CSS pixels. */
+  .ltsCalendarControls{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end}
+  .ltsCalendarModes{grid-column:1;grid-row:1;min-width:0}
+  .ltsCalendarArrows{grid-column:2;grid-row:1}
+  .ltsCalendarControls>label{grid-column:1/-1;width:100%;max-width:none;min-width:0}
+}
+@media print{
+  /* The application shell locks html as well as body to the viewport. Printing
+     must use normal document flow so all pages and evidence remain reachable. */
+  html:has(body.ltsCalendarPrinting){height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;background:#fff!important}
+  body.ltsCalendarPrinting{min-height:0!important;max-height:none!important}
+  #calendarPrintRoot .ltsCalendarSource span::before{content:' · '}
+}

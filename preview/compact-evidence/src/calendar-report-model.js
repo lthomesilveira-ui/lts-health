@@ -77,6 +77,16 @@ export function calendarReportCalendar(ui={},today){
 }
 function explicitUI(ui,current,previous=null){return {...ui,dashboardSources:{...ui.dashboardSources,...ui.calendarReportSources},dashboardCalendar:{bounds:current,previousBounds:previous}};}
 function sum(items,key){return items.every(item=>item[key]!=null)?items.reduce((total,item)=>total+item[key],0):null;}
+function metricReadDiagnostics(metric,status){
+  const domains=['water','protein','energy'].includes(metric.key)?['nutrition','sourceMetrics']:['metrics','sourceMetrics'];
+  const domainStates=Object.fromEntries(domains.map(domain=>[domain,state(status,domain)]));
+  const readyDomains=domains.filter(domain=>domainStates[domain]==='ready'),failedDomains=domains.filter(domain=>domainStates[domain]==='error'),pendingDomains=domains.filter(domain=>domainStates[domain]==='loading');
+  const readError=failedDomains.length>0,readPending=pendingDomains.length>0,readComplete=readyDomains.length===domains.length,readHasReadySource=readyDomains.length>0;
+  const partialRead=readHasReadySource&&!readComplete,readStatus=readComplete?'ready':partialRead?'partial':readError?'error':readPending?'loading':'unavailable';
+  const hasValue=metric.value!==null,coverageUnavailable=!hasValue&&!readComplete;
+  const readNote=readComplete?null:readError?(hasValue?'Parte das origens não carregou. O valor e a cobertura usam somente os registros disponíveis da origem indicada.':`${readHasReadySource?'Parte das origens não carregou':'As origens não carregaram'}. Não é possível confirmar se há registros neste período.`):readPending?(hasValue?'Parte das origens ainda está carregando. O valor e a cobertura usam somente os registros disponíveis da origem indicada.':'Há origens ainda carregando. A ausência de valor nesta atualização não confirma falta de registro.'):(hasValue?'Parte das origens está indisponível. O valor e a cobertura usam somente os registros disponíveis da origem indicada.':'As origens necessárias não estão totalmente disponíveis. Não é possível confirmar a cobertura do período.');
+  return {domainStates,readyDomains,failedDomains,pendingDomains,readStatus,readError,readPending,readComplete,readHasReadySource,partialRead,coverageUnavailable,readNote};
+}
 function trainingReport(data,status,calendar){
   const received=dashboardContext(data,status,{bounds:calendar.bounds,today:calendar.today}).training;
   const reviewed=received.history.map(row=>{
@@ -167,8 +177,8 @@ function summaryFor(calendar,metrics,training,labs){
   if(highlights.length)items.push(`${highlights.map(metric=>`${metric.label}: média registrada de ${format(metric.comparison.previous,metric.unit)} para ${format(metric.comparison.current,metric.unit)} ${metric.unit}`).join('; ')} nos dias equivalentes dos dois períodos. São diferenças descritivas, sem classificação de melhora ou piora.`);
   else items.push('Ainda não há base suficiente para comparar as médias diárias: são necessários a mesma origem, dias equivalentes e registros suficientes nos dois períodos.');
   const limited=metrics.filter(metric=>metric.expectedDays>0&&metric.count<metric.expectedDays).sort((a,b)=>a.count/a.expectedDays-b.count/b.expectedDays)[0];
-  if(!observed.length)items.push('Não há valores diários válidos nas origens selecionadas para este período.');
-  else if(limited)items.push(`${limited.label}: ${limited.count}/${limited.expectedDays} dias encerrados com valor. A falta de registro limita a leitura e não significa zero.`);
+  if(!observed.length)items.push(metrics.some(metric=>!metric.readComplete)?'As origens não estão totalmente disponíveis nesta atualização. Não é possível confirmar a presença de registros ou a cobertura do período.':'Não há valores diários válidos nas origens selecionadas para este período.');
+  else if(limited)items.push(limited.coverageUnavailable?`${limited.label}: ${limited.readNote}`:`${limited.label}: ${limited.count}/${limited.expectedDays} dias encerrados com valor. A falta de registro limita a leitura e não significa zero.`);
   if(labs.available)items.push(labs.collectionCount?`${labs.collectionCount} ${labs.collectionCount===1?'data de coleta no período':'datas de coleta no período'}. Exames são lidos pela data e pelo contexto de cada laudo.`:'Sem coleta neste período; exames não precisam seguir uma cadência semanal ou mensal.');
   return {headline:`Como foi ${calendar.mode==='week'?'sua semana':'seu mês'}${calendar.partial?' até agora':''}`,items};
 }
@@ -183,11 +193,11 @@ export function calendarReport(data={},status={},ui={},today){
   const comparison=calendar.comparisonDays?healthDashboardModel(data,status,explicitUI(ui,calendar.comparisonBounds,calendar.previousComparisonBounds),calendar.today):null;
   const metrics=keys.map(key=>{
     const metric=dashboard.metricsByKey[key],compared=comparison?.metricsByKey[key].comparison||{...metric.comparison,reason:'no_closed_days'};
-    return {...metric,comparison:{...compared,note:calendar.comparisonNote,fullPeriodMean:metric.value,fullPeriodDays:metric.count,commonPrefixDays:calendar.comparisonDays},
+    return {...metric,...metricReadDiagnostics(metric,status),comparison:{...compared,note:calendar.comparisonNote,fullPeriodMean:metric.value,fullPeriodDays:metric.count,commonPrefixDays:calendar.comparisonDays},
       coverage:metric.expectedDays?metric.count/metric.expectedDays:null,
       lastObservedOutsidePeriod:Boolean(metric.lastObservedDate&&!inside(metric.lastObservedDate,calendar.bounds))};
   });
-  const todayMetrics=calendar.bounds.includesToday?keys.map(key=>dashboard.todayMetrics.find(metric=>metric.key===key)):[];
+  const todayMetrics=calendar.bounds.includesToday?keys.map(key=>{const metric=dashboard.todayMetrics.find(metric=>metric.key===key);return {...metric,...metricReadDiagnostics(metric,status)};}):[];
   const training=trainingReport(data,status,calendar),labs=labsReport(data,status,ui,calendar),protocol=protocolReport(data,status,calendar);
   const nutritionPlan=nutritionPlanComparison(data,status,fullUI,calendar.today);
   const notes=[calendar.comparisonNote,'Diferenças só aparecem com a mesma medida, origem e unidade, nos mesmos dias relativos dos dois períodos: pelo menos 5 dias e 70% dos dias em cada um. Hoje, registros incompletos e dias com valores conflitantes ficam fora.',

@@ -140,11 +140,13 @@ async function capture(page,name,selector=null){
   captures.push({name,viewport:report.viewport,originalResolution:true,selector});save();
 }
 async function literalText(page,selector,expected,{mustWrap=false}={}){
-  const paragraph=page.locator(selector);
-  assert.equal(await paragraph.count(),1);
-  assert.equal(await paragraph.textContent(),expected,'The original string, including HTML/newlines, is preserved exactly');
-  assert.equal(await paragraph.locator('*').count(),0,'HTML-looking text creates no child markup');
-  const geometry=await paragraph.evaluate(el=>{
+  // Resolve and inspect the current DOM in one synchronous browser callback.
+  // A locator's separately resolved handle can be detached by a refresh render
+  // before evaluate runs, yielding empty computed styles and zero rectangles.
+  const geometry=await page.evaluate(({selector})=>{
+    const matches=document.querySelectorAll(selector),el=matches[0];
+    if(matches.length!==1)return {matchCount:matches.length,connected:false};
+    const root=document.querySelector('.ltsTrainingReference');
     const b=el.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(el);
     const rectangle=r=>({left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height});
     const positive=r=>r.width>0&&r.height>0;
@@ -167,11 +169,18 @@ async function literalText(page,selector,expected,{mustWrap=false}={}){
     // the same paragraph bounds with the unchanged 1px rounding tolerance.
     const ink=characters.filter(character=>!character.whitespace);
     const overflowingCharacters=ink.filter(character=>character.rects.some(outside));
-    return {viewport:{width:innerWidth,height:innerHeight},workoutId:el.closest('[data-workout-id]')?.dataset.workoutId,
+    return {matchCount:matches.length,connected:el.isConnected,inCurrentTrainingRoot:el.closest('.ltsTrainingReference')===root,
+      sourceText:el.textContent,childCount:el.querySelectorAll('*').length,
+      viewport:{width:innerWidth,height:innerHeight},workoutId:el.closest('[data-workout-id]')?.dataset.workoutId,
       paragraph:rectangle(b),rects,characters,rawOverflowingRects:rects.filter(outside),overflowingCharacters,
       lineCount:new Set(ink.flatMap(character=>character.rects.filter(positive).map(r=>r.top))).size,
       overflow:overflowingCharacters.length>0,whiteSpace:getComputedStyle(el).whiteSpace};
-  });
+  },{selector});
+  assert.equal(geometry.matchCount,1);
+  assert.equal(geometry.connected,true,'Measure a connected paragraph in the current document');
+  assert.equal(geometry.inCurrentTrainingRoot,true,'The paragraph belongs to the current training render');
+  assert.equal(geometry.sourceText,expected,'The original string, including HTML/newlines, is preserved exactly');
+  assert.equal(geometry.childCount,0,'HTML-looking text creates no child markup');
   const evidence=`literal-text-${String(literalTextEvidence.length+1).padStart(3,'0')}-${geometry.viewport.width}-${geometry.workoutId}.json`;
   writeFileSync(`${dir}/${evidence}`,JSON.stringify({syntheticOnly:true,authenticatedReal:false,selector,...geometry},null,2));
   literalTextEvidence.push({evidence,selector,viewport:geometry.viewport,workoutId:geometry.workoutId,lineCount:geometry.lineCount,rawOverflowRectCount:geometry.rawOverflowingRects.length,overflowingCharacterCount:geometry.overflowingCharacters.length});save();

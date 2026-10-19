@@ -113,7 +113,7 @@ async function sourceControls(page,fixture,name){
 // The existing documentary-reading detector is retained below. It compares
 // actual Range ink and separately fails hidden/clip boundaries; clipping text
 // out of the overflow calculation never makes a broken layout pass.
-async function layout(page,name,target){
+async function layout(page,name,target,{expectedIssues=null}={}){
   const report=await target.evaluate(el=>{
     const root=document.querySelector('body.ltsCalendarPrinting #calendarPrintRoot')||document.querySelector('#calendarReport'),host=root;
     const rawText=[],hardClippedText=[],walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node,nodeId=0;
@@ -125,8 +125,21 @@ async function layout(page,name,target){
       for(let p=parent;p;p=p.parentElement){
         const css=getComputedStyle(p),x=/^(hidden|clip|scroll|auto)$/.test(css.overflowX),y=/^(hidden|clip|scroll|auto)$/.test(css.overflowY);
         if((!x&&!y)||['inline','contents'].includes(css.display))continue;
+        // Root overflow is propagated to the viewport. The HTML element's
+        // https://www.w3.org/TR/css-overflow-3/#overflow-propagation
+        // bounding box moves with window scroll; it is not a moving hard clip.
+        // CI1's tile 2 visibly painted below y=44, whereas the old arithmetic
+        // (-1079 + 1123) incorrectly declared all that visible ink clipped.
+        // Root scroll edges are covered by adjacent tiles. Real descendants
+        // with hidden/clip retain the unchanged hard-boundary check below.
+        if(p===document.documentElement){
+          // Horizontal viewport escape remains an error, including negative
+          // left overflow that need not increase document.scrollWidth.
+          const viewportClip={x:false,y,left:0,right:innerWidth,top:0,bottom:innerHeight,rootViewport:true,declaredOverflowX:x};
+          clips.push(viewportClip);scrollClips.push(viewportClip);continue;
+        }
         const b=p.getBoundingClientRect(),left=b.left+p.clientLeft,top=b.top+p.clientTop;
-        const clip={x,y,left,right:left+p.clientWidth,top,bottom:top+p.clientHeight};clips.push(clip);
+        const clip={x,y,left,right:left+p.clientWidth,top,bottom:top+p.clientHeight,tag:p.tagName,id:p.id};clips.push(clip);
         const scroll={...clip,x:/^(scroll|auto)$/.test(css.overflowX),y:/^(scroll|auto)$/.test(css.overflowY)};
         if(scroll.x||scroll.y)scrollClips.push(scroll);
         const hard={...clip,x:/^(hidden|clip)$/.test(css.overflowX),y:/^(hidden|clip)$/.test(css.overflowY)};
@@ -147,6 +160,7 @@ async function layout(page,name,target){
     }
     let visibleTop=0,visibleBottom=innerHeight,visibleLeft=0,visibleRight=innerWidth;
     for(let p=el.parentElement;p;p=p.parentElement){
+      if(p===document.documentElement)continue; // The viewport is initialized above.
       const css=getComputedStyle(p),b=p.getBoundingClientRect();
       if(/^(hidden|clip|scroll|auto)$/.test(css.overflowY)){visibleTop=Math.max(visibleTop,b.top+p.clientTop);visibleBottom=Math.min(visibleBottom,b.top+p.clientTop+p.clientHeight);}
       if(/^(hidden|clip|scroll|auto)$/.test(css.overflowX)){visibleLeft=Math.max(visibleLeft,b.left+p.clientLeft);visibleRight=Math.min(visibleRight,b.left+p.clientLeft+p.clientWidth);}
@@ -166,7 +180,8 @@ async function layout(page,name,target){
       const range=document.createRange();range.selectNodeContents(node);
       if([...range.getClientRects()].some(r=>r.width>0&&r.height>0&&r.top>=visibleTop-1&&r.bottom<=visibleBottom+1&&r.right>visibleLeft&&r.left<visibleRight))targetText.push(node.textContent.trim());
     }
-    return {viewport:{width:innerWidth,height:innerHeight},documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,
+    const overflowElements=[root,...root.querySelectorAll('*')].filter(element=>element.clientWidth>0&&element.scrollWidth>element.clientWidth+1&&element.checkVisibility({checkVisibilityCSS:true})).map(element=>({tag:element.tagName,id:element.id,className:typeof element.className==='string'?element.className:'',clientWidth:element.clientWidth,scrollWidth:element.scrollWidth,overflowX:getComputedStyle(element).overflowX,box:box(element.getBoundingClientRect())}));
+    return {viewport:{width:innerWidth,height:innerHeight},windowScroll:{x:scrollX,y:scrollY},rootOverflow:{x:getComputedStyle(document.documentElement).overflowX,y:getComputedStyle(document.documentElement).overflowY},overflowElements,documentWidth:document.documentElement.scrollWidth,bodyWidth:document.body.scrollWidth,
       hostWidth:host.clientWidth,hostScrollWidth:host.scrollWidth,rootWidth:root.clientWidth,rootScrollWidth:root.scrollWidth,
       target:{box:box(targetBox),height:targetBox.height,visibleTop,visibleBottom,chromeOccluders,coveredStart:Math.max(0,visibleTop-targetBox.top),coveredEnd:Math.min(targetBox.height,visibleBottom-targetBox.top),text:targetText.join(' ')},rawText,hardClippedText};
   });
@@ -178,8 +193,38 @@ async function layout(page,name,target){
   if(report.overlaps.length)issues.push('overlapping painted text');
   if(report.hardClippedText.length)issues.push('text actually cut by hidden/clip bounds');
   if(!report.target.text.trim()||report.target.coveredEnd<=report.target.coveredStart)issues.push('empty or offscreen target tile');
-  if(issues.length)failures.push({name,category:'layout',issues,evidence:`${name}-layout.json`});
-  return report;
+  if(expectedIssues!==null)assert.deepEqual(issues,expectedIssues,`${name}: detector control must have exactly the expected findings`);
+  else if(issues.length)failures.push({name,category:'layout',issues,evidence:`${name}-layout.json`});
+  return {...report,issues};
+}
+
+async function verifyViewportClippingDetector(browser,engine){
+  const page=await browser.newPage({viewport:{width:320,height:740},deviceScaleFactor:1});
+  try{
+    await page.setContent('<!doctype html><html><head><style>html{height:100%;overflow:hidden}body{margin:0}#calendarReport{position:relative;width:320px;height:2200px;font:16px/20px Arial}#rootControlText{position:absolute;left:12px;top:850px;width:270px;margin:0}</style></head><body><div id="calendarReport"><p id="rootControlText">Visible synthetic viewport text</p></div></body></html>');
+    await page.evaluate(()=>window.scrollTo(0,600));assert.equal(await page.evaluate(()=>scrollY),600);
+    let name=`${engine}-detector-root-viewport`;
+    const root=await layout(page,name,page.locator('#rootControlText'),{expectedIssues:[]});
+    assert.ok(root.target.box.top>140&&root.target.box.bottom<740,'The root-control ink is below the old false clip and inside the real viewport');
+    assert.equal(root.hardClippedText.length,0);assert.ok(root.target.text.includes('Visible synthetic viewport text'));
+    await page.screenshot({path:`${dir}/${name}.png`,scale:'css'});
+    await page.evaluate(()=>{document.querySelector('#calendarReport').innerHTML='<div id="hardClipControl" style="position:absolute;left:12px;top:850px;width:100px;height:24px;overflow:hidden"><span style="position:absolute;left:80px;top:2px;white-space:nowrap">CLIPPED SYNTHETIC TEXT</span></div>';});
+    name=`${engine}-detector-descendant-hidden`;
+    const hidden=await layout(page,name,page.locator('#hardClipControl'),{expectedIssues:['text actually cut by hidden/clip bounds']});
+    assert.ok(hidden.hardClippedText.some(item=>item.clip.tag==='DIV'&&item.clip.id==='hardClipControl'),'An actual descendant div with overflow:hidden remains a hard failure');
+    await page.screenshot({path:`${dir}/${name}.png`,scale:'css'});
+    await page.evaluate(()=>{document.querySelector('#calendarReport').innerHTML='<p id="overflowControl" style="position:absolute;left:280px;top:850px;width:160px;white-space:nowrap;margin:0">OVERFLOW SYNTHETIC</p>';});
+    name=`${engine}-detector-horizontal-overflow`;
+    const overflow=await layout(page,name,page.locator('#overflowControl'),{expectedIssues:['horizontal overflow','painted text outside viewport']});
+    assert.ok(overflow.documentWidth>overflow.viewport.width||overflow.rootScrollWidth>overflow.rootWidth,'Viewport propagation never suppresses the independent horizontal-overflow failure');
+    await page.screenshot({path:`${dir}/${name}.png`,scale:'css'});
+    await page.evaluate(()=>{document.querySelector('#overflowControl').style.left='-20px';});
+    name=`${engine}-detector-negative-overflow`;
+    const negative=await layout(page,name,page.locator('#overflowControl'),{expectedIssues:['painted text outside viewport']});
+    assert.ok(negative.overflowingText.some(item=>item.left<0),'Left-side text escape fails even when document width is unchanged');
+    await page.screenshot({path:`${dir}/${name}.png`,scale:'css'});
+    results.push({name:`${engine}-clipping-detector-controls`,status:'passed',rootViewportAccepted:true,descendantHiddenRejected:true,horizontalOverflowRejected:true,negativeLeftTextRejected:true,...flags});save();
+  }finally{await page.close();}
 }
 
 async function captureTiles(page,name,target){
@@ -191,6 +236,7 @@ async function captureTiles(page,name,target){
       el.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
       let visibleTop=0,visibleBottom=innerHeight;
       for(let p=el.parentElement;p;p=p.parentElement){
+        if(p===document.documentElement)continue; // Root overflow clips at the fixed viewport.
         if(!/^(hidden|clip|scroll|auto)$/.test(getComputedStyle(p).overflowY))continue;
         const b=p.getBoundingClientRect();visibleTop=Math.max(visibleTop,b.top+p.clientTop);visibleBottom=Math.min(visibleBottom,b.top+p.clientTop+p.clientHeight);
       }
@@ -204,6 +250,7 @@ async function captureTiles(page,name,target){
       }
       const top=visibleTop+12;
       for(let p=el.parentElement;p;p=p.parentElement){
+        if(p===document.documentElement)continue; // Window scrolling is handled below.
         if(/^(auto|scroll)$/.test(getComputedStyle(p).overflowY)&&p.scrollHeight>p.clientHeight){
           p.scrollTop+=el.getBoundingClientRect().top-top+offset;return;
         }
@@ -257,13 +304,15 @@ print(json.dumps(pages,ensure_ascii=False))
   execFileSync('pdftoppm',['-png','-r','144',path,`${dir}/${name}-pdf-page`],{maxBuffer:5*1024*1024});
   const images=readdirSync(dir).filter(file=>file.startsWith(`${name}-pdf-page-`)&&file.endsWith('.png'));
   assert.equal(images.length,pageCount,'Every PDF page has a native-resolution visual artifact');
+  const bytes=readFileSync(path);assert.equal(bytes.subarray(0,5).toString(),'%PDF-');
+  const record={name,path: `${name}.pdf`,pages:pageCount,pageImages:images,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),format:'A4',allPrintTextPreserved:missing.length===0,printableBoundsChecked:true,status:issues.length||missing.length?'failed':'passed',...flags};pdfs.push(record);save();
   assert.deepEqual(issues,[],`${name}: no blank, wrong-sized or edge-clipped PDF page`);
   assert.deepEqual(missing,[],`${name}: every visible word and recorded number survives PDF export`);
-  const bytes=readFileSync(path);assert.equal(bytes.subarray(0,5).toString(),'%PDF-');
-  const record={name,path: `${name}.pdf`,pages:pageCount,pageImages:images,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),format:'A4',allPrintTextPreserved:true,printableBoundsChecked:true,...flags};pdfs.push(record);save();return record;
+  return record;
 }
 
 async function printContract(page,name,{pdf=false,engine='chromium'}={}){
+  const failureStart=failures.length;
   const original={title:await page.title(),viewport:page.viewportSize(),text:await page.locator('#calendarReport').innerText()},before=await page.evaluate(()=>window.__calendarPrintCalls.length);
   await page.locator('#calendar-export').click();
   await page.waitForSelector('body.ltsCalendarPrinting #calendarPrintRoot',{state:'attached'});
@@ -283,13 +332,18 @@ async function printContract(page,name,{pdf=false,engine='chromium'}={}){
   assert.ok(printText.length>500,'The print root contains the full report');
   assert.doesNotMatch(printText,/\b(?:NaN|undefined|Infinity|SQLSTATE|source_record_id|canonical_status)\b/);
   for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
-  await captureTiles(page,`${name}-print`,page.locator('#calendarPrintRoot'));
   writeFileSync(`${dir}/${name}-print-dom.txt`,printText);
+  // A capture failure is still a test failure, but must not prevent creating
+  // the real PDF and every page image needed to diagnose print pagination.
+  try{await captureTiles(page,`${name}-print`,page.locator('#calendarPrintRoot'));}
+  catch(error){await recordFailure(page,`${name}-print-capture`,error,{});}
   if(pdf){
     assert.equal(engine,'chromium','Only Chromium produces page.pdf');
     const path=`${dir}/${name}.pdf`;
-    await page.pdf({path,format:'A4',printBackground:true,preferCSSPageSize:true,displayHeaderFooter:false});
-    inspectPdf(path,name,printText);
+    try{
+      await page.pdf({path,format:'A4',printBackground:true,preferCSSPageSize:true,displayHeaderFooter:false});
+      inspectPdf(path,name,printText);
+    }catch(error){await recordFailure(page,`${name}-pdf`,error,{});}
   }
   // Native afterprint is also fired by Chromium printToPDF. The explicit event
   // covers the intercepted-dialog/WebKit path and idempotent cleanup.
@@ -298,7 +352,7 @@ async function printContract(page,name,{pdf=false,engine='chromium'}={}){
   assert.equal(await page.title(),original.title,'afterprint restores the original app title');
   await page.emulateMedia({media:'screen'});await page.setViewportSize(original.viewport);await stable(page);
   assert.equal(await page.locator('#calendarReport').innerText(),original.text,'Print cleanup preserves the selected report and data');
-  results.push({name,engine,status:'passed',localPrintInvocations:1,synchronousGesture:true,restoredAfterPrint:true,realPdf:pdf,...flags});save();
+  results.push({name,engine,status:failures.length===failureStart?'passed':'failed',localPrintInvocations:1,synchronousGesture:true,restoredAfterPrint:true,pdfRequested:pdf,realPdf:pdfs.some(item=>item.name===name),...flags});save();
 }
 
 async function printFailure(page,name){
@@ -367,6 +421,8 @@ for(const command of ['pdfinfo','pdftotext','pdftoppm'])execFileSync(command,['-
 for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
   const browser=await browserType.launch({headless:true});
   try{
+    try{await verifyViewportClippingDetector(browser,engine);}
+    catch(error){failures.push({name:`${engine}-clipping-detector-controls`,message:String(error.message)});results.push({name:`${engine}-clipping-detector-controls`,status:'failed',...flags});save();}
     for(const [width,height] of engine==='chromium'?sizes:[[393,844]]){
       const fixture=makeCalendarReportFixture();
       await session(browser,engine,width,height,fixture,async(page,name)=>{

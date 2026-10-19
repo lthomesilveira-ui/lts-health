@@ -197,3 +197,37 @@ test('stricter71 rejection of latest session never promotes an older session or 
   const data=training(),original=data.workouts.find(row=>row.workout_date==='2024-03-06');data.workouts.push({...original,raw_exercises:'Conflicting source text'});
   const result=report(data,status(),{},today).training;assert.equal(result.lastRecordAmbiguous,true);assert.equal(result.lastObservedDate,'2024-03-06');assert.equal(result.latest,null);assert.equal(result.lastRegistered,null);assert.equal(result.daysSinceLast,null);assert.equal(result.gapLabel,null);
 });
+
+test('read diagnostics distinguish one failed origin with no surviving value from an observed empty source',()=>{
+  const states={...status(),sourceMetrics:'error'},result=report(empty(),states,{},today);
+  for(const key of ['water','protein','energy','steps','activeEnergy']){
+    const item=metric(result,key),survivor=['water','protein','energy'].includes(key)?'nutrition':'metrics';
+    assert.deepEqual(item.domainStates,{[survivor]:'ready',sourceMetrics:'error'});assert.deepEqual(item.failedDomains,['sourceMetrics']);assert.equal(item.readError,true);assert.equal(item.partialRead,true);assert.equal(item.readComplete,false);assert.equal(item.readStatus,'partial');assert.equal(item.coverageUnavailable,true);assert.equal(item.value,null);assert.equal(item.count,0);assert.match(item.readNote,/não carregou/);
+  }
+  assert.match(result.summary.items.join(' '),/Não é possível confirmar/);
+  const loaded=metric(report(empty(),status(),{},today));assert.equal(loaded.readComplete,true);assert.equal(loaded.coverageUnavailable,false);assert.equal(loaded.readError,false);assert.equal(loaded.partialRead,false);assert.equal(loaded.readNote,null);
+});
+test('a surviving loaded source retains its values and coverage while exposing the failed read',()=>{
+  const data=filled();data.metrics=data.sourceMetrics.map(row=>({...row,measured_at:row.metric_date,source:'Synthetic surviving canonical'}));
+  const result=report(data,{...status(),sourceMetrics:'error'},{},today);
+  for(const key of ['water','protein','energy','steps','activeEnergy']){
+    const item=metric(result,key);assert.notEqual(item.value,null);assert.equal(item.count,7);assert.equal(item.expectedDays,7);assert.equal(item.readError,true);assert.equal(item.partialRead,true);assert.equal(item.coverageUnavailable,false);assert.match(item.readNote,/somente os registros disponíveis/);assert.equal(item.comparison.delta,null);
+  }
+});
+test('known partial observations are independent of read failures and loading diagnostics',()=>{
+  const data=filled();data.nutrition.find(row=>row.nutrition_date==='2024-03-08').knownPartial=true;
+  const item=metric(report(data,status(),{},today));assert.equal(item.availability,'partial');assert.equal(item.knownPartial,true);assert.equal(item.count,6);assert.equal(item.readStatus,'ready');assert.equal(item.readError,false);assert.equal(item.partialRead,false);assert.equal(item.readComplete,true);assert.equal(item.coverageUnavailable,false);assert.equal(item.readNote,null);
+});
+test('all failed or loading origins retain unavailable coverage rather than a false zero-observation claim',()=>{
+  for(const state of ['error','loading','unavailable']){
+    const result=report(filled(),{...status(),nutrition:state,metrics:state,sourceMetrics:state},{},today);
+    for(const item of result.metrics){assert.equal(item.readStatus,state);assert.equal(item.partialRead,false);assert.equal(item.readHasReadySource,false);assert.equal(item.readComplete,false);assert.equal(item.coverageUnavailable,true);assert.equal(item.value,null);assert.equal(item.readError,state==='error');assert.equal(item.readPending,state==='loading');}
+  }
+  const partial=report(empty(),{...status(),sourceMetrics:'loading'},{},today).metricsByKey.steps;assert.equal(partial.readStatus,'partial');assert.equal(partial.readPending,true);assert.equal(partial.readError,false);assert.equal(partial.coverageUnavailable,true);assert.match(partial.readNote,/carregando/);
+});
+test('today carries the same read diagnostics, including an observed zero from a surviving source',()=>{
+  const data=empty();data.nutrition=[food(today,0)];
+  const result=report(data,{...status(),sourceMetrics:'error'},{calendarReportSelection:'current'},today);
+  const protein=result.todayMetrics.find(item=>item.key==='protein'),steps=result.todayMetrics.find(item=>item.key==='steps');
+  assert.equal(protein.value,0);assert.equal(protein.readError,true);assert.equal(protein.coverageUnavailable,false);assert.equal(steps.value,null);assert.equal(steps.coverageUnavailable,true);assert.deepEqual(steps.failedDomains,['sourceMetrics']);
+});

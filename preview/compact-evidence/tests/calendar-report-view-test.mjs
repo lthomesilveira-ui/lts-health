@@ -40,6 +40,14 @@ const history=renderCalendarReport(f.data,f.status,{calendarReportMode:'month',c
 const empty=makeCalendarReportFixture('empty');const emptyHtml=renderCalendarReport(empty.data,empty.status,{},empty.today);assert.match(emptyHtml,/0\/7 dias encerrados com valor/);assert.match(emptyHtml,/Nenhuma coleta registrada/);assert.doesNotMatch(emptyHtml,/NaN|Infinity|undefined/);
 const failed=renderCalendarReport(f.data,Object.fromEntries(Object.keys(f.status).map(key=>[key,'error'])),{},f.today);assert.match(failed,/Cobertura indisponível/);assert.match(failed,/treinos não carregaram/i);assert.doesNotMatch(card(failed,'water'),/0 mL/);
 
+// CI1 regression: a successful empty metrics domain cannot disguise a failed
+// sourceMetrics read as an ordinary 0/N history gap. A surviving food source
+// remains usable, with a visible read limitation in both screen and PDF.
+const partiallyFailedStatus={...f.status,sourceMetrics:'error'},partiallyFailed=calendarReport(f.data,partiallyFailedStatus,{},f.today),partiallyFailedHtml=renderCalendarReport(f.data,partiallyFailedStatus,{},f.today);
+assert.match(card(partiallyFailedHtml,'steps'),/Falha ao carregar/);assert.match(card(partiallyFailedHtml,'steps'),/Cobertura indisponível/);assert.doesNotMatch(card(partiallyFailedHtml,'steps'),/0\/7 dias encerrados/);
+assert.match(card(partiallyFailedHtml,'water'),/803 mL/);assert.match(card(partiallyFailedHtml,'water'),/4\/7 dias encerrados/);assert.match(card(partiallyFailedHtml,'water'),/não carregou/i);
+const failedPrint=renderCalendarReportPrint(partiallyFailed);assert.match(card(failedPrint,'steps'),/Falha ao carregar/);assert.match(failedPrint,/Os dias deste período não puderam ser verificados/);assert.match(failedPrint,/Cobertura indisponível/);
+const pendingHtml=renderCalendarReport(f.data,{...f.status,sourceMetrics:'loading'},{},f.today);assert.match(card(pendingHtml,'steps'),/Carregando/);assert.match(card(pendingHtml,'steps'),/Cobertura indisponível/);
 const print=renderCalendarReportPrint(model);assert.match(print,/LTS HEALTH/);assert.match(print,/data-calendar-comparison-table/);assert.match(print,/Dias, origens e limites/);assert.match(print,/70%/);assert.match(print,/mesmo treino pode aparecer/);assert.match(print,/Arquivo criado localmente/);
 assert.doesNotMatch(print,/<details|<summary|<button|<select|<input|data-calendar-print|ltsCalendarToday|undefined|NaN|Infinity/);
 for(const metric of model.metrics)for(const point of metric.points)assert.ok(print.includes(`data-calendar-day="${point.date}"`));
@@ -70,7 +78,7 @@ shouldThrow=false;assert.equal(printCalendarReport(f.data,f.status,{},f.today),t
 delete globalThis.document;delete globalThis.window;
 
 const css=readFileSync(new URL('../calendar-reports.css',import.meta.url),'utf8'),source=readFileSync(new URL('../src/calendar-report-view.js',import.meta.url),'utf8'),main=readFileSync(new URL('../src/main.js',import.meta.url),'utf8'),reports=readFileSync(new URL('../src/reports-screen.js',import.meta.url),'utf8');
-assert.match(css,/body\.ltsCalendarPrinting>\*:not\(#calendarPrintRoot\)\{display:none!important\}/);assert.match(css,/@page\{size:A4/);assert.match(css,/max-width:600px/);assert.match(css,/page-break-inside:avoid/);assert.match(css,/thead\{display:table-header-group/);
+assert.match(css,/body\.ltsCalendarPrinting>\*:not\(#calendarPrintRoot\)\{display:none!important\}/);assert.match(css,/@page\{size:A4/);assert.match(css,/html:has\(body\.ltsCalendarPrinting\)\{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important/);assert.match(css,/ltsCalendarSourcePicker select\{[^}]*appearance:none;[^}]*text-overflow:ellipsis/);assert.match(css,/ltsCalendarControls>label\{grid-column:1\/-1;width:100%/);assert.match(css,/max-width:600px/);assert.match(css,/page-break-inside:avoid/);assert.match(css,/thead\{display:table-header-group/);
 assert.doesNotMatch(source,/\blocalStorage\b|\bsessionStorage\b|\bfetch\s*\(|console\.|window\.open|navigator\.sendBeacon/);
 assert.match(main,/state\.ui\.calendarReportSources=/);assert.match(reports,/renderCalendarReport\(\)/);assert.match(reports,/Explorar outras janelas/);assert.match(reports,/renderIntegratedReview\(m\)/);assert.match(reports,/renderEvidenceInsights/);
 console.log('Calendar report view: independent windows, all five metric values/coverage, chart gaps and zero, origin isolation, dated labs, training and plan limits, escaped full print evidence, A4/mobile CSS, synchronous print/cancel/error/repeat lifecycle, and preserved old workspaces passed. Browser layout and native iPhone saving require separate acceptance tests.');
