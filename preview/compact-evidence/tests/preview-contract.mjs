@@ -102,7 +102,7 @@ const manifest={
     "src/integrated-review-view.js": "c2d7a62cd2e0178942176685c2143c55c69f6623f71836f593aa6c63cadec485",
     "src/integrated-review.js": "0a2b5f6414b706e06fa385bed405b9108ddca7c41140207a8b3908fef508b631",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
-    "src/labs-layout-v2.js": "36c0b28c1b0475b57ba3904a037dc7c6155a2c2e62e723dc673f2ffcad6bd466",
+    "src/labs-layout-v2.js": "6092306cde0fc2aa00ae5fa4c75544be5adcf2eebba57ece43afb2334afa2a74",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
     "src/longitudinal-story.js": "d2b764d06c1073f0ae57e49290c8e39609ea2095ce6533cc9e8f99ade0c35c12",
     "src/main.js": "232d1db871fafe174f3057374e23103dfc41a2d791af4b9f6d61bad2740ce1d1",

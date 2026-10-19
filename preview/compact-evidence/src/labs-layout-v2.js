@@ -133,7 +133,7 @@ export function labsModel(){
   const cohort=item.cohorts.find(c=>c.key===state.ui.productLabCohort)||item.cohorts[0];
   const lastDate=validDay(cohort?.all.at(-1)?.collection_date);
   const latestRows=lastDate?cohort.all.filter(row=>validDay(row.collection_date)===lastDate):cohort?.all||[];
-  const latest=latestRows.length===1&&!cohort?.identityConflicts?.has(latestRows[0])?latestRows[0]:null;
+  const latest=latestRows.length===1&&!cohort?.identityConflicts?.has(latestRows[0])&&!cohort?.ambiguousDates?.includes(lastDate)?latestRows[0]:null;
   const recent=cohort?.rows||[];
   const history=pageOf([...(labGroups(allRows).find(g=>g.key===item.group.key)?.rows||[])].reverse(),state.ui.productLabPage,10);
   const query=norm(state.ui.productLabQuery),matches=groups.filter(g=>!query||norm(g.label).includes(query));

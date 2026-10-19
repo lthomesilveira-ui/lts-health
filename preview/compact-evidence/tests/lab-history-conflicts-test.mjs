@@ -105,6 +105,27 @@ test('latest same-day method conflicts do not select a current value or automati
   assert.equal(lines(m.points),0);
 });
 
+test('latest same-day method conflicts cannot select a hero value in either cohort',()=>{
+  const rows=[row('first','2025-01-10',2,{biomarker:'Glicose'}),row('last-a','2025-02-10',3,{biomarker:'Glicose'}),
+    row('last-b','2025-02-10',7,{biomarker:'Glicose',method:'Método sintético B'})];
+  const original={data:state.data,domainStatus:state.domainStatus,ui:state.ui,errors:state.errors};
+  try{
+    state.data={labs:rows};state.domainStatus=status;state.errors={};state.ui={productLabPeriod:'all',homePeriod:'all'};
+    const cohorts=labsModel().item.cohorts;assert.equal(cohorts.length,2);
+    for(const cohort of cohorts){
+      state.ui.productLabCohort=cohort.key;
+      const m=labsModel(),html=renderProductLabs(),hero=html.split('<section class="ltsLabsHero">')[1]?.split('</section>')[0];
+      assert.equal(m.latestRows.length,1,'The selected method alone has one result on the latest date');
+      assert.ok(m.cohort.ambiguousDates.includes(m.lastDate),'The other method creates collection ambiguity');
+      assert.equal(m.latest,null,'A unique row in one method is not an unambiguous collection');
+      assert.ok(hero.includes('<strong>Resultado com registros divergentes</strong>'));
+      assert.ok(hero.includes('Nenhum resultado foi escolhido automaticamente.'));
+      assert.equal(m.history.total,3);assert.ok(html.includes('3 mg/L'));assert.ok(html.includes('7 mg/L'));
+      assert.equal(labCohortComparison(m.cohort).comparable,false);assert.equal(lines(labCohortPoints(m.cohort)),0);
+    }
+  }finally{Object.assign(state,original);}
+});
+
 test('unverified repeated identities stay conservative without marking a unique missing ID as conflicting',()=>{
   const one=row('a','2025-01-10',2,{source_record_id:null}),duplicate={...one},last=row('b','2025-02-10',3);
   assert.equal(labHistoryConflicts([one,last]).size,0);
