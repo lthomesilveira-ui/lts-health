@@ -1,4 +1,5 @@
 import {receiveSummary} from './receive-summary.mjs';
+import {captureBasalCandidates} from './basal-energy-candidates.mjs';
 import {KEY_HEADER,MAX_BODY_BYTES,validToken,digest,normalizeExport,unitErrorDetails} from './health-auto-export-contract.mjs';
 
 const cors={'Access-Control-Allow-Origin':'https://lthomesilveira-ui.github.io','Access-Control-Allow-Headers':`content-type,${KEY_HEADER},automation-aggregation`,'Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
@@ -15,7 +16,7 @@ export async function boundedJson(req,max=MAX_BODY_BYTES){
 export async function receiveHealthExport(req,db,{emit=event=>console.info(JSON.stringify(event))}={}){
   let authenticated=false,batch=null;
   const correlationId=crypto.randomUUID();
-  const record=(outcome,acceptedMetrics=0,validationCode=null)=>{if(authenticated)try{emit(receiveSummary({outcome,metrics:batch?.metrics||[],ignoredPoints:batch?.ignored_points||0,ignoredBasalBlocks:batch?.ignored_basal_blocks,ignoredBasalPoints:batch?.ignored_basal_points,acceptedMetrics,correlationId,validationCode,automationPeriod:req.headers.get('automation-period')}));}catch{/* Logging cannot change ingestion. */}};
+  const record=(outcome,acceptedMetrics=0,validationCode=null,acceptedBasalCandidates=0)=>{if(authenticated)try{emit(receiveSummary({outcome,metrics:batch?.metrics||[],ignoredPoints:batch?.ignored_points||0,ignoredBasalBlocks:batch?.ignored_basal_blocks,ignoredBasalPoints:batch?.ignored_basal_points,acceptedMetrics,acceptedBasalCandidates,basalCandidatePoints:batch?.basal_candidates?.length,correlationId,validationCode,automationPeriod:req.headers.get('automation-period')}));}catch{/* Logging cannot change ingestion. */}};
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   if(req.method!=='POST')return json({error:'method_not_allowed'},405);
   const token=req.headers.get(KEY_HEADER);if(!validToken(token))return json({error:'unauthorized'},401);
@@ -27,14 +28,21 @@ export async function receiveHealthExport(req,db,{emit=event=>console.info(JSON.
     authenticated=true;
     if(!/^application\/json(?:;|$)/i.test(req.headers.get('content-type')||'')){record('validation_rejected',0,'json_required');return json({error:'json_required',correlation_id:correlationId},415);}
     const payload=await boundedJson(req);batch=normalizeExport(payload,{aggregation:req.headers.get('automation-aggregation')});
-    if(!batch.metrics.length){record('no_supported_data');return json({received:false,accepted_metrics:0,ignored_points:batch.ignored_points,message:'no_supported_data',outcome:'no_supported_data',nutrition_metrics_observed:0,coverage_verified:false,correlation_id:correlationId,nutrition_dates_observed:0},200);}
-    const result=await db.rpc('health_auto_export_ingest',{p_key_hash:keyHash,p_metrics:batch.metrics});
+    const basal=captureBasalCandidates(payload);batch.basal_candidates=basal.candidates;
+    batch.ignored_points-=basal.candidates.length;batch.ignored_basal_points=basal.rejected_points;batch.ignored_basal_blocks=basal.ignored_blocks;
+    if(!batch.metrics.length&&!batch.basal_candidates.length){record('no_supported_data');return json({received:false,accepted_metrics:0,ignored_points:batch.ignored_points,message:'no_supported_data',outcome:'no_supported_data',nutrition_metrics_observed:0,coverage_verified:false,correlation_id:correlationId,nutrition_dates_observed:0},200);}
+    // One RPC transaction for mixed batches. Never double-consume the rate limit,
+    // partially write nutrition, or send basal snapshots through the daily router.
+    const result=batch.basal_candidates.length
+      ?await db.rpc('health_auto_export_ingest_candidates',{p_key_hash:keyHash,p_metrics:batch.metrics,p_basal_candidates:batch.basal_candidates,p_receipt_id:correlationId})
+      :await db.rpc('health_auto_export_ingest',{p_key_hash:keyHash,p_metrics:batch.metrics});
     if(result.error){record('ingestion_failed');return json({error:'temporarily_unavailable',correlation_id:correlationId},503);}
     if(result.data?.error==='unauthorized')return json({error:'unauthorized'},401);
     if(result.data?.error==='rate_limited'){record('rate_limited');return json({error:'rate_limited',correlation_id:correlationId},429);}
     if(!result.data?.received){record('ingestion_failed');return json({error:'temporarily_unavailable',correlation_id:correlationId},503);}
-    record('accepted',result.data.accepted_metrics);
-    const summary=receiveSummary({outcome:'accepted',metrics:batch.metrics,acceptedMetrics:result.data.accepted_metrics,correlationId});
+    if(batch.basal_candidates.length&&result.data.accepted_basal_candidates!==batch.basal_candidates.length){record('ingestion_failed');return json({error:'temporarily_unavailable',correlation_id:correlationId},503);}
+    record('accepted',result.data.accepted_metrics,null,result.data.accepted_basal_candidates||0);
+    const summary=receiveSummary({outcome:'accepted',metrics:batch.metrics,acceptedMetrics:result.data.accepted_metrics,acceptedBasalCandidates:result.data.accepted_basal_candidates||0,correlationId});
     return json({...result.data,ignored_points:batch.ignored_points,correlation_id:correlationId,outcome:summary.outcome,nutrition_metrics_observed:summary.nutrition_metrics_observed,nutrition_dates_observed:summary.nutrition_dates_observed,nutrition_first_date_observed:summary.nutrition_first_date_observed,nutrition_last_date_observed:summary.nutrition_last_date_observed,coverage_verified:false});
   }catch(error){
   const code=validationErrors.has(error?.message)?error.message:'temporarily_unavailable';
