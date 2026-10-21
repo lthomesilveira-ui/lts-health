@@ -19,7 +19,7 @@ permissions:
   contents: read
 jobs:
   parser-and-http-boundaries:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
           node v2/hydration-contract-test.mjs
           node v2/reports-model-test.mjs
   synthetic-database:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
