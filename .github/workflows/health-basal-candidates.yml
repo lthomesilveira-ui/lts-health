@@ -1,0 +1,92 @@
+name: LTS Health private basal candidates
+on:
+  push:
+    branches: [main, 'health-auto-export-*']
+    paths:
+      - 'supabase/functions/_shared/**'
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - '.github/workflows/health-basal-candidates.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/functions/_shared/**'
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - '.github/workflows/health-basal-candidates.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  parser-and-http-boundaries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify additive parser and existing ingestion
+        run: |
+          node --check supabase/functions/_shared/health-auto-export-handler.mjs
+          node supabase/tests/basal-energy-candidates-test.mjs
+          node supabase/tests/basal-energy-http-test.mjs
+          node supabase/tests/receiver-observability-test.mjs
+          node supabase/tests/receiver-summary-test.mjs
+          node v2/health-auto-export-test.mjs
+          node v2/health-auto-export-ui-test.mjs
+          node v2/hydration-contract-test.mjs
+          node v2/reports-model-test.mjs
+  synthetic-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [postgres, postgrest]
+    services:
+      postgres:
+        image: postgres:17.11
+        env:
+          POSTGRES_DB: health_basal_candidates_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: synthetic-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d health_basal_candidates_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    # Only invented disposable credentials, never application configuration.
+    env:
+      HEALTH_BASAL_SYNTHETIC_TEST: '1'
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGDATABASE: health_basal_candidates_test
+      PGUSER: postgres
+      PGPASSWORD: synthetic-ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify PostgreSQL client
+        run: psql --version
+      - name: Run SQL, roles, atomicity and concurrency gates
+        if: matrix.gate == 'postgres'
+        run: node --test supabase/tests/health-basal-candidates-postgres-test.mjs
+      - name: Install pinned synthetic transport dependencies
+        if: matrix.gate == 'postgrest'
+        run: |
+          npm ci --prefix supabase/tests/runtime
+          mkdir -p "$RUNNER_TEMP/basal-postgrest"
+          curl --fail --location --retry 2 https://github.com/PostgREST/postgrest/releases/download/v16.5/postgrest-v16.5-linux-static-x86-64.tar.xz -o "$RUNNER_TEMP/basal-postgrest/postgrest.tar.xz"
+          echo "5099e7ada38f9f6846cd87c14c5f158b7c165f1e9959665ad412e61f4dceba95  $RUNNER_TEMP/basal-postgrest/postgrest.tar.xz" | sha256sum --check
+          tar -xJf "$RUNNER_TEMP/basal-postgrest/postgrest.tar.xz" -C "$RUNNER_TEMP/basal-postgrest"
+      - name: Run HTTP, Supabase client, PostgREST and PostgreSQL gate
+        if: matrix.gate == 'postgrest'
+        run: |
+          HEALTH_BASAL_SUPABASE_JS_ENTRY="$GITHUB_WORKSPACE/supabase/tests/runtime/node_modules/@supabase/supabase-js/dist/index.mjs" \
+          HEALTH_BASAL_POSTGREST_BIN="$RUNNER_TEMP/basal-postgrest/postgrest" \
+          node supabase/tests/basal-energy-postgrest-test.mjs
