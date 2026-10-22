@@ -22,3 +22,18 @@ for(const [blocks,points,ignored] of [[-1,0,0],[81,0,0],[1,2501,2501],[1,2,1],[0
  assert.ok(!Object.hasOwn(summary,'ignored_basal_blocks'));assert.ok(!Object.hasOwn(summary,'ignored_basal_points'));
 }
 console.log('Private basal counters: absent stays unknown; only bounded integer pairs survive.');
+// Official labels: https://help.healthyapps.dev/en/health-auto-export/automations/rest-api/
+// Tokens: https://help.healthyapps.dev/en/health-auto-export/automations/deep-link/
+const periodCases=[['none','none'],['default','default'],['lastsync','lastsync'],['today','today'],['yesterday','yesterday'],['previous7days','previous7days'],['Default','default'],['Today','today'],['Yesterday','yesterday'],['Since Last Sync','lastsync'],['Previous 7 Days','previous7days'],['previous7Days','previous7days'],['  DEFAULT  ','default'],['  sInCe LaSt SyNc  ','lastsync']];
+const baseline=receiveSummary({outcome:'accepted',metrics:rows,acceptedMetrics:30,basalCandidatePoints:2,acceptedBasalCandidates:2});
+for(const [input,expected] of periodCases){
+ const actual=receiveSummary({outcome:'accepted',metrics:rows,acceptedMetrics:30,basalCandidatePoints:2,acceptedBasalCandidates:2,automationPeriod:input});
+ assert.deepEqual(actual,{...baseline,automation_period:expected});
+ assert.equal(actual.coverage_verified,false);assert.equal(actual.basal_coverage_verified,false);assert.equal(actual.requested_interval,'unknown');
+}
+const invalidPeriods=[undefined,null,'',' ',true,false,0,1,[],{},new String('Today'),{toString(){throw Error('must not coerce');}},'PRIVATE_HEADER','realtime','Today,Yesterday','Since  Last Sync','Previous 7 Days extra','Default\n','\tToday','Today\r\nPRIVATE_HEADER','Today\0','Today\u007f','Today\u0085','\u00a0Today','Ｔoday','Today😀','Today\ud800',' '.repeat(65)+'Today','a'.repeat(100000)];
+for(const input of invalidPeriods){
+ const actual=receiveSummary({outcome:'accepted',metrics:rows,acceptedMetrics:30,basalCandidatePoints:2,acceptedBasalCandidates:2,automationPeriod:input});
+ assert.deepEqual(actual,baseline);assert.ok(!JSON.stringify(actual).includes('PRIVATE_HEADER'));
+}
+console.log(`Period diagnostics: ${periodCases.length} documented label/token cases and ${invalidPeriods.length} invalid/unknown cases; no coverage or payload expansion.`);
