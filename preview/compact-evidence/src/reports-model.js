@@ -1,3 +1,4 @@
+import {stepCountReview} from './steps-evidence.js';
 import {num,norm,day} from './core.js';
 import {validDay} from './history-tools.js';
 import {localHealthDay,bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,labHighlights} from './health-context.js';
@@ -152,7 +153,7 @@ export function recoveryReport(data,status,bounds,requested=null){
     const key=JSON.stringify([row.metric_type,row.source_family,row.source_name,row.unit]);
     if(!buckets.has(key))buckets.set(key,{key,metric:row.metric_type,label:labels.get(row.source_name)||row.source_name,unit:row.unit,rows:[]});buckets.get(key).rows.push(row);
   }
-  const series=[...buckets.values()].map(s=>({...s,points:ordered(uniqueDates(s.rows,'metric_date'),'metric_date').map(r=>({date:day(r.metric_date),value:num(r.value),cohort:s.key,context:s.label}))})).sort((a,b)=>(a.metric==='sleep_duration_h'?-1:0)-(b.metric==='sleep_duration_h'?-1:0)||a.key.localeCompare(b.key));
+  const series=[...buckets.values()].map(s=>({...s,reviewRows:s.metric==='steps'?s.rows.filter(row=>stepCountReview(row.value).reason):[],points:ordered(uniqueDates(s.rows,'metric_date'),'metric_date').filter(row=>s.metric!=='steps'||!stepCountReview(row.value).reason).map(r=>({date:day(r.metric_date),value:num(r.value),cohort:s.key,context:s.label}))})).sort((a,b)=>(a.metric==='sleep_duration_h'?-1:0)-(b.metric==='sleep_duration_h'?-1:0)||a.key.localeCompare(b.key));
   const selected=series.find(s=>s.key===requested)||series[0];
   return {available:true,series,selected,points:selected?.points||[]};
 }

@@ -1,3 +1,4 @@
+import {stepValueText} from './steps-evidence.js';
 import {displaySource} from './source-display.js';
 import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
@@ -39,7 +40,7 @@ function bodyEventSub(row){return num(row.body_fat_pct)!=null?`Gordura corporal 
 function metricValueText(row){
   const value=num(row.value),type=String(row.metric_type||'');
   if(value==null)return'Registro disponível';
-  if(type==='steps')return`${fmtNum(value,0)} passos`;
+  if(type==='steps')return stepValueText(row.value);
   if(type==='resting_heart_rate_bpm')return`${fmtNum(value,0)} bpm`;
   if(type==='hrv_sdnn_ms')return`${fmtNum(value,0)} ms`;
   if(type==='respiratory_rate_bpm')return`${fmtNum(value,1)} resp./min`;

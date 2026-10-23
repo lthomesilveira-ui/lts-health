@@ -1,5 +1,6 @@
 import {homePeriodSnapshot} from './home-period-model.js';
 import {nutritionSourceReview} from './nutrition-source-review.js';
+import {stepCountReview,stepEvidence} from './steps-evidence.js';
 
 // Pure presentation model. No ingestion, database, browser or global UI state.
 const DAY=86400000;
@@ -94,7 +95,8 @@ function observationsFor(definition,data,status,today){
       const unit=domain==='nutrition'?definition.units[0]:norm(row.unit);
       if(!definition.units.includes(unit)){invalidRows++;continue;}
       const raw=domain==='nutrition'?row[definition.field]:row.value;
-      let value=scalar(raw);if(definition.maximum!=null&&value>definition.maximum)value=null;
+      const steps=definition.key==='steps'?stepCountReview(raw):null;
+      let value=steps?steps.value:scalar(raw);if(definition.maximum!=null&&value>definition.maximum)value=null;
       if(raw!=null&&value==null)invalidRows++;
       const review=domain==='sourceMetrics'&&['protein','energy'].includes(definition.key)?nutritionSourceReview(row):null;
       const family=row.source_family||null;
@@ -103,6 +105,7 @@ function observationsFor(definition,data,status,today){
           JSON.stringify([domain,norm(family),norm(label),statusName,unit]);
       const knownPartial=partialFlag(row)||Boolean(review?.partial);
       observations.push({date,value,key,label,domain,status:statusName,unit,displayUnit:definition.unit,sourceFamily:family,
+        receivedValue:steps?.receivedValue??value,receivedRaw:steps?.receivedRaw??value,stepReviewReason:steps?.reason||null,receivedAt:row.updated_at||null,
         unresolvedOverlap:definition.key==='steps'&&label.includes('|'),partial:knownPartial||date===today,knownPartial,excludeFromClosedMeans:knownPartial||Boolean(review?.excludeFromClosedMeans),
         reviewVerified:Boolean(review?.verified),reviewInvalid:review?.state==='review_invalid',exportedAt:review?.exportedAt||null});
     }
@@ -123,17 +126,18 @@ function sourceCatalog(observations,today){
       const knownPartial=list.some(row=>row.knownPartial),reviewInvalid=list.some(row=>row.reviewInvalid);
       // Preserve every received observation for inspection, including equal or
       // conflicting duplicates. A withheld aggregate never destroys evidence.
-      const observations=list.map(row=>({date:row.date,value:row.value,source:key,label:row.label,sourceLabel:row.label,unit:row.unit,displayUnit:row.displayUnit,
+      const observations=list.map(row=>({date:row.date,value:row.value,receivedValue:row.receivedValue,receivedRaw:row.receivedRaw,stepReviewReason:row.stepReviewReason,receivedAt:row.receivedAt,source:key,label:row.label,sourceLabel:row.label,unit:row.unit,displayUnit:row.displayUnit,
         sourceStatus:row.status,sourceFamily:row.sourceFamily,partial:row.partial,knownPartial:row.knownPartial,ambiguous,reviewInvalid:row.reviewInvalid,
         eligible:!ambiguous&&row.value!=null&&row.date<today&&!row.excludeFromClosedMeans}));
       return {date,value,rawValue,rawValues:observations.map(row=>row.value),observations,unresolvedOverlap,unit:first.unit,displayUnit:first.displayUnit,source:key,sourceLabel:first.label,sourceStatus:first.status,sourceFamily:first.sourceFamily,
         cohort:key,context:first.label,open:date===today,partial:knownPartial||date===today,knownPartial,ambiguous,duplicateCount:ambiguous?list.length:0,extraDuplicateCount:ambiguous?list.length-1:0,
+        stepReviewReason:list.find(row=>row.stepReviewReason)?.stepReviewReason||null,receivedAt:list.find(row=>row.receivedAt)?.receivedAt||null,
         reviewInvalid,reviewVerified:list.every(row=>row.reviewVerified),exportedAt:list.find(row=>row.exportedAt)?.exportedAt||null,
         excludeFromClosedMeans:list.some(row=>row.excludeFromClosedMeans),eligible:value!=null&&date<today&&!list.some(row=>row.excludeFromClosedMeans)};
     }).sort((a,b)=>a.date.localeCompare(b.date));
     return {key,label:first.label,domain:first.domain,status:first.status,unit:first.unit,displayUnit:first.displayUnit,sourceFamily:first.sourceFamily,rows,
       latest:rows.filter(row=>row.value!=null).at(-1)||null,lastDate:rows.filter(row=>row.value!=null).at(-1)?.date||null,lastReceivedDate:rows.at(-1)?.date||null,
-      lastReportedDate:rows.filter(row=>row.rawValue!=null).at(-1)?.date||null,unresolvedOverlap:rows.some(row=>row.unresolvedOverlap)};
+      lastReportedDate:rows.filter(row=>row.rawValue!=null||row.stepReviewReason&&row.observations.some(observation=>observation.receivedValue!=null)).at(-1)?.date||null,unresolvedOverlap:rows.some(row=>row.unresolvedOverlap)};
   }).sort((a,b)=>a.key.localeCompare(b.key));
 }
 function requestedSource(definition,ui){
@@ -165,7 +169,7 @@ function duplicateStats(points){
 function availabilityFor(definition,status,count,points){
   const available=definition.domains.filter(domain=>ready(status,domain));
   if(!available.length)return definition.domains.some(domain=>status?.[domain]==='error')?'error':'unavailable';
-  if(available.length<definition.domains.length||points.some(point=>point.knownPartial||point.ambiguous||point.reviewInvalid||point.unresolvedOverlap))return 'partial';
+  if(available.length<definition.domains.length||points.some(point=>point.knownPartial||point.ambiguous||point.reviewInvalid||point.stepReviewReason||point.unresolvedOverlap))return 'partial';
   return count?'ready':'empty';
 }
 function compare(source,points,previousBounds,bounds,status,definition,today,mode){
@@ -188,7 +192,8 @@ function makeMetric(definition,catalog,status,ui,calendar,bounds=calendar.bounds
   const dayPoint=mode==='day'?points[0]:null,value=mode==='day'?dayPoint?.value??null:mean(eligible.map(point=>point.value));
   const count=mode==='day'?(value!=null?1:0):eligible.length,expectedDays=mode==='day'?1:bounds.closedDays;
   const todayPoint=source?.rows.find(row=>row.date===today)||null;
-  return {key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,aggregation:mode==='day'?'recorded_day':'observed_mean',
+  return {key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,
+    stepEvidence:definition.key==='steps'?stepEvidence(sources,bounds,today):null,aggregation:mode==='day'?'recorded_day':'observed_mean',
     source:source?{key:source.key,label:source.label,domain:source.domain,status:source.status,unit:source.unit,displayUnit:source.displayUnit,sourceFamily:source.sourceFamily}:null,
     sources:sources.map(item=>{const ps=pointsFor(item,bounds,today),good=ps.filter(point=>point.eligible);return {key:item.key,label:item.label,domain:item.domain,status:item.status,unit:item.unit,displayUnit:item.displayUnit,sourceFamily:item.sourceFamily,count:good.length,mean:mean(good.map(point=>point.value)),lastDate:item.lastDate,lastReceivedDate:item.lastReceivedDate,lastReportedDate:item.lastReportedDate,unresolvedOverlap:item.unresolvedOverlap,...duplicateStats(ps),points:ps};}),
     points,...duplicateStats(points),lastDate:observed.at(-1)?.date||null,lastObservedDate:source?.lastDate||null,lastReceivedDate:source?.lastReceivedDate||null,todayValue:todayPoint?.value??null,todayPoint,

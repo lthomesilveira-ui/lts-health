@@ -13,7 +13,7 @@ permissions:
   contents: read
 jobs:
   synthetic-calendar-report-export:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       LTS_HEALTH_BASE_URL: http://127.0.0.1:4173/preview/compact-evidence/
