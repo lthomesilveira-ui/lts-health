@@ -32,8 +32,8 @@ try{
  assert.match(await page.locator('.refReading').innerText(),/Gordura −1,0 kg · músculo \+1,0 kg nos registros/,'observed deltas belong to selected period');
  assert.match(await page.locator('.refLegend').innerText(),/16(?:,0)?.*15(?:,0)?.*30(?:,0)?.*31(?:,0)?/s,'both endpoint values remain accessible in the chart legend');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\.050 kcal/,'sparse mean is explicitly an observed mean');
- assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias encerrados/);
- assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);
+ assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias desta origem/);
+ assert.match(await page.locator('.refPanel.labs').innerText(),/Sem coleta nesta janela/);
  assert.doesNotMatch(await page.locator('.refPanels').innerText(),/999|9\.000/);
  assert.equal(await page.locator('.refPanel.water .refPlot').count(),0,'no invented hydration chart');
  await page.evaluate(async selectedDate=>{const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.ui.overviewBodyDate=selectedDate;document.querySelector('#screenHost').innerHTML=renderProductHomeReference();},dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);

@@ -31,8 +31,15 @@ try{
   await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
   if(width<=840)await page.locator('[data-home-period-select]').selectOption('all');else await page.locator('[data-home-period="all"]').click();
   assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1,'one shared body panel');
-  const axes=await page.locator('.refPanels .refAxis').allTextContents();
-  assert.ok(axes.length>=2&&new Set(axes).size===1,'all populated panels share selected calendar');
+  const axes=await page.locator('.refPanels .refPlot svg').evaluateAll(es=>es.map(e=>({start:e.dataset.periodStart,end:e.dataset.periodEnd,axisStart:e.dataset.axisStart,axisEnd:e.dataset.axisEnd})));
+  assert.ok(axes.length>=2&&new Set(axes.map(a=>a.start+'|'+a.end)).size===1,'all populated charts use the same global filter');
+  assert.ok(axes.every(a=>a.start&&a.end&&a.axisStart>=a.start&&a.axisEnd<=a.end&&a.axisStart<=a.axisEnd),'observed-date zoom stays within the selected calendar');
+  for(const e of await page.locator('.refPanels .refPlot').all()){assert.equal(await e.locator('.refAxis').count(),1,'observed chart retains visible date endpoints');}
+  const plotted=async selector=>page.locator(selector).evaluateAll(es=>es.map(e=>[e.dataset.date,Number(e.dataset.rawValue??e.dataset.value)]).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
+  const expected=rows=>rows.sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+  assert.deepEqual(await plotted('.refPanel.body [data-series="fat"] circle'),expected(db.health_body_composition.map(r=>[r.measured_at,r.fat_mass_kg])),'body chart retains every eligible raw fat point');
+  assert.deepEqual(await plotted('.refPanel.body [data-series="muscle"] circle'),expected(db.health_body_composition.map(r=>[r.measured_at,r.skeletal_muscle_mass_kg])),'body chart retains every eligible raw muscle point');
+  assert.deepEqual(await plotted('.refPanel.training [data-series="load"] circle'),expected(db.health_workout_sets.map(r=>[r.workout_date,r.weight])),'training observed-date zoom never truncates older eligible records');
   await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
   await page.locator('#overview-body-date').focus();await page.locator('#overview-body-date').press('ArrowDown');
   assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);

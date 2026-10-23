@@ -55,7 +55,7 @@ const preserved=JSON.stringify(state.data);
 for(const period of ['30','90','365','all']){
  state.ui.homePeriod=period;const home=renderProductHomeReference();
  assert.doesNotMatch(home,/ltsRefProgress|de 30 dias|de 90 dias|dias registrados no histórico/);
- assert.match(home,/Consumo de água/);assert.match(home,/Fontes e limitações/);
+ assert.match(home,/<h2>Água<\/h2>/);assert.match(home,/Fontes e limitações/);
 }
 state.data.nutrition=[];assert.match(renderProductHomeReference(),/Sem registros no período/);
 state.data.nutrition=JSON.parse(preserved).nutrition;assert.equal(JSON.stringify(state.data),preserved);

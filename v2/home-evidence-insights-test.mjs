@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'?fixture=1'};
+const {homePeriodModel}=await import('./src/home-period-model.js');
+const {homeEvidence,waterGoal}=await import('./src/home-evidence-insights.js');
+const status=Object.fromEntries(['body','nutrition','sourceMetrics','metrics','workouts','exercises','sets','labs','goals'].map(k=>[k,'ready']));
+const data={nutrition:[{nutrition_date:'2024-03-02',source:'Synthetic export',protein_g:100,calories_kcal:1000},{nutrition_date:'2024-03-03',source:'Synthetic export',protein_g:110,calories_kcal:1100},{nutrition_date:'2024-03-03',source:'Synthetic sync',protein_g:120,calories_kcal:1200},{nutrition_date:'2024-03-04',source:'Synthetic sync',protein_g:130,calories_kcal:1300},{nutrition_date:'2024-03-12',source:'Synthetic sync',protein_g:900,calories_kcal:9000}],sourceMetrics:[{metric_date:'2024-03-05',metric_type:'dietary_protein_g',value:200,unit:'g',source_name:'Synthetic held',canonical_status:'held'}],workouts:['02','04','06'].map((d,i)=>({source_record_id:'w'+i,workout_date:'2024-03-'+d,is_canonical:true,location:'Synthetic location'})),exercises:[0,1,2].map(i=>({source_record_id:'e'+i,workout_source_record_id:'w'+i,exercise:'Synthetic press',machine:'Synthetic machine'})),sets:[0,1,2].map(i=>({source_record_id:'s'+i,workout_source_record_id:'w'+i,exercise_source_record_id:'e'+i,weight:20,weight_unit:'kg',reps_numeric:8,phase:null})),labs:[{collection_date:'2024-03-06',biomarker:'Synthetic A',result_numeric:12,result_raw:'12',unit:'u',reference_range:'2 a 10',laboratory:'Synthetic lab'}],goals:[{effective_from:'2024-03-05',water_ml:1500,notes:'Synthetic source'}]};
+const model=d=>homePeriodModel(d,status,'30',{},'2024-03-12');
+let e=homeEvidence(data,status,model(data));
+assert.equal(e.nutrition.days,3);assert.deepEqual(e.nutrition.overlapDates,['2024-03-03']);assert.equal(e.nutrition.sources.length,3);assert.equal(e.nutrition.canonical.length,2);assert.equal(e.nutrition.pooledMean,null);assert.deepEqual(e.nutrition.byMetric.protein_g,['2024-03-02','2024-03-03','2024-03-04']);
+assert.equal(e.training.selected.points.length,3);assert.equal(e.training.selected.phase,'unknown');assert.equal(e.training.selected.conditionsConfirmed,false);assert.equal(e.training.selected.phaseConfirmedFromOriginal,false);
+assert.equal(e.labs.selected.range.status,'above');assert.equal(e.labs.selected.range.high,10);
+assert.equal(waterGoal(data,status,'2024-03-04'),null);assert.equal(waterGoal(data,status,'2024-03-05').value,1500);assert.equal(waterGoal(data,{...status,goals:'error'},'2024-03-08'),null);
+assert.equal(waterGoal({...data,goals:[...data.goals,{effective_from:'2024-03-06',water_ml:null}]},status,'2024-03-08'),null,'new effective record clears a prior water target');
+assert.equal(waterGoal({...data,goals:[...data.goals,...data.goals]},status,'2024-03-08'),null,'same-date target ambiguity cannot choose first');
+assert.equal(waterGoal({...data,goals:[{effective_from:'2024-03-05',water_ml:3500,notes:JSON.stringify({type:'historical_protocol',documented_on:'2024-03-05',current_validity:'unconfirmed'})}]},status,'2024-03-08'),null,'historical unconfirmed target never becomes current');
+const conflict={...data,sets:[...data.sets,{...data.sets[1],source_record_id:'extra',weight:30}]};assert.equal(homeEvidence(conflict,status,model(conflict)).training.selected.points.length,2);assert.deepEqual(homeEvidence(conflict,status,model(conflict)).training.selected.ambiguousDates,['2024-03-04']);
+const phaseSplit={...data,sets:data.sets.map((s,i)=>({...s,phase:['working','unknown','warmup'][i]}))};assert.equal(homeEvidence(phaseSplit,status,model(phaseSplit)).training.selected,null);
+const unitSplit={...data,sets:data.sets.map((s,i)=>({...s,weight_unit:['kg','lb','plate_index'][i]}))};assert.equal(homeEvidence(unitSplit,status,model(unitSplit)).training.selected,null);
+const repsSplit={...data,sets:data.sets.map((s,i)=>({...s,reps_numeric:8+i}))};assert.equal(homeEvidence(repsSplit,status,model(repsSplit)).training.selected,null);
+const labDuplicate={...data,labs:[...data.labs,...data.labs]};assert.equal(homeEvidence(labDuplicate,status,model(labDuplicate)).labs.selected,null);
+const ambiguousRange={...data,labs:[{...data.labs[0],reference_range:'2 a 10; outro grupo 4 a 12'}]};assert.equal(homeEvidence(ambiguousRange,status,model(ambiguousRange)).labs.selected,null);
+const future={...data,nutrition:[...data.nutrition,{nutrition_date:'2025-03-02',source:'Future',protein_g:999}]};assert.equal(homeEvidence(future,status,model(future)).nutrition.days,3);
+assert.equal(homeEvidence(data,{...status,sets:'error'},homePeriodModel(data,{...status,sets:'error'},'30',{},'2024-03-12')).training.available,false);
+console.log('Home evidence: source-specific union coverage, no pooled averages, observed same-context sets, ambiguous identity/load exclusions, source ranges, effective water targets and missing data passed.');
+
+const {goalForDate,documentedWaterBase}=await import('./src/personal-goals.js');
+const documentGoal={effective_from:'2024-03-05',water_ml:1600,notes:JSON.stringify({type:'documented_water_base',source:'Synthetic prescription.pdf',source_page:3,documented_on:'2024-03-05',date_basis:'document_update',clinical_start:'not_explicit',exercise_addition:'Synthetic conditional additional intake'})};
+assert.equal(documentedWaterBase(documentGoal).date_basis,'document_update');assert.equal(goalForDate([documentGoal],'2024-03-08'),null,'document reference is not silently treated as active clinical start');assert.equal(waterGoal({goals:[documentGoal]},status,'2024-03-04'),null);assert.equal(waterGoal({goals:[documentGoal]},status,'2024-03-05').dateBasis,'document_update');
+const effort={...data,sets:data.sets.map((r,i)=>({...r,failure:i===0?true:i===1?false:null}))};assert.equal(homeEvidence(effort,status,model(effort)).training.selected,null,'known effort and unknown effort do not share a context');
+
+const labMany={...data,labs:[...data.labs,{...data.labs[0],biomarker:'Synthetic B',result_numeric:5},{...data.labs[0],biomarker:'Synthetic C',reference_range:'Varies by context'}]};
+const labs=homeEvidence(labMany,status,model(labMany)).labs;assert.equal(labs.total,3);assert.equal(labs.withReference,2);assert.equal(labs.outsideCount,1);assert.equal(labs.unclassified,1);
+const selectedLab=homeEvidence(labMany,status,model(labMany),{homeLabKey:labs.candidates[1].key}).labs;assert.equal(selectedLab.selected.row.biomarker,'Synthetic B');assert.equal(selectedLab.selectedByUser,true);assert.equal(homeEvidence(labMany,status,model(labMany),{homeLabKey:'missing'}).labs.selectedByUser,false);
+assert.equal(waterGoal({goals:[{...documentGoal,effective_from:'2024-03-04'}]},status,'2024-03-05'),null,'document date cannot silently become clinical start');
+
+const incompleteReference={effective_from:'2024-03-05',water_ml:1600,notes:JSON.stringify({type:'documented_water_base'})};assert.equal(goalForDate([incompleteReference],'2024-03-08'),null);assert.equal(waterGoal({goals:[incompleteReference]},status,'2024-03-08'),null,'incomplete source metadata cannot become a personal clinical target');
