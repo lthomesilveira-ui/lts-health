@@ -40,7 +40,7 @@ try{
   await page.locator('[data-dashboard-change="body:body-0"]').click();
   await page.waitForSelector('[data-composition-view="detail"]');
   assert.match(await page.locator('.ltsHistoryContext').first().innerText(),/11\/10\/2026/);
-  assert.match(await page.locator('.ltsRecordDetails').first().innerText(),/80 kg/);
+  assert.match(await page.locator('.ltsRecordDetails').first().innerText(),/80,0 kg/);
   await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-dashboard-change-domain="training"]');
   await page.locator('[data-dashboard-change="training:workout-1:exercise-1"]').click();
   await page.waitForSelector('[data-workout-id="workout-1"]');

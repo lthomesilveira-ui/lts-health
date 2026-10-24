@@ -56,9 +56,11 @@ for(const width of [320,393,1440]){
   if(['bio','treinos'].includes(route)){
    await page.locator(`#screenHost [data-entry="${route==='bio'?'body':'workout'}"]`).click();await page.locator('#entryModal:not(.hidden)').waitFor();
    assert.equal(await page.locator('#entryModal input:not([disabled])').count()>0,true,'operational fields available');
-   await page.locator('#closeEntry').click();await page.locator('#entryModal.hidden').waitFor();
+   await page.locator('#closeEntry').click();await page.locator('#entryModal').waitFor({state:'hidden'});
+   assert.equal(await page.locator('#entryModal').evaluate(e=>e.classList.contains('hidden')),true);
    await page.locator(`#screenHost [data-entry="${route==='bio'?'body':'workout'}"]`).click();await page.locator('#entryModal:not(.hidden)').waitFor();
-   await page.locator('#closeEntry').click();await page.locator('#entryModal.hidden').waitFor();
+   await page.locator('#closeEntry').click();await page.locator('#entryModal').waitFor({state:'hidden'});
+   assert.equal(await page.locator('#entryModal').evaluate(e=>e.classList.contains('hidden')),true);
    assert.equal(await page.evaluate(()=>location.hash),'#'+route,'cancel retains route');
   }
  }
