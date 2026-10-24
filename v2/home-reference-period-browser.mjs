@@ -71,6 +71,18 @@ async function quality(page,label){
 }
 async function capture(page,name,selector){
   await stableHome(page);
+  // A test-injected data/status change also reaches the compatibility controller
+  // on its 250 ms cycle. Observe a quiet root and layout beyond that cycle before
+  // measuring scroll/screenshot effects; ongoing redraws still fail by timeout.
+  await page.evaluate(()=>{window.__qaCaptureStable=null;});
+  await page.waitForFunction(()=>{
+    const root=document.querySelector('[data-health-dashboard]'),host=document.querySelector('#screenHost');
+    if(!root||!host)return false;
+    const geometry=[root.clientWidth,root.scrollWidth,root.clientHeight,root.scrollHeight,host.clientWidth,host.clientHeight].join(','),now=performance.now();
+    const previous=window.__qaCaptureStable;
+    if(!previous||previous.root!==root||previous.geometry!==geometry){window.__qaCaptureStable={root,geometry,since:now};return false;}
+    return now-previous.since>=350;
+  });
   const handle=await page.locator('[data-health-dashboard]').elementHandle();
   if(selector)await page.locator(selector).first().scrollIntoViewIfNeeded();
   else await page.evaluate(()=>{document.querySelector('#screenHost').scrollTop=0;window.scrollTo(0,0);});
