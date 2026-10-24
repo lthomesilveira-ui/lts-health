@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
+import {sourceWindowService} from './source-window-service-fixture.mjs';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 import {labAccessRows} from './lab-history-access-fixture.mjs';
-import {makeConsumerLanguageFixture,consumerLanguageService,languageDatabase,LANGUAGE_TODAY} from './consumer-language-fixture.mjs';
+import {makeConsumerLanguageFixture,languageDatabase,LANGUAGE_TODAY} from './consumer-language-fixture.mjs';
 import {consumerRouteSettled} from './consumer-language-readiness.mjs';
 
 // CI-only proof through the real startup, loader and delegated event handlers.
@@ -53,7 +54,7 @@ try{
     const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,isMobile:width<=840,hasTouch:width<=840,locale:'pt-BR',timezoneId:'America/Sao_Paulo',serviceWorkers:'block'});
     await context.route('**/*',route=>{
       const request=route.request(),url=new URL(request.url());
-      if(url.protocol==='https:'&&url.hostname==='cdn.jsdelivr.net'&&url.pathname==='/npm/@supabase/supabase-js@2'&&request.method()==='GET')return route.fulfill({status:200,contentType:'application/javascript',body:consumerLanguageService(fixture.db)});
+      if(url.protocol==='https:'&&url.hostname==='cdn.jsdelivr.net'&&url.pathname==='/npm/@supabase/supabase-js@2'&&request.method()==='GET')return route.fulfill({status:200,contentType:'application/javascript',body:sourceWindowService(fixture.db)});
       if(url.origin===origin.origin&&['GET','HEAD'].includes(request.method())&&(url.pathname.startsWith(origin.pathname)||url.pathname==='/favicon.ico'))return route.continue();
       if(!['GET','HEAD'].includes(request.method()))traffic.writes.push({url:request.url(),method:request.method()});else traffic.external.push(request.url());
       return route.abort('blockedbyclient');

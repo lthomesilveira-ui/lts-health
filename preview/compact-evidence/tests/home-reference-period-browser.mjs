@@ -87,7 +87,7 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  assert.equal(await page.locator('.ltsCompositionChart circle').count(),2);
  await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true','body selection does not rewrite Home');
  await setPeriod('90');
- if(width<=840){assert.equal(await page.locator('#mobileNav button').count(),4);await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="saude"]').click();}else await page.locator('.primaryNav [data-route="saude"]').click();await page.waitForSelector('.ltsLabsV2');
+ if(width<=840){assert.equal(await page.locator('#mobileNav button').count(),4);assert.deepEqual(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.map(node=>node.dataset.route)),['hoje','treinos','evolucao','mais']);await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="saude"]').click();}else await page.locator('.primaryNav [data-route="saude"]').click();await page.waitForSelector('.ltsLabsV2');
  assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','labs open full history independently');assert.equal(await page.locator('#productLabCollection option').count(),3);
  await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').click();
  assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#productLabCollection option').count(),2);

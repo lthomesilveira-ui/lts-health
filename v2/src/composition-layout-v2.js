@@ -10,7 +10,7 @@ export const compositionMetrics={
   fat_mass_kg:{label:'Massa de gordura',short:'Gordura kg',unit:'kg'}
 };
 const identity=bodyEvidenceCohort;
-const unknown=new Set(['unknown','unknown model','unknown source','not informed','not provided','not available','não informado','não informada','não disponível','origem não informada','modelo não informado','desconhecido','desconhecida','n/a','na','null','none','—','-'].map(norm));
+const unknown=new Set(['unknown','unknown model','unknown source','not informed','not provided','not available','not recorded','unspecified','não especificado','nao especificado','não informado','não informada','não disponível','origem não informada','modelo não informado','desconhecido','desconhecida','n/a','na','null','none','—','-'].map(norm));
 const known=v=>typeof v==='string'&&Boolean(norm(v)&&!unknown.has(norm(v))&&!/^(unknown(?: |$)|nao (?:informad|identificad|registrad)|sem informacao|unreported$|not documented$)/.test(norm(v)));
 const documentedSeries=rows=>rows.length>1&&rows.every(r=>known(r.device_name)&&known(r.source)&&norm(r.device_name)===norm(rows[0].device_name)&&norm(r.source)===norm(rows[0].source));
 const sourceDisplay=row=>{

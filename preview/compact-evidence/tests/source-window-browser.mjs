@@ -1,7 +1,8 @@
+import {sourceWindowService} from './source-window-service-fixture.mjs';
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium,webkit} from 'playwright';
-import {languageDatabase,consumerLanguageService} from './consumer-language-fixture.mjs';
+import {languageDatabase} from './consumer-language-fixture.mjs';
 import {consumerRouteSettled} from './consumer-language-readiness.mjs';
 // Invented origin switch only. Real startup, loopback transport, no private inputs.
 const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/preview/compact-evidence/';
@@ -9,7 +10,7 @@ const origin=new URL(base);assert.equal(origin.protocol,'http:');assert.ok(['loc
 assert.ok(['/preview/compact-evidence/','/v2/'].includes(origin.pathname));assert.equal(origin.search,'');
 const today='2026-10-24',data={nutrition:[]};
 for(let day=1;day<=24;day++)data.nutrition.push({source_record_id:`synthetic-window-${day}`,nutrition_date:`2026-10-${String(day).padStart(2,'0')}`,source:day<19?'Origin A':'Origin B',protein_g:day<19?100:200,calories_kcal:day<19?1000:2000,water_ml:day<19?1000:2000});
-const sdk=consumerLanguageService(languageDatabase(data)),directory='source-window-visual',results=[];mkdirSync(directory,{recursive:true});
+const sdk=sourceWindowService(languageDatabase(data)),directory='source-window-visual',results=[];mkdirSync(directory,{recursive:true});
 async function stable(page,route='hoje'){
  await page.evaluate(async()=>{if(window.__languageApp)return;const {state}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');window.__languageApp={state,isRouteReady};});
  await page.waitForFunction(consumerRouteSettled,{route,selector:route==='hoje'?'[data-health-dashboard]':'#calendarReport'});
@@ -40,21 +41,21 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
    await page.locator('[data-dashboard-mode="period"]').click();await stable(page);await page.locator('#dashboard-period').selectOption('7');await stable(page);
    const card=page.locator('[data-dashboard-card="protein"]');assert.match(await card.innerText(),/5\/7 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.locator('[data-source-window]').innerText(),/Origin B.*Automática/s);
    const originA=await sourceKey(page,'dashboard','Origin A'),originB=await sourceKey(page,'dashboard','Origin B');assert.ok(originA&&originB);
-   await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.match(await card.innerText(),/18\/90 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'100');assert.match(await card.locator('[data-source-window]').innerText(),/Origin A.*pode mudar/s);assert.match(await card.locator('#dashboard-source-protein').innerText(),/Origin B.*5\/90/s);
+   await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.match(await card.innerText(),/18\/90 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'100');assert.match(await card.locator('[data-source-window]').innerText(),/Origin A.*pode mudar/s);assert.match((await card.locator('#dashboard-source-protein option').allTextContents()).join(' '),/Origin B.*5\/90/s);
    await quality(page,'[data-health-dashboard]');await card.scrollIntoViewIfNeeded();await page.screenshot({path:`${directory}/${engine}-${width}-period90.png`});
    await page.locator('#dashboard-period').selectOption('7');await stable(page);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');
    await page.locator('#dashboard-source-protein').selectOption(originB);await stable(page);await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.innerText(),/5\/90 dias usados/);assert.match(await card.locator('[data-source-window]').innerText(),/escolhida por você/);
    // Calendar inherits explicit dashboard choice; never silently replaces it.
    await page.evaluate(()=>location.hash='#analise');await stable(page,'analise');
-   const week=page.locator('[data-calendar-metric="protein"]');assert.match(await week.innerText(),/0\/7 dias encerrados/);assert.match(await week.innerText(),/Há registros em outra origem/);assert.match(await week.locator('#calendar-source-protein').innerText(),/Origin A.*7\/7/s);
-   await quality(page,'#calendarReport');await week.scrollIntoViewIfNeeded();await page.screenshot({path:`${directory}/${engine}-${width}-explicit-empty.png`});
+   const week=page.locator('[data-calendar-metric="protein"]');assert.match(await week.innerText(),/0\/7 dias encerrados/);assert.match(await week.innerText(),/Há registros em outra origem/);assert.match((await week.locator('#calendar-source-protein option').allTextContents()).join(' '),/Origin A.*7\/7/s);
+   await quality(page,'#calendarReport');await week.locator('.ltsCalendarMetricValue').evaluate(element=>element.scrollIntoView({block:'center'}));await page.screenshot({path:`${directory}/${engine}-${width}-explicit-empty.png`});
    await page.locator('#calendar-source-protein').selectOption('');await stable(page,'analise');assert.match(await week.innerText(),/7\/7 dias encerrados/);assert.equal(await week.locator('.ltsCalendarMetricValue').innerText(),'100 g');assert.match(await week.innerText(),/Origin A.*Automática/s);
    assert.match(await week.locator('.ltsCalendarComparison').innerText(),/100 g → 100 g/,'same-origin comparison, not pooled values');
-   await week.scrollIntoViewIfNeeded();await page.screenshot({path:`${directory}/${engine}-${width}-week12-18.png`});
+   await week.locator('.ltsCalendarMetricValue').evaluate(element=>element.scrollIntoView({block:'center'}));await page.screenshot({path:`${directory}/${engine}-${width}-week12-18.png`});
    await page.evaluate(()=>location.hash='#hoje');await stable(page);await page.locator('#dashboard-source-protein').selectOption('');await stable(page);await page.locator('[data-dashboard-mode="day"]').click();await stable(page);
    assert.deepEqual(await geometry(page),baseline,'return to Dia preserves seven-card layout and dimensions');
    assert.equal(await page.locator('[data-dashboard-card] > .healthSourceWindow').count(),0);await quality(page,'[data-health-dashboard]');
-   await page.locator('[data-disclosure="dashboard-metric-protein"] > summary').click();await stable(page);assert.match(await page.locator('#dashboard-source-protein').innerText(),/Origin B.*1\/1 dias/,'today value counts as one recorded day without entering means');
+   await page.locator('[data-disclosure="dashboard-metric-protein"] > summary').click();await stable(page);assert.match((await page.locator('#dashboard-source-protein option').allTextContents()).join(' '),/Origin B.*1\/1 dias/,'today value counts as one recorded day without entering means');
    assert.deepEqual(errors,[]);assert.deepEqual(blocked.filter(request=>!['GET','HEAD'].includes(request.method)),[]);
    assert.equal(await page.evaluate(()=>Boolean(window.__historyQA)),true,'synthetic write guard active');const writes=await page.evaluate(()=>window.__historyQA.writes);assert.deepEqual(writes,[]);
    results.push({engine,width,height,automaticWindowSwitch:true,explicitOriginPreserved:true,explicitEmptyExplained:true,weeklyRecovered:true,dailyGridPreserved:true,syntheticOnly:true});await context.close();

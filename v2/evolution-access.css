@@ -9,5 +9,9 @@ body[data-product-route="evolucao"] #screenHost{background:#f3f6fa;color:#17283b
 .ltsEvolutionOverview button,.ltsCompositionV2 [data-ux-scroll],.ltsLabsV2 [data-ux-scroll]{min-height:44px}
 .ltsEvolutionOverview button:focus-visible,.ltsCompositionV2 [data-ux-scroll]:focus-visible{outline:3px solid #175cc2;outline-offset:3px}
 .ltsRefTrainPrimaryTabs{display:flex!important;flex-wrap:wrap;gap:6px}.ltsRefTrainPrimaryTabs button{flex:1 1 90px;min-height:44px}
-.ltsExerciseDirectory .ltsWorkoutList button{min-height:64px;grid-template-columns:minmax(0,1fr) auto}.ltsExerciseDirectory .ltsWorkoutList small{display:block;white-space:normal}
+.ltsEvolutionOverview .ltsWorkoutList button,.ltsExerciseDirectory .ltsWorkoutList button{min-height:64px;grid-template-columns:minmax(0,1fr) auto}.ltsExerciseDirectory .ltsWorkoutList small{display:block;white-space:normal}
 @media(max-width:600px){.ltsEvolutionAccess{grid-template-columns:1fr}.ltsEvolutionOverview .ltsPageHeader h1{font-size:26px!important}.ltsEvolutionOverview .ltsCompositionTabs{flex-wrap:wrap;overflow:visible}.ltsEvolutionOverview .ltsCompositionTabs button{font-size:12px}.ltsEvolutionOverview .ltsWorkoutList button{grid-template-columns:minmax(0,1fr) auto}.ltsEvolutionOverview .ltsDepthLink{white-space:normal;text-align:left}}
+
+.ltsEvolutionOverview .ltsWorkoutList em,.ltsExerciseDirectory .ltsWorkoutList em{font-size:12px;white-space:normal}.ltsEvolutionOverview .ltsWorkoutList small{white-space:normal}
+
+.ltsRefExerciseNav{display:flex;flex-wrap:wrap;gap:6px}.ltsRefExerciseNav button{min-height:44px;flex:1 1 90px}

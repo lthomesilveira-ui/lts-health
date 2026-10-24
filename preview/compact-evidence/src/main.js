@@ -44,7 +44,7 @@ function showLogin(message=''){$('login').classList.remove('hidden');$('app').cl
 function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden');}
 
 function syncNav(){
-  document.querySelectorAll('#primaryNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&state.route==='evolucao'));});
+  document.querySelectorAll('#primaryNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route);});
   document.querySelectorAll('#moreSheet [data-route]').forEach(button=>button.classList.toggle('active',button.dataset.route===state.route));
   document.querySelectorAll('#mobileNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&mobileMoreRoutes.has(state.route)));});
   const action=$('routeAction');

@@ -43,8 +43,12 @@ try{
     // Without a body pair the hero opens Composition. Recovery remains reachable
     // through the existing navigation and keeps the same global calendar.
     await page.locator('.studyCard.body [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2 .ltsEmptyCard');
-    const nav=width<=840?'#mobileNav':'#primaryNav';
-    await page.locator(`${nav} [data-route="analise"]`).click();
+    if(width<=840){
+      await page.locator('#mobileNav [data-route="mais"]').click();
+      const recovery=page.locator('#moreSheet [data-route="analise"]');
+      assert.ok(await recovery.isVisible(),'Recovery remains reachable through the mobile More menu');
+      await recovery.click();
+    }else await page.locator('#primaryNav [data-route="analise"]').click();
     await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90','evidence details retain the Home calendar window');
     assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food a','canonical']));

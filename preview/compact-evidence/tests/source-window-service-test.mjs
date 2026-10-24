@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {sourceWindowService} from './source-window-service-fixture.mjs';
+const context=vm.createContext({window:{}});vm.runInContext(sourceWindowService({}),context);
+const client=context.window.supabase.createClient();
+const result=await client.functions.invoke('health-polar-connection',{body:{action:'status'}});
+assert.equal(result.data.configured,false);assert.equal(result.data.connected,false);assert.equal(context.window.__historyQA.writes.length,0);assert.equal(context.window.__historyQA.reads[0].action,'status');
+for(const [target,options] of [['health-polar-connection',{body:{action:'sync'}}],['health-polar-connection',{body:{action:'connect'}}],['health-other',{body:{action:'status'}}],['health-polar-connection',{body:{action:'status',trigger:'manual'}}],['health-polar-connection',{body:{action:'status'},headers:{}}],['health-polar-connection',undefined]])assert.throws(()=>client.functions.invoke(target,options),/forbids writes/);
+assert.throws(()=>client.rpc('anything'),/forbids writes/);assert.throws(()=>client.from('table').insert({}),/forbids writes/);assert.throws(()=>client.storage.from('bucket').upload('file',{}),/forbids writes/);
+assert.equal(context.window.__historyQA.writes.length,9);
+console.log('Source-window SDK guard: exact startup status read only; sync/connect/other invokes and mutations denied.');

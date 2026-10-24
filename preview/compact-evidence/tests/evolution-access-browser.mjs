@@ -29,7 +29,7 @@ try{
   const nav=width<900?'#mobileNav':'#sideNav';
   // The labelled Evolução destination must open evolution, never Recovery.
   const evolution=page.locator('[data-route="evolucao"]:visible').first();await evolution.click();await page.waitForSelector('.ltsEvolutionOverview');
-  assert.equal(new URL(page.url()).hash,'#evolucao');assert.match(await page.locator('.ltsEvolutionOverview').innerText(),/41 medições preservadas/);
+  assert.equal(new URL(page.url()).hash,'#evolucao');assert.equal(await page.locator((width<900?'#mobileNav':'#primaryNav')+' [data-route].active').count(),1,'only the actual Evolution destination is active');assert.match(await page.locator('.ltsEvolutionOverview').innerText(),/41 medições preservadas/);
   assert.equal(await page.locator('.ltsEvolutionOverview .ltsContextLine').count(),0);assert.equal(await page.locator('.ltsEvolutionOverview circle').count(),41);
   await page.screenshot({path:`${directory}/evolution-${width}.png`});
   await page.locator('.ltsEvolutionAccess [data-route="bio"]').click();await page.waitForSelector('[data-composition-overview]');

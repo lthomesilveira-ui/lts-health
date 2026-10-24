@@ -31,7 +31,7 @@ jobs:
           TESTDIR="$(mktemp -d v2/.integration-tests.XXXXXX)"
           trap 'rm -rf "$TESTDIR"' EXIT
           cp preview/compact-evidence/tests/* "$TESTDIR/"
-          for test in source-window-selection evolution-access lab-history-access care-nutrition-status dashboard-changes body-interval-model body-interval-view calendar-report-model calendar-report-view consumer-health-copy documentary-numeric-reading documentary-water-consumers documented-nutrition-plan documented-water-reference evidence-insights evolution-period-contract evolution-product final-evolution health-dashboard-body health-dashboard-context health-dashboard-empty-history health-dashboard-guidance health-dashboard-labs health-dashboard-model health-dashboard-render health-dashboard-training home-evidence-insights home-lab-history home-useful-render integrated-review lab-consumer-consistency lab-history-conflicts lab-shared-reading nutrition-archive nutrition-history-access nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-reviewed-integration personal-goals-preservation steps-evidence training-comparability training-phase-label training-session-summary training-session-summary-view water-reference-consumers; do
+          for test in source-window-service source-window-selection evolution-access lab-history-access care-nutrition-status dashboard-changes body-interval-model body-interval-view calendar-report-model calendar-report-view consumer-health-copy documentary-numeric-reading documentary-water-consumers documented-nutrition-plan documented-water-reference evidence-insights evolution-period-contract evolution-product final-evolution health-dashboard-body health-dashboard-context health-dashboard-empty-history health-dashboard-guidance health-dashboard-labs health-dashboard-model health-dashboard-render health-dashboard-training home-evidence-insights home-lab-history home-useful-render integrated-review lab-consumer-consistency lab-history-conflicts lab-shared-reading nutrition-archive nutrition-history-access nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-reviewed-integration personal-goals-preservation steps-evidence training-comparability training-phase-label training-session-summary training-session-summary-view water-reference-consumers; do
             node "$TESTDIR/${test}-test.mjs"
           done
       - name: Install pinned browser runtime
@@ -39,6 +39,7 @@ jobs:
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium webkit
       - name: Serve integrated production and legacy-fixture test entry
+        id: app_server
         run: |
           python3 -m http.server 4175 >/tmp/health-production.log 2>&1 &
           python3 -m http.server 4173 --directory v2 >/tmp/health-production-forms.log 2>&1 &
@@ -48,9 +49,15 @@ jobs:
           node v2/production-integration-browser.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs
-          LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/source-window-browser.mjs
-          LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/evolution-access-browser.mjs
-          LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/lab-history-access-browser.mjs
+      - name: Verify period-aware source selection and preserved daily cards
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/source-window-browser.mjs
+      - name: Verify observed body and exercise history navigation
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/evolution-access-browser.mjs
+      - name: Verify discoverable laboratory search and history
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/lab-history-access-browser.mjs
       - name: Preserve existing input-validation and login-interruption tests
         run: |
           node v2/write-integrity-smoke.mjs

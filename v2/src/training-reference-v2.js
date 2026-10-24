@@ -141,7 +141,7 @@ function tabs(view){
   return `<div class="ltsRefTrainTabs ltsRefTrainPrimaryTabs" role="tablist" aria-label="Detalhes do treino">${options.map(([key,label])=>`<button type="button" data-depth-training-view="${key}" role="tab" aria-selected="${view===key}" class="${view===key?'active':''}">${label}</button>`).join('')}</div>`;
 }
 
-function exerciseNav(){return `<div class="ltsRefTrainTabs ltsRefExerciseNav" role="navigation" aria-label="Retorno do histórico do exercício"><button type="button" data-depth-training-view="exercises">Exercícios</button><button type="button" data-depth-training-view="progress">Todos os exercícios</button></div>`;}
+function exerciseNav(){return `<div class="ltsRefTrainTabs ltsRefExerciseNav" role="navigation" aria-label="Retorno do histórico do exercício"><button type="button" data-depth-training-view="exercises">Exercícios</button><button type="button" data-depth-training-view="progress">Todos os exercícios</button><button type="button" data-depth-training-view="history">Sessões</button></div>`;}
 
 export function renderProductTraining(){
   const rows=workoutRows();
