@@ -1,47 +1,54 @@
+import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
+import {makeDashboardFixture,FIXED_TODAY} from '../preview/compact-evidence/tests/health-dashboard-render-test.mjs';
 import {mkdirSync} from 'node:fs';
 
 const evidenceDir='v2/public-audit-evidence';
 const origin=process.env.LTS_TEST_ORIGIN||'http://127.0.0.1:4173';
 mkdirSync(evidenceDir,{recursive:true});
+const base=new URL(origin.replace(/\/$/,'')+'/');
+assert.equal(base.protocol,'http:');assert.ok(['127.0.0.1','localhost'].includes(base.hostname));assert.ok(['/','/v2/'].includes(base.pathname));assert.equal(base.search,'');assert.equal(base.hash,'');
+const fixture=makeDashboardFixture(FIXED_TODAY);
+const service=`window.__physicalDb=${JSON.stringify(fixture.db)};window.__physicalWrites=[];
+const deny=target=>{window.__physicalWrites.push(target);throw Error('Synthetic physical-layout gate forbids '+target);};
+window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-physical-owner'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},
+functions:{invoke:async(name,args)=>args?.body?.action==='status'?{data:{configured:false,connected:false,received:false},error:null}:deny('invoke '+name)},rpc:()=>deny('rpc'),storage:{from:()=>({upload:()=>deny('upload'),remove:()=>deny('remove')})},
+from(table){let from=0,to=999;const filters=[],orders=[];const rows=()=>[...(window.__physicalDb[table]||[])].filter(row=>filters.every(([key,value])=>row[key]===value)).sort((a,b)=>{for(const[key,ascending]of orders){const n=String(a[key]??'').localeCompare(String(b[key]??''));if(n)return ascending?n:-n;}return 0;});
+const q={select(){return q;},eq(key,value){filters.push([key,value]);return q;},is(key,value){filters.push([key,value]);return q;},range(a,b){from=a;to=b;return q;},order(key,options={}){orders.push([key,options.ascending!==false]);return q;},limit(n){to=from+n-1;return q;},maybeSingle:async()=>{const r=rows();return r.length>1?{data:null,error:{message:'Multiple rows'}}:{data:r[0]||null,error:null};},then(resolve,reject){return Promise.resolve({data:rows().slice(from,to+1),error:null}).then(resolve,reject);}};
+for(const name of ['insert','update','upsert','delete'])q[name]=()=>deny(table+' '+name);return q;}})};`;
+const external=[];
 
 const browser=await chromium.launch({headless:true});
 
-async function productRoute(page,route,modulePath,exportName){
-  await page.evaluate(async({route,modulePath,exportName})=>{
-    const core=await import('./src/core.js');
-    const module=await import(modulePath);
-    core.state.data=core.fixtureData();
-    core.state.loaded=true;
-    core.state.route=route;
-    core.state.domainStatus={body:'ready',segmental:'ready',workouts:'ready',exercises:'ready',sets:'ready',nutrition:'ready',labs:'ready',docs:'ready',metrics:'ready',sourceMetrics:'ready',treatments:'ready'};
-    document.body.dataset.productRoute=route;
-    const host=document.querySelector('#screenHost');
-    host.innerHTML=module[exportName]();
-    host.scrollTop=0;
-    document.querySelectorAll('#mobileNav [data-route]').forEach(button=>button.classList.toggle('active',button.dataset.route===route));
-  },{route,modulePath,exportName});
+async function productRoute(page,route,selector){
+  const direct=page.locator(`#mobileNav [data-route="${route}"]`);
+  if(await direct.count())await direct.click();else{await page.locator('#mobileNav [data-route="mais"]').click();await page.locator(`#moreSheet [data-route="${route}"]`).click();}
+  await page.waitForSelector(selector);
+  await page.waitForFunction(route=>document.body.dataset.productRoute===route&&document.querySelector('#screenHost')?.dataset.productLayoutRoute===route,route);
 }
+async function homeReady(page){await page.waitForFunction(()=>document.querySelector('[data-health-dashboard]')&&document.querySelector('#syncText')?.textContent==='Atualizado'&&document.querySelector('#screenHost')?.dataset.productLayoutRoute==='hoje');}
 
 for(const config of [
   {label:'iphone-full',viewport:{width:393,height:852}},
   {label:'iphone-safari-sheet',viewport:{width:393,height:650}}
 ]){
-  const page=await browser.newPage({viewport:config.viewport});
+  const page=await browser.newPage({viewport:config.viewport,serviceWorkers:'block'});
+  await page.clock.setFixedTime(new Date(`${FIXED_TODAY}T15:00:00Z`));
+  await page.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.href==='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'&&request.method()==='GET')return route.fulfill({contentType:'application/javascript',body:service});if(url.origin===base.origin&&['GET','HEAD'].includes(request.method()))return route.continue();external.push({url:url.href,method:request.method()});return route.abort('blockedbyclient');});
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{
     const value=message.text();
     if(message.type()==='error'&&!value.includes('Failed to load resource'))errors.push(value);
   });
-  await page.goto(`${origin}/?fixture=1#hoje`,{waitUntil:'domcontentloaded'});
+  await page.goto(base.href+'#hoje',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('#app:not(.hidden)');
 
-  await productRoute(page,'hoje','./src/home-reference.js','renderProductHomeReference');
-  await page.waitForSelector('.ltsHomeReference');
+  await homeReady(page);
+  assert.equal(await page.evaluate(async()=>{const {fixtureMode}=await import('./src/core.js');return fixtureMode;}),false,'exercise the actual production renderer');
   const home=await page.evaluate(()=>{
     const rect=selector=>document.querySelector(selector)?.getBoundingClientRect();
-    const app=rect('#app'),host=rect('#screenHost'),nav=rect('#mobileNav'),header=rect('.refHeading'),cards=rect('.refPanel.body');
+    const app=rect('#app'),host=rect('#screenHost'),nav=rect('#mobileNav'),header=rect('.studyHeading'),cards=rect('.healthMetricGrid');
     const hostStyle=getComputedStyle(document.querySelector('#screenHost'));
     return{
       appHeight:app?.height,hostTop:host?.top,hostBottom:host?.bottom,navTop:nav?.top,
@@ -51,17 +58,19 @@ for(const config of [
       overflow:document.documentElement.scrollWidth-window.innerWidth
     };
   });
+  for(const key of ['hostTop','hostBottom','navTop','headerTop','cardsTop'])assert.ok(Number.isFinite(home[key]),`${config.label}: ${key} must exist`);
   if(home.hostTop>2)throw new Error(`${config.label}/home: hidden topbar still reserves ${Math.round(home.hostTop)}px`);
   if(home.headerTop<0||home.headerTop>18)throw new Error(`${config.label}/home: first useful content starts at ${Math.round(home.headerTop)}px`);
   if(home.hostBottom>home.navTop+1)throw new Error(`${config.label}/home: content overlaps navigation`);
   if(home.hostPaddingBottom>30)throw new Error(`${config.label}/home: duplicate bottom reserve ${home.hostPaddingBottom}px`);
   if(home.overflow>3)throw new Error(`${config.label}/home: horizontal overflow ${home.overflow}px`);
-  if(await page.locator('.refSignal:visible').count()!==5||await page.locator('.refPanels>.refPanel:visible').count()!==6)throw new Error(`${config.label}/home: mobile hides analytical content`);
-  for(const domain of ['body','training','nutrition','sleep','labs','water']){const header=page.locator('.refPanel.'+domain+'>header');await header.scrollIntoViewIfNeeded();const reachable=await header.evaluate(el=>{const r=el.getBoundingClientRect(),n=document.querySelector('#mobileNav').getBoundingClientRect();return r.height>0&&r.top>=0&&r.bottom<=n.top+1;});if(!reachable)throw new Error(`${config.label}/home: ${domain} header cannot be reached above navigation`);}
-  await page.locator('.refHeading').scrollIntoViewIfNeeded();
+  if(await page.locator('[data-dashboard-card]:visible').count()!==7||await page.locator('[data-study-domain]:visible').count()!==4)throw new Error(`${config.label}/home: mobile hides analytical content`);
+  for(const [kind,keys] of [['data-dashboard-card',['water','protein','energy','activeEnergy','totalEnergy','steps','sleep']],['data-study-domain',['body','training','labs','protocols']]])for(const key of keys){const header=page.locator(`[${kind}="${key}"]>header`);await header.scrollIntoViewIfNeeded();const reachable=await header.evaluate(el=>{const r=el.getBoundingClientRect(),n=document.querySelector('#mobileNav').getBoundingClientRect();return r.height>0&&r.top>=0&&r.bottom<=n.top+1;});if(!reachable)throw new Error(`${config.label}/home: ${key} header cannot be reached above navigation`);}
+  const clipped=await page.locator('.healthMetricValue strong,.healthMetricPeriod,.healthCoverage').evaluateAll(nodes=>nodes.filter(node=>node.scrollWidth>node.clientWidth+1).map(node=>node.textContent));assert.deepEqual(clipped,[],'metric value/date/coverage text cannot clip');
+  await page.locator('.studyHeading').scrollIntoViewIfNeeded();
   await page.screenshot({path:`${evidenceDir}/${config.label}-home-physical-remediation.png`});
 
-  await productRoute(page,'treinos','./src/training-reference-v2.js','renderProductTraining');
+  await productRoute(page,'treinos','.ltsTrainingReference');
   await page.waitForSelector('.ltsTrainingReference');
   await page.evaluate(()=>{const host=document.querySelector('#screenHost');host.scrollTop=host.scrollHeight;});
   await page.waitForTimeout(50);
@@ -82,10 +91,10 @@ for(const config of [
   await page.screenshot({path:`${evidenceDir}/${config.label}-training-physical-remediation.png`});
 
   for(const domain of [
-    {route:'bio',modulePath:'./src/composition-layout-v2.js',exportName:'renderProductComposition',selector:'.ltsCompositionV2'},
-    {route:'saude',modulePath:'./src/labs-layout-v2.js',exportName:'renderProductLabs',selector:'.ltsLabsV2'}
+    {route:'bio',selector:'.ltsCompositionV2'},
+    {route:'saude',selector:'.ltsLabsV2'}
   ]){
-    await productRoute(page,domain.route,domain.modulePath,domain.exportName);
+    await productRoute(page,domain.route,domain.selector);
     await page.waitForSelector(domain.selector);
     const layout=await page.evaluate(selector=>{
       const host=document.querySelector('#screenHost');
@@ -105,9 +114,11 @@ for(const config of [
     await page.screenshot({path:`${evidenceDir}/${config.label}-${domain.route}-physical-remediation.png`});
   }
 
+  assert.deepEqual(await page.evaluate(()=>window.__physicalWrites),[],'navigation must not write');
   if(errors.length)throw new Error(`${config.label}: browser errors ${errors.join(' | ')}`);
   await page.close();
 }
 
 await browser.close();
-console.log('LTS Health physical iPhone layout smoke passed');
+assert.deepEqual(external,[],'no external or write network traffic');
+console.log('LTS Health emulated iPhone viewport layout passed; no physical device was tested');

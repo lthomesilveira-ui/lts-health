@@ -93,11 +93,11 @@ jobs:
         run: node v2/cockpit-smoke.mjs
       - name: Consultation follow-up desktop and mobile
         run: node v2/care-followup-browser-smoke.mjs
-      - name: Home information integrity on mobile
+      - name: Supplemental legacy Home information integrity
         run: node v2/home-information-integrity-smoke.mjs
-      - name: Approved Home dashboard on desktop and mobile
+      - name: Supplemental legacy Home reference on desktop and mobile
         run: node v2/home-dashboard-reference-smoke.mjs
-      - name: Physical iPhone reduced-viewport layout
+      - name: Emulated iPhone reduced-viewport layout
         run: node v2/physical-iphone-layout-smoke.mjs
       - name: Upload safe visual audit evidence
         if: always()
