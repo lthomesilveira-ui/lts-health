@@ -19,6 +19,8 @@ jobs:
       - name: Verify source parity, auth, privacy and bounded writes
         run: |
           node v2/production-integration-contract.mjs
+          node v2/deployed-runtime-assets.mjs
+          node --check v2/deployed-public-auth-smoke.mjs
           node preview/compact-evidence/tests/preview-contract.mjs
           node v2/privacy-contract-smoke.mjs
           node v2/production-write-boundary-test.mjs
@@ -44,6 +46,7 @@ jobs:
       - name: Verify actual renderer through mocked authentication, mobile routes and repeated cancel
         run: |
           node v2/production-integration-browser.mjs
+          LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs
       - name: Preserve existing input-validation and login-interruption tests
         run: |
@@ -56,6 +59,7 @@ jobs:
           name: integrated-production-synthetic-visual
           path: |
             artifacts/production-integration/*.png
+            artifacts/deployed-public-login-*.png
             dashboard-changes-visual/*.png
           if-no-files-found: error
           retention-days: 7

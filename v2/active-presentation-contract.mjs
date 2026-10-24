@@ -17,9 +17,10 @@ export function activePresentationGraph(html,read,root){
   assert.ok(mapped||urlLike(specifier),'unmapped bare dependency requires audit: '+specifier);
   return new URL(mapped||key);
  };
- const scripts=new Map(),inline=[];
+ const scripts=new Map(),inline=[],requests=new Set();
  const visit=(url,scriptRoot=false)=>{
   if(!url.href.startsWith(base.href)){assert.ok(scriptRoot&&url.href==='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','external executable dependency requires audit: '+url.href);return;}
+  requests.add(url.href);
   const file=new URL(url);file.search='';file.hash='';
   if(scripts.has(file.href))return;
   const body=read(file);scripts.set(file.href,body);
@@ -30,7 +31,7 @@ export function activePresentationGraph(html,read,root){
   const src=attrs.match(/\bsrc=["']([^"']+)["']/)?.[1];
   if(src)visit(new URL(src,base),true);else{inline.push(body);for(const relative of specifiers(body))visit(resolve(relative,base));}
  }
- return {scripts,inline};
+ return {scripts,inline,requests};
 }
 export function assertActivePresentation(html,read,root){
  const graph=activePresentationGraph(html,read,root);
