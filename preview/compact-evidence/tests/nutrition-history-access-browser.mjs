@@ -226,6 +226,9 @@ try{
     const {context,page,external,networkWrites,errors}=await contextFor(browser,393,844,{pauseTable:'health_nutrition_meals',pauseFrom:1000});
     try{
       await page.goto(base+'#nutricao');await page.waitForFunction(()=>window.__historyQA?.reads.some(read=>read.table==='health_nutrition_meals'&&read.from===1000));
+      // The paginated read starts before requestAnimationFrame renders the loading state.
+      // Keep the second page paused while waiting for the actual visible UI boundary.
+      await page.locator('#screenHost .loadingState').waitFor({state:'visible'});
       assert.equal(await page.locator('.ltsNutritionArchive').count(),0);assert.equal(await page.locator('#screenHost .loadingState').count(),1);
       await tile(page,'mobile-loading',page.locator('#screenHost .loadingState b'));
       await page.evaluate(()=>window.__releaseHistoryReads());await stable(page);await choose(page,'#nutritionArchiveSource',historyKey);await chooseDate(page,FIRST_HISTORY_DAY);await assertDiary(page,FIRST_HISTORY_DAY);
