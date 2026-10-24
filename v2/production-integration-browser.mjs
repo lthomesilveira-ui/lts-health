@@ -51,12 +51,13 @@ for(const width of [320,393,1440]){
   await page.waitForFunction(r=>document.querySelector('#screenHost')?.dataset.productLayoutRoute===r||r==='evolucao'||r==='timeline'||r==='dados'||r==='tratamentos',route);
   assert.ok((await page.locator('#screenHost').innerText()).trim().length>30,route+' renders');
   assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.route}),route);
+  await page.screenshot({path:`artifacts/production-integration/${route}-${width}.png`,fullPage:true});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,route+' fits '+width);
   if(['bio','treinos'].includes(route)){
-   await page.locator('#routeAction').click();await page.locator('#entryModal:not(.hidden)').waitFor();
+   await page.locator(`#screenHost [data-entry="${route==='bio'?'body':'workout'}"]`).click();await page.locator('#entryModal:not(.hidden)').waitFor();
    assert.equal(await page.locator('#entryModal input:not([disabled])').count()>0,true,'operational fields available');
    await page.locator('#closeEntry').click();await page.locator('#entryModal.hidden').waitFor();
-   await page.locator('#routeAction').click();await page.locator('#entryModal:not(.hidden)').waitFor();
+   await page.locator(`#screenHost [data-entry="${route==='bio'?'body':'workout'}"]`).click();await page.locator('#entryModal:not(.hidden)').waitFor();
    await page.locator('#closeEntry').click();await page.locator('#entryModal.hidden').waitFor();
    assert.equal(await page.evaluate(()=>location.hash),'#'+route,'cancel retains route');
   }
