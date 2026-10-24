@@ -1,3 +1,4 @@
+import {renderEvolutionOverview} from './evolution-overview.js';
 import {dashboardChangeAction} from './dashboard-changes.js';
 import {printCalendarReport,updateCalendarReportSelection} from './calendar-report-view.js';
 import {userFacingError} from './user-facing-errors.js';
@@ -30,13 +31,13 @@ import {downloadIntegratedSummary} from './integrated-review-view.js';
 import {saveGoals} from './personal-goals.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
-const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
+const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,evolucao:renderEvolutionOverview,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
 let renderedRoute=null;
-const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','evolucao','dados']);
+const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','dados']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
 function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
@@ -212,6 +213,10 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const overviewMetric=event.target.closest('[data-evolution-overview-metric]');if(overviewMetric){state.ui.evolutionOverviewMetric=overviewMetric.dataset.evolutionOverviewMetric;render();return;}
+    const overviewBody=event.target.closest('[data-evolution-body]');if(overviewBody){state.ui.productCompositionRecord=overviewBody.dataset.evolutionBody;setRoute('bio',{replace:false});return;}
+    const overviewExercise=event.target.closest('[data-evolution-exercise]');if(overviewExercise){state.ui.productExerciseId=overviewExercise.dataset.evolutionExercise;state.ui.productExercisePage=1;state.ui.productExerciseUnit=null;state.ui.productTrainingView='exercise';setRoute('treinos',{replace:false});return;}
+    if(event.target.closest('[data-evolution-training]')){state.ui.productTrainingView='progress';setRoute('treinos',{replace:false});return;}
     const calendarPrint=event.target.closest('[data-calendar-print]');if(calendarPrint){printCalendarReport();return;}
     const calendarMode=event.target.closest('[data-calendar-mode]');if(calendarMode){const patch=updateCalendarReportSelection(state.ui,'mode',calendarMode.dataset.calendarMode);if(patch)Object.assign(state.ui,patch);render();return;}
     const calendarStep=event.target.closest('[data-calendar-step]');if(calendarStep&&!calendarStep.disabled){const patch=updateCalendarReportSelection(state.ui,'step',calendarStep.dataset.calendarStep);if(patch)Object.assign(state.ui,patch);render();return;}

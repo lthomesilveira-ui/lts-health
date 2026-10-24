@@ -8,7 +8,7 @@ const timeline=await readFile('v2/src/timeline-screen.js','utf8');
 const dataScreen=await readFile('v2/src/data-screen.js','utf8');
 
 const srcNames=await readdir('v2/src');
-const presentationNames=srcNames.filter(name=>name.endsWith('-screen.js')||['main.js','entry.js','source-status.js','health-dashboard.js','health-dashboard-guidance.js','calendar-report-view.js','dashboard-changes.js'].includes(name));
+const presentationNames=srcNames.filter(name=>name.endsWith('-screen.js')||['main.js','entry.js','source-status.js','health-dashboard.js','health-dashboard-guidance.js','calendar-report-view.js','dashboard-changes.js','evolution-overview.js','source-window-view.js','composition-layout-v2.js','training-history.js','labs-layout-v2.js'].includes(name));
 const presentationFiles=await Promise.all(presentationNames.map(async name=>[name,await readFile(join('v2/src',name),'utf8')]));
 for(const[name,content]of presentationFiles){
   if(/\b(?:row|record|upload|item)\.source_payload\b/.test(content))throw new Error(`raw source_payload entered presentation data access: ${name}`);

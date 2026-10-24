@@ -44,6 +44,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await overflow(page);
+  const independentBefore=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return [state.ui.productCompositionPeriod,state.ui.productLabPeriod];});
   await page.locator('[data-home-period-select]').selectOption('all');
   await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='all');await stableHome(page);
   assert.equal(await page.locator('.studyCard.body').count(),1,'one shared body panel');
@@ -57,7 +58,8 @@ try{
    assert.equal(await row.locator('em').innerText(),delta);
   }
   const periods=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return ['homePeriod','analysisPeriod','trainingPeriod','nutritionPeriod','productCompositionPeriod','productLabPeriod'].map(key=>state.ui[key]);});
-  assert.deepEqual(periods,Array(6).fill('all'),'Home selection propagates one calendar to every domain');
+  assert.deepEqual(periods.slice(0,4),Array(4).fill('all'),'Home retains its shared training/nutrition/analysis calendar');
+  assert.deepEqual(periods.slice(4),independentBefore,'Home selection must not assign or overwrite body/lab windows');
   await page.locator('.studyCard.body details>summary').click();
   assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'original assessments remain reachable from the body summary');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
@@ -85,7 +87,7 @@ try{
   await page.locator('[data-depth-clear="training"]').click();await page.locator('#productTrainingYear').selectOption('2025');assert.equal(await page.locator('[data-training-total]').getAttribute('data-training-total'),'18');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-training-history.png`});
 
-  await goto(page,'saude','.ltsLabsV2');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
+  await goto(page,'saude','.ltsLabsV2');assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Exames opens its own full-history default');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
   assert.equal(await page.locator('#productLabMarkerSelect option').count(),24,'all 23 markers plus placeholder');
   await page.locator('#productLabMarkerSelect').selectOption('marcador textual unico');
   assert.ok((await page.locator('.ltsLabsHero').innerText()).includes('Resultado textual sintético'));assert.equal(await page.locator('.ltsDepthLine').count(),0);
@@ -101,7 +103,7 @@ try{
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-labs.png`});
 
   await goto(page,'bio','.ltsCompositionV2 .ltsCompositionHero');
-  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition inherits the Home historical calendar');
+  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition opens its own full-history default');
   await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),30);
   // Home intentionally shows a readable pair. Full raw series live in Composition.
   for(const [metric,label] of [['fat_mass_kg','fat'],['skeletal_muscle_mass_kg','muscle']]){

@@ -110,7 +110,7 @@ test('month coverage uses the comparison prefix denominator, and demands70%',()=
 });
 test('explicit origin stays selected across history; missing request never falls back',()=>{
   const data=filled();data.nutrition.push(food(today,900,{source:'Synthetic newer B'}));
-  const defaultResult=report(data,status(),{},today);assert.equal(metric(defaultResult).source.label,'Synthetic newer B');assert.equal(metric(defaultResult).value,null);assert.equal(metric(defaultResult).lastObservedOutsidePeriod,true);
+  const defaultResult=report(data,status(),{},today);assert.equal(metric(defaultResult).source.label,'Synthetic food A');assert.equal(metric(defaultResult).value,110);assert.equal(metric(defaultResult).lastObservedOutsidePeriod,false);assert.equal(metric(defaultResult).sourceSelectionMode,'automatic');
   const ui={calendarReportSources:{protein:'Synthetic food A'},dashboardSources:{protein:'Synthetic newer B'}};
   const chosen=report(data,status(),ui,today);assert.equal(metric(chosen).value,110);assert.equal(ui.dashboardSources.protein,'Synthetic newer B');
   const missing=report(data,status(),{calendarReportSources:{protein:'nonexistent'}},today);assert.equal(metric(missing).requestedSourceMissing,true);assert.equal(metric(missing).value,null);assert.equal(metric(missing).source,null);

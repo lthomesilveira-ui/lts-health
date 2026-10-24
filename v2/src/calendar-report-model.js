@@ -190,7 +190,9 @@ function summaryFor(calendar,metrics,training,labs){
 export function calendarReport(data={},status={},ui={},today){
   const calendar=calendarReportCalendar(ui,today),fullUI=explicitUI(ui,calendar.bounds);
   const dashboard=healthDashboardModel(data,status,fullUI,calendar.today);
-  const comparison=calendar.comparisonDays?healthDashboardModel(data,status,explicitUI(ui,calendar.comparisonBounds,calendar.previousComparisonBounds),calendar.today):null;
+  // Pin the full-period origin when calculating the shorter comparison prefix.
+  const comparisonUI={...ui,calendarReportSources:Object.fromEntries(dashboard.metrics.map(metric=>[metric.key,metric.source?.key||metric.requestedSource||'__unavailable__']))};
+  const comparison=calendar.comparisonDays?healthDashboardModel(data,status,explicitUI(comparisonUI,calendar.comparisonBounds,calendar.previousComparisonBounds),calendar.today):null;
   const metrics=keys.map(key=>{
     const metric=dashboard.metricsByKey[key],compared=comparison?.metricsByKey[key].comparison||{...metric.comparison,reason:'no_closed_days'};
     return {...metric,...metricReadDiagnostics(metric,status),comparison:{...compared,note:calendar.comparisonNote,fullPeriodMean:metric.value,fullPeriodDays:metric.count,commonPrefixDays:calendar.comparisonDays},
@@ -202,7 +204,7 @@ export function calendarReport(data={},status={},ui={},today){
   const nutritionPlan=nutritionPlanComparison(data,status,fullUI,calendar.today);
   const notes=[calendar.comparisonNote,'Diferenças só aparecem com a mesma medida, origem e unidade, nos mesmos dias relativos dos dois períodos: pelo menos 5 dias e 70% dos dias em cada um. Hoje, registros incompletos e dias com valores conflitantes ficam fora.',
     'Ausência não significa zero. Dias com registros não comprovam diário completo. Duplicatas ambíguas e dias sabidamente parciais ficam fora das médias.',
-    'A origem escolhida é mantida entre períodos; origens e dispositivos não são somados. Quando a origem ainda precisa de revisão, essa informação permanece visível.',
+    'A escolha explícita é mantida entre períodos. No modo automático, a origem pode mudar conforme a cobertura da janela; origens e dispositivos não são somados. Quando a origem ainda precisa de revisão, essa informação permanece visível.',
     'Somente referências alimentares documentadas são exibidas. Data de recebimento não confirma vigência, início de uso ou adesão. Retrospectivas exigem escolha explícita e ficam rotuladas.',
     'Energia ativa não é gasto total. Não calculamos balanço energético a partir dela.',protocol.note];
   if(calendar.selectionNotice)notes.unshift(calendar.selectionNotice);

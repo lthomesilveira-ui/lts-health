@@ -77,10 +77,11 @@ test('Energy source wins over a separately selected protein source for all five 
   const model=compare(data,{dashboardSources:{energy:first,protein:second}});assert.equal(model.foodSource.key,first);assert.equal(get(model,'protein_g').value,100);assert.ok(model.metrics.slice(0,5).every(metric=>metric.sourceKey===first));
   const chosen=compare(data,{dashboardSources:{energy:first,protein:first},nutritionPlanFoodSource:second});assert.equal(chosen.foodSource.key,second);assert.equal(get(chosen,'protein_g').value,200);
 });
-test('Source choices are stable across windows and missing selections never silently substitute',()=>{
+test('Automatic coverage is period-aware; explicit food choices and missing selections never silently substitute',()=>{
   const data=fill(40);data.nutrition.push(foodRow(today,{source:'Synthetic new food',protein_g:300}));
-  const model=compare(data);assert.equal(model.foodSource.label,'Synthetic new food');assert.equal(get(model,'protein_g').value,null);
-  const key=model.foodSource.key;for(const period of ['7','30','60','90','6m','1y','all'])assert.equal(compare(data,{dashboardPeriod:period,nutritionPlanRetrospective:true}).foodSource.key,key);
+  const model=compare(data);assert.equal(model.foodSource.label,'Synthetic food origin');assert.equal(get(model,'protein_g').value,100);
+  const key=model.foodSources.find(source=>source.label==='Synthetic new food').key;
+  for(const period of ['7','30','60','90','6m','1y','all']){const explicit=compare(data,{dashboardPeriod:period,nutritionPlanRetrospective:true,nutritionPlanFoodSource:key});assert.equal(explicit.foodSource.key,key);assert.equal(get(explicit,'protein_g').value,null,'Today-only explicit origin is not silently replaced by historical food');}
   for(const ui of [{nutritionPlanFoodSource:'missing-origin'},{dashboardSources:{energy:'missing-origin'}},{homeNutritionSource:'missing-origin'}]){
     const missing=compare(data,ui);assert.equal(missing.foodSource,null);assert.ok(missing.metrics.slice(0,5).every(metric=>metric.value===null));assert.match(get(missing,'protein_g').reason,/Nenhum outro diário/);
   }

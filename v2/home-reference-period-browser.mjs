@@ -241,19 +241,34 @@ try{
       assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'7','day mode retains the saved period');
       await selectPeriod(page,'90');
       await visitAndReturn(page,width,'treinos',page.locator('[data-study-domain="training"] [data-route="treinos"]').last(),{mode:'period',period:'90',sources:{water:sourceB}});
-      // Preserve the established shared-calendar contract for compatible windows.
+      // Body and labs have their own windows. Home must not truncate or overwrite them.
       if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="bio"]').click();}else await page.locator('#primaryNav [data-route="bio"]').click();
       await page.waitForSelector('.ltsCompositionV2');
+      assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','body defaults to full history even while Home is 90 days');
+      assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?2:7);
+      await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').click();
       assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');
       assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?2:4);
       await page.locator('[data-depth-period="productCompositionPeriod"][data-value="30"]').click();
       assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?1:2);
       await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await stableHome(page);
-      assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'30','a shared domain calendar returns to the same Home window');
+      assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'90','body 30 days must not change Home 90 days');
+      await selectPeriod(page,'7');
+      if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="bio"]').click();}else await page.locator('#primaryNav [data-route="bio"]').click();
+      await page.waitForSelector('.ltsCompositionV2');assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="30"]').getAttribute('aria-pressed'),'true','body keeps its selected window after Home changes to 7 days');
+      assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?1:2);
+      await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await stableHome(page);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'7');
       await selectPeriod(page,'90');
       if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="saude"]').click();}else await page.locator('#primaryNav [data-route="saude"]').click();
-      await page.waitForSelector('.ltsLabsV2');assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#productLabCollection option').count(),2);
+      await page.waitForSelector('.ltsLabsV2');assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','labs default to full history despite Home 90 days');assert.equal(await page.locator('#productLabCollection option').count(),2);
+      await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').click();assert.equal(await page.locator('#productLabCollection option').count(),2);
+      await page.locator('[data-depth-period="productLabPeriod"][data-value="30"]').click();assert.equal(await page.locator('#productLabCollection option').count(),1);
       await page.locator('.ltsLabsV2>.ltsPageHeader .ltsBack').click();await stableHome(page);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'90');
+      await selectPeriod(page,'7');
+      if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="saude"]').click();}else await page.locator('#primaryNav [data-route="saude"]').click();
+      await page.waitForSelector('.ltsLabsV2');assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="30"]').getAttribute('aria-pressed'),'true','labs keep their chosen window after Home changes');assert.equal(await page.locator('#productLabCollection option').count(),1);
+      await page.locator('.ltsLabsV2>.ltsPageHeader .ltsBack').click();await stableHome(page);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'7');
+      await selectPeriod(page,'90');
       if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="nutricao"]').click();}else await page.locator('#primaryNav [data-route="nutricao"]').click();
       await page.waitForSelector('.ltsNutritionProduct');assert.equal(await page.locator('[data-period="90"]').getAttribute('aria-pressed'),'true');
       await returnHome(page,width);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'90');
@@ -265,7 +280,9 @@ try{
       await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await stableHome(page);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'1y','365-day domain window cannot redefine Home calendar-year bounds');
       await selectPeriod(page,'all');
       if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="bio"]').click();}else await page.locator('#primaryNav [data-route="bio"]').click();
-      await page.waitForSelector('.ltsCompositionV2');assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true');
+      await page.waitForSelector('.ltsCompositionV2');assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="365"]').getAttribute('aria-pressed'),'true','Home history cannot reset an explicit 365-day body window');
+      assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?2:6);
+      await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?2:7);
       await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await stableHome(page);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'all');
       await page.locator('[data-dashboard-mode="day"]').click();await stableHome(page);await focusIs(page,'dashboard-mode-day');
       assert.equal(await page.locator('[data-dashboard-date]').inputValue(),date,'period changes retain the chosen historical day');

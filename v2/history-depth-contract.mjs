@@ -21,7 +21,10 @@ state.errors.labs='test';html=renderProductLabs();assert.ok(html.includes('ltsDe
 
 const body=Array.from({length:30},(_,i)=>({source_record_id:`body-${i}`,measured_at:`2025-${String(Math.floor(i/28)+1).padStart(2,'0')}-${String(i%28+1).padStart(2,'0')}`,source:'Origem',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30}));
 state.data={body,segmental:[]};state.ui={};state.domainStatus={body:'ready',segmental:'ready'};
-let m=compositionModel();assert.equal(m.recent.length,0,'old measurements stay outside the default current calendar');assert.equal(m.history.total,30);state.ui.productCompositionPeriod='all';m=compositionModel();assert.equal(m.recent.length,30);
+let m=compositionModel();assert.equal(m.period,'all');assert.equal(m.recent.length,30,'the body domain defaults to its complete observed history');assert.equal(m.history.total,30);
+for(const period of ['30','90']){state.ui.productCompositionPeriod=period;m=compositionModel();assert.equal(m.recent.length,0,'old measurements stay outside an explicitly chosen recent window');assert.equal(m.history.total,30);}
+setGlobalPeriod('all');assert.equal(compositionModel().period,'90','Home cannot overwrite the selected body window');assert.equal(compositionModel().recent.length,0);
+state.ui.productCompositionPeriod='all';m=compositionModel();assert.equal(m.recent.length,30);
 assert.equal(seriesWindow(body,'measured_at','all').length,30);assert.equal(seriesWindow(body,'measured_at','recent').length,12);
 const seg={measured_at:body[0].measured_at,source:'Origem',lean_right_arm_kg:0};assert.equal(linkedSegmental(body[0],body,[seg]).row,seg);assert.equal(linkedSegmental(body[0],body,[{...seg,source:'Outra'}]).row,null);assert.equal(linkedSegmental({...body[0],source_file:'A'},body,[{...seg,source_file:'B'}]).row,null);assert.equal(linkedSegmental(body[0],[...body,{...body[0],source_record_id:'duplicate'}],[seg]).row,null);
 state.data.body=[...body,{...body[0],source_record_id:'duplicate'}];m=compositionModel();assert.equal(m.unique.length,29);assert.equal(m.all.length,31);state.ui.productCompositionRecord='duplicate';html=renderProductComposition();assert.ok(html.includes('data-composition-view="detail"'));assert.ok(html.includes('múltiplos registros'));

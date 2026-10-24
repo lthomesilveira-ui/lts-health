@@ -7,7 +7,7 @@ const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','
 const routeDomains={
   bio:[],
   treinos:[],
-  evolucao:[],
+  evolucao:['labs'],
   analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans'],
   tratamentos:['treatments','regimens','docs','nutritionPlans'],
   hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions'],

@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {makeCalendarReportFixture,expectedCalendarMetric,CALENDAR_KEYS,CALENDAR_WINDOWS,CALENDAR_TODAY} from './calendar-report-fixture.mjs';
+import {makeCalendarReportFixture,expectedCalendarMetric,CALENDAR_KEYS,CALENDAR_WINDOWS,CALENDAR_TODAY,CALENDAR_SOURCES} from './calendar-report-fixture.mjs';
 globalThis.location={search:'?fixture=1'};
 const {renderCalendarReport,renderCalendarReportPrint,calendarReportPrintTitle,updateCalendarReportSelection,printCalendarReport}=await import('../src/calendar-report-view.js');
 const {calendarReport}=await import('../src/calendar-report-model.js');
 const {state}=await import('../src/core.js');
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-calendar-metric="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
 const capture=value=>structuredClone(value);
-const f=makeCalendarReportFixture(),before=capture(f.data),ui={analysisPeriod:'365',dashboardMode:'day',dashboardDate:'2026-10-01'},uiBefore=capture(ui),stateBefore=capture(state);
+// Arithmetic/gap assertions deliberately inspect an explicitly selected origin.
+const chosenSources={water:CALENDAR_SOURCES.food,protein:CALENDAR_SOURCES.food,energy:CALENDAR_SOURCES.food,steps:CALENDAR_SOURCES.watch,activeEnergy:CALENDAR_SOURCES.watch};
+const f=makeCalendarReportFixture(),before=capture(f.data),ui={calendarReportSources:chosenSources,analysisPeriod:'365',dashboardMode:'day',dashboardDate:'2026-10-01'},uiBefore=capture(ui),stateBefore=capture(state);
 const html=renderCalendarReport(f.data,f.status,ui,f.today),model=calendarReport(f.data,f.status,ui,f.today);
 assert.match(html,/id="calendarReport"/);assert.match(html,/05\/10\/2026 a 11\/10\/2026/);assert.match(html,/segunda a domingo/);
 assert.match(html,/data-calendar-mode="week" aria-pressed="true"/);assert.match(html,/value="last" selected/);
@@ -43,7 +45,7 @@ const failed=renderCalendarReport(f.data,Object.fromEntries(Object.keys(f.status
 // CI1 regression: a successful empty metrics domain cannot disguise a failed
 // sourceMetrics read as an ordinary 0/N history gap. A surviving food source
 // remains usable, with a visible read limitation in both screen and PDF.
-const partiallyFailedStatus={...f.status,sourceMetrics:'error'},partiallyFailed=calendarReport(f.data,partiallyFailedStatus,{},f.today),partiallyFailedHtml=renderCalendarReport(f.data,partiallyFailedStatus,{},f.today);
+const partiallyFailedStatus={...f.status,sourceMetrics:'error'},partiallyFailed=calendarReport(f.data,partiallyFailedStatus,{calendarReportSources:chosenSources},f.today),partiallyFailedHtml=renderCalendarReport(f.data,partiallyFailedStatus,{calendarReportSources:chosenSources},f.today);
 assert.match(card(partiallyFailedHtml,'steps'),/Falha ao carregar/);assert.match(card(partiallyFailedHtml,'steps'),/Cobertura indisponível/);assert.doesNotMatch(card(partiallyFailedHtml,'steps'),/0\/7 dias encerrados/);
 assert.match(card(partiallyFailedHtml,'water'),/803 mL/);assert.match(card(partiallyFailedHtml,'water'),/4\/7 dias encerrados/);assert.match(card(partiallyFailedHtml,'water'),/não carregou/i);
 const failedPrint=renderCalendarReportPrint(partiallyFailed);assert.match(card(failedPrint,'steps'),/Falha ao carregar/);assert.match(failedPrint,/Os dias deste período não puderam ser verificados/);assert.match(failedPrint,/Cobertura indisponível/);

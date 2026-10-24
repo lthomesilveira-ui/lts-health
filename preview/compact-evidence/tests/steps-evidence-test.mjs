@@ -39,14 +39,15 @@ test('same-day different origins remain distinct, never summed or chosen as cons
   assert.equal(selected.value,4321);assert.equal(selected.source.label,'Synthetic watch|Synthetic phone');
   assert.equal(selected.stepEvidence.differingSourceDays,1);assert.equal(selected.unresolvedOverlap,true);
 });
-test('latest and explicit source selection stay stable across windows and invalid latest values',()=>{
+test('automatic selection favors usable window coverage; explicit invalid latest remains selected',()=>{
   const data=fixture();const latest=steps(data,{dashboardPeriod:'30'});
   assert.equal(latest.source.label,'Synthetic unnamed origin');
   const explicit=steps(data,{dashboardPeriod:'7',dashboardSources:{steps:'Synthetic watch|Synthetic phone'}});
   assert.equal(explicit.source.label,'Synthetic watch|Synthetic phone');
   assert.equal(steps(data,{dashboardSources:{steps:'absent'}}).source,null);
   const onlyFraction={...data,sourceMetrics:[step('2024-03-03',50,'Synthetic older'),step('2024-03-07',1.25,'Synthetic latest')]};
-  assert.equal(steps(onlyFraction).source.label,'Synthetic latest');assert.equal(steps(onlyFraction).value,null);
+  const automatic=steps(onlyFraction);assert.equal(automatic.source.label,'Synthetic older');assert.equal(automatic.value,50);assert.equal(automatic.stepEvidence.invalidCountDays,1,'Fractional evidence is preserved although not selected automatically');
+  for(const period of ['7','30','90']){const selected=steps(onlyFraction,{dashboardPeriod:period,dashboardSources:{steps:'Synthetic latest'}});assert.equal(selected.source.label,'Synthetic latest');assert.equal(selected.value,null);assert.equal(selected.otherSourcesWithData,1);assert.equal(selected.stepEvidence.invalidCountDays,1);}
 });
 test('no data and failed source reads are distinct; stale evidence is not exposed',()=>{
   const empty={...fixture(),sourceMetrics:[]};assert.equal(steps(empty).value,null);assert.equal(steps(empty).stepEvidence.days.length,0);

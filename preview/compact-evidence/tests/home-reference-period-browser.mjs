@@ -76,17 +76,22 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  const insight=page.locator('.refReading [data-home-insight-details]'),pairStart=await insight.getAttribute('data-body-start'),pairEnd=await insight.getAttribute('data-body-end'),foodSource=await page.locator('[data-home-field="reportNutritionSource"]').inputValue();await insight.click();await page.waitForSelector('#reportIntegratedReview');assert.equal(await page.locator('#analysisPeriod').inputValue(),'90');if(pairStart&&pairEnd){await page.waitForSelector('.ltsBodyInterval');assert.equal(await page.locator('#bodyIntervalStart').inputValue(),pairStart);assert.equal(await page.locator('#bodyIntervalEnd').inputValue(),pairEnd);}assert.equal(await page.evaluate(async()=>{const{state}=await import(new URL('src/core.js',location.href));return state.ui.reportNutritionSource;}),foodSource,'origin survives Home to exact body interval');assert.doesNotMatch(await page.locator('#reviewPanel').innerText(),/entre as duas semanas|comparar semanas/);
  await page.locator('#reviewTab-consultation').click();await page.waitForSelector('[data-review-export]');assert.match(await page.locator('.ltsConsultation').innerText(),/90|janela/);assert.doesNotMatch(await page.locator('.ltsConsultation').innerText(),/entre as duas semanas/);
  await page.goBack();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
- // Global calendar must survive entry into each domain and its return path.
+ // Home survives each return path; body and labs keep independent history windows.
  await page.locator('.refPanel.body>header [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2');
+ assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','body opens full history independently');
+ await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').click();
  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');
  assert.match(await page.locator('.ltsCompositionTrend').innerText(),new RegExp(date(89).split('-').reverse().join('/')));
  assert.equal(await page.locator('.ltsCompositionChart circle').count(),4);
  await page.locator('[data-depth-period="productCompositionPeriod"][data-value="30"]').click();
  assert.equal(await page.locator('.ltsCompositionChart circle').count(),2);
- await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-30').getAttribute('aria-pressed'),'true');
+ await page.locator('.ltsCompositionV2>.ltsPageHeader .ltsBack').click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true','body selection does not rewrite Home');
  await setPeriod('90');
  if(width<=840){assert.equal(await page.locator('#mobileNav button').count(),4);await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="saude"]').click();}else await page.locator('.primaryNav [data-route="saude"]').click();await page.waitForSelector('.ltsLabsV2');
+ assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','labs open full history independently');assert.equal(await page.locator('#productLabCollection option').count(),3);
+ await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').click();
  assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#productLabCollection option').count(),2);
+ await page.locator('[data-depth-period="productLabPeriod"][data-value="30"]').click();assert.equal(await page.locator('#productLabCollection option').count(),1);
  await page.locator('.ltsLabsV2>.ltsPageHeader .ltsBack').click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
  await page.locator('.refPanel.water>header [data-route="nutricao"]').click();await page.waitForSelector('.ltsNutritionProduct');assert.equal(await page.locator('[data-period="90"]').getAttribute('aria-pressed'),'true');
  await page.locator(`${width>840?'.primaryNav':'.mobileNav'} [data-route="hoje"]`).click();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
