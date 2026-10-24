@@ -73,6 +73,9 @@ for(const width of [320,393,1440]){
  assert.deepEqual(forms,{goalsDisabled:false,preview:false});
  await page.screenshot({path:`artifacts/production-integration/home-${width}.png`,fullPage:true});
  assert.deepEqual(await page.evaluate(()=>window.__healthQA.writes),[],'navigation produces no writes when disconnected');
+ // Mobile Home owns its header; account controls remain in the sources area.
+ await page.locator('.studyFooter [data-route="dados"]').click();
+ await page.waitForFunction(()=>location.hash==='#dados');
  await page.locator('#logoutBtn').click();await page.locator('#login:not(.hidden)').waitFor();
  assert.equal(await page.locator('#app').evaluate(e=>e.classList.contains('hidden')),true);
  assert.deepEqual(errors,[]);assert.deepEqual(external,[],'no unexpected external request');await page.close();

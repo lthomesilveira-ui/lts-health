@@ -42,6 +42,18 @@ async function stable(page){
   await installProbe(page);
   await page.evaluate(()=>{window.__languageStableRoot=null;window.__languageFrames=0;});
   assert.equal(await (await page.waitForFunction(consumerRouteSettled,{route:'analise',selector:'#calendarReport'})).jsonValue(),true);
+  // The compatibility controller polls every 250 ms after startup. Three RAFs
+  // can precede its last ready-data redraw, which would reset a tile's scroll.
+  // Observe an unchanged report node and geometry beyond one controller cycle;
+  // retain all subsequent no-gap, clipping and incremental-coverage assertions.
+  await page.evaluate(()=>{window.__calendarSettledGeometry=null;});
+  await page.waitForFunction(()=>{
+    const root=document.querySelector('#calendarReport');if(!root)return false;
+    const box=root.getBoundingClientRect(),signature=[box.top,box.left,box.width,box.height,scrollY].join('|');
+    const previous=window.__calendarSettledGeometry;
+    if(!previous||previous.root!==root||previous.signature!==signature){window.__calendarSettledGeometry={root,signature,since:performance.now()};return false;}
+    return performance.now()-previous.since>=350;
+  });
 }
 async function report(page){return page.evaluate(today=>{const {state,calendarReport}=window.__languageApp;return calendarReport(state.data,state.domainStatus,state.ui,today);},CALENDAR_TODAY);}
 async function choose(page,{mode='week',selection='last',date}={}){
