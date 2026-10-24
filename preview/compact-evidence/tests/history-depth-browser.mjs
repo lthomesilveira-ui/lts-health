@@ -11,6 +11,9 @@ db.health_workouts=Array.from({length:36},(_,i)=>({source_record_id:`w-${i}`,wor
 db.health_workout_exercises=db.health_workouts.map((w,i)=>({source_record_id:`ex-${i}`,workout_source_record_id:w.source_record_id,workout_date:w.workout_date,order_index:1,exercise:'Exercício sintético',machine:'Equipamento sintético',source:'Teste'}));
 db.health_workout_sets=db.health_workouts.map((w,i)=>({source_record_id:`s-${i}`,workout_source_record_id:w.source_record_id,exercise_source_record_id:`ex-${i}`,workout_date:w.workout_date,set_index:1,phase:'working',weight:20+i%4,weight_unit:'kg',reps_numeric:10,source:'Teste'}));
 db.health_body_composition=Array.from({length:30},(_,i)=>({source_record_id:`b-${i}`,measured_at:`2024-${i<28?'01':'02'}-${String(i%28+1).padStart(2,'0')}`,source:'Teste',source_file:'synthetic.csv',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30,fat_mass_kg:14,body_water_l:40}));
+// Two invented records form a documented positive-control cohort; the other
+// 28 remain model-unknown and must never acquire comparison eligibility.
+for(const row of db.health_body_composition.slice(0,2))row.device_name='Modelo sintético de teste';
 db.health_segmental_composition=db.health_body_composition.map((r,i)=>({source_record_id:`seg-${i}`,measured_at:r.measured_at,source:'Teste',source_file:'synthetic.csv',lean_right_arm_kg:3,lean_left_arm_kg:3,lean_trunk_kg:20,lean_right_leg_kg:7,lean_left_leg_kg:7,fat_right_arm_kg:1,fat_left_arm_kg:1,fat_trunk_kg:6,fat_right_leg_kg:2,fat_left_leg_kg:2}));
 db.health_lab_results=Array.from({length:22},(_,i)=>Array.from({length:25},(_,j)=>({source_record_id:`lab-${i}-${j}`,biomarker:`Marcador ${String(i+1).padStart(2,'0')}`,collection_date:`2024-01-${String(j+1).padStart(2,'0')}`,laboratory:'Laboratório A sintético',unit:'u',result_numeric:10+j%4,result_raw:String(10+j%4),reference_range:'Faixa sintética',source:'Teste'}))).flat();
 db.health_lab_results.push({source_record_id:'text-only',biomarker:'Marcador textual único',collection_date:'2026-01-01',laboratory:'Laboratório A sintético',result_raw:'Resultado textual sintético',source:'Teste'});
@@ -124,7 +127,16 @@ try{
   await page.waitForSelector('.ltsSegmentTable');assert.equal(await page.locator('.ltsSegmentTable tbody tr').count(),5);await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-measurement.png`});
   await page.locator('[data-depth-composition-back]').last().click();assert.equal(await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().getAttribute('data-depth-composition-record'),'b-0');
-  await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);await overflow(page);
+  assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'all-source observed history does not offer cross-source comparisons');
+  await page.locator('#productCompositionSource').selectOption({label:'Teste'});
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),28,'all model-unknown observations remain visible');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),0,'unknown model cannot create a connected line');
+  assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'unknown model cannot create an automatic difference');
+  await page.locator('#productCompositionSource').selectOption({label:'Modelo sintético de teste'});
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),2,'the documented synthetic cohort is separate');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),1);
+  await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');await page.locator('#productCompareB').selectOption('b-1');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);
+  assert.match(await page.locator('[data-disclosure="product-composition-compare"]').innerText(),/Peso\s*\+1,0 kg/,'positive control compares only the two documented records');await overflow(page);
 
   await goto(page,'analise','.ltsUsefulReports');
   await page.locator('#analysisPeriod').selectOption('all');
