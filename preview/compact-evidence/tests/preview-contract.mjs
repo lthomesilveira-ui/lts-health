@@ -123,7 +123,7 @@ const manifest={
     "src/personal-goals.js": "8451a8c46108fb01124e1774958f4319498a46b8dc991279bd49f381c03b6d3f",
     "src/polar-connection.js": "18ce96581a1449b1f665d694f016c3e2ad8580b1e12cf47f03aa1ea064e9eca4",
     "src/preview-readonly.js": "ca267422b70a50f4bbddb3edfad7f5ed6d7d1bef8edad324e546f043a944a994",
-    "src/product-layout-runtime.js": "3a93788390b46960e6a847248f3a08ec3577817ebaed3cdf75235bd1c6f71901",
+    "src/product-layout-runtime.js": "93304fce0dd6613cb46c7c7d042b070b74db6cf163c5e8c4a905c53780926d7d",
     "src/product-layout-v2.js": "39ced48a76c7a6b01556c7c5c54d73de279bdc06d5f08dabce692d00dd0b1f05",
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "35a8b855e4f1767e385ac243abefa4059352af9d1efb8c6f46a7b07a1dc7c13a",
