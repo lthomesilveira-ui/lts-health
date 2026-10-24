@@ -1,11 +1,16 @@
+import {stepValueText} from './steps-evidence.js';
+import {displaySource} from './source-display.js';
 import {state,esc,day,fmtNum,fmtDate,norm,unique,since,num,workoutRows,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
+import {nutritionArchiveSourceKey} from './nutrition-archive.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
 const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Tempo na cama',sleep_awake_h:'Tempo acordado',sleep_core_h:'Sono leve/Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio informado',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Calorias',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibras',dietary_water_ml:'Água'};
-const domainMap={workouts:'Treinos',body:'Composição corporal',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Métricas confirmadas',sourceMetrics:'Registros aguardando conferência',treatments:'Tratamentos'};
+const domainMap={workouts:'Treinos',body:'Composição corporal',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Atividade e sono',sourceMetrics:'Registros adicionais',treatments:'Tratamentos'};
 const preservedStatuses=new Set(['candidate','held']);
+const domainLabel=value=>({'Métricas confirmadas':'Atividade e sono','Sono em conferência':'Sono · registros adicionais','Hidratação em conferência':'Água · registros adicionais','Alimentação em conferência':'Alimentação · registros adicionais','Métricas em conferência':'Atividade · registros adicionais'})[value]||value;
+const documentLabel=value=>({care_followup:'Acompanhamento de saúde',lab:'Exame',lab_report:'Laudo de exame',laboratory_report:'Laudo de exame',nutrition_plan:'Plano alimentar',medical_report:'Relatório médico',body_composition:'Avaliação corporal'})[value]||(/^[a-z]+(?:_[a-z]+)+$/.test(String(value))?'Documento de saúde':value||'Documento');
 const contextualDomains=new Set(['Documentos','Tratamentos']);
 const sourceMetricOrder=['sleep_duration_h','sleep_in_bed_h','sleep_awake_h','sleep_core_h','sleep_deep_h','sleep_rem_h','sleep_asleep_unspecified_h','steps','resting_heart_rate_bpm','hrv_sdnn_ms','respiratory_rate_bpm','weight_kg','dietary_water_ml','dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g'];
 const monthNames=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -23,7 +28,7 @@ function sourceDisplay(source='',family=''){
   if(text.includes('workout log')||text.includes('user-reported'))return'Registro de treino';
   if(text.includes('claude migration')||text.includes('lab report'))return'Exame importado';
   if(text==='projeto'||text==='conversa'||text.includes('chatgpt'))return'Histórico LTS Health';
-  return String(source||family||'Origem registrada');
+  return displaySource(source,family);
 }
 function bodyEventTitle(row){
   const parts=[];
@@ -35,7 +40,7 @@ function bodyEventSub(row){return num(row.body_fat_pct)!=null?`Gordura corporal 
 function metricValueText(row){
   const value=num(row.value),type=String(row.metric_type||'');
   if(value==null)return'Registro disponível';
-  if(type==='steps')return`${fmtNum(value,0)} passos`;
+  if(type==='steps')return stepValueText(row.value);
   if(type==='resting_heart_rate_bpm')return`${fmtNum(value,0)} bpm`;
   if(type==='hrv_sdnn_ms')return`${fmtNum(value,0)} ms`;
   if(type==='respiratory_rate_bpm')return`${fmtNum(value,1)} resp./min`;
@@ -79,7 +84,7 @@ function sourceMetricEvents(rows=[]){
       return ar-br||String(a.metric_type).localeCompare(String(b.metric_type));
     });
     const preview=ordered.slice(0,4).map(sourceMetricDetail),more=ordered.length>preview.length?` · + ${countLabel(ordered.length-preview.length,'outro registro','outros registros')}`:'';
-    return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more} · aguardando conferência; mantido separado dos dados confirmados`,source:group.source};
+    return{date:group.date,domain:group.domain,title:group.title,sub:`${preview.join(' · ')}${more}`,note:'Registros adicionais desta origem. Permanecem separados das outras versões e não são somados nos cruzamentos entre áreas.',source:group.source};
   });
 }
 function labCollectionIdentity(row,index){
@@ -116,12 +121,13 @@ function events(){
     }
     for(const [key,c] of collections)out.push({date:c.date,domain:'Exames',title:'Coleta de exames',sub:countLabel(c.rows.length,'resultado','resultados'),source:c.lab||sourceDisplay(c.source),route:'saude',kind:'labs',ref:key});
   }
-  if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||d.document_type||'Documento',sub:d.document_type||'',source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
+  if(!failed('docs'))for(const d of state.data.docs||[])out.push({date:d.document_date,domain:'Documentos',title:d.title||documentLabel(d.document_type),sub:documentLabel(d.document_type),source:sourceDisplay(d.source),route:'saude',kind:'document',ref:d.source_record_id||''});
   if(!failed('nutrition')){
-    const rows=state.data.nutrition||[],ambiguous=ambiguousDateSet(rows,'nutrition_date');
+    const rows=state.data.nutrition||[],counts=new Map();
+    for(const row of rows){const key=JSON.stringify([day(row.nutrition_date),nutritionArchiveSourceKey(row.source)]);counts.set(key,(counts.get(key)||0)+1);}
     for(const n of rows){
-      const review=ambiguous.has(String(n.nutrition_date||''));
-      out.push({date:n.nutrition_date,domain:'Alimentação',title:review?'Alimentação em revisão':n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:review?'Mais de um total diário nesta data; valores preservados sem escolha automática.':n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'',source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.nutrition_date});
+      const sourceKey=String(n.source||'').trim()?nutritionArchiveSourceKey(n.source):'',review=counts.get(JSON.stringify([day(n.nutrition_date),sourceKey]))>1;
+      out.push({date:n.nutrition_date,domain:'Alimentação',title:review?'Alimentação em revisão':n.calories_kcal==null?'Alimentação registrada':`${fmtNum(n.calories_kcal,0)} kcal registradas`,sub:review?'Mais de um total diário nesta data; valores preservados sem escolha automática.':n.protein_g!=null?`${fmtNum(n.protein_g,0)} g de proteína`:'',source:sourceDisplay(n.source),route:'nutricao',kind:'nutrition',ref:n.source_record_id||'',sourceKey});
     }
   }
   if(!failed('activity'))for(const a of state.data.activity||[]){const detail=[a.duration_minutes!=null?`${fmtNum(a.duration_minutes,0)} min`:null,a.steps!=null?`${fmtNum(a.steps,0)} passos`:null,a.calories_kcal!=null?`${fmtNum(a.calories_kcal,0)} kcal`:null].filter(Boolean).join(' · ');out.push({date:a.activity_date,domain:'Atividade',title:a.activity_name||a.activity_type||'Atividade registrada',sub:detail,source:sourceDisplay(a.source)});}
@@ -131,8 +137,8 @@ function events(){
   return out.filter(e=>e.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(a.domain).localeCompare(String(b.domain),'pt-BR'));
 }
 function item(e){
-  const body=`<span>${esc(e.domain)}</span><div><b>${esc(e.title)}</b>${e.sub?`<small>${esc(e.sub)}</small>`:''}${e.source?`<em>${esc(e.source)}</em>`:''}</div>`;
-  return e.route?`<button type="button" class="timelineItem rich timelineLink" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}">${body}</button>`:`<div class="timelineItem rich">${body}</div>`;
+  const body=`<span>${esc(domainLabel(e.domain))}</span><div><b>${esc(e.title)}</b>${e.sub?`<small>${esc(e.sub)}</small>`:''}${e.source?`<em>${esc(e.source)}</em>`:''}${e.note?`<details><summary>Sobre estes dados</summary><p>${esc(e.note)}</p></details>`:''}</div>`;
+  return e.route?`<button type="button" class="timelineItem rich timelineLink" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" data-timeline-source="${esc(e.sourceKey||'')}">${body}</button>`:`<div class="timelineItem rich">${body}</div>`;
 }
 function crossDomainDays(rows){
   const evidenceRows=rows.filter(e=>!String(e.domain||'').endsWith(' em conferência')&&!contextualDomains.has(e.domain));
@@ -141,16 +147,16 @@ function crossDomainDays(rows){
   return [...byDate.entries()].map(([date,dayRows])=>({date,rows:dayRows,domains:unique(dayRows.map(r=>r.domain)).sort((a,b)=>a.localeCompare(b,'pt-BR'))})).filter(x=>x.domains.length>=2).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
 }
 function contextRow(e){
-  const body=`<strong>${esc(e.domain)}</strong><span>${esc(e.title)}</span>`;
-  return e.route?`<button type="button" class="timelineContextJump" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" aria-label="Abrir ${esc(e.domain)} de ${esc(fmtDate(e.date))}">${body}</button>`:`<div>${body}</div>`;
+  const body=`<strong>${esc(domainLabel(e.domain))}</strong><span>${esc(e.title)}</span>`;
+  return e.route?`<button type="button" class="timelineContextJump" data-timeline-jump data-timeline-route="${esc(e.route)}" data-timeline-kind="${esc(e.kind||'')}" data-timeline-ref="${esc(e.ref||'')}" data-timeline-date="${esc(e.date)}" data-timeline-source="${esc(e.sourceKey||'')}" aria-label="Abrir ${esc(domainLabel(e.domain))} de ${esc(fmtDate(e.date))}">${body}</button>`:`<div>${body}</div>`;
 }
 function crossDomainCard(entry){
   const preview=[...entry.rows].sort((a,b)=>Number(!!b.route)-Number(!!a.route)||String(a.domain).localeCompare(String(b.domain),'pt-BR')).slice(0,4);
-  return `<article class="timelineContextCard"><div class="timelineContextHead"><div><b>${fmtDate(entry.date)}</b><span>${countLabel(entry.domains.length,'área com registros','áreas com registros')}</span></div><div class="timelineDomainChips">${entry.domains.map(d=>`<span>${esc(d)}</span>`).join('')}</div></div><div class="timelineContextRows">${preview.map(contextRow).join('')}</div>${entry.rows.length>preview.length?`<small>+ ${countLabel(entry.rows.length-preview.length,'registro neste dia','registros neste dia')}</small>`:''}</article>`;
+  return `<article class="timelineContextCard"><div class="timelineContextHead"><div><b>${fmtDate(entry.date)}</b><span>${countLabel(entry.domains.length,'área com registros','áreas com registros')}</span></div><div class="timelineDomainChips">${entry.domains.map(d=>`<span>${esc(domainLabel(d))}</span>`).join('')}</div></div><div class="timelineContextRows">${preview.map(contextRow).join('')}</div>${entry.rows.length>preview.length?`<small>+ ${countLabel(entry.rows.length-preview.length,'registro neste dia','registros neste dia')}</small>`:''}</article>`;
 }
 function domainSummary(rows,missing){
   const counts=new Map();for(const row of rows)counts.set(row.domain,(counts.get(row.domain)||0)+1);
-  const cards=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'pt-BR')).map(([domain,count])=>`<div class="timelineStat"><b>${count}</b><span>${esc(domain)}</span></div>`).join('');
+  const cards=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'pt-BR')).map(([domain,count])=>`<div class="timelineStat"><b>${count}</b><span>${esc(domainLabel(domain))}</span></div>`).join('');
   return `<div class="timelineStats">${cards||'<div class="timelineStat muted"><b>—</b><span>Nenhum registro carregado neste período</span></div>'}${missing.length?'<div class="timelineStat muted"><b>—</b><span>Resumo parcial</span></div>':''}</div>`;
 }
 function monthLabel(value){const index=Number(value)-1;return monthNames[index]||value;}
@@ -176,11 +182,11 @@ export function renderTimelineHub(){
   const contextDays=crossDomainDays(periodRows).slice(0,6);
   const historicalControls=period==='all'?`<select id="timelineYear" aria-label="Ano da Timeline">${years.map(y=>`<option value="${esc(y)}">${esc(y)}</option>`).join('')}</select><select id="timelineMonth" aria-label="Mês da Timeline"><option value="all">Todos os meses</option>${months.map(m=>`<option value="${esc(m)}">${esc(monthLabel(m))}</option>`).join('')}</select>${month!=='all'?`<select id="timelineDate" aria-label="Dia da Timeline"><option value="">Todos os dias</option>${dates.map(d=>`<option value="${esc(d)}">${esc(fmtDate(d))}</option>`).join('')}</select>`:''}`:'';
   const scopeLabel=selectedDate?` em ${fmtDate(selectedDate)}`:period==='all'&&state.ui.timelineYear?` em ${esc(month!=='all'?`${monthLabel(month)} de ${state.ui.timelineYear}`:state.ui.timelineYear)}`:cut?' no período':'';
-  return `${title('Timeline','Seu histórico em ordem de data. Registros que ainda precisam de conferência aparecem como existentes, mas ficam separados dos dados já confirmados.')}
+  return `${title('Timeline','Seus treinos, exames e outros registros, organizados por data.')}
     ${missing.length?`<div class="errorState"><b>Parte da Timeline está indisponível agora.</b><span>Não foi possível carregar: ${esc(missing.join(', '))}. Os registros das outras áreas continuam visíveis; atualize para tentar completar a Timeline.</span></div>`:''}
     ${domainSummary(periodRows,missing)}
-    <section class="timelineContext sectionGap"><div class="sectionHeading"><div><h2>Visão cruzada por dia</h2><p>Dias em que existem registros confirmados de duas ou mais áreas de saúde. Documentos, tratamentos e itens em conferência continuam no histórico, mas não criam sozinhos uma relação cruzada. Toque em um registro para abrir o detalhe. A proximidade na data ajuda a consultar o contexto, mas não demonstra causa entre os registros.</p></div></div>${contextDays.length?`<div class="timelineContextGrid">${contextDays.map(crossDomainCard).join('')}</div>`:empty(missing.length?'Não há dias cruzados entre as áreas que foram carregadas.':'Ainda não há dias com registros confirmados em mais de uma área neste período.')}</section>
-    <div class="controls sectionGap"><select id="timelinePeriod"><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Histórico</option></select>${historicalControls}<select id="timelineDomain">${domains.map(d=>`<option value="${esc(d)}">${d==='all'?'Todas as áreas':esc(d)}</option>`).join('')}</select><input id="timelineQuery" type="search" placeholder="Buscar no histórico" value="${esc(state.ui.timelineQuery)}"></div>
+    <section class="timelineContext sectionGap"><div class="sectionHeading"><div><h2>Visão cruzada por dia</h2><p>Veja registros de diferentes áreas no mesmo dia. Toque para abrir os detalhes. A proximidade das datas não explica, por si só, uma mudança na saúde.</p></div></div>${contextDays.length?`<div class="timelineContextGrid">${contextDays.map(crossDomainCard).join('')}</div>`:empty(missing.length?'Não há dias cruzados entre as áreas que foram carregadas.':'Ainda não há dias com registros comparáveis de mais de uma área neste período.')}</section>
+    <div class="controls sectionGap"><select id="timelinePeriod"><option value="90">90 dias</option><option value="365">1 ano</option><option value="all">Histórico</option></select>${historicalControls}<select id="timelineDomain">${domains.map(d=>`<option value="${esc(d)}">${d==='all'?'Todas as áreas':esc(domainLabel(d))}</option>`).join('')}</select><input id="timelineQuery" type="search" placeholder="Buscar no histórico" value="${esc(state.ui.timelineQuery)}"></div>
     <div class="timelineSummary"><b>${filtered.length}</b><span>de ${countLabel(matching.length,'registro encontrado','registros encontrados')}${scopeLabel}${missing.length?' entre as áreas carregadas':''}</span></div>
     <div class="timelineGroups sectionGap">${[...grouped.entries()].map(([date,rows])=>`<section class="timelineDay"><div class="timelineDate"><b>${fmtDate(date)}</b><span>${countLabel(rows.length,'registro','registros')}</span></div><div class="card timelineDayCard">${rows.map(item).join('')}</div></section>`).join('')||empty(missing.length?'Nenhum dos registros carregados corresponde aos filtros.':'Nenhum registro corresponde aos filtros.')}</div>
     ${matching.length>filtered.length?`<div class="loadMore"><button type="button" data-timeline-more>Mostrar mais ${Math.min(50,matching.length-filtered.length)} registros</button></div>`:''}`;

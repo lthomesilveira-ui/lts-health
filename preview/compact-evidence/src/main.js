@@ -1,3 +1,4 @@
+import {dashboardChangeAction} from './dashboard-changes.js';
 import {printCalendarReport,updateCalendarReportSelection} from './calendar-report-view.js';
 import {userFacingError} from './user-facing-errors.js';
 import {bodyIntervalModel} from './body-interval-model.js';
@@ -229,8 +230,15 @@ function bindStaticEvents(){
     if(dashboardChart){const box=dashboardChart.getBoundingClientRect(),start=dashboardChart.dataset.start,end=dashboardChart.dataset.end;const span=Math.round((Date.parse(end)-Date.parse(start))/86400000),fraction=Math.min(1,Math.max(0,((event.clientX-box.left)/box.width*286-5)/276));state.ui.dashboardMode='day';state.ui.dashboardDate=event.detail===0?dashboardChart.dataset.last:new Date(Date.parse(start)+Math.round(fraction*span)*86400000).toISOString().slice(0,10);render();document.getElementById('dashboard-date')?.focus({preventScroll:true});resetRouteScroll();return;}
     const dashboardDay=event.target.closest('[data-dashboard-day]');
     if(dashboardDay){state.ui.dashboardMode='day';state.ui.dashboardDate=dashboardDay.dataset.dashboardDay;render();document.getElementById('dashboard-date')?.focus({preventScroll:true});resetRouteScroll();return;}
+    const dashboardChange=event.target.closest('[data-dashboard-change]');
+    if(dashboardChange){
+      const action=dashboardChangeAction(dashboardChange.dataset.dashboardChange,state.data,state.domainStatus,state.ui);
+      if(action){Object.assign(state.ui,action.ui);setRoute(action.route,{replace:false});}else render();
+      return;
+    }
+    if(event.target.closest('[data-lab-clear-asof]')){state.ui.productLabAsOf=null;render();return;}
     const dashboardLab=event.target.closest('[data-dashboard-lab]');
-    if(dashboardLab){try{Object.assign(state.ui,JSON.parse(dashboardLab.dataset.dashboardLab));}catch{event.preventDefault();return;}}
+    if(dashboardLab){try{state.ui.productLabAsOf=null;Object.assign(state.ui,JSON.parse(dashboardLab.dataset.dashboardLab));}catch{event.preventDefault();return;}}
     const haeCheck=event.target.closest('[data-hae-check]');
     if(haeCheck){haeCheck.disabled=true;await checkAutoExportConnection();if(state.autoExportConnection?.received)await refreshData(state.route,setSync);scheduleRender();return;}
     const haeAction=event.target.closest('[data-hae-action]');

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'',assign(){throw new Error('No navigation expected');}};
+let calls=[],response={configured:true,connected:true,last_attempt_at:new Date().toISOString()};
+const client={functions:{async invoke(name,args){calls.push({name,...args.body});return {data:args.body.action==='sync'?{synced:true}:response,error:null};}}};
+globalThis.window={supabase:{createClient:()=>client}};
+const {state}=await import('./src/core.js');
+const {checkPolarConnection,resetPolarConnection}=await import('./src/polar-connection.js');
+const {checkAutoExportConnection,resetAutoExportConnection}=await import('./src/health-auto-export-connection.js');
+await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0,'absent owner does not call integrations');
+state.session={user:{id:'synthetic-owner'}};
+await checkPolarConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'manual check is read-only');
+calls=[];await checkPolarConnection({syncOnOpen:true});assert.deepEqual(calls.map(c=>c.action),['status'],'recent connection does not sync again');
+calls=[];response={configured:true,connected:false};await checkPolarConnection({syncOnOpen:true});assert.deepEqual(calls.map(c=>c.action),['status'],'disconnected account never initiates access or sync');
+calls=[];response={configured:true,connected:true,last_attempt_at:'2000-01-01T00:00:00Z'};await checkPolarConnection({syncOnOpen:true});assert.deepEqual(calls.map(c=>c.action),['status','sync','status']);assert.equal(calls[1].trigger,'app_open','existing production refresh behavior retained, not expanded');
+calls=[];response={configured:false,received:false};await checkAutoExportConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'receiver check never creates or rotates a credential');
+resetPolarConnection();resetAutoExportConnection();state.session=null;calls=[];await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0);
+console.log('Production integration status reads, absent-owner and disconnected boundaries, existing bounded Polar refresh and no implicit credential creation passed.');

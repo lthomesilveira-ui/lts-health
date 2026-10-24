@@ -1,3 +1,4 @@
+import {stepCountReview} from './steps-evidence.js';
 import {state,esc,day,fmtDate,fmtNum,num,norm,unique,countLabel,periodLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
 import {
@@ -31,16 +32,17 @@ export function complementarySignalSeries(rows,bounds={start:null,end:null}){
     const value=num(row?.value),date=day(row?.metric_date),unit=String(row?.unit||'').trim()||'unidade não informada';
     if(value==null||!date)continue;
     const family=String(row?.source_family||'other'),identity=String(row?.source_name||row?.source_family||'Outra origem'),key=`${family}\u0000${identity}\u0000${metric}\u0000${unit}`;
-    if(!groups.has(key))groups.set(key,{family,identity,metric,unit,rows:[]});
-    groups.get(key).rows.push({date,value});
+    if(!groups.has(key))groups.set(key,{family,identity,metric,unit,rows:[],reviewRows:[]});
+    if(metric==='steps'&&stepCountReview(row.value).reason)groups.get(key).reviewRows.push({date,value:row.value});
+    groups.get(key).rows.push({date,value:metric==='steps'?row.value:value});
   }
   const series=[];
   for(const group of groups.values()){
     const byDate=new Map();
     for(const row of group.rows){if(!byDate.has(row.date))byDate.set(row.date,[]);byDate.get(row.date).push(row.value);}
-    const points=[...byDate.entries()].filter(([,values])=>values.length===1).map(([date,values])=>({date,value:values[0]})).sort((a,b)=>a.date.localeCompare(b.date));
-    const reviewDays=[...byDate.values()].filter(values=>values.length!==1).length;
-    if(!points.length)continue;
+    const points=[...byDate.entries()].filter(([,values])=>values.length===1&&(group.metric!=='steps'||!stepCountReview(values[0]).reason)).map(([date,values])=>({date,value:num(values[0])})).sort((a,b)=>a.date.localeCompare(b.date));
+    const reviewDays=new Set([...byDate.entries()].filter(([,values])=>values.length!==1).map(([date])=>date).concat(group.reviewRows.map(row=>row.date))).size;
+    if(!points.length&&!group.reviewRows.length)continue;
     series.push({...group,points,reviewDays,first:points[0],last:points.at(-1),baseLabel:complementarySourceLabels[group.family]||'Outra origem'});
   }
   return series.sort((a,b)=>a.metric.localeCompare(b.metric)||a.baseLabel.localeCompare(b.baseLabel,'pt-BR'));

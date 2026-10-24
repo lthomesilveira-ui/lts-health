@@ -1,4 +1,16 @@
 /* Canonical Training surface. It intentionally does not invent HR zones or time-series evidence. */
+.ltsRefSessionComment{margin-top:16px;padding:12px 14px;border-radius:12px;background:#f1f5f9;color:#25354a;overflow-wrap:anywhere}
+.ltsRefSessionComment>b{font-size:12px}
+.ltsRefSessionComment>p{margin:6px 0 0;white-space:pre-wrap;font-size:14px;line-height:1.55;color:#25354a}
+.ltsRefSessionContext{margin-top:12px;border-top:1px solid #d9e1e9;min-width:0;color:#25354a}
+.ltsRefSessionContext>summary{display:flex;align-items:center;min-height:44px;padding:10px 0;cursor:pointer;font-size:13px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.ltsRefSessionContext>summary::before{content:'›';margin-right:8px;font-size:18px;flex:0 0 auto}
+.ltsRefSessionContext[open]>summary::before{transform:rotate(90deg)}
+.ltsRefSessionGroups{list-style:none;padding:0;margin:4px 0 12px;display:grid;gap:10px}
+.ltsRefSessionGroups>li{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.ltsRefSessionGroups>li>small{color:#516277;font-size:12px}
+.ltsRefSessionContextNote{font-size:12px!important;line-height:1.55!important;color:#516277!important;margin:10px 0!important;overflow-wrap:anywhere}
+.ltsRefSessionOriginal{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px!important;line-height:1.6!important;color:#25354a!important;margin:8px 0 12px!important}
 .ltsTrainingReference {
   display: grid;
   width: 100%;
