@@ -13,7 +13,7 @@ if(!fixtureMode){
   let applying=false,pollTimer=null,pollStarted=0,lastData=null,lastRoute=null;
   const route=()=>location.hash.replace(/^#/,'')||state.route||'hoje';
   const pageFields=new Set(['productTrainingPage','productLabPage','productCompositionPage','productExercisePage']);
-  const textFields=new Set(['productTrainingQuery','productLabQuery']);
+  const textFields=new Set(['productTrainingQuery','productLabQuery','productExerciseQuery']);
   const selectFields=new Set(['productTrainingYear','productLabCollection','productLabCohort','productLabMarkerSelect','productCompositionSource','productCompositionYear','productCompareA','productCompareB','productExerciseUnit','productLabPoint','productCompositionPoint','productExercisePoint']);
   function ownRouteAction(key){
     const action=document.getElementById('routeAction');if(!renderers[key]||!action)return;
@@ -87,6 +87,7 @@ if(!fixtureMode){
     document.addEventListener('change',event=>{if(selectFields.has(event.target.dataset?.depthField))fieldChanged(event.target);});
     document.addEventListener('click',event=>{
       const target=event.target instanceof Element?event.target:null;if(!target)return;
+      const jump=target.closest('[data-ux-scroll]');if(jump&&['productCompositionHistory','productCompositionTrend','productLabsTrend','productLabsHistory','productLabsCollection'].includes(jump.dataset.uxScroll)){const el=document.getElementById(jump.dataset.uxScroll);if(el){el.scrollIntoView({block:'start'});const heading=el.querySelector('h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}}return;}
       const metric=target.closest('[data-composition-metric]');
       if(metric&&route()==='bio'){state.ui.productCompositionMetric=metric.dataset.compositionMetric;state.ui.productCompositionPoint=null;redraw();return;}
       const marker=target.closest('[data-lab-marker]');if(marker&&route()==='saude'){selectMarker(marker.dataset.labMarker);return;}
@@ -103,7 +104,7 @@ if(!fixtureMode){
       if(page&&pageFields.has(page.dataset.depthPage)&&!page.disabled){state.ui[page.dataset.depthPage]=Math.max(1,Number(page.dataset.page)||1);redraw();return;}
       const period=target.closest('[data-depth-period]');
       if(period&&['productLabPeriod','productCompositionPeriod'].includes(period.dataset.depthPeriod)&&['30','90','365','all'].includes(period.dataset.value)){
-        const key=period.dataset.depthPeriod;if(key==='productLabPeriod')state.ui.productLabAsOf=null;setGlobalPeriod(period.dataset.value);if(['30','90','all'].includes(period.dataset.value))state.ui.dashboardPeriod=period.dataset.value;state.ui[key.replace('Period','Point')]=null;redraw();return;
+        const key=period.dataset.depthPeriod;if(key==='productLabPeriod')state.ui.productLabAsOf=null;state.ui[key]=period.dataset.value;state.ui[key.replace('Period','Point')]=null;redraw();return;
       }
       if(target.closest('[data-depth-clear="training"]')){state.ui.productTrainingQuery='';state.ui.productTrainingYear='all';state.ui.productTrainingPage=1;redraw();return;}
       const nav=target.closest('[data-route]');

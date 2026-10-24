@@ -26,44 +26,69 @@ jobs:
         run: node preview/compact-evidence/tests/preview-contract.mjs
       - name: Verify candidate analytical contracts with synthetic data
         run: |
-          for test in care-nutrition-status dashboard-changes steps-evidence health-dashboard-model health-dashboard-body health-dashboard-labs health-dashboard-training health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation documented-nutrition-plan nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-archive nutrition-history-access consumer-health-copy consumer-diagnostics consumer-language training-session-summary training-session-summary-view lab-shared-reading lab-consumer-consistency lab-history-conflicts documentary-numeric-reading calendar-report-model calendar-report-view; do
+          for test in source-window-service source-window-selection evolution-access lab-history-access care-nutrition-status dashboard-changes steps-evidence health-dashboard-model health-dashboard-body health-dashboard-labs health-dashboard-training health-dashboard-empty-history health-dashboard-context health-dashboard-guidance health-dashboard-render mobile-study study-findings home-lab-history home-useful-content home-useful-render nutrition-reviewed-integration body-interval-model body-interval-view documented-water-reference documentary-water-consumers water-reference-consumers training-comparability training-phase-label evidence-insights integrated-review evolution-period-contract evolution-product final-evolution home-evidence-insights personal-goals-preservation documented-nutrition-plan nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-archive nutrition-history-access consumer-health-copy consumer-diagnostics consumer-language training-session-summary training-session-summary-view lab-shared-reading lab-consumer-consistency lab-history-conflicts documentary-numeric-reading calendar-report-model calendar-report-view; do
             node "preview/compact-evidence/tests/${test}-test.mjs"
           done
       - name: Install existing pinned browser runtime
         run: |
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
       - name: Serve repository without changing production
+        id: app_server
         run: |
           python3 -m http.server 4173 >/tmp/health-preview-server.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
       - name: Verify substantive changes and exact drilldowns
-        run: node preview/compact-evidence/tests/dashboard-changes-browser.mjs
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: |
+          node preview/compact-evidence/tests/dashboard-changes-browser.mjs
+      - name: Verify period-aware source selection and preserved daily cards
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: node preview/compact-evidence/tests/source-window-browser.mjs
+      - name: Verify observed body and exercise history navigation
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: node preview/compact-evidence/tests/evolution-access-browser.mjs
+      - name: Verify discoverable laboratory search and history
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: node preview/compact-evidence/tests/lab-history-access-browser.mjs
       - name: Verify signed-out boundary
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/mobile-study-auth.mjs
       - name: Verify plain-language health screens and failure states
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/consumer-language-browser.mjs
       - name: Verify recorded session context on mobile and desktop
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/training-session-summary-browser.mjs
       - name: Verify consistent laboratory readings and original histories
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/lab-reading-consistency-browser.mjs
       - name: Verify bound documentary readings without changing original results
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/documentary-numeric-reading-browser.mjs
       - name: Verify full histories in preview route
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/history-depth-browser.mjs
       - name: Verify steps quality and daily source evidence
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/steps-evidence-browser.mjs
       - name: Verify preview periods, sources, routes and responsive layout
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/health-dashboard-browser.mjs
       - name: Verify documentary nutrition comparisons and responsive details
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/nutrition-plan-browser.mjs
       - name: Verify full dietary archive, historical routes and responsive navigation
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/nutrition-history-access-browser.mjs
       - name: Verify reviewed blood-count readings and raw values
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/reviewed-blood-count-browser.mjs
       - name: Verify interval navigation and complete contextual evidence
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/body-interval-browser.mjs
       - name: Verify equivalent recorded training conditions
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/evidence-insights-browser.mjs
       - name: Upload synthetic-only preview evidence
         if: always()
@@ -72,6 +97,9 @@ jobs:
           name: isolated-preview-synthetic-visual
           path: |
             dashboard-changes-visual/
+            source-window-visual/*
+            evolution-access-visual/*.png
+            lab-history-access-visual/*
             nutrition-plan-visual
             nutrition-history-access-visual
             consumer-language-visual

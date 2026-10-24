@@ -11,6 +11,9 @@ db.health_workouts=Array.from({length:36},(_,i)=>({source_record_id:`w-${i}`,wor
 db.health_workout_exercises=db.health_workouts.map((w,i)=>({source_record_id:`ex-${i}`,workout_source_record_id:w.source_record_id,workout_date:w.workout_date,order_index:1,exercise:'Exercício sintético',machine:'Equipamento sintético',source:'Teste'}));
 db.health_workout_sets=db.health_workouts.map((w,i)=>({source_record_id:`s-${i}`,workout_source_record_id:w.source_record_id,exercise_source_record_id:`ex-${i}`,workout_date:w.workout_date,set_index:1,phase:'working',weight:20+i%4,weight_unit:'kg',reps_numeric:10,source:'Teste'}));
 db.health_body_composition=Array.from({length:30},(_,i)=>({source_record_id:`b-${i}`,measured_at:`2024-${i<28?'01':'02'}-${String(i%28+1).padStart(2,'0')}`,source:'Teste',source_file:'synthetic.csv',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30,fat_mass_kg:14,body_water_l:40}));
+// Two invented records form a documented positive-control cohort; the other
+// 28 remain model-unknown and must never acquire comparison eligibility.
+for(const row of db.health_body_composition.slice(0,2))row.device_name='Modelo sintético de teste';
 db.health_segmental_composition=db.health_body_composition.map((r,i)=>({source_record_id:`seg-${i}`,measured_at:r.measured_at,source:'Teste',source_file:'synthetic.csv',lean_right_arm_kg:3,lean_left_arm_kg:3,lean_trunk_kg:20,lean_right_leg_kg:7,lean_left_leg_kg:7,fat_right_arm_kg:1,fat_left_arm_kg:1,fat_trunk_kg:6,fat_right_leg_kg:2,fat_left_leg_kg:2}));
 db.health_lab_results=Array.from({length:22},(_,i)=>Array.from({length:25},(_,j)=>({source_record_id:`lab-${i}-${j}`,biomarker:`Marcador ${String(i+1).padStart(2,'0')}`,collection_date:`2024-01-${String(j+1).padStart(2,'0')}`,laboratory:'Laboratório A sintético',unit:'u',result_numeric:10+j%4,result_raw:String(10+j%4),reference_range:'Faixa sintética',source:'Teste'}))).flat();
 db.health_lab_results.push({source_record_id:'text-only',biomarker:'Marcador textual único',collection_date:'2026-01-01',laboratory:'Laboratório A sintético',result_raw:'Resultado textual sintético',source:'Teste'});
@@ -44,6 +47,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await overflow(page);
+  const independentBefore=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return [state.ui.productCompositionPeriod,state.ui.productLabPeriod];});
   await page.locator('[data-home-period-select]').selectOption('all');
   await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='all');await stableHome(page);
   assert.equal(await page.locator('.studyCard.body').count(),1,'one shared body panel');
@@ -57,7 +61,8 @@ try{
    assert.equal(await row.locator('em').innerText(),delta);
   }
   const periods=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return ['homePeriod','analysisPeriod','trainingPeriod','nutritionPeriod','productCompositionPeriod','productLabPeriod'].map(key=>state.ui[key]);});
-  assert.deepEqual(periods,Array(6).fill('all'),'Home selection propagates one calendar to every domain');
+  assert.deepEqual(periods.slice(0,4),Array(4).fill('all'),'Home retains its shared training/nutrition/analysis calendar');
+  assert.deepEqual(periods.slice(4),independentBefore,'Home selection must not assign or overwrite body/lab windows');
   await page.locator('.studyCard.body details>summary').click();
   assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'original assessments remain reachable from the body summary');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
@@ -85,7 +90,7 @@ try{
   await page.locator('[data-depth-clear="training"]').click();await page.locator('#productTrainingYear').selectOption('2025');assert.equal(await page.locator('[data-training-total]').getAttribute('data-training-total'),'18');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-training-history.png`});
 
-  await goto(page,'saude','.ltsLabsV2');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
+  await goto(page,'saude','.ltsLabsV2');assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Exames opens its own full-history default');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
   assert.equal(await page.locator('#productLabMarkerSelect option').count(),24,'all 23 markers plus placeholder');
   await page.locator('#productLabMarkerSelect').selectOption('marcador textual unico');
   assert.ok((await page.locator('.ltsLabsHero').innerText()).includes('Resultado textual sintético'));assert.equal(await page.locator('.ltsDepthLine').count(),0);
@@ -101,7 +106,7 @@ try{
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-labs.png`});
 
   await goto(page,'bio','.ltsCompositionV2 .ltsCompositionHero');
-  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition inherits the Home historical calendar');
+  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition opens its own full-history default');
   await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),30);
   // Home intentionally shows a readable pair. Full raw series live in Composition.
   for(const [metric,label] of [['fat_mass_kg','fat'],['skeletal_muscle_mass_kg','muscle']]){
@@ -110,7 +115,10 @@ try{
   }
   await page.locator('#productCompositionPoint').selectOption('9');
   assert.equal(await page.locator('#productCompositionPoint').inputValue(),'9');
-  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'10/01/2024','an older measurement can be selected directly');
+  assert.equal(await page.locator('#productCompositionPoint option:checked').innerText(),'10/01/2024','an older measurement can be selected directly by its original date');
+  assert.equal(await page.locator('.ltsCompositionChart circle.selected title').textContent(),'10/01/2024: 30,0 kg','selected point binds that date to the original observed value');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] b').innerText(),'30,0 kg');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'Teste','selected point exposes its original source, not an invented device');
   await page.locator('#productCompositionPoint').focus();await page.locator('#productCompositionPoint').press('ArrowDown');
   assert.equal(await page.locator('#productCompositionPoint').evaluate(el=>el===document.activeElement),true,'historical measurement selector retains keyboard focus');
   await page.locator('[data-composition-metric="weight_kg"]').click();assert.equal(await page.locator('[data-composition-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
@@ -119,7 +127,16 @@ try{
   await page.waitForSelector('.ltsSegmentTable');assert.equal(await page.locator('.ltsSegmentTable tbody tr').count(),5);await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-measurement.png`});
   await page.locator('[data-depth-composition-back]').last().click();assert.equal(await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().getAttribute('data-depth-composition-record'),'b-0');
-  await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);await overflow(page);
+  assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'all-source observed history does not offer cross-source comparisons');
+  await page.locator('#productCompositionSource').selectOption({label:'Teste'});
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),28,'all model-unknown observations remain visible');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),0,'unknown model cannot create a connected line');
+  assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'unknown model cannot create an automatic difference');
+  await page.locator('#productCompositionSource').selectOption({label:'Modelo sintético de teste'});
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),2,'the documented synthetic cohort is separate');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),1);
+  await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');await page.locator('#productCompareB').selectOption('b-1');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);
+  assert.match(await page.locator('[data-disclosure="product-composition-compare"]').innerText(),/Peso\s*\+1,0 kg/,'positive control compares only the two documented records');await overflow(page);
 
   await goto(page,'analise','.ltsUsefulReports');
   await page.locator('#analysisPeriod').selectOption('all');

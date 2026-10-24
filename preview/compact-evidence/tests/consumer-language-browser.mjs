@@ -157,20 +157,21 @@ async function labChecks(page,f,label){
 }
 async function evolutionChecks(page,label){
   const metrics=['weight_kg','skeletal_muscle_mass_kg','fat_mass_kg','body_fat_pct'],proof=[];
-  assert.equal(await page.locator('[data-evolution-metric]').count(),metrics.length);
+  assert.equal(await page.locator('[data-evolution-overview-metric]').count(),metrics.length);
   for(const key of metrics){
-    const control=page.locator(`[data-evolution-metric="${key}"]`);
+    const control=page.locator(`[data-evolution-overview-metric="${key}"]`);
     const result=await control.evaluate(el=>{
-      const strip=el.closest('.segmented'),before=strip.scrollLeft;
+      const strip=el.closest('.ltsCompositionTabs'),before=strip.scrollLeft;
       el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});
       const b=el.getBoundingClientRect(),s=strip.getBoundingClientRect(),left=Math.max(0,s.left+strip.clientLeft),right=Math.min(innerWidth,s.left+strip.clientLeft+strip.clientWidth),hit=document.elementFromPoint((b.left+b.right)/2,(b.top+b.bottom)/2);
-      return {key:el.dataset.evolutionMetric,text:el.innerText,before,after:strip.scrollLeft,scrollWidth:strip.scrollWidth,clientWidth:strip.clientWidth,overflowX:getComputedStyle(strip).overflowX,box:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},clip:{left,right},fullyReachable:b.left>=left-1&&b.right<=right+1&&b.top>=0&&b.bottom<=innerHeight&&!!hit&&(hit===el||el.contains(hit))};
+      return {key:el.dataset.evolutionOverviewMetric,text:el.innerText,before,after:strip.scrollLeft,scrollWidth:strip.scrollWidth,clientWidth:strip.clientWidth,overflowX:getComputedStyle(strip).overflowX,box:{left:b.left,right:b.right,top:b.top,bottom:b.bottom},clip:{left,right},fullyReachable:b.left>=left-1&&b.right<=right+1&&b.top>=0&&b.bottom<=innerHeight&&!!hit&&(hit===el||el.contains(hit))};
     });
+    await control.focus();await control.press('Enter');await stable(page,'evolucao');assert.equal(await control.getAttribute('aria-pressed'),'true','the exact metric selection is applied');assert.equal(await control.evaluate(el=>el===document.activeElement),true,'metric keyboard focus survives the real render');
     proof.push(result);assert.equal(result.fullyReachable,true,`${label}: metric ${key} remains fully visible and hit-testable after native scroll`);
   }
   writeFileSync(`${dir}/${label}-evolution-scroll.json`,JSON.stringify(proof,null,2));
-  await capture(page,`${label}-evolution-scroll-end`,'[data-evolution-metric="body_fat_pct"]');
-  await page.locator('[data-evolution-metric]').first().evaluate(el=>el.closest('.segmented').scrollTo({left:0,behavior:'instant'}));
+  await capture(page,`${label}-evolution-scroll-end`,'[data-evolution-overview-metric="body_fat_pct"]');
+  await page.locator('[data-evolution-overview-metric]').first().evaluate(el=>el.closest('.ltsCompositionTabs').scrollTo({left:0,behavior:'instant'}));
 }
 async function visibleRefresh(page,label,targetRoute,width,table,domain,status){
   // The approved mobile Home hides the global header; several legacy mobile

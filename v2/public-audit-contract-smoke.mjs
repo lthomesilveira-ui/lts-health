@@ -31,7 +31,7 @@ for(const retired of ['training-reference.css','visual-convergence-20260914.css'
 }
 assert.ok(!index.includes('src="./src/training-reference-runtime.js'),'training-reference-runtime.js is still active in the public document');
 
-assert.match(main,/fixtureMode\?legacyScreenRenderers:\{\.\.\.legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference\}/);
+assert.match(main,/fixtureMode\?legacyScreenRenderers:\{\.\.\.legacyScreenRenderers,evolucao:renderEvolutionOverview,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference\}/);
 assert.doesNotMatch(main,/state\.route==='nutricao'\|\|state\.route==='hoje'/);
 assert.match(runtime,/from '\.\/training-reference-v2\.js'/);
 assert.doesNotMatch(runtime,/from '\.\/product-layout-v2\.js'/);
@@ -54,7 +54,7 @@ assert.match(timeline,/Math\.min\(50,matching\.length-filtered\.length\)/);
 assert.match(analysis,/option value="365"\$\{selected\('365'\)\}/);
 assert.match(evolution,/grid sectionGap evolutionLowerGrid/);
 assert.match(evolution,/evolutionTrainingRhythm[\s\S]*evolutionSegmental/);
-assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','bio','saude','tratamentos','evolucao','dados'\]\)/);
+assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','bio','saude','tratamentos','dados'\]\)/);
 
 for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInbox','.analysisDigestCard']){
   assert.ok(internalCss.includes(selector),`audited readability reset is missing ${selector}`);

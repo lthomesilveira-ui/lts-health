@@ -47,7 +47,8 @@ assert.match(feedback,/Nenhuma alegação antiga de “10\/10” substitui feedb
 const active=assertActivePresentation(index,url=>readFileSync(url,'utf8'),new URL('v2/',root));
 assert.ok([...active.scripts.keys()].some(file=>file.endsWith('/health-dashboard.js')),'accepted daily/period dashboard is active');
 for(const group of ['Acompanhar','Áreas','Contexto','Sistema'])assert.match(index,new RegExp(`navGroupLabel[^>]*>${group}<`),`navigation group missing: ${group}`);
-assert.ok(!index.includes('data-route="evolucao">Evolução</button>'),'Evolução remains a competing primary destination');
+assert.ok(index.includes('data-route="evolucao">Evolução</button>'),'observed history has a discoverable primary destination');
+assert.match(await read('v2/src/main.js'),/evolucao:renderEvolutionOverview/,'Evolution must use the new observed-history view, not the legacy analytical cockpit');
 assert.match(index,/data-route="evolucao">Evolução detalhada<\/button>/);
 
 const cockpit=await read('v2/src/home-cockpit.js'),evolutionCss=await read('v2/evolution-product.css');

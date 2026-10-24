@@ -192,7 +192,8 @@ async function literalText(page,selector,expected,{mustWrap=false}={}){
 }
 async function checkShell(page,id=SUMMARY_IDS.current){
   assert.equal(await page.locator(trainingSelector('summary',id)).count(),1);
-  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').allTextContents(),['Resumo','Exercícios','Histórico'],'Keep the three approved tabs');
+  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').allTextContents(),['Resumo','Exercícios','Sessões','Por exercício'],'Keep session views and expose the requested exercise history');
+  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').evaluateAll(nodes=>nodes.map(el=>el.dataset.depthTrainingView)),['summary','exercises','history','progress'],'Original session destinations remain intact beside the exercise index');
   assert.equal(await page.locator('.ltsRefTrainHero').count(),1);
   assert.equal(await page.locator('.ltsRefTrainMetric').count(),4,'Keep all four existing metric cards');
   assert.equal(await page.locator('.ltsRefHrPanel').count(),1);
@@ -324,6 +325,9 @@ try{
       await page.goto(`${base}#hoje`);await stable(page,'hoje');
       assert.equal(await page.locator('[data-dashboard-card]').count(),7,'The approved Home cards stay unchanged');
       await navigate(page,'treinos',width);await stableTraining(page);await checkCurrent(page);
+      await page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="summary"]').focus();for(let i=0;i<3;i++)await page.keyboard.press('Tab');
+      const progressTab=page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="progress"]');assert.equal(await progressTab.evaluate(el=>el===document.activeElement),true,'The exercise index is keyboard-reachable as the fourth destination');
+      await page.keyboard.press('Enter');await stableTraining(page,'progress');assert.ok(await page.locator('.ltsExerciseDirectory').isVisible(),'The real fourth tab opens observed exercise history');await chooseTab(page,'summary');await checkCurrent(page);
       for(const kind of ['distribution','original'])assert.equal(await page.locator(disclosureSelector(kind)).evaluate(el=>el.open),false,'New session details begin collapsed');
       await capture(page,`${label}-summary`);
       await capture(page,`${label}-literal-comment`,'.ltsRefSessionComment');

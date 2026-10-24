@@ -438,6 +438,14 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
     for(const [width,height] of engine==='chromium'?sizes:[[393,844]]){
       const fixture=makeCalendarReportFixture();
       await session(browser,engine,width,height,fixture,async(page,name)=>{
+        // Keep the existing independent arithmetic/gap oracle on origin A.
+        // Automatic period-aware selection is covered separately by the model regression.
+        const availableOrigins=await report(page);
+        for(const metric of availableOrigins.metrics){
+          const desired=metric.sources.find(source=>source.label===(['water','protein','energy'].includes(metric.key)?'Synthetic A food':'Synthetic A watch'));
+          assert.ok(desired,`Explicit arithmetic fixture origin exists for ${metric.key}`);
+          await page.locator(`#calendar-source-${metric.key}`).selectOption(desired.key);await stable(page);
+        }
         const initial=await assertWindow(page,fixture,CALENDAR_WINDOWS.lastWeek);
         assert.equal(initial.training.sessions,3,'Three detailed sessions remain three, despite nine exercises and matching Polar records');
         assert.equal(initial.training.polar.sessions,3,'Three device records are separately reported');
