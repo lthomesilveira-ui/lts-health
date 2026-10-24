@@ -39,16 +39,31 @@ try{
   assert.ok(targets.every(t=>t.rect.height>=43.5&&t.rect.width>=43.5),'visible insight actions have 44px targets');
   await page.locator('[data-dashboard-change="body:body-0"]').click();
   await page.waitForSelector('[data-composition-view="detail"]');
+  assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'bio','body drilldown owns its route styling');
   assert.match(await page.locator('.ltsHistoryContext').first().innerText(),/11\/10\/2026/);
   assert.match(await page.locator('.ltsRecordDetails').first().innerText(),/80,0 kg/);
   await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-dashboard-change-domain="training"]');
   await page.locator('[data-dashboard-change="training:workout-1:exercise-1"]').click();
   await page.waitForSelector('[data-workout-id="workout-1"]');
+  assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'treinos','training drilldown owns its route styling');
   assert.match(await page.locator('[data-workout-id="workout-1"]').innerText(),/25/);
   await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-dashboard-change-domain="labs"]');
   await page.locator('[data-dashboard-change-domain="labs"] [data-dashboard-change]').click();
   await page.waitForSelector('[data-lab-asof]');
   assert.match(await page.locator('.ltsLabsHero').innerText(),/15\/10\/2026/);assert.match(await page.locator('.ltsLabsHero').innerText(),/13 u/);
+  assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'saude','exact drilldown changes route styling, not only content');
+  for(const selector of ['.ltsLabsV2 h1','.ltsLabsV2 [data-lab-clear-asof]']){
+   const contrast=await page.locator(selector).evaluate(el=>{
+    const rgb=text=>{const parts=text.match(/[\d.]+/g)?.map(Number)||[];return parts.length===4&&parts[3]===0?null:parts.slice(0,3);};
+    const foreground=rgb(getComputedStyle(el).color);let background=null;
+    for(let node=el;node&&!background;node=node.parentElement)background=rgb(getComputedStyle(node).backgroundColor);
+    if(!foreground||!background||background.length!==3)return 0;
+    const luminance=channels=>channels.map(n=>n/255).map(n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4).reduce((sum,n,i)=>sum+n*[.2126,.7152,.0722][i],0);
+    const a=luminance(foreground),b=luminance(background);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+   });
+   assert.ok(contrast>=4.5,`${selector}: readable contrast after historical drilldown (${contrast})`);
+  }
+  const clearBounds=await page.locator('[data-lab-clear-asof]').boundingBox();assert.ok(clearBounds.width>=44&&clearBounds.height>=44,'historical cutoff action stays touch-accessible');
   await page.screenshot({path:`${directory}/lab-drilldown-${width}.png`});
   await page.locator('[data-lab-clear-asof]').click();assert.equal(await page.locator('[data-lab-asof]').count(),0);
   assert.deepEqual(await page.evaluate(()=>window.__changesQA.writes),[]);assert.deepEqual(errors,[]);

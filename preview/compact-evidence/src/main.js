@@ -68,7 +68,10 @@ function settleRouteScroll(route){
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
-  state.route=route;$('moreSheet').classList.add('hidden');
+  state.route=route;
+  // pushState does not emit hashchange: apply route styling before rendering.
+  if(!fixtureMode)document.body.dataset.productRoute=route;
+  $('moreSheet').classList.add('hidden');
   try{localStorage.setItem('lts-health-v2-route',route);}catch{}
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
