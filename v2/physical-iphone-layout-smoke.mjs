@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {makeDashboardFixture,FIXED_TODAY} from '../preview/compact-evidence/tests/health-dashboard-render-test.mjs';
-import {mkdirSync} from 'node:fs';
+import {mkdirSync,writeFileSync} from 'node:fs';
 
 const evidenceDir='v2/public-audit-evidence';
 const origin=process.env.LTS_TEST_ORIGIN||'http://127.0.0.1:4173';
@@ -45,6 +45,7 @@ for(const config of [
   await page.waitForSelector('#app:not(.hidden)');
 
   await homeReady(page);
+  await page.screenshot({path:`${evidenceDir}/${config.label}-home-initial.png`});
   assert.equal(await page.evaluate(async()=>{const {fixtureMode}=await import('./src/core.js');return fixtureMode;}),false,'exercise the actual production renderer');
   const home=await page.evaluate(()=>{
     const rect=selector=>document.querySelector(selector)?.getBoundingClientRect();
@@ -54,13 +55,22 @@ for(const config of [
       appHeight:app?.height,hostTop:host?.top,hostBottom:host?.bottom,navTop:nav?.top,
       headerTop:header?.top,cardsTop:cards?.top,
       hostPaddingBottom:parseFloat(hostStyle.paddingBottom),
+      hostPaddingTop:parseFloat(hostStyle.paddingTop),
+      dashboardPaddingTop:parseFloat(getComputedStyle(document.querySelector('[data-health-dashboard]')).paddingTop),
       hostMinHeight:hostStyle.minHeight,
       overflow:document.documentElement.scrollWidth-window.innerWidth
     };
   });
+  writeFileSync(`${evidenceDir}/${config.label}-home-geometry.json`,JSON.stringify(home,null,2));
   for(const key of ['hostTop','hostBottom','navTop','headerTop','cardsTop'])assert.ok(Number.isFinite(home[key]),`${config.label}: ${key} must exist`);
   if(home.hostTop>2)throw new Error(`${config.label}/home: hidden topbar still reserves ${Math.round(home.hostTop)}px`);
-  if(home.headerTop<0||home.headerTop>18)throw new Error(`${config.label}/home: first useful content starts at ${Math.round(home.headerTop)}px`);
+  // Approved current mobile spacing is 6px of shell inset plus 14px of
+  // dashboard padding, not the retired reference Home's <=18px combined gap.
+  // These emulated viewports have no hardware safe-area inset.
+  assert.equal(home.hostPaddingTop,6,`${config.label}: preserve the compact shell inset`);
+  assert.equal(home.dashboardPaddingTop,14,`${config.label}: preserve accepted dashboard spacing`);
+  assert.ok(home.headerTop>=19&&home.headerTop<=21,`${config.label}: expected accepted 20px content inset; geometry=${JSON.stringify(home)}`);
+  assert.ok(Math.abs(home.headerTop-(home.hostTop+home.hostPaddingTop+home.dashboardPaddingTop))<=1,`${config.label}: no extra hidden margin above the first useful content`);
   if(home.hostBottom>home.navTop+1)throw new Error(`${config.label}/home: content overlaps navigation`);
   if(home.hostPaddingBottom>30)throw new Error(`${config.label}/home: duplicate bottom reserve ${home.hostPaddingBottom}px`);
   if(home.overflow>3)throw new Error(`${config.label}/home: horizontal overflow ${home.overflow}px`);
