@@ -184,20 +184,20 @@ export function renderCoveragePriorityPanel(model){
 export function renderTraceabilityPanel(model){
   const partial=model?.partial;
   return `<section class="card evidenceTraceability sectionGap" data-evidence-traceability>
-    <div class="evidenceTraceabilityHead"><div><span>Rastreabilidade</span><h2>Do arquivo recebido ao dado analisável</h2><p>Visão agregada da cadeia de dados. Conteúdo bruto, identificadores internos e informações sensíveis não aparecem aqui.</p></div>${partial?'<small>algumas fontes não carregaram</small>':'<small>cadeia verificada</small>'}</div>
+    <details><summary>Sobre estes dados</summary><div class="evidenceTraceabilityHead"><div><span>Arquivos e histórico</span><h2>De onde vêm os registros</h2><p>Quantidade de arquivos, registros disponíveis e limitações conhecidas.</p></div>${partial?'<small>algumas fontes não carregaram</small>':'<small>Resumo dos registros disponíveis</small>'}</div>
     <div class="evidenceTraceabilityMetrics">
-      <div><span>Arquivos recebidos</span><b>${metricValue(model?.uploads)}</b></div>
-      <div><span>Processados/importados</span><b>${metricValue(model?.processed)}</b></div>
-      <div><span>Domínios estruturados</span><b>${metricValue(model?.structuredDomains)}</b></div>
-      <div><span>Séries complementares preservadas</span><b>${metricValue(model?.preservedSeries)}</b></div>
+      <div><span>Arquivos importados</span><b>${metricValue(model?.uploads)}</b></div>
+      <div><span>Importação concluída</span><b>${metricValue(model?.processed)}</b></div>
+      <div><span>Áreas com registros</span><b>${metricValue(model?.structuredDomains)}</b></div>
+      <div><span>Históricos adicionais</span><b>${metricValue(model?.preservedSeries)}</b></div>
     </div>
     <div class="evidenceTraceabilityFlow">
       <div><i>1</i><span><b>Originais</b><small>${model?.uploads==null?'origem indisponível agora':countLabel(model.uploads,'arquivo preservado','arquivos preservados')}</small></span></div>
-      <div><i>2</i><span><b>Processamento</b><small>${model?.processed==null?'situação indisponível agora':`${countLabel(model.processed,'concluído','concluídos')} · ${model.inProgress} em andamento · ${countLabel(model.uploadAttention,'item com atenção','itens com atenção')}`}</small></span></div>
-      <div><i>3</i><span><b>Estrutura e origem</b><small>${model?.preservedSeries==null?'cobertura complementar indisponível agora':`${countLabel(model.structuredDomains,'domínio com dados','domínios com dados')} · ${countLabel(model.preservedSeries,'série complementar mantida separada','séries complementares mantidas separadas')}${model.workoutEvidence==null?'':` · ${countLabel(model.workoutEvidence,'vínculo complementar de treino','vínculos complementares de treino')}`}`}</small></span></div>
+      <div><i>2</i><span><b>Importação</b><small>${model?.processed==null?'situação indisponível agora':`${countLabel(model.processed,'concluído','concluídos')} · ${model.inProgress} em andamento · ${countLabel(model.uploadAttention,'item com atenção','itens com atenção')}`}</small></span></div>
+      <div><i>3</i><span><b>Históricos e origens</b><small>${model?.preservedSeries==null?'cobertura complementar indisponível agora':`${countLabel(model.structuredDomains,'área com registros','áreas com registros')} · ${countLabel(model.preservedSeries,'histórico adicional mantido separado','históricos adicionais mantidos separados')}${model.workoutEvidence==null?'':` · ${countLabel(model.workoutEvidence,'registro associado a um treino','registros associados a treinos')}`}`}</small></span></div>
       <div><i>4</i><span><b>Qualidade</b><small>${model?.qualityOpen==null?'qualidade indisponível agora':`${countLabel(model.qualityOpen,'item aberto','itens abertos')} · ${countLabel(model.qualityKnown,'limitação conhecida','limitações conhecidas')} · ${countLabel(model.qualityResolved,'item resolvido','itens resolvidos')}`}</small></span></div>
     </div>
-    <div class="evidenceBoundary"><b>Separação de fontes preservada</b><span>Apple, Polar e outras origens complementares só avançam para uma leitura consolidada quando existir regra validada. Até lá, permanecem separadas e não geram registros duplicados no histórico principal.</span></div>
+    <div class="evidenceBoundary"><b>Origens separadas</b><span>Apple, Polar e outras origens mantêm seus próprios históricos. Registros adicionais não são somados ao histórico principal: o mesmo dia ou treino pode aparecer em mais de uma origem.</span></div></details>
   </section>`;
 }
 

@@ -38,7 +38,7 @@ export function seriesWindow(rows,dateKey,period='recent'){
   return ordered.filter(r=>validDay(r[dateKey])>=start.toISOString().slice(0,10));
 }
 export const emptyCard=text=>`<div class="ltsEmptyCard" role="status">${esc(text)}</div>`;
-export const errorCard=text=>`<div class="ltsDepthError" role="alert"><b>${esc(text)}</b><span>Os dados não foram substituídos por zero. Use Atualizar para tentar novamente.</span></div>`;
+export const errorCard=text=>`<div class="ltsDepthError" role="alert"><b>${esc(text)}</b><span>Tente novamente em Atualizar. Você pode continuar consultando as outras áreas.</span></div>`;
 export const sourceLabel=row=>String(row?.source_name||row?.source||row?.laboratory||'Origem não informada').trim();
 export const failed=(state,key)=>state.domainStatus?.[key]==='error'||Boolean(state.errors?.[key]);
 export const valueText=(value,unit='',digits=1)=>num(value)==null?'Não informado':`${fmtNum(value,digits)}${unit?` ${unit}`:''}`;

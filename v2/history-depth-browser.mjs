@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
 import {chromium} from 'playwright';
 
-// Exercises the production structural path with a synthetic service, not ?fixture.
+// Exercises the integrated production renderer with a synthetic service, not ?fixture.
 // Real authenticated release proof is a separate mandatory gate.
 const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4173/v2/';
+const parsed=new URL(base);assert.equal(parsed.protocol,'http:');assert.ok(['127.0.0.1','localhost'].includes(parsed.hostname),'synthetic gate only targets loopback');assert.equal(parsed.pathname,'/v2/');assert.equal(parsed.search,'','never use fixture mode or a remote source');
 const dir='v2/history-depth-evidence';mkdirSync(dir,{recursive:true});
 const db={};
 db.health_workouts=Array.from({length:36},(_,i)=>({source_record_id:`w-${i}`,workout_date:`${i<18?'2025':'2026'}-01-${String(i%18+1).padStart(2,'0')}`,workout_type:`Sessão sintética ${i}`,location:'Local sintético',duration_minutes:40,heart_rate_avg:100,heart_rate_min:60,heart_rate_max:120,is_canonical:true,record_status:'validated',source:'Teste',muscle_groups:['Grupo sintético']}));
@@ -15,27 +16,76 @@ db.health_segmental_composition=db.health_body_composition.map((r,i)=>({source_r
 db.health_lab_results=Array.from({length:22},(_,i)=>Array.from({length:25},(_,j)=>({source_record_id:`lab-${i}-${j}`,biomarker:`Marcador ${String(i+1).padStart(2,'0')}`,collection_date:`2024-01-${String(j+1).padStart(2,'0')}`,laboratory:'Laboratório A sintético',unit:'u',result_numeric:10+j%4,result_raw:String(10+j%4),reference_range:'Faixa sintética',source:'Teste'}))).flat();
 db.health_lab_results.push({source_record_id:'text-only',biomarker:'Marcador textual único',collection_date:'2026-01-01',laboratory:'Laboratório A sintético',result_raw:'Resultado textual sintético',source:'Teste'});
 for(let j=1;j<4;j++)db.health_lab_results.push({source_record_id:`other-${j}`,biomarker:'Marcador 01',collection_date:`2025-02-0${j}`,laboratory:'Laboratório B sintético',unit:'outra unidade',result_numeric:j,result_raw:String(j),source:'Teste'});
-const service=`window.__depthDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},from(table){let from=0,to=999,orders=[];const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(k,opt={}){orders.push([k,opt.ascending!==false]);return q;},then(resolve,reject){let rows=[...(window.__depthDb[table]||[])];rows.sort((a,b)=>{for(const[k,asc]of orders){const c=String(a[k]||'').localeCompare(String(b[k]||''));if(c)return asc?c:-c;}return 0;});return Promise.resolve({data:window.__failTable===table?null:rows.slice(from,to+1),error:window.__failTable===table?{message:'Synthetic read failure'}:null}).then(resolve,reject);}};return q;}})};`;
+const service=`
+window.__depthDb=${JSON.stringify(db)};window.__qaMutations=[];
+const mutation=(kind,target)=>{window.__qaMutations.push({kind,target});throw new Error('Synthetic browser gate forbids writes: '+kind+' '+target);};
+window.supabase={createClient:()=>({
+ auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},
+ functions:{invoke:async(name,args)=>{if(args?.body?.action!=='status')return mutation('invoke',name);return {data:{configured:false,connected:false,received:false},error:null};}},
+ rpc:name=>mutation('rpc',name),storage:{from:name=>({upload:()=>mutation('upload',name),remove:()=>mutation('remove',name)})},
+ from(table){
+  let from=0,to=999;const filters=[],orders=[];
+  const rows=()=>{const list=(window.__depthDb[table]||[]).filter(row=>filters.every(([key,value])=>row[key]===value));return list.slice().sort((a,b)=>{for(const[key,ascending]of orders){const c=String(a[key]??'').localeCompare(String(b[key]??''));if(c)return ascending?c:-c;}return 0;});};
+  const q={select(){return q;},eq(key,value){filters.push([key,value]);return q;},is(key,value){filters.push([key,value]);return q;},range(a,b){from=a;to=b;return q;},order(key,options={}){orders.push([key,options.ascending!==false]);return q;},limit(n){to=from+n-1;return q;},
+   maybeSingle:async()=>({data:rows()[0]||null,error:null}),
+   then(resolve,reject){return Promise.resolve({data:window.__failTable===table?null:rows().slice(from,to+1),error:window.__failTable===table?{message:'Synthetic read failure'}:null}).then(resolve,reject);}
+  };
+  for(const name of ['insert','update','upsert','delete'])q[name]=()=>mutation(name,table);
+  return q;
+ }
+})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
-const errors=[];
+const errors=[],external=[];
+async function isolate(page){
+ await page.route('**/*',route=>{
+  const url=new URL(route.request().url());
+  if(url.href==='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2')return route.fulfill({contentType:'application/javascript',body:service});
+  if(url.origin===parsed.origin&&route.request().method()==='GET')return route.continue();
+  external.push({url:url.href,method:route.request().method()});return route.abort();
+ });
+}
+async function stableHome(page){
+  await page.waitForFunction(()=>{
+    const root=document.querySelector('[data-health-dashboard]');
+    if(!root||document.querySelector('#syncText')?.textContent!=='Atualizado'||document.querySelector('#screenHost')?.dataset.productLayoutRoute!=='hoje')return false;
+    if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
+    return ++window.__gateHomeStableFrames>=3;
+  });
+}
 async function overflow(page){
   const result=await page.evaluate(()=>({doc:document.documentElement.scrollWidth-window.innerWidth,host:document.getElementById('screenHost').scrollWidth-document.getElementById('screenHost').clientWidth}));
   assert.ok(result.doc<=1&&result.host<=1,`horizontal overflow ${JSON.stringify(result)}`);
+}
+const displayedDate=value=>value.split('-').reverse().join('/');
+async function assertHistoricalPoints(page,selector,rows,dateKey,valueKey,unit,message){
+  const ordered=[...rows].sort((a,b)=>a[dateKey].localeCompare(b[dateKey]));
+  const expected=ordered.map(row=>`${displayedDate(row[dateKey])}: ${Number(row[valueKey]).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} ${unit}`);
+  assert.deepEqual(await page.locator(`${selector} .ltsDepthPlot circle title`).allTextContents(),expected,message);
+  assert.deepEqual(await page.locator(`${selector} .ltsDepthAxis span`).allTextContents(),[displayedDate(ordered[0][dateKey]),displayedDate(ordered.at(-1)[dateKey])],'observed-date chart exposes the complete first/last endpoints');
 }
 async function goto(page,route,selector){await page.evaluate(r=>{location.hash='#'+r;},route);await page.waitForSelector(selector);await page.waitForTimeout(150);}
 try{
  for(const [label,width,height] of [['desktop',1440,1000],['mobile',390,844],['small',320,740]]){
   const page=await browser.newPage({viewport:{width,height}});
   page.on('pageerror',e=>errors.push(e.message));
-  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
-  await page.goto(base+'#hoje');await page.waitForSelector('.ltsHomeV2');await overflow(page);
-  if(width<=840)await page.locator('[data-home-period-select]').selectOption('all');else await page.locator('[data-home-period="all"]').click();
-  assert.equal(await page.locator('.refPanel.body .refPlot svg').count(),1,'one shared body panel');
-  const axes=await page.locator('.refPanels .refAxis').allTextContents();
-  assert.ok(axes.length>=2&&new Set(axes).size===1,'all populated panels share selected calendar');
-  await page.locator('[data-disclosure="reference-body-date"]>summary').click();await page.locator('#overview-body-date').selectOption('2024-01-10');assert.equal(await page.locator('#overview-body-date').inputValue(),'2024-01-10');
-  await page.locator('#overview-body-date').focus();await page.locator('#overview-body-date').press('ArrowDown');
-  assert.equal(await page.locator('#overview-body-date').evaluate(el=>el===document.activeElement),true);
+  await isolate(page);
+  await page.goto(base+'#hoje');await page.waitForSelector('[data-health-dashboard]');await stableHome(page);assert.equal(await page.locator('[data-dashboard-card]').count(),7);assert.equal(await page.locator('[data-preview-readonly-banner]').count(),0);await page.locator('[data-dashboard-mode="period"]').click();await stableHome(page);await overflow(page);
+  await page.locator('[data-home-period-select]').selectOption('all');
+  await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='all');await stableHome(page);
+  assert.equal(await page.locator('.studyCard.body').count(),1,'one shared body panel');
+  assert.equal(await page.locator('.studyCard.body .studyPair').count(),3,'Home summarizes the first and last body records');
+  assert.equal(await page.locator('.studyCard.body svg').count(),0,'body summary uses readable before/after values');
+  assert.deepEqual(await page.locator('.studyPairDates span').allTextContents(),['','01/01','02/02','Diferença']);
+  for(const [metric,first,last,delta] of [['weight_kg','70,0 kg','72,0 kg','+2,0 kg'],['fat_mass_kg','14,0 kg','14,0 kg','0,0 kg'],['skeletal_muscle_mass_kg','30,0 kg','30,0 kg','0,0 kg']]){
+   const row=page.locator(`.studyCard.body .studyPair.${metric}`);
+   assert.equal(await row.locator('span').innerText(),first);
+   assert.equal(await row.locator('strong').innerText(),last);
+   assert.equal(await row.locator('em').innerText(),delta);
+  }
+  const periods=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return ['homePeriod','analysisPeriod','trainingPeriod','nutritionPeriod','productCompositionPeriod','productLabPeriod'].map(key=>state.ui[key]);});
+  assert.deepEqual(periods,Array(6).fill('all'),'Home selection propagates one calendar to every domain');
+  await page.locator('.studyCard.body details>summary').click();
+  assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'original assessments remain reachable from the body summary');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
   await goto(page,'treinos','.ltsTrainingV2 .ltsExerciseCard');
   await page.locator('[data-depth-training-view="history"]').first().click();
@@ -51,6 +101,7 @@ try{
   await page.locator('[data-depth-training-view="exercises"]').first().click();
   await page.locator('[data-depth-exercise]').first().click();
   await page.waitForSelector('.ltsExerciseHistory');assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
+  await assertHistoricalPoints(page,'.ltsExerciseHistory',db.health_workout_sets,'workout_date','weight','kg','training history retains every older eligible load');
   await overflow(page);
   await page.locator('[data-depth-training-view="history"]').first().click();
   assert.equal(await page.locator('[data-depth-workout]').last().getAttribute('data-depth-workout'),'w-0','return preserves pagination');
@@ -76,7 +127,18 @@ try{
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-labs.png`});
 
   await goto(page,'bio','.ltsCompositionV2 .ltsCompositionHero');
+  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition inherits the Home historical calendar');
   await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),30);
+  // Home intentionally shows a readable pair. Full raw series live in Composition.
+  for(const [metric,label] of [['fat_mass_kg','fat'],['skeletal_muscle_mass_kg','muscle']]){
+   await page.locator(`[data-composition-metric="${metric}"]`).click();
+   await assertHistoricalPoints(page,'.ltsCompositionChart',db.health_body_composition,'measured_at',metric,'kg',`body history retains every eligible raw ${label} point`);
+  }
+  await page.locator('#productCompositionPoint').selectOption('9');
+  assert.equal(await page.locator('#productCompositionPoint').inputValue(),'9');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'10/01/2024','an older measurement can be selected directly');
+  await page.locator('#productCompositionPoint').focus();await page.locator('#productCompositionPoint').press('ArrowDown');
+  assert.equal(await page.locator('#productCompositionPoint').evaluate(el=>el===document.activeElement),true,'historical measurement selector retains keyboard focus');
   await page.locator('[data-composition-metric="weight_kg"]').click();assert.equal(await page.locator('[data-composition-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
   const ids=[];for(let i=0;i<4;i++){ids.push(...await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').evaluateAll(es=>es.map(e=>e.dataset.depthCompositionRecord)));if(i<3)await page.locator('[data-depth-page="productCompositionPage"]').last().click();}
   assert.equal(new Set(ids).size,30,'all body records past former 8 cap');await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().click();
@@ -151,14 +213,15 @@ try{
   await overflow(page);
   if(label!=='small'){await page.locator('#reportPeriods').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-duration-water.png`});}
   await page.evaluate(()=>{window.__failTable='health_source_daily_metrics';});await page.locator('#refreshBtn').click();
-  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível verificar todas as fontes de água'));
+  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível atualizar os registros de água'));
   assert.equal(await page.locator('#reportHydration .ltsContextPlot').count(),0,'failed source must hide stale water');
   await page.evaluate(()=>{window.__failTable='';});
 
   // Explicit read failure is not a valid empty dataset and cannot show stale hero.
   await goto(page,'saude','.ltsLabsV2');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');await page.evaluate(()=>{window.__failTable='health_lab_results';});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsDepthError');assert.equal(await page.locator('.ltsLabsHero').count(),0);
   await page.evaluate(()=>{window.__failTable='';window.__depthDb.health_lab_results=[];});await page.locator('#refreshBtn').click();await page.waitForSelector('.ltsLabsV2 .ltsEmptyCard');assert.equal(await page.locator('.ltsDepthError').count(),0);await overflow(page);
+  assert.deepEqual(await page.evaluate(()=>window.__qaMutations),[],'synthetic navigation and inspection perform no writes');
   await page.close();
  }
- assert.deepEqual(errors,[]);console.log('Production-path synthetic browser gate passed in desktop, 390px and 320px: all histories, filtering, selection, units, details, return and read failures.');
+ assert.deepEqual(external,[],'all unexpected external requests are blocked');assert.deepEqual(errors,[]);console.log('Integrated production synthetic browser gate passed in desktop, 390px and 320px: all histories, filtering, selection, units, details, return and read failures.');
 }finally{await browser.close();}

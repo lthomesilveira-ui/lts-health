@@ -31,13 +31,13 @@ assert.equal(c.trainingPoints.length,0);assert.equal(c.body,null);assert.equal(c
 assert.match(c.detail,/não carregaram/);assert.match(renderHomeCockpit(c),/Indisponível/);
 assert.doesNotMatch(renderHomeCockpit(c),/0 coletas|0 registros de sono|Nenhum registro nesta janela/,'failed readers never appear as successful empty histories');
 const ambiguous=structuredClone(data);ambiguous.body.push({...ambiguous.body[1],source:'Other scan'});
-c=homeCockpitModel(ambiguous,status,'30',{},'2025-04-20');assert.equal(c.body,null);assert.match(c.detail,/mais de uma medição candidata/);
+c=homeCockpitModel(ambiguous,status,'30',{},'2025-04-20');assert.equal(c.body,null);assert.match(c.detail,/mais de uma medição para a mesma data/);assert.match(c.detail,/Nenhuma foi escolhida automaticamente/);
 const changed=structuredClone(data);changed.body[1].device_name='B';
 c=homeCockpitModel(changed,status,'30',{},'2025-04-20');assert.match(c.detail,/origem e o aparelho não estão confirmados/);assert.doesNotMatch(c.title,/Peso -1/);
 const single=structuredClone(data);single.body=single.body.slice(1);
 c=homeCockpitModel(single,status,'30',{},'2025-04-20');assert.match(c.detail,/outra medição compatível/);
 const empty=Object.fromEntries(Object.keys(data).map(k=>[k,[]]));c=homeCockpitModel(empty,status,'30',{},'2025-04-20');
-assert.match(c.detail,/Sem avaliação inequívoca/);assert.match(renderHomeCockpit(c),/Nenhum resultado inequívoco/);
+assert.match(c.detail,/Não há uma avaliação única disponível neste período/);assert.match(renderHomeCockpit(c),/Nenhum resultado pode ser comparado neste período/);
 assert.doesNotMatch(renderHomeCockpit(c),/Os exames não carregaram/);
 const tissues=structuredClone(data);tissues.body[0]={...tissues.body[0],fat_mass_kg:16,skeletal_muscle_mass_kg:30};tissues.body[1]={...tissues.body[1],fat_mass_kg:15,skeletal_muscle_mass_kg:31};
 c=homeCockpitModel(tissues,status,'30',{},'2025-04-20');assert.equal(c.title,'Gordura -1,0 kg; músculo +1,0 kg');

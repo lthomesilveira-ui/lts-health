@@ -51,3 +51,5 @@
 .ltsLabsHistoryRow time,.ltsLabsHistoryRow small{font-size:12px}
 .ltsLabsHistoryRow>.ltsRecordFlag{white-space:normal;max-width:100%;overflow-wrap:anywhere}
 .ltsCompositionHistoryRow>span{white-space:normal}
+/* Keep report provenance readable at normal text sizes on the white history. */
+.ltsLabsV2 .ltsLabsHistoryRow time,.ltsLabsV2 .ltsLabsHistoryRow small{color:#596e86}

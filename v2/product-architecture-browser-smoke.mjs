@@ -84,7 +84,7 @@ async function run(viewport,label){
   const isolation=await page.evaluate(()=>({appDisplay:getComputedStyle(document.querySelector('#app')).display,loginVisible:document.querySelector('#login')?.classList.contains('hidden')===false}));
   if(isolation.appDisplay!=='none'||!isolation.loginVisible)throw new Error(`${label}: authenticated shell leaks into login`);
   const loginText=(await page.locator('#login').innerText())||'';
-  for(const expected of ['Seu histórico de saúde, finalmente em contexto.','Uma linha do tempo','Leitura com evidência','Acesse seu cockpit'])if(!loginText.includes(expected))throw new Error(`${label}: login does not explain the product: ${expected}`);
+  for(const expected of ['Seu histórico de saúde, finalmente em contexto.','Uma linha do tempo','Informações claras','Resultados com datas, unidades e detalhes','Área privada','Acesse seu Health'])if(!loginText.toLocaleLowerCase('pt-BR').includes(expected.toLocaleLowerCase('pt-BR')))throw new Error(`${label}: login does not explain the product: ${expected}`);
 
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();

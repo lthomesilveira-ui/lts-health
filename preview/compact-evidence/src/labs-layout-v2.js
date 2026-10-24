@@ -124,12 +124,14 @@ export function labComparisonText(reason){
 }
 
 export function labsModel(){
-  const allRows=state.data.labs||[];
-  const {period,bounds}=selectedCalendar(state.data,state.domainStatus,state.ui.productLabPeriod||state.ui.homePeriod||'90');
+  const asOf=validDay(state.ui.productLabAsOf);
+  const allRows=(state.data.labs||[]).filter(row=>!asOf||validDay(row.collection_date)<=asOf);
+  const selected=selectedCalendar(state.data,state.domainStatus,state.ui.productLabPeriod||state.ui.homePeriod||'90');
+  const period=selected.period,bounds=asOf?{...selected.bounds,start:selected.bounds.start<asOf?selected.bounds.start:asOf,end:asOf}:selected.bounds;
   const rows=allRows.filter(r=>validDay(r.collection_date)>=bounds.start&&validDay(r.collection_date)<=bounds.end),groups=labGroups(rows,allRows.filter(row=>validDay(row.collection_date)&&validDay(row.collection_date)<=bounds.end));
   const ranked=groups.map(group=>({group,cohorts:labCohorts(group)})).sort((a,b)=>String(b.group.rows.at(-1)?.collection_date||'').localeCompare(String(a.group.rows.at(-1)?.collection_date||''))||a.group.label.localeCompare(b.group.label,'pt-BR'));
   const item=ranked.find(i=>i.group.key===state.ui.productLabMarker)||ranked.find(i=>i.group.key===norm('Hemoglobina Glicada (A1C)')&&i.group.rows.at(-1)?.collection_date===ranked[0]?.group.rows.at(-1)?.collection_date)||ranked[0]||null;
-  if(!item)return{allRows,rows,groups,ranked,item:null,period,bounds};
+  if(!item)return{allRows,rows,groups,ranked,item:null,period,bounds,asOf};
   const cohort=item.cohorts.find(c=>c.key===state.ui.productLabCohort)||item.cohorts[0];
   const lastDate=validDay(cohort?.all.at(-1)?.collection_date);
   const latestRows=lastDate?cohort.all.filter(row=>validDay(row.collection_date)===lastDate):cohort?.all||[];
@@ -137,7 +139,7 @@ export function labsModel(){
   const recent=cohort?.rows||[];
   const history=pageOf([...(labGroups(allRows).find(g=>g.key===item.group.key)?.rows||[])].reverse(),state.ui.productLabPage,10);
   const query=norm(state.ui.productLabQuery),matches=groups.filter(g=>!query||norm(g.label).includes(query));
-  return{allRows,rows,bounds,groups,ranked,item,cohort,latestRows,latest,lastDate,period,recent,history,matches};
+  return{allRows,rows,bounds,groups,ranked,item,cohort,latestRows,latest,lastDate,period,recent,history,matches,asOf};
 }
 const header=()=>`<header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1 tabindex="-1" id="productLabsTitle">Exames</h1><p>Seus resultados, referências e coletas anteriores.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>`;
 function resultMeta(row){return [origin(row)||'Origem não informada',unit(row)||'Unidade não informada',row.reference_range?`Referência: ${row.reference_range}`:'Referência não informada',method(row)?`Método: ${method(row)}`:''].filter(Boolean).join(' · ');}
@@ -153,7 +155,7 @@ function collectionOverview(rows,identityConflicts=new Set()){
 export function renderProductLabs(){
   if(failed(state,'labs'))return `<section class="ltsLabsV2">${header()}${errorCard('Os resultados laboratoriais não carregaram agora.')}</section>`;
   const m=labsModel();
-  const windowControl=`${periodControl('productLabPeriod',m.period)}<p class="ltsDepthNote">${esc(fmtDate(m.bounds.start))}–${esc(fmtDate(m.bounds.end))}, a mesma janela selecionada na Visão geral.</p>`;
+  const windowControl=`${m.asOf?`<p class="ltsDepthNote" data-lab-asof>Consulta até ${esc(fmtDate(m.asOf))}, data da leitura selecionada. <button type="button" data-lab-clear-asof>Ver histórico sem este corte</button></p>`:''}${periodControl('productLabPeriod',m.period)}<p class="ltsDepthNote">${esc(fmtDate(m.bounds.start))}–${esc(fmtDate(m.bounds.end))}, ${m.asOf?'corte da leitura selecionada.':'a mesma janela selecionada na Visão geral.'}</p>`;
   if(!m.item)return `<section class="ltsLabsV2">${header()}${windowControl}${emptyCard('Nenhum resultado laboratorial nesta janela. Selecione Histórico para consultar coletas anteriores.')}</section>`;
   const group=m.item.group,c=m.cohort,comparison=labCohortComparison(c),first=comparison.first,last=comparison.last;
   const change=comparison.comparable?`${fmtDate(first.collection_date)} → ${fmtDate(last.collection_date)}: ${differenceText(labResultReading(last).exactValue,labResultReading(first).exactValue,c.unit,2)}`:labComparisonText(comparison.comparisonReason);

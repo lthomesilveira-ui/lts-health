@@ -35,7 +35,7 @@ async function run(viewport,label){
   await disclosure.locator('summary').click();
   const text=(await disclosure.textContent())||'';
 
-  if(!text.includes('Sinais de recuperação por origem')||!text.includes('Evidência complementar separada'))throw new Error(`${label}: recovery evidence panel is missing`);
+  if(!text.includes('Recuperação por aparelho')||!text.includes('Registros por aparelho'))throw new Error(`${label}: recovery evidence panel is missing`);
   if(!text.includes('Apple Watch')||!text.includes('RingConn'))throw new Error(`${label}: source identities are not preserved`);
   if(!text.includes('61 bpm → 60 bpm'))throw new Error(`${label}: Apple Watch observations are not preserved independently`);
   if(!text.includes('63 bpm → 63 bpm'))throw new Error(`${label}: RingConn unique observations are not preserved independently`);

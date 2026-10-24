@@ -19,12 +19,13 @@ const realAuth=read('./real-auth-e2e.mjs');
 const realAuthDepth=read('./real-auth-depth-checks.mjs');
 const dataLayer=read('./src/data-layer.js');
 
-assert.match(index,/name="lts-build" content="mobile-parity-20261014\.58"/);
+const build=index.match(/name="lts-build" content="([^"]+)"/)?.[1];
+assert.match(build||'',/^health-integrated-\d{8}\.\d+$/,'public entry must identify the integrated build');
 for(const asset of ['home-reference.css','training-reference-v2.css','public-audit-remediation.css']){
-  assert.ok(index.includes(`./${asset}?v=mobile-parity-20261014.58`),`${asset} is not tied to the audited build`);
+  assert.ok(index.includes(`./${asset}?v=${build}`),`${asset} is not tied to the audited build`);
 }
-assert.ok(index.includes('./physical-iphone-remediation-20260915.css?v=mobile-parity-20261014.58'),'physical iPhone remediation is not versioned with the current build');
-assert.ok(index.includes('./integrated-review.css?v=mobile-parity-20261014.58'),'integrated review is not versioned with the current build');
+assert.ok(index.includes(`./physical-iphone-remediation-20260915.css?v=${build}`),'physical iPhone remediation is not versioned with the current build');
+assert.ok(index.includes(`./integrated-review.css?v=${build}`),'integrated review is not versioned with the current build');
 for(const retired of ['training-reference.css','visual-convergence-20260914.css','reference-parity-20260914.css']){
   assert.ok(!index.includes(`href="./${retired}`),`${retired} is still active in the public document`);
 }

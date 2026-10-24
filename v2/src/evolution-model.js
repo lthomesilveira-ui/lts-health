@@ -1,6 +1,7 @@
 import {num,day,norm,fmtNum,fmtDate} from './core.js';
 import {homePeriodModel} from './home-period-model.js';
 import {evidenceInsights,loadInsightUnits} from './evidence-insights.js';
+import {waterReferenceContext} from './water-reference-context.js';
 import {goalComparison,goalForDate,historicalGoalReference} from './personal-goals.js';
 import {normalizeMuscleGroup,addDays} from './integrated-analysis.js';
 import {bodySourceLabel} from './health-context.js';
@@ -34,10 +35,10 @@ function evolutionReadings(m,r,e){
   });
   if(outside.length){
     const rows=outside.slice(0,3);
-    readings.labs={kind:'labs',priority:0,title:'Exames para discutir na consulta',meaning:`${rows.map(row=>`${row.group.label}: ${labReferenceStatus(row.current).status==='above'?'acima':'abaixo'} da faixa exibida no laudo`).join('; ')}.`,evidence:rows.map(row=>`${labResultText(row.current)} · faixa ${labReferenceStatus(row.current).lowRaw}–${labReferenceStatus(row.current).highRaw} ${row.current.unit} · ${fmtDate(row.current.collection_date)}`).join('; '),limit:'Faixas de referência não são metas do protocolo. Leve os valores e o contexto dos medicamentos ao médico, sem ajustar doses por este painel.',route:'saude',action:'Ver exames e referências'};
+    readings.labs={kind:'labs',priority:0,title:'Exames para discutir na consulta',meaning:`${rows.map(row=>`${row.group.label}: ${labReferenceStatus(row.current).status==='above'?'acima':'abaixo'} da faixa exibida no laudo`).join('; ')}.`,evidence:rows.map(row=>`${labResultText(row.current)} · referência registrada: ${row.current.reference_range} · ${row.current.laboratory||'Laboratório não informado'} · ${fmtDate(row.current.collection_date)}`).join('; '),limit:'Faixas de referência não são metas do protocolo. Leve os valores e o contexto dos medicamentos ao médico, sem ajustar doses por este painel.',route:'saude',action:'Ver exames e referências'};
   }else{
     const row=currentLabs.find(row=>row.comparable);
-    if(row)readings.labs={kind:'labs',priority:4,title:`${row.group.label}: valor ${direction(row.delta)}`,meaning:'A mudança é observada em coletas comparáveis; seu significado depende da referência e do contexto clínico, não apenas da direção.',evidence:`${labResultText(row.previous)} → ${labResultText(row.current)} · ${fmtDate(row.previous.collection_date)} → ${fmtDate(row.current.collection_date)}`,limit:'Uma mudança isolada não confirma melhora ou piora da saúde.',route:'saude',action:'Ver histórico dos exames',rows:[row]};
+    if(row)readings.labs={kind:'labs',priority:4,title:`${row.group.label}: valor ${direction(row.delta)}`,meaning:'A mudança é observada em coletas comparáveis; seu significado depende da referência e do contexto clínico, não apenas da direção.',evidence:`${labResultText(row.previous)} → ${labResultText(row.current)} · ${fmtDate(row.previous.collection_date)} → ${fmtDate(row.current.collection_date)} · mesmo laboratório, unidade, método e referência registrados. Referência atual: ${row.current.reference_range}; anterior: ${row.previous.reference_range}.`,limit:'Uma mudança isolada não confirma melhora ou piora da saúde.',route:'saude',action:'Ver histórico dos exames',rows:[row]};
   }
   if(e.body){
     const fat=num(e.bodyPairs?.changes.fat_mass_kg),muscle=num(e.bodyPairs?.changes.skeletal_muscle_mass_kg);
@@ -60,19 +61,20 @@ function evolutionReadings(m,r,e){
   }
   if(e.latestSession){
     const l=e.freshLoad;
-    readings.training=l?{kind:'training',priority:1,title:`Carga de trabalho ${direction(l.delta)} neste exercício`,meaning:`${l.exercise}: a comparação usa ${l.reps} repetições no mesmo aparelho e local. Isso descreve este exercício, não melhora ou piora global do treino.`,evidence:`${fmtNum(l.previous.weight,1)} → ${fmtNum(l.latest.weight,1)} ${loadInsightUnits[l.unit]} · ${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}`,limit:'Execução e esforço podem variar; aquecimentos e séries com fase desconhecida não sustentam esta progressão.',route:'treinos',action:'Ver progressão no exercício'}:{kind:'training',priority:8,title:'Ainda não há conclusão de progressão recente',meaning:'As cargas e repetições da última sessão estão disponíveis. Falta um par recente de séries de trabalho com condições equivalentes para afirmar progressão.',evidence:`${fmtDate(e.latestSession.workout_date)} · ${e.latestSession.workout_type||'Treino'} · ${e.latestSession.location||'Local não informado'}`,limit:'Uma carga maior em outro aparelho, com outras repetições ou fase desconhecida não comprova melhora.',route:'treinos',action:'Conferir a sessão recente'};
+    readings.training=l?{kind:'training',priority:1,title:`Carga de trabalho ${direction(l.delta)} neste exercício`,meaning:`${l.exercise}: a comparação usa ${l.reps} repetições com a mesma descrição registrada de aparelho e local. Isso descreve este exercício, não melhora ou piora global do treino.`,evidence:`${fmtNum(l.previous.weight,1)} → ${fmtNum(l.latest.weight,1)} ${loadInsightUnits[l.unit]} · ${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}`,limit:'Execução e esforço podem variar; a diferença de carga registrada não confirma execução idêntica nem ganho de força.',route:'treinos',action:'Ver cargas registradas'}:{kind:'training',priority:8,title:'Comparação recente ainda limitada',meaning:'As cargas e repetições da última sessão estão disponíveis. Falta um par recente de séries de trabalho com condições registradas equivalentes.',evidence:`${fmtDate(e.latestSession.workout_date)} · ${e.latestSession.workout_type||'Treino'} · ${e.latestSession.location||'Local não informado'}`,limit:'Uma carga maior em outro aparelho, com outras repetições ou fase desconhecida não comprova melhora.',route:'treinos',action:'Conferir a sessão recente'};
   }
-  if(e.latestWater)readings.water={kind:'water',priority:9,title:'O registro de água pode ser parcial',meaning:'O total recebido não comprova o consumo completo do dia. Ainda não é possível afirmar se a hidratação atingiu o plano.',evidence:`${fmtNum(e.latestWater.value,0)} mL · ${fmtDate(e.latestWater.date)} · ${r.water.source.label}`,limit:'Confira a completude do registro e a vigência da meta; dias ausentes ficam fora das médias.',route:'nutricao',action:'Conferir água e meta'};
+  if(e.latestWater)readings.water={kind:'water',priority:9,title:'O registro de água pode ser parcial',meaning:'O total registrado não comprova o consumo completo do dia. Ainda não é possível afirmar se a hidratação atingiu o plano.',evidence:`${fmtNum(e.latestWater.value,0)} mL · ${fmtDate(e.latestWater.date)} · ${r.water.source.label}`,limit:'Confira a completude do registro e a vigência da meta; dias ausentes ficam fora das médias.',route:'nutricao',action:'Conferir água e meta'};
   return {domainReadings:readings,takeaways:Object.values(readings).sort((a,b)=>a.priority-b.priority),labReferenceRows:outside};
 }
 export function evolutionModel(data,status,m,r,ui={}){
-  const insights=evidenceInsights(data,status,m.current,r.nutrition.source?.key,m.today);
+  const insights=evidenceInsights(data,status,m.current,r.nutrition.source?.key||r.nutrition.requestedSource||'__no_selected_origin__',m.today);
   // The selected global calendar and its equal-duration predecessor are the
   // only time windows feeding synthesis. Never fall back to a fixed fortnight.
   const period=['30','90','365','all'].includes(String(m.period))?String(m.period):String(m.current.days||'all');
   const available=homePeriodModel(data,status,period,{},m.today);
   const exactSource=(domain,legacy)=>{
     if(!legacy)return '__no_selected_origin__';
+    const exact=available[domain].sources.find(source=>source.key===legacy.key);if(exact)return exact.key;
     let matches=available[domain].sources.filter(source=>norm(source.label)===norm(legacy.label));
     if(domain==='nutrition')matches=matches.filter(source=>source.domain==='nutrition');
     if(domain==='sleep'){
@@ -82,7 +84,7 @@ export function evolutionModel(data,status,m,r,ui={}){
     }
     return matches.length===1?matches[0].key:'__ambiguous_or_missing_origin__';
   };
-  const periodModel=homePeriodModel(data,status,period,{...ui,homeNutritionSource:exactSource('nutrition',r.nutrition.source),homeSleepSource:exactSource('sleep',r.sleep.source),homeWaterSource:exactSource('water',r.water.source)},m.today);
+  const periodModel=homePeriodModel(data,status,period,{...ui,homeNutritionSource:r.nutrition.source?.key||r.nutrition.requestedSource||'__no_selected_origin__',homeSleepSource:exactSource('sleep',r.sleep.source),homeWaterSource:exactSource('water',r.water.source)},m.today);
   const matchingWindow=periodModel.bounds.start===m.current.start&&periodModel.bounds.end===m.current.end;
   const align=comparison=>matchingWindow?comparison:{...comparison,comparable:false,delta:null,reason:'window_mismatch'};
   const body=m.body.latest||null;
@@ -109,7 +111,7 @@ export function evolutionModel(data,status,m,r,ui={}){
   const latestExercises=latestSession?exercises.filter(e=>e.workout_source_record_id===latestSession.source_record_id).sort((a,b)=>(num(a.order_index)||0)-(num(b.order_index)||0)).map(exercise=>({...exercise,recordedSets:sets?.filter(s=>s.exercise_source_record_id===exercise.source_record_id).sort((a,b)=>(num(a.set_index)||0)-(num(b.set_index)||0))||[]})):[];
   const load=insights.highlightLoad;
   const freshLoad=load&&(!latestSession||load.latest.date>=addDays(day(latestSession.workout_date),-14))?load:null;
-  const meals=status.meals==='ready'?(data.meals||[]).filter(row=>inWindow(day(row.meal_date),m.current)&&day(row.meal_date)<m.today&&norm(row.source)===r.nutrition.source?.key&&r.nutrition.closedRows.some(d=>d.date===day(row.meal_date))&&row.meal_name):[];
+  const meals=status.meals==='ready'?(data.meals||[]).filter(row=>inWindow(day(row.meal_date),m.current)&&day(row.meal_date)<m.today&&r.nutrition.source?.domain==='nutrition'&&norm(row.source)===norm(r.nutrition.source.label)&&r.nutrition.closedRows.some(d=>d.date===day(row.meal_date))&&row.meal_name):[];
   const mealsByDay=new Map();for(const row of meals){const key=JSON.stringify([day(row.meal_date),norm(row.meal_name)]);if(!mealsByDay.has(key))mealsByDay.set(key,[]);mealsByDay.get(key).push(row);}
   const mealNames=new Map();for(const rows of mealsByDay.values()){if(rows.length!==1)continue;const row=rows[0];if(num(row.protein_g)==null)continue;const key=norm(row.meal_name);if(!mealNames.has(key))mealNames.set(key,{label:row.meal_name,values:[]});mealNames.get(key).values.push(num(row.protein_g));}
   const mealDistribution=[...mealNames.values()].map(g=>({label:g.label,value:average(g.values),days:g.values.length}));
@@ -121,7 +123,7 @@ export function evolutionModel(data,status,m,r,ui={}){
   }
   for(const l of insights.loads.rows.filter(l=>!latestSession||l.latest.date>=addDays(day(latestSession.workout_date),-14)).slice(0,3))findings.push({kind:'training',title:`${l.exercise}: ${fmtNum(l.previous.weight,1)} → ${fmtNum(l.latest.weight,1)} ${loadInsightUnits[l.unit]}`,text:`${l.reps} repetições · ${l.machine} · ${l.location}`,detail:`${fmtDate(l.previous.date)} → ${fmtDate(l.latest.date)}. Variação da carga de trabalho nessas repetições; esforço e execução podem variar.`,route:'treinos',exerciseId:l.latest.exerciseId,unit:l.unit});
   for(const[key,label,unit]of [['protein_g','Proteína','g/dia'],['calories_kcal','Energia registrada','kcal/dia']]){
-    const d=recent.nutrition[key];if(d.comparable)findings.push({kind:'nutrition',title:`${label}: ${fmtNum(d.previous,0)} → ${fmtNum(d.current,0)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r.nutrition.source.label}`,detail:`${d.previousDays}/${d.previousBounds.closedDays} e ${d.currentDays}/${d.currentBounds.closedDays} dias com valor · ${d.sourceLabel}. ${d.rule.description} Médias dos diários recebidos, sem inferir adequação ou déficit.`,route:'nutricao'});
+    const d=recent.nutrition[key];if(d.comparable)findings.push({kind:'nutrition',title:`${label}: ${fmtNum(d.previous,0)} → ${fmtNum(d.current,0)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r.nutrition.source.label}`,detail:`${d.previousDays}/${d.previousBounds.closedDays} e ${d.currentDays}/${d.currentBounds.closedDays} dias com valor · ${d.sourceLabel}. ${d.rule.description} Médias dos diários disponíveis, sem inferir adequação ou déficit.`,route:'nutricao'});
   }
   for(const[key,label,unit,digits,route]of [['sleep','Sono registrado','h',1,'analise'],['water','Água registrada','mL/dia',0,'nutricao']]){
     const d=recent[key];if(d.comparable)findings.push({kind:key,title:`${label}: ${fmtNum(d.previous,digits)} → ${fmtNum(d.current,digits)} ${unit}`,text:`${fmtDate(d.previousBounds.start)}–${fmtDate(d.previousBounds.end)} versus ${fmtDate(d.currentBounds.start)}–${fmtDate(d.currentBounds.end)}.`,summary:`${d.previousDays} e ${d.currentDays} dias · ${r[key].source.label}`,detail:`${d.previousDays}/${d.previousBounds.closedDays} e ${d.currentDays}/${d.currentBounds.closedDays} dias com valor · ${d.sourceLabel}. ${d.rule.description} Dias ausentes não são zero.`,route});
@@ -130,7 +132,7 @@ export function evolutionModel(data,status,m,r,ui={}){
   if(foodContrast)findings.push({kind:'nutrition',title:`${foodContrast.label}: ${fmtNum(foodContrast.withMean,0)} versus ${fmtNum(foodContrast.withoutMean,0)} ${foodContrast.unit}/dia`,text:'Dias com treino versus dias sem treino registrado, na mesma fonte alimentar.',detail:`${foodContrast.withDays} e ${foodContrast.withoutDays} dias com valor. Associação descritiva; ausência de treino não confirma descanso.`,route:'nutricao'});
   const energyChange=foodChange('calories_kcal');
   if(energyChange)findings.push({kind:'nutrition',title:`Energia registrada ${signed(energyChange.delta,0)} kcal/dia`,text:'Média dos dias encerrados versus a janela anterior de mesma duração.',detail:`${r.nutrition.source.label}. Os diários podem estar incompletos; não é estimativa de déficit energético.`,route:'nutricao'});
-  for(const lab of m.labs.comparisons.filter(x=>x.comparable).slice(0,3))findings.push({kind:'labs',title:`${lab.group.label}: ${lab.previous.result_raw||fmtNum(lab.previous.result_numeric,2)} → ${lab.current.result_raw||fmtNum(lab.current.result_numeric,2)} ${lab.current.unit||''}`,text:`${fmtDate(lab.previous.collection_date)} → ${fmtDate(lab.current.collection_date)} · mesma origem, unidade e método declarado.`,summary:`${lab.current.laboratory||lab.current.source||'Origem no detalhe'} · método declarado`,detail:`${lab.baselineOutsideWindow?'A coleta anterior é contexto fora da janela. ':''}Referência do laboratório no detalhe; variação isolada não define diagnóstico.`,route:'saude'});
+  for(const lab of m.labs.comparisons.filter(x=>x.comparable).slice(0,3))findings.push({kind:'labs',title:`${lab.group.label}: ${labResultText(lab.previous)} → ${labResultText(lab.current)}`,text:`${fmtDate(lab.previous.collection_date)} → ${fmtDate(lab.current.collection_date)} · mesmo laboratório, unidade, método e referência registrados.`,summary:`${lab.current.laboratory||lab.current.source||'Origem no detalhe'} · método declarado`,detail:`${lab.baselineOutsideWindow?'A coleta anterior é contexto fora da janela. ':''}Referência atual: ${lab.current.reference_range}; anterior: ${lab.previous.reference_range}. Variação isolada não confirma melhora, piora clínica ou diagnóstico.`,route:'saude'});
   const next=[];
   if(body&&!bodyPairs)next.push({title:'Condições da avaliação corporal',text:`${fmtDate(body.measured_at)} · ${bodySourceLabel(body)}. Confira o aparelho das avaliações anteriores antes de atribuir a diferença a gordura ou músculo.`,route:'bio'});
   if(recent.sleep.comparable)next.push({title:'Sono nos períodos comparados',text:`${fmtNum(recent.sleep.previous,1)} → ${fmtNum(recent.sleep.current,1)} h em média. Abra as datas e a origem para conferir a rotina registrada.`,route:'analise'});
@@ -138,7 +140,10 @@ export function evolutionModel(data,status,m,r,ui={}){
   else if(freshLoad)next.push({title:`Conferir ${freshLoad.exercise}`,text:`${fmtNum(freshLoad.previous.weight,1)} → ${fmtNum(freshLoad.latest.weight,1)} ${loadInsightUnits[freshLoad.unit]} em ${freshLoad.reps} reps. Confira execução e esforço nas duas sessões.`,route:'treinos'});
   if(!currentGoal&&status.goals==='ready')next.push({title:goalReference?'Vigência do plano alimentar':'Conferir suas metas',text:goalReference?`As referências do protocolo de ${fmtDate(goalReference.meta.documented_on)} foram recuperadas. A data de vigência do plano atual continua sem confirmação.`:'Registrar as referências do seu plano alimentar permite comparar consumo e objetivo.',kind:'goals'});
   next.push({title:'Preparar a próxima consulta',text:'Gerar um resumo de evolução com exames e contexto dos protocolos.',kind:'consultation'});
-  const result={periodModel,insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
+  const waterContext=waterReferenceContext(data,status,latestWater?.date||m.today);
+  const currentWaterDocument=waterReferenceContext(data,status,m.today).documented;
+  const waterReference=waterContext?.selected||currentWaterDocument||null,documentedWaterReference=currentWaterDocument||null;
+  const result={waterReference,documentedWaterReference,periodModel,insights,body,bodyPairs,bodyPrevious,latestFood,latestWater,latestSleep,nutritionTargets,currentGoal,goalReference,recent,foodChange,sleepChange,trainingGroups,latestSession,latestExercises,freshLoad,mealDistribution,recentTreatments,findings,next:next.slice(0,3),goalsAvailable:status.goals==='ready',waterMean:r.water.closedRows.length>=5?r.water.mean:null};
   return {...result,...evolutionReadings(m,r,result)};
 }
 

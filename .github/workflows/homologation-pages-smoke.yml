@@ -12,15 +12,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
-      - name: Static checks
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Validate current graph and supplemental fixture contracts
         run: |
           node --check v2/homologation-live-smoke.mjs
+          node --check v2/deployed-public-auth-smoke.mjs
+          node v2/deployed-runtime-assets.mjs
+          node v2/production-integration-contract.mjs
           grep -q 'Última medição' v2/src/bio-screen.js
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Exercise deployed desktop and mobile summaries
+      - name: Verify public signed-out boundary
+        env:
+          LTS_DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node v2/deployed-public-auth-smoke.mjs
+      - name: Supplemental deployed legacy fixture summaries
         run: node v2/homologation-live-smoke.mjs

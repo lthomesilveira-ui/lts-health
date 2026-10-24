@@ -1,3 +1,4 @@
+import {nutritionSourceReview} from './nutrition-source-review.js';
 import {trainingSetCounts,isSetExtension} from './training-session.js';
 
 // A read-only calendar contract for the Home. This module intentionally has no
@@ -25,7 +26,7 @@ const inside=(value,bounds)=>{const date=dayOf(value);return Boolean(date&&date>
 const sourceStatus=row=>norm(row.canonical_status);
 const accepted=row=>['canonical','candidate','held'].includes(sourceStatus(row));
 const foodFields=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g'];
-const candidateFood={dietary_energy_kcal:['calories_kcal','kcal'],dietary_protein_g:['protein_g','g'],dietary_carbohydrates_g:['carbs_g','g'],dietary_fat_g:['fat_g','g'],dietary_fiber_g:['fiber_g','g']};
+const candidateFood={dietary_energy_kcal:['calories_kcal','kcal'],dietary_protein_g:['protein_g','g'],dietary_carbohydrates_g:['carbs_g','g'],dietary_carbs_g:['carbs_g','g'],dietary_fat_g:['fat_g','g'],dietary_fiber_g:['fiber_g','g']};
 const bodyFields=['fat_mass_kg','skeletal_muscle_mass_kg','weight_kg','body_fat_pct'];
 const comparisonRule=Object.freeze({minimumDays:5,minimumCoverage:.7,description:'Critério descritivo: ao menos 5 dias com valor e 70% dos dias encerrados em cada janela, na mesma variável, unidade e origem. Não é teste estatístico nem prova de diário completo.'});
 
@@ -40,7 +41,7 @@ function statusOf(status,keys,count){
   return count?'ready':'empty';
 }
 function coverage(rows,bounds,today,available=true){
-  const dates=unique(rows.map(row=>row.date).filter(Boolean)).sort(),closed=dates.filter(date=>date<today);
+  const dates=unique(rows.map(row=>row.date).filter(Boolean)).sort(),closed=unique(rows.filter(row=>row.date<today&&!row.excludeFromClosedMeans).map(row=>row.date)).sort();
   return {recordedDays:available?dates.length:null,closedDays:available?closed.length:null,days:available?closed.length:null,
     expectedDays:bounds.closedDays,calendarDays:bounds.days,openDays:available?dates.filter(date=>date===today).length:null,
     fraction:available&&bounds.closedDays?closed.length/bounds.closedDays:null,firstDate:dates[0]||null,lastDate:dates.at(-1)||null,
@@ -48,13 +49,21 @@ function coverage(rows,bounds,today,available=true){
     note:'Dias com registro não comprovam diário completo. Ausência não significa zero.'};
 }
 function pickSource(sources,requested){
-  if(requested)return sources.find(source=>source.key===requested||norm(source.label)===requested)||null;
+  if(requested){
+    const exact=sources.find(source=>source.key===requested);if(exact)return exact;
+    try{if(Array.isArray(JSON.parse(requested)))return null;}catch{}
+    // Legacy labels are accepted only when they identify exactly one source.
+    // Never choose among domains/statuses sharing the same display label.
+    const legacy=sources.filter(source=>norm(source.label)===norm(requested));
+    return legacy.length===1?legacy[0]:null;
+  }
   return sources.slice().sort((a,b)=>(b.rows.at(-1)?.date||'').localeCompare(a.rows.at(-1)?.date||'')||b.coverage.closedDays-a.coverage.closedDays||a.key.localeCompare(b.key))[0]||null;
 }
 function sourceStats(key,items,fields,bounds,today){
   const dates=groups(items,row=>row.date),rows=[],duplicates=[];
   for(const[date,list]of dates){
-    const row={date,open:date===today,source:key,context:items[0].label,cohort:key};
+    const reviews=list.map(item=>item.review).filter(Boolean);const knownPartial=reviews.some(r=>r.partial),reviewInvalid=reviews.some(r=>r.state==='review_invalid');
+    const row={date,open:date===today,knownPartial,excludeFromClosedMeans:knownPartial||reviewInvalid,reviewVerified:reviews.length===list.length&&reviews.length>0&&reviews.every(r=>r.verified),exportedAt:reviews.find(r=>r.exportedAt)?.exportedAt||null,source:key,context:items[0].label,cohort:key};
     for(const field of fields){
       const observations=list.filter(item=>Object.hasOwn(item.values,field));
       row[field]=observations.length===1?observations[0].values[field]:null;
@@ -62,7 +71,7 @@ function sourceStats(key,items,fields,bounds,today){
     }
     if(fields.some(field=>row[field]!=null))rows.push(row);
   }
-  const sorted=ordered(rows),closedRows=sorted.filter(row=>!row.open),means={},counts={},series={},metricCoverage={};
+  const sorted=ordered(rows),closedRows=sorted.filter(row=>!row.open&&!row.excludeFromClosedMeans),means={},counts={},series={},metricCoverage={};
   for(const field of fields){
     const closed=closedRows.filter(row=>row[field]!=null);
     counts[field]=closed.length;means[field]=average(closed.map(row=>row[field]));
@@ -71,7 +80,7 @@ function sourceStats(key,items,fields,bounds,today){
   }
   const first=items[0];
   return {key,label:first.label,status:first.status,unit:first.unit||null,domain:first.domain,sourceFamily:first.sourceFamily||null,
-    rows:sorted,closedRows,openRows:sorted.filter(row=>row.open),means,counts,series,duplicates,ambiguousDays:unique(duplicates.map(row=>row.date)).length,
+    receivedDates:unique(items.filter(item=>fields.some(field=>item.values[field]!=null)).map(item=>item.date)).sort(),rows:sorted,closedRows,knownPartialRows:sorted.filter(r=>r.knownPartial),reviewVerified:sorted.length>0&&sorted.every(r=>r.reviewVerified),openRows:sorted.filter(row=>row.open),means,counts,series,duplicates,ambiguousDays:unique(duplicates.map(row=>row.date)).length,
     coverage:coverage(sorted,bounds,today),metricCoverage,mean:means.value??null,count:counts.value??closedRows.length,
     points:series.value||[],latest:sorted.at(-1)||null};
 }
@@ -82,14 +91,18 @@ function domainSources(observed,fields,status,keys,bounds,today,requested){
     rows:source?.rows||[],closedRows:source?.closedRows||[],means:source?.means||empty,counts:source?.counts||Object.fromEntries(fields.map(field=>[field,0])),
     mean:source?.mean??null,count:source?.count??0,points:source?.points||[],latest:source?.latest||null,
     coverage:source?.coverage||coverage([],bounds,today,available),duplicates:sources.flatMap(item=>item.duplicates),
-    requestedSourceMissing:Boolean(requested&&!source),comparison:null};
+    requestedSource:requested||null,requestedSourceMissing:Boolean(requested&&!source),
+    selectionMessage:requested&&!source?'Origem escolhida sem dados disponíveis nesta janela. Amplie o período ou escolha outra origem; nenhuma substituição foi feita.':null,comparison:null};
 }
 function metricObservation(row,domain,field,value){
   const label=String(row.source_name||row.source||'').trim(),status=domain==='metrics'?'canonical':sourceStatus(row),unit=norm(row.unit);
   return {date:dayOf(domain==='metrics'?row.measured_at:row.metric_date),label,status,unit,sourceFamily:row.source_family||null,domain,
     key:JSON.stringify([domain,norm(row.source_family),norm(label),status,unit]),values:{[field]:value}};
 }
-function nutritionModel(data,status,bounds,ui,today){
+// Shared source contract for Home, integrated review and consultation/export.
+// It retains source domain/status, per-variable counts and today's open rows.
+export function nutritionPeriodModel(data={},status={},bounds={},ui={},today=localToday()){
+  bounds=makeBounds(bounds.start||selectedCalendar(data,status,'all',today).bounds.start,bounds.end&&bounds.end<today?bounds.end:today,today);
   const observed=[];let unknownRows=0,invalidRows=0;
   if(ready(status,'nutrition'))for(const row of data.nutrition||[]){
     if(!inside(row.nutrition_date,bounds))continue;
@@ -99,16 +112,16 @@ function nutritionModel(data,status,bounds,ui,today){
   }
   if(ready(status,'sourceMetrics'))for(const row of data.sourceMetrics||[]){
     if(!accepted(row)||!candidateFood[row.metric_type]||!inside(row.metric_date,bounds))continue;
-    const[field,unit]=candidateFood[row.metric_type],point=metricObservation(row,'sourceMetrics',field,nonnegative(row.value));
+    const[field,unit]=candidateFood[row.metric_type],point=metricObservation(row,'sourceMetrics',field,nonnegative(row.value));point.review=nutritionSourceReview(row);
     if(!point.label){unknownRows++;continue;}if(norm(row.unit)!==unit){invalidRows++;continue;}
     // Units belong to the individual nutrient, not the source identity: protein
     // and energy from one origin must remain selectable together, without pooling.
-    point.key=JSON.stringify(['sourceMetrics',norm(row.source_family),norm(point.label),point.status]);point.unit=null;observed.push(point);
+    point.key=JSON.stringify(['sourceMetrics',norm(row.source_family),norm(point.label),point.status,...(point.review.verified?[point.review.sourceHash]:[])]);point.unit=null;observed.push(point);
   }
   const result=domainSources(observed,foodFields,status,['nutrition','sourceMetrics'],bounds,today,ui.homeNutritionSource||ui.reportNutritionSource);
   for(const source of result.sources){source.caloriesPoints=source.series.calories_kcal;source.proteinPoints=source.series.protein_g;}
   return {...result,unknownRows,invalidRows,caloriesPoints:result.source?.caloriesPoints||[],proteinPoints:result.source?.proteinPoints||[],
-    note:'Médias dos dias encerrados com valor, por variável e origem. Fontes candidatas permanecem identificadas; não são somadas.'};
+    note:'Médias dos dias encerrados com valor, por variável e origem. Versões adicionais permanecem separadas; não são somadas.'};
 }
 function sleepModel(data,status,bounds,ui,today){
   const observed=[];let invalidRows=0,unknownRows=0;
@@ -205,7 +218,7 @@ function simpleRows(data,status,key,dateKey,bounds,today){
   return {available,status:statusOf(status,[key],rows.length),rows,coverage:coverage(rows,bounds,today,available)};
 }
 function snapshot(data,status,bounds,ui,today){
-  const body=bodyModel(data,status,bounds,ui,today),training=trainingModel(data,status,bounds,today),nutrition=nutritionModel(data,status,bounds,ui,today),sleep=sleepModel(data,status,bounds,ui,today),water=waterModel(data,status,bounds,ui,today),labs=labsModel(data,status,bounds,today);
+  const body=bodyModel(data,status,bounds,ui,today),training=trainingModel(data,status,bounds,today),nutrition=nutritionPeriodModel(data,status,bounds,ui,today),sleep=sleepModel(data,status,bounds,ui,today),water=waterModel(data,status,bounds,ui,today),labs=labsModel(data,status,bounds,today);
   const treatments=simpleRows(data,status,'treatments','event_date',bounds,today),polar=simpleRows(data,status,'polarSessions','workout_date',bounds,today);
   const domains={body,training,nutrition,sleep,water,labs,treatments,polar};
   const dates=unique(Object.values(domains).flatMap(domain=>domain.sources?domain.sources.flatMap(source=>source.rows.map(row=>row.date)):domain.rows.map(row=>row.date))).sort();
@@ -234,7 +247,7 @@ function describe(model){
   const add=(kind,title,text,evidence,attention='')=>insights.push({kind,title,text,evidence,attention,isAttention:Boolean(attention)});
   if(body.rows.length){
     const pair=body.first&&body.latest&&body.first.date!==body.latest.date;
-    add('body',`${body.rows.length} avaliações no período`,pair?`Gordura estimada: ${format(body.first.fat_mass_kg,1)} → ${format(body.latest.fat_mass_kg,1)} kg; músculo estimado: ${format(body.first.skeletal_muscle_mass_kg,1)} → ${format(body.latest.skeletal_muscle_mass_kg,1)} kg.`:`Última avaliação inequívoca: ${displayDate(body.latest?.date)}.`,pair?`${displayDate(body.first.date)} → ${displayDate(body.latest.date)}. ${body.comparability.note}`:body.comparability.note);
+    add('body',`${body.rows.length} avaliações no período`,pair?`Gordura estimada: ${format(body.first.fat_mass_kg,1)} → ${format(body.latest.fat_mass_kg,1)} kg; músculo estimado: ${format(body.first.skeletal_muscle_mass_kg,1)} → ${format(body.latest.skeletal_muscle_mass_kg,1)} kg.`:`Última avaliação sem conflito: ${displayDate(body.latest?.date)}.`,pair?`${displayDate(body.first.date)} → ${displayDate(body.latest.date)}. ${body.comparability.note}`:body.comparability.note);
   }
   if(training.available&&training.sessions)add('training',`${training.sessions} sessões registradas`,training.primarySets==null?'Detalhes das séries indisponíveis.':`${training.primarySets} séries principais e ${training.extensions} prolongamentos registrados.`,`${range}. ${training.note}`);
   for(const[domain,field,label,unit,digits,kind]of [[nutrition,'protein_g','Proteína','g',0,'nutrition'],[nutrition,'calories_kcal','Energia','kcal',0,'nutrition'],[sleep,'value','Sono','h',1,'sleep'],[water,'value','Água','mL',0,'water']]){
@@ -298,5 +311,24 @@ export function homePeriodModel(data={},status={},period='90',ui={},today=localT
   model.sleep.comparison=compareMetric(model.sleep,previous?.sleep,'value',bounds,previousBounds);
   model.water.comparison=compareMetric(model.water,previous?.water,'value',bounds,previousBounds);
   const result={period,today,label:period==='all'?'Histórico':`${period} dias`,...model,previousBounds,previous,comparisonRule};
+  return {...result,...describe(result)};
+}
+
+/** Read-only snapshot using caller-supplied calendar bounds. This does not alter
+ * the legacy Home calendar, source selection or comparison contract. */
+export function homePeriodSnapshot(data={},status={},bounds={},ui={},today=localToday(),previousBounds=null){
+  today=dayOf(today);
+  if(!today||!dayOf(bounds.start)||!dayOf(bounds.end))throw new RangeError('Explicit valid calendar bounds and today are required');
+  bounds=makeBounds(bounds.start,bounds.end,today);
+  if(previousBounds){
+    if(!dayOf(previousBounds.start)||!dayOf(previousBounds.end))throw new RangeError('Invalid previous calendar bounds');
+    previousBounds=makeBounds(previousBounds.start,previousBounds.end,today);
+  }
+  const model=snapshot(data,status,bounds,ui,today);
+  const previous=previousBounds?snapshot(data,status,previousBounds,{...ui,homeNutritionSource:model.nutrition.source?.key||ui.homeNutritionSource,homeSleepSource:model.sleep.source?.key||ui.homeSleepSource,homeWaterSource:model.water.source?.key||ui.homeWaterSource},today):null;
+  model.nutrition.comparison=Object.fromEntries(foodFields.map(field=>[field,compareMetric(model.nutrition,previous?.nutrition,field,bounds,previousBounds)]));
+  model.sleep.comparison=compareMetric(model.sleep,previous?.sleep,'value',bounds,previousBounds);
+  model.water.comparison=compareMetric(model.water,previous?.water,'value',bounds,previousBounds);
+  const result={period:String(ui.dashboardPeriod||'custom'),today,label:`${displayDate(bounds.start)} a ${displayDate(bounds.end)}`,...model,previousBounds,previous,comparisonRule};
   return {...result,...describe(result)};
 }

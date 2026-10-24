@@ -19,7 +19,7 @@ change=recentObservedChange(rows.map((r,i)=>({...r,value:i<3?null:r.value})),'va
 assert.equal(change.comparable,false);assert.equal(change.delta,null);assert.equal(change.previousDays,4,'null values have their own denominator');
 assert.equal(recentObservedChange(rows,'value',{start:'2025-04-25',end:today},today).comparable,false,'comparison cannot escape the chosen window');
 
-const make=(id,date,exercise,weight,phase='working')=>({w:{source_record_id:`w${id}`,workout_date:date,source:'Synthetic log',location:'Synthetic gym',is_canonical:true,record_status:'validated'},e:{source_record_id:`e${id}`,workout_source_record_id:`w${id}`,workout_date:date,exercise,machine:'Synthetic machine',source:'Synthetic log'},s:{source_record_id:`s${id}`,exercise_source_record_id:`e${id}`,workout_source_record_id:`w${id}`,workout_date:date,weight,weight_unit:'kg',reps_numeric:8,phase,source:'Synthetic log'}});
+const make=(id,date,exercise,weight,phase='working')=>({w:{source_record_id:`w${id}`,workout_date:date,source:'Synthetic log',location:'Synthetic gym',is_canonical:true,record_status:'validated'},e:{source_record_id:`e${id}`,workout_source_record_id:`w${id}`,workout_date:date,exercise,machine:'Synthetic machine',source:'Synthetic log'},s:{source_record_id:`s${id}`,exercise_source_record_id:`e${id}`,workout_source_record_id:`w${id}`,workout_date:date,weight,weight_unit:'kg',reps_numeric:8,phase,technique:'standard',failure:false,near_failure:false,source:'Synthetic log'}});
 const observations=[make(1,'2025-04-01','Old changed',20),make(2,'2025-04-02','Old changed',25),make(3,'2025-04-20','Recent stable',30),make(4,'2025-04-21','Recent stable',30)];
 const training={workouts:observations.map(x=>x.w),exercises:observations.map(x=>x.e),sets:observations.map(x=>x.s)};
 assert.equal(evidenceInsights(training,status,bounds,'',today).highlightLoad.exercise,'Recent stable','fresh unchanged pair beats old changed pair');
@@ -32,12 +32,15 @@ assert.doesNotMatch(c.evo.findings.map(f=>f.title).join(' '),/Old changed/);
 assert.match(html,/Comparação histórica · 02\/04\/2025/);assert.match(html,/42,5 kg × 8/);
 assert.match(html,/Fase das séries não informada/);
 
-const result=(date,method,value,extra={})=>({collection_date:date,biomarker:'Synthetic A',laboratory:'Synthetic lab',unit:'u',method,result_numeric:value,result_raw:String(value),...extra});
+const result=(date,method,value,extra={})=>({collection_date:date,biomarker:'Synthetic A',laboratory:'Synthetic lab',unit:'u',method,result_numeric:value,result_raw:String(value),reference_range:'1 a 20',...extra});
 const labs=[result('2025-01-02','HPLC',10),result('2025-03-01',null,11),result('2025-04-20','Cromatografia líquida de alta eficiência (HPLC)',12)];
 let l=laboratoryReport({labs},status,bounds);
-assert.equal(l.selected.comparable,true);assert.equal(l.selected.previous.collection_date,'2025-01-02');
-assert.equal(l.selected.delta,2);assert.equal(l.selected.baselineOutsideWindow,true);
+assert.equal(l.selected.comparable,false);assert.equal(l.selected.previous.collection_date,'2025-03-01','never skip an intervening collection to find a convenient older comparator');
+assert.equal(l.selected.delta,null);assert.equal(l.selected.comparisonReason,'unknown_method');assert.equal(l.selected.baselineOutsideWindow,true);
 assert.equal(l.rows.length,1,'plot and current marker scope remain inside the chosen window');
+const matching=[result('2025-03-01','HPLC',10),result('2025-04-20','HPLC',12)];
+const exact=laboratoryReport({labs:matching},status,bounds);assert.equal(exact.selected.comparable,true);assert.equal(exact.selected.delta,2);
+const methodAlias=laboratoryReport({labs:[labs[0],labs.at(-1)]},status,bounds);assert.equal(methodAlias.selected.comparable,false,'different recorded method labels are not automatically aliased for deltas');assert.equal(methodAlias.selected.comparisonReason,'different_method');
 l=laboratoryReport({labs:[...labs.slice(0,2),result('2025-04-20','HPLC-MS',12)]},status,bounds);
 assert.equal(l.selected.comparable,false,'other chromatographic methods cannot be aliased');
 l=laboratoryReport({labs:[result('2025-03-01',null,11),result('2025-04-20',null,12)]},status,bounds);
@@ -57,7 +60,8 @@ const data={...stale,labs,goals:[reference]};const saved=structuredClone(data);
 const ref=homeCockpitModel(data,status,'30',{},today),summary=consultationLines(ref.r,ref.m,ref.evo).join('\n');
 assert.match(renderHomeCockpit(ref),/Referência do protocolo · 01\/04\/2025/);
 assert.match(renderHomeCockpit(ref),/Vigência atual não confirmada/);
-assert.match(summary,/Anterior comparável: 10 u em 02\/01\/2025 \(contexto fora da janela\)/);
+assert.match(summary,/Anterior: 11 u em 01\/03\/2025 \(contexto fora da janela\)/);
+assert.match(summary,/Sem diferença automática: Método não informado na coleta anterior/);assert.doesNotMatch(summary,/Anterior comparável: 10 u/);
 assert.match(summary,/Referências históricas documentadas/);assert.match(summary,/Current annotated.*42,5 kg × 8 reps/s);
 assert.deepEqual(data,saved,'models and exports preserve all source records');
 const phaseKeys=['warmup','working','drop','rest_pause','other',null,'constructor'];
@@ -76,8 +80,9 @@ assert.match(consultationLines(percent.r,percent.m,percent.evo).join('\n'),/Dife
 const ranged=(value,reference_range,extra={})=>result('2025-04-20','Synthetic method',value,{reference_range,...extra});
 assert.equal(labReferenceStatus(ranged(120,'Homens: 10 a 100 u; resultado confirmado após diluição')).status,'above');
 assert.equal(labReferenceStatus(ranged(9,'10 a 100')).status,'below');
+const adultReference=labReferenceStatus(ranged(120,'Adultos: 10 a 100 u'));assert.equal(adultReference.status,'above');assert.equal(adultReference.scope,'Adultos','a single printed population qualification is preserved, not chosen from multiple ranges');
 for(const n of [10,50,100])assert.equal(labReferenceStatus(ranged(n,'10 a 100 u')).status,'within','endpoints are included');
-for(const reference of ['10 a 100 mg/dL','Homens: 10 a 100 u; mulheres: 5 a 50 u','Adultos: 10 a 100 u','Jejum: <100; sem jejum: <120','ótimo <100; alto >200','100 a 10 u','10 a 10 u','10 a 100 u; alvos dependem de risco','3.800 a 9.800 u','1,250 a 2,500 u'])assert.equal(labReferenceStatus(ranged(120,reference)).status,'unclassified',`no invented interpretation: ${reference}`);
+for(const reference of ['10 a 100 mg/dL','Homens: 10 a 100 u; mulheres: 5 a 50 u','Jejum: <100; sem jejum: <120','ótimo <100; alto >200','100 a 10 u','10 a 10 u','10 a 100 u; alvos dependem de risco','3.800 a 9.800 u','1,250 a 2,500 u'])assert.equal(labReferenceStatus(ranged(120,reference)).status,'unclassified',`no invented interpretation: ${reference}`);
 assert.equal(labReferenceStatus(ranged(120,'0,45 a 99,95 u')).lowRaw,'0,45','source range precision is retained');
 assert.equal(labReferenceStatus(ranged(120,'10 a 100 u',{result_raw:'<120'})).status,'unclassified');
 assert.equal(labReferenceStatus(ranged(null,'10 a 100 u',{result_raw:'Detectável'})).status,'unclassified');
@@ -105,7 +110,7 @@ assert.equal(stableRoutine.evo.domainReadings.nutrition.title,'Proteína e energ
 assert.doesNotMatch(stableRoutine.evo.domainReadings.nutrition.meaning,/mudou 0|estável 0|aumentou|diminuiu/);
 assert.match(stableRoutine.evo.domainReadings.nutrition.meaning,/não mudou entre os períodos/);
 assert.match(view,/Exames para discutir na consulta/);assert.match(view,/acima da faixa exibida no laudo/);
-assert.match(view,/Ganho ou perda de tecido ainda não confirmados/);assert.match(view,/Ainda não há conclusão de progressão recente/);
+assert.match(view,/Ganho ou perda de tecido ainda não confirmados/);assert.match(view,/Comparação recente ainda limitada/);
 assert.equal(interpreted.m.segmental.parts[0].previous,4);assert.equal(interpreted.m.segmental.parts[0].previousFat,.4);
 assert.equal(interpreted.m.segmental.parts[0].delta,null,'regional raw context does not enable an incompatible delta');
 assert.match(view,/Massa magra por região/);assert.match(view,/Gordura por região/);assert.match(view,/4,00 kg/);

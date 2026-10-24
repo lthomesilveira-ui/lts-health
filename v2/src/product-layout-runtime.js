@@ -103,7 +103,7 @@ if(!fixtureMode){
       if(page&&pageFields.has(page.dataset.depthPage)&&!page.disabled){state.ui[page.dataset.depthPage]=Math.max(1,Number(page.dataset.page)||1);redraw();return;}
       const period=target.closest('[data-depth-period]');
       if(period&&['productLabPeriod','productCompositionPeriod'].includes(period.dataset.depthPeriod)&&['30','90','365','all'].includes(period.dataset.value)){
-        const key=period.dataset.depthPeriod;setGlobalPeriod(period.dataset.value);state.ui[key.replace('Period','Point')]=null;redraw();return;
+        const key=period.dataset.depthPeriod;if(key==='productLabPeriod')state.ui.productLabAsOf=null;setGlobalPeriod(period.dataset.value);if(['30','90','all'].includes(period.dataset.value))state.ui.dashboardPeriod=period.dataset.value;state.ui[key.replace('Period','Point')]=null;redraw();return;
       }
       if(target.closest('[data-depth-clear="training"]')){state.ui.productTrainingQuery='';state.ui.productTrainingYear='all';state.ui.productTrainingPage=1;redraw();return;}
       const nav=target.closest('[data-route]');
