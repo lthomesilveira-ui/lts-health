@@ -15,12 +15,12 @@ test('Document query uses the exact selective projection and type filter on ever
   assert.deepEqual(queries.map(query=>[query.from,query.to]),[[0,999],[1000,1999]]);
 });
 
-test('Both plan-bearing routes wait for their independent document domain',()=>{
+test('Every plan-bearing route waits for its independent document domain',()=>{
   const previous={loaded:state.loaded,domainStatus:state.domainStatus};
   try{
     const source=readFileSync(new URL('../src/data-layer.js',import.meta.url),'utf8');
     state.loaded=true;
-    for(const route of ['hoje','nutricao']){
+    for(const route of ['hoje','nutricao','analise','tratamentos']){
       const keys=[...source.match(new RegExp(`  ${route}:\\[([^\\]]+)\\]`))[1].matchAll(/'([^']+)'/g)].map(match=>match[1]);
       assert.ok(keys.includes('nutritionPlans'));state.domainStatus=Object.fromEntries(keys.map(key=>[key,'ready']));
       assert.equal(isRouteReady(route),true);delete state.domainStatus.nutritionPlans;assert.equal(isRouteReady(route),false);
