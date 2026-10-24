@@ -32,11 +32,13 @@ try{
   return{latest:date(2),old:date(60)};
  });
  assert.equal(await page.locator('.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
- assert.match(await page.locator('.refReading').innerText(),/Gordura −1,0 kg · músculo \+1,0 kg nos registros/,'observed deltas belong to selected period');
+ assert.match(await page.locator('.refReading').innerText(),/Gordura estimada −1,0 kg · Músculo estimado \+1,0 kg/,'observed deltas belong to selected period');
+ assert.match(await page.locator('.refReading').innerText(),/Condições das avaliações não confirmadas/,'numeric differences are not confirmation of tissue change');
  assert.match(await page.locator('.refLegend').innerText(),/16(?:,0)?.*15(?:,0)?.*30(?:,0)?.*31(?:,0)?/s,'both endpoint values remain accessible in the chart legend');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\.050 kcal/,'sparse mean is explicitly an observed mean');
- assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias encerrados/);
- assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);
+ await page.locator('.refPanel.nutrition details summary').click();
+ assert.match(await page.locator('.refPanel.nutrition').innerText(),/Dias encerrados com alimentação: 2\/29/);
+ assert.match(await page.locator('.refPanel.labs').innerText(),/Sem resultado numérico nesta janela/);
  assert.doesNotMatch(await page.locator('.refPanels').innerText(),/999|9\.000/);
  assert.equal(await page.locator('.refPanel.water .refPlot').count(),0,'no invented hydration chart');
  await page.evaluate(async selectedDate=>{const {state}=await import('./src/core.js');const {renderReferenceHome}=await import('./src/home-reference-experience.js');const renderProductHomeReference=()=>renderReferenceHome(state.data,state.domainStatus,state.ui.homePeriod,state.ui);state.ui.overviewBodyDate=selectedDate;document.querySelector('#screenHost').innerHTML=renderProductHomeReference();},dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);

@@ -86,18 +86,24 @@ jobs:
           node --check v2/physical-iphone-layout-smoke.mjs
           node v2/public-audit-contract-smoke.mjs
       - name: Start fixture server
+        id: app_server
         run: |
           cd v2
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-cockpit-server.log 2>&1 &
       - name: Cockpit desktop and mobile
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/cockpit-smoke.mjs
       - name: Consultation follow-up desktop and mobile
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/care-followup-browser-smoke.mjs
       - name: Supplemental legacy Home information integrity
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/home-information-integrity-smoke.mjs
       - name: Supplemental legacy Home reference on desktop and mobile
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/home-dashboard-reference-smoke.mjs
       - name: Emulated iPhone reduced-viewport layout
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/physical-iphone-layout-smoke.mjs
       - name: Upload safe visual audit evidence
         if: always()
