@@ -60,7 +60,7 @@ const polarProjection=dataLayer.match(/polarSessions:\(\)=>fetchAll\('health_pol
 if(!polarProjection||/source_payload|user_id|tokens_encrypted/.test(polarProjection))throw new Error('Polar session projection exposed private connection/raw data');
 if(/health_polar_(connections|oauth_states)/.test(dataLayer+core))throw new Error('service-only credentials entered client table access');
 if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions']"))throw new Error('Cockpit no longer loads protocol context on first open');
-if(!dataLayer.includes("tratamentos:['treatments','regimens','docs']"))throw new Error('Protocol route no longer loads event, context and consultation records together');
+if(!dataLayer.includes("tratamentos:['treatments','regimens','docs','nutritionPlans']"))throw new Error('Protocol route no longer loads event, context and consultation records together');
 const documentLoader=dataLayer.match(/docs:\(\)=>fetchAll\('health_documents','([^']+)'/)?.[1]||'';
 if(documentLoader.split(',').includes('source_payload'))throw new Error('raw document payload entered the UI');
 if(!documentLoader.includes('care_context:source_payload->care_ui'))throw new Error('bounded consultation projection missing');

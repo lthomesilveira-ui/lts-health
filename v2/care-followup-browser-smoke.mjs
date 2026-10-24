@@ -1,4 +1,7 @@
 import {chromium} from 'playwright';
+import {mkdirSync} from 'node:fs';
+import {syntheticNutritionPlanRow} from '../preview/compact-evidence/tests/documented-nutrition-plan-fixture.mjs';
+mkdirSync('v2/public-audit-evidence',{recursive:true});
 
 const browser=await chromium.launch({headless:true});
 try{
@@ -28,6 +31,21 @@ try{
     await page.getByText('Informação recuperada',{exact:true}).waitFor();
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
     if(overflow>1)throw new Error(`Consultation overflows at ${viewport.width}px: ${overflow}`);
+    await page.evaluate(async plan=>{
+      const {state}=await import('./src/core.js');state.data.nutritionPlans=[plan];state.domainStatus.nutritionPlans='ready';
+      const {renderTreatmentHub}=await import('./src/treatment-screen.js');document.querySelector('#screenHost').innerHTML=renderTreatmentHub();
+    },syntheticNutritionPlanRow('2026-01-20'));
+    await care.locator('[data-care-plan-received]').waitFor();
+    for(const text of ['Plano alimentar recebido em 20/01/2026','Synthetic nutrition plan.pdf','Início de uso não informado','Registro histórico do documento de 15/01/2026','Plano alimentar aguardado.','pendências registradas na consulta'])if(!(await care.innerText()).includes(text))throw new Error(`Missing dated nutrition-plan evidence: ${text}`);
+    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Plan receipt annotation overflows');
+    await care.locator('.careNotes').scrollIntoViewIfNeeded();await page.screenshot({path:`v2/public-audit-evidence/care-plan-receipt-${viewport.width}.png`});
+    await page.evaluate(async()=>{
+      const {state}=await import('./src/core.js');state.domainStatus.nutritionPlans='error';
+      const {renderTreatmentHub}=await import('./src/treatment-screen.js');document.querySelector('#screenHost').innerHTML=renderTreatmentHub();
+    });
+    if(await care.locator('[data-care-plan-received]').count())throw new Error('Failed plan reader retained stale receipt');
+    if(!(await care.locator('[data-care-nutrition-history]').innerText()).includes('Plano alimentar aguardado.'))throw new Error('Historical consultation quote was lost');
+    await care.locator('[data-care-plan-status="error"]').waitFor();
     await page.evaluate(async()=>{
       const {state}=await import('./src/core.js');state.domainStatus.docs='error';
       const {renderTreatmentHub}=await import('./src/treatment-screen.js');document.querySelector('#screenHost').innerHTML=renderTreatmentHub();
