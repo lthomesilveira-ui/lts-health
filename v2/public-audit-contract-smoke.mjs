@@ -54,7 +54,7 @@ assert.match(timeline,/Math\.min\(50,matching\.length-filtered\.length\)/);
 assert.match(analysis,/option value="365"\$\{selected\('365'\)\}/);
 assert.match(evolution,/grid sectionGap evolutionLowerGrid/);
 assert.match(evolution,/evolutionTrainingRhythm[\s\S]*evolutionSegmental/);
-assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','bio','saude','tratamentos','dados'\]\)/);
+assert.match(main,/mobileMoreRoutes=new Set\(\['timeline','nutricao','bio','saude','tratamentos','dados','analise'\]\)/);
 
 for(const selector of ['.timelineContextCard','.protocolSummaryCard','.reviewInbox','.analysisDigestCard']){
   assert.ok(internalCss.includes(selector),`audited readability reset is missing ${selector}`);
