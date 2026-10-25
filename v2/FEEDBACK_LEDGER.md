@@ -1,3 +1,9 @@
+# Current feedback — autonomous completeness review, 2026-10-25
+
+FB-034: the owner requests continued autonomous review of existing documents, conversations and unresolved defects while preserving the approved layout. Previously supplied evidence and completed diagnostic steps must not be requested again. The current package repairs source-specific coverage and refresh behavior; a bounded original-confirmed metadata repair is independently saved and reopened. Technical tests and publication do not imply overall acceptance. Water transport, the exact separately authorized lab proposal, basal eligibility, ordinary production forms and physical-device acceptance remain explicit in `EXECUTION_STATE.json`.
+
+This checkpoint supersedes older open-action wording below. Earlier notes retain their historical role and do not authorize repeating completed phone checks or clinical changes.
+
 # Phone status evidence reconciled — 2026-10-25
 
 FB-033: the owner supplied the requested current Health Sync main/status view. It shows the selected intake category and a successful recent attempt. The prior missing-capture condition is fulfilled; do not repeat that request. The latest receiver packet is older than the attempt, and a status alone does not prove water quantities. Continue with an actual newer receipt and source-side coverage if needed, preserving the paid setup and avoiding recurrent manual exports. Authority: `EXECUTION_STATE.json`.

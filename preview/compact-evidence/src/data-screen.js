@@ -1,5 +1,5 @@
 import {state,esc,fmtDate,norm,countLabel} from './core.js';
-import {sourceStatusFor,sourceCoverageFor,uploadBucket} from './source-status.js';
+import {sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
@@ -24,7 +24,13 @@ function statusCard(source){
   const detail=source.status==='ready'?source.readyDetail:source.status==='candidate'?(source.candidateDetail||'Há registros adicionais desta origem, mantidos separadamente.'):source.status==='processing'?'O arquivo foi recebido e ainda está sendo processado.':source.status==='attention'?'O arquivo está guardado e ainda não entrou nas análises.':source.status==='received'?'O arquivo foi recebido e ainda não foi incluído nos resumos.':source.status==='unknown'?'Não foi possível verificar essa origem agora.':source.missingDetail;
   const kind=source.status==='ready'?'ok':source.status==='attention'||source.status==='unknown'?'warn':'';
   const coverage=[];
-  if(source.status==='ready'&&source.confirmedDate)coverage.push(`Registros disponíveis até: ${fmtDate(source.confirmedDate)}`);
+  const transport=sourceTransportCoverageFor(source.key);
+  if(source.status==='ready'&&source.key==='myfitnesspal'&&transport.bridgeDate){
+    if(transport.fileDate)coverage.push(`Histórico por arquivo até: ${fmtDate(transport.fileDate)}`);
+    coverage.push(`Totais identificados como MyFitnessPal pelo Saúde do iPhone até: ${fmtDate(transport.bridgeDate)}`);
+  }else if(source.status==='ready'&&source.key==='polar_flow'&&transport.providerDate){
+    coverage.push(`Sessões recebidas do Polar até: ${fmtDate(transport.providerDate)}`);
+  }else if(source.status==='ready'&&source.confirmedDate)coverage.push(`Registros disponíveis até: ${fmtDate(source.confirmedDate)}`);
   if((source.status==='ready'||source.status==='candidate')&&source.preservedDate&&(!source.confirmedDate||source.preservedDate>source.confirmedDate))coverage.push(`${source.confirmedDate?'Registros adicionais guardados até':'Registros guardados até'}: ${fmtDate(source.preservedDate)}`);
   const freshness=coverage.length?`<small class="sourceFreshness">${coverage.map(esc).join('<br>')}</small>`:'';
   return `<article class="sourceStatus ${source.status==='ready'?'ready':''}"><div class="sourceStatusTop"><b>${esc(source.name)}</b>${pill(labels[source.status]||'não verificado',kind)}</div><p>${esc(detail)}</p>${freshness}<button type="button" data-source-upload="${esc(source.key)}">${esc(source.action)}</button><details class="sourceMore"><summary>O que entra dessa fonte</summary><small class="sourceScope">${esc(source.scope)}</small></details></article>`;
@@ -76,7 +82,8 @@ function previewDetail(preview){
   const facts=[preview.detected_format?`Formato: ${String(preview.detected_format).toUpperCase()}`:null,preview.row_count!=null?countLabel(preview.row_count,'registro','registros'):null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean),notice=previewNotice(preview);
   return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='inspected'?'ok':'')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${notice?`<small>${esc(notice)}</small>`:''}</div>`;
 }
-function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(u.original_filename||'Arquivo')}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
+function displayFilename(value){try{return decodeURIComponent(String(value||'Arquivo'));}catch{return String(value||'Arquivo');}}
+function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(displayFilename(u.original_filename))}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
 
 function filteredUploads(uploads){const status=state.ui.dataUploadStatus||'all',source=state.ui.dataUploadSource||'all';return uploads.filter(upload=>(status==='all'||uploadBucket(upload)===status)&&(source==='all'||String(upload.source_type||'other')===source));}
 function uploadFilters(uploads){const sources=[...new Set(uploads.map(u=>String(u.source_type||'other')).filter(Boolean))].sort((a,b)=>sourceLabel(a).localeCompare(sourceLabel(b),'pt-BR'));return `<div class="controls"><label>Situação<select id="dataUploadStatus"><option value="all">Todos</option><option value="attention">Precisa de atenção</option><option value="in_progress">Em andamento</option><option value="done">Concluídos</option></select></label><label>Origem<select id="dataUploadSource"><option value="all">Todas</option>${sources.map(source=>`<option value="${esc(source)}">${esc(sourceLabel(source))}</option>`).join('')}</select></label></div>`;}

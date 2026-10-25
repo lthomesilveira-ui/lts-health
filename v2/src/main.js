@@ -77,8 +77,8 @@ function setRoute(route,{replace=true}={}){
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
-  if(route==='dados'&&state.session&&!state.polarConnection)checkPolarConnection().then(scheduleRender);
-  if(route==='dados'&&state.session&&!state.autoExportConnection)checkAutoExportConnection().then(scheduleRender);
+  if(route==='dados'&&state.session)checkPolarConnection().then(scheduleRender);
+  if(route==='dados'&&state.session)checkAutoExportConnection().then(scheduleRender);
   settleRouteScroll(route);
 }
 
@@ -159,7 +159,12 @@ function applyControlState(){
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
-async function refresh(){if(state.loading)return;setSync('Atualizando…');scheduleRender();await refreshData(state.route,setSync);scheduleRender();}
+async function refresh(){
+  if(state.loading)return;
+  setSync('Atualizando…');scheduleRender();
+  await Promise.all([refreshData(state.route,setSync),...(state.session?[checkPolarConnection(),checkAutoExportConnection()]:[])]);
+  scheduleRender();
+}
 async function updatePolarOnOpen(){const updated=await checkPolarConnection({syncOnOpen:true});if(updated)await refreshData(state.route,setSync);scheduleRender();}
 
 export function uploadOutcomeMessage(result){

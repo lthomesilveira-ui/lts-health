@@ -11,7 +11,7 @@ window.__reviewDb=${JSON.stringify(db)};
 const mutation=(kind,target)=>{window.__healthQA.writes.push({kind,target});throw new Error('Synthetic QA forbids writes: '+kind+' '+target);};
 window.supabase={createClient:()=>({
  auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-health-dashboard-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},
- functions:{invoke:async(name,args)=>{if(args?.body?.action!=='status')return mutation('invoke',name);return {data:{configured:false,connected:false,received:false},error:null}}},rpc:(name)=>mutation('rpc',name),
+ functions:{invoke:async(name,args)=>{if(args?.body?.action!=='status')return mutation('invoke',name);window.__healthQA.reads.push({function:name,action:'status'});return {data:window.__statusOverrides?.[name]||{configured:false,connected:false,received:false},error:null}}},rpc:(name)=>mutation('rpc',name),
  storage:{from:(name)=>({upload:()=>mutation('upload',name),remove:()=>mutation('remove',name)})},
  from(table){
   let from=0,to=999;const filters=[],orders=[];
@@ -72,10 +72,54 @@ for(const width of [320,393,1440]){
  });
  assert.deepEqual(forms,{goalsDisabled:false,preview:false});
  await page.screenshot({path:`artifacts/production-integration/home-${width}.png`,fullPage:true});
+ await page.screenshot({path:`artifacts/production-integration/home-viewport-${width}.png`});
  assert.deepEqual(await page.evaluate(()=>window.__healthQA.writes),[],'navigation produces no writes when disconnected');
  // Mobile Home owns its header; account controls remain in the sources area.
  await page.locator('.studyFooter [data-route="dados"]').click();
  await page.waitForFunction(()=>location.hash==='#dados');
+ await page.getByRole('heading',{name:'Dados & fontes',exact:true}).waitFor();
+ // A refresh must retrieve connection status as well as table rows. These are
+ // invented old dates, unrelated to the owner's source history.
+ await page.evaluate(()=>{
+  window.__statusOverrides={
+   'health-polar-connection':{configured:true,connected:true,update_mode:'scheduled_hourly',last_sync_at:'2001-04-03T07:15:00Z',last_scheduled_sync_at:'2001-04-03T07:15:00Z'},
+   'health-auto-export-connection':{configured:true,received:true,last_received_at:'2001-04-03T08:20:00Z',last_metric_date:'2001-04-02'}
+  };
+  window.__reviewDb.health_daily_nutrition=[{source_record_id:'invented-file',nutrition_date:'2001-03-01',source:'MyFitnessPal',calories_kcal:1234}];
+  window.__reviewDb.health_nutrition_meals=[];
+  const bridge=(date,source)=>({source_record_id:'health_auto_export:invented:'+date,metric_date:date,metric_type:'dietary_energy_kcal',value:1234,unit:'kcal',source_name:'Apple Saúde · '+source,source_family:'health_auto_export',canonical_status:'canonical',confidence:'authenticated_auto_export'});
+  window.__reviewDb.health_source_daily_metrics=[bridge('2001-04-01','MyFitnessPal'),bridge('2001-04-02','Origem não informada pelo Saúde')];
+  window.__reviewDb.health_polar_sessions=[{source_record_id:'invented-polar-session',workout_date:'2001-04-02',source_name:'Polar Flow'}];
+  window.__reviewDb.health_workout_source_evidence=[];
+  window.__reviewDb.health_medication_events=[{source_record_id:'invented-historical-event',event_date:'2001-03-02',medication:'Registro histórico de exemplo',event_type:'application',source:'Relato de exemplo',local_time:'07:45',recorded_site:'glute',recorded_side:'left'}];
+ });
+ assert.equal(await page.locator('#refreshBtn').isVisible(),true,'Sources exposes refresh at '+width);
+ await page.locator('#refreshBtn').click();
+ await page.waitForFunction(()=>document.querySelector('[data-connections]')?.textContent.includes('03/04/2001, 04:15:00'));
+ assert.ok((await page.locator('[data-health-auto-export]').innerText()).includes('03/04/2001, 05:20:00'));
+ const mfpCard=page.locator('.sourceStatus.ready').filter({hasText:'Totais identificados como MyFitnessPal'});
+ const mfpText=await mfpCard.innerText();
+ assert.ok(mfpText.includes('Histórico por arquivo até: 01/03/2001'));
+ assert.ok(mfpText.includes('pelo Saúde do iPhone até: 01/04/2001'));
+ assert.ok(!mfpText.includes('02/04/2001'),'anonymous newer source cannot advance MyFitnessPal coverage');
+ assert.equal(await page.getByText('Sessões recebidas do Polar até: 02/04/2001',{exact:true}).count(),1);
+ await page.screenshot({path:`artifacts/production-integration/source-history-${width}.png`,fullPage:true});
+ await page.screenshot({path:`artifacts/production-integration/source-viewport-${width}.png`});
+ await mfpCard.screenshot({path:`artifacts/production-integration/source-card-${width}.png`});
+ await page.evaluate(()=>{location.hash='tratamentos'});
+ await page.getByRole('heading',{name:'Protocolos',exact:true}).waitFor();
+ const legacy=await page.locator('.timelineItem.rich').filter({hasText:'Registro histórico de exemplo'}).innerText();
+ assert.ok(legacy.includes('07:45 · glúteo esquerdo'),'bounded saved historical context survives the actual loader and renderer');
+ await page.screenshot({path:`artifacts/production-integration/legacy-context-${width}.png`,fullPage:true});
+ await page.evaluate(()=>{
+  window.__statusOverrides['health-polar-connection'].last_scheduled_sync_at='2001-04-04T07:15:00Z';
+  window.__statusOverrides['health-auto-export-connection'].last_received_at='2001-04-04T08:20:00Z';
+  location.hash='dados';
+ });
+ await page.waitForFunction(()=>document.querySelector('[data-connections]')?.textContent.includes('04/04/2001, 04:15:00'));
+ assert.ok((await page.locator('[data-health-auto-export]').innerText()).includes('04/04/2001, 05:20:00'),'returning to Sources refreshes its receipt status');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'source dates fit '+width);
+ assert.deepEqual(await page.evaluate(()=>window.__healthQA.writes),[],'status refresh and historical reading cannot mutate records or renew authorisation');
  await page.locator('#logoutBtn').click();await page.locator('#login:not(.hidden)').waitFor();
  assert.equal(await page.locator('#app').evaluate(e=>e.classList.contains('hidden')),true);
  assert.deepEqual(errors,[]);assert.deepEqual(external,[],'no unexpected external request');await page.close();
@@ -89,4 +133,4 @@ await page.route('**/*',route=>{
 });
 await page.goto(base);await page.locator('#login:not(.hidden)').waitFor();
 assert.equal(await page.locator('#app').evaluate(e=>e.classList.contains('hidden')),true);
-await browser.close();console.log('Production entry at 320/393/1440px, 10 routes, logout, absent-session auth and operational goals form passed; synthetic authenticated SDK only; no external writes.');
+await browser.close();console.log('Production entry at 320/393/1440px, 10 routes, status refresh/reentry, separate source coverage, literal historical context, logout, absent-session auth and operational forms passed; synthetic authenticated SDK only; no external writes.');
