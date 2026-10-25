@@ -1,3 +1,7 @@
+# Phone status evidence reconciled — 2026-10-25
+
+FB-033: the owner supplied the requested current Health Sync main/status view. It shows the selected intake category and a successful recent attempt. The prior missing-capture condition is fulfilled; do not repeat that request. The latest receiver packet is older than the attempt, and a status alone does not prove water quantities. Continue with an actual newer receipt and source-side coverage if needed, preserving the paid setup and avoiding recurrent manual exports. Authority: `EXECUTION_STATE.json`.
+
 # Current verified checkpoint — 2026-10-25
 
 FB-031/FB-032 technical follow-up: .80/.81 water presentation and mobile selection fixes are published, manually inspected in the exact authenticated public build and covered by final real-account workflow `40209261568`. Current histories and nutrition contrasts are checked with exact source identities and independently read observations. Overall owner rejection remains open as `LTS-OWNER-DELIVERY-20261025`; phone water continuity, physical-device and genuine production write/reopen evidence are not inferred. The original lab proposal and basal eligibility remain separate. Authority: `EXECUTION_STATE.json`.

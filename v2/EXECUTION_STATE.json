@@ -1611,7 +1611,7 @@
       "priority": "P0",
       "status": "blocked_user",
       "owner": "user",
-      "summary": "Identify the missing water transfer before the paid export bridge without repeating Apple Health permission captures or purchases.",
+      "summary": "Requested current Health Sync status has been received and inspected; verify actual post-status water transport without treating a successful attempt as transferred volume.",
       "acceptance": [
         "Inspect the existing Health Sync main/status screen after the reported purchase, including Water and last synchronization or error.",
         "Preserve source, paid configuration and keys; do not require recurring manual exports or duplicate daily entry.",
@@ -1620,10 +1620,14 @@
       "evidence": [
         "Existing private water diagnostic recovered and checked against current dedicated-source metadata.",
         "Recent receipts continue for other metric categories, while water remains older.",
-        "The previously supplied Apple Health captures already showed the same water cutoff; they need not be requested again."
+        "The previously supplied Apple Health captures already showed the same water cutoff; they need not be requested again.",
+        "The owner supplied the requested current phone status after the reported purchase. The selected intake category, source-to-Apple direction and successful recent status are visible. Do not request the same capture again.",
+        "A fresh read-only receiver check still shows no newer water. Its most recent general packet predates the supplied phone status, so it cannot verify the result of that newer attempt.",
+        "Official Health Auto Export guidance confirms automations can run while the app remains open and the device is unlocked; this is a one-time diagnostic opportunity, not a recurring manual-export routine."
       ],
-      "next_action": "Obtain one current Health Sync main/status capture with Water and its last synchronization/error; use it to identify the blocked upstream stage.",
-      "blocker": "Phone-local sync status is not exposed to the server or this environment."
+      "next_action": "Verify the next genuine receiver packet after the supplied phone status, using the existing enabled automation with the export app open and the phone unlocked. If that packet still lacks water, inspect the current source-side water date/value before changing connections.",
+      "blocker": "The requested status capture is no longer missing. A genuine post-status water observation or a source-side quantity is not yet available to the receiver.",
+      "phone_status_capture_received": true
     },
     {
       "id": "LTS-LAB-PROPOSAL-RECOVERY-001",
@@ -1721,10 +1725,11 @@
       ],
       "evidence": [
         "Owner restart of 2026-10-25 rejects completion while preserving the approved layout.",
-        "Runtime .81 and workflow 40209261568 are technical evidence only."
+        "Runtime .81 and workflow 40209261568 are technical evidence only.",
+        "The requested current Health Sync status is now supplied and inspected. Successful phone status does not by itself establish transferred observations."
       ],
-      "next_action": "Continue from the exact Health Sync status evidence and the independently tracked source/coverage tasks; retain this overall rejection until genuinely superseded.",
-      "blocker": "Phone-local water status and physical-device/owner acceptance remain unavailable; independent source/coverage tasks are still open."
+      "next_action": "Continue from actual post-status receipt and source-side water coverage, preserving the supplied phone evidence and the independent delivery tasks.",
+      "blocker": "Actual water continuity and physical-device/owner acceptance remain unverified; the current Health Sync status capture is already available."
     }
   ],
   "package_history": [
