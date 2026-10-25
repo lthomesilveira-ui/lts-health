@@ -1,6 +1,7 @@
 import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import {runDepthChecks} from './real-auth-depth-checks.mjs';
+import {auditIntegratedDashboard} from './real-auth-dashboard-checks.mjs';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
 if(!tokenHash)throw new Error('authenticated token hash missing');
@@ -74,7 +75,7 @@ async function assertStableMobileShell(label){
     if(window.innerWidth>840)return{desktop:true};
     const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
     const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{route:button.dataset.route,text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width,active:button.classList.contains('active')};});
-    const brand=[document.querySelector('.refMobileBrand'),document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
+    const brand=[document.querySelector('.studyBrand'),document.querySelector('.refMobileBrand'),document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
     const routeAction=document.querySelector('#routeAction');
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
@@ -98,6 +99,7 @@ async function assertMinimumReadableType(selector,minimum,label){
   if(result.minimum<minimum)throw new Error(`${label}: supporting type is too small (${result.minimum}px)`);
 }
 async function auditReferenceHome(label,expectedBuild){
+ if(await page.locator('[data-health-dashboard]').count()){await auditIntegratedDashboard(page,{expectedBuild});return;}
  const result=await page.evaluate(()=>{
   const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
   const visible=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;};
@@ -218,7 +220,7 @@ try{
 
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
-  if(await page.locator('.refSignal').count()!==5||await page.locator('.refPanel:not(.mobileWorkout)').count()!==6)throw new Error('executive Home modules missing');
+  if(!await page.locator('[data-health-dashboard]').count()&&(await page.locator('.refSignal').count()!==5||await page.locator('.refPanel:not(.mobileWorkout)').count()!==6))throw new Error('executive Home modules missing');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
   await auditReferenceHome('desktop Home',expectedBuild);
   await assertNoHorizontalOverflow();

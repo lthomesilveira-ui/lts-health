@@ -124,8 +124,8 @@ export async function runRenderTests(){
     const old=model.metricsByKey.water.sources.find(item=>item.label==='Synthetic older water').key;
     const older=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{water:old}},f.today),'water');
     assert.match(older,/<strong>—<\/strong>/);
-    assert.match(primary(older),new RegExp(`Último registro desta origem: ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date stays visible in an empty selected period');
-    assert.equal((older.match(/Último registro/g)||[]).length,1,'latest-date provenance is not repeated inside the disclosure');
+    assert.match(primary(older),new RegExp(`Último valor desta origem: <b>5\\.555 mL</b> · ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date stays visible in an empty selected period');
+    assert.equal((older.match(/Último valor desta origem/g)||[]).length,1,'latest-date provenance is not repeated inside the disclosure');
     const context=dashboardContext(f.data,f.status,{bounds:model.bounds,today:f.today,mode:model.mode});
     assert.equal(context.training.sessions,sparse?0:3);assert.equal(context.training.recordedDays,sparse?0:2);
     if(!sparse){
@@ -218,8 +218,8 @@ export async function runRenderTests(){
   const docDate=documentary.date(3),checksum='a'.repeat(64);
   documentary.data.waterReferences=[{source_record_id:'synthetic-documentary-water',document_type:'medical_plan',document_date:docDate,source_file:'Synthetic plan.pdf',source:'Synthetic documentary source',checksum,water_reference:{schema_version:1,type:'documented_water_base',base_ml_per_day:3000,source_page:3,documented_on:docDate,source_sha256:checksum,date_basis:'document_update',clinical_start:'not_explicit',exercise_addition:'Synthetic exercise context; not calculated automatically.'}}];
   const documentaryCard=card(renderHealthDashboard(documentary.data,documentary.status,{dashboardMode:'day'},documentary.today),'water');
-  assert.match(primary(documentaryCard),/Sem registro neste dia/);
-  assert.match(primary(documentaryCard),new RegExp(`Último registro desta origem: ${escapeRegex(dateLabel(documentary.date(1)))}`),'missing water retains its most recent date above details');
+  assert.match(primary(documentaryCard),/Sem informação neste dia/);
+  assert.match(primary(documentaryCard),new RegExp(`Último valor desta origem: <b>1\\.010 mL</b> · ${escapeRegex(dateLabel(documentary.date(1)))}`),'missing water retains its most recent date above details');
   assert.doesNotMatch(primary(documentaryCard),/Referência documental/,'a documentary reference is secondary context, not a current target or water value');
   assert.match(documentaryCard,/<details[\s\S]*Referência documental: 3\.000 mL\/dia[\s\S]*Vigência clínica não confirmada/,'documentary amount, date and validity warning stay together in the disclosure');
   assert.match(primary(card(renderHealthDashboard(makeDashboardFixture().data,documentary.status,{dashboardMode:'day'},documentary.today),'water')),/Meta cadastrada: 2\.400 mL/,'a genuine personal target remains visible');
@@ -242,7 +242,7 @@ export async function runRenderTests(){
     assert.match(primary(card(html,'steps')),/Parcial · 1 dia em revisão\. 1 dia divergente/);
     assert.doesNotMatch(primary(card(html,'steps')),/Resumo parcial|valores fracionados ou inválidos/,'specific steps warning replaces repeated generic/method text');
     assert.match(card(html,'steps'),/valores fracionados ou inválidos/,'full steps limitation remains available');
-    assert.match(primary(card(html,'water')),/Último registro desta origem/);
+    assert.match(primary(card(html,'water')),/Último valor desta origem/);
     for(const source of [d.metricsByKey.protein.sources.find(source=>source.label==='Outro diário sintético').key,'synthetic-missing-origin']){
       const emptyCard=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{protein:source}},f.today),'protein'),visible=visibleHtmlText(emptyCard);
       assert.match(visible,/Escolhida por você/);assert.match(visible,/origem com registros, não somadas/);assert.match(visible,/Ver fontes e detalhes/);

@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   real-auth-e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +33,7 @@ jobs:
         run: |
           node --check v2/real-auth-e2e.mjs
           node --check v2/real-auth-depth-checks.mjs
+          node --check v2/real-auth-dashboard-checks.mjs
           node --check v2/real-auth-labs-visual.mjs
           node --check v2/seal-visual-evidence.mjs
           node --check v2/mfp-water-audit-auth.mjs

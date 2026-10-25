@@ -31,7 +31,7 @@ jobs:
           TESTDIR="$(mktemp -d v2/.integration-tests.XXXXXX)"
           trap 'rm -rf "$TESTDIR"' EXIT
           cp preview/compact-evidence/tests/* "$TESTDIR/"
-          for test in composition-reading source-window-service source-window-selection lab-visual-context exercise-history-reading evolution-body-chart evolution-access lab-history-access care-nutrition-status dashboard-changes body-interval-model body-interval-view calendar-report-model calendar-report-view consumer-health-copy documentary-numeric-reading documentary-water-consumers documented-nutrition-plan documented-water-reference evidence-insights evolution-period-contract evolution-product final-evolution health-dashboard-body health-dashboard-context health-dashboard-empty-history health-dashboard-guidance health-dashboard-labs health-dashboard-model health-dashboard-render health-dashboard-training home-evidence-insights home-lab-history home-useful-render integrated-review lab-consumer-consistency lab-history-conflicts lab-shared-reading nutrition-archive nutrition-history-access nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-reviewed-integration personal-goals-preservation steps-evidence training-comparability training-phase-label training-session-summary training-session-summary-view water-reference-consumers; do
+          for test in composition-reading source-window-service source-window-selection lab-visual-context exercise-history-reading evolution-body-chart evolution-access lab-history-access care-nutrition-status dashboard-changes body-interval-model body-interval-view calendar-report-model calendar-report-view consumer-health-copy documentary-numeric-reading documentary-water-consumers documented-nutrition-plan documented-water-reference evidence-insights evolution-period-contract evolution-product final-evolution health-dashboard-body health-dashboard-context health-dashboard-empty-history health-dashboard-guidance health-dashboard-labs health-dashboard-model health-dashboard-render health-dashboard-training home-evidence-insights home-lab-history home-useful-render integrated-review lab-consumer-consistency lab-history-conflicts lab-shared-reading nutrition-archive nutrition-history-access nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-reviewed-integration personal-goals-preservation steps-evidence training-comparability training-phase-label training-session-summary training-session-summary-view water-reference-consumers water-continuity; do
             node "$TESTDIR/${test}-test.mjs"
           done
       - name: Install pinned browser runtime
@@ -47,6 +47,7 @@ jobs:
       - name: Verify actual renderer through mocked authentication, mobile routes and repeated cancel
         run: |
           node v2/production-integration-browser.mjs
+          node v2/real-auth-dashboard-checks-test.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs
       - name: Verify period-aware source selection and preserved daily cards
@@ -81,6 +82,7 @@ jobs:
             dashboard-changes-visual/*.png
             source-window-visual/*
             period-readability-visual/*
+            water-continuity-visual/*
             evolution-access-visual/*
             lab-history-access-visual/*
             lab-visual-context-evidence/*
