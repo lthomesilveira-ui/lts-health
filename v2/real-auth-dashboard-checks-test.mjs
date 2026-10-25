@@ -8,6 +8,7 @@ import {languageDatabase} from '../preview/compact-evidence/tests/consumer-langu
 // transport. It does not claim to authenticate or write to a real account.
 const base='http://127.0.0.1:4175/v2/',today='2024-08-21';
 const sdk=sourceWindowService(languageDatabase({nutrition:[{source_record_id:'synthetic-food-no-water',nutrition_date:today,source:'Synthetic food',water_ml:null,calories_kcal:2100,protein_g:150}],sourceMetrics:[{source_record_id:'synthetic-water-prior',metric_date:'2024-08-08',metric_type:'dietary_water_ml',value:1750,unit:'mL',source_family:'synthetic_bridge',source_name:'Synthetic water bridge',canonical_status:'candidate',updated_at:'2024-08-09T11:20:00Z'}]}));
+await assert.rejects(()=>auditIntegratedDashboard({locator(){throw Error('Synthetic confidential value');},screenshot(){throw Error('Synthetic screenshot unavailable');}},{}),error=>!error.message.includes('Synthetic confidential')&&!error.cause&&/private observations withheld/.test(error.message),'public failure text must not contain private assertion values');
 mkdirSync('water-continuity-visual',{recursive:true});
 const browser=await chromium.launch({headless:true});
 try{

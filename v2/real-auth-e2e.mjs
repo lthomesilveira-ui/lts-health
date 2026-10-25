@@ -14,6 +14,7 @@ const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
 const evidenceDir='v2/real-auth-evidence';
 mkdirSync(evidenceDir,{recursive:true});
 let runtimeErrorCount=0;
+let verificationStage='authentication';
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
 const page=await context.newPage();
@@ -34,6 +35,7 @@ const routeReadySelectors=Object.freeze({
 });
 
 async function waitForRoute(route){
+  verificationStage=route;
   const readySelector=routeReadySelectors[route];
   if(!readySelector)throw new Error(`no authenticated ready selector registered for ${route}`);
   const mobile=(await page.viewportSize()).width<=840;
@@ -414,4 +416,7 @@ try{
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
   if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
   console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
+}catch{
+  try{await page.screenshot({path:`${evidenceDir}/e2e-failure.png`,fullPage:true});}catch{}
+  throw new Error(`Real authenticated verification failed in ${verificationStage}; private details are withheld from public logs. Inspect the encrypted evidence.`);
 }finally{await browser.close();}

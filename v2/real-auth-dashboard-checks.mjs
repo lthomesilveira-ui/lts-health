@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 // Called only inside the established authenticated CI session. No fixtures,
 // writes, credentials, medical values or source identifiers are printed.
-export async function auditIntegratedDashboard(page,{expectedBuild}){
+async function inspectIntegratedDashboard(page,{expectedBuild}){
  const keys=['water','protein','energy','activeEnergy','totalEnergy','steps','sleep'];
  assert.equal(await page.locator('meta[name="lts-build"]').getAttribute('content'),expectedBuild);
  const check=async()=>{
@@ -69,4 +69,14 @@ export async function auditIntegratedDashboard(page,{expectedBuild}){
  await page.locator('[data-dashboard-mode="period"]').click();
  await page.locator('#dashboard-period').selectOption('7');
  await check();
+}
+
+export async function auditIntegratedDashboard(page,options){
+ try{return await inspectIntegratedDashboard(page,options);}
+ catch{
+  // This workflow has public logs. Preserve evidence only in the existing
+  // encrypted-artifact path; never print an assertion containing private values.
+  try{await page.screenshot({path:'v2/real-auth-evidence/dashboard-failure.png',fullPage:true});}catch{}
+  throw new Error('Integrated dashboard verification failed; private observations withheld. Inspect the encrypted authenticated evidence.');
+ }
 }
