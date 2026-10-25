@@ -1,7 +1,7 @@
 import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import {runDepthChecks} from './real-auth-depth-checks.mjs';
-import {auditIntegratedDashboard} from './real-auth-dashboard-checks.mjs';
+import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-dashboard-checks.mjs';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
 if(!tokenHash)throw new Error('authenticated token hash missing');
@@ -31,7 +31,7 @@ const routeReadySelectors=Object.freeze({
   analise:'.ltsRecoveryV2',
   tratamentos:'.protocolSummaryGrid',
   dados:'[data-review-inbox]',
-  evolucao:'.evolutionChangeTable'
+  evolucao:'.ltsEvolutionOverview,.evolutionChangeTable'
 });
 
 async function waitForRoute(route){
@@ -54,7 +54,7 @@ async function waitForRoute(route){
       const rect=button.getBoundingClientRect(),style=getComputedStyle(button);
       return style.display!=='none'&&style.visibility!=='hidden'&&rect.width>=44&&rect.left>=-1&&rect.right<=window.innerWidth+1;
     });
-    const expectedMobileRoute=['hoje','treinos','analise'].includes(value)?value:'mais';
+    const expectedMobileRoute=['hoje','treinos','evolucao'].includes(value)?value:'mais';
     const mobileActive=mobileButtons.filter(button=>button.classList.contains('active'));
     const mobileShellReady=window.innerWidth>840||(mobileButtons.length===4&&mobileActive.length===1&&mobileActive[0].dataset.route===expectedMobileRoute);
     return location.hash===`#${value}`
@@ -82,8 +82,8 @@ async function assertStableMobileShell(label){
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
   if(result.desktop)return;
-  if(result.buttons.map(button=>button.route).join(',')!=='hoje,treinos,analise,mais'||result.buttons.length!==4||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
-  const expected=['hoje','treinos','analise'].includes(result.route)?result.route:'mais';
+  if(result.buttons.map(button=>button.route).join(',')!=='hoje,treinos,evolucao,mais'||result.buttons.length!==4||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
+  const expected=['hoje','treinos','evolucao'].includes(result.route)?result.route:'mais';
   const active=result.buttons.filter(button=>button.active);
   if(active.length!==1||active[0].route!==expected)throw new Error(`${label}: mobile navigation has competing or incorrect active destinations ${JSON.stringify({route:result.route,expected,active})}`);
   if(!result.brand.includes('LTS Health'))throw new Error(`${label}: mobile brand is not visible`);
@@ -304,6 +304,11 @@ try{
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Nutrition duplicates its import action in the top bar');
   await page.screenshot({path:`${evidenceDir}/desktop-nutrition.png`});
   await waitForRoute('evolucao');
+  if(await page.locator('.ltsEvolutionOverview').count()){
+    await auditIntegratedEvolution(page);
+    await assertMinimumReadableType('.ltsEvolutionReading,.ltsEvolutionChartNote,[data-evolution-overview-metric]',10.5,'desktop Evolution');
+    await page.screenshot({path:`${evidenceDir}/desktop-evolution.png`,fullPage:true});
+  }else{
   await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'desktop Evolution');
   await page.screenshot({path:`${evidenceDir}/desktop-evolution.png`});
   await page.locator('.evolutionLowerGrid').scrollIntoViewIfNeeded();
@@ -316,6 +321,7 @@ try{
   await page.screenshot({path:`${evidenceDir}/desktop-evolution-lower.png`});
   await page.locator('.evolutionSegmental').scrollIntoViewIfNeeded();
   await page.screenshot({path:`${evidenceDir}/desktop-evolution-segmental.png`});
+  }
 
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
@@ -382,6 +388,12 @@ try{
 
   await waitForRoute('evolucao');
   await assertNoHorizontalOverflow();
+  if(await page.locator('.ltsEvolutionOverview').count()){
+    await auditIntegratedEvolution(page);
+    await assertMinimumReadableType('.ltsEvolutionReading,.ltsEvolutionChartNote,[data-evolution-overview-metric]',10.5,'mobile Evolution');
+    await assertStableMobileShell('mobile Evolution');
+    await page.screenshot({path:`${evidenceDir}/mobile-evolution.png`,fullPage:true});
+  }else{
   await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'mobile Evolution');
   await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
   await assertStableMobileShell('mobile Evolution');
@@ -397,6 +409,7 @@ try{
     await assertMinimumReadableType('.segmentKindTitle b,.segmentKindTitle small,.segmentPair span,.segmentPair strong,.sideDifferenceHead small',10.5,'mobile Evolution segmental');
     await assertStableMobileShell('mobile Evolution segmental');
     await page.screenshot({path:`${evidenceDir}/mobile-evolution-segmental.png`});
+  }
   }
 
   await waitForRoute('timeline');
