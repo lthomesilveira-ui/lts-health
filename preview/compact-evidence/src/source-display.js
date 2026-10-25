@@ -11,6 +11,7 @@ export function displaySource(value,family=''){
   if(/^[a-z][a-z0-9]*_[a-z0-9_]+$/i.test(label))return'Origem importada';
   if(key==='apple health activitysummary')return'Apple Saúde';
   if(key==='claude migration'||key==='projeto'||key==='conversa')return'Histórico LTS Health';
+  if(key==='user report in lts health conversation')return'Informado por você';
   if(key==='user-reported completed workout'||key==='workout log')return'Registro de treino';
   if(!label)return exact[family]||'Origem não informada';
   return label;

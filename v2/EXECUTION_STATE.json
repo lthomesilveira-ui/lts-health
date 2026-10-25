@@ -66,7 +66,10 @@
       "Established real-auth workflow failed before authentication because ubuntu-latest moved beyond the pinned browser support; candidate pins the existing compatible runner without changing credentials or permissions.",
       "Current published renderer exercised locally with invented isolated data at 320, 393 and 1440 px across ten routes, signed-out boundaries and zero production writes.",
       "Exact 393x650 dense and sparse cases retain the original natural-height limits; missing historical context reuses the empty chart space instead of adding a second block.",
-      "Water assertions independently read the selected origin, reopen a historical day and distinguish today from the older observation; their harness passes on all three widths."
+      "Water assertions independently read the selected origin, reopen a historical day and distinguish today from the older observation; their harness passes on all three widths.",
+      "All twelve initial candidate workflows ran; eleven passed. Functional Depth exposed one remaining old wording assertion, now aligned with the dated-value reading; no functional assertion was removed.",
+      "Real owner session entered through the secure browser form. Current public .79 was opened; today and the actual historical water day were independently inspected without writes.",
+      "Existing integrated-review browser coverage exercises actual goal saving and page reload against its isolated synthetic persistence service; production write success is not inferred."
     ],
     "pending_evidence": [
       "Exact-head candidate CI including Chromium/WebKit.",
@@ -80,8 +83,8 @@
     "main_commit": "a4883958aaab7dd46c1b1c93f1f380fabad7095c",
     "verified_on": "2026-10-25",
     "automated_runtime_and_responsive_status": "published_and_synthetic_gates_passed; real_auth_workflow_failed_before_authentication",
-    "manual_exact_public_status": "current_session_signed_out",
-    "acceptance_note": "Owner explicitly rejects project completion. Historical technical checks and prior authenticated observations do not constitute current account or physical-device acceptance."
+    "manual_exact_public_status": "verified_authenticated_desktop_at_79",
+    "acceptance_note": "Current authenticated desktop explicitly verifies missing current water and the actual historical water date. Owner rejects overall completion; candidate .80 and physical-iPhone acceptance remain separate."
   },
   "tasks": [
     {

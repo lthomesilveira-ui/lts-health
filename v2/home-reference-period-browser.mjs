@@ -190,7 +190,7 @@ try{
       const oldSource=initial.metricsByKey.water.sources.find(source=>source.label==='Synthetic older water').key;
       await sourceControl.focus();await sourceControl.selectOption(oldSource);await stableHome(page);await focusIs(page,'dashboard-source-water');
       assert.equal(await page.locator('[data-dashboard-card="water"] .healthMetricValue strong').innerText(),'—');
-      assert.ok((await page.locator('[data-dashboard-card="water"]').innerText()).includes(`Último registro desta origem: ${dateLabel(fixture.date(40))}`));
+      assert.ok((await page.locator('[data-dashboard-card="water"]').innerText()).includes(`Último valor desta origem: 5.555 mL · ${dateLabel(fixture.date(40))}`));
       assert.equal(await page.locator('[data-disclosure="dashboard-metric-water"]').evaluate(el=>el.open),true,'open source disclosure is retained');
       const sourceB=initial.metricsByKey.water.sources.find(source=>source.label==='Synthetic B food').key;
       await sourceControl.focus();await sourceControl.selectOption(sourceB);await stableHome(page);await focusIs(page,'dashboard-source-water');

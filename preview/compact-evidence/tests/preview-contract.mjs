@@ -133,7 +133,7 @@ const manifest={
     "src/reports-model.js": "65c0443fce458fc83c1e733b80af65702ccc348241cb67a237beb0cb03963d84",
     "src/reports-screen.js": "0970d6cc8ccb251b06dfd995f10af5435659612a3f2d3a1fd9c391124f855734",
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
-    "src/source-display.js": "9e1e68fa7382145291a3fc339ba7c2b118038e3ec68e0943f6f985ad52e87d00",
+    "src/source-display.js": "319c9f7061543315fffefaaa27dc9f8c3450ce0d12626dcfe2c6fd6c5ff3e6e8",
     "src/source-status.js": "f51f73a6d73d5880b0615b89101693ff2333a7d2021311d96bd80cf4a57b179f",
     "src/source-window-view.js": "c7316305372e98d841e3e2c1d77630c4156868494fbab939338382599a9febdf",
     "src/steps-evidence-view.js": "fe5ce4e8299e684b7061b49ace897bd115afb3fc4e64bdcdf759e20b6e528b6b",
