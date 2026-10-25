@@ -1,3 +1,7 @@
+# Current verified checkpoint — 2026-10-25
+
+FB-031/FB-032 technical follow-up: .80/.81 water presentation and mobile selection fixes are published, manually inspected in the exact authenticated public build and covered by final real-account workflow `40209261568`. Current histories and nutrition contrasts are checked with exact source identities and independently read observations. Overall owner rejection remains open as `LTS-OWNER-DELIVERY-20261025`; phone water continuity, physical-device and genuine production write/reopen evidence are not inferred. The original lab proposal and basal eligibility remain separate. Authority: `EXECUTION_STATE.json`.
+
 # Current navigation reliability — 2026-10-25
 
 FB-032: authenticated inspection and restored current-journey verification found a missing mobile active destination for Reports after Evolution became a primary destination. Candidate .81 preserves the approved dashboard, repairs More activation and verifies current observed-history metrics/windows against independent observations. No source, prescription or private record is changed. Actual publication and owner acceptance remain separate; authority: `EXECUTION_STATE.json`.
