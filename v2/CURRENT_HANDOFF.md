@@ -1,3 +1,15 @@
+# Current restart — water reliability, 2026-10-25
+
+The current public source checkpoint is `.79`, PR 387, merge `a4883958aaab7dd46c1b1c93f1f380fabad7095c`. Do not restore older preview builds or infer product acceptance. The owner reopens end-to-end reliability, particularly missing water, and preserves the approved dashboard.
+
+Candidate `.80` distinguishes absent information from actual zero, shows the last value with its original date and available receipt timestamp, and avoids describing an empty nutrition envelope as a water observation. Current source-selection/calculation, privacy, write and prescription boundaries are preserved. The paid bridge and existing keys remain intact.
+
+The previous current-build real-auth workflow failed before authentication because its floating runner changed beyond the pinned browser support. Candidate pins Ubuntu 24.04 and exercises the actual seven-card dashboard while retaining historical/deep checks. Candidate browser/CI/public authentication remain gates, not completion claims.
+
+Water transport before the export bridge still needs one existing Health Sync main/status view after purchase, with Water and last synchronization/error. Do not ask again for Apple Health permission screenshots, another purchase, recurrent exports or duplicate recording. The exact original fifteen-record laboratory proposal has not been recovered; synthetic SQL tests and broader ambiguous result lists do not identify or authorize its targets. Basal candidates remain outside totals.
+
+`EXECUTION_STATE.json` is reconciled with this restart. Older material below is historical; current source and actual evidence outrank old completion wording.
+
 # Original-source audit and bounded repair — 13/10/2026
 
 The restart recovered current main, .44, operational state and the visual reference. Independent metadata queries confirm continuing hourly Polar completions and a later real paid-bridge hydration receipt. Medications previously confirmed by the owner remain preserved. Do not reopen delivered scheduling, login, connection or layout work.

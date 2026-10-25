@@ -1,3 +1,7 @@
+# Reliability reopened — 2026-10-25
+
+FB-031: the owner does not accept the application as delivered. Preserve the approved daily cards and published corrections; prioritize actual water continuity and truthful missing-data states, review all domains with real data, keep basal unverified, recover the exact fifteen-record lab proposal without executing it, and distinguish reading tests from write/reopen evidence. Candidate package: `PKG-WATER-RELIABILITY-001`; authority: `EXECUTION_STATE.json`. Automated or previous narrow-screen checks do not imply physical-iPhone acceptance.
+
 # Cockpit reading published and verified — 2026-10-06
 
 Build `product-clarity-20261006.41` is published by normal PR #322 at `ffc8681e5d361fcc52c63b1021f681934d266a60`. All six exact final candidate checks and all ten product post-merge workflows passed, including deploy `37475661838`, real authenticated E2E `37475661660` and Functional Depth `37475661839`. Final artifact `11418332772` had its digest verified and was manually reviewed at desktop 1536×864 and mobile 390×844 / 393×650 / 320×740. The complete desktop footer fits; approved mobile Today/week priority is preserved.

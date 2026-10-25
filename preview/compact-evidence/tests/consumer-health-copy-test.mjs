@@ -25,13 +25,13 @@ assert.deepEqual(f.data,before,'presentation never mutates records');
 const empty=Object.fromEntries(Object.keys(f.data).map(key=>[key,[]]));
 const day=renderHealthDashboard(empty,f.status,{dashboardMode:'day'},f.today);
 for(const key of ['water','protein','energy','activeEnergy','totalEnergy','steps','sleep']){
-  const html=card(day,key);assert.match(html,/<strong>—<\/strong>/);assert.match(html,/Sem registro neste dia/);
+  const html=card(day,key);assert.match(html,/<strong>—<\/strong>/);assert.match(html,/Sem informação neste dia/);
   assert.doesNotMatch(primary(html),/não foi possível|falhou|consumo zero|origens separadas/i);
 }
 const failed=renderHealthDashboard(f.data,{...f.status,metrics:'error',sourceMetrics:'error'}, {},f.today);
 assert.match(card(failed,'steps'),/Não foi possível atualizar passos/);
 assert.match(card(failed,'steps'),/<strong>—<\/strong>/);
-assert.doesNotMatch(card(failed,'steps'),/Sem registro neste dia/);
+assert.doesNotMatch(card(failed,'steps'),/Sem informação neste dia/);
 const partial=renderHealthDashboard(f.data,{...f.status,sourceMetrics:'error'}, {},f.today);
 assert.match(card(partial,'water'),/Parte dos registros não carregou/);
 assert.match(card(partial,'water'),/1\.040/);

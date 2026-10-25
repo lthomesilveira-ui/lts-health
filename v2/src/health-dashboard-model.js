@@ -193,9 +193,14 @@ function makeMetric(definition,catalog,status,ui,calendar,bounds=calendar.bounds
   const {today}=calendar,{sources,invalidRows,unknownRows}=catalog,requested=requestedSource(definition,ui),source=selectSource(sources,requested,bounds,mode);
   const points=pointsFor(source,bounds,today),eligible=points.filter(point=>point.eligible),observed=points.filter(point=>point.value!=null);
   const dayPoint=mode==='day'?points[0]:null,value=mode==='day'?dayPoint?.value??null:mean(eligible.map(point=>point.value));
+  // A nutrition envelope can arrive without this metric. Keep receipt dates
+  // separate from actual values, and never present a historical value as today.
+  const latestRecorded=source?.rows.filter(row=>row.value!=null&&row.date<=bounds.end).at(-1)||null;
+  const lastMetricDate=source?.rows.filter(row=>row.date<=bounds.end&&row.observations.some(item=>item.receivedValue!=null||item.receivedRaw!=null)).at(-1)?.date||null;
   const count=mode==='day'?(value!=null?1:0):eligible.length,expectedDays=mode==='day'?1:bounds.closedDays;
   const todayPoint=source?.rows.find(row=>row.date===today)||null;
   return {key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,
+    latestRecorded:latestRecorded?{date:latestRecorded.date,value:latestRecorded.value,receivedAt:latestRecorded.receivedAt,sourceLabel:source.label,partial:latestRecorded.partial}:null,lastMetricDate,
     stepEvidence:definition.key==='steps'?stepEvidence(sources,bounds,today):null,aggregation:mode==='day'?'recorded_day':'observed_mean',
     source:source?{key:source.key,label:source.label,domain:source.domain,status:source.status,unit:source.unit,displayUnit:source.displayUnit,sourceFamily:source.sourceFamily}:null,
     sources:sources.map(item=>{const ps=pointsFor(item,bounds,today),good=ps.filter(point=>mode==='day'?point.value!=null:point.eligible);return {key:item.key,label:item.label,domain:item.domain,status:item.status,unit:item.unit,displayUnit:item.displayUnit,sourceFamily:item.sourceFamily,count:good.length,mean:mean(good.map(point=>point.value)),firstDate:good[0]?.date||null,periodLastDate:good.at(-1)?.date||null,lastDate:item.lastDate,lastReceivedDate:item.lastReceivedDate,lastReportedDate:item.lastReportedDate,unresolvedOverlap:item.unresolvedOverlap,...duplicateStats(ps),points:ps};}),
