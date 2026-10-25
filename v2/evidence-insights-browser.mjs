@@ -55,6 +55,31 @@ async function stableHome(page){
     return ++window.__gateHomeStableFrames>=3;
   });
 }
+// Route rendering and the compatibility controller can replace the first DOM.
+// Require a stable live root and geometry beyond its 250 ms settling cycle.
+async function stableExercise(page,id,name){
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');
+    window.__insightExerciseApp={state,isRouteReady};window.__insightExerciseCapture=null;
+  });
+  await page.waitForFunction(({id,name})=>{
+    const {state,isRouteReady}=window.__insightExerciseApp;
+    const root=document.querySelector('.ltsTrainingReference[data-training-view="exercise"]'),title=root?.querySelector('#productTrainingTitle');
+    if(!root||!title||!state.loaded||state.loading||!isRouteReady('treinos')||state.route!=='treinos'||location.hash!=='#treinos'||state.ui.productExerciseId!==id||title.textContent.trim()!==name||!root.querySelector('.ltsExerciseHistory')){
+      window.__insightExerciseCapture=null;return false;
+    }
+    const geometry=[root,title].flatMap(element=>{const r=element.getBoundingClientRect();return[r.x,r.y,r.width,r.height];}).join('|');
+    const previous=window.__insightExerciseCapture;
+    if(previous?.root!==root||previous.title!==title||previous.geometry!==geometry){
+      window.__insightExerciseCapture={root,title,geometry,id,name,since:performance.now()};return false;
+    }
+    return performance.now()-previous.since>=350;
+  },{id,name});
+}
+function exerciseCaptureUnchanged(){
+  const capture=window.__insightExerciseCapture,{state}=window.__insightExerciseApp;
+  return Boolean(capture&&capture.root===document.querySelector('.ltsTrainingReference[data-training-view="exercise"]')&&capture.title===document.querySelector('#productTrainingTitle')&&state.route==='treinos'&&state.ui.productExerciseId===capture.id&&capture.title.textContent.trim()===capture.name);
+}
 async function overflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no document horizontal overflow');}
 try{
   for(const [label,width,height] of [['desktop',1440,1000],['mobile',390,844],['small',320,740]]){
@@ -100,12 +125,16 @@ try{
     await page.screenshot({path:`${dir}/synthetic-${label}-insights.png`,fullPage:false});
     const exerciseLink=page.locator('[data-report-exercise]').first(),exerciseId=await exerciseLink.getAttribute('data-report-exercise');
     const expectedExercise=db.health_workout_exercises.find(row=>row.source_record_id===exerciseId);assert.ok(expectedExercise,'evidence link names an actual fixture record');
-    await exerciseLink.click();await page.waitForSelector('.ltsExerciseHistory');
+    await exerciseLink.click();await stableExercise(page,exerciseId,expectedExercise.exercise);
     assert.equal(await page.locator('#productTrainingTitle').innerText(),expectedExercise.exercise,'evidence link promotes the exact exercise name to the page title');
     assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.productExerciseId;}),exerciseId,'the exact clicked record identity remains selected');
     assert.match(await page.locator('.ltsExerciseSessionLatest .ltsExerciseRecordedSets').innerText(),/30 kg × 10/,'latest original load and reps lead the history');
-    await overflow(page);await page.locator('#productTrainingTitle').scrollIntoViewIfNeeded();
+    await overflow(page);
+    assert.equal(await page.evaluate(exerciseCaptureUnchanged),true,'exercise root remains identical before capture');
+    await page.evaluate(()=>{const {root,title}=window.__insightExerciseCapture;if(root!==document.querySelector('.ltsTrainingReference[data-training-view="exercise"]')||title!==document.querySelector('#productTrainingTitle'))throw new Error('Exercise DOM changed before scroll');title.scrollIntoView({block:'center',behavior:'instant'});});
+    assert.ok(await page.evaluate(()=>{const title=window.__insightExerciseCapture.title,r=title.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return r.top>=0&&r.bottom<=innerHeight&&Boolean(hit&&(hit===title||title.contains(hit)));}),'exact exercise title is inside the captured viewport');
     await page.screenshot({path:`${dir}/synthetic-${label}-exercise-history.png`,fullPage:false});
+    assert.equal(await page.evaluate(exerciseCaptureUnchanged),true,'exercise identity and DOM survive scrolling and screenshot');
     await page.evaluate(()=>{location.hash='#analise';});await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.data.sets=state.data.sets.map(row=>({...row,failure:null}));const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
     await page.locator('[data-report-section="reportEvidenceInsights"]').click();

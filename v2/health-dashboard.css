@@ -31,4 +31,4 @@
 
 /* Period-only hierarchy; the accepted daily grid and sizing are unchanged. */
 .healthPeriodContext{font-size:12px;line-height:1.5;color:#61758b;margin:6px 0 10px}.healthPeriodMetric .healthPeriodSource{font-size:11px;line-height:1.35;color:#536f89;margin:6px 0;overflow-wrap:anywhere}.healthPeriodSource>span{display:block;font-size:10px;color:#61758b;margin-top:2px}.healthPeriodMetric .healthSpark{margin-top:8px}.healthPeriodMetric .healthSparkEmpty{min-height:32px;margin-top:8px}.healthPeriodSourceException{display:block;font-size:11px;line-height:1.35;font-weight:400;color:#93672b;margin-bottom:5px}.healthPeriodMetric .healthSourceCaution{line-height:1.35}.healthPeriodMetric details>summary{line-height:1.35}
-.healthPeriodMetric{align-self:start}
+.healthPeriodMetric{align-self:start}.healthPeriodMetric>header{margin-bottom:8px}
