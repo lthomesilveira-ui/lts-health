@@ -61,7 +61,7 @@ jobs:
       - name: Verify readable laboratory scale and reference context
         if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         env:
-          LTS_HEALTH_BASE_URL: http://127.0.0.1:4173/v2/
+          LTS_HEALTH_BASE_URL: http://127.0.0.1:4175/v2/
         run: node preview/compact-evidence/tests/lab-visual-context-browser.mjs
       - name: Preserve existing input-validation and login-interruption tests
         run: |
