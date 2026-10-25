@@ -105,8 +105,10 @@ try{
   await page.locator('#productLabQuery').fill('Marcador 22');assert.equal(await page.locator('#productLabMarkerSelect option').count(),2);await page.locator('[data-lab-marker="marcador 22"]').click();await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-labs.png`});
 
-  await goto(page,'bio','.ltsCompositionV2 .ltsCompositionHero');
-  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition opens its own full-history default');
+  await goto(page,'bio','[data-composition-overview]');
+  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="365"]').getAttribute('aria-pressed'),'true','Composition opens its own recent-year default independently of Home');
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),0,'older observations are not substituted into the recent window');
+  assert.match(await page.locator('[data-composition-overview]').innerText(),/30 medições no histórico/,'the archive remains available before choosing all');
   await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),30);
   // Home intentionally shows a readable pair. Full raw series live in Composition.
   for(const [metric,label] of [['fat_mass_kg','fat'],['skeletal_muscle_mass_kg','muscle']]){

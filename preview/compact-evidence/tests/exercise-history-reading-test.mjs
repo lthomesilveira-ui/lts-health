@@ -115,4 +115,29 @@ reset();state.data.sets.forEach(set=>set.weight=null);html=renderExerciseHistory
 for(const key of ['workouts','exercises','sets']){reset();state.domainStatus[key]='error';html=renderExerciseHistory();assert.match(html,/não carregou por completo/);assert.doesNotMatch(html,/ltsExerciseRecordedSets|<svg/);}
 reset();state.ui.productExerciseId='absent';assert.equal(exerciseHistoryTitle(),'Histórico do exercício');assert.match(renderExerciseHistory(),/Escolha um exercício/);
 reset();state.data.exercises[0].exercise='Outro nome';state.ui.productExerciseId='synthetic-exercise-0';html=renderProductTraining();assert.match(html,/<h1[^>]*>Outro nome<\/h1>/);assert.doesNotMatch(html,/Exercício inventado/,'switching history cannot retain the previous exercise name');
+// Exact source aliases are presentation only; originals remain in the existing disclosure.
+const visibleSummary=markup=>markup.replace(/<details\b[\s\S]*?<\/details>/g,'');
+const withoutOriginalNotes=()=>{state.data.exercises.forEach(row=>{row.notes=null;row.source_text=null;});state.data.sets.forEach(row=>row.notes=null);};
+for(const source of ['user_detail','lucas_app.jsx (SEED_TREINOS)']){
+ reset();withoutOriginalNotes();state.data.exercises.forEach(row=>row.source=source);state.data.sets.forEach(row=>row.source=source);
+ const snapshot=JSON.stringify(state.data);html=renderExerciseHistory();
+ assert.match(visibleSummary(html),/Origem: Registro de treino/);
+ assert.doesNotMatch(visibleSummary(html),/user_detail|lucas_app\.jsx|SEED_TREINOS/);
+ assert.match(html,/<summary>Observações e registro original<\/summary><p>Identificação original das origens:/,'original source creates the same disclosure even without notes');
+ assert.ok(html.includes(`<b>Registro de treino</b>: ${source}</li>`),'full original identifier is accessible');
+ assert.doesNotMatch(visibleSummary(html),/verificada|validada|Histórico importado|Registro detalhado|informado por você/i);
+ assert.equal(JSON.stringify(state.data),snapshot,'labels never rewrite source identity');
+}
+reset();withoutOriginalNotes();state.data.exercises.forEach(row=>row.source='user_detail');state.data.sets.forEach(row=>row.source='lucas_app.jsx (SEED_TREINOS)');html=renderExerciseHistory();
+assert.match(visibleSummary(html),/Origem: Registro de treino 1 · Registro de treino 2/,'different original identities never collapse into one label');
+assert.match(visibleSummary(html),/Origem: Registro de treino 2<\/small>/,'set-level provenance points to the distinct numbered origin');
+assert.match(html,/<b>Registro de treino 1<\/b>: user_detail<\/li>/);assert.match(html,/<b>Registro de treino 2<\/b>: lucas_app\.jsx \(SEED_TREINOS\)<\/li>/);
+assert.equal(exerciseHistoryModel(state.ui.productExerciseId).occurrences[0].exercise.source,'user_detail');assert.equal(exerciseHistoryModel(state.ui.productExerciseId).occurrences[0].sets[0].source,'lucas_app.jsx (SEED_TREINOS)');
+for(const source of ['USER_DETAIL','user_detail_extra','user-detail',' user_detail ','SEED_TREINOS','other.jsx (SEED_TREINOS)','lucas_app.jsx (SEED_TREINOS) extra']){
+ reset();withoutOriginalNotes();state.data.exercises.forEach(row=>row.source=source);state.data.sets.forEach(row=>row.source=source);html=renderExerciseHistory();
+ assert.ok(visibleSummary(html).includes(`Origem: ${source.trim()}`),'unrecognized source remains literal');assert.doesNotMatch(visibleSummary(html),/Origem: Registro de treino/);assert.doesNotMatch(html,/Identificação original das origens/);
+}
+reset();withoutOriginalNotes();state.data.exercises[1].source='user_detail';state.data.sets[4].source='lucas_app.jsx (SEED_TREINOS)';state.data.sets[4].workout_date='2025-06-01';html=renderExerciseHistory();
+assert.match(html,/Registros originais não atribuídos/);assert.doesNotMatch(visibleSummary(html),/user_detail|SEED_TREINOS|lucas_app\.jsx/);assert.match(html,/Identificação original das origens/);assert.match(html,/lucas_app\.jsx \(SEED_TREINOS\)/,'an unassigned original source is also preserved');
+reset();withoutOriginalNotes();state.data.exercises[1].source='user_detail';state.data.sets[4].source='<script>unknown_source</script>';html=renderExerciseHistory();assert.match(html,/&lt;script&gt;unknown_source&lt;\/script&gt;/);assert.doesNotMatch(html,/<script>/);
 console.log('Exercise history reading: named title, latest original sets first, isolated recorded dots, preserved partial reps/effort/source, secondary eligible comparison, strict identities, units, empty/error states and no mutation passed.');

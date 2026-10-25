@@ -27,7 +27,7 @@ try{
     await page.goto(base+'#hoje');
     const card=page.locator('[data-dashboard-card="steps"]');
     await page.waitForFunction(()=>document.querySelector('[data-dashboard-card="steps"]')?.textContent.includes('contagens diferentes por origem'));
-    assert.match(await card.innerText(),/contagem em revisão/);
+    assert.match(await card.innerText(),/dia em revisão/);
     await card.locator('summary').click();
     const evidence=card.locator('[data-steps-evidence]');
     assert.match(await evidence.innerText(),/1\.024,125006/);assert.match(await evidence.innerText(),/1\.234 passos/);assert.match(await evidence.innerText(),/4\.321 passos/);

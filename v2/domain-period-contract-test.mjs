@@ -11,8 +11,8 @@ state.data={body:[10,45,120,400].map(n=>({source_record_id:'b'+n,measured_at:dat
 const original=structuredClone(state.data);
 for(const home of ['30','90','365','all']){
  setGlobalPeriod(home);
- assert.equal(compositionModel().period,'all');assert.equal(labsModel().period,'all');
- assert.equal(compositionModel().recent.length,4);assert.equal(labsModel().recent.length,4);
+ assert.equal(compositionModel().period,'365','Composition keeps its recent-year default when Home changes');assert.equal(labsModel().period,'all');
+ assert.equal(compositionModel().recent.length,3);assert.equal(compositionModel().history.total,4,'the recent window does not truncate the full archive');assert.equal(labsModel().recent.length,4);
  assert.equal(state.ui.productCompositionPeriod,undefined);assert.equal(state.ui.productLabPeriod,undefined,'Home never assigns a laboratory filter');
 }
 state.ui.homePeriod='7';state.ui.dashboardPeriod='7';
@@ -33,4 +33,4 @@ assert.equal(compositionModel().latest,null);assert.equal(labsModel().item,null)
 assert.match(renderProductLabs(),/data-value="all"/);
 state.ui.productCompositionPeriod='all';state.ui.productLabPeriod='all';
 assert.equal(compositionModel().recent.length,1);assert.equal(labsModel().recent.length,1,'old observations remain available only after an explicit full-history choice');
-console.log('Domain periods: independent full-history defaults, explicit 30/90/365/history bounds, Home7/90 persistence, no stale fallback or mutation; full archives remain available.');
+console.log('Domain periods: independent recent-year Composition and full-history Labs defaults, explicit 30/90/365/history bounds, Home7/90 persistence, no stale fallback or mutation; full archives remain available.');

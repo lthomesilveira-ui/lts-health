@@ -113,7 +113,9 @@ async function assertMetrics(page,fixture,ui={}){
         assert.equal(m.count,expected.count);
       }
       assert.equal(await card.locator('.healthCoverage').innerText(),`${m.count}/${m.expectedDays} dias usados na média`);
-      assert.equal(await card.locator('.healthMetricPeriod').innerText(),`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`);
+      assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'period window is shared above the cards');
+      assert.ok((await page.locator('.healthWindow').innerText()).includes(`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`),'shared period window remains exact');
+      if(m.source)assert.ok((await card.locator('.healthPeriodSource').innerText()).includes(m.source.label),'full synthetic origin remains visible');
     }else{
       assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'daily date is shared above the seven cards');
       assert.equal(await card.locator(':scope > .healthAggregation').count(),0,'daily partial copy is not repeated in the cards');
@@ -248,7 +250,9 @@ try{
       // Body and labs have their own windows. Home must not truncate or overwrite them.
       if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="bio"]').click();}else await page.locator('#primaryNav [data-route="bio"]').click();
       await page.waitForSelector('.ltsCompositionV2');
-      assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','body defaults to full history even while Home is 90 days');
+      assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="365"]').getAttribute('aria-pressed'),'true','body defaults to its own recent year while Home remains 90 days');
+      await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();
+      assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','the complete observed history remains an explicit choice');
       assert.equal(await page.locator('.ltsCompositionChart circle').count(),sparse?2:7);
       await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').click();
       assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');
