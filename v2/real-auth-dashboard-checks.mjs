@@ -80,3 +80,50 @@ export async function auditIntegratedDashboard(page,options){
   throw new Error('Integrated dashboard verification failed; private observations withheld. Inspect the encrypted authenticated evidence.');
  }
 }
+
+
+async function inspectIntegratedEvolution(page){
+ const rows=await page.evaluate(async()=>{
+  const {sb}=await import('./src/core.js'),rows=[];
+  for(let from=0;;from+=1000){
+   const {data,error}=await sb.from('health_body_composition').select('source_record_id,measured_at,weight_kg,body_fat_pct,skeletal_muscle_mass_kg,fat_mass_kg').order('source_record_id').range(from,from+999);
+   if(error)throw Error('independent body read failed');rows.push(...data);if(data.length<1000)break;
+  }
+  return rows;
+ });
+ const check=async(metric,period)=>{
+  await page.waitForFunction(({metric,period})=>document.querySelector(`[data-evolution-overview-metric="${metric}"]`)?.getAttribute('aria-pressed')==='true'&&document.querySelector(`[data-evolution-period="${period}"]`)?.getAttribute('aria-pressed')==='true',{metric,period});
+  const matches=await page.evaluate(async({rows,metric,period})=>{
+   const {fmtNum}=await import('./src/core.js'),{localHealthDay}=await import('./src/health-context.js');
+   const end=localHealthDay(),[year,month,day]=end.split('-').map(Number),first=new Date(Date.UTC(year,month-1-(period==='6m'?6:12),1));
+   first.setUTCDate(Math.min(day,new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate()));
+   const start=period==='all'?'0000-01-01':first.toISOString().slice(0,10);
+   const valid=rows.filter(r=>r.measured_at&&String(r.measured_at).slice(0,10)>=start&&String(r.measured_at).slice(0,10)<=end&&r[metric]!=null&&Number.isFinite(Number(r[metric])));
+   const select=document.querySelector('#evolution-point'),marks=document.querySelectorAll('[data-evolution-point]');
+   if(!valid.length)return marks.length===0&&Boolean(document.querySelector('.ltsEvolutionEmpty'));
+   if(!select||select.options.length!==valid.length||marks.length!==valid.length)return false;
+   const identity=JSON.parse(decodeURIComponent(select.value.slice(0,select.value.lastIndexOf('~'))));
+   const row=valid.find(r=>r.source_record_id===identity[0]),reading=document.querySelector('.ltsEvolutionReading');
+   return Boolean(row&&String(row.measured_at).slice(0,10)===identity[1]&&Number(row[metric])===identity[2]&&reading?.querySelector('strong')?.textContent.startsWith(fmtNum(row[metric],1))&&reading.innerText.includes(identity[1].split('-').reverse().join('/'))&&document.querySelector('[data-evolution-body]')?.getAttribute('data-evolution-body')===row.source_record_id&&document.querySelectorAll('.ltsEvolutionChart path, .ltsEvolutionChart polyline').length===0&&document.documentElement.scrollWidth<=innerWidth+1);
+  },{rows,metric,period});
+  assert.ok(matches,'current body points, selected value and original-record link agree with independent observations');
+ };
+ for(const period of ['6m','12m','all']){
+  await page.locator(`[data-evolution-period="${period}"]`).click();
+  for(const metric of ['weight_kg','body_fat_pct','skeletal_muscle_mass_kg','fat_mass_kg']){
+   await page.locator(`[data-evolution-overview-metric="${metric}"]`).click();await check(metric,period);
+   const options=await page.locator('#evolution-point option').evaluateAll(es=>es.map(e=>e.value));
+   if(options.length>1){await page.locator('#evolution-point').selectOption(options.at(-1));await check(metric,period);}
+  }
+ }
+ await page.locator('[data-evolution-overview-metric="weight_kg"]').click();
+ await page.locator('[data-evolution-period="12m"]').click();await check('weight_kg','12m');
+}
+
+export async function auditIntegratedEvolution(page){
+ try{return await inspectIntegratedEvolution(page);}
+ catch{
+  try{await page.screenshot({path:'v2/real-auth-evidence/evolution-failure.png',fullPage:true});}catch{}
+  throw new Error('Current evolution verification failed; private observations withheld. Inspect the encrypted authenticated evidence.');
+ }
+}

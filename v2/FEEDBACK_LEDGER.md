@@ -1,3 +1,7 @@
+# Current navigation reliability — 2026-10-25
+
+FB-032: authenticated inspection and restored current-journey verification found a missing mobile active destination for Reports after Evolution became a primary destination. Candidate .81 preserves the approved dashboard, repairs More activation and verifies current observed-history metrics/windows against independent observations. No source, prescription or private record is changed. Actual publication and owner acceptance remain separate; authority: `EXECUTION_STATE.json`.
+
 # Reliability reopened — 2026-10-25
 
 FB-031: the owner does not accept the application as delivered. Preserve the approved daily cards and published corrections; prioritize actual water continuity and truthful missing-data states, review all domains with real data, keep basal unverified, recover the exact fifteen-record lab proposal without executing it, and distinguish reading tests from write/reopen evidence. Candidate package: `PKG-WATER-RELIABILITY-001`; authority: `EXECUTION_STATE.json`. Automated or previous narrow-screen checks do not imply physical-iPhone acceptance.

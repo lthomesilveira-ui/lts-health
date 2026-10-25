@@ -1,3 +1,13 @@
+# Current restart — .80 verified, .81 candidate, 2026-10-25
+
+Runtime .80 was published by PR 388 at `868f549b919180366f7df3e55098f41b5c38f5e3` after all twelve exact candidate workflows passed. The exact public build was manually inspected with the existing secure authenticated account: current absent water, historical reopening, receipt time, connection warning and all domains. This is not overall owner acceptance or resolved phone-side continuity.
+
+The restored real-auth runner now installs and authenticates. It exposed stale Data wording and legacy Evolution assumptions. PR 389 updated independently checked inbox actions. Candidate .81 checks the actual observed-history graph against independent authenticated observations, all metrics/windows and the current mobile navigation. Reports opened through More lacked an active destination; .81 repairs it and keeps the metric controls readable and touchable. The approved seven-card dashboard is preserved.
+
+One Health Sync main/status capture after the reported purchase is still needed, showing Water and the last synchronization/error. Do not repeat Apple Health permissions, purchases, manual daily exports or duplicate recording. The exact original fifteen-record lab proposal is not recovered and has no execution authority. Basal candidates remain unverified and excluded from totals. Original MFP water history is a separate unresolved transfer.
+
+`EXECUTION_STATE.json` is authoritative. Candidate CI, exact public .81 authentication and physical-device/owner acceptance remain distinct gates. Historical notes below are preserved.
+
 # Current restart — water reliability, 2026-10-25
 
 The current public source checkpoint is `.79`, PR 387, merge `a4883958aaab7dd46c1b1c93f1f380fabad7095c`. Do not restore older preview builds or infer product acceptance. The owner reopens end-to-end reliability, particularly missing water, and preserves the approved dashboard.
