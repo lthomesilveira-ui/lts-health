@@ -369,8 +369,8 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
 
   await waitForRoute('analise');
-  const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:[...document.querySelectorAll('.ltsUsefulReports h2')].map(e=>e.textContent),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
-  if(!reports.period||!reports.sections.includes('Onde o corpo mudou')||!reports.sections.includes('Exames ao longo do tempo'))throw new Error('mobile useful reports are missing');
+  const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:['reportComposition','reportLabs'].map(id=>Boolean(document.querySelector('#'+id))),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
+  if(!reports.period||!reports.sections.every(Boolean))throw new Error('mobile useful reports are missing');
   if(reports.axes.length&&new Set(reports.axes).size!==1)throw new Error('mobile report calendars disagree');
   await assertNoHorizontalOverflow();
   await assertStableMobileShell('mobile Recovery');
@@ -429,6 +429,7 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-more.png`});
   await page.locator('#moreSheet [data-route="evolucao"]').click();
 
+  verificationStage='deep-history';
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
 
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
