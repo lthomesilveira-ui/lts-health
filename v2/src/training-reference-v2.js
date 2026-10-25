@@ -1,5 +1,5 @@
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
-import {renderTrainingHistory,renderExerciseHistory,renderExerciseDirectory} from './training-history.js';
+import {renderTrainingHistory,renderExerciseHistory,exerciseHistoryTitle,renderExerciseDirectory} from './training-history.js';
 import {failed,errorCard} from './history-tools.js';
 import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './training-session.js';
 import {trainingSessionSummary} from './training-session-summary.js';
@@ -148,7 +148,7 @@ export function renderProductTraining(){
   const selected=rows.find(w=>w.source_record_id===state.ui.openWorkout)||rows[0]||null;
   const requested=state.ui.productTrainingView;
   const view=['summary','exercises','history','exercise','progress'].includes(requested)?requested:(requested==='session'?'summary':'summary');
-  const heading=view==='progress'?'Histórico por exercício':view==='history'?'Treinos':view==='exercise'?'Histórico do exercício':selected?safe(selected.workout_type,'Sessão'):'Treinos';
+  const heading=view==='progress'?'Histórico por exercício':view==='history'?'Treinos':view==='exercise'?exerciseHistoryTitle():selected?safe(selected.workout_type,'Sessão'):'Treinos';
   const subtitle=view==='progress'?'Escolha um exercício para ver datas, cargas e repetições registradas.':view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Datas, cargas e repetições registradas por sessão.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
   return `<section class="ltsTrainingV2 ltsTrainingReference" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
     <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino">+</button></header>

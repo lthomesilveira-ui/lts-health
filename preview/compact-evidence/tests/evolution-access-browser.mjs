@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mkdirSync} from 'node:fs';
+import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 import {evolutionAccessFixture,TODAY} from './evolution-access-fixture.mjs';
 // Synthetic, loopback-only acceptance of the real module routes. No real login,
@@ -14,7 +14,7 @@ const sdk=`window.__changesQA={writes:[],calls:[]};window.supabase={createClient
  from(table){let start=0,end=999;const filters=[];const rows=()=>(${JSON.stringify(db)}[table]||[]).filter(r=>filters.every(([k,v])=>r[k]===v));const q={select(){return q},eq(k,v){filters.push([k,v]);return q},is(k,v){filters.push([k,v]);return q},order(){return q},range(a,b){start=a;end=b;return q},limit(n){end=start+n-1;return q},maybeSingle:async()=>({data:rows()[0]||null,error:null}),then(resolve,reject){if(table==='health_lab_results'&&window.__pauseEvolutionLabs){window.__evolutionLabsRequested=true;return new Promise(done=>window.__releaseEvolutionLabs=done).then(()=>({data:rows().slice(start,end+1),error:null})).then(resolve,reject)}return Promise.resolve({data:rows().slice(start,end+1),error:null}).then(resolve,reject)}};for(const op of ['insert','update','upsert','delete'])q[op]=()=>{window.__changesQA.writes.push(op);throw Error('No writes')};return q},
  functions:{invoke(name,options){window.__changesQA.calls.push([name,options?.body?.action]);if(options?.body?.action==='status')return Promise.resolve({data:{configured:false,connected:false},error:null});window.__changesQA.writes.push(name);throw Error('No integration mutation')}},
  rpc(){window.__changesQA.writes.push('rpc');throw Error('No writes')}})};`;
-const directory='evolution-access-visual';mkdirSync(directory,{recursive:true});
+const geometry=[];const directory='evolution-access-visual';mkdirSync(directory,{recursive:true});
 const browser=await chromium.launch({headless:true});
 try{
  for(const width of [320,393,1280]){
@@ -30,7 +30,15 @@ try{
   // The labelled Evolução destination must open evolution, never Recovery.
   const evolution=page.locator('[data-route="evolucao"]:visible').first();await evolution.click();await page.waitForSelector('.ltsEvolutionOverview');
   assert.equal(new URL(page.url()).hash,'#evolucao');assert.equal(await page.locator((width<900?'#mobileNav':'#primaryNav')+' [data-route].active').count(),1,'only the actual Evolution destination is active');assert.match(await page.locator('.ltsEvolutionOverview').innerText(),/41 medições preservadas/);
-  assert.equal(await page.locator('.ltsEvolutionOverview .ltsContextLine').count(),0);assert.equal(await page.locator('.ltsEvolutionOverview circle').count(),41);
+  assert.equal(await page.locator('.ltsEvolutionOverview .ltsContextLine').count(),0);assert.equal(await page.locator('.ltsEvolutionOverview .ltsEvolutionMark').count(),40);
+  assert.equal(await page.locator('[data-evolution-period="12m"]').getAttribute('aria-pressed'),'true');
+  const chartGeometry=await page.locator('.ltsEvolutionChart').evaluate(el=>{const r=el.getBoundingClientRect(),nav=document.querySelector('#mobileNav'),n=nav?.getBoundingClientRect(),bottom=n&&n.height>0?n.top:innerHeight;return{top:r.top,bottom:r.bottom,height:r.height,visible:Math.max(0,Math.min(r.bottom,bottom)-Math.max(0,r.top)),viewport:innerHeight};});geometry.push({width,...chartGeometry});writeFileSync(`${directory}/geometry.json`,JSON.stringify(geometry,null,2));assert.ok(chartGeometry.top<500&&chartGeometry.visible/chartGeometry.height>=.65,'at least65% of the recent chart is visible above navigation on entry');
+  assert.equal(await page.locator('.ltsEvolutionLegend span').count(),2);
+  await page.locator('[data-evolution-period="all"]').click();assert.equal(await page.locator('.ltsEvolutionMark').count(),41);
+  await page.locator('[data-evolution-point-select]').selectOption(await page.locator('[data-evolution-point-select] option').filter({hasText:'20/03/2021'}).getAttribute('value'));assert.match(await page.locator('.ltsEvolutionReading').innerText(),/20\/03\/2021/);assert.match(await page.locator('.ltsEvolutionReading').innerText(),/90,0/);await page.screenshot({path:`${directory}/selected-observation-${width}.png`});
+  await page.locator('[data-evolution-period="6m"]').click();assert.equal(await page.locator('.ltsEvolutionMark').count(),21);
+  await page.locator('[data-evolution-period="12m"]').click();assert.equal(await page.locator('.ltsEvolutionMark').count(),40);
+  assert.match(await page.locator('.ltsEvolutionReading').innerText(),/01\/09\/2026/);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Evolution has no horizontal overflow');await page.screenshot({path:`${directory}/evolution-${width}.png`});
   await page.locator('.ltsEvolutionAccess [data-route="bio"]').click();await page.waitForSelector('[data-composition-overview]');
   assert.match(await page.locator('[data-composition-overview]').innerText(),/41 medições no histórico · 41 nesta janela/);

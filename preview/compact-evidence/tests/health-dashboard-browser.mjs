@@ -96,7 +96,11 @@ async function assertMetrics(page,fixture,ui={}){
       }
       assert.equal(await card.locator('.healthCoverage').innerText(),`${m.count}/${m.expectedDays} dias usados na média`);
       assert.equal(await card.locator('.healthMetricPeriod').innerText(),`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`);
-    }else assert.equal(await card.locator('.healthMetricPeriod').innerText(),dateLabel(d.date));
+    }else{
+      assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'daily date is shared above the seven cards');
+      assert.equal(await card.locator(':scope > .healthAggregation').count(),0,'daily partial copy is not repeated in the cards');
+      assert.ok((await page.locator('.healthWindow').innerText()).includes(dateLabel(d.date)),'selected daily date remains visible');
+    }
   }
   return d;
 }

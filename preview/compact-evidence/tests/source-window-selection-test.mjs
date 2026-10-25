@@ -21,8 +21,14 @@ assert.equal(week.source.label,'Origin A');assert.equal(week.count,7);assert.equ
 const explicit=calendarReport(data,status,{...weekUI,calendarReportSources:{protein:seven.source.key}},'2026-10-24').metricsByKey.protein;
 assert.equal(explicit.count,0);assert.equal(explicit.source.key,seven.source.key);assert.equal(explicit.otherSourcesWithData,1);assert.equal(explicit.comparison.comparable,false);
 assert.match(sourceWindowView(explicit),/Sem valor utilizável nesta origem/);assert.match(sourceWindowView(explicit),/Origin A/);assert.match(sourceWindowView(explicit),/7\/7 dias/);
+const compactEmpty=sourceWindowView(explicit,{compact:true});
+assert.match(compactEmpty,/Sem valor utilizável nesta origem/);assert.match(compactEmpty,/1 outra origem com registros/);assert.match(compactEmpty,/Sem soma entre origens/);assert.match(compactEmpty,/Origin A/);assert.match(compactEmpty,/7\/7 dias/);assert.match(compactEmpty,/Origem escolhida por você/);
 const missing=model('30',{dashboardSources:{protein:'missing-origin'}}).metricsByKey.protein;
 assert.equal(missing.source,null);assert.equal(missing.value,null);assert.equal(missing.requestedSourceMissing,true);assert.match(sourceWindowView(missing),/nenhuma outra foi usada/);
+assert.match(sourceWindowView(missing,{compact:true}),/nenhuma outra foi usada/);
+assert.match(sourceWindowView(seven,{compact:true}),/Origin B[\s\S]*Automática por cobertura; pode mudar/,'automatic rule and full chosen origin remain readable outside the select');
+assert.match(sourceWindowView(explicit,{compact:true}),/<option value="" >Automática · maior cobertura<\/option>/,'automatic option does not claim the explicit origin is its future choice');
+assert.equal(sourceWindowView(explicit,{compact:true,print:true}),sourceWindowView(explicit,{print:true}),'printed source evidence remains complete');
 const chosen=model('90',{dashboardSources:{protein:seven.source.key}}).metricsByKey.protein;
 assert.equal(chosen.count,5);assert.equal(chosen.value,200);assert.equal(chosen.sourceSelectionMode,'explicit');
 assert.equal(calendarReport(data,status,{...weekUI,dashboardSources:{protein:seven.source.key}},'2026-10-24').metricsByKey.protein.count,0,'inherited explicit dashboard choice retained');

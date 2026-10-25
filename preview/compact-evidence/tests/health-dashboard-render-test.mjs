@@ -57,6 +57,7 @@ export function expectedMetric(fixture,key,bounds,source='A'){
   return {value:points.length?points.reduce((sum,row)=>sum+row.value,0)/points.length:null,count:points.length};
 }
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-dashboard-card="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
+const primary=html=>html.split('<details')[0];
 const panel=(html,domain)=>html.match(new RegExp(`<article[^>]+data-study-domain="${domain}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
 const freeze=value=>{if(value&&typeof value==='object'){Object.freeze(value);Object.values(value).forEach(freeze);}return value;};
 const escapeRegex=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -89,6 +90,12 @@ export async function runRenderTests(){
     assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);
     const current=renderHealthDashboard(f.data,f.status,{dashboardMode:'day'},f.today);
     assert.match(current,/hoje parcial/);assert.match(current,/value="2026-10-17"/);assert.doesNotMatch(current,/data-dashboard-period/);
+    assert.equal((current.match(/hoje parcial/g)||[]).length,1,'the shared day/partial context is stated once');
+    assert.deepEqual([...current.matchAll(/data-dashboard-card="([^"]+)"/g)].map(match=>match[1]),METRIC_KEYS,'approved seven-card order is unchanged');
+    for(const key of METRIC_KEYS){
+      const content=primary(card(current,key));
+      assert.doesNotMatch(content,/healthAggregation|healthMetricPeriod|Registro de hoje|O registro deste dia pode estar incompleto/,'daily date/partial copy is not repeated in each card');
+    }
     assert.match(card(current,'water'),/<strong>9\.000<\/strong>/);
     const historical=renderHealthDashboard(f.data,f.status,{dashboardMode:'day',dashboardDate:f.date(1)},f.today);
     assert.match(historical,/dia encerrado; registros podem estar incompletos/);
@@ -116,7 +123,8 @@ export async function runRenderTests(){
     const old=model.metricsByKey.water.sources.find(item=>item.label==='Synthetic older water').key;
     const older=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{water:old}},f.today),'water');
     assert.match(older,/<strong>—<\/strong>/);
-    assert.match(older,new RegExp(`Último registro: ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date survives an empty selected period');
+    assert.match(primary(older),new RegExp(`Último registro desta origem: ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date stays visible in an empty selected period');
+    assert.equal((older.match(/Último registro/g)||[]).length,1,'latest-date provenance is not repeated inside the disclosure');
     const context=dashboardContext(f.data,f.status,{bounds:model.bounds,today:f.today,mode:model.mode});
     assert.equal(context.training.sessions,sparse?0:3);assert.equal(context.training.recordedDays,sparse?0:2);
     if(!sparse){
@@ -201,6 +209,19 @@ export async function runRenderTests(){
     assert.ok(text.includes(expected),'recorded load retains significant decimal precision');assert.doesNotMatch(text,/40,0000000000 kg/,'no artificial trailing decimal zeros');
   }
   const candidateFixture=makeDashboardFixture();candidateFixture.data.sourceMetrics.forEach(row=>{row.canonical_status='candidate';});const candidateHtml=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{},candidateFixture.today);assert.match(candidateHtml,/versão adicional do registro/);assert.doesNotMatch(candidateHtml,/Origem ainda não validada/);
+  const candidateDay=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{dashboardMode:'day'},candidateFixture.today);
+  assert.match(primary(card(candidateDay,'activeEnergy')),/Registro adicional, ainda sem confirmação/,'unconfirmed active energy remains visible without opening details');
+  const missingOriginDay=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{dashboardMode:'day',dashboardSources:{water:'synthetic-missing-origin'}},candidateFixture.today);
+  assert.match(primary(card(missingOriginDay,'water')),/origem escolhida não está disponível; nenhuma outra foi usada/,'an unavailable explicit daily origin never becomes an unexplained blank');
+  const documentary=makeDashboardFixture();documentary.data.goals=[];documentary.data.nutrition=documentary.data.nutrition.filter(row=>row.nutrition_date<documentary.today);documentary.data.sourceMetrics=[];
+  const docDate=documentary.date(3),checksum='a'.repeat(64);
+  documentary.data.waterReferences=[{source_record_id:'synthetic-documentary-water',document_type:'medical_plan',document_date:docDate,source_file:'Synthetic plan.pdf',source:'Synthetic documentary source',checksum,water_reference:{schema_version:1,type:'documented_water_base',base_ml_per_day:3000,source_page:3,documented_on:docDate,source_sha256:checksum,date_basis:'document_update',clinical_start:'not_explicit',exercise_addition:'Synthetic exercise context; not calculated automatically.'}}];
+  const documentaryCard=card(renderHealthDashboard(documentary.data,documentary.status,{dashboardMode:'day'},documentary.today),'water');
+  assert.match(primary(documentaryCard),/Sem registro neste dia/);
+  assert.match(primary(documentaryCard),new RegExp(`Último registro desta origem: ${escapeRegex(dateLabel(documentary.date(1)))}`),'missing water retains its most recent date above details');
+  assert.doesNotMatch(primary(documentaryCard),/Referência documental/,'a documentary reference is secondary context, not a current target or water value');
+  assert.match(documentaryCard,/<details[\s\S]*Referência documental: 3\.000 mL\/dia[\s\S]*Vigência clínica não confirmada/,'documentary amount, date and validity warning stay together in the disclosure');
+  assert.match(primary(card(renderHealthDashboard(makeDashboardFixture().data,documentary.status,{dashboardMode:'day'},documentary.today),'water')),/Meta cadastrada: 2\.400 mL/,'a genuine personal target remains visible');
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));

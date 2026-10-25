@@ -213,7 +213,9 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
-    const overviewMetric=event.target.closest('[data-evolution-overview-metric]');if(overviewMetric){state.ui.evolutionOverviewMetric=overviewMetric.dataset.evolutionOverviewMetric;render();return;}
+    const overviewMetric=event.target.closest('[data-evolution-overview-metric]');if(overviewMetric){state.ui.evolutionOverviewMetric=overviewMetric.dataset.evolutionOverviewMetric;state.ui.evolutionOverviewPoint=null;render();return;}
+    const overviewPeriod=event.target.closest('[data-evolution-period]');if(overviewPeriod){state.ui.evolutionOverviewPeriod=overviewPeriod.dataset.evolutionPeriod;state.ui.evolutionOverviewPoint=null;render();return;}
+    const overviewPoint=event.target.closest('[data-evolution-point]');if(overviewPoint){event.preventDefault();state.ui.evolutionOverviewPoint=overviewPoint.dataset.evolutionPoint;render();return;}
     const overviewBody=event.target.closest('[data-evolution-body]');if(overviewBody){state.ui.productCompositionRecord=overviewBody.dataset.evolutionBody;setRoute('bio',{replace:false});return;}
     const overviewExercise=event.target.closest('[data-evolution-exercise]');if(overviewExercise){state.ui.productExerciseId=overviewExercise.dataset.evolutionExercise;state.ui.productExercisePage=1;state.ui.productExerciseUnit=null;state.ui.productTrainingView='exercise';setRoute('treinos',{replace:false});return;}
     if(event.target.closest('[data-evolution-training]')){state.ui.productTrainingView='progress';setRoute('treinos',{replace:false});return;}
@@ -323,6 +325,7 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-evolution-point-select')){state.ui.evolutionOverviewPoint=event.target.value;render();return;}
     if(event.target.hasAttribute('data-calendar-control')){const patch=updateCalendarReportSelection(state.ui,event.target.dataset.calendarControl,event.target.value);if(patch){Object.assign(state.ui,patch);render();}return;}
     if(event.target.hasAttribute('data-calendar-source')){state.ui.calendarReportSources={...(state.ui.calendarReportSources||{}),[event.target.dataset.calendarSource]:event.target.value};render();return;}
     if(event.target.hasAttribute('data-nutrition-archive-field')){
