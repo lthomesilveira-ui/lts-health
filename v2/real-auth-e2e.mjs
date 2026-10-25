@@ -288,10 +288,15 @@ try{
   if(await page.locator('.qualityRow').count()<1)throw new Error('real quality history missing');
   const resolvedCount=await page.locator('.qualityRow').filter({hasText:'resolvido'}).count();
   if(resolvedCount<1)throw new Error('resolved real quality item missing');
-  const dataText=await page.locator('#screenHost').innerText();
-  if(integrity.uploadActionCount===0&&!dataText.includes('Nada exige sua ação agora'))throw new Error('real Data Inbox action state is contradictory');
-  if(integrity.uploadActionCount>0&&dataText.includes('Nada exige sua ação agora'))throw new Error('real Data Inbox hides required user action');
-  if(integrity.internalQualityCount>0&&!dataText.includes('Tratamento interno'))throw new Error('real Data Inbox internal-quality state is contradictory');
+  const inbox=page.locator('[data-review-inbox]');
+  const inboxHeadline=await inbox.locator('h2').innerText();
+  if(integrity.uploadActionCount===0&&inboxHeadline!=='Nenhuma ação sua é necessária')throw new Error('real Data Inbox action state is contradictory');
+  if(integrity.uploadActionCount>0&&inboxHeadline==='Nenhuma ação sua é necessária')throw new Error('real Data Inbox hides required user action');
+  if(await inbox.locator('[data-user-actions] .reviewActionRow').count()!==integrity.uploadActionCount)throw new Error('real Data Inbox user-action coverage differs from independent read');
+  if(await inbox.locator('[data-internal-quality] .reviewActionRow').count()!==Math.min(8,integrity.internalQualityCount))throw new Error('real Data Inbox internal-quality coverage differs from independent read');
+  await inbox.locator('details[data-disclosure="data-record-status"] > summary').click();
+  const inboxCounts=await inbox.locator('.reviewStat strong').allTextContents();
+  if(Number(inboxCounts[0])!==integrity.uploadActionCount||Number(inboxCounts[1])!==integrity.internalQualityCount)throw new Error('real Data Inbox disclosed counts differ from independent read');
   await assertLightReadableCards('.reviewInbox,.reviewStat,.sourceStatus','desktop Data');
 
   await waitForRoute('nutricao');
