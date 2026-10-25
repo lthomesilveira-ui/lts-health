@@ -50,16 +50,16 @@
   },
   "current_package": {
     "id": "PKG-SOURCE-COVERAGE-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Reconcile supplied documents and conversations, repair current source dates and stale connection status, and verify bounded historical context without changing the approved dashboard.",
     "task_ids": [
       "LTS-COMPLETENESS-REVIEW-001",
       "LTS-SOURCE-COVERAGE-001",
       "LTS-HISTORICAL-CONTEXT-001"
     ],
-    "public_build": "health-integrated-20261025.81",
+    "public_build": "health-integrated-20261025.82",
     "candidate_build": "health-integrated-20261025.82",
-    "release_state": "candidate_82_locally_verified;publication_and_exact_public_check_pending;overall_delivery_not_accepted",
+    "release_state": "published_82;candidate_gates_deploy_real_auth_and_exact_public_manual_verified;overall_delivery_not_accepted",
     "completed_evidence": [
       "Current main and both reference heads reconciled before changes; the existing published work and approved Home are preserved.",
       "Private supplied originals and available conversations inspected; already incorporated food plan, workout and application records are preserved without reimport.",
@@ -67,11 +67,14 @@
       "Actual Polar provider sessions contribute to source availability without creating or adding canonical workouts.",
       "Global refresh and Sources reentry read current connection status; the existing refresh control is visible at mobile widths.",
       "A bounded previously authorized historical-context repair updated only structured metadata. Exact preimages, unchanged other fields and record count, independent reread and full authenticated public reload were verified privately.",
-      "Local privacy, provenance, production write/connection boundaries, model suites and responsive production-entry checks passed."
+      "Local privacy, provenance, production write/connection boundaries, model suites and responsive production-entry checks passed.",
+      "All thirteen exact candidate workflows passed at c5a8e25ed584974baed9e33c143279fcacd8c08a.",
+      "Normal PR 395 published runtime at e6317bc171133d8a4d8a213da3edc88aca86d8ae with the exact tested tree 5456ec0551086b1e7a484e710a8be07b5f3ad658.",
+      "Deployment 40246269409, public Pages 40246293604, homologation Pages 40246293639 and full real authenticated workflow 40246269360 passed at the runtime promotion commit.",
+      "The preserved owner session reloaded exact public .82. Separate file/named food bridge/provider dates, readable filename, global refresh, historical context and daily missing-water reading were manually inspected.",
+      "All seven daily cards and the approved Home remain present. Clinical prescriptions, laboratory data, canonical workout identity and source-specific non-additive boundaries are preserved."
     ],
-    "pending_evidence": [
-      "Exact final candidate CI, normal merge, deployment and authenticated public .82 inspection."
-    ],
+    "pending_evidence": [],
     "independent_open_conditions": [
       "Phone-side water continuity and original MFP history.",
       "Original exact lab proposal recovery and separate specific execution authority.",
@@ -81,15 +84,15 @@
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261025.81",
-    "main_commit": "5f3652a71736ac80519439a9062698fa4c96e54f",
-    "runtime_promotion_commit": "dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+    "build_id": "health-integrated-20261025.82",
+    "main_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
+    "runtime_promotion_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
     "published_on": "2026-10-25",
     "verified_on": "2026-10-25",
-    "automated_runtime_and_responsive_status": "verified; exact candidate gates and full real-auth workflow 40209261568 passed",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_81",
+    "automated_runtime_and_responsive_status": "verified; thirteen exact candidate gates and full real-auth workflow 40246269360 passed",
+    "manual_exact_public_status": "verified_authenticated_desktop_at_82",
     "manual_exact_public_verified_on": "2026-10-25",
-    "acceptance_note": "Water presentation, mobile navigation and current authenticated journeys are verified. Water transport, exact lab proposal recovery, basal eligibility, production write/reopen, physical-iPhone and owner acceptance remain separate open tasks."
+    "acceptance_note": "Source coverage and current status, approved daily cards and bounded historical context are verified. Water transport and recurrence, original MFP history, exact lab proposal recovery and separate authority, basal eligibility, ordinary production forms, physical-iPhone and owner acceptance remain open."
   },
   "tasks": [
     {
@@ -1747,7 +1750,7 @@
       "id": "LTS-SOURCE-COVERAGE-001",
       "area": "Data and sources",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Show actual source-specific coverage and refresh current connection status on mobile and desktop.",
       "acceptance": [
@@ -1759,9 +1762,13 @@
       "evidence": [
         "v2/source-current-coverage-test.mjs",
         "v2/production-integration-browser.mjs",
-        "Local source, model, privacy and connection/write boundary checks passed; publication remains pending."
+        "Local source, model, privacy and connection/write boundary checks passed; publication remains pending.",
+        "All thirteen final candidate workflows passed; normal PR 395 published exact tested runtime .82.",
+        "Deployment and public smokes passed; full real authenticated workflow 40246269360 succeeded.",
+        "Exact public .82 inspected in the existing owner session: source dates, filename, actual refresh, context reopening and current-day absent water.",
+        "v2/releases/SOURCE_COVERAGE_20261025.md"
       ],
-      "next_action": "Complete final candidate CI, normal merge, deploy and exact authenticated public inspection.",
+      "next_action": "Preserve exact-origin coverage, read-only refresh and the approved Home; reopen only on reproduced evidence.",
       "blocker": null
     },
     {
@@ -2226,15 +2233,15 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261025.81",
-    "main_commit": "5f3652a71736ac80519439a9062698fa4c96e54f",
-    "runtime_promotion_commit": "dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+    "build_id": "health-integrated-20261025.82",
+    "main_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
+    "runtime_promotion_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
     "published_on": "2026-10-25",
     "verified_on": "2026-10-25",
-    "automated_runtime_and_responsive_status": "verified; exact candidate gates and full real-auth workflow 40209261568 passed",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_81",
+    "automated_runtime_and_responsive_status": "verified; thirteen exact candidate gates and full real-auth workflow 40246269360 passed",
+    "manual_exact_public_status": "verified_authenticated_desktop_at_82",
     "manual_exact_public_verified_on": "2026-10-25",
-    "acceptance_note": "Water presentation, mobile navigation and current authenticated journeys are verified. Water transport, exact lab proposal recovery, basal eligibility, production write/reopen, physical-iPhone and owner acceptance remain separate open tasks."
+    "acceptance_note": "Source coverage and current status, approved daily cards and bounded historical context are verified. Water transport and recurrence, original MFP history, exact lab proposal recovery and separate authority, basal eligibility, ordinary production forms, physical-iPhone and owner acceptance remain open."
   },
   "release_history": [
     {
@@ -2298,6 +2305,30 @@
       "automated_runtime_and_responsive_status": "candidate gates passed; authenticated workflow restored but current journey checks still being aligned",
       "manual_exact_public_status": "verified_authenticated_desktop_at_80",
       "acceptance_note": "Exact current and historical water inspected with the real account. Source continuity, physical device and owner acceptance remain open."
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261025.81",
+      "main_commit": "5f3652a71736ac80519439a9062698fa4c96e54f",
+      "runtime_promotion_commit": "dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+      "published_on": "2026-10-25",
+      "verified_on": "2026-10-25",
+      "automated_runtime_and_responsive_status": "verified; exact candidate gates and full real-auth workflow 40209261568 passed",
+      "manual_exact_public_status": "verified_authenticated_desktop_at_81",
+      "manual_exact_public_verified_on": "2026-10-25",
+      "acceptance_note": "Water presentation, mobile navigation and current authenticated journeys are verified. Water transport, exact lab proposal recovery, basal eligibility, production write/reopen, physical-iPhone and owner acceptance remain separate open tasks."
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261025.82",
+      "main_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
+      "runtime_promotion_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
+      "published_on": "2026-10-25",
+      "verified_on": "2026-10-25",
+      "automated_runtime_and_responsive_status": "verified; thirteen exact candidate gates and full real-auth workflow 40246269360 passed",
+      "manual_exact_public_status": "verified_authenticated_desktop_at_82",
+      "manual_exact_public_verified_on": "2026-10-25",
+      "acceptance_note": "Source coverage and current status, approved daily cards and bounded historical context are verified. Water transport and recurrence, original MFP history, exact lab proposal recovery and separate authority, basal eligibility, ordinary production forms, physical-iPhone and owner acceptance remain open."
     }
   ]
 }

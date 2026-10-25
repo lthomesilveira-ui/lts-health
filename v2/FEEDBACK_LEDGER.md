@@ -2,6 +2,8 @@
 
 FB-034: the owner requests continued autonomous review of existing documents, conversations and unresolved defects while preserving the approved layout. Previously supplied evidence and completed diagnostic steps must not be requested again. The current package repairs source-specific coverage and refresh behavior; a bounded original-confirmed metadata repair is independently saved and reopened. Technical tests and publication do not imply overall acceptance. Water transport, the exact separately authorized lab proposal, basal eligibility, ordinary production forms and physical-device acceptance remain explicit in `EXECUTION_STATE.json`.
 
+Runtime `.82` is published and technically verified through PR 395, thirteen exact candidate gates, deployment/public smokes and full real authenticated workflow `40246269360`. Exact public source dates, actual refresh, saved context and current-day missing-water reading were manually inspected in the preserved owner session. `PKG-SOURCE-COVERAGE-001` is technically done; overall acceptance remains open.
+
 This checkpoint supersedes older open-action wording below. Earlier notes retain their historical role and do not authorize repeating completed phone checks or clinical changes.
 
 # Phone status evidence reconciled — 2026-10-25
