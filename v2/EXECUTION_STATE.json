@@ -50,16 +50,16 @@
   },
   "current_package": {
     "id": "PKG-WATER-RELIABILITY-001",
-    "status": "in_progress",
-    "goal": "Preserve the approved dashboard while making missing water, dated observations and receipt timestamps unambiguous; restore current authenticated release verification.",
+    "status": "done",
+    "goal": "Make missing water and receipt dates explicit, repair mobile Reports selection, and verify the current public journeys without presuming overall delivery.",
     "task_ids": [
       "LTS-WATER-READING-001",
       "LTS-CURRENT-AUTH-QA-001",
       "LTS-MOBILE-NAV-COVERAGE-001"
     ],
-    "public_build": "health-integrated-20261025.80",
+    "public_build": "health-integrated-20261025.81",
     "candidate_build": "health-integrated-20261025.81",
-    "release_state": "80_published_and_manually_verified;81_candidate_under_verification",
+    "release_state": "verified_public_81;overall_delivery_not_accepted",
     "completed_evidence": [
       "Current default branch and supplied merge checkpoint independently matched.",
       "Read-only dedicated-source audit confirms a metric-specific continuity gap while other categories continue arriving.",
@@ -75,22 +75,31 @@
       "Exact authenticated public .80 inspected: current absent water, historical observation reopening, separate receipt timestamp, all domains and connection warning; no production data writes.",
       "Restored authenticated verification reached the current Data screen and Evolution. Its legacy text and removed-renderer assumptions are being replaced by independently checked current journeys. PR 389 aligns actual inbox rows and counts.",
       "The current mobile navigation routes directly to Evolution. Reports opened through More lacked an active destination; candidate .81 repairs that state and checks all ten destinations.",
-      "Current Evolution independently checks all three windows and four metrics against authenticated body observations, selected historical values, original-record links and absence of interpolating paths."
+      "Current Evolution independently checks all three windows and four metrics against authenticated body observations, selected historical values, original-record links and absence of interpolating paths.",
+      "All twelve exact .81 candidate workflows passed at 667868d8231e04ecd80f707ac86c96c56f016751. PR 390 published runtime at dffd34f43a87a1b2cd811016b2eff94ee603aff4.",
+      "Exact public .81 was manually inspected in the existing authenticated session: current and historical water, all observed body points, historical point selection and reopening of its original measurement.",
+      "PRs 389, 391 and 392 reconcile current authenticated checks without changing runtime records or permissions. Final real-account workflow 40209261568 passed completely at 5f3652a71736ac80519439a9062698fa4c96e54f, including independent full-history means/denominators, all current windows, responsive navigation, actual Labs visuals and encrypted evidence.",
+      "Final source-specific metadata recheck confirms that general receipts remain newer than water. Upstream continuity is not closed by the presentation fix or workflow success."
     ],
-    "pending_evidence": [
-      "Final .81 exact-head workflows and normal PR promotion.",
-      "Exact public .81 authenticated and responsive verification.",
-      "Physical-iPhone and owner experience acceptance remain independent."
+    "pending_evidence": [],
+    "independent_open_conditions": [
+      "Phone-side water continuity and original MFP history.",
+      "Original exact lab proposal recovery and separate specific execution authority.",
+      "Basal origin and complete-day eligibility.",
+      "Genuine production write/reopen and physical-iPhone/owner acceptance are not inferred from read-only or synthetic checks."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261025.80",
-    "main_commit": "868f549b919180366f7df3e55098f41b5c38f5e3",
+    "build_id": "health-integrated-20261025.81",
+    "main_commit": "5f3652a71736ac80519439a9062698fa4c96e54f",
+    "runtime_promotion_commit": "dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+    "published_on": "2026-10-25",
     "verified_on": "2026-10-25",
-    "automated_runtime_and_responsive_status": "candidate gates passed; authenticated workflow restored but current journey checks still being aligned",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_80",
-    "acceptance_note": "Exact current and historical water inspected with the real account. Source continuity, physical device and owner acceptance remain open."
+    "automated_runtime_and_responsive_status": "verified; exact candidate gates and full real-auth workflow 40209261568 passed",
+    "manual_exact_public_status": "verified_authenticated_desktop_at_81",
+    "manual_exact_public_verified_on": "2026-10-25",
+    "acceptance_note": "Water presentation, mobile navigation and current authenticated journeys are verified. Water transport, exact lab proposal recovery, basal eligibility, production write/reopen, physical-iPhone and owner acceptance remain separate open tasks."
   },
   "tasks": [
     {
@@ -1573,7 +1582,7 @@
       "id": "LTS-CURRENT-AUTH-QA-001",
       "area": "release reliability",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Restore established authenticated QA and verify the actually deployed integrated dashboard.",
       "acceptance": [
@@ -1588,9 +1597,12 @@
         "v2/real-auth-e2e.mjs",
         "v2/real-auth-dashboard-checks.mjs",
         "The previous current-build run failed during browser dependency installation; authenticated steps were skipped.",
-        "The pinned runner now installs and authenticates. Runs 40205247095 and 40205906827 exposed stale Data copy and removed Evolution assumptions rather than proving the current journey."
+        "The pinned runner now installs and authenticates. Runs 40205247095 and 40205906827 exposed stale Data copy and removed Evolution assumptions rather than proving the current journey.",
+        "PR 390 / dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+        "Real authenticated workflow 40209261568 passed at 5f3652a71736ac80519439a9062698fa4c96e54f; no medical values in public logs.",
+        "Exact public .81 manual authenticated desktop inspection; actual mobile journeys automated separately."
       ],
-      "next_action": "Validate current Evolution and mobile destinations, promote .81 and finish actual authenticated deep-history checks.",
+      "next_action": "Preserve the verified current journeys; overall owner and physical-device acceptance remain independent.",
       "blocker": null
     },
     {
@@ -1656,7 +1668,7 @@
       "id": "LTS-MOBILE-NAV-COVERAGE-001",
       "area": "mobile navigation",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Keep the correct active destination when Reports is opened through More, and keep observed-history metric controls readable and touchable.",
       "acceptance": [
@@ -1667,10 +1679,52 @@
       ],
       "evidence": [
         "v2/real-auth-dashboard-checks-test.mjs",
-        "v2/real-auth-e2e.mjs"
+        "v2/real-auth-e2e.mjs",
+        "PR 390 / dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+        "Real authenticated workflow 40209261568 passed at 5f3652a71736ac80519439a9062698fa4c96e54f; no medical values in public logs.",
+        "Exact public .81 manual authenticated desktop inspection; actual mobile journeys automated separately."
       ],
-      "next_action": "Finish exact .81 candidate and public gates.",
+      "next_action": "Preserve the verified current journeys; overall owner and physical-device acceptance remain independent.",
       "blocker": null
+    },
+    {
+      "id": "LTS-PRODUCTION-WRITE-REOPEN-001",
+      "area": "production persistence coverage",
+      "priority": "P1",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "Verify a genuine authorized production update through saving and reopening without inventing or duplicating a health record.",
+      "acceptance": [
+        "Use the next genuine authorized update and inspect its actual saved values after reopening.",
+        "Keep source identity and duplicate protections.",
+        "Do not infer production form persistence from read-only checks or synthetic saving."
+      ],
+      "evidence": [
+        "The isolated integrated-review browser verifies actual goal saving and page reload in disposable synthetic persistence.",
+        "Current public changes are reading/navigation changes; no production medical record or prescription was written during this restart."
+      ],
+      "next_action": "Validate the next genuine authorized write and its reopening when the source update becomes available.",
+      "blocker": "No new genuine production record or edit was supplied for a non-duplicating end-to-end write in this restart."
+    },
+    {
+      "id": "LTS-OWNER-DELIVERY-20261025",
+      "area": "overall product acceptance",
+      "priority": "P0",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "The owner explicitly rejects overall delivery; verified presentation and QA fixes do not close the project.",
+      "acceptance": [
+        "Resolve and verify the specific upstream water continuity gap.",
+        "Keep lab proposal recovery, basal limits and production write coverage explicit.",
+        "Validate the physical-iPhone experience when device access is available.",
+        "Obtain actual owner acceptance of the experience rather than inferring it from automated success."
+      ],
+      "evidence": [
+        "Owner restart of 2026-10-25 rejects completion while preserving the approved layout.",
+        "Runtime .81 and workflow 40209261568 are technical evidence only."
+      ],
+      "next_action": "Continue from the exact Health Sync status evidence and the independently tracked source/coverage tasks; retain this overall rejection until genuinely superseded.",
+      "blocker": "Phone-local water status and physical-device/owner acceptance remain unavailable; independent source/coverage tasks are still open."
     }
   ],
   "package_history": [
@@ -2052,13 +2106,15 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261025.80",
-    "main_commit": "868f549b919180366f7df3e55098f41b5c38f5e3",
+    "build_id": "health-integrated-20261025.81",
+    "main_commit": "5f3652a71736ac80519439a9062698fa4c96e54f",
+    "runtime_promotion_commit": "dffd34f43a87a1b2cd811016b2eff94ee603aff4",
+    "published_on": "2026-10-25",
     "verified_on": "2026-10-25",
-    "automated_runtime_and_responsive_status": "candidate gates passed; authenticated workflow restored but current journey checks still being aligned",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_80",
-    "acceptance_note": "Exact current and historical water inspected with the real account. Source continuity, physical device and owner acceptance remain open.",
-    "published_on": "2026-10-25"
+    "automated_runtime_and_responsive_status": "verified; exact candidate gates and full real-auth workflow 40209261568 passed",
+    "manual_exact_public_status": "verified_authenticated_desktop_at_81",
+    "manual_exact_public_verified_on": "2026-10-25",
+    "acceptance_note": "Water presentation, mobile navigation and current authenticated journeys are verified. Water transport, exact lab proposal recovery, basal eligibility, production write/reopen, physical-iPhone and owner acceptance remain separate open tasks."
   },
   "release_history": [
     {
@@ -2113,6 +2169,15 @@
       ],
       "acceptance_note": "Compact source-backed evolution dashboard, readable private consultation and source-preserving training detail are technically delivered and verified. Owner visual/physical-device acceptance is separate. Original MFP water history, independently attributable automatic water recurrence, current dietary-plan validity and unidentified historical body devices remain explicit source limits.",
       "runtime_promotion_commit": "875d0371dfdb4ae595bcbc47472c132c26a16c8b"
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261025.80",
+      "main_commit": "868f549b919180366f7df3e55098f41b5c38f5e3",
+      "verified_on": "2026-10-25",
+      "automated_runtime_and_responsive_status": "candidate gates passed; authenticated workflow restored but current journey checks still being aligned",
+      "manual_exact_public_status": "verified_authenticated_desktop_at_80",
+      "acceptance_note": "Exact current and historical water inspected with the real account. Source continuity, physical device and owner acceptance remain open."
     }
   ]
 }
