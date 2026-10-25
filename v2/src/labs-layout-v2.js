@@ -128,9 +128,12 @@ export function labChartModel(cohort){
 }
 const labChartValue=(value,u)=>`${Number(value).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:20})}${u?` ${u}`:''}`;
 const labDeltaText=(value,u)=>`${value>0?'+':''}${Number(value).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:20})}${u?` ${u==='%'?'p.p.':u}`:''}`;
+function labSeriesDetails(cohort){
+  return `<details class="ltsLabSeriesDetails" id="productLabMethodDetails"><summary>Método e contexto</summary><dl class="ltsLabSeriesContext" id="productLabSeriesContext"><div><dt>Laboratório</dt><dd>${esc(cohort?.origin||'Não informado')}</dd></div><div><dt>Unidade</dt><dd>${esc(cohort?.unit||'Não informada')}</dd></div><div><dt>Método registrado</dt><dd>${esc(cohort?.method||'Não informado')}</dd></div></dl></details>`;
+}
 export function labPointChart(cohort,{label='Evolução',selected=null}={}){
   const m=labChartModel(cohort),clean=m.points,u=cohort?.unit||'';
-  if(!clean.length)return emptyCard('Não há pontos numéricos exatos nesta série e período. Os resultados continuam disponíveis no histórico.');
+  if(!clean.length)return `${emptyCard('Não há pontos numéricos exatos nesta série e período. Os resultados continuam disponíveis no histórico.')}${labSeriesDetails(cohort)}`;
   const {min,max,ticks,digits}=m.axis,w=660,h=210,l=12,r=12,t=12,b=12;
   const time=point=>Date.parse(`${point.date}T12:00:00Z`),start=time(clean[0]),end=time(clean.at(-1));
   const x=point=>start===end?w/2:l+(time(point)-start)/(end-start)*(w-l-r),y=value=>t+(max-value)/(max-min)*(h-t-b);
@@ -145,6 +148,7 @@ export function labPointChart(cohort,{label='Evolução',selected=null}={}){
       ${m.band?`<rect class="ltsLabReferenceBand" x="${l}" y="${y(m.band.upper).toFixed(2)}" width="${w-l-r}" height="${(y(m.band.lower)-y(m.band.upper)).toFixed(2)}"/><path class="ltsLabReferenceBounds" d="M${l} ${y(m.band.upper).toFixed(2)}H${w-r}M${l} ${y(m.band.lower).toFixed(2)}H${w-r}"/>`:''}
       <path class="ltsDepthGrid" d="${ticks.map(value=>`M${l} ${y(value).toFixed(2)}H${w-r}`).join(' ')}"/>${line?`<path class="ltsDepthLine" d="${line}"/>`:''}${clean.map((point,i)=>`<circle class="${i===index?'selected':''}" cx="${x(point).toFixed(2)}" cy="${y(point.value).toFixed(2)}" r="${i===index?5:3}"><title>${esc(fmtDate(point.date))}: ${esc(labChartValue(point.value,u))}</title></circle>`).join('')}</svg></div>
     <div class="ltsDepthAxis"><span>${esc(fmtDate(clean[0].date))}</span><b>${esc(u)}</b><span>${esc(fmtDate(clean.at(-1).date))}</span></div>
+    ${labSeriesDetails(cohort)}
     <p class="ltsLabScaleNote">Escala ajustada aos valores${m.band?' e à faixa do laudo':''}. O eixo não precisa começar em zero. A altura da curva não indica melhora ou piora.</p>
     <div class="ltsPointReadout"><label class="ltsField">Consultar ponto<select id="productLabPoint" data-depth-field="productLabPoint">${clean.map((point,i)=>`<option value="${i}" ${i===index?'selected':''}>${esc(fmtDate(point.date))}</option>`).join('')}</select></label><p role="status"><b>${esc(labChartValue(focus.value,u))}</b><span>${esc(fmtDate(focus.date))} · ${esc(focus.row.reference_range?`Referência da coleta: ${focus.row.reference_range}`:'Referência não informada')}</span><span>Resultado original: ${esc(labResultText(focus.row))}</span></p></div>
   </div>`;
@@ -218,9 +222,8 @@ export function renderProductLabs(){
     </section>
 
     <section class="ltsSection ltsLabsTrend" id="productLabsTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2 tabindex="-1">${esc(group.label)}</h2></div></div>
-      <label class="ltsField ltsSourceSelect">Selecionar série<select id="productLabCohort" data-depth-field="productLabCohort" aria-describedby="productLabSeriesContext">${m.item.cohorts.map((co,index)=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${index+1}. ${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} (${co.all.length})</option>`).join('')}</select></label>
-      <dl class="ltsLabSeriesContext" id="productLabSeriesContext"><div><dt>Laboratório</dt><dd>${esc(c.origin||'Não informado')}</dd></div><div><dt>Unidade</dt><dd>${esc(c.unit||'Não informada')}</dd></div><div><dt>Método registrado</dt><dd>${esc(c.method||'Não informado')}</dd></div></dl>
-      <div class="ltsHistoryContext ltsLabDelta"><b>Diferença na série selecionada</b><span>${esc(change)}</span>${comparison.comparable?'<small>Diferença numérica, sem interpretação de melhora ou piora clínica.</small>':''}</div>
+      <label class="ltsField ltsSourceSelect">Série · laboratório e unidade<select id="productLabCohort" data-depth-field="productLabCohort" aria-describedby="productLabSeriesContext">${m.item.cohorts.map((co,index)=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${index+1}. ${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} (${co.all.length})</option>`).join('')}</select></label>
+      <div class="ltsHistoryContext ltsLabDelta"><b>Diferença na série selecionada</b><span>${esc(change)}</span>${comparison.comparable?'<small>Diferença numérica entre coletas; não é uma avaliação clínica.</small>':''}</div>
       <div class="ltsLabsChart">${labPointChart(c,{label:group.label,selected:state.ui.productLabPoint})}</div>
       <p class="ltsDepthNote">${m.recent.length} pontos exibidos de ${c.all.length} resultados desta série. Os demais resultados permanecem no histórico, com suas notas, limites e referências originais. A janela usa o período de Exames; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>
     </section>

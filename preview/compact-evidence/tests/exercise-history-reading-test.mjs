@@ -37,6 +37,13 @@ assert.doesNotMatch(html,/<path|ltsDepthLine|Não há pontos numéricos exatos|i
 assert.ok(html.indexOf('ltsExerciseRecordedSets')<html.indexOf('ltsExerciseRecordedPlots'),'literal set readout precedes the compact plot');
 assert.equal(JSON.stringify(state.data),before,'reading and plotting never mutate records');
 
+// One recorded load needs the original row, not a redundant mini-chart.
+reset();state.data.sets=[state.data.sets[4]];html=renderExerciseHistory();
+assert.match(html,/17 kg/);assert.match(html,/× 7/);assert.match(html,/fase não informada/);assert.doesNotMatch(html,/ltsExerciseRecordedPlot|Não há pontos numéricos exatos/);
+reset();state.data.sets=state.data.sets.slice(4,7);state.data.sets[2].weight_unit='lb';html=renderExerciseHistory();
+assert.equal((html.match(/<circle /g)||[]).length,2,'only the two-point kg group is plotted');assert.match(html,/31 lb/,'the lone lb original remains readable');assert.doesNotMatch(html,/Cargas desta sessão · lb/);
+reset();
+
 // Unknown equipment/location still preserves isolated per-session facts.
 for(const unknown of [null,'unknown','não informado','not documented','unspecified']){
  reset();state.data.exercises.forEach(e=>e.machine=unknown);state.data.workouts.forEach(w=>w.location=unknown);

@@ -118,10 +118,11 @@ function setFlags(set){
   return [...new Set([phase,set.failure===true?'falha relatada':'',set.near_failure===true?'quase falha relatada':'',recordedText(set.technique)||''].filter(Boolean))];
 }
 function renderSessionSeries(item){
-  if(!item.series.length)return '';
+  const series=item.series.filter(group=>group.points.length>=2);
+  if(!series.length)return '';
   // Each strip owns its scale. Dots are isolated and never form a trend line.
   // Long sessions wrap into short strips so labels remain legible on mobile.
-  return `<div class="ltsExerciseRecordedPlots">${item.series.map(group=>{
+  return `<div class="ltsExerciseRecordedPlots">${series.map(group=>{
     const values=group.points.map(p=>p.value),low=Math.min(...values),high=Math.max(...values),span=high-low||1;
     const chunks=[];for(let i=0;i<group.points.length;i+=6)chunks.push(group.points.slice(i,i+6));
     return `<figure class="ltsExerciseRecordedPlot"><figcaption>Cargas desta sessão · ${esc(unitLabel(group.unit))}<span>Escala própria · pontos sem ligação</span></figcaption>${chunks.map(points=>`<svg viewBox="0 0 300 76" role="img" aria-label="${esc(`Cargas registradas nesta sessão em ${unitLabel(group.unit)}; pontos isolados, sem comparação entre sessões`)}">${points.map((point,index)=>{

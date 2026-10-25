@@ -18,7 +18,12 @@ const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).for
 let count=0;const test=(name,run)=>{run();count++;console.log(`ok ${count} - ${name}`);};
 
 test('production and preview use byte-identical scoped lab sources and styles',()=>{
-  for(const path of ['src/labs-layout-v2.js','labs-model-v2.css'])assert.equal(readFileSync(new URL(`../${path}`,import.meta.url),'utf8'),readFileSync(new URL(`../../../v2/${path}`,import.meta.url),'utf8'));
+  // The production workflow copies this suite into v2/.integration-tests.*.
+  // Resolve both peers from the repository, never relative to a test depth.
+  const runtimeRoot=new URL('../',import.meta.url);
+  assert.ok(runtimeRoot.pathname.endsWith('/v2/')||runtimeRoot.pathname.endsWith('/preview/compact-evidence/'));
+  const repositoryRoot=new URL(runtimeRoot.pathname.endsWith('/v2/')?'../':'../../',runtimeRoot);
+  for(const path of ['src/labs-layout-v2.js','labs-model-v2.css'])assert.equal(readFileSync(new URL(`preview/compact-evidence/${path}`,repositoryRoot),'utf8'),readFileSync(new URL(`v2/${path}`,repositoryRoot),'utf8'));
 });
 test('complete eligible cohorts include the finite reference interval, not an exaggerated observed-only scale',()=>{
   const c=cohort(pair()),m=labChartModel(c);
@@ -97,11 +102,17 @@ test('the point picker retains exact numeric precision, dates, raw strings and s
   const html=labPointChart(c,{selected:0});assert.match(html,/61,1234 u\/L/);assert.match(html,/Resultado original: 61.1234 u\/L/);
   for(const selected of [-1,999,'bogus'])assert.match(labPointChart(c,{selected}),/value="1" selected/);
 });
-test('long selected methods are visible as wrapping text and the selected marker is not repeated in shortcuts',()=>{
+test('long selected methods remain in a labeled post-plot disclosure, not before the values',()=>{
   state.data={labs:pair()};state.domainStatus={labs:'ready'};state.errors={};state.ui={productLabPeriod:'all'};
   const html=renderProductLabs();assert.match(html,/class="ltsLabSeriesContext"/);assert.ok(html.includes(`<dd>${method}</dd>`));
+  assert.match(html,/<details class="ltsLabSeriesDetails" id="productLabMethodDetails"><summary>Método e contexto<\/summary>/);
+  assert.ok(html.indexOf('class="ltsLabEndpoints"')<html.indexOf('class="ltsLabSeriesDetails"'));
+  assert.ok(html.indexOf('class="ltsDepthAxis"')<html.indexOf('class="ltsLabSeriesDetails"'));
+  assert.match(html,/Série · laboratório e unidade/);
   assert.doesNotMatch(html,/data-lab-marker="marcador visual sintetico"/);assert.match(html,/id="productLabMarkerSelect"/);
-  assert.match(html,/10\/01\/2025 → 20\/05\/2025: \+0,60 u\/L/);assert.match(html,/Diferença numérica, sem interpretação de melhora ou piora clínica/);
+  assert.match(html,/10\/01\/2025 → 20\/05\/2025: \+0,60 u\/L/);assert.match(html,/Diferença numérica entre coletas; não é uma avaliação clínica/);
+  const delta=html.match(/<div class="ltsHistoryContext ltsLabDelta">([\s\S]*?)<\/div>/)[1];
+  assert.doesNotMatch(delta,/melhorou|piorou|melhora clínica|piora clínica|diagnóstico confirmado/i,'the documentary clinical-language guard remains unchanged');
   const rows=pair({unit:'%',reference_range:'42 a 60 %'});state.data.labs=rows;assert.match(renderProductLabs(),/\+0,60 p\.p\./);
   state.data.labs=[row('tiny-a','2025-01-10',.000042,{reference_range:'0.000040 a 0.000080 u/L'}),row('tiny-b','2025-05-20',.000046,{reference_range:'0.000040 a 0.000080 u/L'})];
   assert.match(renderProductLabs(),/\+0,000004 u\/L/,'small permitted differences are not rounded to zero');

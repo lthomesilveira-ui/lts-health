@@ -51,3 +51,9 @@
   .ltsLabsV2 .ltsLabTrendPlot .ltsDepthAxis{margin-left:49px;font-size:10px}.ltsLabsV2 .ltsLabTrendPlot .ltsPointReadout{grid-template-columns:minmax(0,1fr);gap:10px}
   .ltsLabsV2 .ltsLabTrendPlot .ltsField select,.ltsLabsV2 #productLabCohort{min-height:44px!important;font-size:13px!important}
 }
+
+/* Full method remains one explicit action away, after the measured values/plot. */
+.ltsLabsV2 .ltsLabSeriesDetails{margin:12px 0;border-top:1px solid #e1e5ec;border-bottom:1px solid #e1e5ec}
+.ltsLabsV2 .ltsLabSeriesDetails>summary{min-height:44px;box-sizing:border-box;padding:12px 4px;color:#344157;font-size:13px;font-weight:700;line-height:20px;cursor:pointer}
+.ltsLabsV2 .ltsLabSeriesDetails>summary:focus-visible{outline:3px solid #8b95aa;outline-offset:2px}
+.ltsLabsV2 .ltsLabSeriesDetails .ltsLabSeriesContext{margin:0 0 12px;box-shadow:none}

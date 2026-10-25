@@ -7,6 +7,11 @@ export function evolutionAccessFixture(){
  f.data.body[5].source='Synthetic alternate report';
  f.data.exercises=f.data.exercises.map(e=>({...e,machine:null}));
  f.data.workouts=f.data.workouts.map(w=>({...w,location:null}));
- f.data.sets=f.data.sets.map(s=>({...s,technique:null,reps_raw:'4 + 1,5 parcial'}));
+ // Invented dense history: missing phases stay unknown; the fourth record is
+ // an explicit rest-pause extension. None of these loads are personal data.
+ f.data.sets=f.data.sets.flatMap(set=>[17,23,31,39].map((weight,index)=>({...set,source_record_id:`${set.source_record_id}-dense-${index}`,set_index:index+1,weight,phase:index===3?'rest_pause':null,technique:null,reps_numeric:null,reps_raw:['11','9','4 + 1,5 parcial','3'][index],failure:index===3,near_failure:index===2})));
+ const single={...f.data.exercises[1],source_record_id:'single-session-exercise',exercise:'Synthetic single-session press'};
+ f.data.exercises.push(single);
+ f.data.sets.push(...f.data.sets.filter(set=>set.exercise_source_record_id==='exercise-1').map((set,index)=>({...set,source_record_id:`single-session-set-${index}`,exercise_source_record_id:single.source_record_id})));
  return f;
 }

@@ -59,23 +59,39 @@ try{
       assert.equal(await page.locator('.ltsLabsChart circle').count(),2);assert.equal(await page.locator('.ltsLabsMarkerRail [data-lab-marker="marcador visual sintetico"]').count(),0);
       assert.match(await page.locator('.ltsLabEndpoints').innerText(),/61,1 u\/L/);assert.match(await page.locator('.ltsLabEndpoints').innerText(),/61,7 u\/L/);
       assert.match(await page.locator('.ltsLabDelta').innerText(),/10\/01\/2025 → 20\/05\/2025: \+0,60 u\/L/);
-      const geometry=await page.evaluate(()=>{
-        const chart=document.querySelector('.ltsLabTrendPlot'),min=Number(chart.dataset.labAxisMin),max=Number(chart.dataset.labAxisMax);
-        const text=document.querySelector('.ltsLabSeriesContext>div:last-child dd'),style=getComputedStyle(text),box=text.getBoundingClientRect();
-        const plot=chart.querySelector('svg'),band=chart.querySelector('rect'),circles=[...chart.querySelectorAll('circle')];
-        return {min,max,method:text.textContent,methodWidth:box.width,methodScrollWidth:text.scrollWidth,methodClientWidth:text.clientWidth,whiteSpace:style.whiteSpace,lineClamp:style.webkitLineClamp,
-          bandY:Number(band.getAttribute('y')),bandHeight:Number(band.getAttribute('height')),viewHeight:plot.viewBox.baseVal.height,
-          pointDisplacement:Math.abs(Number(circles[0].getAttribute('cy'))-Number(circles[1].getAttribute('cy'))),
-          rootOverflow:document.documentElement.scrollWidth-innerWidth,hostOverflow:document.querySelector('#screenHost').scrollWidth-document.querySelector('#screenHost').clientWidth};
-      });
-      assert.ok(geometry.min<42&&geometry.min>0&&geometry.max>61.7);assert.ok(geometry.pointDisplacement<10);
-      assert.equal(geometry.method,method);assert.equal(geometry.whiteSpace,'normal');assert.ok(['none','0',''].includes(geometry.lineClamp));
-      assert.ok(geometry.methodWidth<=width&&geometry.methodScrollWidth<=geometry.methodClientWidth+1);
-      assert.ok(geometry.bandY>0&&geometry.bandY+geometry.bandHeight<geometry.viewHeight);assert.ok(geometry.rootOverflow<=1&&geometry.hostOverflow<=1);
+      const disclosure=page.locator('#productLabMethodDetails');assert.equal(await disclosure.evaluate(el=>el.open),false);
       await page.locator('[data-ux-scroll="productLabsTrend"]').click();
       await page.waitForFunction(()=>document.activeElement===document.querySelector('#productLabsTrend h2'));
+      const geometry=await page.evaluate(()=>{
+        const chart=document.querySelector('.ltsLabTrendPlot'),min=Number(chart.dataset.labAxisMin),max=Number(chart.dataset.labAxisMax);
+        const plot=chart.querySelector('svg'),band=chart.querySelector('rect'),circles=[...chart.querySelectorAll('circle')];
+        const host=document.querySelector('#screenHost'),hostBox=host.getBoundingClientRect(),nav=document.querySelector('#mobileNav'),topbar=document.querySelector('.topbar');
+        const visibleTop=Math.max(0,hostBox.top,topbar?.checkVisibility()?topbar.getBoundingClientRect().bottom:0);
+        const visibleBottom=Math.min(innerHeight,hostBox.bottom,nav?.checkVisibility()?nav.getBoundingClientRect().top:innerHeight);
+        const box=el=>{const r=el.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height,left:r.left,right:r.right};};
+        const plotBox=box(plot),valuesBox=box(chart.querySelector('.ltsLabEndpoints')),referenceBox=box(chart.querySelector('.ltsLabReferenceLegend'));
+        const visiblePlotHeight=Math.max(0,Math.min(plotBox.bottom,visibleBottom)-Math.max(plotBox.top,visibleTop));
+        return {min,max,visibleTop,visibleBottom,plotBox,valuesBox,referenceBox,visiblePlotHeight,visiblePlotFraction:visiblePlotHeight/plotBox.height,
+          bandY:Number(band.getAttribute('y')),bandHeight:Number(band.getAttribute('height')),viewHeight:plot.viewBox.baseVal.height,
+          pointDisplacement:Math.abs(Number(circles[0].getAttribute('cy'))-Number(circles[1].getAttribute('cy'))),
+          rootOverflow:document.documentElement.scrollWidth-innerWidth,hostOverflow:host.scrollWidth-host.clientWidth};
+      });
+      assert.ok(geometry.min<42&&geometry.min>0&&geometry.max>61.7);assert.ok(geometry.pointDisplacement<10);
+      assert.ok(geometry.bandY>0&&geometry.bandY+geometry.bandHeight<geometry.viewHeight);assert.ok(geometry.rootOverflow<=1&&geometry.hostOverflow<=1);
+      for(const target of [geometry.valuesBox,geometry.referenceBox])assert.ok(target.top>=geometry.visibleTop-1&&target.bottom<=geometry.visibleBottom+1,'dates, values and the report range are fully visible after the chart jump');
+      assert.ok(geometry.visiblePlotHeight>=130&&geometry.visiblePlotFraction>=.7,'the initial chart view shows at least 130px and 70% of the actual plot, not merely empty container');
       await page.screenshot({path:`${dir}/${width}-lab-trend.png`,animations:'disabled',scale:'css'});
       await page.locator('.ltsLabsChart').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${width}-lab-chart.png`,animations:'disabled',scale:'css'});
+      await disclosure.locator('summary').click();assert.equal(await disclosure.evaluate(el=>el.open),true);
+      await disclosure.scrollIntoViewIfNeeded();
+      const methodGeometry=await page.locator('.ltsLabSeriesContext>div:last-child dd').evaluate(text=>{
+        const style=getComputedStyle(text),box=text.getBoundingClientRect();
+        return {method:text.textContent,visible:text.checkVisibility(),width:box.width,scrollWidth:text.scrollWidth,clientWidth:text.clientWidth,whiteSpace:style.whiteSpace,lineClamp:style.webkitLineClamp};
+      });
+      assert.equal(methodGeometry.method,method);assert.equal(methodGeometry.visible,true);assert.equal(methodGeometry.whiteSpace,'normal');assert.ok(['none','0',''].includes(methodGeometry.lineClamp));
+      assert.ok(methodGeometry.width<=width&&methodGeometry.scrollWidth<=methodGeometry.clientWidth+1);
+      await page.screenshot({path:`${dir}/${width}-lab-method-open.png`,animations:'disabled',scale:'css'});
+      await disclosure.locator('summary').click();assert.equal(await disclosure.evaluate(el=>el.open),false);
       await page.locator('#productLabPoint').selectOption('0');await stable(page);assert.match(await page.locator('.ltsPointReadout p').innerText(),/61,1 u\/L/);assert.match(await page.locator('.ltsPointReadout p').innerText(),/10\/01\/2025/);
       await page.locator('#productLabMarkerSelect').selectOption('marcador condicional sintetico');await stable(page);
       assert.equal(await page.locator('.ltsLabReferenceBand').count(),0);assert.equal(await page.locator('.ltsLabsChart .ltsDepthLine').count(),1,'conditional references retain the pre-existing numeric comparison only');
@@ -83,7 +99,7 @@ try{
       await page.evaluate(()=>{location.hash='#hoje';});await stable(page,'hoje');await page.evaluate(()=>{location.hash='#saude';});await stable(page);
       assert.equal(await page.locator('#productLabMarkerSelect').inputValue(),'marcador condicional sintetico');assert.equal(await page.locator('.ltsLabReferenceBand').count(),0);
       assert.equal(await page.evaluate(()=>JSON.stringify(window.__languageApp.state.data.labs)),before);assert.deepEqual(await page.evaluate(()=>window.__historyQA.writes),[]);assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
-      results.push({width,height,geometry,neutralDelta:true,datedValues:true,referenceFailClosed:true,pointSelection:true,routeReturn:true,immutableRecords:true,traffic,status:'passed'});
+      results.push({width,height,geometry,methodGeometry,methodDisclosure:true,neutralDelta:true,datedValues:true,referenceFailClosed:true,pointSelection:true,routeReturn:true,immutableRecords:true,traffic,status:'passed'});
     }catch(error){failures.push({width,message:String(error.message),traffic});await page.screenshot({path:`${dir}/${width}-failure.png`,animations:'disabled',scale:'css'}).catch(()=>{});}
     finally{await context.close();save();}
   }
