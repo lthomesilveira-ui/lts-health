@@ -127,3 +127,41 @@ export async function auditIntegratedEvolution(page){
   throw new Error('Current evolution verification failed; private observations withheld. Inspect the encrypted authenticated evidence.');
  }
 }
+
+
+export async function auditObservedNutritionContrast(page){
+ const truth=await page.evaluate(async()=>{
+  const {sb}=await import('./src/core.js');
+  async function all(table,select){const rows=[];for(let from=0;;from+=1000){const {data,error}=await sb.from(table).select(select).order('source_record_id').range(from,from+999);if(error)throw Error('independent contrast read failed');rows.push(...data);if(data.length<1000)return rows;}}
+  const [nutrition,workouts]=await Promise.all([all('health_daily_nutrition','source_record_id,nutrition_date,source,protein_g,calories_kcal,carbs_g,fat_g'),all('health_workouts','source_record_id,workout_date,is_canonical,record_status')]);
+  return{nutrition,workouts};
+ });
+ const source=await page.evaluate(({nutrition})=>{
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),norm=x=>String(x||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const counts=new Map();for(const r of nutrition){if(r.nutrition_date>=today||!norm(r.source))continue;const key=JSON.stringify(['nutrition',norm(r.source),'canonical']);counts.set(key,(counts.get(key)||0)+1);}
+  const options=new Set([...document.querySelectorAll('#reportNutritionSource option')].map(e=>e.value));
+  return [...counts].filter(([key])=>options.has(key)).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]?.[0]||null;
+ },truth);
+ assert.ok(source,'an independently received original nutrition source is reachable in the full-history comparison');
+ if(await page.locator('#reportNutritionSource').inputValue()!==source){
+  const previous=await page.locator('#reportEvidenceInsights').elementHandle();await page.locator('#reportNutritionSource').selectOption(source);await page.waitForFunction(element=>!element.isConnected,previous);
+ }
+ const matches=await page.evaluate(async({nutrition,workouts,source})=>{
+  const {fmtNum}=await import('./src/core.js'),today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  const norm=x=>String(x||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(),identity=JSON.parse(source),days=new Map();
+  // Filter the exact source BEFORE checking duplicate dates. Other origins on
+  // the same date do not invalidate this source and are never pooled into it.
+  for(const row of nutrition){const date=String(row.nutrition_date||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>=today||norm(row.source)!==identity[1])continue;if(!days.has(date))days.set(date,[]);days.get(date).push(row);}
+  const training=new Set(workouts.filter(r=>r.is_canonical===true&&norm(r.record_status)!=='quarantined').map(r=>String(r.workout_date||'').slice(0,10)));
+  const observations=[...days].filter(([,rows])=>rows.length===1).map(([date,[row]])=>({row,training:training.has(date)}));
+  const rows=document.querySelector('#reportEvidenceInsights .ltsInsightTable')?.querySelectorAll('tbody tr'),specifications=[['protein_g','g'],['calories_kcal','kcal'],['carbs_g','g'],['fat_g','g']];
+  const clean=x=>String(x).replace(/\s+/g,' ').trim();
+  return document.querySelector('#analysisPeriod')?.value==='all'&&document.querySelector('#reportNutritionSource')?.value===source&&rows?.length===4&&specifications.every(([key,unit],index)=>{
+   const number=r=>r[key]==null||r[key]===''?null:Number(r[key]),group=flag=>observations.filter(o=>o.training===flag&&number(o.row)!=null&&Number.isFinite(number(o.row))&&number(o.row)>=0).map(o=>number(o.row));
+   const a=group(true),b=group(false),avg=xs=>xs.length?xs.reduce((x,y)=>x+y,0)/xs.length:null,am=avg(a),bm=avg(b),cells=rows[index].querySelectorAll('td');
+   const expected=(mean,count)=>`${mean==null?'Sem valor':`${fmtNum(mean,0)} ${unit}`}${count} dias com valor`,difference=a.length>=5&&b.length>=5?`${am-bm>0?'+':''}${fmtNum(am-bm,1)} ${unit}`:'Base curta: mínimo 5 dias por grupo';
+   return clean(cells[0].textContent)===clean(expected(am,a.length))&&clean(cells[1].textContent)===clean(expected(bm,b.length))&&clean(cells[2].textContent)===clean(difference);
+  });
+ },{...truth,source});
+ assert.ok(matches,'selected-origin nutrition means and denominators agree with independently read closed observations');
+}
