@@ -26,6 +26,7 @@ jobs:
           node v2/production-write-boundary-test.mjs
           node v2/production-connection-boundary-test.mjs
           node v2/polar-contract-test.mjs
+          node v2/source-current-coverage-test.mjs
       - name: Verify promoted analytical models using synthetic data
         run: |
           TESTDIR="$(mktemp -d v2/.integration-tests.XXXXXX)"

@@ -46,6 +46,22 @@ export function isMyFitnessPalViaApple(row){
 }
 
 const directMyFitnessPal=row=>isMyFitnessPalSource(row)&&!isMyFitnessPalViaApple(row);
+const foodMetricTypes=new Set(['dietary_energy_kcal','dietary_protein_g','dietary_carbs_g','dietary_fat_g','dietary_fiber_g']);
+const confirmedMyFitnessPalBridge=row=>confirmedAutoExport(row)&&isMyFitnessPalSource(row)&&foodMetricTypes.has(row.metric_type);
+
+export function sourceTransportCoverageFor(source){
+  if(source==='myfitnesspal')return{
+    fileDate:latestDate([
+      ...(!failed('nutrition')?(state.data.nutrition||[]).filter(directMyFitnessPal).map(row=>row.nutrition_date):[]),
+      ...(!failed('meals')?(state.data.meals||[]).filter(directMyFitnessPal).map(row=>row.meal_date):[])
+    ]),
+    bridgeDate:failed('sourceMetrics')?null:latestDate((state.data.sourceMetrics||[]).filter(confirmedMyFitnessPalBridge).map(row=>row.metric_date))
+  };
+  if(source==='polar_flow')return{
+    providerDate:failed('polarSessions')?null:latestDate((state.data.polarSessions||[]).map(row=>row.workout_date))
+  };
+  return{};
+}
 
 export function uploadBucket(upload){
   const status=String(upload?.status||'').toLowerCase();
@@ -68,12 +84,12 @@ function sourceEvidence(source){
     domainKeys:['metrics','sourceMetrics']
   };
   if(source==='polar_flow')return{
-    dataFound:!failed('workoutEvidence')&&confirmedWorkoutEvidence(workoutEvidence,'polar_flow').length>0,
+    dataFound:(!failed('workoutEvidence')&&confirmedWorkoutEvidence(workoutEvidence,'polar_flow').length>0)||!!sourceTransportCoverageFor(source).providerDate,
     candidateFound:(!failed('workoutEvidence')&&preservedWorkoutEvidence(workoutEvidence,'polar_flow').length>0)||(!failed('sourceMetrics')&&candidateFromFamily(sourceMetrics,'polar_flow')),
-    domainKeys:['workoutEvidence','sourceMetrics']
+    domainKeys:['workoutEvidence','sourceMetrics','polarSessions']
   };
   if(source==='myfitnesspal')return{
-    dataFound:(!failed('nutrition')&&nutrition.some(directMyFitnessPal))||(!failed('meals')&&meals.some(directMyFitnessPal)),
+    dataFound:(!failed('nutrition')&&nutrition.some(directMyFitnessPal))||(!failed('meals')&&meals.some(directMyFitnessPal))||!!sourceTransportCoverageFor(source).bridgeDate,
     candidateFound:!failed('sourceMetrics')&&candidateFromFamily(sourceMetrics,'myfitnesspal'),
     domainKeys:['nutrition','meals','sourceMetrics']
   };
@@ -103,9 +119,11 @@ export function latestConfirmedSourceDateFor(source){
     if(!failed('sourceMetrics'))directDates.push(...(state.data.sourceMetrics||[]).filter(confirmedAutoExport).map(row=>row?.metric_date));
   }else if(source==='polar_flow'){
     if(!failed('workoutEvidence'))directDates.push(...confirmedWorkoutEvidence(workoutEvidence,'polar_flow').map(row=>row?.workout_date));
+    directDates.push(sourceTransportCoverageFor(source).providerDate);
   }else if(source==='myfitnesspal'){
     if(!failed('nutrition'))directDates.push(...nutrition.filter(directMyFitnessPal).map(row=>row?.nutrition_date));
     if(!failed('meals'))directDates.push(...meals.filter(directMyFitnessPal).map(row=>row?.meal_date));
+    directDates.push(sourceTransportCoverageFor(source).bridgeDate);
   }else if(source==='fleury'||source==='einstein'){
     if(!failed('labs')){
       const term=source==='fleury'?'fleury':'einstein';

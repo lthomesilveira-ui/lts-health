@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/WATER_RELIABILITY_20261025.md"
+    "latest_release": "v2/releases/SOURCE_COVERAGE_20261025.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,39 +49,29 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-WATER-RELIABILITY-001",
-    "status": "done",
-    "goal": "Make missing water and receipt dates explicit, repair mobile Reports selection, and verify the current public journeys without presuming overall delivery.",
+    "id": "PKG-SOURCE-COVERAGE-001",
+    "status": "in_progress",
+    "goal": "Reconcile supplied documents and conversations, repair current source dates and stale connection status, and verify bounded historical context without changing the approved dashboard.",
     "task_ids": [
-      "LTS-WATER-READING-001",
-      "LTS-CURRENT-AUTH-QA-001",
-      "LTS-MOBILE-NAV-COVERAGE-001"
+      "LTS-COMPLETENESS-REVIEW-001",
+      "LTS-SOURCE-COVERAGE-001",
+      "LTS-HISTORICAL-CONTEXT-001"
     ],
     "public_build": "health-integrated-20261025.81",
-    "candidate_build": "health-integrated-20261025.81",
-    "release_state": "verified_public_81;overall_delivery_not_accepted",
+    "candidate_build": "health-integrated-20261025.82",
+    "release_state": "candidate_82_locally_verified;publication_and_exact_public_check_pending;overall_delivery_not_accepted",
     "completed_evidence": [
-      "Current default branch and supplied merge checkpoint independently matched.",
-      "Read-only dedicated-source audit confirms a metric-specific continuity gap while other categories continue arriving.",
-      "Sixty analytical suites exercised; the affected copy assertion was updated and rechecked. Missing, zero, conflict, partial, explicit-origin and failed-load states remain distinct.",
-      "Established real-auth workflow failed before authentication because ubuntu-latest moved beyond the pinned browser support; candidate pins the existing compatible runner without changing credentials or permissions.",
-      "Current published renderer exercised locally with invented isolated data at 320, 393 and 1440 px across ten routes, signed-out boundaries and zero production writes.",
-      "Exact 393x650 dense and sparse cases retain the original natural-height limits; missing historical context reuses the empty chart space instead of adding a second block.",
-      "Water assertions independently read the selected origin, reopen a historical day and distinguish today from the older observation; their harness passes on all three widths.",
-      "All twelve initial candidate workflows ran; eleven passed. Functional Depth exposed one remaining old wording assertion, now aligned with the dated-value reading; no functional assertion was removed.",
-      "Real owner session entered through the secure browser form. Current public .79 was opened; today and the actual historical water day were independently inspected without writes.",
-      "Existing integrated-review browser coverage exercises actual goal saving and page reload against its isolated synthetic persistence service; production write success is not inferred.",
-      "Twelve final .80 candidate workflows passed; PR 388 published runtime at 868f549b919180366f7df3e55098f41b5c38f5e3.",
-      "Exact authenticated public .80 inspected: current absent water, historical observation reopening, separate receipt timestamp, all domains and connection warning; no production data writes.",
-      "Restored authenticated verification reached the current Data screen and Evolution. Its legacy text and removed-renderer assumptions are being replaced by independently checked current journeys. PR 389 aligns actual inbox rows and counts.",
-      "The current mobile navigation routes directly to Evolution. Reports opened through More lacked an active destination; candidate .81 repairs that state and checks all ten destinations.",
-      "Current Evolution independently checks all three windows and four metrics against authenticated body observations, selected historical values, original-record links and absence of interpolating paths.",
-      "All twelve exact .81 candidate workflows passed at 667868d8231e04ecd80f707ac86c96c56f016751. PR 390 published runtime at dffd34f43a87a1b2cd811016b2eff94ee603aff4.",
-      "Exact public .81 was manually inspected in the existing authenticated session: current and historical water, all observed body points, historical point selection and reopening of its original measurement.",
-      "PRs 389, 391 and 392 reconcile current authenticated checks without changing runtime records or permissions. Final real-account workflow 40209261568 passed completely at 5f3652a71736ac80519439a9062698fa4c96e54f, including independent full-history means/denominators, all current windows, responsive navigation, actual Labs visuals and encrypted evidence.",
-      "Final source-specific metadata recheck confirms that general receipts remain newer than water. Upstream continuity is not closed by the presentation fix or workflow success."
+      "Current main and both reference heads reconciled before changes; the existing published work and approved Home are preserved.",
+      "Private supplied originals and available conversations inspected; already incorporated food plan, workout and application records are preserved without reimport.",
+      "Named authenticated food bridge coverage is separated from original file history; newer anonymous nutrition cannot advance MyFitnessPal coverage.",
+      "Actual Polar provider sessions contribute to source availability without creating or adding canonical workouts.",
+      "Global refresh and Sources reentry read current connection status; the existing refresh control is visible at mobile widths.",
+      "A bounded previously authorized historical-context repair updated only structured metadata. Exact preimages, unchanged other fields and record count, independent reread and full authenticated public reload were verified privately.",
+      "Local privacy, provenance, production write/connection boundaries, model suites and responsive production-entry checks passed."
     ],
-    "pending_evidence": [],
+    "pending_evidence": [
+      "Exact final candidate CI, normal merge, deployment and authenticated public .82 inspection."
+    ],
     "independent_open_conditions": [
       "Phone-side water continuity and original MFP history.",
       "Original exact lab proposal recovery and separate specific execution authority.",
@@ -1609,24 +1599,22 @@
       "id": "LTS-WATER-UPSTREAM-STATUS-001",
       "area": "water source continuity",
       "priority": "P0",
-      "status": "blocked_user",
-      "owner": "user",
-      "summary": "Requested current Health Sync status has been received and inspected; verify actual post-status water transport without treating a successful attempt as transferred volume.",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "Phone status, permissions and the normal-entry comparison are already available; investigate the observed source-to-Apple gap through the opened technical case.",
       "acceptance": [
         "Inspect the existing Health Sync main/status screen after the reported purchase, including Water and last synchronization or error.",
         "Preserve source, paid configuration and keys; do not require recurring manual exports or duplicate daily entry.",
         "Verify the next genuine water observation from origin through the receiver and app; do not infer the cause from a missing field alone."
       ],
       "evidence": [
-        "Existing private water diagnostic recovered and checked against current dedicated-source metadata.",
-        "Recent receipts continue for other metric categories, while water remains older.",
-        "The previously supplied Apple Health captures already showed the same water cutoff; they need not be requested again.",
-        "The owner supplied the requested current phone status after the reported purchase. The selected intake category, source-to-Apple direction and successful recent status are visible. Do not request the same capture again.",
-        "A fresh read-only receiver check still shows no newer water. Its most recent general packet predates the supplied phone status, so it cannot verify the result of that newer attempt.",
-        "Official Health Auto Export guidance confirms automations can run while the app remains open and the device is unlocked; this is a one-time diagnostic opportunity, not a recurring manual-export routine."
+        "The requested main/status screen and the relevant write permission were supplied and inspected; neither is missing.",
+        "The owner completed the one-time foreground/export and connection checks. Accepted newer receiver packets still lacked the metric, while the source-side versus Apple history comparison showed a gap before export.",
+        "The exact internal provider or native write failure remains unproved; successful status is not proof of transferred observations.",
+        "An authorized technical support request was sent through the verified official channel; no health values, private images or credentials were sent."
       ],
-      "next_action": "Verify the next genuine receiver packet after the supplied phone status, using the existing enabled automation with the export app open and the phone unlocked. If that packet still lacks water, inspect the current source-side water date/value before changing connections.",
-      "blocker": "The requested status capture is no longer missing. A genuine post-status water observation or a source-side quantity is not yet available to the receiver.",
+      "next_action": "Use the existing official support case and native diagnostic guidance when received. Inspect genuine later source/receiver evidence; do not repeat screenshots, purchases, connection resets, duplicate recording or recurring exports.",
+      "blocker": "The source app shows the new normal entry while the inspected Apple history remains older; the internal transfer cause is not exposed to the LTS receiver.",
       "phone_status_capture_received": true
     },
     {
@@ -1644,7 +1632,8 @@
       "evidence": [
         "supabase/tests/support/lab-numeric-proof-sql.mjs",
         "Public PR 367 contains disposable synthetic tests, not an executable private approval or real target list.",
-        "Searches of project records and recent private file metadata did not recover the original exact manifest. A broader set of ambiguous results is not substituted for that list."
+        "Searches of project records and recent private file metadata did not recover the original exact manifest. A broader set of ambiguous results is not substituted for that list.",
+        "Completeness review searched the available conversations, exact proposal references and private file metadata again; the original exact manifest was not recovered. Existing broader ambiguous records are not substituted."
       ],
       "next_action": "Recover the original private proposal from a durable source; keep this as agent-side continuity work and do not ask the owner to repeat the medical history.",
       "blocker": "The exact original private fifteen-record manifest is not currently recovered."
@@ -1663,7 +1652,8 @@
       ],
       "evidence": [
         "Read-only candidate audit confirms prospectively captured observations, no verified coverage and absent source identification.",
-        "Existing dashboard total-energy contract accepts only explicitly supplied totals and does not add basal candidates."
+        "Existing dashboard total-energy contract accepts only explicitly supplied totals and does not add basal candidates.",
+        "Current private candidate recheck still has no independently identified original source, interval boundaries or verified coverage; candidates remain excluded from totals."
       ],
       "next_action": "Inspect a genuine origin-bearing full-day export when available; preserve the current non-additive boundary.",
       "blocker": "Available prospective candidates do not establish source identity or full-day coverage."
@@ -1697,7 +1687,7 @@
       "priority": "P1",
       "status": "blocked_external",
       "owner": "Codex",
-      "summary": "Verify a genuine authorized production update through saving and reopening without inventing or duplicating a health record.",
+      "summary": "Verify ordinary production form saving and reopening on the next genuine authorized update; distinguish it from the completed bounded metadata repair.",
       "acceptance": [
         "Use the next genuine authorized update and inspect its actual saved values after reopening.",
         "Keep source identity and duplicate protections.",
@@ -1705,10 +1695,11 @@
       ],
       "evidence": [
         "The isolated integrated-review browser verifies actual goal saving and page reload in disposable synthetic persistence.",
-        "Current public changes are reading/navigation changes; no production medical record or prescription was written during this restart."
+        "Current public changes are reading/navigation changes; no production medical record or prescription was written during this restart.",
+        "A genuine authorized bounded metadata repair now has exact preimages, unchanged other fields and count, independent database reread and full public reload. The separate LTS-HISTORICAL-CONTEXT-001 is complete; ordinary app form submission remains unproved."
       ],
-      "next_action": "Validate the next genuine authorized write and its reopening when the source update becomes available.",
-      "blocker": "No new genuine production record or edit was supplied for a non-duplicating end-to-end write in this restart."
+      "next_action": "Exercise ordinary production saving and full reopening with the next genuine non-duplicating form update. Do not create a fake health record merely for testing.",
+      "blocker": "No new genuine non-duplicating ordinary app form update is currently available; the completed metadata repair is a different write path."
     },
     {
       "id": "LTS-OWNER-DELIVERY-20261025",
@@ -1726,10 +1717,93 @@
       "evidence": [
         "Owner restart of 2026-10-25 rejects completion while preserving the approved layout.",
         "Runtime .81 and workflow 40209261568 are technical evidence only.",
-        "The requested current Health Sync status is now supplied and inspected. Successful phone status does not by itself establish transferred observations."
+        "The requested current Health Sync status is now supplied and inspected. Successful phone status does not by itself establish transferred observations.",
+        "Completeness review and bounded historical-context persistence are verified privately; source display/status improvements are in the current candidate package. Overall delivery is not accepted."
       ],
-      "next_action": "Continue from actual post-status receipt and source-side water coverage, preserving the supplied phone evidence and the independent delivery tasks.",
+      "next_action": "Continue from the opened technical cases and genuine source evidence, while preserving separate lab, basal, ordinary form and physical-device tasks.",
       "blocker": "Actual water continuity and physical-device/owner acceptance remain unverified; the current Health Sync status capture is already available."
+    },
+    {
+      "id": "LTS-COMPLETENESS-REVIEW-001",
+      "area": "project continuity",
+      "priority": "P0",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Reconcile current files, conversations and records without restarting the brief.",
+      "acceptance": [
+        "Inspect supplied original documents and available conversation evidence.",
+        "Distinguish incorporated records, source gaps, unsupported clinical proposals and technical defects.",
+        "Keep private evidence out of public project records."
+      ],
+      "evidence": [
+        "Private review checkpoint saved before any bounded repair; original file identities and limitations retained privately.",
+        "The received food plan and prior workout/application records already exist and were not reimported.",
+        "The exact original fifteen-record laboratory proposal remains unrecovered after focused searches; no substitute list or data edit is authorized."
+      ],
+      "next_action": "Preserve the reconciled checkpoint; continue only from genuinely new evidence.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-SOURCE-COVERAGE-001",
+      "area": "Data and sources",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show actual source-specific coverage and refresh current connection status on mobile and desktop.",
+      "acceptance": [
+        "Separate original food-file history from explicitly named authenticated food bridge totals.",
+        "Use actual provider session coverage without adding duplicate workouts or attributing anonymous food.",
+        "Refresh connection status on global refresh and Sources reentry, with a visible mobile control.",
+        "Pass affected gates and inspect the exact published build using the real account."
+      ],
+      "evidence": [
+        "v2/source-current-coverage-test.mjs",
+        "v2/production-integration-browser.mjs",
+        "Local source, model, privacy and connection/write boundary checks passed; publication remains pending."
+      ],
+      "next_action": "Complete final candidate CI, normal merge, deploy and exact authenticated public inspection.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-HISTORICAL-CONTEXT-001",
+      "area": "bounded historical record fidelity",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Make previously confirmed historical context available through the existing bounded fields.",
+      "acceptance": [
+        "Recover literal original confirmation and exact current preimages.",
+        "Update only the missing structured context for existing records; preserve every other field and total count.",
+        "Independently reread and fully reopen the public app.",
+        "Keep raw medical notes and operational fields outside the client projection."
+      ],
+      "evidence": [
+        "Original user confirmation and existing literal source fields matched privately.",
+        "Guarded transaction updated only structured context and proved unchanged remaining fields and record count.",
+        "Independent database read and full authenticated public reload displayed the saved context.",
+        "Privacy contract remains intact; this does not prove ordinary app form submission."
+      ],
+      "next_action": "Preserve existing records and the private before/after evidence.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-EXPORT-PAYLOAD-001",
+      "area": "upstream export transport",
+      "priority": "P1",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "Resolve an observed oversized export without assuming its unknown body contained the missing metric.",
+      "acceptance": [
+        "Establish the rejected request size, interval and aggregation through supported diagnostics.",
+        "Choose a validated batching configuration or bounded receiver change from evidence.",
+        "Verify a genuine subsequent accepted request and its metric-specific coverage."
+      ],
+      "evidence": [
+        "A receiver request was rejected before parsing at the existing payload limit; its body is unknown.",
+        "A separate technical support request has been sent using the official channel without medical values, images or credentials."
+      ],
+      "next_action": "Use the provider response and a genuine bounded diagnostic to establish request composition and supported batching; preserve current keys and accepted records.",
+      "blocker": "Rejected request composition and supported export batching are not yet established."
     }
   ],
   "package_history": [
@@ -2107,6 +2181,47 @@
       "pending_evidence": [],
       "public_build": "consultation-followup-20261013.52",
       "release_state": "published_52; consultation_followup_authenticated_public_verified; independent_source_limits_preserved"
+    },
+    {
+      "id": "PKG-WATER-RELIABILITY-001",
+      "status": "done",
+      "goal": "Make missing water and receipt dates explicit, repair mobile Reports selection, and verify the current public journeys without presuming overall delivery.",
+      "task_ids": [
+        "LTS-WATER-READING-001",
+        "LTS-CURRENT-AUTH-QA-001",
+        "LTS-MOBILE-NAV-COVERAGE-001"
+      ],
+      "public_build": "health-integrated-20261025.81",
+      "candidate_build": "health-integrated-20261025.81",
+      "release_state": "verified_public_81;overall_delivery_not_accepted",
+      "completed_evidence": [
+        "Current default branch and supplied merge checkpoint independently matched.",
+        "Read-only dedicated-source audit confirms a metric-specific continuity gap while other categories continue arriving.",
+        "Sixty analytical suites exercised; the affected copy assertion was updated and rechecked. Missing, zero, conflict, partial, explicit-origin and failed-load states remain distinct.",
+        "Established real-auth workflow failed before authentication because ubuntu-latest moved beyond the pinned browser support; candidate pins the existing compatible runner without changing credentials or permissions.",
+        "Current published renderer exercised locally with invented isolated data at 320, 393 and 1440 px across ten routes, signed-out boundaries and zero production writes.",
+        "Exact 393x650 dense and sparse cases retain the original natural-height limits; missing historical context reuses the empty chart space instead of adding a second block.",
+        "Water assertions independently read the selected origin, reopen a historical day and distinguish today from the older observation; their harness passes on all three widths.",
+        "All twelve initial candidate workflows ran; eleven passed. Functional Depth exposed one remaining old wording assertion, now aligned with the dated-value reading; no functional assertion was removed.",
+        "Real owner session entered through the secure browser form. Current public .79 was opened; today and the actual historical water day were independently inspected without writes.",
+        "Existing integrated-review browser coverage exercises actual goal saving and page reload against its isolated synthetic persistence service; production write success is not inferred.",
+        "Twelve final .80 candidate workflows passed; PR 388 published runtime at 868f549b919180366f7df3e55098f41b5c38f5e3.",
+        "Exact authenticated public .80 inspected: current absent water, historical observation reopening, separate receipt timestamp, all domains and connection warning; no production data writes.",
+        "Restored authenticated verification reached the current Data screen and Evolution. Its legacy text and removed-renderer assumptions are being replaced by independently checked current journeys. PR 389 aligns actual inbox rows and counts.",
+        "The current mobile navigation routes directly to Evolution. Reports opened through More lacked an active destination; candidate .81 repairs that state and checks all ten destinations.",
+        "Current Evolution independently checks all three windows and four metrics against authenticated body observations, selected historical values, original-record links and absence of interpolating paths.",
+        "All twelve exact .81 candidate workflows passed at 667868d8231e04ecd80f707ac86c96c56f016751. PR 390 published runtime at dffd34f43a87a1b2cd811016b2eff94ee603aff4.",
+        "Exact public .81 was manually inspected in the existing authenticated session: current and historical water, all observed body points, historical point selection and reopening of its original measurement.",
+        "PRs 389, 391 and 392 reconcile current authenticated checks without changing runtime records or permissions. Final real-account workflow 40209261568 passed completely at 5f3652a71736ac80519439a9062698fa4c96e54f, including independent full-history means/denominators, all current windows, responsive navigation, actual Labs visuals and encrypted evidence.",
+        "Final source-specific metadata recheck confirms that general receipts remain newer than water. Upstream continuity is not closed by the presentation fix or workflow success."
+      ],
+      "pending_evidence": [],
+      "independent_open_conditions": [
+        "Phone-side water continuity and original MFP history.",
+        "Original exact lab proposal recovery and separate specific execution authority.",
+        "Basal origin and complete-day eligibility.",
+        "Genuine production write/reopen and physical-iPhone/owner acceptance are not inferred from read-only or synthetic checks."
+      ]
     }
   ],
   "latest_published_release": {
