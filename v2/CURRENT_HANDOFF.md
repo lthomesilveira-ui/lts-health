@@ -1,3 +1,7 @@
+# Phone status evidence received — 2026-10-25
+
+The owner supplied the exact Health Sync status evidence requested at the previous checkpoint. Its selected intake category, source-to-Apple direction and recent successful status are inspected. This closes the missing-capture condition; it does not establish the quantity or date of transferred water. The current receiver metadata still predates that phone attempt. Preserve the existing configuration and verify a genuine newer packet before drawing a cause conclusion. No private image or health observation is included here. Runtime remains the verified .81; overall delivery stays open.
+
 # Current checkpoint — .81 verified, project still open, 2026-10-25
 
 Runtime `health-integrated-20261025.81` is published by PR 390 at `dffd34f43a87a1b2cd811016b2eff94ee603aff4`, preserving .80 water presentation and the approved dashboard. All twelve exact .81 candidate workflows passed. Verification-only PRs 389/391/392 align current inbox, Evolution, Reports and exact-origin nutrition checks. Full real authenticated workflow `40209261568` passed at `5f3652a71736ac80519439a9062698fa4c96e54f`, including current dashboard periods, complete histories, independent means/denominators, mobile routes and Labs visuals. Private evidence is encrypted; no medical values are printed.
@@ -6,7 +10,7 @@ The exact public .81 was manually inspected using the preserved authenticated se
 
 `PKG-WATER-RELIABILITY-001` is technically done. **The owner still rejects overall delivery; the project remains open.** Current authority is `EXECUTION_STATE.json`, including explicit overall acceptance and genuine production write/reopen tasks. Synthetic goal save/reload is verified; production medical/form writing is not inferred from it.
 
-Water continuity still needs one Health Sync main/status capture after the reported purchase, showing Water and last synchronization/error. General receipts do not close that metric-specific gap. Do not repeat Apple Health permission screenshots, purchases, manual daily exports or duplicate recording. Original MFP water history is a distinct pending transfer. The exact original fifteen-record lab proposal has not been recovered and cannot be executed under interface/publication authority. Basal origin and full-day eligibility remain unverified; candidates stay outside totals.
+The requested Health Sync main/status capture after purchase has been received and inspected. Do not request it again. Its successful attempt is newer than the last receiver packet, so actual post-status water transport remains unverified. Use the existing enabled export automation with the app open and phone unlocked for a one-time receipt check; inspect source-side water coverage if that newer packet still has no water. General receipts do not close that metric-specific gap. Do not repeat Apple Health permission screenshots, purchases, manual daily exports or duplicate recording. Original MFP water history is a distinct pending transfer. The exact original fifteen-record lab proposal has not been recovered and cannot be executed under interface/publication authority. Basal origin and full-day eligibility remain unverified; candidates stay outside totals.
 
 Earlier restart and release notes below preserve history and do not override this checkpoint.
 
