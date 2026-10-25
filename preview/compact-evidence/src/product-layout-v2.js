@@ -1,5 +1,5 @@
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
-import {renderTrainingHistory,renderExerciseHistory} from './training-history.js';
+import {renderTrainingHistory,renderExerciseHistory,exerciseHistoryTitle} from './training-history.js';
 import {failed,errorCard} from './history-tools.js';
 
 const latest=(rows,key)=>[...(rows||[])].filter(r=>r?.[key]).sort((a,b)=>String(a[key]).localeCompare(String(b[key]))).at(-1)||null;
@@ -139,7 +139,7 @@ export function renderProductTraining(){
   const selected=rows.find(w=>w.source_record_id===state.ui.openWorkout)||rows[0]||null;
   const view=['history','exercise'].includes(state.ui.productTrainingView)?state.ui.productTrainingView:'session';
   const tabs=`<div class="ltsDepthTabs" role="group" aria-label="Explorar treinos"><button type="button" data-depth-training-view="session" class="${view==='session'?'active':''}" aria-pressed="${view==='session'}">Resumo e séries</button><button type="button" data-depth-training-view="history" class="${view==='history'?'active':''}" aria-pressed="${view==='history'}">Histórico completo</button></div>`;
-  const heading=view==='history'?'Treinos':view==='exercise'?'Histórico do exercício':selected?safe(selected.workout_type,'Sessão'):'Histórico de treinos';
+  const heading=view==='history'?'Treinos':view==='exercise'?exerciseHistoryTitle():selected?safe(selected.workout_type,'Sessão'):'Histórico de treinos';
   const subtitle=view==='history'?'Encontre qualquer sessão por ano, exercício ou local.':view==='exercise'?'Ocorrências, equipamento e cargas registradas.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão para abrir o detalhe.';
   return `<section class="ltsTrainingV2" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
     <header class="ltsPageHeader"><button class="ltsBack" ${view==='exercise'?'data-depth-training-view="session"':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRoundAction" data-entry="workout" aria-label="Registrar treino">+</button></header>

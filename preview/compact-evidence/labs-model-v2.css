@@ -17,3 +17,43 @@
 /* Exames has its own history window and direct navigation, separate from Home. */
 .ltsLabsJump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}.ltsLabsJump button{min-height:44px;padding:10px 14px;border:1px solid #d9c6d3;border-radius:12px;background:#fff;color:#673b58;font:inherit;font-size:12px;font-weight:700;cursor:pointer}.ltsLabsJump button:focus-visible{outline:3px solid #ad5e94;outline-offset:2px}.ltsLabsWindowLabel{display:block;margin:0 0 8px;color:var(--p-muted);font-size:12px;font-weight:700}.ltsLabsWindow{margin-bottom:14px}.ltsLabsV2 #productLabsTrend,.ltsLabsV2 #productLabsHistory,.ltsLabsV2 #productLabsCollection{scroll-margin-top:16px}.ltsLabsV2 h2:focus{outline:none}.ltsLabsV2>.ltsLabCollection{margin-top:24px}.ltsLabsV2>.ltsLabsHero{margin:24px 0 0}
 @media(max-width:600px){.ltsLabsJump{gap:6px}.ltsLabsJump button{flex:1 1 120px;font-size:11px;padding:10px}.ltsLabsWindowLabel{font-size:11px}}
+
+/* Laboratory chart context: scoped to Exames, without health-status colors. */
+.ltsLabsV2 .ltsLabSeriesContext{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;margin:10px 0 14px;padding:13px 15px;border:1px solid #e1e5ec;border-radius:14px;background:#fff}
+.ltsLabsV2 .ltsLabSeriesContext>div{min-width:0}.ltsLabsV2 .ltsLabSeriesContext>div:last-child{grid-column:1/-1}
+.ltsLabsV2 .ltsLabSeriesContext dt{margin:0 0 3px;color:#5e6b7c;font-size:11px;font-weight:600}
+.ltsLabsV2 .ltsLabSeriesContext dd{margin:0;color:#253247;font-size:13px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+.ltsLabsV2 .ltsLabDelta{padding:13px 15px!important;font-size:13px!important;line-height:1.5!important;color:#3d4d61;background:#f1f3f7}
+.ltsLabsV2 .ltsLabDelta b{font-size:12px!important}.ltsLabsV2 .ltsLabDelta>span{display:block;font-size:15px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ltsLabsV2 .ltsLabDelta small{display:block;margin-top:5px;color:#526075;font-size:11px;line-height:1.5}
+.ltsLabsV2 .ltsLabEndpoints{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:2px 0 15px}
+.ltsLabsV2 .ltsLabEndpoints>div{min-width:0}.ltsLabsV2 .ltsLabEndpoints>div:last-child:not(:first-child){text-align:right}
+.ltsLabsV2 .ltsLabEndpoints span,.ltsLabsV2 .ltsLabEndpoints time{display:block;color:#566277;font-size:12px;line-height:1.4}
+.ltsLabsV2 .ltsLabEndpoints b{display:block;margin:4px 0;color:#253247;font-size:23px;line-height:1.2;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ltsLabsV2 .ltsLabReferenceLegend{display:flex;align-items:flex-start;gap:9px;padding:11px 12px;margin:0 0 14px;border:1px solid #d3d9e4;border-radius:12px;background:#f1f3f8}
+.ltsLabsV2 .ltsLabReferenceLegend>span{flex:none;width:15px;height:15px;margin-top:2px;border:1px solid #8b95aa;border-radius:3px;background:#e2e7f0}
+.ltsLabsV2 .ltsLabReferenceLegend b{display:block;color:#344157;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.ltsLabsV2 .ltsLabReferenceLegend small{display:block;margin-top:4px;color:#526075;font-size:11px;line-height:1.5}
+.ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot{height:210px!important;grid-template-columns:58px minmax(0,1fr)}
+.ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot svg{height:210px!important}
+.ltsLabsV2 .ltsLabTrendPlot .ltsDepthScale{font-size:11px;color:#526075}
+.ltsLabsV2 .ltsLabTrendPlot .ltsDepthLine{stroke:#65516e;stroke-width:2.4}
+.ltsLabsV2 .ltsLabTrendPlot circle{fill:#65516e;stroke:#fff;stroke-width:2}
+.ltsLabsV2 .ltsLabTrendPlot circle.selected{fill:#fff;stroke:#65516e;stroke-width:2.5}
+.ltsLabsV2 .ltsLabReferenceBand{fill:#e2e7f0}.ltsLabsV2 .ltsLabReferenceBounds{fill:none;stroke:#8b95aa;stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke}
+.ltsLabsV2 .ltsLabScaleNote{margin:10px 0 13px;color:#526075;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.ltsLabsV2 .ltsLabTrendPlot .ltsPointReadout p span{color:#526075;font-size:12px;line-height:1.5}
+.ltsLabsV2 .ltsLabsMarkerRail:empty{display:none}
+@media(max-width:600px){
+  .ltsLabsV2 .ltsLabSeriesContext{padding:11px 12px;gap:9px 12px}.ltsLabsV2 .ltsLabEndpoints{gap:8px}
+  .ltsLabsV2 .ltsLabEndpoints b{font-size:21px}.ltsLabsV2 .ltsLabEndpoints span,.ltsLabsV2 .ltsLabEndpoints time{font-size:11px}
+  .ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot{grid-template-columns:47px minmax(0,1fr);height:190px!important}.ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot svg{height:190px!important}
+  .ltsLabsV2 .ltsLabTrendPlot .ltsDepthAxis{margin-left:49px;font-size:10px}.ltsLabsV2 .ltsLabTrendPlot .ltsPointReadout{grid-template-columns:minmax(0,1fr);gap:10px}
+  .ltsLabsV2 .ltsLabTrendPlot .ltsField select,.ltsLabsV2 #productLabCohort{min-height:44px!important;font-size:13px!important}
+}
+
+/* Full method remains one explicit action away, after the measured values/plot. */
+.ltsLabsV2 .ltsLabSeriesDetails{margin:12px 0;border-top:1px solid #e1e5ec;border-bottom:1px solid #e1e5ec}
+.ltsLabsV2 .ltsLabSeriesDetails>summary{min-height:44px;box-sizing:border-box;padding:12px 4px;color:#344157;font-size:13px;font-weight:700;line-height:20px;cursor:pointer}
+.ltsLabsV2 .ltsLabSeriesDetails>summary:focus-visible{outline:3px solid #8b95aa;outline-offset:2px}
+.ltsLabsV2 .ltsLabSeriesDetails .ltsLabSeriesContext{margin:0 0 12px;box-shadow:none}

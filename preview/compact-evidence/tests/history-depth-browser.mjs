@@ -79,7 +79,7 @@ try{
   assert.ok((await page.locator('.ltsTrainingV2 h1').textContent()).includes('Sessão sintética 0'));
   await page.locator('[data-depth-training-view="exercises"]').first().click();
   await page.locator('[data-depth-exercise]').first().click();
-  await page.waitForSelector('.ltsExerciseHistory');assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
+  await page.waitForSelector('.ltsExerciseHistory');await page.locator('[data-disclosure="exercise-working-history"] > summary').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
   await assertHistoricalPoints(page,'.ltsExerciseHistory',db.health_workout_sets,'workout_date','weight','kg','training history retains every older eligible load');
   await overflow(page);
   await page.locator('[data-depth-training-view="history"]').first().click();

@@ -23,7 +23,7 @@ for(const data of [empty(),future])for(const state of [status,Object.fromEntries
   const context=dashboardContext(data,state,{bounds:model.bounds,today,mode:model.mode});
   assert.equal(context.valid,true);assert.notEqual(context.reason,'invalid_calendar');
   const html=renderHealthDashboard(data,state,{dashboardPeriod:'all'},today);
-  assert.match(html,/<p class="healthWindow">Sem histórico encerrado · dias encerrados/);
+  assert.match(html,/<p class="healthWindow"[^>]*>Sem histórico encerrado · dias encerrados/);
   assert.doesNotMatch(html,/01\/03\/2024 a 29\/02\/2024/);
   assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity|invalid_calendar)\b/);
   assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7);

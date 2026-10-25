@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 // Generic build hashes live in the test. No public JSON payload is introduced.
 const manifest={
-  "candidate_commit": "8a46cb15a9edecf15ed2523a1c22e1a84dda600b",
+  "candidate_commit": "075f3720915b75597528c9aaa69e3ded122356f6",
   "build": "health-dashboard-20261019.74",
   "files": {
     "accessibility.css": "9ee0d8b2fd8bc00d1c039e9dcf8598f695a273cea119614e14181cb4f1879389",
@@ -15,7 +15,7 @@ const manifest={
     "body-interval.css": "ea7509f603febe4147f6411737b7e015b336cdaea3ddc13f15b9e17abd16061e",
     "calendar-reports.css": "a271ec5871b3ace5bf96c4d11d38fbc3217748f016f72a0af9483c788a98b749",
     "cockpit.css": "75d94843fa9861bafc82bb8870c305fddbf140b5c2ba31b3308f186ea88a51bd",
-    "composition-model-v2.css": "97da2b169549cb6a683514976e1dad004f71d9e889249837a8caa8493803a75d",
+    "composition-model-v2.css": "9e1c5ceb694e96ac586f0c3eeb29767c97937d08721466d4d8524c89e85b4dc1",
     "dashboard-final-polish.css": "e827badad263a43f1283c7d120e732872d85342f206bb37afa926842353cfa67",
     "dashboard-parity.css": "c370a25ea7e501fc4bff32e5d9463cbcbb489f7cb6e026fbccf260485ea20826",
     "dashboard-pixel-parity.css": "391ee883ea04982dd5f8c133fd3621a64972f3e1b8bee093a4e3cf8772cfe639",
@@ -25,7 +25,7 @@ const manifest={
     "domain-reference-parity-20260914.css": "af7f0c34b9d9055a8b13ea731aed32253c75f39ec1232a72b914fbe76381c912",
     "entry.css": "4448b31b193f468eb741f1e1ea646b293936abb615093b6232d1a224071152d4",
     "evidence-priority.css": "a2de4cffa12b132bc6d610672f602b6db2f83950c88a04e0b51de27f2f3c36ba",
-    "evolution-access.css": "498373277d8f8c9a51ba314cdefc1dce3a5afb9140379a353a42625e09009d3b",
+    "evolution-access.css": "a09ff41f500e315730bfe047088329cf590364f4126f8d81f30951b9d9499715",
     "evolution-product.css": "342f71b109b1ae835b979c6080111446e5a61183d522ea1cfba45e3e9b4b27b4",
     "evolution.css": "1ec73c327865ecbe99acc8ccc9fd1816dc288ccc9f492085feb72561d7d6f63e",
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
@@ -36,9 +36,9 @@ const manifest={
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "613e59d0b4ba1baa97c3d9c99218697f7e77abed0a76a91cb40fe13d507cedf1",
+    "index.html": "a5114ba2a3139585e86de315f9651230b31cae2979f0cae9fc4f7e0cbf083287",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
-    "labs-model-v2.css": "a274c2f00b6ce123e3f5355235fa13837e338ae7da3e8c3adacf7b6ea59c15fe",
+    "labs-model-v2.css": "96bff087685d9b00bc4f9a9a911f38bd35c41e6d4b74709877007878f329d40f",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
     "mfp-water-extractor.css": "a28f5aa6885b9605efd7294d485f8f2eec14b4bfee29901316acc753e933b590",
     "mobile-study.css": "a834a6977c280b3142b9ac8c2f35784b63a4b4aa3a8d50fdab7cc38fd6ff041b",
@@ -66,7 +66,7 @@ const manifest={
     "src/calendar-report-model.js": "2f6861b8e762663fee0738263ccc5aef964db63327115640dfc7ef20c2adad44",
     "src/calendar-report-view.js": "8a541fbec3b4d9e7f5e1c9e7eb5d6d47224d53b8b06f4f8ed7ce58c1f5a07154",
     "src/care-followup.js": "d27adde998c8a5c643c357c22e010206f1abf3ac819479832e3cacc115d5c7e8",
-    "src/composition-layout-v2.js": "805fbff0afa9b64ae718ce1580f36654a20ba547ddcbfe23f8b23122a0e98833",
+    "src/composition-layout-v2.js": "06c94fd15c98f657d274a0579965bd2c825e974b76428b813b7a6598755aa9b5",
     "src/core.js": "64c10d70a53477cccd917da6d18aeeb0b15694d1501bab841fcc3a40f278d55d",
     "src/dashboard-changes.js": "2826da829e3fe46cd62c1939e53e9cb2faa3b097d3bea11757a188faa991fc7a",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
@@ -78,8 +78,9 @@ const manifest={
     "src/evidence-insights-view.js": "b2dababf8c8ae008af62c3f49362e9e2f62173653eb566dec5504c28a58a6141",
     "src/evidence-insights.js": "46fd88e8c3d7be0ab6de361201581d5a6cab1c4ee785ebf3f53f2bac9387f1a3",
     "src/evidence-priority.js": "a35801fda348552067a5e334643b364ad75304db92c72494325f2c83b275a47a",
+    "src/evolution-body-chart.js": "29e2bca779f0fe8da4309e3458eeea6233e2ff6856c3be5445402b4d71d842f0",
     "src/evolution-model.js": "c95f4f64ff555f51c04cc10e233da9b83cc5e0e9871567791e5f444353486f49",
-    "src/evolution-overview.js": "fd5e472043e23a3e5c42f1c07a3ac16eceb41a430cf2321c04ece4be619c2c09",
+    "src/evolution-overview.js": "6867d5a56d05712446de58217d07274ae6bfbd0b9973de56e00bb493a5e36501",
     "src/evolution-screen.js": "4b0e1328954de031c8c8a7ade77bb839c3b11f4cf2b9b0564c53b7005d74d57e",
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/health-auto-export-connection.js": "2cac80a8e2936e40aa6f39c806d635d965b6c30fe5e451c097c375f6bd7f1dae",
@@ -91,7 +92,7 @@ const manifest={
     "src/health-dashboard-labs.js": "ff872dce35a698e382bbe557bd33d169edb6d6825aa15cb22736eddd5fd86bdf",
     "src/health-dashboard-model.js": "253a0946fcaa8e432890ef857a3a0832232b5c38239705a2c66d4e93fb964a33",
     "src/health-dashboard-training.js": "309e7137ba62c5e44797a31fa70968cf6fb30484bce436254e840c0178d8925d",
-    "src/health-dashboard.js": "8b9e816a8343d458a06bb8b87f1678bb3cde0e7383e024c1ed83fd52966541a7",
+    "src/health-dashboard.js": "d5be95aa5be4792d614d01013649120e2839b601fb315d571b997bd6c865dc84",
     "src/health-lab-documentary-numeric.js": "d6ffaced7ecd6e09c78b37b79019fce42573155690c844ce3490ef37dca61b7e",
     "src/health-lab-reviewed-numeric.js": "d3ee1812c2df272d579c791df3abeb0458960cb24e02dfc7695bf5d3d1509b66",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
@@ -109,10 +110,10 @@ const manifest={
     "src/integrated-review-view.js": "c2d7a62cd2e0178942176685c2143c55c69f6623f71836f593aa6c63cadec485",
     "src/integrated-review.js": "0a2b5f6414b706e06fa385bed405b9108ddca7c41140207a8b3908fef508b631",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
-    "src/labs-layout-v2.js": "687c699c4d13d7c6efb5b083e778868ebd916820429cdbe8f54871f9973a0307",
+    "src/labs-layout-v2.js": "c9b599e414434ddcec489243b4100dd0e1b226dbff6879e9fbcaca2e67f74f68",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
     "src/longitudinal-story.js": "d2b764d06c1073f0ae57e49290c8e39609ea2095ce6533cc9e8f99ade0c35c12",
-    "src/main.js": "c524942bee4826da0a12553e3f5736eeccafaaf705a41e3012a5587a140a70ac",
+    "src/main.js": "fd374927876ea1606aa52c3c3576d9ae76dd57339d4ce0e1ed6e82c73a2d89d9",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
     "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
     "src/mobile-study.js": "110f7b52b14bf6c2a893fd953bdb84f3f59bb1f7af3eaac6008efd1065c1529b",
@@ -126,7 +127,7 @@ const manifest={
     "src/polar-connection.js": "18ce96581a1449b1f665d694f016c3e2ad8580b1e12cf47f03aa1ea064e9eca4",
     "src/preview-readonly.js": "ca267422b70a50f4bbddb3edfad7f5ed6d7d1bef8edad324e546f043a944a994",
     "src/product-layout-runtime.js": "6a46a5c64c4659ef6b4b0abedc471c60c5e47ecdc6681e406261f25e59a88d05",
-    "src/product-layout-v2.js": "39ced48a76c7a6b01556c7c5c54d73de279bdc06d5f08dabce692d00dd0b1f05",
+    "src/product-layout-v2.js": "a70967aea9eed353798c630bcd6d3f576d9b1c7709af3c3cfd7164f508452a16",
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "35a8b855e4f1767e385ac243abefa4059352af9d1efb8c6f46a7b07a1dc7c13a",
     "src/reports-model.js": "65c0443fce458fc83c1e733b80af65702ccc348241cb67a237beb0cb03963d84",
@@ -134,16 +135,16 @@ const manifest={
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-display.js": "9e1e68fa7382145291a3fc339ba7c2b118038e3ec68e0943f6f985ad52e87d00",
     "src/source-status.js": "f51f73a6d73d5880b0615b89101693ff2333a7d2021311d96bd80cf4a57b179f",
-    "src/source-window-view.js": "4c7cdcf43d1441a6550103756163c8d4c610d3d6c5e150ee12a6764ef0f96bdb",
+    "src/source-window-view.js": "c7316305372e98d841e3e2c1d77630c4156868494fbab939338382599a9febdf",
     "src/steps-evidence-view.js": "fe5ce4e8299e684b7061b49ace897bd115afb3fc4e64bdcdf759e20b6e528b6b",
     "src/steps-evidence.js": "288fe0eaa92554e6e99d1a7bf4a5c00feaeacaa3c0eea706b219fab35a9f20da",
     "src/study-findings.js": "112a5925feb0fcb9267e6c1d5483f9b1ee1befcfc7444336cbe1b603ab550e80",
     "src/timeline-screen.js": "31425e4c1d8629a9bd5e60ca5c2a2172ca95cf12b5133d3cd0a02479593ce9bb",
     "src/today-screen.js": "0686db7acb46bd8147e9c5bf8aa6e30d2bd5f670fdfa0e1a1c5eab397bf4313c",
     "src/training-comparability.js": "29cbde79fed598028c4fffcf6789d8793909b7df64c9f7bec31c2a3a8919cc99",
-    "src/training-history.js": "e9e06978c2de28a50e2f90016254cc66e1209bfee22327d5fbffc5006430d5f2",
+    "src/training-history.js": "b5a67e995805753e9ae6b22701eb4abbd89b6d2bbcab8a5fe42b46bb64a136d1",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
-    "src/training-reference-v2.js": "829ff7a74b27383b899be7fc05877c52482f782e137e304b9902b197c6c8230b",
+    "src/training-reference-v2.js": "f1d05728d3d671af5bf8d55483bc19fbd402c10b87ae93d637955ab76414433c",
     "src/training-screen.js": "255481f1cfc2439d091bc7e0b138259206f1920804b8fcf795c53d90a229c759",
     "src/training-session-summary.js": "48bd4cad251ec9d2ea5b4d20f4fda79496a8874da1128f53ba246a1516e4bd43",
     "src/training-session.js": "82bd2d255b7c9c5ef6aa44f6eca4427d963fb324bf74ad4fe33b984d7e217538",
@@ -154,7 +155,7 @@ const manifest={
     "src/writes.js": "2056c98acaaf7b40e29e6d86e146965c0d2227b65098e99ee2b82f1310ecf60d",
     "styles.css": "90ca5a32254ba77ebb7394dffc85254f1790b7a70d6071c5772cf5b60336a274",
     "today.css": "c52c17b8471960e744307201f228dd3fcc6e3ed58819489add627a349f1fd21d",
-    "training-reference-v2.css": "e74964662b20228ddbf2be53c2da2bcb9462b5361acd3428cfecb4a9f34a76fd",
+    "training-reference-v2.css": "481e122b8235ba78eb7f6544ec3af9f1b96856b8cd5419b9e84be871c536bbae",
     "training-reference.css": "4336e64042148a3ea94353dc3f98d3e5010930f14635d90158c480a440c6df10",
     "training.css": "123b48543b6e97893371bba86c15784644fad7096da4e4a2a1d38a99d72970ce",
     "ux-coherence.css": "5f51f49e3d9312c54523257544daa86769ee093f31a35c349aefb73b0abbe6f7",
@@ -180,8 +181,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261024\.77/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261024.77'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261025\.78/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261025.78'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

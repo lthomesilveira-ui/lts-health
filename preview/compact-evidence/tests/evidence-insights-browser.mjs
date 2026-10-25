@@ -72,9 +72,14 @@ try{
     await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('10 dias com valor'));
     await overflow(page);await page.evaluate(()=>document.querySelector('#reportNutritionSource').scrollIntoView({block:'center'}));
     await page.screenshot({path:`${dir}/synthetic-${label}-insights.png`,fullPage:false});
-    await page.locator('[data-report-exercise]').first().click();await page.waitForSelector('.ltsExerciseHistory');
-    assert.match(await page.locator('.ltsExerciseHistory').innerText(),/Synthetic press/,'evidence link opens the actual exercise');
-    await overflow(page);
+    const exerciseLink=page.locator('[data-report-exercise]').first(),exerciseId=await exerciseLink.getAttribute('data-report-exercise');
+    const expectedExercise=db.health_workout_exercises.find(row=>row.source_record_id===exerciseId);assert.ok(expectedExercise,'evidence link names an actual fixture record');
+    await exerciseLink.click();await page.waitForSelector('.ltsExerciseHistory');
+    assert.equal(await page.locator('#productTrainingTitle').innerText(),expectedExercise.exercise,'evidence link promotes the exact exercise name to the page title');
+    assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.productExerciseId;}),exerciseId,'the exact clicked record identity remains selected');
+    assert.match(await page.locator('.ltsExerciseSessionLatest .ltsExerciseRecordedSets').innerText(),/30 kg × 10/,'latest original load and reps lead the history');
+    await overflow(page);await page.locator('#productTrainingTitle').scrollIntoViewIfNeeded();
+    await page.screenshot({path:`${dir}/synthetic-${label}-exercise-history.png`,fullPage:false});
     await page.evaluate(()=>{location.hash='#analise';});await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.data.sets=state.data.sets.map(row=>({...row,failure:null}));const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
     await page.locator('[data-report-section="reportEvidenceInsights"]').click();

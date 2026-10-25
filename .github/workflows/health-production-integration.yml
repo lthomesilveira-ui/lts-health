@@ -31,7 +31,7 @@ jobs:
           TESTDIR="$(mktemp -d v2/.integration-tests.XXXXXX)"
           trap 'rm -rf "$TESTDIR"' EXIT
           cp preview/compact-evidence/tests/* "$TESTDIR/"
-          for test in source-window-service source-window-selection evolution-access lab-history-access care-nutrition-status dashboard-changes body-interval-model body-interval-view calendar-report-model calendar-report-view consumer-health-copy documentary-numeric-reading documentary-water-consumers documented-nutrition-plan documented-water-reference evidence-insights evolution-period-contract evolution-product final-evolution health-dashboard-body health-dashboard-context health-dashboard-empty-history health-dashboard-guidance health-dashboard-labs health-dashboard-model health-dashboard-render health-dashboard-training home-evidence-insights home-lab-history home-useful-render integrated-review lab-consumer-consistency lab-history-conflicts lab-shared-reading nutrition-archive nutrition-history-access nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-reviewed-integration personal-goals-preservation steps-evidence training-comparability training-phase-label training-session-summary training-session-summary-view water-reference-consumers; do
+          for test in source-window-service source-window-selection lab-visual-context exercise-history-reading evolution-body-chart evolution-access lab-history-access care-nutrition-status dashboard-changes body-interval-model body-interval-view calendar-report-model calendar-report-view consumer-health-copy documentary-numeric-reading documentary-water-consumers documented-nutrition-plan documented-water-reference evidence-insights evolution-period-contract evolution-product final-evolution health-dashboard-body health-dashboard-context health-dashboard-empty-history health-dashboard-guidance health-dashboard-labs health-dashboard-model health-dashboard-render health-dashboard-training home-evidence-insights home-lab-history home-useful-render integrated-review lab-consumer-consistency lab-history-conflicts lab-shared-reading nutrition-archive nutrition-history-access nutrition-plan-comparison nutrition-plan-data nutrition-plan-view nutrition-reviewed-integration personal-goals-preservation steps-evidence training-comparability training-phase-label training-session-summary training-session-summary-view water-reference-consumers; do
             node "$TESTDIR/${test}-test.mjs"
           done
       - name: Install pinned browser runtime
@@ -58,6 +58,11 @@ jobs:
       - name: Verify discoverable laboratory search and history
         if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/lab-history-access-browser.mjs
+      - name: Verify readable laboratory scale and reference context
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        env:
+          LTS_HEALTH_BASE_URL: http://127.0.0.1:4175/v2/
+        run: node preview/compact-evidence/tests/lab-visual-context-browser.mjs
       - name: Preserve existing input-validation and login-interruption tests
         run: |
           node v2/write-integrity-smoke.mjs
@@ -72,7 +77,8 @@ jobs:
             artifacts/deployed-public-login-*.png
             dashboard-changes-visual/*.png
             source-window-visual/*
-            evolution-access-visual/*.png
+            evolution-access-visual/*
             lab-history-access-visual/*
+            lab-visual-context-evidence/*
           if-no-files-found: error
           retention-days: 7

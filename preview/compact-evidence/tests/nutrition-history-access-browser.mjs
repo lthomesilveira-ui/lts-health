@@ -19,12 +19,15 @@ const attr=(name,value)=>`[${name}=${JSON.stringify(value)}]`;
 const writeResults=()=>writeFileSync(`${dir}/results.json`,JSON.stringify({syntheticOnly:true,today:HISTORY_TODAY,fixture:{dailyDates:f.historicalDays,historicalMeals:f.historicalMeals,missingYear:'2022',allNutritionRows:f.data.nutrition.length,allMealRows:f.data.meals.length},results},null,2));
 
 async function stable(page,route='nutricao'){
-  await page.evaluate(()=>{window.__historyStableRoot=null;window.__historyStableFrames=0;});
+  // A ready-domain refresh can still have a scheduled main/controller render.
+  // Observe root identity and layout beyond the controller's 250 ms cycle.
+  await page.evaluate(()=>{window.__historyStableRoot=null;window.__historyStableGeometry=null;window.__historyStableSince=0;});
   await page.waitForFunction(route=>{
     const root=document.querySelector(route==='nutricao'?'.ltsNutritionProduct':route==='timeline'?'.timelineGroups':'[data-health-dashboard]');
     if(!root||location.hash!==`#${route}`||document.querySelector('#screenHost .loadingState'))return false;
-    if(window.__historyStableRoot!==root){window.__historyStableRoot=root;window.__historyStableFrames=0;}
-    return ++window.__historyStableFrames>=3;
+    const geometry=[root.clientWidth,root.scrollWidth,root.clientHeight,root.scrollHeight].join(','),now=performance.now();
+    if(window.__historyStableRoot!==root||window.__historyStableGeometry!==geometry){window.__historyStableRoot=root;window.__historyStableGeometry=geometry;window.__historyStableSince=now;return false;}
+    return now-window.__historyStableSince>=350;
   },route);
 }
 async function stateSelection(page){return page.evaluate(async()=>{const{state}=await import('./src/core.js');return {source:state.ui.homeNutritionSource,date:state.ui.nutritionDate,year:state.ui.nutritionYear,month:state.ui.nutritionMonth,period:state.ui.nutritionPeriod,status:{...state.domainStatus}};});}
@@ -86,10 +89,15 @@ async function quality(page,label,{archive=true}={}){
   return measurement;
 }
 async function tile(page,name,target){
+  const root=await page.locator('#screenHost > :first-child').elementHandle();
+  assert.ok(root,`${name}: a real screen root exists before scrolling`);
   await target.evaluate(element=>element.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
-  const visible=await target.evaluate(element=>{const rect=element.getBoundingClientRect(),nav=document.querySelector('#mobileNav'),navRect=nav?.getBoundingClientRect(),bottom=nav?.checkVisibility({checkVisibilityCSS:true})?Math.min(innerHeight,navRect.top):innerHeight;return {top:rect.top,bottom:rect.bottom,left:rect.left,right:rect.right,width:innerWidth,visibleBottom:bottom,hostScroll:document.querySelector('#screenHost')?.scrollTop,windowScroll:scrollY};});
+  const visible=await target.evaluate((element,settledRoot)=>{const rect=element.getBoundingClientRect(),nav=document.querySelector('#mobileNav'),navRect=nav?.getBoundingClientRect(),bottom=nav?.checkVisibility({checkVisibilityCSS:true})?Math.min(innerHeight,navRect.top):innerHeight;return {rootUnchanged:settledRoot===document.querySelector('#screenHost > :first-child'),top:rect.top,bottom:rect.bottom,left:rect.left,right:rect.right,width:innerWidth,visibleBottom:bottom,hostScroll:document.querySelector('#screenHost')?.scrollTop,windowScroll:scrollY};},root);
+  assert.equal(visible.rootUnchanged,true,`${name}: root remains identical between scroll and measurement`);
   assert.ok(visible.top>=-1&&visible.bottom<=visible.visibleBottom+1&&visible.left>=-1&&visible.right<=visible.width+1,`${name}: actual scroll target must be wholly visible ${JSON.stringify(visible)}`);
   await page.screenshot({path:`${dir}/${name}.png`,animations:'disabled'});
+  assert.ok(await page.evaluate(root=>root===document.querySelector('#screenHost > :first-child'),root),'scrolling and capture do not replace the settled screen');
+  await root.dispose();
   writeFileSync(`${dir}/${name}-viewport.json`,JSON.stringify(visible,null,2));
 }
 async function capture(page,name){

@@ -1,7 +1,7 @@
 import {labResultReading,compareLabResults,knownLabMetadata,labHistoryConflicts} from './health-dashboard-labs.js';
 import {selectedCalendar} from './home-period-model.js';
 import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
-import {validDay,pageOf,pager,searchField,periodControl,seriesWindow,pointChart,emptyCard,errorCard,failed,differenceText} from './history-tools.js';
+import {validDay,pageOf,pager,searchField,periodControl,emptyCard,errorCard,failed} from './history-tools.js';
 
 const origin=row=>String(row?.laboratory||row?.source||row?.source_file||'').trim();
 const unit=row=>String(row?.unit||'').trim();
@@ -103,6 +103,57 @@ export function labCohortComparison(cohort){
   }
   return {...compareLabResults(last,first),first,last};
 }
+// Laboratory-only visual scale. Shared clinical eligibility remains unchanged.
+// A band describes one finite interval printed in every result, not a target.
+// Partial, conditional, one-sided or incompatible references never become a band.
+export function labChartModel(cohort){
+  const comparison=labCohortComparison(cohort);
+  const points=(cohort?.rows||[]).map(row=>({row,date:validDay(row.collection_date),value:labResultReading(row).exactValue}))
+    .filter(point=>point.date&&point.value!=null).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!points.length)return {points,comparison,band:null,axis:null};
+  const readings=points.map(point=>labResultReading(point.row));
+  const complete=points.length===(cohort?.all||[]).length&&comparison.comparable&&comparison.rangeComparable;
+  const bounded=readings.every(reading=>reading.interval&&Number.isFinite(reading.interval.lower)&&Number.isFinite(reading.interval.upper)&&reading.interval.lower<reading.interval.upper);
+  const equal=readings.slice(1).every((reading,index)=>compareLabResults(points[index+1].row,points[index].row).rangeComparable);
+  const band=complete&&bounded&&equal?{...readings[0].interval}:null;
+  const values=points.map(point=>point.value);
+  const low=Math.min(...values,...(band?[band.lower]:[])),high=Math.max(...values,...(band?[band.upper]:[]));
+  // Small movements must not fill the whole plot. Include the verified report
+  // range when possible; otherwise retain at least 10% of the value magnitude.
+  // Do not force a zero baseline or imply that the displayed scale is a goal.
+  const magnitude=Math.max(Math.abs(low),Math.abs(high)),span=Math.max(high-low,magnitude?magnitude*.1:1);
+  const center=low+(high-low)/2,min=center-span*.6,max=center+span*.6;
+  const digits=Math.min(20,Math.max(1,Math.ceil(-Math.log10(span/4))));
+  return {points,comparison,band,axis:{min,max,ticks:[max,center,min],digits}};
+}
+const labChartValue=(value,u)=>`${Number(value).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:20})}${u?` ${u}`:''}`;
+const labDeltaText=(value,u)=>`${value>0?'+':''}${Number(value).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:20})}${u?` ${u==='%'?'p.p.':u}`:''}`;
+function labSeriesDetails(cohort){
+  return `<details class="ltsLabSeriesDetails" id="productLabMethodDetails"><summary>Método e contexto</summary><dl class="ltsLabSeriesContext" id="productLabSeriesContext"><div><dt>Laboratório</dt><dd>${esc(cohort?.origin||'Não informado')}</dd></div><div><dt>Unidade</dt><dd>${esc(cohort?.unit||'Não informada')}</dd></div><div><dt>Método registrado</dt><dd>${esc(cohort?.method||'Não informado')}</dd></div></dl></details>`;
+}
+export function labPointChart(cohort,{label='Evolução',selected=null}={}){
+  const m=labChartModel(cohort),clean=m.points,u=cohort?.unit||'';
+  if(!clean.length)return `${emptyCard('Não há pontos numéricos exatos nesta série e período. Os resultados continuam disponíveis no histórico.')}${labSeriesDetails(cohort)}`;
+  const {min,max,ticks,digits}=m.axis,w=660,h=210,l=12,r=12,t=12,b=12;
+  const time=point=>Date.parse(`${point.date}T12:00:00Z`),start=time(clean[0]),end=time(clean.at(-1));
+  const x=point=>start===end?w/2:l+(time(point)-start)/(end-start)*(w-l-r),y=value=>t+(max-value)/(max-min)*(h-t-b);
+  const index=selected!=null&&Number.isInteger(Number(selected))&&Number(selected)>=0&&Number(selected)<clean.length?Number(selected):clean.length-1;
+  const focus=clean[index],line=m.comparison.comparable&&clean.length>=2?clean.map((point,i)=>`${i?'L':'M'}${x(point).toFixed(2)} ${y(point.value).toFixed(2)}`).join(' '):'';
+  const endpoints=clean.length>1?[[clean[0],'Primeiro ponto'],[clean.at(-1),'Último ponto']]:[[clean[0],'Coleta disponível']];
+  const reference=m.band?`<div class="ltsLabReferenceLegend" data-lab-reference-band><span aria-hidden="true"></span><div><b>Faixa do laudo · ${esc(m.band.reference)}</b><small>Mesma faixa e unidade em todas as coletas exibidas. Não é uma meta individual.</small></div></div>`:'<p class="ltsLabScaleNote">Sem faixa de referência comum validada para sombrear. Consulte a referência original de cada coleta.</p>';
+  return `<div class="ltsDepthChart ltsLabTrendPlot" data-chart-scope="productLab" data-lab-axis-min="${min}" data-lab-axis-max="${max}">
+    <div class="ltsLabEndpoints">${endpoints.map(([point,title])=>`<div><span>${title}</span><b>${esc(labChartValue(point.value,u))}</b><time datetime="${point.date}">${esc(fmtDate(point.date))}</time></div>`).join('')}</div>
+    ${reference}
+    <div class="ltsDepthPlot"><div class="ltsDepthScale">${ticks.map(value=>`<span>${fmtNum(value,digits)}</span>`).join('')}</div><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${esc(label)}; ${clean.length} pontos; ${esc(u)}; escala de ${fmtNum(min,digits)} a ${fmtNum(max,digits)}${m.band?`; faixa do laudo: ${esc(m.band.reference)}`:''}">
+      ${m.band?`<rect class="ltsLabReferenceBand" x="${l}" y="${y(m.band.upper).toFixed(2)}" width="${w-l-r}" height="${(y(m.band.lower)-y(m.band.upper)).toFixed(2)}"/><path class="ltsLabReferenceBounds" d="M${l} ${y(m.band.upper).toFixed(2)}H${w-r}M${l} ${y(m.band.lower).toFixed(2)}H${w-r}"/>`:''}
+      <path class="ltsDepthGrid" d="${ticks.map(value=>`M${l} ${y(value).toFixed(2)}H${w-r}`).join(' ')}"/>${line?`<path class="ltsDepthLine" d="${line}"/>`:''}${clean.map((point,i)=>`<circle class="${i===index?'selected':''}" cx="${x(point).toFixed(2)}" cy="${y(point.value).toFixed(2)}" r="${i===index?5:3}"><title>${esc(fmtDate(point.date))}: ${esc(labChartValue(point.value,u))}</title></circle>`).join('')}</svg></div>
+    <div class="ltsDepthAxis"><span>${esc(fmtDate(clean[0].date))}</span><b>${esc(u)}</b><span>${esc(fmtDate(clean.at(-1).date))}</span></div>
+    ${labSeriesDetails(cohort)}
+    <p class="ltsLabScaleNote">Escala ajustada aos valores${m.band?' e à faixa do laudo':''}. O eixo não precisa começar em zero. A altura da curva não indica melhora ou piora.</p>
+    <div class="ltsPointReadout"><label class="ltsField">Consultar ponto<select id="productLabPoint" data-depth-field="productLabPoint">${clean.map((point,i)=>`<option value="${i}" ${i===index?'selected':''}>${esc(fmtDate(point.date))}</option>`).join('')}</select></label><p role="status"><b>${esc(labChartValue(focus.value,u))}</b><span>${esc(fmtDate(focus.date))} · ${esc(focus.row.reference_range?`Referência da coleta: ${focus.row.reference_range}`:'Referência não informada')}</span><span>Resultado original: ${esc(labResultText(focus.row))}</span></p></div>
+  </div>`;
+}
+
 export function labComparisonText(reason){
   return ({
     intervening_collection:'Há uma coleta intermediária em outro contexto. Os valores permanecem separados para não pular esse resultado.',
@@ -158,23 +209,22 @@ export function renderProductLabs(){
   const windowControl=`${m.asOf?`<p class="ltsDepthNote" data-lab-asof>Consulta até ${esc(fmtDate(m.asOf))}, data da leitura selecionada. <button type="button" data-lab-clear-asof>Ver histórico sem este corte</button></p>`:''}<div class="ltsLabsWindow"><span class="ltsLabsWindowLabel">Período de Exames</span>${periodControl('productLabPeriod',m.period)}<p class="ltsDepthNote">${esc(fmtDate(m.bounds.start))}–${esc(fmtDate(m.bounds.end))} · ${m.asOf?'corte da leitura selecionada.':'Período próprio, independente da Visão geral.'}</p></div>`;
   if(!m.item)return `<section class="ltsLabsV2">${header()}${windowControl}${emptyCard('Nenhum resultado laboratorial nesta janela. Selecione Histórico para consultar coletas anteriores.')}</section>`;
   const group=m.item.group,c=m.cohort,comparison=labCohortComparison(c),first=comparison.first,last=comparison.last;
-  const change=comparison.comparable?`${fmtDate(first.collection_date)} → ${fmtDate(last.collection_date)}: ${differenceText(labResultReading(last).exactValue,labResultReading(first).exactValue,c.unit,2)}`:labComparisonText(comparison.comparisonReason);
-  const shortcuts=(state.ui.productLabQuery?m.matches:m.ranked.map(i=>i.group)).slice(0,8);
+  const change=comparison.comparable?`${fmtDate(first.collection_date)} → ${fmtDate(last.collection_date)}: ${labDeltaText(comparison.delta,c.unit)}`:labComparisonText(comparison.comparisonReason);
+  const shortcuts=(state.ui.productLabQuery?m.matches:m.ranked.map(i=>i.group)).filter(g=>g.key!==group.key).slice(0,8);
   const latestValue=m.latest?labResultText(m.latest):m.latestRows.length===1?'Resultado com registros divergentes':`${m.latestRows.length} resultados na mesma data`;
   return `<section class="ltsLabsV2">
     ${header()}<nav class="ltsLabsJump" aria-label="Navegar pelos exames"><button type="button" data-ux-scroll="productLabsTrend">Gráfico e evolução</button><button type="button" data-ux-scroll="productLabsHistory">Histórico do marcador</button><button type="button" data-ux-scroll="productLabsCollection">Coletas completas</button></nav>${windowControl}
     <section class="ltsSection ltsLabsMarkers"><div class="ltsSectionHead"><div><span>Explorar</span><h2>Todos os marcadores</h2></div><small>${m.groups.length} marcadores · ${m.rows.length} resultados</small></div>
       ${searchField('productLabQuery',state.ui.productLabQuery,'Nome do marcador','Buscar em todos os marcadores')}
       <label class="ltsField ltsSourceSelect">Marcador · ${m.matches.length} encontrados<select id="productLabMarkerSelect" data-depth-field="productLabMarkerSelect"><option value="">Selecione um marcador</option>${m.matches.map(g=>`<option value="${esc(g.key)}" ${g.key===group.key?'selected':''}>${esc(g.label)} (${g.rows.length})</option>`).join('')}</select></label>
-      <div class="ltsLabsMarkerRail">${shortcuts.map(g=>`<button type="button" data-lab-marker="${esc(g.key)}" class="${g.key===group.key?'active':''}" aria-pressed="${g.key===group.key}"><b>${esc(g.label)}</b><small>${g.rows.length} ${g.rows.length===1?'resultado':'resultados'}</small></button>`).join('')||emptyCard('Nenhum marcador corresponde à busca. Apague a busca para ver todos.')}</div>
+      <div class="ltsLabsMarkerRail">${shortcuts.map(g=>`<button type="button" data-lab-marker="${esc(g.key)}" class="${g.key===group.key?'active':''}" aria-pressed="${g.key===group.key}"><b>${esc(g.label)}</b><small>${g.rows.length} ${g.rows.length===1?'resultado':'resultados'}</small></button>`).join('')||(!m.matches.length?emptyCard('Nenhum marcador corresponde à busca. Apague a busca para ver todos.'):'')}</div>
       <p class="ltsDepthNote">O seletor inclui os marcadores desta janela, inclusive resultados textuais e marcadores com uma única coleta. Selecione Histórico para acessar outras datas.</p>
     </section>
 
     <section class="ltsSection ltsLabsTrend" id="productLabsTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2 tabindex="-1">${esc(group.label)}</h2></div></div>
-      <label class="ltsField ltsSourceSelect">Origem, unidade e método da série<select id="productLabCohort" data-depth-field="productLabCohort">${m.item.cohorts.map(co=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} · ${esc(co.method||'Método não informado')} (${co.all.length})</option>`).join('')}</select></label>
-
-      <div class="ltsHistoryContext"><b>Diferença na série selecionada</b>${esc(change)}</div>
-      <div class="ltsLabsChart">${pointChart(m.recent.map(r=>({date:r.collection_date,value:r.result_numeric,context:r.reference_range?`Referência da coleta: ${r.reference_range}`:'Referência não informada'})),{unit:c.unit,label:group.label,scope:'productLab',selected:state.ui.productLabPoint,connect:comparison.comparable})}</div>
+      <label class="ltsField ltsSourceSelect">Série · laboratório e unidade<select id="productLabCohort" data-depth-field="productLabCohort" aria-describedby="productLabSeriesContext">${m.item.cohorts.map((co,index)=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${index+1}. ${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} (${co.all.length})</option>`).join('')}</select></label>
+      <div class="ltsHistoryContext ltsLabDelta"><b>Diferença na série selecionada</b><span>${esc(change)}</span>${comparison.comparable?'<small>Diferença numérica entre coletas; não é uma avaliação clínica.</small>':''}</div>
+      <div class="ltsLabsChart">${labPointChart(c,{label:group.label,selected:state.ui.productLabPoint})}</div>
       <p class="ltsDepthNote">${m.recent.length} pontos exibidos de ${c.all.length} resultados desta série. Os demais resultados permanecem no histórico, com suas notas, limites e referências originais. A janela usa o período de Exames; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>
     </section>
 

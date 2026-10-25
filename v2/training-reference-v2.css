@@ -701,3 +701,195 @@
   }
 }
 
+
+/* Exercise history leads with the recorded session, not an empty chart. */
+.ltsTrainingV2[data-training-view="exercise"] .ltsRefTrainHeader h1 {
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.ltsExerciseHistory .ltsExerciseHistoryOverview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 4px 0 12px;
+}
+.ltsExerciseHistoryOverview h2 {
+  margin: 0;
+  font-size: 16px;
+  color: #223b50;
+}
+.ltsExerciseHistoryOverview > span,
+.ltsExerciseHistory .ltsExerciseSessionMeta {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #596d7c;
+}
+.ltsExerciseHistory .ltsExerciseSession {
+  min-width: 0;
+  padding: 14px 16px;
+  overflow-wrap: anywhere;
+}
+.ltsExerciseHistory .ltsExerciseSessionLatest {
+  border-color: #8ab8aa;
+  border-left: 3px solid #397e68;
+}
+.ltsExerciseHistory .ltsExerciseSession header {
+  align-items: center;
+  gap: 12px;
+}
+.ltsExerciseHistory .ltsExerciseSession header > div {
+  min-width: 0;
+}
+.ltsExerciseHistory .ltsExerciseSession time {
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.ltsExerciseHistory .ltsExerciseLatestLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #36745f;
+  letter-spacing: .025em;
+}
+.ltsExerciseHistory .ltsExerciseSessionMeta {
+  display: grid;
+  gap: 2px;
+  margin: 5px 0 10px;
+}
+.ltsExerciseHistory .ltsExerciseSetHeading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  border-top: 1px solid #e4ebe8;
+  padding: 10px 0 4px;
+  color: #344d45;
+  font-size: 12px;
+}
+.ltsExerciseHistory .ltsExerciseSetHeading > span {
+  color: #62766e;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets li {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #edf1ef;
+  line-height: 1.45;
+}
+.ltsExerciseHistory .ltsExerciseSetStep {
+  padding-top: 1px;
+  color: #5b7165;
+  font-size: 12px;
+  font-weight: 650;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets b,
+.ltsExerciseHistory .ltsExerciseSetReps {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: #213c32;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets small {
+  display: block;
+  margin-top: 2px;
+  color: #64766e;
+  font-size: 11px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 8px 14px;
+  margin-top: 12px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot {
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px 2px;
+  border-radius: 9px;
+  background: #f5f8f6;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot figcaption {
+  font-size: 11px;
+  color: #5b7165;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot figcaption span {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot svg {
+  display: block;
+  width: 100%;
+  max-height: 96px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot circle {
+  fill: #397e68;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot text {
+  font-size: 11px;
+  fill: #2b5947;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot .ltsExercisePointStep {
+  font-size: 10px;
+  fill: #62766e;
+}
+.ltsExerciseHistory .ltsExerciseOriginal,
+.ltsExerciseHistory .ltsExerciseComparison {
+  margin-top: 10px;
+  min-width: 0;
+}
+.ltsExerciseHistory .ltsExerciseOriginal summary,
+.ltsExerciseHistory .ltsExerciseComparison summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 12px 0;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.5;
+  color: #325d55;
+  cursor: pointer;
+}
+.ltsExerciseHistory .ltsExerciseOriginal p {
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+.ltsExerciseHistory .ltsExerciseComparison {
+  border-top: 1px solid #dce5e0;
+}
+.ltsExerciseHistory .ltsExerciseComparison > .ltsSourceSelect {
+  max-width: 280px;
+}
+.ltsExerciseHistory .ltsExerciseCaution {
+  margin: 8px 0;
+  color: #647266;
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 390px) {
+  .ltsExerciseHistory .ltsExerciseSession { padding: 12px; }
+  .ltsExerciseHistory .ltsExerciseRecordedSets li { grid-template-columns: 60px minmax(0, 1fr); }
+  .ltsExerciseHistory .ltsExerciseRecordedSets b,
+  .ltsExerciseHistory .ltsExerciseSetReps { font-size: 14px; }
+}
+
+.ltsExerciseHistory .ltsExerciseUnassigned {
+  margin-top: 12px;
+  border-top: 1px solid #e6ddd1;
+}
+.ltsExerciseHistory .ltsExerciseUnassigned h3 {
+  margin: 12px 0 4px;
+  font-size: 13px;
+  color: #735b3e;
+}
