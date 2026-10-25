@@ -3,6 +3,7 @@ import {pathToFileURL} from 'node:url';
 import {healthDashboardModel} from '../src/health-dashboard-model.js';
 import {dashboardContext} from '../src/health-dashboard-context.js';
 import {dashboardGuidance} from '../src/health-dashboard-guidance.js';
+import {sourceDisplayLabel} from '../src/source-display.js';
 
 // Shared deterministic synthetic fixture. This module performs no I/O when
 // imported by the browser suite. No user records, accounts or credentials.
@@ -225,6 +226,31 @@ export async function runRenderTests(){
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));
+  const {periodReadabilityFixture}=await import('./period-readability-fixture.mjs'),{htmlText:visibleHtmlText}=await import('./consumer-language-html.mjs');
+  for(const sparse of [false,true]){
+    const f=periodReadabilityFixture({sparse}),before=structuredClone(f.data),d=healthDashboardModel(f.data,f.status,{},f.today),html=renderHealthDashboard(f.data,f.status,{},f.today);
+    assert.equal((html.match(/class="healthPeriodContext"/g)||[]).length,1,'period calculation context appears once');
+    assert.match(visibleHtmlText(html),/sem somar origens.*revisão.*fora da média/);
+    for(const m of d.metrics){
+      const content=card(html,m.key),top=primary(content);
+      assert.doesNotMatch(top,/healthAggregation|healthMetricPeriod|healthSourceWindow|Hoje parcial/,'period source controls and repeated methodology are secondary');
+      assert.ok(top.includes(sourceDisplayLabel(m.source,m.sources)),'full origin identity stays readable');
+      assert.match(top,/Automática/);assert.match(top,new RegExp(`${m.count}/${m.expectedDays} dias usados na média`));
+      assert.match(content,/<details[\s\S]*data-dashboard-source=/,'the source picker remains in the card disclosure');
+    }
+    assert.match(primary(card(html,'activeEnergy')),/Ainda não confirmado/);
+    assert.match(primary(card(html,'steps')),/Parcial · 1 dia em revisão\. 1 dia divergente/);
+    assert.doesNotMatch(primary(card(html,'steps')),/Resumo parcial|valores fracionados ou inválidos/,'specific steps warning replaces repeated generic/method text');
+    assert.match(card(html,'steps'),/valores fracionados ou inválidos/,'full steps limitation remains available');
+    assert.match(primary(card(html,'water')),/Último registro desta origem/);
+    for(const source of [d.metricsByKey.protein.sources.find(source=>source.label==='Outro diário sintético').key,'synthetic-missing-origin']){
+      const emptyCard=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{protein:source}},f.today),'protein'),visible=visibleHtmlText(emptyCard);
+      assert.match(visible,/Escolhida por você/);assert.match(visible,/origem com registros, não somadas/);assert.match(visible,/Ver fontes e detalhes/);
+      assert.match(emptyCard,/<summary><span class="healthPeriodSourceException">/,'the visible empty-source warning itself is the native disclosure action');
+      assert.match(visible,/Sem valor utilizável|Origem escolhida indisponível; nenhuma outra usada/);
+    }
+    assert.deepEqual(f.data,before,'period presentation never mutates observations');
+  }
   assert.deepEqual(state,stateBefore,'pure renderer never writes shared application state');
   console.log('Health dashboard render: seven exact metrics, all windows, day/partial, source isolation, latest dates, sessions/groups, labs, protocols, empty/error states, escaping and pure inputs passed.');
 }

@@ -21,7 +21,7 @@ state.errors.labs='test';html=renderProductLabs();assert.ok(html.includes('ltsDe
 
 const body=Array.from({length:30},(_,i)=>({source_record_id:`body-${i}`,measured_at:`2025-${String(Math.floor(i/28)+1).padStart(2,'0')}-${String(i%28+1).padStart(2,'0')}`,source:'Origem',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30}));
 state.data={body,segmental:[]};state.ui={};state.domainStatus={body:'ready',segmental:'ready'};
-let m=compositionModel();assert.equal(m.period,'all');assert.equal(m.recent.length,30,'the body domain defaults to its complete observed history');assert.equal(m.history.total,30);
+let m=compositionModel();assert.equal(m.period,'365');assert.equal(m.recent.length,0,'the recent-year default does not substitute older measurements');assert.equal(m.all.length,30);assert.equal(m.history.total,30,'the complete archive remains available despite the recent default');
 for(const period of ['30','90']){state.ui.productCompositionPeriod=period;m=compositionModel();assert.equal(m.recent.length,0,'old measurements stay outside an explicitly chosen recent window');assert.equal(m.history.total,30);}
 setGlobalPeriod('all');assert.equal(compositionModel().period,'90','Home cannot overwrite the selected body window');assert.equal(compositionModel().recent.length,0);
 state.ui.productCompositionPeriod='all';m=compositionModel();assert.equal(m.recent.length,30);

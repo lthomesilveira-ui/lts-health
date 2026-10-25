@@ -1,5 +1,5 @@
 import {state,esc,fmtDate,fmtNum,num,norm,workoutRows,exercisesFor,setsFor} from './core.js';
-import {pageOf,pager,searchField,yearFilter,years,validDay,pointChart,emptyCard,errorCard,failed,sourceLabel} from './history-tools.js';
+import {pageOf,pager,searchField,yearFilter,years,validDay,pointChart,emptyCard,errorCard,failed} from './history-tools.js';
 import {trainingSetCounts,setStepLabel} from './training-session.js';
 
 export function trainingHistoryModel(){
@@ -131,24 +131,38 @@ function renderSessionSeries(item){
     }).join('')}</svg>`).join('')}</figure>`;
   }).join('')}</div>`;
 }
-function renderRecordedSets(sets,allSets,sources){
-  return `<ol class="ltsExerciseRecordedSets">${sets.map(set=>`<li><span class="ltsExerciseSetStep">${esc(setStepLabel(allSets,allSets.indexOf(set)))}</span><div><b>${esc(loadText(set))}</b><span class="ltsExerciseSetReps"> × ${esc(set.reps_raw??set.reps_numeric??'Repetições não informadas')}</span><small>${esc(setFlags(set).join(' · '))}</small>${recordedText(set.source)&&sources.length>1?`<small>Origem: ${esc(set.source)}</small>`:''}</div></li>`).join('')}</ol>`;
+// Exact presentation aliases only. Original source identities are never
+// changed, combined, or treated as proof of import, authorship or verification.
+const exerciseSourceLabels=new Map([['user_detail','Registro de treino'],['lucas_app.jsx (SEED_TREINOS)','Registro de treino']]);
+const originalTrainingSource=row=>String(row?.source_name||row?.source||row?.laboratory||'Origem não informada');
+function exerciseSourceName(original,sources=[]){
+  const label=exerciseSourceLabels.get(original)||original.trim();
+  const peers=sources.filter(source=>(exerciseSourceLabels.get(source)||source.trim())===label);
+  return peers.length>1?`${label} ${peers.indexOf(original)+1}`:label;
 }
-function renderUnassignedSets(item){
+function renderOriginalSources(sources){
+  if(!sources.some(source=>exerciseSourceLabels.has(source)))return '';
+  return `<p>Identificação original das origens:</p><ul>${sources.map(source=>`<li><b>${esc(exerciseSourceName(source,sources))}</b>: ${esc(source)}</li>`).join('')}</ul>`;
+}
+function renderRecordedSets(sets,allSets,sources){
+  return `<ol class="ltsExerciseRecordedSets">${sets.map(set=>`<li><span class="ltsExerciseSetStep">${esc(setStepLabel(allSets,allSets.indexOf(set)))}</span><div><b>${esc(loadText(set))}</b><span class="ltsExerciseSetReps"> × ${esc(set.reps_raw??set.reps_numeric??'Repetições não informadas')}</span><small>${esc(setFlags(set).join(' · '))}</small>${recordedText(set.source)&&sources.length>1?`<small>Origem: ${esc(exerciseSourceName(originalTrainingSource(set),sources))}</small>`:''}</div></li>`).join('')}</ol>`;
+}
+function renderUnassignedSets(item,sources){
   if(!item.unassignedSets.length)return '';
-  return `<section class="ltsExerciseUnassigned"><h3>Registros originais não atribuídos</h3><p class="ltsExerciseCaution">Estes registros foram preservados, mas não entram nas contagens nem nos gráficos desta sessão.</p>${item.unassignedSets.map(({set,reason})=>`<div>${renderRecordedSets([set],item.originalSets,[])}<p class="ltsExerciseCaution">${esc(reason)} Origem: ${esc(sourceLabel(set))}</p>${recordedText(set.notes)?`<p class="ltsPreservedText">${esc(set.notes)}</p>`:''}</div>`).join('')}</section>`;
+  return `<section class="ltsExerciseUnassigned"><h3>Registros originais não atribuídos</h3><p class="ltsExerciseCaution">Estes registros foram preservados, mas não entram nas contagens nem nos gráficos desta sessão.</p>${item.unassignedSets.map(({set,reason})=>`<div>${renderRecordedSets([set],item.originalSets,[])}<p class="ltsExerciseCaution">${esc(reason)} Origem: ${esc(exerciseSourceName(originalTrainingSource(set),sources))}</p>${recordedText(set.notes)?`<p class="ltsPreservedText">${esc(set.notes)}</p>`:''}</div>`).join('')}</section>`;
 }
 function renderOccurrence(item,index,page){
   const {exercise,workout,sets,ambiguousIdentity}=item,counts=trainingSetCounts(sets),latest=index===0&&page.page===1;
-  const sources=[...new Set([sourceLabel(exercise),...sets.map(sourceLabel)].filter(value=>value&&value!=='Origem não informada'))];
-  if(!sources.length)sources.push(sourceLabel(workout));
+  const sources=[...new Set([originalTrainingSource(exercise),...sets.map(originalTrainingSource)].filter(value=>value.trim()&&value.trim()!=='Origem não informada'))];
+  if(!sources.length)sources.push(originalTrainingSource(workout));
+  const allSources=[...new Set([...sources,...item.unassignedSets.map(({set})=>originalTrainingSource(set))])],sourceDetails=renderOriginalSources(allSources);
   const notes=[...new Set([recordedText(exercise.notes),...sets.map(set=>recordedText(set.notes))].filter(Boolean))];
   const original=recordedText(exercise.source_text);
   return `<article class="ltsExerciseSession${latest?' ltsExerciseSessionLatest':''}"><header><div>${latest?'<span class="ltsExerciseLatestLabel">Último registro</span>':''}<time>${esc(fmtDate(workout.workout_date))}</time></div><button class="ltsDepthLink" data-depth-workout="${esc(workout.source_record_id)}">Abrir sessão ›</button></header>
-    <div class="ltsExerciseSessionMeta"><span>${esc(exercise.machine||'Equipamento não informado')} · ${esc(workout.location||'Local não informado')}</span><span>Origem: ${esc(sources.join(' · '))}</span></div>
-    ${sets.length?`<div class="ltsExerciseSetHeading"><b>${counts.primary} ${counts.primary===1?'série registrada':'séries registradas'}${counts.extensions?` + ${counts.extensions} prolong.`:''}</b><span>Carga × repetições</span></div>${renderRecordedSets(sets,item.originalSets,sources)}${renderSessionSeries(item)}`:`<p class="ltsExerciseDetailsMissing">${ambiguousIdentity?'Identidade do exercício ambígua; séries não atribuídas automaticamente.':item.invalidDate?'A data deste registro não permite vincular as séries com segurança.':original?esc(original):'Séries detalhadas não informadas.'}</p>`}
-    ${renderUnassignedSets(item)}
-    ${notes.length||original&&sets.length?`<details class="ltsExerciseOriginal" data-disclosure="exercise-original-${esc(exercise.source_record_id)}-${page.start+index}"><summary>Observações e registro original</summary>${notes.map(note=>`<p>${esc(note)}</p>`).join('')}${original?`<p class="ltsPreservedText">${esc(original)}</p>`:''}</details>`:''}
+    <div class="ltsExerciseSessionMeta"><span>${esc(exercise.machine||'Equipamento não informado')} · ${esc(workout.location||'Local não informado')}</span><span>Origem: ${esc(sources.map(source=>exerciseSourceName(source,allSources)).join(' · '))}</span></div>
+    ${sets.length?`<div class="ltsExerciseSetHeading"><b>${counts.primary} ${counts.primary===1?'série registrada':'séries registradas'}${counts.extensions?` + ${counts.extensions} prolong.`:''}</b><span>Carga × repetições</span></div>${renderRecordedSets(sets,item.originalSets,allSources)}${renderSessionSeries(item)}`:`<p class="ltsExerciseDetailsMissing">${ambiguousIdentity?'Identidade do exercício ambígua; séries não atribuídas automaticamente.':item.invalidDate?'A data deste registro não permite vincular as séries com segurança.':original?esc(original):'Séries detalhadas não informadas.'}</p>`}
+    ${renderUnassignedSets(item,allSources)}
+    ${notes.length||original&&sets.length||sourceDetails?`<details class="ltsExerciseOriginal" data-disclosure="exercise-original-${esc(exercise.source_record_id)}-${page.start+index}"><summary>Observações e registro original</summary>${sourceDetails}${notes.map(note=>`<p>${esc(note)}</p>`).join('')}${original?`<p class="ltsPreservedText">${esc(original)}</p>`:''}</details>`:''}
   </article>`;
 }
 function renderWorkingComparison(model){

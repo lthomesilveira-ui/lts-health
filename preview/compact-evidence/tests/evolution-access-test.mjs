@@ -8,6 +8,9 @@ const {exerciseDirectoryModel,renderExerciseDirectory,exerciseHistoryModel}=awai
 const {changesFixture}=await import('./dashboard-changes-fixture.mjs');
 const f=changesFixture();Object.assign(state.data,f.data);Object.assign(state.domainStatus,f.status);state.ui={homePeriod:'7'};
 state.data.body=Array.from({length:41},(_,i)=>({source_record_id:'observed-'+i,measured_at:`2026-${String(1+Math.floor(i/5)).padStart(2,'0')}-${String(i%5+1).padStart(2,'0')}`,source:'Synthetic report',device_name:null,weight_kg:90-i/10,body_fat_pct:20-i/20}));
+assert.equal(compositionModel().period,'365','Composition starts in its independent recent-year window');assert.equal(state.ui.productCompositionPeriod,undefined);
+for(const home of ['30','90','all']){setGlobalPeriod(home);assert.equal(compositionModel().period,'365','Home cannot overwrite the implicit Composition window');}
+state.ui.homePeriod='7';state.ui.productCompositionPeriod='all';
 assert.equal(compositionModel().period,'all');assert.equal(compositionModel().all.length,41);assert.equal(compositionModel().windowRows.length,41);assert.equal(compositionModel().source,'all');
 let html=renderProductComposition();assert.match(html,/41 medições no histórico/);assert.doesNotMatch(html,/class="ltsDepthLine"/);assert.match(html,/data-ux-scroll="productCompositionHistory"/);
 assert.equal(descriptiveBodyPoints(state.data.body,'weight_kg','2026-10-24').length,41);assert.ok(descriptiveBodyPoints(state.data.body,'weight_kg').every(p=>p.cohort===null));

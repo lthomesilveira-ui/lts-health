@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+const NativeDate=Date;globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:['2026-10-24T15:00:00Z']));}static now(){return NativeDate.parse('2026-10-24T15:00:00Z');}};
+globalThis.location={search:'?fixture=1'};
+const {state}=await import('../src/core.js');
+const {compositionModel,renderProductComposition}=await import('../src/composition-layout-v2.js');
+state.ui={};state.domainStatus.body='ready';
+state.data.body=[{source_record_id:'old',measured_at:'2021-03-20',source:'Synthetic old report',device_name:null,weight_kg:90},{source_record_id:'recent',measured_at:'2026-09-01',source:'Synthetic current report',device_name:null,weight_kg:86,body_fat_pct:18,skeletal_muscle_mass_kg:40}];
+let model=compositionModel(),html=renderProductComposition();
+assert.equal(model.period,'365');assert.equal(model.all.length,2);assert.equal(model.windowRows.length,1);
+assert.ok(html.indexOf('ltsCompositionHeroCompact')<html.indexOf('productCompositionTrend'));
+assert.ok(html.indexOf('<svg')<html.indexOf('id="productCompositionSource"'));
+assert.ok(html.indexOf('<svg')<html.indexOf('data-composition-overview'));
+assert.match(html,/86,0/);assert.match(html,/01\/09\/2026/);assert.match(html,/Synthetic current report/);
+assert.doesNotMatch(html,/class="ltsDepthLine"/);
+state.ui.productCompositionPeriod='all';assert.equal(compositionModel().windowRows.length,2);assert.match(renderProductComposition(),/20\/03\/2021/);
+state.ui={};state.data.body=state.data.body.slice(0,1);html=renderProductComposition();assert.equal(compositionModel().windowRows.length,0);assert.match(html,/histórico completo continua disponível/);assert.match(html,/20\/03\/2021/);assert.doesNotMatch(html,/<svg/,'an empty recent window never silently recenters to the old observation');
+console.log('Composition reading: recent default, full archive, chart before secondary context, original values and empty-window honesty pass.');

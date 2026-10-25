@@ -42,7 +42,7 @@ conflict.sourceMetrics=[100,900].map((value,i)=>({source_record_id:`synthetic-wa
 const conflictHtml=card(renderHealthDashboard(conflict,f.status,{},f.today),'water');
 assert.match(conflictHtml,/mais de um valor/);assert.match(conflictHtml,/100 mL/);assert.match(conflictHtml,/900 mL/);
 assert.match(conflictHtml,/0\/7 dias usados na média/);
-assert.match(primary(conflictHtml),/Registro adicional, ainda sem confirmação/);
+assert.match(primary(conflictHtml),/Ainda não confirmado/);
 const held=structuredClone(conflict);held.sourceMetrics=held.sourceMetrics.slice(0,1).map(row=>({...row,canonical_status:'held'}));
 assert.match(primary(card(renderHealthDashboard(held,f.status,{},f.today),'water')),/Registro com limitações/);
 assert.doesNotMatch(text(primary(conflictHtml)),/candidate|candidata|não validada/);

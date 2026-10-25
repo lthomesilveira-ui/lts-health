@@ -78,7 +78,8 @@ for(const [label,width,height] of [['desktop',1440,900],['tablet',900,900],['com
  await page.goBack();await page.waitForSelector('[data-reference-home]');assert.equal(await page.locator('#home-period-90').getAttribute('aria-pressed'),'true');
  // Home survives each return path; body and labs keep independent history windows.
  await page.locator('.refPanel.body>header [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2');
- assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','body opens full history independently');
+ assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="365"]').getAttribute('aria-pressed'),'true','body opens its recent-year window independently of Home');
+ await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsCompositionChart circle').count(),7,'the explicit full-history choice retains every original observation');
  await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').click();
  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="90"]').getAttribute('aria-pressed'),'true');
  assert.match(await page.locator('.ltsCompositionTrend').innerText(),new RegExp(date(89).split('-').reverse().join('/')));

@@ -18,6 +18,12 @@ async function stable(page,route='hoje'){
  await page.waitForFunction(selector=>{const root=document.querySelector(selector),now=performance.now();if(window.__windowRoot!==root){window.__windowRoot=root;window.__windowRootAt=now;return false;}return now-window.__windowRootAt>600;},route==='hoje'?'[data-health-dashboard]':'#calendarReport');
 }
 async function sourceKey(page,scope,label){return page.locator(`#${scope}-source-protein option`).evaluateAll((options,label)=>options.find(option=>option.textContent.startsWith(label+' ·'))?.value,label);}
+async function chooseDashboardSource(page,key,value){
+ const details=page.locator(`[data-disclosure="dashboard-metric-${key}"]`),wasOpen=await details.evaluate(element=>element.open);
+ if(!wasOpen)await details.locator(':scope > summary').click();
+ await page.locator(`#dashboard-source-${key}`).selectOption(value);await stable(page);
+ if(!wasOpen)await details.locator(':scope > summary').click();
+}
 async function geometry(page){return page.locator('.healthMetricGrid').evaluate(grid=>({columns:getComputedStyle(grid).gridTemplateColumns,cards:[...grid.querySelectorAll('[data-dashboard-card]')].map(card=>({key:card.dataset.dashboardCard,width:Math.round(card.getBoundingClientRect().width),height:Math.round(card.getBoundingClientRect().height)}))}));}
 async function quality(page,selector){
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no horizontal page overflow');
@@ -39,12 +45,12 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
    const dayNames=await page.locator('[data-dashboard-card] h2').allTextContents();assert.equal(dayNames.length,7);assert.deepEqual(new Set(await page.locator('[data-dashboard-card]').evaluateAll(cards=>cards.map(card=>card.dataset.dashboardCard))),new Set(['water','protein','energy','activeEnergy','totalEnergy','steps','sleep']));
    await quality(page,'[data-health-dashboard]');await page.screenshot({path:`${directory}/${engine}-${width}-day.png`});
    await page.locator('[data-dashboard-mode="period"]').click();await stable(page);await page.locator('#dashboard-period').selectOption('7');await stable(page);
-   const card=page.locator('[data-dashboard-card="protein"]');assert.match(await card.innerText(),/5\/7 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.locator('[data-source-window]').innerText(),/Origin B.*Automática/s);
+   const card=page.locator('[data-dashboard-card="protein"]');assert.match(await card.innerText(),/5\/7 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.locator('.healthPeriodSource').innerText(),/Origin B.*Automática/s);
    const originA=await sourceKey(page,'dashboard','Origin A'),originB=await sourceKey(page,'dashboard','Origin B');assert.ok(originA&&originB);
-   await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.match(await card.innerText(),/18\/90 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'100');assert.match(await card.locator('[data-source-window]').innerText(),/Origin A.*pode mudar/s);assert.match((await card.locator('#dashboard-source-protein option').allTextContents()).join(' '),/Origin B.*5\/90/s);
+   await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.match(await card.innerText(),/18\/90 dias usados/);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'100');assert.match(await card.locator('.healthPeriodSource').innerText(),/Origin A.*Automática/s);assert.match((await card.locator('#dashboard-source-protein option').allTextContents()).join(' '),/Origin B.*5\/90/s);
    await quality(page,'[data-health-dashboard]');await card.scrollIntoViewIfNeeded();await page.screenshot({path:`${directory}/${engine}-${width}-period90.png`});
    await page.locator('#dashboard-period').selectOption('7');await stable(page);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');
-   await page.locator('#dashboard-source-protein').selectOption(originB);await stable(page);await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.innerText(),/5\/90 dias usados/);assert.match(await card.locator('[data-source-window]').innerText(),/escolhida por você/);
+   await chooseDashboardSource(page,'protein',originB);await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.innerText(),/5\/90 dias usados/);assert.match(await card.locator('.healthPeriodSource').innerText(),/Escolhida por você/);
    // Calendar inherits explicit dashboard choice; never silently replaces it.
    await page.evaluate(()=>location.hash='#analise');await stable(page,'analise');
    const week=page.locator('[data-calendar-metric="protein"]');assert.match(await week.innerText(),/0\/7 dias encerrados/);assert.match(await week.innerText(),/Há registros em outra origem/);assert.match((await week.locator('#calendar-source-protein option').allTextContents()).join(' '),/Origin A.*7\/7/s);
@@ -52,7 +58,7 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
    await page.locator('#calendar-source-protein').selectOption('');await stable(page,'analise');assert.match(await week.innerText(),/7\/7 dias encerrados/);assert.equal(await week.locator('.ltsCalendarMetricValue').innerText(),'100 g');assert.match(await week.innerText(),/Origin A.*Automática/s);
    assert.match(await week.locator('.ltsCalendarComparison').innerText(),/100 g → 100 g/,'same-origin comparison, not pooled values');
    await week.locator('.ltsCalendarMetricValue').evaluate(element=>element.scrollIntoView({block:'center'}));await page.screenshot({path:`${directory}/${engine}-${width}-week12-18.png`});
-   await page.evaluate(()=>location.hash='#hoje');await stable(page);await page.locator('#dashboard-source-protein').selectOption('');await stable(page);await page.locator('[data-dashboard-mode="day"]').click();await stable(page);
+   await page.evaluate(()=>location.hash='#hoje');await stable(page);await chooseDashboardSource(page,'protein','');await page.locator('[data-dashboard-mode="day"]').click();await stable(page);
    assert.deepEqual(await geometry(page),baseline,'return to Dia preserves seven-card layout and dimensions');
    assert.equal(await page.locator('[data-dashboard-card] > .healthSourceWindow').count(),0);await quality(page,'[data-health-dashboard]');
    await page.locator('[data-disclosure="dashboard-metric-protein"] > summary').click();await stable(page);assert.match((await page.locator('#dashboard-source-protein option').allTextContents()).join(' '),/Origin B.*1\/1 dias/,'today value counts as one recorded day without entering means');
