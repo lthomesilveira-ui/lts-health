@@ -19,10 +19,12 @@ permissions:
   id-token: write
 concurrency:
   group: lts-health-real-auth-e2e-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   real-auth-e2e:
     runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +43,6 @@ jobs:
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
       - name: Obtain one-time audit token hash
         shell: bash
         run: |
