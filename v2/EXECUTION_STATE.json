@@ -49,25 +49,21 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CALENDAR-MACRONUTRIENTS-001",
-    "status": "done",
-    "goal": "Complete calendar reports with independently sourced carbohydrate, fat and fiber indicators, while preserving the approved Home and recording the completed native support submission.",
+    "id": "PKG-CALENDAR-HIGHLIGHTS-001",
+    "status": "in_progress",
+    "goal": "Make weekly/monthly reports easier to read with source-specific daily extrema and a shared-scale registered-series graphic; reconcile completed native support steps.",
     "task_ids": [
-      "LTS-CALENDAR-MACRONUTRIENTS-001"
+      "LTS-CALENDAR-HIGHLIGHTS-001"
     ],
-    "public_build": "health-integrated-20261026.84",
-    "release_state": "published;candidate_contracts_and_responsive_pdf_passed;real_authenticated_runtime_verified;water_not_restored;overall_delivery_not_accepted",
+    "candidate_build": "health-integrated-20261026.85",
+    "release_state": "candidate; local arithmetic and view contracts passed; responsive/PDF and actual authenticated publication pending",
     "completed_evidence": [
-      "Existing public main and both reference branch heads were reread; exclusive reference commits and existing open PRs are preserved.",
-      "Native diagnostic submission is confirmed; no new permission, entry, purchase or report is required.",
-      "First weekly summary was sent to the owner and reread; its separate weekly schedule is enabled.",
-      "Calendar nutrient calculations reuse origin, unit, duplicate, missingness, partial-day and comparison rules. Default Home remains seven metrics.",
-      "All twelve exact final candidate workflows passed; earlier failed arithmetic-source test and PDF word extraction were diagnosed and repaired without weakening coverage assertions.",
-      "The PDF displays and preserves recorded zero differences with units; exact numeric/token retention and Chromium/WebKit responsive checks passed.",
-      "Normal PR400 merged at 6b38b865bb2c1c855ee6010d391ff9491e5a5d01; public deployment and smoke passed, followed by real authenticated workflow 40352350034 checking all three new nutrient values/denominators in the exact published report.",
-      "The Cloud Browser public entry identifies the exact build; that browser no longer retains the previous authenticated session. Real-data inspection uses the established authenticated CI and independently checked private arithmetic, not a claimed manual physical-iPhone test."
+      "Independent private calculation agrees with three nutrient ranges and separately counted workout series.",
+      "Current official support threads and private checkpoint reread; account reset and both native reports are complete; no restored water transfer is claimed."
     ],
-    "pending_evidence": []
+    "pending_evidence": [
+      "Exact final CI, responsive/PDF visual inspection and authenticated published runtime."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1608,10 +1604,11 @@
         "2026-10-26: the provider replied through the existing official conversation, asking for the category and native Help Center problem report. The category/direction reply was sent and independently read back.",
         "2026-10-26: fresh genuine accepted receiver requests still lack the expected water block. Native device report delivery is tracked separately in LTS-WATER-NATIVE-REPORT-001.",
         "Native report submission confirmed by owner. The provider missing-report reply was sent before this submission; a subsequent notification was sent and independently reread.",
-        "The provider acknowledged the native report and states that the water API request returns no records without an error. Account mismatch remains a hypothesis; no reset or new report was performed."
+        "The provider acknowledged the native report and states that the water API request returns no records without an error. Account mismatch remains a hypothesis; no reset or new report was performed.",
+        "2026-10-26 later checkpoint: owner completed same-account reset and post-reset native report; the specifically consented source screenshot was sent and acknowledged. The provider proposes Deauthorize without yet explaining its distinction from the completed icon reset; clarification has already been sent in the existing case."
       ],
-      "next_action": "Continue the existing case from the acknowledged native report and actual empty-read finding. Keep provider-proposed account authorization checks distinct from a proven cause; do not repeat the diagnostic submission or generic phone tests.",
-      "blocker": "Provider reports an empty water API response without error. The account-identity hypothesis, effective query window and imported-water API availability are unresolved; actual water delivery remains absent.",
+      "next_action": "Await the already-requested technical distinction between Deauthorize and the completed reset, confirmation of post-reset API findings and supported escalation. Preserve all completed steps; do not duplicate replies or ask for new ingestion/screenshots/reports.",
+      "blocker": "Empty API response remains unexplained; no restoration or new indispensable native step is established.",
       "phone_status_capture_received": true
     },
     {
@@ -2025,8 +2022,8 @@
       "id": "LTS-WATER-ACCOUNT-ALIGNMENT-001",
       "area": "provider-directed account verification",
       "priority": "P0",
-      "status": "blocked_user",
-      "owner": "User",
+      "status": "done",
+      "owner": "Codex",
       "summary": "Follow the provider-directed account alignment after the acknowledged native report showed an empty water API read without an error.",
       "acceptance": [
         "Identify the account actually displayed in the Google Health app.",
@@ -2036,10 +2033,34 @@
       "evidence": [
         "The provider acknowledged the submitted native report and states that the water request returns no records without an error.",
         "The provider specifically directed account selection/alignment; the account-mismatch hypothesis is not yet proven and no agent-side reset was performed.",
-        "The agent cannot operate the native iPhone authorization flow. Current source selections were corrected in the existing support conversation without forwarding screenshots or measurements."
+        "The agent cannot operate the native iPhone authorization flow. Current source selections were corrected in the existing support conversation without forwarding screenshots or measurements.",
+        "2026-10-26: owner confirmed same-account authorization reset and one-off sync, then confirmed missing water persisted; the post-reset report was also submitted. These operational steps are complete, independently of root cause."
       ],
-      "next_action": "On the iPhone, view the email under the Google Health profile, then in Health Sync open Connected apps → Google Health Authorization and choose that same account through the provider-directed reset. If this exact alignment is already evidenced as completed, reuse that evidence rather than repeating it. The existing genuine water entry and next source receipt can then be checked without adding test consumption.",
-      "blocker": "The provider-directed authorization selection is inside the native iPhone app and cannot be completed by the agent. Native problem-report submission is already complete and is not this task."
+      "next_action": "Completed account selection is not evidence of restored water. Continue provider analysis; do not repeat it.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-CALENDAR-HIGHLIGHTS-001",
+      "area": "weekly/monthly report usefulness",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show daily variation with dated extrema and coverage, plus registered training series on one common scale.",
+      "acceptance": [
+        "Use the exact eligible closed-day sample and selected canonical origin of each metric.",
+        "Never create ranges from one day, failed source reads, candidate/held sources, conflicting or incomplete days.",
+        "Show same-day energy/fiber coincidence only with the same origin, identical date sample and unique extrema; no clinical interpretation.",
+        "Keep registered primary series and extensions distinct; preserve unknown/partial training states.",
+        "Verify mobile and PDF readability, public authentication and source arithmetic without writing health data."
+      ],
+      "evidence": [
+        "preview/compact-evidence/tests/calendar-report-model-test.mjs",
+        "preview/compact-evidence/tests/calendar-report-view-test.mjs",
+        "preview/compact-evidence/tests/calendar-report-browser.mjs",
+        "Private fresh source arithmetic agrees with eligible daily ranges and registered series counts."
+      ],
+      "next_action": "Finish candidate CI and inspect responsive/PDF evidence, then publish normally and verify actual authenticated runtime.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -2560,6 +2581,27 @@
         "Basal source and complete-day eligibility.",
         "Ordinary production form submission, physical-iPhone and owner acceptance remain separate."
       ]
+    },
+    {
+      "id": "PKG-CALENDAR-MACRONUTRIENTS-001",
+      "status": "done",
+      "goal": "Complete calendar reports with independently sourced carbohydrate, fat and fiber indicators, while preserving the approved Home and recording the completed native support submission.",
+      "task_ids": [
+        "LTS-CALENDAR-MACRONUTRIENTS-001"
+      ],
+      "public_build": "health-integrated-20261026.84",
+      "release_state": "published;candidate_contracts_and_responsive_pdf_passed;real_authenticated_runtime_verified;water_not_restored;overall_delivery_not_accepted",
+      "completed_evidence": [
+        "Existing public main and both reference branch heads were reread; exclusive reference commits and existing open PRs are preserved.",
+        "Native diagnostic submission is confirmed; no new permission, entry, purchase or report is required.",
+        "First weekly summary was sent to the owner and reread; its separate weekly schedule is enabled.",
+        "Calendar nutrient calculations reuse origin, unit, duplicate, missingness, partial-day and comparison rules. Default Home remains seven metrics.",
+        "All twelve exact final candidate workflows passed; earlier failed arithmetic-source test and PDF word extraction were diagnosed and repaired without weakening coverage assertions.",
+        "The PDF displays and preserves recorded zero differences with units; exact numeric/token retention and Chromium/WebKit responsive checks passed.",
+        "Normal PR400 merged at 6b38b865bb2c1c855ee6010d391ff9491e5a5d01; public deployment and smoke passed, followed by real authenticated workflow 40352350034 checking all three new nutrient values/denominators in the exact published report.",
+        "The Cloud Browser public entry identifies the exact build; that browser no longer retains the previous authenticated session. Real-data inspection uses the established authenticated CI and independently checked private arithmetic, not a claimed manual physical-iPhone test."
+      ],
+      "pending_evidence": []
     }
   ],
   "latest_published_release": {

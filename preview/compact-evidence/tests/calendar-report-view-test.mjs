@@ -34,6 +34,19 @@ assert.match(html,/Grupos principais e secundários não foram informados/);
 assert.match(html,/comparação retrospectiva está desativada/i);
 assert.deepEqual(f.data,before);assert.deepEqual(ui,uiBefore);assert.deepEqual(state,stateBefore);
 
+assert.match(html,/O que a média não mostra/);
+assert.equal((html.match(/data-calendar-highlight=/g)||[]).length,3);
+for(const item of model.highlights.ranges){
+  const highlight=html.match(new RegExp(`<article[^>]+data-calendar-highlight="${item.key}"[^>]*>([\\s\\S]*?)<\\/article>`))[1];
+  assert.ok(highlight.includes(item.minimum.value.toLocaleString('pt-BR',{maximumFractionDigits:1})));
+  assert.ok(highlight.includes(item.maximum.value.toLocaleString('pt-BR',{maximumFractionDigits:1})));
+  assert.ok(highlight.includes(`${item.count}/${item.expectedDays} dias encerrados com valor`));
+}
+assert.match(html,/ltsCalendarGroupBar/);
+assert.match(html,/Incluem aquecimento e ajuste quando informados/);
+assert.doesNotMatch(renderCalendarReport(f.data,{...f.status,sets:'error'},ui,f.today),/class="ltsCalendarGroupBar"/,'Failed series never become visual zero bars');
+assert.match(renderCalendarReportPrint(model),/O que a média não mostra/,'The local PDF shares the exact descriptive model');
+
 const current=renderCalendarReport(f.data,f.status,{calendarReportSelection:'current'},f.today);
 assert.match(current,/12\/10\/2026 a 17\/10\/2026/);assert.match(current,/ltsCalendarToday/);assert.match(current,/Hoje · 17\/10\/2026 · parcial/);assert.match(current,/Fora das médias e comparações/);
 const monday=renderCalendarReport(f.data,f.status,{calendarReportSelection:'current'},'2026-10-19');assert.match(monday,/0\/0 dias encerrados com valor/);assert.doesNotMatch(monday,/NaN|Infinity|undefined/);

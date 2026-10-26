@@ -1,3 +1,13 @@
+# Calendar report highlights and support continuity — 26/10/2026
+
+The owner positively assessed the revised visual email report and requested autonomous app improvements. Candidate `.85` adds dated daily ranges for energy, protein and fiber, with individual origins and coverage, plus a shared-scale graphic of registered primary series per recorded group. A coincident unique energy maximum and fiber minimum is described only for the identical dated sample and origin; it does not establish adequacy, deficit, causality or physiological training volume. Unknown, partial, disputed and review-source observations are not promoted. The approved Home and all writes, clinical records, prescriptions and integrations are preserved.
+
+Local source arithmetic and contracts passed. Final responsive/PDF and authenticated public verification remain pending; candidate code is not published evidence. The visual email's separate weekly schedule is already configured and must not be duplicated.
+
+Latest support evidence supersedes older checkpoints below: same-account reset, one-off sync and both native reports are completed. The specifically consented source screenshot was sent and acknowledged. The provider still reports an empty source API response without a proven cause and now proposes Deauthorize. A clarification is already sent asking whether that differs technically from the completed icon reset and whether the finding covers the post-reset report. Do not repeat native steps or send duplicate replies. The export provider's existing batch/413/retry case remains unanswered. Receiver limit, keys and schedules are unchanged. Overall app delivery, water restoration, basal eligibility, exact laboratory proposal, ordinary production saving and physical-device acceptance remain open.
+
+Authority: `EXECUTION_STATE.json`; current support events live in the existing private ledger. Earlier entries are historical.
+
 # FB-037 — Verified publication checkpoint
 
 The calendar nutrient change is published and authenticated; provider water diagnosis remains open. Native report submission is complete and must not be repeated. Prior owner rejection of overall delivery remains in force.
