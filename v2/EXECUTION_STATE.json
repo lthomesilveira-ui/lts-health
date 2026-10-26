@@ -50,17 +50,17 @@
   },
   "current_package": {
     "id": "PKG-HISTORICAL-FIDELITY-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Restore omitted confirmed historical context and complete source text in existing records, identify documented estimates without changing values, and diagnose bounded export transport without raw-payload logging.",
     "task_ids": [
       "LTS-HISTORICAL-CONTEXT-002",
       "LTS-LEGACY-WORKOUT-SOURCE-001",
       "LTS-LEGACY-ESTIMATE-READING-001",
-      "LTS-EXPORT-BODY-DIAGNOSTICS-001"
+      "LTS-EXPORT-BODY-DIAGNOSTICS-001",
+      "LTS-QUALITY-STATUS-TEXT-001"
     ],
-    "public_build": "health-integrated-20261025.82",
-    "candidate_build": "health-integrated-20261026.83",
-    "release_state": "historical_bounded_writes_verified;candidate_83_locally_verified;publication_and_receiver_deployment_pending;overall_delivery_not_accepted",
+    "public_build": "health-integrated-20261026.83",
+    "release_state": "published_and_exact_authenticated_public_verified;receiver_9_exact_readback_and_negative_auth_verified;bounded_package_complete;overall_delivery_not_accepted",
     "completed_evidence": [
       "Original structured export and matching CSVs reconciled with exact current records; historical document-backed body corrections preserved.",
       "Private exact preimages and expected postimages saved durably before any update.",
@@ -68,11 +68,15 @@
       "Existing public .82 fully reloaded and displayed saved application contexts. Unknown times and unconfirmed locations remain absent.",
       "Candidate .83 labels only explicitly documented estimates/approximate durations, preserving numeric values and unknown source identity.",
       "Local privacy, source parity, write/connection boundaries and actual production-entry journeys at 320/393/1440 px passed; synthetic screenshots inspected.",
-      "Authenticated receiver candidate keeps the existing limit, keys and ingestion routing. Numeric-only transport facts distinguish declared length, observed lower bound and unread body; cancellation/logger failures cannot mask the response."
+      "Authenticated receiver candidate keeps the existing limit, keys and ingestion routing. Numeric-only transport facts distinguish declared length, observed lower bound and unread body; cancellation/logger failures cannot mask the response.",
+      "Normal PR 397 promoted the exact reviewed tree as main 4393c905b28ae66b5ae2bd6db3deaef14ffa4b08 after all fourteen final candidate workflows passed.",
+      "Deploy 40254229066, public Pages 40254260359, homologation 40254260335 and full real authenticated workflow 40254229141 passed.",
+      "The preserved authenticated owner session fully reloaded exact .83 and reopened restored session text, explicit estimates, approximate duration, textual exercise sets and saved application context. All seven daily cards and missing-water/last-observation distinctions remain present.",
+      "Receiver version 9 is ACTIVE. All six deployed files match the reviewed bundle exactly; existing custom key authentication, verify_jwt=false, absent import map, ingestion routing and the 1 MiB limit are preserved. Missing and malformed actual-key-header requests return 401 without health-record writes.",
+      "Two stale operational laboratory quality descriptions were updated from the verified original-source checkpoint. Exact preimages and independent full postimages were checked; accepted status, all other fields, other quality rows and clinical results were preserved.",
+      "The original water-history transfer is blocked by supported provider access, not by an uncompleted repeated phone check. No immediate owner micro-test, duplicate recording, purchase or recurring manual export is requested."
     ],
-    "pending_evidence": [
-      "Final candidate CI, normal publication, exact authenticated public .83 inspection and exact receiver deployment/readback/negative-auth checks."
-    ],
+    "pending_evidence": [],
     "independent_open_conditions": [
       "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
       "Exact original laboratory proposal and separate specific execution authority.",
@@ -82,15 +86,15 @@
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261025.82",
-    "main_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
-    "runtime_promotion_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
-    "published_on": "2026-10-25",
-    "verified_on": "2026-10-25",
-    "automated_runtime_and_responsive_status": "verified; thirteen exact candidate gates and full real-auth workflow 40246269360 passed",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_82",
-    "manual_exact_public_verified_on": "2026-10-25",
-    "acceptance_note": "Source coverage and current status, approved daily cards and bounded historical context are verified. Water transport and recurrence, original MFP history, exact lab proposal recovery and separate authority, basal eligibility, ordinary production forms, physical-iPhone and owner acceptance remain open."
+    "build_id": "health-integrated-20261026.83",
+    "main_commit": "4393c905b28ae66b5ae2bd6db3deaef14ffa4b08",
+    "runtime_promotion_commit": "4393c905b28ae66b5ae2bd6db3deaef14ffa4b08",
+    "published_on": "2026-10-26",
+    "verified_on": "2026-10-26",
+    "automated_runtime_and_responsive_status": "verified; fourteen exact candidate gates, deploy/public smokes and full real-auth workflow 40254229141 passed",
+    "manual_exact_public_status": "verified_authenticated_desktop_at_83",
+    "manual_exact_public_verified_on": "2026-10-26",
+    "acceptance_note": "Bounded historical restoration, original textual sets and explicit estimate qualifiers were saved, independently reread and reopened on the exact public build. Approved daily cards remain present. Receiver v9 source/config and negative auth are verified. Upstream water, original MFP history, attributable recurrence, exact lab proposal, basal eligibility, ordinary production forms and physical-device/owner acceptance remain independent. Overall delivery is not accepted."
   },
   "tasks": [
     {
@@ -670,9 +674,9 @@
       "id": "LTS-HYD-IMPORT-001",
       "area": "hydration",
       "priority": "P0",
-      "status": "blocked_user",
-      "owner": "user",
-      "summary": "Run the authenticated MyFitnessPal historical water export on a notebook and import the JSON into LTS Health.",
+      "status": "blocked_external",
+      "owner": "Codex",
+      "summary": "Recover original authenticated MyFitnessPal water history through supported provider access without recurring manual exports or duplicate records.",
       "acceptance": [
         "The extractor finishes the selected historical interval.",
         "The LTS preview is confirmed and imports the generated JSON.",
@@ -684,10 +688,11 @@
         "v2/src/mfp-water-transfer.js",
         "v2/mfp-water-transfer-test.mjs",
         "v2/mfp-water-import-smoke.mjs",
-        "2026-10-04: authorized cloud-browser attempt was rejected by MyFitnessPal security before sign-in; one reload did not recover access."
+        "2026-10-04: authorized cloud-browser attempt was rejected by MyFitnessPal security before sign-in; one reload did not recover access.",
+        "2026-10-26: task ownership/classification reconciled with the documented provider block and completed phone evidence; original authenticated-source acceptance is unchanged."
       ],
-      "next_action": "Provide an authenticated water export when available; the existing notebook helper can generate a complete JSON without daily entry. The agent can validate and import that file.",
-      "blocker": "The provider currently rejects the agent cloud browser before login. No authenticated water export is available, and no credentials or cookies may be used to bypass that block."
+      "next_action": "Resume supported provider authentication/extraction or validate an already available authentic export when access exists. The existing notebook helper remains available; do not repeat completed phone checks, request recurring manual exports or bypass provider security.",
+      "blocker": "A persistent provider-served security block prevents the agent browser from reaching authenticated history. No authenticated original water export is available. This is not an uncompleted owner phone setup step; no immediate repeated owner action is requested."
     },
     {
       "id": "LTS-MFP-OAUTH-001",
@@ -1861,7 +1866,7 @@
       "id": "LTS-LEGACY-ESTIMATE-READING-001",
       "area": "truthful workout telemetry",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Identify documented estimates and approximate durations, and distinguish preserved textual sets from zero structured detail.",
       "acceptance": [
@@ -1874,16 +1879,18 @@
         "v2/workout-estimate-provenance-test.mjs",
         "v2/production-integration-browser.mjs",
         "All local model, privacy and source-parity tests passed; renderer verified at 320/393/1440 px.",
-        "The responsive production-entry test now exercises preserved textual sets, literal plate notation, estimated energy and approximate duration; no external writes."
+        "The responsive production-entry test now exercises preserved textual sets, literal plate notation, estimated energy and approximate duration; no external writes.",
+        "PR 397 / main 4393c905b28ae66b5ae2bd6db3deaef14ffa4b08; all fourteen final candidate workflows passed.",
+        "Exact public .83 authenticated reload confirmed explicit estimate/approximate-duration labels, original report reopening and full-width textual exercise sets. Full real-auth workflow 40254229141 passed."
       ],
-      "next_action": "Complete final candidate CI, publication and exact public inspection.",
+      "next_action": "Preserve original qualifiers, unknown source identity and literal notation; do not infer structured series counts or unit conversions.",
       "blocker": null
     },
     {
       "id": "LTS-EXPORT-BODY-DIAGNOSTICS-001",
       "area": "export transport diagnostics",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Capture bounded numeric byte diagnostics after authentication while preserving receiver limits and responses.",
       "acceptance": [
@@ -1895,9 +1902,31 @@
       "evidence": [
         "Deployed prior receiver and all relative dependencies matched the repository exactly before modification.",
         "supabase/tests/receiver-body-observability-test.mjs",
-        "Existing receiver summary, authenticated import and failure-isolation tests passed locally."
+        "Existing receiver summary, authenticated import and failure-isolation tests passed locally.",
+        "Authenticated body-byte, summary, invalid-payload, limit, cancellation-failure, logger-failure and no-partial-write tests passed.",
+        "Receiver version 9 deployed and all six reviewed files/config read back exactly. Real missing-key and malformed x-lts-health-key requests returned 401. No valid synthetic health record was sent.",
+        "No genuine authenticated receipt was observed in the bounded immediate post-deployment log window; actual future oversized-request composition remains the separate LTS-EXPORT-PAYLOAD-001 condition."
       ],
-      "next_action": "Finish exact candidate gates and deploy/read back the reviewed receiver bundle; inspect genuine later evidence when available.",
+      "next_action": "Use the numeric-only diagnostics on a genuine later request; preserve the existing limit and never reconstruct an unobserved rejected body.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-QUALITY-STATUS-TEXT-001",
+      "area": "data_quality",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Reconcile stale operational lab coverage/parser descriptions with known validated originals while preserving clinical records.",
+      "acceptance": [
+        "Descriptions distinguish the original migration bundle from current coverage and known offline validation from broader production ingestion.",
+        "Only description and resolution_notes change; exact private preimages/postimages, accepted status and all other quality rows are preserved.",
+        "No result, reference, biomarker, prescription or separately pending laboratory correction is changed."
+      ],
+      "evidence": [
+        "Known original-source proof: PR 333 and releases/FLEURY_SOURCE_VALIDATION_20261013.md.",
+        "Private preimages were saved before a guarded transaction; all full expected postimages, unrelated quality rows and independent reread passed."
+      ],
+      "next_action": "Keep the broader importer and exact original lab-correction proposal separately blocked until their own evidence and specific execution authority exist.",
       "blocker": null
     }
   ],
