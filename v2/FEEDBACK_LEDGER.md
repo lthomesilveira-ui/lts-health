@@ -1,3 +1,9 @@
+# FB-038 — Mobile report rejected; compact reading reopened, 26/10/2026
+
+The owner opened .85 on a phone and explicitly rejected its UX as far from the defined layout. Earlier browser/PDF passes do not resolve that feedback. PKG-CALENDAR-MOBILE-002 replaces the long default stack with a short source-backed overview, readable daily charts and progressive details. The concise default summary PDF is separate from the preserved complete evidence export. Candidate .86 is not yet published or accepted. The approved Home and all clinical/source/write boundaries remain unchanged. Actual rendered screens and exports must be inspected before promotion.
+
+Authority: `EXECUTION_STATE.json`. Earlier checkpoints below remain historical.
+
 # Calendar highlights published and verified — 26/10/2026
 
 Build `.85` is published through normal PR403 at `d788abfc2888b46176c5d82c4a3e6266cad58ce0`. All twelve exact candidate workflows passed. The calendar suite exercised 26 scenarios in Chromium/WebKit at 320/393/1440 px and produced five actual A4 PDFs without detected content/layout failures. Digest-verified synthetic evidence and representative mobile/desktop and printed highlight/training pages were visually inspected. Independent current private source arithmetic agrees with the descriptive ranges and separate registered-series counts.

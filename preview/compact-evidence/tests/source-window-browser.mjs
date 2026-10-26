@@ -53,6 +53,7 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
    await chooseDashboardSource(page,'protein',originB);await page.locator('#dashboard-period').selectOption('90');await stable(page);assert.equal(await card.locator('.healthMetricValue strong').innerText(),'200');assert.match(await card.innerText(),/5\/90 dias usados/);assert.match(await card.locator('.healthPeriodSource').innerText(),/Escolhida por você/);
    // Calendar inherits explicit dashboard choice; never silently replaces it.
    await page.evaluate(()=>location.hash='#analise');await stable(page,'analise');
+   await page.locator('#calendarReport .ltsCalendarFullDetails > summary').click();await stable(page,'analise');
    const week=page.locator('[data-calendar-metric="protein"]');assert.match(await week.innerText(),/0\/7 dias encerrados/);assert.match(await week.innerText(),/Há registros em outra origem/);assert.match((await week.locator('#calendar-source-protein option').allTextContents()).join(' '),/Origin A.*7\/7/s);
    await quality(page,'#calendarReport');await week.locator('.ltsCalendarMetricValue').evaluate(element=>element.scrollIntoView({block:'center'}));await page.screenshot({path:`${directory}/${engine}-${width}-explicit-empty.png`});
    await page.locator('#calendar-source-protein').selectOption('');await stable(page,'analise');assert.match(await week.innerText(),/7\/7 dias encerrados/);assert.equal(await week.locator('.ltsCalendarMetricValue').innerText(),'100 g');assert.match(await week.innerText(),/Origin A.*Automática/s);

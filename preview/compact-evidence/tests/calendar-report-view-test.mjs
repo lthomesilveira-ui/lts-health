@@ -5,12 +5,30 @@ globalThis.location={search:'?fixture=1'};
 const {renderCalendarReport,renderCalendarReportPrint,calendarReportPrintTitle,updateCalendarReportSelection,printCalendarReport}=await import('../src/calendar-report-view.js');
 const {calendarReport}=await import('../src/calendar-report-model.js');
 const {state}=await import('../src/core.js');
+const {renderCalendarOverview,renderCalendarSummaryPrint}=await import('../src/calendar-report-overview.js');
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-calendar-metric="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
 const capture=value=>structuredClone(value);
 // Arithmetic/gap assertions deliberately inspect an explicitly selected origin.
 const chosenSources={water:CALENDAR_SOURCES.food,protein:CALENDAR_SOURCES.food,energy:CALENDAR_SOURCES.food,carbs:CALENDAR_SOURCES.food,fat:CALENDAR_SOURCES.food,fiber:CALENDAR_SOURCES.food,steps:CALENDAR_SOURCES.watch,activeEnergy:CALENDAR_SOURCES.watch};
 const f=makeCalendarReportFixture(),before=capture(f.data),ui={calendarReportSources:chosenSources,analysisPeriod:'365',dashboardMode:'day',dashboardDate:'2026-10-01'},uiBefore=capture(ui),stateBefore=capture(state);
 const html=renderCalendarReport(f.data,f.status,ui,f.today),model=calendarReport(f.data,f.status,ui,f.today);
+assert.match(html,/<details class="ltsCalendarFullDetails" data-disclosure="calendar-full">/,'Detailed records start closed, with a native accessible disclosure');
+assert.ok(html.indexOf('ltsReportOverview')<html.indexOf('ltsCalendarFullDetails'),'The visual reading precedes the complete record workspace');
+assert.equal((html.match(/id="calendarReportStatus"/g)||[]).length,1,'One live export status, without duplicate IDs');
+assert.match(html,/id="calendar-summary-export" data-calendar-print="summary"/);
+assert.match(html,/id="calendar-export" data-calendar-print="full"/,'The full original evidence export remains available');
+for(const key of ['energy','protein','carbs','fat','fiber']){
+  const overview=renderCalendarOverview(model,{selected:key}),expected=expectedCalendarMetric(f,key,CALENDAR_WINDOWS.lastWeek);
+  const plotted=[...overview.matchAll(/data-report-plot-date="([^"]+)"/g)].map(match=>match[1]).sort();
+  assert.deepEqual(plotted,expected.dates,`${key}: overview charts preserve the independent eligibility/gap/source oracle`);
+  assert.match(overview,new RegExp(`data-calendar-chart="${key}" aria-pressed="true"`));
+}
+const summary=renderCalendarSummaryPrint(model);
+assert.equal((summary.match(/<tr>/g)||[]).length,9,'Concise export contains all eight source-specific indicator rows');
+assert.doesNotMatch(summary,/<details|<button|<select|data-calendar-day=|ltsCalendarAllEvidence/,'Summary and full-evidence export are explicit separate choices');
+assert.match(summary,/Dados completos/);assert.match(summary,/Ausência não é zero/);
+for(const metric of model.metrics)assert.ok(summary.includes(sourceDisplayForTest(metric)));
+function sourceDisplayForTest(metric){return metric.value==null?'Sem registro':metric.value.toLocaleString('pt-BR',{maximumFractionDigits:1});}
 assert.match(html,/id="calendarReport"/);assert.match(html,/05\/10\/2026 a 11\/10\/2026/);assert.match(html,/segunda a domingo/);
 assert.match(html,/data-calendar-mode="week" aria-pressed="true"/);assert.match(html,/value="last" selected/);
 assert.match(html,/Imprimir \/ salvar PDF/);assert.match(html,/Nada é enviado automaticamente/);

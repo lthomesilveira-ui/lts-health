@@ -68,7 +68,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
   const m=await report(page),body=await page.locator('#calendarReport').innerText();
   assert.equal(m.calendar.bounds.start,expected.start);assert.equal(m.calendar.bounds.end,expected.end);assert.equal(m.calendar.bounds.days,expected.days);
   assert.equal(m.calendar.partial,partial);assert.equal(m.calendar.nominalBounds.end,nominalEnd);
-  assert.ok(body.includes(dateLabel(expected.start))&&body.includes(dateLabel(expected.end)),'Visible report states its actual dates');
+  assert.equal(await page.locator('#calendarReport .ltsReportHeading h2').getAttribute('aria-label'),`${dateLabel(expected.start)} a ${dateLabel(expected.end)}`,'The concise visible heading has the exact full date range as its accessible name');
   assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),8);
   for(const key of CALENDAR_KEYS){
     const expectedMetric=expectedCalendarMetric(fixture,key,expected),metric=m.metricsByKey[key],card=page.locator(`#calendarReport [data-calendar-metric="${key}"]`);
@@ -103,6 +103,35 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
     assert.deepEqual(widths,m.training.recordedGroups.map(group=>Number((280*group.primary/maximum).toFixed(2))),'Group bars share a single numeric scale; device sessions never inflate them');
   }
   return m;
+}
+async function overviewContract(page,name){
+  assert.equal(await page.locator('#calendarReport .ltsCalendarFullDetails').evaluate(el=>el.open),false,'Daily source records start closed');
+  assert.equal(await page.locator('#calendarReport .ltsReportKpis').isVisible(),true);
+  assert.equal(await page.locator('#calendarReport .ltsReportPlot').isVisible(),true);
+  const bounds=await page.locator('#calendarReport').evaluate(root=>{const k=root.querySelector('.ltsReportKpis').getBoundingClientRect(),plot=root.querySelector('.ltsReportPlot').getBoundingClientRect();return {kpisBottom:k.bottom,plotTop:plot.top,height:root.getBoundingClientRect().height,viewport:innerHeight};});
+  if(page.viewportSize().width<=393){assert.ok(bounds.kpisBottom<570,'Useful numeric summary fits the first mobile screen');assert.ok(bounds.plotTop<700,'The daily chart is part of the initial mobile reading');assert.ok(bounds.height<2500,'The default report is not a long stack of documentary cards');}
+  await page.screenshot({path:`${dir}/${name}-overview-initial.png`,scale:'css'});
+  if(page.viewportSize().width===393){
+    const previous=page.viewportSize();await page.setViewportSize({width:393,height:650});await stable(page);
+    const reduced=await page.locator('#calendarReport').evaluate(root=>({kpisBottom:root.querySelector('.ltsReportKpis').getBoundingClientRect().bottom,plotTop:root.querySelector('.ltsReportPlot').getBoundingClientRect().top}));
+    assert.ok(reduced.kpisBottom<570,'Essential values remain visible in the reduced physical-device-sized viewport');
+    assert.ok(reduced.plotTop<650,'The daily graph begins inside the reduced mobile viewport');
+    const marks=await page.locator('#calendarReport .ltsReportPlot').evaluate(plot=>{const nav=document.querySelector('#mobileNav')?.getBoundingClientRect(),nodes=[...plot.querySelectorAll('[data-report-plot-date] rect,[data-report-plot-date] circle')];return {bottom:Math.max(...nodes.map(n=>n.getBoundingClientRect().bottom)),datesBottom:Math.max(...[...plot.querySelectorAll('svg text')].map(n=>n.getBoundingClientRect().bottom)),visibleBottom:nav?.top||innerHeight};});
+    assert.ok(marks.bottom<marks.visibleBottom-2,'The actual daily bars, including their zero baseline, fit above mobile navigation');
+    assert.ok(marks.datesBottom<marks.visibleBottom-2,'The daily chart dates remain readable above mobile navigation');
+    await page.screenshot({path:`${dir}/${name}-overview-393x650.png`,scale:'css'});
+    await page.setViewportSize(previous);await stable(page);
+  }
+  const before=await report(page);
+  for(const key of ['protein','carbs','fat','fiber','energy']){
+    await page.locator(`[data-calendar-chart="${key}"]`).click();await stable(page);
+    assert.equal(await page.locator(`[data-calendar-chart="${key}"]`).getAttribute('aria-pressed'),'true');
+    const after=await report(page);assert.deepEqual(after.metrics,before.metrics,'Chart navigation does not change the source or calendar model');
+    const metric=after.metricsByKey[key],expected=metric.points.filter(p=>p.eligible===true&&p.date<after.calendar.today&&typeof p.value==='number'&&p.value>=0&&!p.ambiguous&&!p.knownPartial&&!p.open&&!p.excludeFromClosedMeans&&!p.reviewInvalid).map(p=>p.date).sort();
+    assert.deepEqual(await page.locator('#calendarReport [data-report-plot-date]').evaluateAll(nodes=>nodes.map(n=>n.dataset.reportPlotDate).sort()),expected,'Overview chart retains every eligible date and no gaps are filled');
+  }
+  await page.screenshot({path:`${dir}/${name}-overview-final.png`,scale:'css'});
+  results.push({name:`${name}-overview`,status:'passed',defaultEvidenceClosed:true,chartControlsPreserveModel:true,...bounds,...flags});save();
 }
 async function openEvidence(page){
   for(const detail of await page.locator('#calendarReport details').all())if(!(await detail.evaluate(el=>el.open)))await detail.locator(':scope > summary').click();
@@ -337,10 +366,12 @@ print(json.dumps(pages,ensure_ascii=False))
   return record;
 }
 
-async function printContract(page,name,{pdf=false,engine='chromium'}={}){
+async function printContract(page,name,{pdf=false,engine='chromium',summary=false}={}){
   const failureStart=failures.length;
+  if(!summary)await openEvidence(page);
   const original={title:await page.title(),viewport:page.viewportSize(),text:await page.locator('#calendarReport').innerText()},before=await page.evaluate(()=>window.__calendarPrintCalls.length);
-  await page.locator('#calendar-export').click();
+  if(!summary)await openEvidence(page);
+  await page.locator(summary?'#calendar-summary-export':'#calendar-export').click();
   await page.waitForSelector('body.ltsCalendarPrinting #calendarPrintRoot',{state:'attached'});
   const invocation=await page.evaluate(()=>window.__calendarPrintCalls.at(-1));
   assert.equal(await page.evaluate(()=>window.__calendarPrintCalls.length),before+1,'Exactly one print dialog invocation per click');
@@ -357,7 +388,7 @@ async function printContract(page,name,{pdf=false,engine='chromium'}={}){
   });
   assert.ok(printText.length>500,'The print root contains the full report');
   assert.doesNotMatch(printText,/\b(?:NaN|undefined|Infinity|SQLSTATE|source_record_id|canonical_status)\b/);
-  for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
+  if(summary){assert.equal(await page.locator('#calendarPrintRoot .ltsReportPrintSources tbody tr').count(),8);assert.equal(await page.locator('#calendarPrintRoot [data-calendar-day]').count(),0);assert.match(printText,/Dados completos/);}else for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
   writeFileSync(`${dir}/${name}-print-dom.txt`,printText);
   // A capture failure is still a test failure, but must not prevent creating
   // the real PDF and every page image needed to diagnose print pagination.
@@ -368,7 +399,7 @@ async function printContract(page,name,{pdf=false,engine='chromium'}={}){
     const path=`${dir}/${name}.pdf`;
     try{
       await page.pdf({path,format:'A4',printBackground:true,preferCSSPageSize:true,displayHeaderFooter:false});
-      inspectPdf(path,name,printText);
+      const exported=inspectPdf(path,name,printText);if(summary)assert.ok(exported.pages<=3,'The concise report stays within three A4 pages; full daily records have a separate export');
     }catch(error){await recordFailure(page,`${name}-pdf`,error,{});}
   }
   // Native afterprint is also fired by Chromium printToPDF. The explicit event
@@ -382,6 +413,7 @@ async function printContract(page,name,{pdf=false,engine='chromium'}={}){
 }
 
 async function printFailure(page,name){
+  await openEvidence(page);
   const title=await page.title();await page.evaluate(()=>{window.__calendarPrintMode='throw';});
   await page.locator('#calendar-export').click();
   await page.waitForFunction(()=>!document.querySelector('#calendarPrintRoot')&&!document.body.classList.contains('ltsCalendarPrinting'));
@@ -454,6 +486,8 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
       await session(browser,engine,width,height,fixture,async(page,name)=>{
         // Keep the existing independent arithmetic/gap oracle on origin A.
         // Automatic period-aware selection is covered separately by the model regression.
+        await overviewContract(page,name);
+        await openEvidence(page);
         const availableOrigins=await report(page);
         for(const metric of availableOrigins.metrics){
           const desired=metric.sources.find(source=>source.label===(['water','protein','energy','carbs','fat','fiber'].includes(metric.key)?'Synthetic A food':'Synthetic A watch'));
@@ -461,6 +495,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
           await page.locator(`#calendar-source-${metric.key}`).selectOption(desired.key);await stable(page);
         }
         const initial=await assertWindow(page,fixture,CALENDAR_WINDOWS.lastWeek);
+        if(engine==='chromium'&&width===393)await printContract(page,`${name}-summary-export`,{pdf:true,engine,summary:true});
         assert.equal(initial.training.sessions,3,'Three detailed sessions remain three, despite nine exercises and matching Polar records');
         assert.equal(initial.training.polar.sessions,3,'Three device records are separately reported');
         assert.equal(initial.metricsByKey.water.comparison.comparable,false,'Sparse, mismatched coverage cannot create a precise comparison');
@@ -486,6 +521,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
         assert.equal(month.labs.collections.some(collection=>String(collection.date||collection.collection_date).startsWith('2026-10')),false,'Historical month does not include later lab collections');
         await controls(page,name);await captureTiles(page,`${name}-last-month`,page.locator('#calendarReport'));
         if(engine==='chromium'&&width===393)await printContract(page,`${name}-last-month-export`,{pdf:true,engine});
+        if(engine==='chromium'&&width===393)await printContract(page,`${name}-month-summary-export`,{pdf:true,engine,summary:true});
         await choose(page,{mode:'week',selection:'current'});const current=await assertWindow(page,fixture,CALENDAR_WINDOWS.currentWeek,{partial:true,nominalEnd:'2026-10-18'});
         assert.ok(current.todayMetrics?.length||Object.keys(current.todayMetrics||{}).length,'Today has a separate partial view');
         assert.match(await page.locator('#calendarReport .ltsCalendarToday').innerText(),/hoje|parcial/i);
@@ -516,6 +552,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
     if(engine==='chromium')for(const scenario of [{kind:'empty'},{kind:'error'},{kind:'complete',failTable:'health_documents'}]){
       const fixture=makeCalendarReportFixture(scenario.kind);
       await session(browser,engine,393,844,fixture,async(page,name)=>{
+        await openEvidence(page);
         const m=await report(page),root=page.locator('#calendarReport'),text=await root.innerText();
         if(scenario.kind==='empty'){
           assert.equal(m.metricsByKey.water.count,0);assert.equal(m.metricsByKey.water.value,null);

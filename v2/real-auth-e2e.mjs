@@ -374,6 +374,24 @@ try{
   // Inspect the actual published report with the existing real authenticated
   // session. Private values never enter public logs; screenshots stay in the
   // established encrypted-artifact path. No form submission or data mutation.
+  await page.waitForSelector('#calendarReport .ltsReportKpis',{timeout:30000});
+  if(await page.locator('#calendarReport .ltsCalendarFullDetails').evaluate(el=>el.open))throw new Error('The report must start with its compact reading.');
+  const overviewMatches=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js'),{calendarReport}=await import('./src/calendar-report-model.js');
+    const model=calendarReport(state.data,state.domainStatus,state.ui);
+    const kpis=['energy','protein'].every(key=>{const m=model.metricsByKey[key],actual=document.querySelector(`[data-report-kpi="${key}"] b`)?.textContent;return actual===(m.value==null?'—':m.value.toLocaleString('pt-BR',{maximumFractionDigits:0}));});
+    const key=state.ui.calendarReportChart||'energy',metric=model.metricsByKey[key];
+    const expected=metric.points.filter(p=>p.eligible===true&&p.date<model.calendar.today&&typeof p.value==='number'&&p.value>=0&&!p.ambiguous&&!p.knownPartial&&!p.open&&!p.excludeFromClosedMeans&&!p.reviewInvalid).map(p=>p.date).sort();
+    const plotted=[...document.querySelectorAll('#calendarReport [data-report-plot-date]')].map(el=>el.dataset.reportPlotDate).sort();
+    return kpis&&JSON.stringify(plotted)===JSON.stringify(expected);
+  });
+  if(!overviewMatches)throw new Error('The actual compact report does not match its eligible source values/dates; private values withheld.');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-overview.png`});
+  const reportViewport=page.viewportSize();await page.setViewportSize({width:393,height:650});
+  await assertNoHorizontalOverflow();await assertStableMobileShell('mobile report reduced viewport');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-overview-393x650.png`});
+  await page.setViewportSize(reportViewport);
+  await page.locator('#calendarReport .ltsCalendarFullDetails > summary').click();
   await page.waitForSelector('#calendarReport [data-calendar-metric="fiber"]',{timeout:30000});
   const calendarNutrientsMatch=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
