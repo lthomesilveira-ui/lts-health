@@ -111,6 +111,14 @@ async function overviewContract(page,name){
   const bounds=await page.locator('#calendarReport').evaluate(root=>{const k=root.querySelector('.ltsReportKpis').getBoundingClientRect(),plot=root.querySelector('.ltsReportPlot').getBoundingClientRect();return {kpisBottom:k.bottom,plotTop:plot.top,height:root.getBoundingClientRect().height,viewport:innerHeight};});
   if(page.viewportSize().width<=393){assert.ok(bounds.kpisBottom<570,'Useful numeric summary fits the first mobile screen');assert.ok(bounds.plotTop<700,'The daily chart is part of the initial mobile reading');assert.ok(bounds.height<2500,'The default report is not a long stack of documentary cards');}
   await page.screenshot({path:`${dir}/${name}-overview-initial.png`,scale:'css'});
+  if(page.viewportSize().width===393){
+    const previous=page.viewportSize();await page.setViewportSize({width:393,height:650});await stable(page);
+    const reduced=await page.locator('#calendarReport').evaluate(root=>({kpisBottom:root.querySelector('.ltsReportKpis').getBoundingClientRect().bottom,plotTop:root.querySelector('.ltsReportPlot').getBoundingClientRect().top}));
+    assert.ok(reduced.kpisBottom<570,'Essential values remain visible in the reduced physical-device-sized viewport');
+    assert.ok(reduced.plotTop<650,'The daily graph begins inside the reduced mobile viewport');
+    await page.screenshot({path:`${dir}/${name}-overview-393x650.png`,scale:'css'});
+    await page.setViewportSize(previous);await stable(page);
+  }
   const before=await report(page);
   for(const key of ['protein','carbs','fat','fiber','energy']){
     await page.locator(`[data-calendar-chart="${key}"]`).click();await stable(page);
