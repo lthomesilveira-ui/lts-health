@@ -1,3 +1,15 @@
+# Monthly endpoint axis correction published — .87, 26/10/2026
+
+Final monthly page-one inspection found the last two date ticks overlapping in .86. The .87 correction reserves the last date and omits only a nearby intermediate axis label. Every daily point, value, date in the evidence, source and mean remains intact. Browser checks now measure actual SVG date-text glyph boxes, including both concise PDF modes; the older document geometry excluded SVG text.
+
+Candidate `97c5b94c267a99c4d959a23a0571bb14046e7e79` passed affected Calendar/PDF `40417145816`, isolated preview `40417145847`, Functional Depth and the remaining source/model checks. One repeated Integrated Production job `40417145815` was still preparing its browser and is not counted as passed. The predecessor .86 had full exact-candidate verification; this bounded view change also has fresh actual authenticated .87 production verification.
+
+Calendar/PDF exercised 32 scenarios, 1187 captures and seven native A4 exports without failures. Artifact `12696103650`, SHA256 `97dddf8159d61d778d5527560fc0f1725dd7a92fc4cf67bbbb0dd5d5854f6ee3`, was verified. Monthly page one was actually reopened and its endpoint dates are distinct. Both synthetic concise summaries remain two pages; actual length depends on content. Full source-evidence export remains separate and untruncated.
+
+Normal PR407 merge `b1b2e8276fef5751bfca17fa77caa412d2df7c05`. Deploy `40418509252`, public smokes `40418564504`/`40418564604` and fresh actual authenticated production workflow `40418509121` passed. Cloud Browser confirmed `health-integrated-20261026.87` at the public report entry, while signed out. Manual authenticated Cloud Browser and physical-iPhone acceptance are not claimed.
+
+Owner acceptance remains open. Home, data/source models, clinical records, authentication/writes, receiver limit, keys and schedules are unchanged. Water restoration and the support cases remain independent. Current authority: `EXECUTION_STATE.json`. The .86 checkpoint below is preserved history and is superseded only for the endpoint-label defect.
+
 # Mobile report .86 published and inspected — 26/10/2026
 
 The owner rejected .85 after opening it on a phone. That feedback superseded its earlier technical completion. Build `health-integrated-20261026.86` is now published by normal PR405 at `6dc88dcf1b595dbf0e817332f40591c2a64915ec`, from exact candidate `2b0551e89c5272deb2edc04505ce3096fbb6936c`. It replaces the long default report stack with essential values, a daily chart, training and concise observations; complete source-specific evidence and the complete PDF remain explicit separate choices. The primary PDF is a concise summary.

@@ -50,14 +50,14 @@
   },
   "current_package": {
     "id": "PKG-CALENDAR-MOBILE-002",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Rebuild the rejected mobile report around the approved compact summary, legible daily charts and progressive source evidence; provide a concise default PDF and preserve the full export.",
     "task_ids": [
       "LTS-CALENDAR-HIGHLIGHTS-001"
     ],
     "candidate_build": "health-integrated-20261026.87",
-    "public_build": "health-integrated-20261026.86",
-    "release_state": ".86 published; final monthly PDF inspection found adjacent endpoint tick labels overlapping. .87 is a bounded view-only correction; production and owner acceptance remain separate.",
+    "public_build": "health-integrated-20261026.87",
+    "release_state": "published; bounded monthly axis fix passed actual SVG glyph geometry, inspected weekly/monthly PDF output and fresh authenticated production verification; owner acceptance not granted",
     "completed_evidence": [
       "Both approved visual references actually reopened; private original mobile reference digest matched; illustrative values were not copied.",
       "All twelve exact candidate workflows passed at 2b0551e89c5272deb2edc04505ce3096fbb6936c.",
@@ -67,14 +67,20 @@
       "Final integrated artifact 12693614420 SHA256 0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368 verified; 320/393 and desktop report screens inspected.",
       "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
       "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
-      "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed."
+      "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed.",
+      ".87 changes only intermediate axis tick selection and date-text marking; every plotted daily point, value, source and all data/auth/write implementations are preserved.",
+      "Exact candidate 97c5b94c267a99c4d959a23a0571bb14046e7e79: affected Calendar/PDF 40417145816, full isolated preview 40417145847 and nine other workflows completed successfully. Integrated Production 40417145815 was still preparing its browser and is not counted as passed.",
+      "Axis-aware Calendar run 40417145816: 32 scenarios, 1187 captures, seven actual A4 exports, no failures. Real SVG date glyph boxes are checked in weekly/monthly screens and concise PDF; all daily plotted dates and full evidence remain intact.",
+      "Final .87 artifact 12696103650 SHA256 97dddf8159d61d778d5527560fc0f1725dd7a92fc4cf67bbbb0dd5d5854f6ee3 verified. Monthly summary page one actually reopened; final date label is separate. Both synthetic concise summaries remain two pages with all expected text and numeric tokens.",
+      "Normal PR407 merged at b1b2e8276fef5751bfca17fa77caa412d2df7c05. Deploy 40418509252, public smokes 40418564504/40418564604 and fresh actual-authenticated production workflow 40418509121 passed. Cloud Browser independently confirmed the .87 public entry; it remains signed out. No physical-device or owner acceptance is inferred."
     ],
-    "pending_evidence": [
-      "Verify actual SVG tick bounding boxes on weekly/monthly screens and both concise PDFs; publish exact correction."
-    ],
-    "candidate_commit": "2b0551e89c5272deb2edc04505ce3096fbb6936c",
-    "runtime_merge": "6dc88dcf1b595dbf0e817332f40591c2a64915ec",
-    "owner_acceptance": "not_granted"
+    "pending_evidence": [],
+    "candidate_commit": "97c5b94c267a99c4d959a23a0571bb14046e7e79",
+    "runtime_merge": "b1b2e8276fef5751bfca17fa77caa412d2df7c05",
+    "owner_acceptance": "not_granted",
+    "nonblocking_rechecks": [
+      "40417145815 browser preparation was ongoing at the bounded-axis release checkpoint; no success is claimed for it."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -2056,7 +2062,7 @@
       "id": "LTS-CALENDAR-HIGHLIGHTS-001",
       "area": "weekly/monthly report usefulness",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Show daily variation with dated extrema and coverage, plus registered training series on one common scale.",
       "acceptance": [
@@ -2089,9 +2095,14 @@
         "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
         "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
         "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed.",
-        "After .86 publication, visual monthly page-one inspection found overlapping penultimate and final axis dates. Daily points and values were intact; the visual completion is reopened for a bounded endpoint-label correction."
+        "After .86 publication, visual monthly page-one inspection found overlapping penultimate and final axis dates. Daily points and values were intact; the visual completion is reopened for a bounded endpoint-label correction.",
+        ".87 changes only intermediate axis tick selection and date-text marking; every plotted daily point, value, source and all data/auth/write implementations are preserved.",
+        "Exact candidate 97c5b94c267a99c4d959a23a0571bb14046e7e79: affected Calendar/PDF 40417145816, full isolated preview 40417145847 and nine other workflows completed successfully. Integrated Production 40417145815 was still preparing its browser and is not counted as passed.",
+        "Axis-aware Calendar run 40417145816: 32 scenarios, 1187 captures, seven actual A4 exports, no failures. Real SVG date glyph boxes are checked in weekly/monthly screens and concise PDF; all daily plotted dates and full evidence remain intact.",
+        "Final .87 artifact 12696103650 SHA256 97dddf8159d61d778d5527560fc0f1725dd7a92fc4cf67bbbb0dd5d5854f6ee3 verified. Monthly summary page one actually reopened; final date label is separate. Both synthetic concise summaries remain two pages with all expected text and numeric tokens.",
+        "Normal PR407 merged at b1b2e8276fef5751bfca17fa77caa412d2df7c05. Deploy 40418509252, public smokes 40418564504/40418564604 and fresh actual-authenticated production workflow 40418509121 passed. Cloud Browser independently confirmed the .87 public entry; it remains signed out. No physical-device or owner acceptance is inferred."
       ],
-      "next_action": "Verify the bounded monthly tick-label correction and exact public build.",
+      "next_action": "Preserve actual SVG date spacing and every daily plotted point; a future visual defect or owner rejection reopens the affected acceptance.",
       "blocker": null
     }
   ],
