@@ -64,7 +64,7 @@ const manifest={
     "src/body-interval-model.js": "339fbc37a19b23af45e9987b5deaf9ddedf769df7fcd9bc95bd3218490fec923",
     "src/body-interval-view.js": "59b21ecf7f6bab1da1ee5f0e6362e7cd5c1a3390b27c46953ac4062c2af7c7c8",
     "src/calendar-report-highlights.js": "3cccf50528715fe13fee11c016694f339358ecb0e7bea12344e1b31c2de614e7",
-    "src/calendar-report-overview.js": "e3fb64a31a749bb89984939852a4810ffda5a17e088705e7bb87b9b6ece0fedd",
+    "src/calendar-report-overview.js": "66eb6012ac5b1b68d2dbec6a38b373cf2f48ffed96aad11817ae97430fdae02c",
     "src/calendar-report-model.js": "a5ea0b15586a2592ac3c4a2bff5983db02942cfde01b47d8f92db56895ef2fd7",
     "src/calendar-report-view.js": "904b951eb23a0ebe9d26986f7e509a928a961c561909bc67e70db0d3a4a0de8c",
     "src/care-followup.js": "d27adde998c8a5c643c357c22e010206f1abf3ac819479832e3cacc115d5c7e8",
@@ -183,8 +183,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261026\.86/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261026.86'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261026\.87/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261026.87'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';
