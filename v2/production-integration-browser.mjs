@@ -36,7 +36,13 @@ for(const width of [320,393,1440]){
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>{
   const url=new URL(route.request().url());
-  if(url.hostname==='cdn.jsdelivr.net'&&url.pathname==='/npm/@supabase/supabase-js@2')return route.fulfill({contentType:'application/javascript',body:service(makeDashboardFixture(FIXED_TODAY).db)});
+  if(url.hostname==='cdn.jsdelivr.net'&&url.pathname==='/npm/@supabase/supabase-js@2'){
+   const db=makeDashboardFixture(FIXED_TODAY).db;
+   db.health_workouts=db.health_workouts.map(row=>({...row,documented_energy_kind:'estimate',documented_duration_kind:'approximate'}));
+   db.health_workout_sets=[];
+   db.health_workout_exercises=db.health_workout_exercises.map(row=>({...row,source_text:'Escala de placa: 4 × 8 — registro original de exemplo'}));
+   return route.fulfill({contentType:'application/javascript',body:service(db)});
+  }
   if(url.origin===parsed.origin&&route.request().method()==='GET')return route.continue();
   external.push({origin:url.origin,method:route.request().method()});return route.abort();
  });
@@ -51,6 +57,23 @@ for(const width of [320,393,1440]){
   await page.waitForFunction(r=>document.querySelector('#screenHost')?.dataset.productLayoutRoute===r||r==='evolucao'||r==='timeline'||r==='dados'||r==='tratamentos',route);
   assert.ok((await page.locator('#screenHost').innerText()).trim().length>30,route+' renders');
   assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.route}),route);
+  if(route==='treinos'){
+   assert.equal(await page.getByText('Energia estimada',{exact:true}).count(),1,'documented energy estimate is identified at '+width);
+   assert.equal(await page.getByText('Duração aproximada',{exact:true}).count(),1,'documented approximate duration is identified at '+width);
+   assert.equal(await page.locator('.ltsRefTrainMetrics').getByText('Séries em texto',{exact:true}).count(),1,'original textual sets are not a confirmed zero at '+width);
+   await page.getByRole('tab',{name:'Exercícios',exact:true}).click();
+   assert.ok(await page.getByText('Escala de placa: 4 × 8 — registro original de exemplo',{exact:true}).count()>0,'literal source units remain readable');
+   assert.ok((await page.locator('.ltsRefExerciseCard').first().innerText()).includes('Séries em texto'));
+   const sourceGeometry=await page.locator('.ltsRefSetEmpty').first().evaluate(node=>{
+    const range=document.createRange();range.selectNodeContents(node);
+    return{textWidth:range.getBoundingClientRect().width,cardWidth:node.closest('.ltsRefExerciseCard').getBoundingClientRect().width};
+   });
+   assert.ok(sourceGeometry.textWidth>=Math.min(240,sourceGeometry.cardWidth*.65),'original text uses the card width, not the first table column at '+width);
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'textual exercise details fit '+width);
+   await page.screenshot({path:`artifacts/production-integration/training-text-sets-${width}.png`});
+   await page.getByRole('tab',{name:'Resumo',exact:true}).click();
+   await page.screenshot({path:`artifacts/production-integration/training-qualifiers-${width}.png`});
+  }
   await page.screenshot({path:`artifacts/production-integration/${route}-${width}.png`,fullPage:true});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,route+' fits '+width);
   if(['bio','treinos'].includes(route)){

@@ -60,7 +60,7 @@ function hrPanel(workout){
   const sourceLabel=workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada';
   const telemetryLabel=workout.telemetry_heart_rate_is_partial?`Trecho parcial · ${sourceLabel}`:sourceLabel;
   return `<section class="ltsRefTrainPanel ltsRefHrPanel">
-    <header><div><span>Medidas do aparelho</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>
+    <header><div><span>${workout.telemetry_provenance_status==='confirmed'?'Medidas do aparelho':'Valores registrados'}</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>
     <div class="ltsRefHrNumbers">
       <div><small>Mín.</small><b>${min!=null?fmtNum(min,0):'—'}</b><span>bpm</span></div>
       <div><small>Média</small><b>${avg!=null?fmtNum(avg,0):'—'}</b><span>bpm</span></div>
@@ -74,7 +74,7 @@ function hrPanel(workout){
 function summaryExercisePreview(exercises,acceptedSets=[],setsAvailable=false){
   if(!exercises.length)return'';
   const exercise=exercises[0],sets=acceptedSets.filter(set=>set.exercise_source_record_id===exercise.source_record_id),counts=trainingSetCounts(sets);
-  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${!setsAvailable?'Séries indisponíveis agora':sets.length?`${counts.primary} séries registradas${counts.extensions?` + ${counts.extensions} prolong.`:''}`:'Ainda não há séries detalhadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
+  return `<article class="ltsExerciseCard ltsRefExercisePreview"><div><span>Primeiro exercício</span><b>${esc(exercise.exercise||'Exercício')}</b><small>${!setsAvailable?'Séries indisponíveis agora':sets.length?`${counts.primary} séries registradas${counts.extensions?` + ${counts.extensions} prolong.`:''}`:String(exercise.source_text||'').trim()?'Séries preservadas em texto':'Ainda não há séries detalhadas'}</small></div><button type="button" data-depth-training-view="exercises">Ver todos ›</button></article>`;
 }
 
 function recordedSessionContext(workout){
@@ -98,18 +98,19 @@ function recordedSessionContext(workout){
 
 function summaryView(workout){
   const{exercises,acceptedSets,setsAvailable,exerciseCount,setCount,extensionCount}=workoutCounts(workout);
+  const textualSets=setsAvailable&&setCount===0&&(exercises.some(exercise=>String(exercise.source_text||'').trim())||String(workout.raw_exercises||'').trim());
   return `${sessionHero(workout)}
     <section class="ltsRefTrainMetrics">
-      ${metric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min','Duração')}
+      ${metric(num(workout.duration_minutes)!=null?fmtNum(workout.duration_minutes,0):'—','min',workout.telemetry_duration_is_approximate?'Duração aproximada':'Duração')}
       ${metric(num(workout.calories_kcal)!=null?fmtNum(workout.calories_kcal,0):'—','kcal',workout.telemetry_energy_is_estimated?'Energia estimada':'Energia')}
       ${metric(num(workout.heart_rate_avg)!=null?fmtNum(workout.heart_rate_avg,0):'—','bpm',workout.telemetry_heart_rate_is_partial?'FC média · trecho':'FC média')}
-      ${metric(setCount==null?'—':' '+setCount,'','Séries')}
+      ${metric(setCount==null||textualSets?'—':' '+setCount,'',textualSets?'Séries em texto':'Séries')}
     </section>
     ${measurementNote(workout)}
     ${hrPanel(workout)}
     <section class="ltsRefTrainPanel ltsRefSessionOverview">
       <header><div><span>Seu treino</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
-      <div class="ltsRefOverviewGrid"><div><b>${exerciseCount==null?'—':exerciseCount}</b><span>exercícios registrados</span></div><div><b>${setCount==null?'—':setCount}</b><span>séries registradas</span></div></div>
+      <div class="ltsRefOverviewGrid"><div><b>${exerciseCount==null?'—':exerciseCount}</b><span>exercícios registrados</span></div><div><b>${setCount==null||textualSets?'—':setCount}</b><span>${textualSets?'séries preservadas em texto':'séries registradas'}</span></div></div>
       ${extensionCount?`<p class="ltsRefExtensionNote">${extensionCount} prolongamento${extensionCount===1?'':'s'} por drop ou rest-pause, separado${extensionCount===1?'':'s'} das séries. Aquecimentos e ajustes informados entram na contagem das séries.</p>`:''}
       ${recordedSessionContext(workout)}
       ${summaryExercisePreview(exercises,acceptedSets,setsAvailable)}
@@ -124,7 +125,7 @@ function exerciseCards(workout){
     const sets=failed(state,'sets')?[]:setsFor(exercise);
     const counts=trainingSetCounts(sets);
     return `<article class="ltsExerciseCard ltsRefExerciseCard">
-      <header><div class="ltsRefExerciseNumber">${String(index+1).padStart(2,'0')}</div><div><b>${esc(exercise.exercise||'Exercício')}</b><small>${esc([exercise.machine,exercise.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'—':`${counts.primary} séries${counts.extensions?` + ${counts.extensions} prolong.`:''}`}</span></header>
+      <header><div class="ltsRefExerciseNumber">${String(index+1).padStart(2,'0')}</div><div><b>${esc(exercise.exercise||'Exercício')}</b><small>${esc([exercise.machine,exercise.muscle_group].filter(Boolean).join(' · ')||'')}</small></div><span>${failed(state,'sets')?'—':!sets.length&&String(exercise.source_text||'').trim()?'Séries em texto':`${counts.primary} séries${counts.extensions?` + ${counts.extensions} prolong.`:''}`}</span></header>
       <div class="ltsRefSetTable">${sets.length?sets.map((set,setIndex)=>{const t=setText(set);return `<div><span>${esc(setStepLabel(sets,setIndex))}</span><b>${t.missing?'Dados não informados':esc(t.load)}</b><i>${t.missing?'':`× ${esc(t.reps)} reps`}</i>${t.flags.length?`<em>${esc(t.flags.join(' · '))}</em>`:''}</div>`;}).join(''):`<div class="ltsRefSetEmpty">${failed(state,'sets')?'As séries não carregaram agora.':esc(exercise.source_text||'Ainda não há séries detalhadas.')}</div>`}</div>
       ${exerciseNotes(exercise,sets)}
       <button type="button" class="ltsRefExerciseHistory" data-depth-exercise="${esc(exercise.source_record_id)}">Histórico deste exercício ›</button>

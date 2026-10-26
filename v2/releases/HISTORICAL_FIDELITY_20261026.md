@@ -1,0 +1,13 @@
+# Historical source fidelity and bounded transport diagnostics
+
+Candidate frontend: `health-integrated-20261026.83`. Previous verified public frontend: `.82`. Final publication, exact public inspection and receiver deployment are pending.
+
+Original structured export and matching CSVs were reconciled privately against complete current records. Missing bounded application context and original session text were restored in existing uniquely matched records. Every exact preimage was saved before writing and checked before the first update. Full expected postimages, all other target fields, unrelated records, counts and auxiliary history were independently verified. Unknown context stays unknown; no prescription, laboratory result, numerical workout value, session, exercise, set or unit conversion was added or replaced. Existing later document-backed corrections supersede the old migration and were preserved.
+
+The candidate reads only explicit restricted estimate/approximation provenance kinds. It labels estimated energy and approximate duration without changing numeric values or promoting unknown origins to confirmed device telemetry. Preserved textual sets are identified as text instead of a confirmed zero; original notation remains readable without parsing or unit conversion. Its fallback text uses the full card width, with explicit mobile text geometry and no-overflow checks. The actual renderer passes 320/393/1440 px synthetic journeys. A generic real-account gate checks that canonical seed-source workouts retain original session text without printing it.
+
+Receiver diagnostics now distinguish a numeric declared length from actual observed bytes, a complete read from a stopped-stream lower bound, and an unread body from an empty body. These facts are private and recorded only after the existing authentication. Raw payload text, arbitrary headers, source names, tokens and exported values are not added to diagnostics or responses. The existing body limit and ingestion routing are preserved; logger and cancellation failures cannot change a limit response or allow partial writes.
+
+Local verification passed: receiver body/summary/authentication and privacy tests, source parity, read-only preview boundary, operational write/connection boundaries, runtime assets and responsive actual production entry. Candidate gates and exact deployments remain required.
+
+Water transport, original authenticated MFP history, attributable recurrence, the exact independently authorized laboratory proposal, basal eligibility, ordinary production form submission, physical iPhone and actual owner acceptance remain independent open conditions. No private preimages or personal source content are included in this public release record.

@@ -1,3 +1,7 @@
+# FB-035 — further original-source reconciliation, 2026-10-26 UTC
+
+The owner again requests autonomous completion and review of existing documents/chats. Available original structured sources were reconciled with complete current records. Previously stored historical context and session text were omitted from their bounded presentation fields; the guarded source-proven repair preserved other fields, counts, prescriptions and auxiliary history. The candidate also makes explicit original estimate/approximate-duration qualifiers and improves authenticated transport-byte diagnostics. Current publication/deployment gates and independent external conditions remain in `EXECUTION_STATE.json`. No technical pass implies owner acceptance.
+
 # Current feedback — autonomous completeness review, 2026-10-25
 
 FB-034: the owner requests continued autonomous review of existing documents, conversations and unresolved defects while preserving the approved layout. Previously supplied evidence and completed diagnostic steps must not be requested again. The current package repairs source-specific coverage and refresh behavior; a bounded original-confirmed metadata repair is independently saved and reopened. Technical tests and publication do not imply overall acceptance. Water transport, the exact separately authorized lab proposal, basal eligibility, ordinary production forms and physical-device acceptance remain explicit in `EXECUTION_STATE.json`.

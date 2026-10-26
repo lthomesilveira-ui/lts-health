@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-25",
+  "updated_on": "2026-10-26",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/SOURCE_COVERAGE_20261025.md"
+    "latest_release": "v2/releases/HISTORICAL_FIDELITY_20261026.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,37 +49,35 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-SOURCE-COVERAGE-001",
-    "status": "done",
-    "goal": "Reconcile supplied documents and conversations, repair current source dates and stale connection status, and verify bounded historical context without changing the approved dashboard.",
+    "id": "PKG-HISTORICAL-FIDELITY-001",
+    "status": "in_progress",
+    "goal": "Restore omitted confirmed historical context and complete source text in existing records, identify documented estimates without changing values, and diagnose bounded export transport without raw-payload logging.",
     "task_ids": [
-      "LTS-COMPLETENESS-REVIEW-001",
-      "LTS-SOURCE-COVERAGE-001",
-      "LTS-HISTORICAL-CONTEXT-001"
+      "LTS-HISTORICAL-CONTEXT-002",
+      "LTS-LEGACY-WORKOUT-SOURCE-001",
+      "LTS-LEGACY-ESTIMATE-READING-001",
+      "LTS-EXPORT-BODY-DIAGNOSTICS-001"
     ],
     "public_build": "health-integrated-20261025.82",
-    "candidate_build": "health-integrated-20261025.82",
-    "release_state": "published_82;candidate_gates_deploy_real_auth_and_exact_public_manual_verified;overall_delivery_not_accepted",
+    "candidate_build": "health-integrated-20261026.83",
+    "release_state": "historical_bounded_writes_verified;candidate_83_locally_verified;publication_and_receiver_deployment_pending;overall_delivery_not_accepted",
     "completed_evidence": [
-      "Current main and both reference heads reconciled before changes; the existing published work and approved Home are preserved.",
-      "Private supplied originals and available conversations inspected; already incorporated food plan, workout and application records are preserved without reimport.",
-      "Named authenticated food bridge coverage is separated from original file history; newer anonymous nutrition cannot advance MyFitnessPal coverage.",
-      "Actual Polar provider sessions contribute to source availability without creating or adding canonical workouts.",
-      "Global refresh and Sources reentry read current connection status; the existing refresh control is visible at mobile widths.",
-      "A bounded previously authorized historical-context repair updated only structured metadata. Exact preimages, unchanged other fields and record count, independent reread and full authenticated public reload were verified privately.",
-      "Local privacy, provenance, production write/connection boundaries, model suites and responsive production-entry checks passed.",
-      "All thirteen exact candidate workflows passed at c5a8e25ed584974baed9e33c143279fcacd8c08a.",
-      "Normal PR 395 published runtime at e6317bc171133d8a4d8a213da3edc88aca86d8ae with the exact tested tree 5456ec0551086b1e7a484e710a8be07b5f3ad658.",
-      "Deployment 40246269409, public Pages 40246293604, homologation Pages 40246293639 and full real authenticated workflow 40246269360 passed at the runtime promotion commit.",
-      "The preserved owner session reloaded exact public .82. Separate file/named food bridge/provider dates, readable filename, global refresh, historical context and daily missing-water reading were manually inspected.",
-      "All seven daily cards and the approved Home remain present. Clinical prescriptions, laboratory data, canonical workout identity and source-specific non-additive boundaries are preserved."
+      "Original structured export and matching CSVs reconciled with exact current records; historical document-backed body corrections preserved.",
+      "Private exact preimages and expected postimages saved durably before any update.",
+      "A guarded transaction restored only omitted context/source text and restrictive provenance fields. Exact independent postimages, unchanged record counts, other rows and auxiliary history were verified.",
+      "Existing public .82 fully reloaded and displayed saved application contexts. Unknown times and unconfirmed locations remain absent.",
+      "Candidate .83 labels only explicitly documented estimates/approximate durations, preserving numeric values and unknown source identity.",
+      "Local privacy, source parity, write/connection boundaries and actual production-entry journeys at 320/393/1440 px passed; synthetic screenshots inspected.",
+      "Authenticated receiver candidate keeps the existing limit, keys and ingestion routing. Numeric-only transport facts distinguish declared length, observed lower bound and unread body; cancellation/logger failures cannot mask the response."
     ],
-    "pending_evidence": [],
+    "pending_evidence": [
+      "Final candidate CI, normal publication, exact authenticated public .83 inspection and exact receiver deployment/readback/negative-auth checks."
+    ],
     "independent_open_conditions": [
-      "Phone-side water continuity and original MFP history.",
-      "Original exact lab proposal recovery and separate specific execution authority.",
-      "Basal origin and complete-day eligibility.",
-      "Genuine production write/reopen and physical-iPhone/owner acceptance are not inferred from read-only or synthetic checks."
+      "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
+      "Exact original laboratory proposal and separate specific execution authority.",
+      "Basal source and complete-day eligibility.",
+      "Ordinary production form submission, physical-iPhone and owner acceptance remain separate."
     ]
   },
   "last_verified_release": {
@@ -1636,7 +1634,8 @@
         "supabase/tests/support/lab-numeric-proof-sql.mjs",
         "Public PR 367 contains disposable synthetic tests, not an executable private approval or real target list.",
         "Searches of project records and recent private file metadata did not recover the original exact manifest. A broader set of ambiguous results is not substituted for that list.",
-        "Completeness review searched the available conversations, exact proposal references and private file metadata again; the original exact manifest was not recovered. Existing broader ambiguous records are not substituted."
+        "Completeness review searched the available conversations, exact proposal references and private file metadata again; the original exact manifest was not recovered. Existing broader ambiguous records are not substituted.",
+        "Further focused available-conversation search found no original exact manifest. Unrelated project material and later summaries were excluded; laboratory data remains untouched."
       ],
       "next_action": "Recover the original private proposal from a durable source; keep this as agent-side continuity work and do not ask the owner to repeat the medical history.",
       "blocker": "The exact original private fifteen-record manifest is not currently recovered."
@@ -1699,7 +1698,8 @@
       "evidence": [
         "The isolated integrated-review browser verifies actual goal saving and page reload in disposable synthetic persistence.",
         "Current public changes are reading/navigation changes; no production medical record or prescription was written during this restart.",
-        "A genuine authorized bounded metadata repair now has exact preimages, unchanged other fields and count, independent database reread and full public reload. The separate LTS-HISTORICAL-CONTEXT-001 is complete; ordinary app form submission remains unproved."
+        "A genuine authorized bounded metadata repair now has exact preimages, unchanged other fields and count, independent database reread and full public reload. The separate LTS-HISTORICAL-CONTEXT-001 is complete; ordinary app form submission remains unproved.",
+        "A second genuine bounded historical repair has exact preimages, independent postimages, unchanged other data and public reopening. This is still a different path from ordinary form submission."
       ],
       "next_action": "Exercise ordinary production saving and full reopening with the next genuine non-duplicating form update. Do not create a fake health record merely for testing.",
       "blocker": "No new genuine non-duplicating ordinary app form update is currently available; the completed metadata repair is a different write path."
@@ -1721,7 +1721,8 @@
         "Owner restart of 2026-10-25 rejects completion while preserving the approved layout.",
         "Runtime .81 and workflow 40209261568 are technical evidence only.",
         "The requested current Health Sync status is now supplied and inspected. Successful phone status does not by itself establish transferred observations.",
-        "Completeness review and bounded historical-context persistence are verified privately; source display/status improvements are in the current candidate package. Overall delivery is not accepted."
+        "Completeness review and bounded historical-context persistence are verified privately; source display/status improvements are in the current candidate package. Overall delivery is not accepted.",
+        "Further original-file reconciliation found and repaired omitted historical context/source text. Candidate qualifiers and receiver diagnostics remain in progress; owner acceptance is not inferred."
       ],
       "next_action": "Continue from the opened technical cases and genuine source evidence, while preserving separate lab, basal, ordinary form and physical-device tasks.",
       "blocker": "Actual water continuity and physical-device/owner acceptance remain unverified; the current Health Sync status capture is already available."
@@ -1807,10 +1808,97 @@
       ],
       "evidence": [
         "A receiver request was rejected before parsing at the existing payload limit; its body is unknown.",
-        "A separate technical support request has been sent using the official channel without medical values, images or credentials."
+        "A separate technical support request has been sent using the official channel without medical values, images or credentials.",
+        "Bounded numeric transport diagnostics are implemented in the current package; original rejected body composition remains unknown. Deployment is pending and does not resolve upstream transport."
       ],
       "next_action": "Use the provider response and a genuine bounded diagnostic to establish request composition and supported batching; preserve current keys and accepted records.",
       "blocker": "Rejected request composition and supported export batching are not yet established."
+    },
+    {
+      "id": "LTS-HISTORICAL-CONTEXT-002",
+      "area": "historical application fidelity",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Recover omitted bounded context already recorded in original sources without inferring missing sides or times.",
+      "acceptance": [
+        "Reconcile original CSV and literal confirmed historical fields.",
+        "Preserve all doses, prescriptions, source fields, other records and counts.",
+        "Verify exact postimages independently and reopen the public app.",
+        "Retain genuinely missing context as unknown."
+      ],
+      "evidence": [
+        "Private original file digests, exact preimages and postimages saved before execution.",
+        "Guarded write and independent reread passed; all other fields and auxiliary history preserved.",
+        "Existing public .82 fully reloaded and displayed restored context; unconfirmed location remained explicitly absent."
+      ],
+      "next_action": "Preserve literal source fidelity; add missing facts only from a genuine confirming source.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-LEGACY-WORKOUT-SOURCE-001",
+      "area": "training source fidelity",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Restore omitted original session text and caveats in existing uniquely matched workouts.",
+      "acceptance": [
+        "Require exact unique date/type/place/duration/telemetry matches and agreement of independent supplied export files.",
+        "Preserve session identities, numeric values, exercises, sets and raw travel units.",
+        "Verify exact postimages independently and reopen the original source in the public app.",
+        "Prevent a canonical seed-source session from losing its original text in real-account checks."
+      ],
+      "evidence": [
+        "Original JSON and CSV texts matched; only missing raw source text and restrictive provenance were restored.",
+        "Exact independent postimages, all remaining fields, other rows and auxiliary history verified.",
+        "A generic real-account integrity check now rejects missing source text for canonical seed-source sessions without printing private records.",
+        "Actual authenticated .82 session history reopened a restored original report; original units and estimation caveats were visible. The independent generic canonical seed-source query has no missing original text."
+      ],
+      "next_action": "Preserve original session text and source caveats; retain the generic authenticated missing-source gate.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-LEGACY-ESTIMATE-READING-001",
+      "area": "truthful workout telemetry",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Identify documented estimates and approximate durations, and distinguish preserved textual sets from zero structured detail.",
+      "acceptance": [
+        "Use only bounded explicit provenance kinds; do not infer from arbitrary prose or missing data.",
+        "Preserve all numeric values, source identity and confirmed evidence behavior.",
+        "Verify model and actual responsive renderer, then inspect the exact published real-account example.",
+        "Show preserved textual sets without converting their units, inventing structured counts or displaying them as confirmed zero exercise."
+      ],
+      "evidence": [
+        "v2/workout-estimate-provenance-test.mjs",
+        "v2/production-integration-browser.mjs",
+        "All local model, privacy and source-parity tests passed; renderer verified at 320/393/1440 px.",
+        "The responsive production-entry test now exercises preserved textual sets, literal plate notation, estimated energy and approximate duration; no external writes."
+      ],
+      "next_action": "Complete final candidate CI, publication and exact public inspection.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-EXPORT-BODY-DIAGNOSTICS-001",
+      "area": "export transport diagnostics",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Capture bounded numeric byte diagnostics after authentication while preserving receiver limits and responses.",
+      "acceptance": [
+        "Keep the existing authentication, request limit, ingestion route and public response shape.",
+        "Distinguish declared bytes, actually observed bytes, unread bodies and incomplete streams without storing payload text or arbitrary headers.",
+        "Handle logger/cancellation failure without changing response classification or allowing partial writes.",
+        "Deploy exact tested files and verify configuration, file readback and live negative authentication; keep actual oversized-request composition unclaimed until observed."
+      ],
+      "evidence": [
+        "Deployed prior receiver and all relative dependencies matched the repository exactly before modification.",
+        "supabase/tests/receiver-body-observability-test.mjs",
+        "Existing receiver summary, authenticated import and failure-isolation tests passed locally."
+      ],
+      "next_action": "Finish exact candidate gates and deploy/read back the reviewed receiver bundle; inspect genuine later evidence when available.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -2221,6 +2309,40 @@
         "Exact public .81 was manually inspected in the existing authenticated session: current and historical water, all observed body points, historical point selection and reopening of its original measurement.",
         "PRs 389, 391 and 392 reconcile current authenticated checks without changing runtime records or permissions. Final real-account workflow 40209261568 passed completely at 5f3652a71736ac80519439a9062698fa4c96e54f, including independent full-history means/denominators, all current windows, responsive navigation, actual Labs visuals and encrypted evidence.",
         "Final source-specific metadata recheck confirms that general receipts remain newer than water. Upstream continuity is not closed by the presentation fix or workflow success."
+      ],
+      "pending_evidence": [],
+      "independent_open_conditions": [
+        "Phone-side water continuity and original MFP history.",
+        "Original exact lab proposal recovery and separate specific execution authority.",
+        "Basal origin and complete-day eligibility.",
+        "Genuine production write/reopen and physical-iPhone/owner acceptance are not inferred from read-only or synthetic checks."
+      ]
+    },
+    {
+      "id": "PKG-SOURCE-COVERAGE-001",
+      "status": "done",
+      "goal": "Reconcile supplied documents and conversations, repair current source dates and stale connection status, and verify bounded historical context without changing the approved dashboard.",
+      "task_ids": [
+        "LTS-COMPLETENESS-REVIEW-001",
+        "LTS-SOURCE-COVERAGE-001",
+        "LTS-HISTORICAL-CONTEXT-001"
+      ],
+      "public_build": "health-integrated-20261025.82",
+      "candidate_build": "health-integrated-20261025.82",
+      "release_state": "published_82;candidate_gates_deploy_real_auth_and_exact_public_manual_verified;overall_delivery_not_accepted",
+      "completed_evidence": [
+        "Current main and both reference heads reconciled before changes; the existing published work and approved Home are preserved.",
+        "Private supplied originals and available conversations inspected; already incorporated food plan, workout and application records are preserved without reimport.",
+        "Named authenticated food bridge coverage is separated from original file history; newer anonymous nutrition cannot advance MyFitnessPal coverage.",
+        "Actual Polar provider sessions contribute to source availability without creating or adding canonical workouts.",
+        "Global refresh and Sources reentry read current connection status; the existing refresh control is visible at mobile widths.",
+        "A bounded previously authorized historical-context repair updated only structured metadata. Exact preimages, unchanged other fields and record count, independent reread and full authenticated public reload were verified privately.",
+        "Local privacy, provenance, production write/connection boundaries, model suites and responsive production-entry checks passed.",
+        "All thirteen exact candidate workflows passed at c5a8e25ed584974baed9e33c143279fcacd8c08a.",
+        "Normal PR 395 published runtime at e6317bc171133d8a4d8a213da3edc88aca86d8ae with the exact tested tree 5456ec0551086b1e7a484e710a8be07b5f3ad658.",
+        "Deployment 40246269409, public Pages 40246293604, homologation Pages 40246293639 and full real authenticated workflow 40246269360 passed at the runtime promotion commit.",
+        "The preserved owner session reloaded exact public .82. Separate file/named food bridge/provider dates, readable filename, global refresh, historical context and daily missing-water reading were manually inspected.",
+        "All seven daily cards and the approved Home remain present. Clinical prescriptions, laboratory data, canonical workout identity and source-specific non-additive boundaries are preserved."
       ],
       "pending_evidence": [],
       "independent_open_conditions": [
