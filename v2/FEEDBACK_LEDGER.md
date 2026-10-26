@@ -1,3 +1,7 @@
+# FB-036 — follow actual support replies, 2026-10-26
+
+The owner reports that a support email was answered and authorizes continued resolution. Read the actual reply, follow the existing verified conversation and preserve earlier authorizations. The source-sync provider requests a first native problem report; that physical-device action is distinct from already completed phone tests. Category clarification and genuine server diagnostics are verified, while the native cause and water restoration are not. Keep the approved layout, prescriptions, source boundaries and all original records intact.
+
 # FB-035 — further original-source reconciliation, 2026-10-26 UTC
 
 Available originals and conversations were reviewed again. The bounded historical repair was saved, independently reread and reopened in exact public .83. Explicit estimates and textual sets are readable; receiver v9 source/config and negative auth are verified. Stale operational lab descriptions were reconciled without changing clinical records. Completed owner phone evidence must not be requested again, and provider-blocked original history is tracked as an external access dependency. The bounded package is done; actual water continuity, separate exact lab authority, basal eligibility, ordinary form coverage and physical-device/owner acceptance remain open. No technical pass implies overall delivery.

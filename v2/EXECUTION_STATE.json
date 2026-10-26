@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/HISTORICAL_FIDELITY_20261026.md"
+    "latest_release": "v2/releases/WATER_SUPPORT_20261026.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,34 +49,30 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-HISTORICAL-FIDELITY-001",
-    "status": "done",
-    "goal": "Restore omitted confirmed historical context and complete source text in existing records, identify documented estimates without changing values, and diagnose bounded export transport without raw-payload logging.",
+    "id": "PKG-WATER-SUPPORT-001",
+    "status": "blocked_user",
+    "goal": "Use the actual provider response and genuine authenticated transport evidence to investigate missing water, without repeating completed phone checks or treating a diagnostic request as a repair.",
     "task_ids": [
-      "LTS-HISTORICAL-CONTEXT-002",
-      "LTS-LEGACY-WORKOUT-SOURCE-001",
-      "LTS-LEGACY-ESTIMATE-READING-001",
+      "LTS-HEALTH-SUPPORT-FOLLOWUP-001",
       "LTS-EXPORT-BODY-DIAGNOSTICS-001",
-      "LTS-QUALITY-STATUS-TEXT-001"
+      "LTS-WATER-NATIVE-REPORT-001",
+      "LTS-WATER-UPSTREAM-STATUS-001"
     ],
     "public_build": "health-integrated-20261026.83",
-    "release_state": "published_and_exact_authenticated_public_verified;receiver_9_exact_readback_and_negative_auth_verified;bounded_package_complete;overall_delivery_not_accepted",
+    "release_state": "provider_replied;category_clarification_sent_and_reread;real_transport_diagnostics_verified;native_device_report_required;water_not_restored;overall_delivery_not_accepted",
     "completed_evidence": [
-      "Original structured export and matching CSVs reconciled with exact current records; historical document-backed body corrections preserved.",
-      "Private exact preimages and expected postimages saved durably before any update.",
-      "A guarded transaction restored only omitted context/source text and restrictive provenance fields. Exact independent postimages, unchanged record counts, other rows and auxiliary history were verified.",
-      "Existing public .82 fully reloaded and displayed saved application contexts. Unknown times and unconfirmed locations remain absent.",
-      "Candidate .83 labels only explicitly documented estimates/approximate durations, preserving numeric values and unknown source identity.",
-      "Local privacy, source parity, write/connection boundaries and actual production-entry journeys at 320/393/1440 px passed; synthetic screenshots inspected.",
-      "Authenticated receiver candidate keeps the existing limit, keys and ingestion routing. Numeric-only transport facts distinguish declared length, observed lower bound and unread body; cancellation/logger failures cannot mask the response.",
-      "Normal PR 397 promoted the exact reviewed tree as main 4393c905b28ae66b5ae2bd6db3deaef14ffa4b08 after all fourteen final candidate workflows passed.",
-      "Deploy 40254229066, public Pages 40254260359, homologation 40254260335 and full real authenticated workflow 40254229141 passed.",
-      "The preserved authenticated owner session fully reloaded exact .83 and reopened restored session text, explicit estimates, approximate duration, textual exercise sets and saved application context. All seven daily cards and missing-water/last-observation distinctions remain present.",
-      "Receiver version 9 is ACTIVE. All six deployed files match the reviewed bundle exactly; existing custom key authentication, verify_jwt=false, absent import map, ingestion routing and the 1 MiB limit are preserved. Missing and malformed actual-key-header requests return 401 without health-record writes.",
-      "Two stale operational laboratory quality descriptions were updated from the verified original-source checkpoint. Exact preimages and independent full postimages were checked; accepted status, all other fields, other quality rows and clinical results were preserved.",
-      "The original water-history transfer is blocked by supported provider access, not by an uncompleted repeated phone check. No immediate owner micro-test, duplicate recording, purchase or recurring manual export is requested."
+      "The actual official source-sync provider reply was read. It requests the affected category and a problem report generated through the native app Help Center.",
+      "The requested category and direction were clarified in the existing verified email conversation. SENT, recipient and content were read back. No measurements, record dates, screenshots, raw diagnostic files or credentials were attached.",
+      "The other official export-support conversation still has no reply at this checkpoint; no duplicate case was opened.",
+      "Receiver version 9 remains ACTIVE and all six deployed files match the reviewed repository source. Genuine subsequent authenticated requests were accepted, read completely and measured below the existing limit, without a limit trigger or the expected water block.",
+      "The original rejected body remains unknown. A successful small request does not establish what the historical oversized request contained.",
+      "All twelve prior metadata-publication workflows now passed; the previously running integrated workflow is complete. Frontend .83, source routing, keys, original records and the approved layout are preserved."
     ],
-    "pending_evidence": [],
+    "pending_evidence": [
+      "A native Health Sync problem report must be generated on the physical iPhone and submitted to the existing official support conversation; this log cannot be generated from LTS server data or email.",
+      "The provider must analyze the native source read and destination write before a specific cause or repair can be claimed.",
+      "After repair, verify the same genuine observation through the source/destination, accepted receiver and reopened public app; attributable recurrence remains separate."
+    ],
     "independent_open_conditions": [
       "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
       "Exact original laboratory proposal and separate specific execution authority.",
@@ -1617,10 +1613,12 @@
         "The requested main/status screen and the relevant write permission were supplied and inspected; neither is missing.",
         "The owner completed the one-time foreground/export and connection checks. Accepted newer receiver packets still lacked the metric, while the source-side versus Apple history comparison showed a gap before export.",
         "The exact internal provider or native write failure remains unproved; successful status is not proof of transferred observations.",
-        "An authorized technical support request was sent through the verified official channel; no health values, private images or credentials were sent."
+        "An authorized technical support request was sent through the verified official channel; no health values, private images or credentials were sent.",
+        "2026-10-26: the provider replied through the existing official conversation, asking for the category and native Help Center problem report. The category/direction reply was sent and independently read back.",
+        "2026-10-26: fresh genuine accepted receiver requests still lack the expected water block. Native device report delivery is tracked separately in LTS-WATER-NATIVE-REPORT-001."
       ],
-      "next_action": "Use the existing official support case and native diagnostic guidance when received. Inspect genuine later source/receiver evidence; do not repeat screenshots, purchases, connection resets, duplicate recording or recurring exports.",
-      "blocker": "The source app shows the new normal entry while the inspected Apple history remains older; the internal transfer cause is not exposed to the LTS receiver.",
+      "next_action": "Use the existing official conversation to analyze the native report once submitted. Preserve completed phone setup/checks; do not replace the requested diagnostic with repeated entry, screenshots, purchases or reconnection.",
+      "blocker": "The provider requires native Health Sync diagnostics to inspect the internal source read and Apple Health write. The first native-report submission is a separate physical-device task; no exact cause is established yet.",
       "phone_status_capture_received": true
     },
     {
@@ -1814,7 +1812,7 @@
       "evidence": [
         "A receiver request was rejected before parsing at the existing payload limit; its body is unknown.",
         "A separate technical support request has been sent using the official channel without medical values, images or credentials.",
-        "Bounded numeric transport diagnostics are implemented in the current package; original rejected body composition remains unknown. Deployment is pending and does not resolve upstream transport."
+        "Receiver version 9 is deployed and numeric transport diagnostics now operate on genuine complete accepted requests below the unchanged limit. The original oversized body remains unknown; the export-provider reply and supported batching remain pending."
       ],
       "next_action": "Use the provider response and a genuine bounded diagnostic to establish request composition and supported batching; preserve current keys and accepted records.",
       "blocker": "Rejected request composition and supported export batching are not yet established."
@@ -1905,9 +1903,10 @@
         "Existing receiver summary, authenticated import and failure-isolation tests passed locally.",
         "Authenticated body-byte, summary, invalid-payload, limit, cancellation-failure, logger-failure and no-partial-write tests passed.",
         "Receiver version 9 deployed and all six reviewed files/config read back exactly. Real missing-key and malformed x-lts-health-key requests returned 401. No valid synthetic health record was sent.",
-        "No genuine authenticated receipt was observed in the bounded immediate post-deployment log window; actual future oversized-request composition remains the separate LTS-EXPORT-PAYLOAD-001 condition."
+        "No genuine authenticated receipt was observed in the bounded immediate post-deployment log window; actual future oversized-request composition remains the separate LTS-EXPORT-PAYLOAD-001 condition.",
+        "2026-10-26: two genuine authenticated requests after deployment were accepted. Declared and observed bytes agree, the read is complete, no limit trigger is present and no expected water block is observed. This verifies live positive-path observability without submitting synthetic health data."
       ],
-      "next_action": "Use the numeric-only diagnostics on a genuine later request; preserve the existing limit and never reconstruct an unobserved rejected body.",
+      "next_action": "Use the verified numeric-only diagnostics on genuine later requests; keep the original limit and never reconstruct an unobserved rejected body.",
       "blocker": null
     },
     {
@@ -1928,6 +1927,45 @@
       ],
       "next_action": "Keep the broader importer and exact original lab-correction proposal separately blocked until their own evidence and specific execution authority exist.",
       "blocker": null
+    },
+    {
+      "id": "LTS-HEALTH-SUPPORT-FOLLOWUP-001",
+      "area": "water support follow-up",
+      "priority": "P0",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Process the actual first source-sync support response and clarify its technical scope in the existing official conversation.",
+      "acceptance": [
+        "Read and verify the actual response and correspondent.",
+        "Reply with the affected category/direction and preserve completed checks, without sending measurements, private images, raw logs or credentials.",
+        "Verify the sent reply and preserve the real next dependency."
+      ],
+      "evidence": [
+        "Official incoming reply was read; sender and conversation matched the prior authorized technical case.",
+        "Minimal category/direction clarification was sent and reread with SENT status and the verified recipient; no device report or measurement was attached.",
+        "The requested first native report is tracked explicitly instead of repeating completed setup."
+      ],
+      "next_action": "Continue the same technical conversation when the native report or provider diagnosis is available; do not create duplicate cases or imply that sending a report is itself a repair.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-WATER-NATIVE-REPORT-001",
+      "area": "native water diagnostic report",
+      "priority": "P0",
+      "status": "blocked_user",
+      "owner": "user",
+      "summary": "Submit the first provider-requested Health Sync diagnostic report from the physical iPhone, linked to the existing official support conversation.",
+      "acceptance": [
+        "Generate the native report through Health Sync Help Center → Report another problem on the physical iPhone.",
+        "Confirm submission using the in-app delivery receipt or provider acknowledgement and associate it with the existing verified email conversation."
+      ],
+      "evidence": [
+        "2026-10-26: the actual official support reply explicitly requested this in-app report.",
+        "The current provider privacy policy describes native local sync logs and their secure support submission; an old health-data export is not a native diagnostic report.",
+        "Previously supplied status, permissions, entry comparison and foreground/connection attempts are already complete; none is requested again."
+      ],
+      "next_action": "On the iPhone, open Health Sync → Help Center/Central de ajuda → Report another problem, follow the report instructions and use the same account email as the existing support conversation. This sends recent native diagnostics to Health Sync/Appyhapps for the requested analysis; no duplicate health entry or recurring manual export is needed.",
+      "blocker": "The diagnostic log is held inside the native iPhone app. The agent cannot generate or submit that device report from the LTS receiver or the email connection. The provider specifically requires it."
     }
   ],
   "package_history": [
@@ -2379,6 +2417,42 @@
         "Original exact lab proposal recovery and separate specific execution authority.",
         "Basal origin and complete-day eligibility.",
         "Genuine production write/reopen and physical-iPhone/owner acceptance are not inferred from read-only or synthetic checks."
+      ]
+    },
+    {
+      "id": "PKG-HISTORICAL-FIDELITY-001",
+      "status": "done",
+      "goal": "Restore omitted confirmed historical context and complete source text in existing records, identify documented estimates without changing values, and diagnose bounded export transport without raw-payload logging.",
+      "task_ids": [
+        "LTS-HISTORICAL-CONTEXT-002",
+        "LTS-LEGACY-WORKOUT-SOURCE-001",
+        "LTS-LEGACY-ESTIMATE-READING-001",
+        "LTS-EXPORT-BODY-DIAGNOSTICS-001",
+        "LTS-QUALITY-STATUS-TEXT-001"
+      ],
+      "public_build": "health-integrated-20261026.83",
+      "release_state": "published_and_exact_authenticated_public_verified;receiver_9_exact_readback_and_negative_auth_verified;bounded_package_complete;overall_delivery_not_accepted",
+      "completed_evidence": [
+        "Original structured export and matching CSVs reconciled with exact current records; historical document-backed body corrections preserved.",
+        "Private exact preimages and expected postimages saved durably before any update.",
+        "A guarded transaction restored only omitted context/source text and restrictive provenance fields. Exact independent postimages, unchanged record counts, other rows and auxiliary history were verified.",
+        "Existing public .82 fully reloaded and displayed saved application contexts. Unknown times and unconfirmed locations remain absent.",
+        "Candidate .83 labels only explicitly documented estimates/approximate durations, preserving numeric values and unknown source identity.",
+        "Local privacy, source parity, write/connection boundaries and actual production-entry journeys at 320/393/1440 px passed; synthetic screenshots inspected.",
+        "Authenticated receiver candidate keeps the existing limit, keys and ingestion routing. Numeric-only transport facts distinguish declared length, observed lower bound and unread body; cancellation/logger failures cannot mask the response.",
+        "Normal PR 397 promoted the exact reviewed tree as main 4393c905b28ae66b5ae2bd6db3deaef14ffa4b08 after all fourteen final candidate workflows passed.",
+        "Deploy 40254229066, public Pages 40254260359, homologation 40254260335 and full real authenticated workflow 40254229141 passed.",
+        "The preserved authenticated owner session fully reloaded exact .83 and reopened restored session text, explicit estimates, approximate duration, textual exercise sets and saved application context. All seven daily cards and missing-water/last-observation distinctions remain present.",
+        "Receiver version 9 is ACTIVE. All six deployed files match the reviewed bundle exactly; existing custom key authentication, verify_jwt=false, absent import map, ingestion routing and the 1 MiB limit are preserved. Missing and malformed actual-key-header requests return 401 without health-record writes.",
+        "Two stale operational laboratory quality descriptions were updated from the verified original-source checkpoint. Exact preimages and independent full postimages were checked; accepted status, all other fields, other quality rows and clinical results were preserved.",
+        "The original water-history transfer is blocked by supported provider access, not by an uncompleted repeated phone check. No immediate owner micro-test, duplicate recording, purchase or recurring manual export is requested."
+      ],
+      "pending_evidence": [],
+      "independent_open_conditions": [
+        "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
+        "Exact original laboratory proposal and separate specific execution authority.",
+        "Basal source and complete-day eligibility.",
+        "Ordinary production form submission, physical-iPhone and owner acceptance remain separate."
       ]
     }
   ],
