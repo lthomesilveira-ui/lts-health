@@ -68,7 +68,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
   const m=await report(page),body=await page.locator('#calendarReport').innerText();
   assert.equal(m.calendar.bounds.start,expected.start);assert.equal(m.calendar.bounds.end,expected.end);assert.equal(m.calendar.bounds.days,expected.days);
   assert.equal(m.calendar.partial,partial);assert.equal(m.calendar.nominalBounds.end,nominalEnd);
-  assert.ok(body.includes(dateLabel(expected.start))&&body.includes(dateLabel(expected.end)),'Visible report states its actual dates');
+  assert.equal(await page.locator('#calendarReport .ltsReportHeading h2').getAttribute('aria-label'),`${dateLabel(expected.start)} a ${dateLabel(expected.end)}`,'The concise visible heading has the exact full date range as its accessible name');
   assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),8);
   for(const key of CALENDAR_KEYS){
     const expectedMetric=expectedCalendarMetric(fixture,key,expected),metric=m.metricsByKey[key],card=page.locator(`#calendarReport [data-calendar-metric="${key}"]`);

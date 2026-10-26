@@ -15,6 +15,11 @@ const amount=(value,unit='',digits=1)=>numeric(value)==null?'Sem dado':`${value.
 const exactAmount=(value,unit='')=>numeric(value)==null?'Não informado':`${value.toLocaleString('pt-BR',{maximumSignificantDigits:21})}${unit?' '+esc(unit):''}`;
 const date=value=>/^\d{4}-\d{2}-\d{2}$/.test(String(value||''))?value.split('-').reverse().join('/'):'Data não informada';
 const range=bounds=>bounds?.start?`${date(bounds.start)} a ${date(bounds.end)}`:'Período não informado';
+const compactRange=calendar=>{
+  const {start,end}=calendar.bounds,months=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const short=day=>`${Number(day.slice(8))} ${months[Number(day.slice(5,7))-1]}`;
+  return start.slice(0,7)===end.slice(0,7)?`${Number(start.slice(8))}–${short(end)} ${end.slice(0,4)}`:start.slice(0,4)===end.slice(0,4)?`${short(start)} – ${short(end)} ${end.slice(0,4)}`:`${short(start)} ${start.slice(0,4)} – ${short(end)} ${end.slice(0,4)}`;
+};
 const paragraph=text=>text?`<p>${esc(text)}</p>`:'';
 const note=text=>text?`<p class="ltsCalendarNote">${esc(text)}</p>`:'';
 const source=metric=>sourceDisplayLabel(metric?.source,list(metric?.sources));
@@ -125,7 +130,7 @@ function reportContent(model,{print=false,detailOnly=false}={}){
 
 export function renderCalendarReport(data=state.data,status=state.domainStatus,ui=state.ui,today){
   const model=calendarReport(data,status,ui,today),c=model.calendar;
-  const heading=`<header class="ltsCalendarHeading ltsReportHeading"><div><p class="ltsCalendarEyebrow">RELATÓRIO ${c.mode==='month'?'MENSAL':'SEMANAL'}</p><h2>${range(c.bounds)}</h2><p class="ltsReportPeriodState">${c.partial?'Em andamento · hoje fora das médias':'Período encerrado'}</p></div><button type="button" id="calendar-summary-export" data-calendar-print="summary" aria-label="Imprimir / salvar PDF do resumo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg>PDF</button></header>`;
+  const heading=`<header class="ltsCalendarHeading ltsReportHeading"><div><p class="ltsCalendarEyebrow">RELATÓRIO ${c.mode==='month'?'MENSAL':'SEMANAL'}</p><h2 aria-label="${range(c.bounds)}">${compactRange(c)}</h2><p class="ltsReportPeriodState">${c.partial?'Em andamento · hoje fora das médias':'Período encerrado'}</p></div><button type="button" id="calendar-summary-export" data-calendar-print="summary" aria-label="Imprimir / salvar PDF do resumo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg>PDF</button></header>`;
   return `<section class="ltsCalendarReport ltsCalendarCompact" id="calendarReport" aria-label="Relatório semanal e mensal">${heading}${controls(c)}${c.selectionNotice?note(c.selectionNotice):''}${renderCalendarOverview(model,{selected:ui.calendarReportChart})}<details class="ltsCalendarFullDetails" data-disclosure="calendar-full"><summary><span>Dados e origens<small>Dias, comparações, exames e contexto</small></span><span aria-hidden="true">＋</span></summary><div class="ltsCalendarDetailBody">${reportContent(model,{detailOnly:true})}</div></details><p id="calendarReportStatus" class="ltsCalendarNote" role="status" aria-live="polite"></p></section>`;
 }
 export function renderCalendarReportPrint(model){
