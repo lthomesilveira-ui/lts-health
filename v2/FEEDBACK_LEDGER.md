@@ -1,3 +1,15 @@
+# Mobile report .86 published and inspected — 26/10/2026
+
+The owner rejected .85 after opening it on a phone. That feedback superseded its earlier technical completion. Build `health-integrated-20261026.86` is now published by normal PR405 at `6dc88dcf1b595dbf0e817332f40591c2a64915ec`, from exact candidate `2b0551e89c5272deb2edc04505ce3096fbb6936c`. It replaces the long default report stack with essential values, a daily chart, training and concise observations; complete source-specific evidence and the complete PDF remain explicit separate choices. The primary PDF is a concise summary.
+
+Both approved references were reopened. The exact candidate passed twelve workflows. Calendar run `40414166313` exercised 32 scenarios and seven native A4 PDFs, including two two-page synthetic summaries, with complete text/numeric-token preservation. Original-resolution 320/393/desktop and actual reduced 393x650 screens in Chromium/WebKit, plus weekly/monthly summary pages, were visually inspected. The reduced-view check verifies actual bars and date labels above navigation. Digest-verified artifacts: `12694971974` (`20e2325ed9aa1fec42cb1b5a1014f34ab644d2000123558029d1351b46fd4867`) and integrated `12693614420` (`0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368`).
+
+Deploy `40415651289`, public smokes `40415699004`/`40415698902` and actual authenticated workflow `40415650888` passed. The latter verifies actual compact values and eligible daily plot dates, complete source cards and reduced-mobile shell. Cloud Browser confirmed the exact public .86 entry; it has no signed-in session. This is not a claimed new manual authenticated or physical-iPhone inspection. The arithmetic recheck reused the private source snapshot; fresh production reads occurred in the authenticated runtime verification. No clinical write was made.
+
+Owner acceptance remains open under `LTS-OWNER-DELIVERY-20261025`. The technical calendar package is verified; global product delivery, water restoration, original clinical-source dependencies, ordinary form persistence and physical-device acceptance are separate. Home, original records, prescriptions, authentication/write implementations, receiver limit, keys and existing schedules are preserved. No support reply or weekly email was duplicated and completed native phone steps must not be requested again.
+
+Authority: `EXECUTION_STATE.json`; release: `releases/MOBILE_REPORT_READING_20261026.md`. Earlier entries below are preserved history.
+
 # FB-038 — Mobile report rejected; compact reading reopened, 26/10/2026
 
 The owner opened .85 on a phone and explicitly rejected its UX as far from the defined layout. Earlier browser/PDF passes do not resolve that feedback. PKG-CALENDAR-MOBILE-002 replaces the long default stack with a short source-backed overview, readable daily charts and progressive details. The concise default summary PDF is separate from the preserved complete evidence export. Candidate .86 is not yet published or accepted. The approved Home and all clinical/source/write boundaries remain unchanged. Actual rendered screens and exports must be inspected before promotion.

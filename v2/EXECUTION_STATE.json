@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/CALENDAR_NUTRIENTS_20261026.md"
+    "latest_release": "v2/releases/MOBILE_REPORT_READING_20261026.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,24 +50,29 @@
   },
   "current_package": {
     "id": "PKG-CALENDAR-MOBILE-002",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Rebuild the rejected mobile report around the approved compact summary, legible daily charts and progressive source evidence; provide a concise default PDF and preserve the full export.",
     "task_ids": [
-      "LTS-CALENDAR-HIGHLIGHTS-001",
-      "LTS-OWNER-DELIVERY-20261025"
+      "LTS-CALENDAR-HIGHLIGHTS-001"
     ],
     "candidate_build": "health-integrated-20261026.86",
-    "public_build": "health-integrated-20261026.85",
-    "release_state": "candidate; owner explicitly rejected .85 mobile UX; source model preserved; browser and public verification pending",
+    "public_build": "health-integrated-20261026.86",
+    "release_state": "published; exact candidate checks, inspected default/expanded responsive views and both PDF choices, public deployment/smokes and real-authenticated runtime verified; owner acceptance not granted",
     "completed_evidence": [
-      "Approved desktop reference and original private mobile image reopened; expected mobile reference SHA256 verified. No illustrative values copied.",
-      "Existing arithmetic and full-evidence presentation unit contracts passed after the progressive-view change."
+      "Both approved visual references actually reopened; private original mobile reference digest matched; illustrative values were not copied.",
+      "All twelve exact candidate workflows passed at 2b0551e89c5272deb2edc04505ce3096fbb6936c.",
+      "Calendar run 40414166313: 32 scenarios, Chromium/WebKit, 320/393/1440 plus reduced 393x650, 1187 captures and seven actual A4 PDFs; zero detected failures. Daily bars and date labels fit above reduced-mobile navigation.",
+      "Final calendar artifact 12694971974 SHA256 20e2325ed9aa1fec42cb1b5a1014f34ab644d2000123558029d1351b46fd4867 verified. Default reduced-mobile screens in both engines, desktop overview and weekly/monthly summary pages visually inspected at readable resolution.",
+      "Two synthetic concise summaries are two pages each; all expected words and numeric tokens survived native PDF export. Full daily-evidence export remains separate and untruncated.",
+      "Final integrated artifact 12693614420 SHA256 0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368 verified; 320/393 and desktop report screens inspected.",
+      "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
+      "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
+      "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed."
     ],
-    "pending_evidence": [
-      "Inspect actual 320/393/393x650/1440 rendered default and expanded journeys.",
-      "Inspect actual concise and full A4 PDFs.",
-      "Run exact candidate gates and verify the published authenticated route."
-    ]
+    "pending_evidence": [],
+    "candidate_commit": "2b0551e89c5272deb2edc04505ce3096fbb6936c",
+    "runtime_merge": "6dc88dcf1b595dbf0e817332f40591c2a64915ec",
+    "owner_acceptance": "not_granted"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1705,7 +1710,7 @@
       "id": "LTS-OWNER-DELIVERY-20261025",
       "area": "overall product acceptance",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "blocked_external",
       "owner": "Codex",
       "summary": "The owner explicitly rejects overall delivery; verified presentation and QA fixes do not close the project.",
       "acceptance": [
@@ -1720,10 +1725,11 @@
         "The requested current Health Sync status is now supplied and inspected. Successful phone status does not by itself establish transferred observations.",
         "Completeness review and bounded historical-context persistence are verified privately; source display/status improvements are in the current candidate package. Overall delivery is not accepted.",
         "Further original-file reconciliation found and repaired omitted historical context/source text. Candidate qualifiers and receiver diagnostics remain in progress; owner acceptance is not inferred.",
-        "Latest mobile report UX rejection is agent-actionable and reopens product delivery; physical-source dependencies remain separately tracked."
+        "Latest mobile report UX rejection is agent-actionable and reopens product delivery; physical-source dependencies remain separately tracked.",
+        "The .85 mobile report rejection was addressed in published .86 through a visually inspected compact reading and separate concise/full PDF exports. Exact runtime/source and real authenticated checks passed, without inferring owner acceptance."
       ],
-      "next_action": "Complete PKG-CALENDAR-MOBILE-002 against the recovered reference; preserve separately tracked clinical/source/device limits.",
-      "blocker": null
+      "next_action": "Continue provider/source follow-up from existing proof and preserve separate clinical-source, ordinary-form and physical-device dependencies; do not repeat completed phone steps.",
+      "blocker": "The rebuilt report has no new owner acceptance. Actual water continuity and physical-device acceptance remain unverified; existing native evidence is already available."
     },
     {
       "id": "LTS-COMPLETENESS-REVIEW-001",
@@ -2048,7 +2054,7 @@
       "id": "LTS-CALENDAR-HIGHLIGHTS-001",
       "area": "weekly/monthly report usefulness",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Show daily variation with dated extrema and coverage, plus registered training series on one common scale.",
       "acceptance": [
@@ -2070,9 +2076,18 @@
         "Synthetic artifact 12688469135 SHA256 1638ba07fd45a04cfeca171180c31926f3924c0837f3aca6dded73a6ac86c2c1 was verified and representative mobile/desktop, highlight and training PDF pages inspected.",
         "Normal PR403 merged at d788abfc2888b46176c5d82c4a3e6266cad58ce0. Deploy 40403947317, public smokes 40404027740 and 40404027732, and full authenticated real-account workflow 40403947325 passed.",
         "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred.",
-        "2026-10-26 owner rejects .85 after opening it on a phone: the report is far from the defined layout. Previous technical pass is superseded for product acceptance."
+        "2026-10-26 owner rejects .85 after opening it on a phone: the report is far from the defined layout. Previous technical pass is superseded for product acceptance.",
+        "Both approved visual references actually reopened; private original mobile reference digest matched; illustrative values were not copied.",
+        "All twelve exact candidate workflows passed at 2b0551e89c5272deb2edc04505ce3096fbb6936c.",
+        "Calendar run 40414166313: 32 scenarios, Chromium/WebKit, 320/393/1440 plus reduced 393x650, 1187 captures and seven actual A4 PDFs; zero detected failures. Daily bars and date labels fit above reduced-mobile navigation.",
+        "Final calendar artifact 12694971974 SHA256 20e2325ed9aa1fec42cb1b5a1014f34ab644d2000123558029d1351b46fd4867 verified. Default reduced-mobile screens in both engines, desktop overview and weekly/monthly summary pages visually inspected at readable resolution.",
+        "Two synthetic concise summaries are two pages each; all expected words and numeric tokens survived native PDF export. Full daily-evidence export remains separate and untruncated.",
+        "Final integrated artifact 12693614420 SHA256 0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368 verified; 320/393 and desktop report screens inspected.",
+        "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
+        "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
+        "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed."
       ],
-      "next_action": "Inspect candidate compact report and both export choices, correct observed UX defects and verify exact public route before reporting completion.",
+      "next_action": "Preserve the verified compact reading and complete source export. Any later owner rejection reopens product acceptance; technical passes do not constitute global acceptance.",
       "blocker": null
     }
   ],
