@@ -144,7 +144,11 @@
  .ltsReportsExperience>.screenTitle{display:none}
  .ltsCalendarCompact .ltsReportHeading .ltsCalendarEyebrow{display:none}
  .ltsCalendarCompact .ltsReportHeading h2{font-size:23px;margin:0 0 5px}
- .ltsReportPlot>svg{height:160px}
+ .ltsReportPlot>svg{height:150px}
+ .ltsReportChartReading{font-size:11px;line-height:1.3}
+ .ltsReportKpis{margin-bottom:8px}
+ .ltsReportNutrition{padding-top:14px}
+ .ltsReportPlot{margin-top:8px}
 }
 @media(min-width:375px) and (max-width:600px){
  .ltsCalendarCompact .ltsCalendarControls{grid-template-columns:auto minmax(0,1fr) auto;gap:6px}
