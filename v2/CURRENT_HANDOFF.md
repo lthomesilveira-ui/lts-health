@@ -1,3 +1,13 @@
+# Calendar highlights published and verified — 26/10/2026
+
+Build `.85` is published through normal PR403 at `d788abfc2888b46176c5d82c4a3e6266cad58ce0`. All twelve exact candidate workflows passed. The calendar suite exercised 26 scenarios in Chromium/WebKit at 320/393/1440 px and produced five actual A4 PDFs without detected content/layout failures. Digest-verified synthetic evidence and representative mobile/desktop and printed highlight/training pages were visually inspected. Independent current private source arithmetic agrees with the descriptive ranges and separate registered-series counts.
+
+Deploy `40403947317`, public smokes `40404027740`/`40404027732` and full actual-auth workflow `40403947325` passed. The exact public .85 login entry was inspected in Cloud Browser, which has no signed-in session. The actual private range/group render verification is authenticated CI, not a claimed manual native-iPhone test. The seven-card Home and all writes, records, prescriptions, receiver limit and schedules remain unchanged.
+
+The calendar highlight package is technically done. Overall app acceptance, real water continuity, original source history, exact laboratory proposal, basal origin/coverage, ordinary production form persistence and physical-device acceptance remain independent. Latest support evidence is preserved: account reset and both native reports completed, specifically consented source screenshot acknowledged, empty API response still unexplained, and the technical difference of the proposed Deauthorize action is awaiting clarification. Do not repeat those completed steps or duplicate the support replies or weekly email schedule.
+
+Authority: `EXECUTION_STATE.json`; details: `releases/CALENDAR_HIGHLIGHTS_20261026.md`. Earlier checkpoints below are historical.
+
 # Calendar report highlights and support continuity — 26/10/2026
 
 The owner positively assessed the revised visual email report and requested autonomous app improvements. Candidate `.85` adds dated daily ranges for energy, protein and fiber, with individual origins and coverage, plus a shared-scale graphic of registered primary series per recorded group. A coincident unique energy maximum and fiber minimum is described only for the identical dated sample and origin; it does not establish adequacy, deficit, causality or physiological training volume. Unknown, partial, disputed and review-source observations are not promoted. The approved Home and all writes, clinical records, prescriptions and integrations are preserved.
