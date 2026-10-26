@@ -518,6 +518,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
         assert.equal(month.labs.collections.some(collection=>String(collection.date||collection.collection_date).startsWith('2026-10')),false,'Historical month does not include later lab collections');
         await controls(page,name);await captureTiles(page,`${name}-last-month`,page.locator('#calendarReport'));
         if(engine==='chromium'&&width===393)await printContract(page,`${name}-last-month-export`,{pdf:true,engine});
+        if(engine==='chromium'&&width===393)await printContract(page,`${name}-month-summary-export`,{pdf:true,engine,summary:true});
         await choose(page,{mode:'week',selection:'current'});const current=await assertWindow(page,fixture,CALENDAR_WINDOWS.currentWeek,{partial:true,nominalEnd:'2026-10-18'});
         assert.ok(current.todayMetrics?.length||Object.keys(current.todayMetrics||{}).length,'Today has a separate partial view');
         assert.match(await page.locator('#calendarReport .ltsCalendarToday').innerText(),/hoje|parcial/i);
@@ -548,6 +549,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
     if(engine==='chromium')for(const scenario of [{kind:'empty'},{kind:'error'},{kind:'complete',failTable:'health_documents'}]){
       const fixture=makeCalendarReportFixture(scenario.kind);
       await session(browser,engine,393,844,fixture,async(page,name)=>{
+        await openEvidence(page);
         const m=await report(page),root=page.locator('#calendarReport'),text=await root.innerText();
         if(scenario.kind==='empty'){
           assert.equal(m.metricsByKey.water.count,0);assert.equal(m.metricsByKey.water.value,null);
