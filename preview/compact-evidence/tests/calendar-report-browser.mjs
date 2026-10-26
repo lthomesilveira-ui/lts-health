@@ -116,6 +116,8 @@ async function overviewContract(page,name){
     const reduced=await page.locator('#calendarReport').evaluate(root=>({kpisBottom:root.querySelector('.ltsReportKpis').getBoundingClientRect().bottom,plotTop:root.querySelector('.ltsReportPlot').getBoundingClientRect().top}));
     assert.ok(reduced.kpisBottom<570,'Essential values remain visible in the reduced physical-device-sized viewport');
     assert.ok(reduced.plotTop<650,'The daily graph begins inside the reduced mobile viewport');
+    const marks=await page.locator('#calendarReport .ltsReportPlot').evaluate(plot=>{const nav=document.querySelector('#mobileNav')?.getBoundingClientRect(),nodes=[...plot.querySelectorAll('[data-report-plot-date] rect,[data-report-plot-date] circle')];return {bottom:Math.max(...nodes.map(n=>n.getBoundingClientRect().bottom)),visibleBottom:nav?.top||innerHeight};});
+    assert.ok(marks.bottom<marks.visibleBottom-2,'The actual daily bars, including their zero baseline, fit above mobile navigation');
     await page.screenshot({path:`${dir}/${name}-overview-393x650.png`,scale:'css'});
     await page.setViewportSize(previous);await stable(page);
   }
