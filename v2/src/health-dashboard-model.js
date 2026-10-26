@@ -30,6 +30,14 @@ const definitions=Object.freeze([
   {key:'steps',label:'Passos',unit:'passos',domains:['metrics','sourceMetrics'],types:['steps','step_count'],units:['count','steps','passos']},
   {key:'sleep',label:'Sono',unit:'h',domains:['metrics','sourceMetrics'],types:['sleep_duration_h'],units:['h'],maximum:24}
 ]);
+// Calendar-only nutrients reuse the same origin, gap and comparison policy.
+// They do not add cards to the approved seven-metric Home.
+const nutritionDefinitions=Object.freeze([
+  {key:'carbs',label:'Carboidratos',unit:'g',domains:['nutrition','sourceMetrics'],field:'carbs_g',types:['dietary_carbs_g','dietary_carbohydrates_g'],units:['g']},
+  {key:'fat',label:'Gorduras',unit:'g',domains:['nutrition','sourceMetrics'],field:'fat_g',types:['dietary_fat_g'],units:['g']},
+  {key:'fiber',label:'Fibras',unit:'g',domains:['nutrition','sourceMetrics'],field:'fiber_g',types:['dietary_fiber_g'],units:['g']}
+]);
+const nutritionKeys=['protein','energy','carbs','fat','fiber'];
 export const healthDashboardComparisonRule=Object.freeze({
   minimumDays:5,minimumCoverage:.7,matchingPositions:true,
   description:'Médias observadas da mesma variável, origem e unidade, com valores elegíveis nas mesmas posições relativas das duas janelas, ao menos 5 dias e 70% de cobertura em cada janela. Hoje, dias sabidamente parciais e duplicatas ambíguas são excluídos. Comparação descritiva; não comprova diário completo.'
@@ -98,10 +106,10 @@ function observationsFor(definition,data,status,today){
       const steps=definition.key==='steps'?stepCountReview(raw):null;
       let value=steps?steps.value:scalar(raw);if(definition.maximum!=null&&value>definition.maximum)value=null;
       if(raw!=null&&value==null)invalidRows++;
-      const review=domain==='sourceMetrics'&&['protein','energy'].includes(definition.key)?nutritionSourceReview(row):null;
+      const review=domain==='sourceMetrics'&&nutritionKeys.includes(definition.key)?nutritionSourceReview(row):null;
       const family=row.source_family||null;
       const key=domain==='nutrition'?JSON.stringify(['nutrition',norm(label),'canonical',...(definition.key==='water'?['ml']:[])]):
-        ['protein','energy'].includes(definition.key)?JSON.stringify([domain,norm(family),norm(label),statusName,...(review?.verified?[review.sourceHash]:[])]):
+        nutritionKeys.includes(definition.key)?JSON.stringify([domain,norm(family),norm(label),statusName,...(review?.verified?[review.sourceHash]:[])]):
           JSON.stringify([domain,norm(family),norm(label),statusName,unit]);
       const knownPartial=partialFlag(row)||Boolean(review?.partial);
       observations.push({date,value,key,label,domain,status:statusName,unit,displayUnit:definition.unit,sourceFamily:family,
@@ -143,7 +151,7 @@ function sourceCatalog(observations,today){
 function requestedSource(definition,ui){
   const requested=ui.dashboardSources?.[definition.key];
   if(Object.hasOwn(ui.dashboardSources||{},definition.key))return typeof requested==='object'?requested?.key||null:requested||null;
-  if(['protein','energy'].includes(definition.key))return ui.homeNutritionSource||ui.reportNutritionSource||null;
+  if(nutritionKeys.includes(definition.key))return ui.homeNutritionSource||ui.reportNutritionSource||null;
   if(definition.key==='water')return ui.homeWaterSource||ui.reviewWaterSource||null;
   if(definition.key==='sleep')return ui.homeSleepSource||ui.reviewSleepSource||null;
   return null;
@@ -238,4 +246,13 @@ export function healthDashboardModel(data={},status={},ui={},today=todayInSaoPau
     day:{date:calendar.date,today:calendar.today,isToday:calendar.date===calendar.today,partial:calendar.date===calendar.today||dayMetrics.some(metric=>metric.knownPartial),bounds:dayBounds,metrics:dayMetrics},
     comparisonRule:healthDashboardComparisonRule,sourceSelectionRule:'Escolha explícita é preservada. Padrão automático: origem com mais dias utilizáveis na janela; pode mudar ao trocar o período. Empates usam registros no período, recência e identidade estável. Origens permanecem separadas e o status de revisão é preservado.',
     note:calendar.emptyHistory?'Nenhum registro encerrado recebido. A data de ontem é apenas um limite de calendário para a janela vazia; não representa um dia observado. Hoje, se houver registro, aparece separado.':'Médias observadas de dias encerrados, com n/N por variável. Hoje é parcial e aparece separado. Fontes e dispositivos não são somados; lacunas permanecem sem valor.'};
+}
+
+/** Additional report indicators only; no write, global UI change or Home card. */
+export function nutritionReportMetrics(data={},status={},ui={},today=todayInSaoPaulo()){
+  const calendar=healthDashboardCalendar(data,status,ui,today);
+  const todayBounds=boundsFor(calendar.today,calendar.today,calendar.today);
+  const catalogs=nutritionDefinitions.map(definition=>{const collected=observationsFor(definition,data,status,calendar.today);return {definition,catalog:{...collected,sources:sourceCatalog(collected.observations,calendar.today)}};});
+  return {metrics:catalogs.map(({definition,catalog})=>makeMetric(definition,catalog,status,ui,calendar)),
+    todayMetrics:catalogs.map(({definition,catalog})=>makeMetric(definition,catalog,status,ui,calendar,todayBounds,'day'))};
 }

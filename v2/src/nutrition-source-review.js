@@ -1,5 +1,5 @@
 // Generic, read-only candidate contract. Does not change canonical_status.
-const types={dietary_energy_kcal:'kcal',dietary_protein_g:'g',dietary_carbs_g:'g',dietary_carbohydrates_g:'g',dietary_fat_g:'g'};
+const types={dietary_energy_kcal:'kcal',dietary_protein_g:'g',dietary_carbs_g:'g',dietary_carbohydrates_g:'g',dietary_fat_g:'g',dietary_fiber_g:'g'};
 const day=value=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(value||''))return false;const d=new Date(`${value}T12:00:00Z`);return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===value;};
 const numericScalar=v=>(typeof v==='number'&&Number.isFinite(v))||(typeof v==='string'&&/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(v.trim()));
 export function nutritionSourceReview(row){

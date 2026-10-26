@@ -1,4 +1,4 @@
-import {healthDashboardModel,healthDashboardComparisonRule} from './health-dashboard-model.js';
+import {healthDashboardModel,healthDashboardComparisonRule,nutritionReportMetrics} from './health-dashboard-model.js';
 import {dashboardContext} from './health-dashboard-context.js';
 import {trainingSessionSummary} from './training-session-summary.js';
 import {trainingComparability} from './training-comparability.js';
@@ -8,7 +8,7 @@ import {nutritionPlanComparison} from './nutrition-plan-comparison.js';
 // Read-only calendar reports. No database writes, recommendations, clinical
 // targets, inferred activity, causal scores, or aggregation across origins.
 const DAY=86400000;
-const keys=['water','protein','energy','steps','activeEnergy'];
+const keys=['water','protein','energy','carbs','fat','fiber','steps','activeEnergy'];
 const date=value=>{
   if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
   const parsed=new Date(`${value}T12:00:00Z`);
@@ -78,7 +78,7 @@ export function calendarReportCalendar(ui={},today){
 function explicitUI(ui,current,previous=null){return {...ui,dashboardSources:{...ui.dashboardSources,...ui.calendarReportSources},dashboardCalendar:{bounds:current,previousBounds:previous}};}
 function sum(items,key){return items.every(item=>item[key]!=null)?items.reduce((total,item)=>total+item[key],0):null;}
 function metricReadDiagnostics(metric,status){
-  const domains=['water','protein','energy'].includes(metric.key)?['nutrition','sourceMetrics']:['metrics','sourceMetrics'];
+  const domains=['water','protein','energy','carbs','fat','fiber'].includes(metric.key)?['nutrition','sourceMetrics']:['metrics','sourceMetrics'];
   const domainStates=Object.fromEntries(domains.map(domain=>[domain,state(status,domain)]));
   const readyDomains=domains.filter(domain=>domainStates[domain]==='ready'),failedDomains=domains.filter(domain=>domainStates[domain]==='error'),pendingDomains=domains.filter(domain=>domainStates[domain]==='loading');
   const readError=failedDomains.length>0,readPending=pendingDomains.length>0,readComplete=readyDomains.length===domains.length,readHasReadySource=readyDomains.length>0;
@@ -189,10 +189,15 @@ function summaryFor(calendar,metrics,training,labs){
  * This model never writes to or substitutes the user's dashboard selection. */
 export function calendarReport(data={},status={},ui={},today){
   const calendar=calendarReportCalendar(ui,today),fullUI=explicitUI(ui,calendar.bounds);
-  const dashboard=healthDashboardModel(data,status,fullUI,calendar.today);
+  const withNutrients=options=>{
+    const dashboard=healthDashboardModel(data,status,options,calendar.today),nutrients=nutritionReportMetrics(data,status,options,calendar.today);
+    const metrics=[...dashboard.metrics,...nutrients.metrics];
+    return {...dashboard,metrics,metricsByKey:Object.fromEntries(metrics.map(metric=>[metric.key,metric])),todayMetrics:[...dashboard.todayMetrics,...nutrients.todayMetrics]};
+  };
+  const dashboard=withNutrients(fullUI);
   // Pin the full-period origin when calculating the shorter comparison prefix.
   const comparisonUI={...ui,calendarReportSources:Object.fromEntries(dashboard.metrics.map(metric=>[metric.key,metric.source?.key||metric.requestedSource||'__unavailable__']))};
-  const comparison=calendar.comparisonDays?healthDashboardModel(data,status,explicitUI(comparisonUI,calendar.comparisonBounds,calendar.previousComparisonBounds),calendar.today):null;
+  const comparison=calendar.comparisonDays?withNutrients(explicitUI(comparisonUI,calendar.comparisonBounds,calendar.previousComparisonBounds)):null;
   const metrics=keys.map(key=>{
     const metric=dashboard.metricsByKey[key],compared=comparison?.metricsByKey[key].comparison||{...metric.comparison,reason:'no_closed_days'};
     return {...metric,...metricReadDiagnostics(metric,status),comparison:{...compared,note:calendar.comparisonNote,fullPeriodMean:metric.value,fullPeriodDays:metric.count,commonPrefixDays:calendar.comparisonDays},
