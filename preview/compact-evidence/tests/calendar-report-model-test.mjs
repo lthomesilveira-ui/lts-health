@@ -7,6 +7,7 @@ import {makeDocumentaryNumericPair} from './documentary-numeric-reading-fixture.
 // remain data-only. These stubs prohibit real auth/network or browser use.
 globalThis.location={search:'?fixture'};globalThis.window={};
 const {calendarReport:report,calendarReportCalendar:calendar}=await import('../src/calendar-report-model.js');
+const {calendarReportHighlights}=await import('../src/calendar-report-highlights.js');
 const today='2024-03-11';
 const domains=['body','nutrition','sourceMetrics','metrics','workouts','exercises','sets','workoutEvidence','polarSessions','labs','treatments','regimens','goals','nutritionPlans','meals'];
 const status=()=>Object.fromEntries(domains.map(key=>[key,'ready']));
@@ -30,6 +31,46 @@ function training(){
 }
 const lab=(id,date,value,extra={})=>({source_record_id:`synthetic-lab-${id}`,collection_date:date,biomarker:'Synthetic marker',result_numeric:value,result_raw:String(value),unit:'u/L',laboratory:'Synthetic lab',method:'Synthetic method',reference_range:'1 a 20',...extra});
 const deepFreeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(deepFreeze);Object.freeze(value);}return value;};
+
+test('calendar highlights use the exact eligible dated sample, preserve zero, ties and the selected source',()=>{
+  const data=filled(),energy=[2000,3000,1500,4000,2500,2800,2600],fiber=[20,21,22,7,24,25,26];
+  const week=data.nutrition.slice(-7);
+  week.forEach((row,i)=>{row.calories_kcal=energy[i];row.fiber_g=fiber[i];});
+  week[0].protein_g=0;
+  const before=structuredClone(data),m=report(deepFreeze(data),status(),{},today),h=m.highlights;
+  assert.deepEqual(h.ranges.find(item=>item.key==='energy').minimum,{value:1500,dates:['2024-03-06']});
+  assert.deepEqual(h.ranges.find(item=>item.key==='energy').maximum,{value:4000,dates:['2024-03-07']});
+  assert.deepEqual(h.ranges.find(item=>item.key==='protein').minimum,{value:0,dates:['2024-03-04']});
+  assert.equal(h.ranges.find(item=>item.key==='protein').maximum.dates.length,6,'Tied dates remain explicit, not replaced by an arbitrary day');
+  assert.deepEqual(h.coincidence,{date:'2024-03-07',energy:4000,fiber:7});
+  assert.deepEqual(data,before,'Descriptive insights do not mutate records');
+  const tied=structuredClone(before);tied.nutrition.at(-1).calories_kcal=4000;
+  assert.equal(report(tied,status(),{},today).highlights.coincidence,null,'Tied extremes do not produce a unique-day claim');
+  const changedOrigin=structuredClone(m.metrics);
+  changedOrigin.find(item=>item.key==='fiber').source={...changedOrigin.find(item=>item.key==='fiber').source,key:'different recorded origin'};
+  assert.equal(calendarReportHighlights(changedOrigin,m.calendar).coincidence,null,'Matching calendar dates never pool different origins');
+});
+
+test('highlights exclude open, conflicting and incomplete days, failed reads and sources awaiting review',()=>{
+  const data=filled();
+  data.nutrition.push(food(today,99999));
+  data.nutrition.at(-3).knownPartial=true;
+  data.nutrition.push({...data.nutrition.at(-2),calories_kcal:88888});
+  const m=report(data,status(),{calendarReportSources:{energy:'Synthetic food A'}},today);
+  const h=m.highlights.ranges.find(item=>item.key==='energy');
+  assert.equal(h.count,5);assert.equal(h.expectedDays,7);assert.equal(h.maximum.value,2200);
+  assert.ok(!h.dates.includes(today)&&!h.dates.includes('2024-03-09')&&!h.dates.includes('2024-03-10'));
+  assert.deepEqual(report(data,{...status(),sourceMetrics:'error'},{},today).highlights.ranges,[],'Incomplete source reads are not called established extremes');
+  for(const sourceStatus of ['candidate','held']){
+    const metrics=structuredClone(m.metrics);metrics.forEach(metric=>{metric.source={...metric.source,status:sourceStatus};});
+    assert.deepEqual(calendarReportHighlights(metrics,m.calendar).ranges,[],'Review sources do not enter top-level highlights');
+  }
+  const one=empty();one.nutrition=[food('2024-03-05',100)];
+  assert.deepEqual(report(one,status(),{},today).highlights.ranges,[],'A single observation is not a range');
+  assert.deepEqual(report(empty(),status(),{},today).highlights.ranges,[],'An empty history does not create a zero range');
+  const inconsistent=structuredClone(m.metrics);inconsistent.forEach(metric=>{metric.count++;});
+  assert.deepEqual(calendarReportHighlights(inconsistent,m.calendar).ranges,[],'Ranges cannot describe a different sample from the cards');
+});
 
 test('default is the preceding complete Monday–Sunday week, including Sunday and year boundaries',()=>{
   assert.deepEqual(bounds(calendar({},today)),['2024-03-04','2024-03-10',7,7]);

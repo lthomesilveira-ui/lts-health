@@ -62,3 +62,24 @@
 
 /* Keep a recorded zero and its unit distinct in PDF text extraction as well as on paper. */
 @media print{#calendarPrintRoot .ltsCalendarPrintComparison td:last-child{word-spacing:1pt}}
+
+.ltsCalendarHighlights{margin:20px 0 24px;padding:18px;background:#f2f7f7;border:1px solid #d4e4e2;border-radius:12px}
+.ltsCalendarHighlights>p{color:var(--calendar-muted);font-size:13px}
+.ltsCalendarHighlightsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.ltsCalendarHighlight{min-width:0;border-top:3px solid #2f7473;padding:5px 0}
+.ltsCalendarHighlight h4{margin-top:7px}.ltsCalendarHighlight p{font-size:13px}
+.ltsCalendarHighlight .ltsCalendarHighlightRange{font-size:20px;font-weight:700;line-height:1.5;margin:8px 0}
+.ltsCalendarHighlightRange>span{font-size:13px;font-weight:400}
+.ltsCalendarCoincidence{border-top:1px solid #c9deda;padding-top:12px;margin-top:14px!important}
+.ltsCalendarGroupBar{display:block;width:100%;height:12px;fill:#2f7473;margin-top:9px}
+.ltsCalendarGroupBar .ltsCalendarGroupTrack{fill:#dce8e7}
+@media(max-width:750px){.ltsCalendarHighlightsGrid{grid-template-columns:1fr}.ltsCalendarHighlights{padding:14px}}
+@media print{
+  #calendarPrintRoot .ltsCalendarHighlights{background:#fff;border:1px solid #bbb;padding:9pt;margin:10pt 0;break-inside:avoid;page-break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarHighlightsGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12pt}
+  #calendarPrintRoot .ltsCalendarHighlight{border-top:2pt solid #555}
+  #calendarPrintRoot .ltsCalendarHighlight .ltsCalendarHighlightRange{font-size:12pt}
+  #calendarPrintRoot .ltsCalendarHighlightRange>span{font-size:8pt}
+  #calendarPrintRoot .ltsCalendarGroupBar{height:8pt;fill:#555}
+  #calendarPrintRoot .ltsCalendarGroupTrack{fill:#eee}
+}

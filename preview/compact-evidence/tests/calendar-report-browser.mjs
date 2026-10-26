@@ -88,6 +88,20 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
   assert.doesNotMatch(body,/\b(?:NaN|undefined|Infinity|SQLSTATE|source_record_id|canonical_status|payload)\b/);
   assert.doesNotMatch(body,/MARCADOR FUTURO NÃO DEVE APARECER|EVENTO FUTURO NÃO DEVE APARECER|987\.654|987654/);
   assert.equal(await page.evaluate(()=>globalThis.__calendarInjection),undefined);
+  assert.equal(await page.locator('#calendarReport [data-calendar-highlight]').count(),m.highlights.ranges.length,'Top highlights follow the selected origins and window');
+  for(const item of m.highlights.ranges){
+    const highlight=page.locator(`#calendarReport [data-calendar-highlight="${item.key}"]`);
+    const text=await highlight.innerText();
+    assert.ok(text.includes(item.minimum.value.toLocaleString('pt-BR',{maximumFractionDigits:1})));
+    assert.ok(text.includes(item.maximum.value.toLocaleString('pt-BR',{maximumFractionDigits:1})));
+    assert.ok(text.includes(`${item.count}/${item.expectedDays} dias encerrados com valor`));
+  }
+  const bars=page.locator('#calendarReport .ltsCalendarGroupBar');
+  if(await bars.count()){
+    const maximum=Math.max(...m.training.recordedGroups.map(group=>group.primary));
+    const widths=await bars.locator('rect:last-child').evaluateAll(nodes=>nodes.map(node=>Number(node.getAttribute('width'))));
+    assert.deepEqual(widths,m.training.recordedGroups.map(group=>Number((280*group.primary/maximum).toFixed(2))),'Group bars share a single numeric scale; device sessions never inflate them');
+  }
   return m;
 }
 async function openEvidence(page){

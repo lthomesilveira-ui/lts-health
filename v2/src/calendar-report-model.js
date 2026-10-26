@@ -4,6 +4,7 @@ import {trainingSessionSummary} from './training-session-summary.js';
 import {trainingComparability} from './training-comparability.js';
 import {laboratoryReport} from './reports-model.js';
 import {nutritionPlanComparison} from './nutrition-plan-comparison.js';
+import {calendarReportHighlights} from './calendar-report-highlights.js';
 
 // Read-only calendar reports. No database writes, recommendations, clinical
 // targets, inferred activity, causal scores, or aggregation across origins.
@@ -214,6 +215,6 @@ export function calendarReport(data={},status={},ui={},today){
     'Energia ativa não é gasto total. Não calculamos balanço energético a partir dela.',protocol.note];
   if(calendar.selectionNotice)notes.unshift(calendar.selectionNotice);
   return {schemaVersion:1,calendar,today:calendar.today,bounds:calendar.bounds,previousBounds:calendar.previousBounds,metrics,metricsByKey:Object.fromEntries(metrics.map(metric=>[metric.key,metric])),todayMetrics,
-    training,labs,protocol,nutritionPlan,summary:summaryFor(calendar,metrics,training,labs),notes,comparisonRule:healthDashboardComparisonRule,
+    training,labs,protocol,nutritionPlan,highlights:calendarReportHighlights(metrics,calendar),summary:summaryFor(calendar,metrics,training,labs),notes,comparisonRule:healthDashboardComparisonRule,
     sourceSelectionRule:dashboard.sourceSelectionRule};
 }

@@ -389,6 +389,26 @@ try{
     });
   });
   if(!calendarNutrientsMatch)throw new Error('Published calendar nutrient values or coverage do not match the authenticated loaded source model; private values withheld.');
+  const calendarHighlightsMatch=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {calendarReport}=await import('./src/calendar-report-model.js');
+    const model=calendarReport(state.data,state.domainStatus,state.ui),ranges=model.highlights.ranges;
+    if(document.querySelectorAll('#calendarReport [data-calendar-highlight]').length!==ranges.length)return false;
+    if(!ranges.every(item=>{
+      const card=document.querySelector(`#calendarReport [data-calendar-highlight="${item.key}"]`),text=card?.textContent||'';
+      return text.includes(item.minimum.value.toLocaleString('pt-BR',{maximumFractionDigits:1}))&&text.includes(item.maximum.value.toLocaleString('pt-BR',{maximumFractionDigits:1}))&&text.includes(`${item.count}/${item.expectedDays} dias encerrados com valor`);
+    }))return false;
+    const coincidence=document.querySelector('#calendarReport [data-calendar-coincidence]');
+    if((coincidence?.dataset.calendarCoincidence||null)!==(model.highlights.coincidence?.date||null))return false;
+    const bars=[...document.querySelectorAll('#calendarReport .ltsCalendarGroupBar')],groups=model.training.recordedGroups;
+    if(bars.length){
+      if(bars.length!==groups.length)return false;
+      const maximum=Math.max(...groups.map(group=>group.primary));
+      if(!bars.every((bar,i)=>Number(bar.querySelector('rect:last-child')?.getAttribute('width'))===Number((280*groups[i].primary/maximum).toFixed(2))))return false;
+    }
+    return document.documentElement.scrollWidth<=innerWidth+1;
+  });
+  if(!calendarHighlightsMatch)throw new Error('Published descriptive ranges or training graphic do not match the authenticated dated source model; private values withheld.');
   await page.screenshot({path:`${evidenceDir}/mobile-calendar-nutrients.png`,fullPage:true});
   const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:['reportComposition','reportLabs'].map(id=>Boolean(document.querySelector('#'+id))),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
   if(!reports.period||!reports.sections.every(Boolean))throw new Error('mobile useful reports are missing');
