@@ -50,33 +50,36 @@
   },
   "current_package": {
     "id": "PKG-CALENDAR-HIGHLIGHTS-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Make weekly/monthly reports easier to read with source-specific daily extrema and a shared-scale registered-series graphic; reconcile completed native support steps.",
     "task_ids": [
       "LTS-CALENDAR-HIGHLIGHTS-001"
     ],
     "candidate_build": "health-integrated-20261026.85",
-    "release_state": "candidate; local arithmetic and view contracts passed; responsive/PDF and actual authenticated publication pending",
+    "release_state": "published; exact candidate contracts, responsive/PDF, independent private arithmetic and authenticated public runtime verified; water not restored; overall project not accepted",
     "completed_evidence": [
       "Independent private calculation agrees with three nutrient ranges and separately counted workout series.",
-      "Current official support threads and private checkpoint reread; account reset and both native reports are complete; no restored water transfer is claimed."
+      "Current official support threads and private checkpoint reread; account reset and both native reports are complete; no restored water transfer is claimed.",
+      "All twelve exact final candidate workflows passed at 1ff3683d22aef31e911a7b89a7be85209cf44b73. Calendar run 40402174254 covers 26 scenarios, Chromium/WebKit, 320/393/1440px and five genuine A4 PDFs; no layout/content failures.",
+      "Synthetic artifact 12688469135 SHA256 1638ba07fd45a04cfeca171180c31926f3924c0837f3aca6dded73a6ac86c2c1 was verified and representative mobile/desktop, highlight and training PDF pages inspected.",
+      "Normal PR403 merged at d788abfc2888b46176c5d82c4a3e6266cad58ce0. Deploy 40403947317, public smokes 40404027740 and 40404027732, and full authenticated real-account workflow 40403947325 passed.",
+      "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred."
     ],
-    "pending_evidence": [
-      "Exact final CI, responsive/PDF visual inspection and authenticated published runtime."
-    ]
+    "pending_evidence": [],
+    "public_build": "health-integrated-20261026.85"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261026.84",
-    "main_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
-    "runtime_promotion_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+    "build_id": "health-integrated-20261026.85",
+    "main_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
+    "runtime_promotion_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
     "published_on": "2026-10-26",
     "verified_on": "2026-10-26",
-    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, responsive PDF, deploy/public smoke and full real-auth workflow 40352350034 passed",
-    "manual_exact_public_status": "exact_public_entry_verified; authenticated Cloud Browser session unavailable; authenticated report values verified through existing real-auth CI",
+    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, source arithmetic, Chromium/WebKit calendar/PDF and deployment/public smokes passed; full actual-auth workflow 40403947325 passed",
+    "manual_exact_public_status": "exact_public_entry_verified; no authenticated Cloud Browser session; private render behavior verified through existing actual-auth CI",
     "manual_exact_public_verified_on": "2026-10-26",
-    "acceptance_note": "Calendar carbohydrate, fat and fiber now have values, coverage, origins, charts and daily evidence in week/month reports and local PDF. Independent current owner arithmetic agrees. Seven Home indicators, original records and write boundaries are preserved. Water restoration, original MFP history, exact fifteen-record lab proposal, basal validation, ordinary production forms and physical-device/owner acceptance remain open. Overall delivery is not accepted.",
-    "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
+    "acceptance_note": "Calendar daily extrema, source/coverage and common-scale registered primary-series charts are published and verified in screen/PDF. Seven Home cards and all records/writes are unchanged. The revised visual email received positive owner feedback; app-wide acceptance, water delivery, exact laboratory proposal, basal eligibility, ordinary production saving and physical-device verification remain separate open tasks.",
+    "real_auth_verification_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
@@ -2043,7 +2046,7 @@
       "id": "LTS-CALENDAR-HIGHLIGHTS-001",
       "area": "weekly/monthly report usefulness",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Show daily variation with dated extrema and coverage, plus registered training series on one common scale.",
       "acceptance": [
@@ -2057,9 +2060,13 @@
         "preview/compact-evidence/tests/calendar-report-model-test.mjs",
         "preview/compact-evidence/tests/calendar-report-view-test.mjs",
         "preview/compact-evidence/tests/calendar-report-browser.mjs",
-        "Private fresh source arithmetic agrees with eligible daily ranges and registered series counts."
+        "Private fresh source arithmetic agrees with eligible daily ranges and registered series counts.",
+        "All twelve exact final candidate workflows passed at 1ff3683d22aef31e911a7b89a7be85209cf44b73. Calendar run 40402174254 covers 26 scenarios, Chromium/WebKit, 320/393/1440px and five genuine A4 PDFs; no layout/content failures.",
+        "Synthetic artifact 12688469135 SHA256 1638ba07fd45a04cfeca171180c31926f3924c0837f3aca6dded73a6ac86c2c1 was verified and representative mobile/desktop, highlight and training PDF pages inspected.",
+        "Normal PR403 merged at d788abfc2888b46176c5d82c4a3e6266cad58ce0. Deploy 40403947317, public smokes 40404027740 and 40404027732, and full authenticated real-account workflow 40403947325 passed.",
+        "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred."
       ],
-      "next_action": "Finish candidate CI and inspect responsive/PDF evidence, then publish normally and verify actual authenticated runtime.",
+      "next_action": "Preserve the verified descriptive/source boundaries. Independent integration, clinical proposal and physical-device limits remain tracked separately.",
       "blocker": null
     }
   ],
@@ -2606,16 +2613,16 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261026.84",
-    "main_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
-    "runtime_promotion_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+    "build_id": "health-integrated-20261026.85",
+    "main_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
+    "runtime_promotion_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
     "published_on": "2026-10-26",
     "verified_on": "2026-10-26",
-    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, responsive PDF, deploy/public smoke and full real-auth workflow 40352350034 passed",
-    "manual_exact_public_status": "exact_public_entry_verified; authenticated Cloud Browser session unavailable; authenticated report values verified through existing real-auth CI",
+    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, source arithmetic, Chromium/WebKit calendar/PDF and deployment/public smokes passed; full actual-auth workflow 40403947325 passed",
+    "manual_exact_public_status": "exact_public_entry_verified; no authenticated Cloud Browser session; private render behavior verified through existing actual-auth CI",
     "manual_exact_public_verified_on": "2026-10-26",
-    "acceptance_note": "Calendar carbohydrate, fat and fiber now have values, coverage, origins, charts and daily evidence in week/month reports and local PDF. Independent current owner arithmetic agrees. Seven Home indicators, original records and write boundaries are preserved. Water restoration, original MFP history, exact fifteen-record lab proposal, basal validation, ordinary production forms and physical-device/owner acceptance remain open. Overall delivery is not accepted.",
-    "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
+    "acceptance_note": "Calendar daily extrema, source/coverage and common-scale registered primary-series charts are published and verified in screen/PDF. Seven Home cards and all records/writes are unchanged. The revised visual email received positive owner feedback; app-wide acceptance, water delivery, exact laboratory proposal, basal eligibility, ordinary production saving and physical-device verification remain separate open tasks.",
+    "real_auth_verification_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "release_history": [
@@ -2716,6 +2723,20 @@
       "manual_exact_public_status": "verified_authenticated_desktop_at_83",
       "manual_exact_public_verified_on": "2026-10-26",
       "acceptance_note": "Bounded historical restoration, original textual sets and explicit estimate qualifiers were saved, independently reread and reopened on the exact public build. Approved daily cards remain present. Receiver v9 source/config and negative auth are verified. Upstream water, original MFP history, attributable recurrence, exact lab proposal, basal eligibility, ordinary production forms and physical-device/owner acceptance remain independent. Overall delivery is not accepted."
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261026.84",
+      "main_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+      "runtime_promotion_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+      "published_on": "2026-10-26",
+      "verified_on": "2026-10-26",
+      "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, responsive PDF, deploy/public smoke and full real-auth workflow 40352350034 passed",
+      "manual_exact_public_status": "exact_public_entry_verified; authenticated Cloud Browser session unavailable; authenticated report values verified through existing real-auth CI",
+      "manual_exact_public_verified_on": "2026-10-26",
+      "acceptance_note": "Calendar carbohydrate, fat and fiber now have values, coverage, origins, charts and daily evidence in week/month reports and local PDF. Independent current owner arithmetic agrees. Seven Home indicators, original records and write boundaries are preserved. Water restoration, original MFP history, exact fifteen-record lab proposal, basal validation, ordinary production forms and physical-device/owner acceptance remain open. Overall delivery is not accepted.",
+      "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
+      "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
     }
   ]
 }
