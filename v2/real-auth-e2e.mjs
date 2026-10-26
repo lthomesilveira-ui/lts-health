@@ -149,7 +149,7 @@ async function readIntegritySnapshot(){
       return{rows};
     }
     const specs=[
-      ['workouts','health_workouts','source_record_id,workout_date,is_canonical,record_status'],
+      ['workouts','health_workouts','source_record_id,workout_date,is_canonical,record_status,source_file,raw_exercises'],
       ['exercises','health_workout_exercises','source_record_id,workout_source_record_id'],
       ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,phase'],
       ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id,evidence_kind,evidence_status,field_names'],
@@ -177,6 +177,7 @@ async function readIntegritySnapshot(){
       orphanSetsByWorkout:data.sets.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
       orphanSetsByExercise:data.sets.filter(r=>r.exercise_source_record_id&&!exerciseIds.has(r.exercise_source_record_id)).length,
       orphanEvidence:data.evidence.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
+      legacyWorkoutsMissingSource:visibleWorkouts.filter(r=>String(r.source_file||'').includes('SEED_TREINOS')&&!String(r.raw_exercises||'').trim()).length,
       canonicalBoundaryViolations:data.sourceMetrics.filter(r=>String(r.canonical_status||'').toLowerCase()==='canonical'&&!allowedCanonical.has(`${String(r.source_family||'').toLowerCase()}|${String(r.metric_type||'').toLowerCase()}`)&&!validBridge(r)&&!validOriginalWater(r)).length,
       latestWorkoutId:latest?.source_record_id||null,
       latestWorkoutDate:latest?.workout_date||null,
@@ -218,6 +219,7 @@ try{
   const linkageFailures=integrity.orphanExercises+integrity.orphanSetsByWorkout+integrity.orphanSetsByExercise+integrity.orphanEvidence;
   if(linkageFailures)throw new Error(`real-data linkage integrity failed: ${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
   if(integrity.canonicalBoundaryViolations)throw new Error(`real-data canonical boundary failed: ${integrity.canonicalBoundaryViolations}`);
+  if(integrity.legacyWorkoutsMissingSource)throw new Error('Original legacy workout details are missing');
   if(!integrity.latestWorkoutId||integrity.latestExpectedExercises<1||integrity.latestExpectedSets<1)throw new Error('latest canonical workout has no structured linkage');
 
   await waitForRoute('hoje');
