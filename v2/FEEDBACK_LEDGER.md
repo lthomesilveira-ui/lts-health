@@ -1,6 +1,6 @@
 # FB-035 — further original-source reconciliation, 2026-10-26 UTC
 
-The owner again requests autonomous completion and review of existing documents/chats. Available original structured sources were reconciled with complete current records. Previously stored historical context and session text were omitted from their bounded presentation fields; the guarded source-proven repair preserved other fields, counts, prescriptions and auxiliary history. The candidate also makes explicit original estimate/approximate-duration qualifiers and improves authenticated transport-byte diagnostics. Current publication/deployment gates and independent external conditions remain in `EXECUTION_STATE.json`. No technical pass implies owner acceptance.
+Available originals and conversations were reviewed again. The bounded historical repair was saved, independently reread and reopened in exact public .83. Explicit estimates and textual sets are readable; receiver v9 source/config and negative auth are verified. Stale operational lab descriptions were reconciled without changing clinical records. Completed owner phone evidence must not be requested again, and provider-blocked original history is tracked as an external access dependency. The bounded package is done; actual water continuity, separate exact lab authority, basal eligibility, ordinary form coverage and physical-device/owner acceptance remain open. No technical pass implies overall delivery.
 
 # Current feedback — autonomous completeness review, 2026-10-25
 

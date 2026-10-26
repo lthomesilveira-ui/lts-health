@@ -58,7 +58,7 @@ else{
   }else assert.equal(state.current_package.status,'done','a package with no pending acceptance or executable work must be done');
 }
 const water=state.tasks.find(task=>task.id==='LTS-HYD-IMPORT-001');
-assert.equal(water?.status,'blocked_user');
+assert.equal(water?.status,'blocked_external');
 assert.equal(water?.priority,'P0');
 assert.match(water?.next_action||'',/notebook/i);
 assert.equal(state.reminder.task_id,water.id);

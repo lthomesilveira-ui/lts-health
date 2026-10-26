@@ -63,7 +63,7 @@ O usuário autorizou e comprou a ponte anual Health Auto Export. Executar a inte
 
 ## Hidratação pendente
 
-`LTS-HYD-IMPORT-001` permanece `blocked_user` enquanto o banco não contiver uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. O app exibe um caminho explícito para continuar no notebook, sem sugerir digitação diária ou instalação de aplicativo; o ledger privado registra a solicitação; e uma trigger muda a solicitação para concluída quando o primeiro lote válido chegar.
+`LTS-HYD-IMPORT-001` permanece aberto até existir uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. No checkpoint de 26/10/2026 UTC, é `blocked_external`, sob responsabilidade do Codex: o bloqueio de segurança do provedor impede o acesso autenticado do navegador do agente. Isso não é uma etapa de configuração do iPhone ainda não feita. O helper de notebook continua disponível, mas não justifica pedir novamente os testes já concluídos, exportações manuais recorrentes ou registros duplicados. O ledger privado e a trigger de conclusão continuam vinculados à chegada de um lote autêntico. Preservar o bloqueio do provedor, sem contorná-lo.
 
 Sem data e horário escolhidos, não existe notificação agendada. A pendência deve ser citada em cada checkpoint do projeto até ser concluída. Se o usuário definir quando deseja ser lembrado, criar uma automação separada e registrar sua existência no ledger.
 
