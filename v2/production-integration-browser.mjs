@@ -64,6 +64,12 @@ for(const width of [320,393,1440]){
    await page.getByRole('tab',{name:'Exercícios',exact:true}).click();
    assert.ok(await page.getByText('Escala de placa: 4 × 8 — registro original de exemplo',{exact:true}).count()>0,'literal source units remain readable');
    assert.ok((await page.locator('.ltsRefExerciseCard').first().innerText()).includes('Séries em texto'));
+   const sourceGeometry=await page.locator('.ltsRefSetEmpty').first().evaluate(node=>{
+    const range=document.createRange();range.selectNodeContents(node);
+    return{textWidth:range.getBoundingClientRect().width,cardWidth:node.closest('.ltsRefExerciseCard').getBoundingClientRect().width};
+   });
+   assert.ok(sourceGeometry.textWidth>=Math.min(240,sourceGeometry.cardWidth*.65),'original text uses the card width, not the first table column at '+width);
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'textual exercise details fit '+width);
    await page.screenshot({path:`artifacts/production-integration/training-text-sets-${width}.png`});
    await page.getByRole('tab',{name:'Resumo',exact:true}).click();
    await page.screenshot({path:`artifacts/production-integration/training-qualifiers-${width}.png`});

@@ -537,10 +537,14 @@
   white-space: nowrap;
 }
 
-.ltsRefSetEmpty {
+.ltsRefSetTable > .ltsRefSetEmpty {
+  display: block;
   grid-column: 1 / -1;
   color: #65758a;
   font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .ltsRefExerciseHistory {
