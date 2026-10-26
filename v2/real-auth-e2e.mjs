@@ -371,6 +371,25 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
 
   await waitForRoute('analise');
+  // Inspect the actual published report with the existing real authenticated
+  // session. Private values never enter public logs; screenshots stay in the
+  // established encrypted-artifact path. No form submission or data mutation.
+  await page.waitForSelector('#calendarReport [data-calendar-metric="fiber"]',{timeout:30000});
+  const calendarNutrientsMatch=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {calendarReport}=await import('./src/calendar-report-model.js');
+    const model=calendarReport(state.data,state.domainStatus,state.ui);
+    if(document.querySelectorAll('#calendarReport [data-calendar-metric]').length!==8)return false;
+    return ['carbs','fat','fiber'].every(key=>{
+      const metric=model.metricsByKey[key],card=document.querySelector(`#calendarReport [data-calendar-metric="${key}"]`);
+      if(!card||!card.querySelector(`[data-calendar-source="${key}"]`))return false;
+      const value=card.querySelector('.ltsCalendarMetricValue')?.textContent.trim();
+      const expected=metric.value==null?'Sem dado':`${metric.value.toLocaleString('pt-BR',{maximumFractionDigits:0})} g`;
+      return value===expected&&card.querySelector('.ltsCalendarCoverage')?.textContent===`${metric.count}/${metric.expectedDays} dias encerrados com valor`;
+    });
+  });
+  if(!calendarNutrientsMatch)throw new Error('Published calendar nutrient values or coverage do not match the authenticated loaded source model; private values withheld.');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-nutrients.png`,fullPage:true});
   const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:['reportComposition','reportLabs'].map(id=>Boolean(document.querySelector('#'+id))),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
   if(!reports.period||!reports.sections.every(Boolean))throw new Error('mobile useful reports are missing');
   if(reports.axes.length&&new Set(reports.axes).size!==1)throw new Error('mobile report calendars disagree');

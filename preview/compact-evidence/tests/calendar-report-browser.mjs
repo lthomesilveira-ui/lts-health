@@ -442,7 +442,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
         // Automatic period-aware selection is covered separately by the model regression.
         const availableOrigins=await report(page);
         for(const metric of availableOrigins.metrics){
-          const desired=metric.sources.find(source=>source.label===(['water','protein','energy'].includes(metric.key)?'Synthetic A food':'Synthetic A watch'));
+          const desired=metric.sources.find(source=>source.label===(['water','protein','energy','carbs','fat','fiber'].includes(metric.key)?'Synthetic A food':'Synthetic A watch'));
           assert.ok(desired,`Explicit arithmetic fixture origin exists for ${metric.key}`);
           await page.locator(`#calendar-source-${metric.key}`).selectOption(desired.key);await stable(page);
         }
