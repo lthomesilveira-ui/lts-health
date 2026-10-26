@@ -1,3 +1,7 @@
+# FB-037 — Verified publication checkpoint
+
+The calendar nutrient change is published and authenticated; provider water diagnosis remains open. Native report submission is complete and must not be repeated. Prior owner rejection of overall delivery remains in force.
+
 # FB-037 — Continue after the native report; complete useful calendar nutrients
 
 The owner confirms native report submission with a success screen and requests autonomous continuation. Close only the submission task; retain provider analysis and actual water delivery as unresolved. Complete carbohydrate, fat and fiber in calendar reports/PDF, preserve the approved Home, and keep the authorized weekly email separate from its future-run evidence. No repeat device task, duplicate record, clinical correction or prescription change is authorized by this interface work.

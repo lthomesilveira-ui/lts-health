@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/WATER_SUPPORT_20261026.md"
+    "latest_release": "v2/releases/CALENDAR_NUTRIENTS_20261026.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,35 +50,38 @@
   },
   "current_package": {
     "id": "PKG-CALENDAR-MACRONUTRIENTS-001",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Complete calendar reports with independently sourced carbohydrate, fat and fiber indicators, while preserving the approved Home and recording the completed native support submission.",
     "task_ids": [
       "LTS-CALENDAR-MACRONUTRIENTS-001"
     ],
-    "public_build": "health-integrated-20261026.83",
-    "candidate_build": "health-integrated-20261026.84",
-    "release_state": "local_contracts_passed;candidate_browser_and_real_runtime_verification_pending",
+    "public_build": "health-integrated-20261026.84",
+    "release_state": "published;candidate_contracts_and_responsive_pdf_passed;real_authenticated_runtime_verified;water_not_restored;overall_delivery_not_accepted",
     "completed_evidence": [
       "Existing public main and both reference branch heads were reread; exclusive reference commits and existing open PRs are preserved.",
       "Native diagnostic submission is confirmed; no new permission, entry, purchase or report is required.",
       "First weekly summary was sent to the owner and reread; its separate weekly schedule is enabled.",
-      "Calendar nutrient calculations reuse origin, unit, duplicate, missingness, partial-day and comparison rules. Default Home remains seven metrics."
+      "Calendar nutrient calculations reuse origin, unit, duplicate, missingness, partial-day and comparison rules. Default Home remains seven metrics.",
+      "All twelve exact final candidate workflows passed; earlier failed arithmetic-source test and PDF word extraction were diagnosed and repaired without weakening coverage assertions.",
+      "The PDF displays and preserves recorded zero differences with units; exact numeric/token retention and Chromium/WebKit responsive checks passed.",
+      "Normal PR400 merged at 6b38b865bb2c1c855ee6010d391ff9491e5a5d01; public deployment and smoke passed, followed by real authenticated workflow 40352350034 checking all three new nutrient values/denominators in the exact published report.",
+      "The Cloud Browser public entry identifies the exact build; that browser no longer retains the previous authenticated session. Real-data inspection uses the established authenticated CI and independently checked private arithmetic, not a claimed manual physical-iPhone test."
     ],
-    "pending_evidence": [
-      "Exact candidate workflows, responsive report/PDF checks, real-data comparison and public verification."
-    ]
+    "pending_evidence": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261026.83",
-    "main_commit": "4393c905b28ae66b5ae2bd6db3deaef14ffa4b08",
-    "runtime_promotion_commit": "4393c905b28ae66b5ae2bd6db3deaef14ffa4b08",
+    "build_id": "health-integrated-20261026.84",
+    "main_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+    "runtime_promotion_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
     "published_on": "2026-10-26",
     "verified_on": "2026-10-26",
-    "automated_runtime_and_responsive_status": "verified; fourteen exact candidate gates, deploy/public smokes and full real-auth workflow 40254229141 passed",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_83",
+    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, responsive PDF, deploy/public smoke and full real-auth workflow 40352350034 passed",
+    "manual_exact_public_status": "exact_public_entry_verified; authenticated Cloud Browser session unavailable; authenticated report values verified through existing real-auth CI",
     "manual_exact_public_verified_on": "2026-10-26",
-    "acceptance_note": "Bounded historical restoration, original textual sets and explicit estimate qualifiers were saved, independently reread and reopened on the exact public build. Approved daily cards remain present. Receiver v9 source/config and negative auth are verified. Upstream water, original MFP history, attributable recurrence, exact lab proposal, basal eligibility, ordinary production forms and physical-device/owner acceptance remain independent. Overall delivery is not accepted."
+    "acceptance_note": "Calendar carbohydrate, fat and fiber now have values, coverage, origins, charts and daily evidence in week/month reports and local PDF. Independent current owner arithmetic agrees. Seven Home indicators, original records and write boundaries are preserved. Water restoration, original MFP history, exact fifteen-record lab proposal, basal validation, ordinary production forms and physical-device/owner acceptance remain open. Overall delivery is not accepted.",
+    "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
+    "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
     {
@@ -1604,10 +1607,11 @@
         "An authorized technical support request was sent through the verified official channel; no health values, private images or credentials were sent.",
         "2026-10-26: the provider replied through the existing official conversation, asking for the category and native Help Center problem report. The category/direction reply was sent and independently read back.",
         "2026-10-26: fresh genuine accepted receiver requests still lack the expected water block. Native device report delivery is tracked separately in LTS-WATER-NATIVE-REPORT-001.",
-        "Native report submission confirmed by owner. The provider missing-report reply was sent before this submission; a subsequent notification was sent and independently reread."
+        "Native report submission confirmed by owner. The provider missing-report reply was sent before this submission; a subsequent notification was sent and independently reread.",
+        "The provider acknowledged the native report and states that the water API request returns no records without an error. Account mismatch remains a hypothesis; no reset or new report was performed."
       ],
-      "next_action": "Use the existing official support conversation to obtain the diagnostic finding for the submitted native report; completed phone tests must not be repeated.",
-      "blocker": "The native report was submitted successfully; provider receipt association and source-read/destination-write diagnosis are pending. Water delivery is not restored.",
+      "next_action": "Continue the existing case from the acknowledged native report and actual empty-read finding. Keep provider-proposed account authorization checks distinct from a proven cause; do not repeat the diagnostic submission or generic phone tests.",
+      "blocker": "Provider reports an empty water API response without error. The account-identity hypothesis, effective query window and imported-water API availability are unresolved; actual water delivery remains absent.",
       "phone_status_capture_received": true
     },
     {
@@ -1961,7 +1965,7 @@
       "id": "LTS-CALENDAR-MACRONUTRIENTS-001",
       "area": "calendar nutrition reports",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Add carbohydrate, fat and fiber to existing week/month reports and local PDF without adding Home cards or combining sources.",
       "acceptance": [
@@ -1971,9 +1975,11 @@
         "Candidate and published reports pass model, responsive browser/PDF and real-data verification."
       ],
       "evidence": [
-        "Local model/view and promotion-parity contracts passed; exact candidate and public runtime evidence is pending."
+        "Local model/view and promotion-parity contracts passed; exact candidate and public runtime evidence is pending.",
+        "PR400 normal merge 6b38b865bb2c1c855ee6010d391ff9491e5a5d01; exact candidate workflows and responsive PDF checks passed.",
+        "Exact public real-auth workflow 40352350034 passed, including nutrient values and coverage; independent owner-source arithmetic and seven Home indicators were verified."
       ],
-      "next_action": "Complete candidate workflows and inspect the exact published report with current owner data.",
+      "next_action": "Preserve the published calendar/source rules and review actual scheduled email outcomes independently; do not duplicate the enabled schedule.",
       "blocker": null
     },
     {
@@ -2014,6 +2020,26 @@
       ],
       "next_action": "Process substantive provider replies without repeating completed owner steps; no response or fix is assumed.",
       "blocker": null
+    },
+    {
+      "id": "LTS-WATER-ACCOUNT-ALIGNMENT-001",
+      "area": "provider-directed account verification",
+      "priority": "P0",
+      "status": "blocked_user",
+      "owner": "User",
+      "summary": "Follow the provider-directed account alignment after the acknowledged native report showed an empty water API read without an error.",
+      "acceptance": [
+        "Identify the account actually displayed in the Google Health app.",
+        "Select that same account in the existing Health Sync Google Health authorization, as explicitly directed by the provider.",
+        "Record completion separately from proof of subsequent real water transfer; do not require another health entry or diagnostic report."
+      ],
+      "evidence": [
+        "The provider acknowledged the submitted native report and states that the water request returns no records without an error.",
+        "The provider specifically directed account selection/alignment; the account-mismatch hypothesis is not yet proven and no agent-side reset was performed.",
+        "The agent cannot operate the native iPhone authorization flow. Current source selections were corrected in the existing support conversation without forwarding screenshots or measurements."
+      ],
+      "next_action": "On the iPhone, view the email under the Google Health profile, then in Health Sync open Connected apps → Google Health Authorization and choose that same account through the provider-directed reset. If this exact alignment is already evidenced as completed, reuse that evidence rather than repeating it. The existing genuine water entry and next source receipt can then be checked without adding test consumption.",
+      "blocker": "The provider-directed authorization selection is inside the native iPhone app and cannot be completed by the agent. Native problem-report submission is already complete and is not this task."
     }
   ],
   "package_history": [
@@ -2538,15 +2564,17 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261025.82",
-    "main_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
-    "runtime_promotion_commit": "e6317bc171133d8a4d8a213da3edc88aca86d8ae",
-    "published_on": "2026-10-25",
-    "verified_on": "2026-10-25",
-    "automated_runtime_and_responsive_status": "verified; thirteen exact candidate gates and full real-auth workflow 40246269360 passed",
-    "manual_exact_public_status": "verified_authenticated_desktop_at_82",
-    "manual_exact_public_verified_on": "2026-10-25",
-    "acceptance_note": "Source coverage and current status, approved daily cards and bounded historical context are verified. Water transport and recurrence, original MFP history, exact lab proposal recovery and separate authority, basal eligibility, ordinary production forms, physical-iPhone and owner acceptance remain open."
+    "build_id": "health-integrated-20261026.84",
+    "main_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+    "runtime_promotion_commit": "6b38b865bb2c1c855ee6010d391ff9491e5a5d01",
+    "published_on": "2026-10-26",
+    "verified_on": "2026-10-26",
+    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, responsive PDF, deploy/public smoke and full real-auth workflow 40352350034 passed",
+    "manual_exact_public_status": "exact_public_entry_verified; authenticated Cloud Browser session unavailable; authenticated report values verified through existing real-auth CI",
+    "manual_exact_public_verified_on": "2026-10-26",
+    "acceptance_note": "Calendar carbohydrate, fat and fiber now have values, coverage, origins, charts and daily evidence in week/month reports and local PDF. Independent current owner arithmetic agrees. Seven Home indicators, original records and write boundaries are preserved. Water restoration, original MFP history, exact fifteen-record lab proposal, basal validation, ordinary production forms and physical-device/owner acceptance remain open. Overall delivery is not accepted.",
+    "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
+    "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "release_history": [
     {
@@ -2634,6 +2662,18 @@
       "manual_exact_public_status": "verified_authenticated_desktop_at_82",
       "manual_exact_public_verified_on": "2026-10-25",
       "acceptance_note": "Source coverage and current status, approved daily cards and bounded historical context are verified. Water transport and recurrence, original MFP history, exact lab proposal recovery and separate authority, basal eligibility, ordinary production forms, physical-iPhone and owner acceptance remain open."
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261026.83",
+      "main_commit": "4393c905b28ae66b5ae2bd6db3deaef14ffa4b08",
+      "runtime_promotion_commit": "4393c905b28ae66b5ae2bd6db3deaef14ffa4b08",
+      "published_on": "2026-10-26",
+      "verified_on": "2026-10-26",
+      "automated_runtime_and_responsive_status": "verified; fourteen exact candidate gates, deploy/public smokes and full real-auth workflow 40254229141 passed",
+      "manual_exact_public_status": "verified_authenticated_desktop_at_83",
+      "manual_exact_public_verified_on": "2026-10-26",
+      "acceptance_note": "Bounded historical restoration, original textual sets and explicit estimate qualifiers were saved, independently reread and reopened on the exact public build. Approved daily cards remain present. Receiver v9 source/config and negative auth are verified. Upstream water, original MFP history, attributable recurrence, exact lab proposal, basal eligibility, ordinary production forms and physical-device/owner acceptance remain independent. Overall delivery is not accepted."
     }
   ]
 }
