@@ -66,6 +66,7 @@ async function choose(page,{mode='week',selection='last',date}={}){
 }
 async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expected.end}={}){
   const m=await report(page),body=await page.locator('#calendarReport').innerText();
+  await assertAxisLabels(page,'#calendarReport');
   assert.equal(m.calendar.bounds.start,expected.start);assert.equal(m.calendar.bounds.end,expected.end);assert.equal(m.calendar.bounds.days,expected.days);
   assert.equal(m.calendar.partial,partial);assert.equal(m.calendar.nominalBounds.end,nominalEnd);
   assert.equal(await page.locator('#calendarReport .ltsReportHeading h2').getAttribute('aria-label'),`${dateLabel(expected.start)} a ${dateLabel(expected.end)}`,'The concise visible heading has the exact full date range as its accessible name');
@@ -132,6 +133,10 @@ async function overviewContract(page,name){
   }
   await page.screenshot({path:`${dir}/${name}-overview-final.png`,scale:'css'});
   results.push({name:`${name}-overview`,status:'passed',defaultEvidenceClosed:true,chartControlsPreserveModel:true,...bounds,...flags});save();
+}
+async function assertAxisLabels(page,selector){
+  const ticks=await page.locator(selector+' .ltsReportDateTick').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return {text:n.textContent,left:r.left,right:r.right};}));
+  for(let i=1;i<ticks.length;i++)assert.ok(ticks[i-1].right+2<=ticks[i].left,`Actual SVG date labels must not overlap: ${JSON.stringify(ticks.slice(i-1,i+1))}`);
 }
 async function openEvidence(page){
   for(const detail of await page.locator('#calendarReport details').all())if(!(await detail.evaluate(el=>el.open)))await detail.locator(':scope > summary').click();
@@ -381,6 +386,7 @@ async function printContract(page,name,{pdf=false,engine='chromium',summary=fals
   assert.equal(await page.locator('#calendarPrintRoot details,#calendarPrintRoot button,#calendarPrintRoot select,#calendarPrintRoot input').count(),0,'PDF is expanded and has no interactive-only controls');
   await page.setViewportSize({width:794,height:1123});await page.emulateMedia({media:'print'});
   await page.evaluate(()=>document.fonts.ready);
+  if(summary)await assertAxisLabels(page,'#calendarPrintRoot');
   const printText=await page.locator('#calendarPrintRoot').evaluate(root=>{
     const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),parts=[];let node;
     while(node=walker.nextNode())if(node.textContent.trim()&&node.parentElement.checkVisibility({checkVisibilityCSS:true,checkOpacity:true})&&!node.parentElement.closest('script,style,svg'))parts.push(node.textContent.trim());

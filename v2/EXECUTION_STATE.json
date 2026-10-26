@@ -50,14 +50,14 @@
   },
   "current_package": {
     "id": "PKG-CALENDAR-MOBILE-002",
-    "status": "done",
+    "status": "in_progress",
     "goal": "Rebuild the rejected mobile report around the approved compact summary, legible daily charts and progressive source evidence; provide a concise default PDF and preserve the full export.",
     "task_ids": [
       "LTS-CALENDAR-HIGHLIGHTS-001"
     ],
-    "candidate_build": "health-integrated-20261026.86",
+    "candidate_build": "health-integrated-20261026.87",
     "public_build": "health-integrated-20261026.86",
-    "release_state": "published; exact candidate checks, inspected default/expanded responsive views and both PDF choices, public deployment/smokes and real-authenticated runtime verified; owner acceptance not granted",
+    "release_state": ".86 published; final monthly PDF inspection found adjacent endpoint tick labels overlapping. .87 is a bounded view-only correction; production and owner acceptance remain separate.",
     "completed_evidence": [
       "Both approved visual references actually reopened; private original mobile reference digest matched; illustrative values were not copied.",
       "All twelve exact candidate workflows passed at 2b0551e89c5272deb2edc04505ce3096fbb6936c.",
@@ -69,7 +69,9 @@
       "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
       "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed."
     ],
-    "pending_evidence": [],
+    "pending_evidence": [
+      "Verify actual SVG tick bounding boxes on weekly/monthly screens and both concise PDFs; publish exact correction."
+    ],
     "candidate_commit": "2b0551e89c5272deb2edc04505ce3096fbb6936c",
     "runtime_merge": "6dc88dcf1b595dbf0e817332f40591c2a64915ec",
     "owner_acceptance": "not_granted"
@@ -2054,7 +2056,7 @@
       "id": "LTS-CALENDAR-HIGHLIGHTS-001",
       "area": "weekly/monthly report usefulness",
       "priority": "P1",
-      "status": "done",
+      "status": "in_progress",
       "owner": "Codex",
       "summary": "Show daily variation with dated extrema and coverage, plus registered training series on one common scale.",
       "acceptance": [
@@ -2065,7 +2067,8 @@
         "Verify mobile and PDF readability, public authentication and source arithmetic without writing health data.",
         "Default report shows essential values and a legible daily graph before documentary details; evidence remains reachable without loss.",
         "Concise summary PDF and complete source-evidence PDF are separate explicit actions.",
-        "Inspect default mobile screens at readable size, including reduced 393x650 viewport; do not infer acceptance from test counts."
+        "Inspect default mobile screens at readable size, including reduced 393x650 viewport; do not infer acceptance from test counts.",
+        "Actual date-text glyph boxes do not overlap, including penultimate/final monthly ticks, on screen and concise A4 export."
       ],
       "evidence": [
         "preview/compact-evidence/tests/calendar-report-model-test.mjs",
@@ -2085,9 +2088,10 @@
         "Final integrated artifact 12693614420 SHA256 0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368 verified; 320/393 and desktop report screens inspected.",
         "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
         "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
-        "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed."
+        "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed.",
+        "After .86 publication, visual monthly page-one inspection found overlapping penultimate and final axis dates. Daily points and values were intact; the visual completion is reopened for a bounded endpoint-label correction."
       ],
-      "next_action": "Preserve the verified compact reading and complete source export. Any later owner rejection reopens product acceptance; technical passes do not constitute global acceptance.",
+      "next_action": "Verify the bounded monthly tick-label correction and exact public build.",
       "blocker": null
     }
   ],

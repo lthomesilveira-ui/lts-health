@@ -1,3 +1,7 @@
+# Monthly axis follow-up — 26/10/2026
+
+The final monthly summary page-one visual inspection found the penultimate and final date ticks overlapping in published .86. Source observations were intact. Candidate .87 reserves the last date label and omits a nearby intermediate tick, preserving every plotted point. New browser assertions measure actual SVG text glyph boxes in weekly/monthly screens and concise PDFs; the old document geometry excluded SVG text. The technical report task is reopened until this bounded correction is verified. No data/auth/source/write behavior changes. Earlier .86 evidence remains history.
+
 # Mobile report .86 published and inspected — 26/10/2026
 
 The owner rejected .85 after opening it on a phone. That feedback superseded its earlier technical completion. Build `health-integrated-20261026.86` is now published by normal PR405 at `6dc88dcf1b595dbf0e817332f40591c2a64915ec`, from exact candidate `2b0551e89c5272deb2edc04505ce3096fbb6936c`. It replaces the long default report stack with essential values, a daily chart, training and concise observations; complete source-specific evidence and the complete PDF remain explicit separate choices. The primary PDF is a concise summary.
