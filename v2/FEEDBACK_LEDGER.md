@@ -1,3 +1,7 @@
+# FB-037 — Continue after the native report; complete useful calendar nutrients
+
+The owner confirms native report submission with a success screen and requests autonomous continuation. Close only the submission task; retain provider analysis and actual water delivery as unresolved. Complete carbohydrate, fat and fiber in calendar reports/PDF, preserve the approved Home, and keep the authorized weekly email separate from its future-run evidence. No repeat device task, duplicate record, clinical correction or prescription change is authorized by this interface work.
+
 # FB-036 — follow actual support replies, 2026-10-26
 
 The owner reports that a support email was answered and authorizes continued resolution. Read the actual reply, follow the existing verified conversation and preserve earlier authorizations. The source-sync provider requests a first native problem report; that physical-device action is distinct from already completed phone tests. Category clarification and genuine server diagnostics are verified, while the native cause and water restoration are not. Keep the approved layout, prescriptions, source boundaries and all original records intact.

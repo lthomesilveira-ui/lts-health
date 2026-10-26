@@ -49,35 +49,23 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-WATER-SUPPORT-001",
-    "status": "blocked_user",
-    "goal": "Use the actual provider response and genuine authenticated transport evidence to investigate missing water, without repeating completed phone checks or treating a diagnostic request as a repair.",
+    "id": "PKG-CALENDAR-MACRONUTRIENTS-001",
+    "status": "in_progress",
+    "goal": "Complete calendar reports with independently sourced carbohydrate, fat and fiber indicators, while preserving the approved Home and recording the completed native support submission.",
     "task_ids": [
-      "LTS-HEALTH-SUPPORT-FOLLOWUP-001",
-      "LTS-EXPORT-BODY-DIAGNOSTICS-001",
-      "LTS-WATER-NATIVE-REPORT-001",
-      "LTS-WATER-UPSTREAM-STATUS-001"
+      "LTS-CALENDAR-MACRONUTRIENTS-001"
     ],
     "public_build": "health-integrated-20261026.83",
-    "release_state": "provider_replied;category_clarification_sent_and_reread;real_transport_diagnostics_verified;native_device_report_required;water_not_restored;overall_delivery_not_accepted",
+    "candidate_build": "health-integrated-20261026.84",
+    "release_state": "local_contracts_passed;candidate_browser_and_real_runtime_verification_pending",
     "completed_evidence": [
-      "The actual official source-sync provider reply was read. It requests the affected category and a problem report generated through the native app Help Center.",
-      "The requested category and direction were clarified in the existing verified email conversation. SENT, recipient and content were read back. No measurements, record dates, screenshots, raw diagnostic files or credentials were attached.",
-      "The other official export-support conversation still has no reply at this checkpoint; no duplicate case was opened.",
-      "Receiver version 9 remains ACTIVE and all six deployed files match the reviewed repository source. Genuine subsequent authenticated requests were accepted, read completely and measured below the existing limit, without a limit trigger or the expected water block.",
-      "The original rejected body remains unknown. A successful small request does not establish what the historical oversized request contained.",
-      "All twelve prior metadata-publication workflows now passed; the previously running integrated workflow is complete. Frontend .83, source routing, keys, original records and the approved layout are preserved."
+      "Existing public main and both reference branch heads were reread; exclusive reference commits and existing open PRs are preserved.",
+      "Native diagnostic submission is confirmed; no new permission, entry, purchase or report is required.",
+      "First weekly summary was sent to the owner and reread; its separate weekly schedule is enabled.",
+      "Calendar nutrient calculations reuse origin, unit, duplicate, missingness, partial-day and comparison rules. Default Home remains seven metrics."
     ],
     "pending_evidence": [
-      "A native Health Sync problem report must be generated on the physical iPhone and submitted to the existing official support conversation; this log cannot be generated from LTS server data or email.",
-      "The provider must analyze the native source read and destination write before a specific cause or repair can be claimed.",
-      "After repair, verify the same genuine observation through the source/destination, accepted receiver and reopened public app; attributable recurrence remains separate."
-    ],
-    "independent_open_conditions": [
-      "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
-      "Exact original laboratory proposal and separate specific execution authority.",
-      "Basal source and complete-day eligibility.",
-      "Ordinary production form submission, physical-iPhone and owner acceptance remain separate."
+      "Exact candidate workflows, responsive report/PDF checks, real-data comparison and public verification."
     ]
   },
   "last_verified_release": {
@@ -1615,10 +1603,11 @@
         "The exact internal provider or native write failure remains unproved; successful status is not proof of transferred observations.",
         "An authorized technical support request was sent through the verified official channel; no health values, private images or credentials were sent.",
         "2026-10-26: the provider replied through the existing official conversation, asking for the category and native Help Center problem report. The category/direction reply was sent and independently read back.",
-        "2026-10-26: fresh genuine accepted receiver requests still lack the expected water block. Native device report delivery is tracked separately in LTS-WATER-NATIVE-REPORT-001."
+        "2026-10-26: fresh genuine accepted receiver requests still lack the expected water block. Native device report delivery is tracked separately in LTS-WATER-NATIVE-REPORT-001.",
+        "Native report submission confirmed by owner. The provider missing-report reply was sent before this submission; a subsequent notification was sent and independently reread."
       ],
-      "next_action": "Use the existing official conversation to analyze the native report once submitted. Preserve completed phone setup/checks; do not replace the requested diagnostic with repeated entry, screenshots, purchases or reconnection.",
-      "blocker": "The provider requires native Health Sync diagnostics to inspect the internal source read and Apple Health write. The first native-report submission is a separate physical-device task; no exact cause is established yet.",
+      "next_action": "Use the existing official support conversation to obtain the diagnostic finding for the submitted native report; completed phone tests must not be repeated.",
+      "blocker": "The native report was submitted successfully; provider receipt association and source-read/destination-write diagnosis are pending. Water delivery is not restored.",
       "phone_status_capture_received": true
     },
     {
@@ -1952,7 +1941,7 @@
       "id": "LTS-WATER-NATIVE-REPORT-001",
       "area": "native water diagnostic report",
       "priority": "P0",
-      "status": "blocked_user",
+      "status": "done",
       "owner": "user",
       "summary": "Submit the first provider-requested Health Sync diagnostic report from the physical iPhone, linked to the existing official support conversation.",
       "acceptance": [
@@ -1962,10 +1951,69 @@
       "evidence": [
         "2026-10-26: the actual official support reply explicitly requested this in-app report.",
         "The current provider privacy policy describes native local sync logs and their secure support submission; an old health-data export is not a native diagnostic report.",
-        "Previously supplied status, permissions, entry comparison and foreground/connection attempts are already complete; none is requested again."
+        "Previously supplied status, permissions, entry comparison and foreground/connection attempts are already complete; none is requested again.",
+        "2026-10-26: owner screenshot confirms the native report was submitted successfully. Supplier states an email response within 24 hours. This is submission proof, not restoration of water."
       ],
-      "next_action": "On the iPhone, open Health Sync → Help Center/Central de ajuda → Report another problem, follow the report instructions and use the same account email as the existing support conversation. This sends recent native diagnostics to Health Sync/Appyhapps for the requested analysis; no duplicate health entry or recurring manual export is needed.",
-      "blocker": "The diagnostic log is held inside the native iPhone app. The agent cannot generate or submit that device report from the LTS receiver or the email connection. The provider specifically requires it."
+      "next_action": "Await provider receipt confirmation and diagnostic findings through the existing technical conversation; never request this completed report again.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-CALENDAR-MACRONUTRIENTS-001",
+      "area": "calendar nutrition reports",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Add carbohydrate, fat and fiber to existing week/month reports and local PDF without adding Home cards or combining sources.",
+      "acceptance": [
+        "Each nutrient has its own value, origin, unit, n/N and dated evidence.",
+        "Missing, malformed, duplicate and partial observations retain conservative eligibility and strict comparison rules.",
+        "Seven approved Home indicators and operational write boundaries remain unchanged.",
+        "Candidate and published reports pass model, responsive browser/PDF and real-data verification."
+      ],
+      "evidence": [
+        "Local model/view and promotion-parity contracts passed; exact candidate and public runtime evidence is pending."
+      ],
+      "next_action": "Complete candidate workflows and inspect the exact published report with current owner data.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-WEEKLY-EMAIL-001",
+      "area": "weekly summary delivery",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Configure the authorized weekly email and send the first genuine completed-week summary to the owner.",
+      "acceptance": [
+        "Verify recipient and current private source data.",
+        "Avoid duplicate sends, source summation and false zero values.",
+        "Send first edition and independently read SENT/content/recipient.",
+        "Create one enabled Monday-morning schedule in the owner timezone; future-run success remains independently observable."
+      ],
+      "evidence": [
+        "2026-10-26: first genuine completed-week summary sent and read back exactly with SENT and the verified owner recipient.",
+        "One weekly Monday-morning schedule was created successfully after Gmail/Supabase read checks; first future run is not yet executed. Private identifiers and health values remain outside this repository."
+      ],
+      "next_action": "Observe scheduled run results independently; do not duplicate the existing schedule.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-SUPPORT-REPLY-WATCH-001",
+      "area": "support continuity",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Follow the existing two authorized technical cases when the verified provider sends a new email.",
+      "acceptance": [
+        "Resolve both official senders from actual correspondence.",
+        "Create one event-triggered task covering both cases.",
+        "Retain completed native report status and prohibit parallel app development or raw health-data forwarding."
+      ],
+      "evidence": [
+        "Verified official correspondence and harmless Gmail read succeeded.",
+        "An enabled event-based watcher for both verified official senders was created successfully; it reads actual replies and limits action to these existing cases."
+      ],
+      "next_action": "Process substantive provider replies without repeating completed owner steps; no response or fix is assumed.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -2448,6 +2496,38 @@
         "The original water-history transfer is blocked by supported provider access, not by an uncompleted repeated phone check. No immediate owner micro-test, duplicate recording, purchase or recurring manual export is requested."
       ],
       "pending_evidence": [],
+      "independent_open_conditions": [
+        "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
+        "Exact original laboratory proposal and separate specific execution authority.",
+        "Basal source and complete-day eligibility.",
+        "Ordinary production form submission, physical-iPhone and owner acceptance remain separate."
+      ]
+    },
+    {
+      "id": "PKG-WATER-SUPPORT-001",
+      "status": "blocked_external",
+      "goal": "Use the actual provider response and genuine authenticated transport evidence to investigate missing water, without repeating completed phone checks or treating a diagnostic request as a repair.",
+      "task_ids": [
+        "LTS-HEALTH-SUPPORT-FOLLOWUP-001",
+        "LTS-EXPORT-BODY-DIAGNOSTICS-001",
+        "LTS-WATER-NATIVE-REPORT-001",
+        "LTS-WATER-UPSTREAM-STATUS-001"
+      ],
+      "public_build": "health-integrated-20261026.83",
+      "release_state": "native_report_submitted;provider_receipt_and_analysis_pending;water_not_restored",
+      "completed_evidence": [
+        "The actual official source-sync provider reply was read. It requests the affected category and a problem report generated through the native app Help Center.",
+        "The requested category and direction were clarified in the existing verified email conversation. SENT, recipient and content were read back. No measurements, record dates, screenshots, raw diagnostic files or credentials were attached.",
+        "The other official export-support conversation still has no reply at this checkpoint; no duplicate case was opened.",
+        "Receiver version 9 remains ACTIVE and all six deployed files match the reviewed repository source. Genuine subsequent authenticated requests were accepted, read completely and measured below the existing limit, without a limit trigger or the expected water block.",
+        "The original rejected body remains unknown. A successful small request does not establish what the historical oversized request contained.",
+        "All twelve prior metadata-publication workflows now passed; the previously running integrated workflow is complete. Frontend .83, source routing, keys, original records and the approved layout are preserved.",
+        "The owner supplied a native successful-submission confirmation on 2026-10-26. A later support follow-up was sent and reread; the preceding missing-report email predates the submission. No repeat device task remains."
+      ],
+      "pending_evidence": [
+        "The provider must analyze the native source read and destination write before a specific cause or repair can be claimed.",
+        "After repair, verify the same genuine observation through the source/destination, accepted receiver and reopened public app; attributable recurrence remains separate."
+      ],
       "independent_open_conditions": [
         "Metric-specific upstream water continuity, original MFP history and attributable automatic recurrence.",
         "Exact original laboratory proposal and separate specific execution authority.",

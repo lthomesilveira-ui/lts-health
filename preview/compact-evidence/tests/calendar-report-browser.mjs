@@ -69,7 +69,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
   assert.equal(m.calendar.bounds.start,expected.start);assert.equal(m.calendar.bounds.end,expected.end);assert.equal(m.calendar.bounds.days,expected.days);
   assert.equal(m.calendar.partial,partial);assert.equal(m.calendar.nominalBounds.end,nominalEnd);
   assert.ok(body.includes(dateLabel(expected.start))&&body.includes(dateLabel(expected.end)),'Visible report states its actual dates');
-  assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),5);
+  assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),8);
   for(const key of CALENDAR_KEYS){
     const expectedMetric=expectedCalendarMetric(fixture,key,expected),metric=m.metricsByKey[key],card=page.locator(`#calendarReport [data-calendar-metric="${key}"]`);
     assert.equal(metric.count,expectedMetric.count,`${key}: only eligible observed days count`);
@@ -442,7 +442,7 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
         // Automatic period-aware selection is covered separately by the model regression.
         const availableOrigins=await report(page);
         for(const metric of availableOrigins.metrics){
-          const desired=metric.sources.find(source=>source.label===(['water','protein','energy'].includes(metric.key)?'Synthetic A food':'Synthetic A watch'));
+          const desired=metric.sources.find(source=>source.label===(['water','protein','energy','carbs','fat','fiber'].includes(metric.key)?'Synthetic A food':'Synthetic A watch'));
           assert.ok(desired,`Explicit arithmetic fixture origin exists for ${metric.key}`);
           await page.locator(`#calendar-source-${metric.key}`).selectOption(desired.key);await stable(page);
         }

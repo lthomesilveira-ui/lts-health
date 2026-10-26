@@ -6,7 +6,7 @@ import {syntheticNutritionPlanRow} from './documented-nutrition-plan-fixture.mjs
 // private conversation or credentials are used by these acceptance tests.
 export const CALENDAR_TODAY='2026-10-17';
 export const CALENDAR_INJECTION='<img src="synthetic-invalid" onerror="globalThis.__calendarInjection=1">';
-export const CALENDAR_KEYS=['water','protein','energy','steps','activeEnergy'];
+export const CALENDAR_KEYS=['water','protein','energy','carbs','fat','fiber','steps','activeEnergy'];
 export const CALENDAR_SOURCES={food:'Synthetic A food',watch:'Synthetic A watch'};
 export const CALENDAR_DATES={missing:'2026-10-06',partial:'2026-10-07',conflict:'2026-10-08',zero:'2026-10-05',future:'2026-10-18'};
 export const CALENDAR_WINDOWS={
@@ -83,7 +83,7 @@ export const calendarReportService=(fixture,options={})=>consumerLanguageService
 // Independent arithmetic oracle: known incomplete, conflicting, absent and
 // current-day observations are not eligible; zero is a recorded observation.
 export function expectedCalendarMetric(fixture,key,bounds,origin='A'){
-  const fields={water:'water_ml',protein:'protein_g',energy:'calories_kcal'},types={steps:'steps',activeEnergy:'active_energy_kcal'};
+  const fields={water:'water_ml',protein:'protein_g',energy:'calories_kcal',carbs:'carbs_g',fat:'fat_g',fiber:'fiber_g'},types={steps:'steps',activeEnergy:'active_energy_kcal'};
   const observations=fields[key]?fixture.data.nutrition.filter(row=>row.source===`Synthetic ${origin} food`).map(row=>({date:row.nutrition_date,value:row[fields[key]],partial:row.knownPartial})):
     fixture.data.sourceMetrics.filter(row=>row.source_name===`Synthetic ${origin} watch`&&row.metric_type===types[key]).map(row=>({date:row.metric_date,value:row.value,partial:row.knownPartial}));
   const byDate=new Map();for(const row of observations){if(!byDate.has(row.date))byDate.set(row.date,[]);byDate.get(row.date).push(row);}

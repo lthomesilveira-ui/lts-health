@@ -8,13 +8,13 @@ const {state}=await import('../src/core.js');
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-calendar-metric="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
 const capture=value=>structuredClone(value);
 // Arithmetic/gap assertions deliberately inspect an explicitly selected origin.
-const chosenSources={water:CALENDAR_SOURCES.food,protein:CALENDAR_SOURCES.food,energy:CALENDAR_SOURCES.food,steps:CALENDAR_SOURCES.watch,activeEnergy:CALENDAR_SOURCES.watch};
+const chosenSources={water:CALENDAR_SOURCES.food,protein:CALENDAR_SOURCES.food,energy:CALENDAR_SOURCES.food,carbs:CALENDAR_SOURCES.food,fat:CALENDAR_SOURCES.food,fiber:CALENDAR_SOURCES.food,steps:CALENDAR_SOURCES.watch,activeEnergy:CALENDAR_SOURCES.watch};
 const f=makeCalendarReportFixture(),before=capture(f.data),ui={calendarReportSources:chosenSources,analysisPeriod:'365',dashboardMode:'day',dashboardDate:'2026-10-01'},uiBefore=capture(ui),stateBefore=capture(state);
 const html=renderCalendarReport(f.data,f.status,ui,f.today),model=calendarReport(f.data,f.status,ui,f.today);
 assert.match(html,/id="calendarReport"/);assert.match(html,/05\/10\/2026 a 11\/10\/2026/);assert.match(html,/segunda a domingo/);
 assert.match(html,/data-calendar-mode="week" aria-pressed="true"/);assert.match(html,/value="last" selected/);
 assert.match(html,/Imprimir \/ salvar PDF/);assert.match(html,/Nada é enviado automaticamente/);
-assert.equal((html.match(/data-calendar-metric=/g)||[]).length,5);
+assert.equal((html.match(/data-calendar-metric=/g)||[]).length,8);
 for(const key of CALENDAR_KEYS){
   const expected=expectedCalendarMetric(f,key,CALENDAR_WINDOWS.lastWeek),section=card(html,key);
   assert.ok(section.includes(expected.value.toLocaleString('pt-BR',{maximumFractionDigits:0})),`${key} whole-window value matches independent arithmetic`);
@@ -105,4 +105,6 @@ assert.match(css,/#calendarPrintRoot \.ltsCalendarSession,#calendarPrintRoot \.l
 assert.match(css,/\.ltsCalendarModes button\{padding-inline:8px;white-space:nowrap\}/);
 assert.doesNotMatch(source,/\blocalStorage\b|\bsessionStorage\b|\bfetch\s*\(|console\.|window\.open|navigator\.sendBeacon/);
 assert.match(main,/state\.ui\.calendarReportSources=/);assert.match(reports,/renderCalendarReport\(\)/);assert.match(reports,/Explorar outras janelas/);assert.match(reports,/renderIntegratedReview\(m\)/);assert.match(reports,/renderEvidenceInsights/);
-console.log('Calendar report view: independent windows, all five metric values/coverage, chart gaps and zero, origin isolation, dated labs, training and plan limits, escaped full print evidence, A4/mobile CSS, synchronous print/cancel/error/repeat lifecycle, and preserved old workspaces passed. Browser layout and native iPhone saving require separate acceptance tests.');
+console.log('Calendar report view: independent windows, all eight metric values/coverage, chart gaps and zero, origin isolation, dated labs, training and plan limits, escaped full print evidence, A4/mobile CSS, synchronous print/cancel/error/repeat lifecycle, and preserved old workspaces passed. Browser layout and native iPhone saving require separate acceptance tests.');
+
+assert.match(css, /ltsCalendarPrintComparison td:last-child\{word-spacing:1pt\}/, 'PDF zero differences keep a visible, extractable separator before the unit');

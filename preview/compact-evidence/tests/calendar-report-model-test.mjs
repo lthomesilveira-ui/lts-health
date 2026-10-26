@@ -12,7 +12,7 @@ const domains=['body','nutrition','sourceMetrics','metrics','workouts','exercise
 const status=()=>Object.fromEntries(domains.map(key=>[key,'ready']));
 const empty=()=>Object.fromEntries(domains.map(key=>[key,[]]));
 const add=(date,n)=>new Date(Date.parse(date+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);
-const food=(date,value=100,extra={})=>({nutrition_date:date,source:'Synthetic food A',protein_g:value,calories_kcal:value*20,water_ml:value*10,...extra});
+const food=(date,value=100,extra={})=>({nutrition_date:date,source:'Synthetic food A',protein_g:value,calories_kcal:value*20,water_ml:value*10,carbs_g:value*2,fat_g:value/2,fiber_g:value/10,...extra});
 const device=(date,type,value,extra={})=>({metric_date:date,metric_type:type,value,unit:type==='steps'?'count':'kcal',source_name:'Synthetic device A',source_family:'synthetic',canonical_status:'candidate',...extra});
 function filled(start='2024-02-26',days=14){const data=empty();for(let i=0;i<days;i++){const date=add(start,i);data.nutrition.push(food(date,i<7?100:110));data.sourceMetrics.push(device(date,'steps',5000+i),device(date,'active_energy_kcal',300+i));}return data;}
 const metric=(result,key='protein')=>result.metricsByKey[key];
@@ -72,9 +72,9 @@ test('explicit dashboard calendar recomputes counts and rejects future, invalid,
   assert.deepEqual(make({bounds:{start:'2024-03-04',end:'2024-03-10',days:900,closedDays:900}}).bounds,{start:'2024-03-04',end:'2024-03-10',days:7,closedEnd:'2024-03-10',closedDays:7,includesToday:false});
   for(const explicit of [null,{}, {bounds:{start:'2024-03-04',end:'2024-03-12'}},{bounds:{start:'2024-03-10',end:'2024-03-04'}},{bounds:{start:'2024-02-30',end:'2024-03-10'}},{bounds:{start:'2024-03-04',end:'2024-03-10'},previousBounds:{start:'2024-03-04',end:'2024-03-10'}},{bounds:{start:'2024-03-04',end:'2024-03-10'},previousBounds:{start:'2024-02-26',end:'2024-03-02'}}])assert.throws(()=>make(explicit),RangeError);
 });
-test('weekly metrics reuse strict comparability, source identity and five requested variables',()=>{
+test('weekly metrics reuse strict comparability, source identity and all requested nutrients and existing variables',()=>{
   const model=report(filled(),status(),{},today);
-  assert.deepEqual(model.metrics.map(row=>row.key),['water','protein','energy','steps','activeEnergy']);
+  assert.deepEqual(model.metrics.map(row=>row.key),['water','protein','energy','carbs','fat','fiber','steps','activeEnergy']);
   for(const item of model.metrics){assert.equal(item.count,7);assert.equal(item.expectedDays,7);assert.equal(item.comparison.comparable,true);assert.equal(item.comparison.samePositions,true);assert.equal(item.comparison.currentDays,7);}
   assert.equal(metric(model).value,110);assert.equal(metric(model).comparison.previous,100);assert.equal(metric(model).comparison.delta,10);assert.deepEqual(model.todayMetrics,[]);
 });
@@ -82,6 +82,26 @@ test('whole-month mean is distinct from the common-prefix delta for 31 vs29 days
   const data=empty();for(let i=0;i<29;i++)data.nutrition.push(food(add('2024-02-01',i),100));for(let i=0;i<31;i++)data.nutrition.push(food(add('2024-03-01',i),i<29?110:1000));
   const model=report(data,status(),{calendarReportMode:'month'},'2024-04-10'),item=metric(model);
   assert.equal(item.count,31);assert.equal(item.expectedDays,31);assert.equal(item.value,(29*110+2000)/31);assert.equal(item.comparison.current,110);assert.equal(item.comparison.previous,100);assert.equal(item.comparison.delta,10);assert.equal(item.comparison.commonPrefixDays,29);assert.equal(item.comparison.currentBounds.end,'2024-03-29');assert.match(item.comparison.note,/durações diferentes/);
+});
+test('macronutrients retain independent coverage, recorded zero, invalid scalars and partial-day exclusions',()=>{
+  const data=empty();
+  data.nutrition=[food('2024-03-04',100,{carbs_g:200,fat_g:0,fiber_g:null}),food('2024-03-05',100,{carbs_g:null,fat_g:40,fiber_g:20}),food('2024-03-06',100,{carbs_g:400,fat_g:80,fiber_g:30,knownPartial:true}),food('2024-03-07',100,{carbs_g:false,fat_g:-1,fiber_g:'invalid'})];
+  const result=report(data,status(),{},today);
+  assert.equal(result.metricsByKey.carbs.value,200);assert.equal(result.metricsByKey.carbs.count,1);
+  assert.equal(result.metricsByKey.fat.value,20);assert.equal(result.metricsByKey.fat.count,2);
+  assert.equal(result.metricsByKey.fiber.value,20);assert.equal(result.metricsByKey.fiber.count,1);
+  for(const key of ['carbs','fat','fiber']){assert.equal(result.metricsByKey[key].expectedDays,7);assert.equal(result.metricsByKey[key].comparison.delta,null);}
+});
+test('nutrient source copies are never added and carbohydrate aliases remain ambiguous on the same day',()=>{
+  const data=empty();data.nutrition=[food('2024-03-04',100,{carbs_g:200})];
+  data.sourceMetrics=[device('2024-03-04','dietary_carbs_g',200,{unit:'g',canonical_status:'canonical'}),device('2024-03-05','dietary_carbohydrates_g',250,{unit:'g',canonical_status:'canonical'})];
+  const result=report(data,status(),{},today),carbs=result.metricsByKey.carbs;
+  assert.equal(carbs.value,225);assert.equal(carbs.count,2);assert.equal(carbs.sources.length,2);
+  data.sourceMetrics.push(device('2024-03-05','dietary_carbs_g',250,{unit:'g',canonical_status:'canonical'}));
+  const pinned=report(data,status(),{calendarReportSources:{carbs:carbs.source.key}},today).metricsByKey.carbs;
+  assert.equal(pinned.value,200);assert.equal(pinned.count,1);assert.equal(pinned.ambiguousDays,1);
+  data.sourceMetrics.push(device('2024-03-06','dietary_fat_g',500,{unit:'mg',canonical_status:'canonical'}));
+  assert.equal(report(data,status(),{},today).metricsByKey.fat.invalidRows,1);
 });
 test('zero stays observed, missing/invalid/partial/duplicates never become zero or enter means',()=>{
   const data=empty();data.nutrition=[food('2024-03-04',0),food('2024-03-05',null),food('2024-03-06',false),food('2024-03-07',-1),food('2024-03-08',100,{knownPartial:true}),food('2024-03-09',150),food('2024-03-09',150)];
@@ -200,8 +220,8 @@ test('stricter71 rejection of latest session never promotes an older session or 
 
 test('read diagnostics distinguish one failed origin with no surviving value from an observed empty source',()=>{
   const states={...status(),sourceMetrics:'error'},result=report(empty(),states,{},today);
-  for(const key of ['water','protein','energy','steps','activeEnergy']){
-    const item=metric(result,key),survivor=['water','protein','energy'].includes(key)?'nutrition':'metrics';
+  for(const key of ['water','protein','energy','carbs','fat','fiber','steps','activeEnergy']){
+    const item=metric(result,key),survivor=['water','protein','energy','carbs','fat','fiber'].includes(key)?'nutrition':'metrics';
     assert.deepEqual(item.domainStates,{[survivor]:'ready',sourceMetrics:'error'});assert.deepEqual(item.failedDomains,['sourceMetrics']);assert.equal(item.readError,true);assert.equal(item.partialRead,true);assert.equal(item.readComplete,false);assert.equal(item.readStatus,'partial');assert.equal(item.coverageUnavailable,true);assert.equal(item.value,null);assert.equal(item.count,0);assert.match(item.readNote,/não carregou/);
   }
   assert.match(result.summary.items.join(' '),/Não é possível confirmar/);
@@ -210,7 +230,7 @@ test('read diagnostics distinguish one failed origin with no surviving value fro
 test('a surviving loaded source retains its values and coverage while exposing the failed read',()=>{
   const data=filled();data.metrics=data.sourceMetrics.map(row=>({...row,measured_at:row.metric_date,source:'Synthetic surviving canonical'}));
   const result=report(data,{...status(),sourceMetrics:'error'},{},today);
-  for(const key of ['water','protein','energy','steps','activeEnergy']){
+  for(const key of ['water','protein','energy','carbs','fat','fiber','steps','activeEnergy']){
     const item=metric(result,key);assert.notEqual(item.value,null);assert.equal(item.count,7);assert.equal(item.expectedDays,7);assert.equal(item.readError,true);assert.equal(item.partialRead,true);assert.equal(item.coverageUnavailable,false);assert.match(item.readNote,/somente os registros disponíveis/);assert.equal(item.comparison.delta,null);
   }
 });
