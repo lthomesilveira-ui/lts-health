@@ -49,24 +49,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CALENDAR-HIGHLIGHTS-001",
-    "status": "done",
-    "goal": "Make weekly/monthly reports easier to read with source-specific daily extrema and a shared-scale registered-series graphic; reconcile completed native support steps.",
+    "id": "PKG-CALENDAR-MOBILE-002",
+    "status": "in_progress",
+    "goal": "Rebuild the rejected mobile report around the approved compact summary, legible daily charts and progressive source evidence; provide a concise default PDF and preserve the full export.",
     "task_ids": [
-      "LTS-CALENDAR-HIGHLIGHTS-001"
+      "LTS-CALENDAR-HIGHLIGHTS-001",
+      "LTS-OWNER-DELIVERY-20261025"
     ],
-    "candidate_build": "health-integrated-20261026.85",
-    "release_state": "published; exact candidate contracts, responsive/PDF, independent private arithmetic and authenticated public runtime verified; water not restored; overall project not accepted",
+    "candidate_build": "health-integrated-20261026.86",
+    "public_build": "health-integrated-20261026.85",
+    "release_state": "candidate; owner explicitly rejected .85 mobile UX; source model preserved; browser and public verification pending",
     "completed_evidence": [
-      "Independent private calculation agrees with three nutrient ranges and separately counted workout series.",
-      "Current official support threads and private checkpoint reread; account reset and both native reports are complete; no restored water transfer is claimed.",
-      "All twelve exact final candidate workflows passed at 1ff3683d22aef31e911a7b89a7be85209cf44b73. Calendar run 40402174254 covers 26 scenarios, Chromium/WebKit, 320/393/1440px and five genuine A4 PDFs; no layout/content failures.",
-      "Synthetic artifact 12688469135 SHA256 1638ba07fd45a04cfeca171180c31926f3924c0837f3aca6dded73a6ac86c2c1 was verified and representative mobile/desktop, highlight and training PDF pages inspected.",
-      "Normal PR403 merged at d788abfc2888b46176c5d82c4a3e6266cad58ce0. Deploy 40403947317, public smokes 40404027740 and 40404027732, and full authenticated real-account workflow 40403947325 passed.",
-      "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred."
+      "Approved desktop reference and original private mobile image reopened; expected mobile reference SHA256 verified. No illustrative values copied.",
+      "Existing arithmetic and full-evidence presentation unit contracts passed after the progressive-view change."
     ],
-    "pending_evidence": [],
-    "public_build": "health-integrated-20261026.85"
+    "pending_evidence": [
+      "Inspect actual 320/393/393x650/1440 rendered default and expanded journeys.",
+      "Inspect actual concise and full A4 PDFs.",
+      "Run exact candidate gates and verify the published authenticated route."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -1704,7 +1705,7 @@
       "id": "LTS-OWNER-DELIVERY-20261025",
       "area": "overall product acceptance",
       "priority": "P0",
-      "status": "blocked_external",
+      "status": "in_progress",
       "owner": "Codex",
       "summary": "The owner explicitly rejects overall delivery; verified presentation and QA fixes do not close the project.",
       "acceptance": [
@@ -1718,10 +1719,11 @@
         "Runtime .81 and workflow 40209261568 are technical evidence only.",
         "The requested current Health Sync status is now supplied and inspected. Successful phone status does not by itself establish transferred observations.",
         "Completeness review and bounded historical-context persistence are verified privately; source display/status improvements are in the current candidate package. Overall delivery is not accepted.",
-        "Further original-file reconciliation found and repaired omitted historical context/source text. Candidate qualifiers and receiver diagnostics remain in progress; owner acceptance is not inferred."
+        "Further original-file reconciliation found and repaired omitted historical context/source text. Candidate qualifiers and receiver diagnostics remain in progress; owner acceptance is not inferred.",
+        "Latest mobile report UX rejection is agent-actionable and reopens product delivery; physical-source dependencies remain separately tracked."
       ],
-      "next_action": "Continue from the opened technical cases and genuine source evidence, while preserving separate lab, basal, ordinary form and physical-device tasks.",
-      "blocker": "Actual water continuity and physical-device/owner acceptance remain unverified; the current Health Sync status capture is already available."
+      "next_action": "Complete PKG-CALENDAR-MOBILE-002 against the recovered reference; preserve separately tracked clinical/source/device limits.",
+      "blocker": null
     },
     {
       "id": "LTS-COMPLETENESS-REVIEW-001",
@@ -2046,7 +2048,7 @@
       "id": "LTS-CALENDAR-HIGHLIGHTS-001",
       "area": "weekly/monthly report usefulness",
       "priority": "P1",
-      "status": "done",
+      "status": "in_progress",
       "owner": "Codex",
       "summary": "Show daily variation with dated extrema and coverage, plus registered training series on one common scale.",
       "acceptance": [
@@ -2054,7 +2056,10 @@
         "Never create ranges from one day, failed source reads, candidate/held sources, conflicting or incomplete days.",
         "Show same-day energy/fiber coincidence only with the same origin, identical date sample and unique extrema; no clinical interpretation.",
         "Keep registered primary series and extensions distinct; preserve unknown/partial training states.",
-        "Verify mobile and PDF readability, public authentication and source arithmetic without writing health data."
+        "Verify mobile and PDF readability, public authentication and source arithmetic without writing health data.",
+        "Default report shows essential values and a legible daily graph before documentary details; evidence remains reachable without loss.",
+        "Concise summary PDF and complete source-evidence PDF are separate explicit actions.",
+        "Inspect default mobile screens at readable size, including reduced 393x650 viewport; do not infer acceptance from test counts."
       ],
       "evidence": [
         "preview/compact-evidence/tests/calendar-report-model-test.mjs",
@@ -2064,9 +2069,10 @@
         "All twelve exact final candidate workflows passed at 1ff3683d22aef31e911a7b89a7be85209cf44b73. Calendar run 40402174254 covers 26 scenarios, Chromium/WebKit, 320/393/1440px and five genuine A4 PDFs; no layout/content failures.",
         "Synthetic artifact 12688469135 SHA256 1638ba07fd45a04cfeca171180c31926f3924c0837f3aca6dded73a6ac86c2c1 was verified and representative mobile/desktop, highlight and training PDF pages inspected.",
         "Normal PR403 merged at d788abfc2888b46176c5d82c4a3e6266cad58ce0. Deploy 40403947317, public smokes 40404027740 and 40404027732, and full authenticated real-account workflow 40403947325 passed.",
-        "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred."
+        "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred.",
+        "2026-10-26 owner rejects .85 after opening it on a phone: the report is far from the defined layout. Previous technical pass is superseded for product acceptance."
       ],
-      "next_action": "Preserve the verified descriptive/source boundaries. Independent integration, clinical proposal and physical-device limits remain tracked separately.",
+      "next_action": "Inspect candidate compact report and both export choices, correct observed UX defects and verify exact public route before reporting completion.",
       "blocker": null
     }
   ],
@@ -2609,6 +2615,27 @@
         "The Cloud Browser public entry identifies the exact build; that browser no longer retains the previous authenticated session. Real-data inspection uses the established authenticated CI and independently checked private arithmetic, not a claimed manual physical-iPhone test."
       ],
       "pending_evidence": []
+    },
+    {
+      "id": "PKG-CALENDAR-HIGHLIGHTS-001",
+      "status": "done",
+      "goal": "Make weekly/monthly reports easier to read with source-specific daily extrema and a shared-scale registered-series graphic; reconcile completed native support steps.",
+      "task_ids": [
+        "LTS-CALENDAR-HIGHLIGHTS-001"
+      ],
+      "candidate_build": "health-integrated-20261026.85",
+      "release_state": "published; exact candidate contracts, responsive/PDF, independent private arithmetic and authenticated public runtime verified; water not restored; overall project not accepted",
+      "completed_evidence": [
+        "Independent private calculation agrees with three nutrient ranges and separately counted workout series.",
+        "Current official support threads and private checkpoint reread; account reset and both native reports are complete; no restored water transfer is claimed.",
+        "All twelve exact final candidate workflows passed at 1ff3683d22aef31e911a7b89a7be85209cf44b73. Calendar run 40402174254 covers 26 scenarios, Chromium/WebKit, 320/393/1440px and five genuine A4 PDFs; no layout/content failures.",
+        "Synthetic artifact 12688469135 SHA256 1638ba07fd45a04cfeca171180c31926f3924c0837f3aca6dded73a6ac86c2c1 was verified and representative mobile/desktop, highlight and training PDF pages inspected.",
+        "Normal PR403 merged at d788abfc2888b46176c5d82c4a3e6266cad58ce0. Deploy 40403947317, public smokes 40404027740 and 40404027732, and full authenticated real-account workflow 40403947325 passed.",
+        "Exact public .85 entry was checked in Cloud Browser. That browser has no authenticated session; private range/group render checks used the existing authenticated CI. No physical-iPhone or general owner acceptance is inferred."
+      ],
+      "pending_evidence": [],
+      "public_build": "health-integrated-20261026.85",
+      "acceptance_superseded_by": "Owner rejection of the mobile report on 2026-10-26; technical passes do not establish useful UX."
     }
   ],
   "latest_published_release": {

@@ -224,7 +224,8 @@ function bindStaticEvents(){
     const overviewBody=event.target.closest('[data-evolution-body]');if(overviewBody){state.ui.productCompositionRecord=overviewBody.dataset.evolutionBody;setRoute('bio',{replace:false});return;}
     const overviewExercise=event.target.closest('[data-evolution-exercise]');if(overviewExercise){state.ui.productExerciseId=overviewExercise.dataset.evolutionExercise;state.ui.productExercisePage=1;state.ui.productExerciseUnit=null;state.ui.productTrainingView='exercise';setRoute('treinos',{replace:false});return;}
     if(event.target.closest('[data-evolution-training]')){state.ui.productTrainingView='progress';setRoute('treinos',{replace:false});return;}
-    const calendarPrint=event.target.closest('[data-calendar-print]');if(calendarPrint){printCalendarReport();return;}
+    const calendarPrint=event.target.closest('[data-calendar-print]');if(calendarPrint){printCalendarReport(state.data,state.domainStatus,state.ui,undefined,{summary:calendarPrint.dataset.calendarPrint==='summary'});return;}
+    const calendarChart=event.target.closest('[data-calendar-chart]');if(calendarChart&&['energy','protein','carbs','fat','fiber'].includes(calendarChart.dataset.calendarChart)){state.ui.calendarReportChart=calendarChart.dataset.calendarChart;render();return;}
     const calendarMode=event.target.closest('[data-calendar-mode]');if(calendarMode){const patch=updateCalendarReportSelection(state.ui,'mode',calendarMode.dataset.calendarMode);if(patch)Object.assign(state.ui,patch);render();return;}
     const calendarStep=event.target.closest('[data-calendar-step]');if(calendarStep&&!calendarStep.disabled){const patch=updateCalendarReportSelection(state.ui,'step',calendarStep.dataset.calendarStep);if(patch)Object.assign(state.ui,patch);render();return;}
     const archiveOpen=event.target.closest('[data-nutrition-archive-open]');

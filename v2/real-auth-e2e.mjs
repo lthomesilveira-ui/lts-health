@@ -374,6 +374,10 @@ try{
   // Inspect the actual published report with the existing real authenticated
   // session. Private values never enter public logs; screenshots stay in the
   // established encrypted-artifact path. No form submission or data mutation.
+  await page.waitForSelector('#calendarReport .ltsReportKpis',{timeout:30000});
+  if(await page.locator('#calendarReport .ltsCalendarFullDetails').evaluate(el=>el.open))throw new Error('The report must start with its compact reading.');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-overview.png`});
+  await page.locator('#calendarReport .ltsCalendarFullDetails > summary').click();
   await page.waitForSelector('#calendarReport [data-calendar-metric="fiber"]',{timeout:30000});
   const calendarNutrientsMatch=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js');
