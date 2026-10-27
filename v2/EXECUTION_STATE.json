@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/PRODUCT_AUDIT_20261027.md"
+    "latest_release": "v2/releases/TRAINING_VISUAL_20261027.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,34 +50,35 @@
   },
   "current_package": {
     "id": "PKG-TRAINING-VISUAL-005",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Replace the rejected text-heavy Training area with a readable source-backed visual session report and aligned exercise detail.",
     "task_ids": [
       "LTS-TRAINING-VISUAL-001"
     ],
     "candidate_build": "health-integrated-20261027.91",
-    "public_build": "health-integrated-20261027.90",
+    "public_build": "health-integrated-20261027.91",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "Fresh authenticated .90 Training screen and approved original private visual reference were opened and inspected.",
-      "Candidate restores compact session identity, source-backed group/session charts and aligned sets; local original-text/nonmutation/source-failure checks pass."
+      "Candidate restores compact session identity, source-backed group/session charts and aligned sets; local original-text/nonmutation/source-failure checks pass.",
+      "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected.",
+      "Normal PR414 merge d5cc8a8704a010e603827561417f14d3c2835aa5, deploy40594746820 and both public smokes40594802510/40594802593 pass. Fresh manual authenticated exact public .91 inspected in all four Training tabs; chart-driven session switching, exercise-history action and return tested. Existing records preserved; no physical-iPhone claim.",
+      "Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending."
     ],
-    "pending_evidence": [
-      "Exact candidate rendered browser evidence at desktop/mobile/320 and reduced viewport; inspect readable screenshots before normal publication.",
-      "Verify exact public authenticated build and preserve all prior source and global acceptance dependencies."
-    ]
+    "pending_evidence": [],
+    "acceptance_note": "Bounded implementation verified; global and subjective owner acceptance not granted. Source/history/water dependencies remain open."
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261027.90",
-    "main_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
-    "runtime_promotion_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
+    "build_id": "health-integrated-20261027.91",
+    "main_commit": "d5cc8a8704a010e603827561417f14d3c2835aa5",
+    "runtime_promotion_commit": "d5cc8a8704a010e603827561417f14d3c2835aa5",
     "published_on": "2026-10-27",
     "verified_on": "2026-10-27",
-    "automated_runtime_and_responsive_status": "Eleven exact-candidate workflows passed, including Integration, Functional browser structured-set row coverage/geometry and native Calendar/PDF. Isolated Preview remains explicitly pending. Deploy, both public smokes and real-auth40587794809 passed.",
-    "manual_exact_public_status": "fresh_manual_authenticated_public_90_verified; actual historical structured-set coverage and blocked difference inspected, no source reconstruction or record mutation",
+    "automated_runtime_and_responsive_status": "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected. Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending.",
+    "manual_exact_public_status": "fresh_manual_authenticated_public_91_verified; four Training tabs, real current session, source-backed graphs, older-session switching and exercise-history return inspected",
     "manual_exact_public_verified_on": "2026-10-27",
-    "acceptance_note": "Owner rejects global delivery. These verified display and coverage fixes do not prove complete historical reconciliation, water restoration, ordinary-form persistence or physical-device acceptance.",
+    "acceptance_note": "Owner rejects global completion. This bounded Training redesign does not prove original-history completeness, water restoration, ordinary-form persistence or physical-device acceptance.",
     "real_auth_verification_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
@@ -87,7 +88,7 @@
       "area": "Training UX",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Address the explicit rejection of Training as an agglutinated text surface, using the recovered approved reference and actual source-backed visual report.",
       "acceptance": [
@@ -99,9 +100,12 @@
       ],
       "evidence": [
         "Approved private mobile reference recovered and SHA256 verified; no private reference is committed to the public repo.",
-        "Current authenticated .90 Training inspected. Candidate uses existing accepted-session model and immutable source records."
+        "Current authenticated .90 Training inspected. Candidate uses existing accepted-session model and immutable source records.",
+        "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected.",
+        "Normal PR414 merge d5cc8a8704a010e603827561417f14d3c2835aa5, deploy40594746820 and both public smokes40594802510/40594802593 pass. Fresh manual authenticated exact public .91 inspected in all four Training tabs; chart-driven session switching, exercise-history action and return tested. Existing records preserved; no physical-iPhone claim.",
+        "Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending."
       ],
-      "next_action": "Complete rendered visual verification, correct observed layout failures and inspect exact published app."
+      "next_action": "Preserve this verified visual report and all source records; owner feedback can reopen product acceptance. Existing global source and water blockers remain independent."
     },
     {
       "id": "LTS-TRAINING-SETS-COVERAGE-001",
