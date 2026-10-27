@@ -13,6 +13,10 @@ state.data={workouts:[w,old],exercises,sets,workoutEvidence:[]};
 state.domainStatus={workouts:'ready',exercises:'ready',sets:'ready'};
 state.ui={openWorkout:w.source_record_id,productTrainingView:'summary'};
 const before=JSON.stringify(state.data),html=renderProductTraining();
+assert.equal((html.match(/data-training-chart=/g)||[]).length,2);
+assert.equal([...html.matchAll(/data-primary="(\d+)"/g)].reduce((n,m)=>n+Number(m[1]),0),4,'group chart reconciles to primary sets and excludes the extension');
+assert.match(html,/data-training-duration="35"/);
+assert.doesNotMatch(html,/ltsRefTrainPulse|ltsRefHrTrack/,'no decorative bars masquerade as recorded telemetry');
 assert.match(html,/Como você terminou/);assert.match(html,/Pausa tranquila depois do treino\. &lt;comentário literal&gt;/);
 assert.doesNotMatch(html,/SQL synthetic internal note/);assert.doesNotMatch(html,/<comentário literal>|<sem HTML>/);
 assert.match(html,/Relato sintético\nAparelho de teste &lt;sem HTML&gt;/);
@@ -24,7 +28,7 @@ assert.equal((html.match(/data-disclosure="training-/g)||[]).length,2,'original 
 state.ui.openWorkout=old.source_record_id;let view=renderProductTraining();assert.doesNotMatch(view,/Como você terminou|comentário literal|Relato original deste treino/,'changing session cannot retain prior comment');
 state.ui.openWorkout=w.source_record_id;
 for(const domain of ['sets','exercises']){
- state.domainStatus[domain]='error';view=renderProductTraining();assert.match(view,/Como você terminou/);assert.match(view,/Relato original deste treino/);assert.match(view,/>—<\/b><span>séries registradas/);assert.match(view,/Parte dos detalhes/);assert.doesNotMatch(view,/Falha relatada em/);state.domainStatus[domain]='ready';
+ state.domainStatus[domain]='error';view=renderProductTraining();assert.doesNotMatch(view,/data-training-group=/,'failed child reads cannot leave group bars or stale counts');assert.match(view,/Como você terminou/);assert.match(view,/Relato original deste treino/);assert.match(view,/>—<\/b><span>séries registradas/);assert.match(view,/Parte dos detalhes/);assert.doesNotMatch(view,/Falha relatada em/);state.domainStatus[domain]='ready';
 }
 for(const value of [null,undefined,42,{},[],false,'','  ']){w.session_comment=value;assert.doesNotMatch(renderProductTraining(),/Como você terminou/);}
 w.session_comment='Pausa tranquila depois do treino. <comentário literal>';

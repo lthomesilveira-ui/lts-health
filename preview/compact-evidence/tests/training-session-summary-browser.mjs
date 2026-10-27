@@ -99,7 +99,7 @@ async function layout(page,name){
         const item={tag:el.tagName,text:el.textContent.trim().slice(0,90),width:box.width,height:box.height};
         // This change adds only the two session disclosure controls. Keep
         // approved legacy control geometry unchanged, but inventory it openly.
-        (el.matches('.ltsRefSessionContext > summary')?smallControls:preexistingSmallControls).push(item);
+        (el.matches('.ltsRefSessionContext > summary,.ltsTrainingRecentBars > button,.ltsRefTrainHero > button')?smallControls:preexistingSmallControls).push(item);
       }
     }
     const walker=document.createTreeWalker(host,NodeFilter.SHOW_TEXT);let node,nodeId=0;
@@ -202,6 +202,10 @@ async function checkShell(page,id=SUMMARY_IDS.current){
 }
 async function checkCurrent(page){
   await checkShell(page);
+  assert.equal(await page.locator('[data-training-chart]').count(),2,'source-backed session and history charts are visible');
+  const bars=await page.locator('[data-training-group]').evaluateAll(rows=>rows.map(row=>Number(row.dataset.primary)));
+  assert.equal(bars.reduce((a,b)=>a+b,0),SUMMARY_EXPECTED.primary,'chart counts reconcile without extensions');
+  assert.equal(await page.locator('.ltsTrainingRecentBars > button.selected').count(),1);
   assert.equal((await page.locator('.ltsRefTrainMetric').last().locator('strong').innerText()).trim(),String(SUMMARY_EXPECTED.primary));
   assert.deepEqual((await page.locator('.ltsRefOverviewGrid b').allTextContents()).map(s=>s.trim()),['4','8']);
   assert.match(await page.locator('.ltsRefExtensionNote').innerText(),/2 prolongamentos.*separados/s,'Extensions stay separate from primary sets');
@@ -330,6 +334,8 @@ try{
       await page.keyboard.press('Enter');await stableTraining(page,'progress');assert.ok(await page.locator('.ltsExerciseDirectory').isVisible(),'The real fourth tab opens observed exercise history');await chooseTab(page,'summary');await checkCurrent(page);
       for(const kind of ['distribution','original'])assert.equal(await page.locator(disclosureSelector(kind)).evaluate(el=>el.open),false,'New session details begin collapsed');
       await capture(page,`${label}-summary`);
+      await capture(page,`${label}-group-chart`,'[data-training-chart="groups"]');
+      await capture(page,`${label}-session-chart`,'[data-training-chart="sessions"]');
       await capture(page,`${label}-literal-comment`,'.ltsRefSessionComment');
       await checkDistribution(page);await capture(page,`${label}-distribution`,disclosureSelector('distribution'));
       await disclose(page,'distribution',false);

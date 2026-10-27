@@ -1,0 +1,39 @@
+name: LTS Health Visual Training Report
+on:
+  pull_request:
+    paths: ['preview/compact-evidence/**', 'v2/**', '.github/workflows/health-training-visual.yml']
+  push:
+    branches: [main]
+    paths: ['preview/compact-evidence/**', 'v2/**', '.github/workflows/health-training-visual.yml']
+permissions:
+  contents: read
+jobs:
+  visual-training:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify models, charts, provenance and source parity
+        run: |
+          node preview/compact-evidence/tests/training-session-summary-test.mjs
+          node preview/compact-evidence/tests/training-session-summary-view-test.mjs
+          node preview/compact-evidence/tests/training-phase-label-test.mjs
+          node preview/compact-evidence/tests/preview-contract.mjs
+      - name: Install pinned browser API
+        run: npm install --no-save playwright@1.56.1
+      - name: Exercise visual report, records, source failures and all mobile widths
+        run: |
+          python3 -m http.server 4173 >/tmp/health-training-visual.log 2>&1 &
+          node preview/compact-evidence/tests/training-session-summary-browser.mjs
+      - name: Keep synthetic visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-visual-report-synthetic
+          path: training-session-summary-visual/
+          retention-days: 7

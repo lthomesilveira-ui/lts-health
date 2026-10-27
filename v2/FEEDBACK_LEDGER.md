@@ -1,3 +1,11 @@
+# Training visual redesign reopened — candidate .91, 27/10/2026
+
+The owner explicitly rejects Training as an agglutinated text surface. Earlier technical fixes do not satisfy this feedback. Fresh authenticated .90 inspection confirms duplicated identity/count hierarchy and little primary visual analysis. The original approved private mobile reference was recovered, hash-verified and actually viewed. It governs compact session identity, metrics and aligned exercise detail; its illustrative values, equipment photos, HR zones and effort examples are not production evidence.
+
+Candidate .91 adds source-backed registered-group bars and recent recorded-session durations, restores compact identity and aligned load/repetition columns, and explains unreported set type once. Primary sets and extensions remain distinct. Existing session/history/exercise navigation, literal notes, original narrative, source and failure boundaries remain. No performance comparison, estimated volume, HR timeline/zones, inferred effort or device average is invented. The fake decorative pulse/range marks are removed. New direct browser checks cover chart reconciliation and controls alongside original source-preservation/failure cases.
+
+Local contracts pass. Exact candidate visual evidence, readable narrow/desktop review, normal publication and fresh authenticated public inspection are pending. Global owner acceptance and all original source/water/form dependencies remain open. Clinical records, prescriptions, keys, receiver1MiB and schedules are unchanged. Authority: EXECUTION_STATE.json. Earlier entries below remain history.
+
 # Product audit checkpoint — .90 published and inspected, 27/10/2026
 
 The owner rejects overall completion. This audit accessed the real authenticated app, traversed every area in its navigation, inspected the report continuation, and reconciled the reported recent workout with its preserved source narrative and exercise details. The session is present in Training, Home and Timeline. The initial completed-week report excludes its date; its current-week selection includes it. This is a verified window distinction, not proof that every reported gap has the same cause. No duplicate record is created.
