@@ -189,6 +189,12 @@ try{
     const retry=await page.locator('#refreshBtn').boundingBox();
     assert.ok(retry?.width>=44&&retry?.height>=44,'report retry remains visible with a phone-sized touch target');
   }
+  const structuredSetsRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Séries estruturadas'});
+  const structuredSetsText=await structuredSetsRow.innerText();
+  assert.equal((structuredSetsText.match(/Sem séries estruturadas/g)||[]).length,2,'recorded sessions without structured sets must not form a zero baseline');
+  assert.ok(structuredSetsText.includes('Cobertura incompleta'),'missing historical set detail cannot produce a numerical difference');
+  const structuredSetCells=await structuredSetsRow.locator('td').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right};}));
+  assert.ok(structuredSetCells.every(r=>r.left>=0&&r.right<=width),'structured-set coverage remains readable inside the viewport');
   const durationRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Tempo registrado dos treinos'});
   assert.ok((await durationRow.innerText()).includes('40 min'));
   assert.ok((await durationRow.innerText()).includes('Cobertura incompleta'));
