@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/REPORT_LOWER_READING_20261027.md"
+    "latest_release": "v2/releases/PRODUCT_AUDIT_20261027.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,38 +50,42 @@
   },
   "current_package": {
     "id": "PKG-PRODUCT-AUDIT-004",
-    "status": "in_progress",
+    "status": "blocked_external",
     "goal": "Audit user journeys and reconcile reported missing activity and technical frontend text.",
     "task_ids": [
       "LTS-UI-SOURCE-KEYS-001",
-      "LTS-TRAINING-SETS-COVERAGE-001"
+      "LTS-TRAINING-SETS-COVERAGE-001",
+      "LTS-CHAT-RECONCILIATION-001"
     ],
     "candidate_build": "health-integrated-20261027.90",
-    "public_build": "health-integrated-20261027.89",
+    "public_build": "health-integrated-20261027.90",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "Fresh authenticated public navigation confirms the reported previous-day workout is already visible in Training and Home. Selecting the current report week includes that session; the initial completed-week report excludes its date.",
       "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display.",
       "Timeline also exposes the recent session and its preserved original narrative. Recovery transport units now use human display wording; exact source keys and units remain unchanged.",
-      "Exact published .89 manually authenticated: nutrition titles are human-readable, recovery option and selected step chart use passos. Deploy40585959736 passed."
+      "Exact published .89 manually authenticated: nutrition titles are human-readable, recovery option and selected step chart use passos. Deploy40585959736 passed.",
+      "Published .90 by PR412f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4. Eleven candidate workflows including new actual-browser row coverage/geometry and Calendar/PDF pass; synthetic artifacts verified and inspected. Exact public .90 manually authenticated, and the actual historical missing-detail row and blocked difference inspected.",
+      "Real-auth40587794809 and both .90 public smokes40587844814/40587844826 passed. The separate Isolated Preview40586663624 remains pending and is not counted as passed."
     ],
     "pending_evidence": [
-      "Finish exact .90 candidate browser checks, publish and inspect actual historical structured-set coverage.",
-      "Prior-chat reconciliation and project acceptance remain independent and blocked."
-    ]
+      "Recover original chat availability and reconcile remaining prior requests without duplicate submissions.",
+      "Global owner acceptance and the preserved independent external/source/form dependencies remain open."
+    ],
+    "blocker": "Original prior-chat retrieval is unavailable this run; source-preserved workout inspection is not a complete historical reconciliation."
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261027.89",
-    "main_commit": "799894333c4b829921e3311300200455e7d078e3",
-    "runtime_promotion_commit": "799894333c4b829921e3311300200455e7d078e3",
+    "build_id": "health-integrated-20261027.90",
+    "main_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
+    "runtime_promotion_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
     "published_on": "2026-10-27",
     "verified_on": "2026-10-27",
-    "automated_runtime_and_responsive_status": "Ten exact-candidate workflows passed including Integration, Functional and Recovery; broader isolated/calendar repeats explicitly pending; deploy passed; public smoke retry after503 and real-auth repeat pending",
-    "manual_exact_public_status": "fresh_manual_authenticated_public_89_verified; human nutrition titles and selected step chart inspected",
+    "automated_runtime_and_responsive_status": "Eleven exact-candidate workflows passed, including Integration, Functional browser structured-set row coverage/geometry and native Calendar/PDF. Isolated Preview remains explicitly pending. Deploy, both public smokes and real-auth40587794809 passed.",
+    "manual_exact_public_status": "fresh_manual_authenticated_public_90_verified; actual historical structured-set coverage and blocked difference inspected, no source reconstruction or record mutation",
     "manual_exact_public_verified_on": "2026-10-27",
-    "acceptance_note": "Owner rejects global completion. Original-chat reconciliation, source gaps and historical structured-set comparison remain open. No physical-device test is claimed.",
-    "real_auth_verification_commit": "799894333c4b829921e3311300200455e7d078e3",
+    "acceptance_note": "Owner rejects global delivery. These verified display and coverage fixes do not prove complete historical reconciliation, water restoration, ordinary-form persistence or physical-device acceptance.",
+    "real_auth_verification_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
@@ -90,7 +94,7 @@
       "area": "Historical report coverage",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Do not compare a zero structured-set count against recent sets when historical sessions have no structured sets.",
       "acceptance": [
@@ -101,9 +105,11 @@
       ],
       "evidence": [
         "Actual public period table treated text-only historical sessions as a zero comparison baseline. Candidate adds coverage metadata and truthful missing-detail text without changing existing counts or records.",
-        "Rendered regression covers text-only baseline, mixed detail coverage, known empty selection and nonmutation; source/parity/read-only and report-model tests pass locally."
+        "Rendered regression covers text-only baseline, mixed detail coverage, known empty selection and nonmutation; source/parity/read-only and report-model tests pass locally.",
+        "Exact candidate64632fb86df8d6634241ab8e2f3bcad8c0dcd3cf passed Integration40586663801, Functional40586663951 and Calendar/PDF40586663607. Functional browser regression checks desktop/mobile missing-detail wording, blocked differences and actual cell geometry. Digest-verified synthetic historical rows and Home inspected.",
+        "Normal PR412f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4, deploy40587794823 and homologation40587844826 passed. Fresh authenticated public .90 confirms actual historical structured-set coverage and blocked comparison; all originals preserved."
       ],
-      "next_action": "Finish .90 browser validation and inspect the published historical period row."
+      "next_action": "Preserve source text and coverage semantics; do not infer unstructured sets or interpret missing detail as zero."
     },
     {
       "area": "Product audit",
@@ -121,7 +127,8 @@
       "evidence": [
         "Confirmed by fresh authenticated Nutrition DOM; local full consumer-copy regression passes.",
         "Authenticated recovery inspection also found transport count units in live selectors; display-only passos mapping and actual renderer nonmutation regression pass locally.",
-        "Normal PR411799894333c4b829921e3311300200455e7d078e3, exact candidate7476649fd8e9529e8d90699e8aba383de110d472 passed ten affected workflows, including Integration40585302190, Functional40585302327 and Recovery40585302261. Exact public .89 authenticated nutrition titles and selected step chart inspected; originals unchanged."
+        "Normal PR411799894333c4b829921e3311300200455e7d078e3, exact candidate7476649fd8e9529e8d90699e8aba383de110d472 passed ten affected workflows, including Integration40585302190, Functional40585302327 and Recovery40585302261. Exact public .89 authenticated nutrition titles and selected step chart inspected; originals unchanged.",
+        "All twelve .89 candidate workflows, both public smokes and real-auth40585959947 subsequently passed. Earlier pending descriptions remain timestamped history."
       ],
       "next_action": "Preserve human presentation and source identity regression."
     },
