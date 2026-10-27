@@ -78,7 +78,9 @@ export function trainingSummary(data,status,bounds,region=null){
   const points=[...groups].filter(([,list])=>list.every(r=>num(r.duration_minutes)!=null)).map(([date,list])=>({date,value:list.reduce((s,r)=>s+num(r.duration_minutes),0),cohort:'recorded-duration'})).sort((a,b)=>a.date.localeCompare(b.date));
   const recordedMinutes=knownDuration.length?knownDuration.reduce((s,r)=>s+num(r.duration_minutes),0):null;
   const durationComplete=selected.length>0&&knownDuration.length===selected.length;
-  return {available:true,sessions,sets:sets?.length??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
+  const setCoverage=sets?selected.filter(workout=>sets.some(set=>set.workout_source_record_id===workout.source_record_id)).length:null;
+  const setComplete=sets!==null&&setCoverage===selected.length;
+  return {available:true,sessions,sets:sets?.length??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,setCoverage,setTotal:selected.length,setComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
 }
 export function hydrationSummary(data,status,bounds){
   // A failed overlapping source can hide a conflict; do not select the surviving one.

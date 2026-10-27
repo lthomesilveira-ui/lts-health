@@ -132,8 +132,8 @@ const manifest={
     "src/product-layout-v2.js": "a70967aea9eed353798c630bcd6d3f576d9b1c7709af3c3cfd7164f508452a16",
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "154e8ae21f55df9de451049ee82c7f401ed51bc62dea66792d1e32643d0f0beb",
-    "src/reports-model.js": "65c0443fce458fc83c1e733b80af65702ccc348241cb67a237beb0cb03963d84",
-    "src/reports-screen.js": "a2139daeebfbd48241ac0d8bbbfcb23b899930c94da8288d3d4c3e6ff23b9cbb",
+    "src/reports-model.js": "bc4e274d2a8eb4b4ba599452561ea146d0261c4e4336f6f64facf4647f9b8a95",
+    "src/reports-screen.js": "062ca4985a8a2c2f936265d446f217c69318816811d6bb89a0f13e126887788e",
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-display.js": "319c9f7061543315fffefaaa27dc9f8c3450ce0d12626dcfe2c6fd6c5ff3e6e8",
     "src/source-status.js": "0e014bf134388984f847eedd571ce0564ce7ed72cedea945cef71114b06325b7",
@@ -183,8 +183,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261027\.89/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261027.89'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261027\.90/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261027.90'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

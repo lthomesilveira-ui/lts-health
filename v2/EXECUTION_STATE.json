@@ -53,42 +53,65 @@
     "status": "in_progress",
     "goal": "Audit user journeys and reconcile reported missing activity and technical frontend text.",
     "task_ids": [
-      "LTS-UI-SOURCE-KEYS-001"
+      "LTS-UI-SOURCE-KEYS-001",
+      "LTS-TRAINING-SETS-COVERAGE-001"
     ],
-    "candidate_build": "health-integrated-20261027.89",
-    "public_build": "health-integrated-20261027.88",
+    "candidate_build": "health-integrated-20261027.90",
+    "public_build": "health-integrated-20261027.89",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "Fresh authenticated public navigation confirms the reported previous-day workout is already visible in Training and Home. Selecting the current report week includes that session; the initial completed-week report excludes its date.",
       "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display.",
-      "Timeline also exposes the recent session and its preserved original narrative. Recovery transport units now use human display wording; exact source keys and units remain unchanged."
+      "Timeline also exposes the recent session and its preserved original narrative. Recovery transport units now use human display wording; exact source keys and units remain unchanged.",
+      "Exact published .89 manually authenticated: nutrition titles are human-readable, recovery option and selected step chart use passos. Deploy40585959736 passed."
     ],
     "pending_evidence": [
-      "Exact candidate browser checks, publication and authenticated public regression."
+      "Finish exact .90 candidate browser checks, publish and inspect actual historical structured-set coverage.",
+      "Prior-chat reconciliation and project acceptance remain independent and blocked."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261027.88",
-    "main_commit": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
-    "runtime_promotion_commit": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
+    "build_id": "health-integrated-20261027.89",
+    "main_commit": "799894333c4b829921e3311300200455e7d078e3",
+    "runtime_promotion_commit": "799894333c4b829921e3311300200455e7d078e3",
     "published_on": "2026-10-27",
     "verified_on": "2026-10-27",
-    "automated_runtime_and_responsive_status": "verified affected candidate integration, Functional Depth, native calendar/PDF, source/model checks; actual-auth and both public smokes passed; one isolated-preview browser preparation is explicitly pending",
-    "manual_exact_public_status": "fresh_manual_authenticated_public_88_verified; six lower readings, full references, lower library and recovery jump inspected; no page/card overflow",
+    "automated_runtime_and_responsive_status": "Ten exact-candidate workflows passed including Integration, Functional and Recovery; broader isolated/calendar repeats explicitly pending; deploy passed; public smoke retry after503 and real-auth repeat pending",
+    "manual_exact_public_status": "fresh_manual_authenticated_public_89_verified; human nutrition titles and selected step chart inspected",
     "manual_exact_public_verified_on": "2026-10-27",
-    "acceptance_note": "Opening summary is preserved and lower report is technically verified; partial owner praise does not accept the app. Project-wide acceptance, water delivery, original-source and ordinary-form dependencies, and physical-device verification remain separate.",
-    "real_auth_verification_commit": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
+    "acceptance_note": "Owner rejects global completion. Original-chat reconciliation, source gaps and historical structured-set comparison remain open. No physical-device test is claimed.",
+    "real_auth_verification_commit": "799894333c4b829921e3311300200455e7d078e3",
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
+    {
+      "id": "LTS-TRAINING-SETS-COVERAGE-001",
+      "area": "Historical report coverage",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Do not compare a zero structured-set count against recent sets when historical sessions have no structured sets.",
+      "acceptance": [
+        "Distinguish sessions without structured sets from a known empty session selection.",
+        "Show structured-set session coverage and suppress differences when either period is incomplete.",
+        "Preserve every original note, exercise, set, source and value; no reconstruction or imputation.",
+        "Verify actual rendered text, partial/empty cases, responsive candidate and published authenticated report."
+      ],
+      "evidence": [
+        "Actual public period table treated text-only historical sessions as a zero comparison baseline. Candidate adds coverage metadata and truthful missing-detail text without changing existing counts or records.",
+        "Rendered regression covers text-only baseline, mixed detail coverage, known empty selection and nonmutation; source/parity/read-only and report-model tests pass locally."
+      ],
+      "next_action": "Finish .90 browser validation and inspect the published historical period row."
+    },
     {
       "area": "Product audit",
       "priority": "P0",
       "owner": "Codex",
       "blocker": null,
       "id": "LTS-UI-SOURCE-KEYS-001",
-      "status": "in_progress",
+      "status": "done",
       "summary": "Remove serialized nutrition source titles and transport step units from the consumer UI without changing any observations or grouping.",
       "acceptance": [
         "Human source names in every point tooltip and accessible name.",
@@ -97,9 +120,10 @@
       ],
       "evidence": [
         "Confirmed by fresh authenticated Nutrition DOM; local full consumer-copy regression passes.",
-        "Authenticated recovery inspection also found transport count units in live selectors; display-only passos mapping and actual renderer nonmutation regression pass locally."
+        "Authenticated recovery inspection also found transport count units in live selectors; display-only passos mapping and actual renderer nonmutation regression pass locally.",
+        "Normal PR411799894333c4b829921e3311300200455e7d078e3, exact candidate7476649fd8e9529e8d90699e8aba383de110d472 passed ten affected workflows, including Integration40585302190, Functional40585302327 and Recovery40585302261. Exact public .89 authenticated nutrition titles and selected step chart inspected; originals unchanged."
       ],
-      "next_action": "Finish candidate checks and inspect published chart titles."
+      "next_action": "Preserve human presentation and source identity regression."
     },
     {
       "area": "Product audit",
