@@ -12,16 +12,17 @@ const labels={
   respiratory_rate_bpm:'Frequência respiratória',
   oxygen_saturation_pct:'Saturação de oxigênio'
 };
+const signalUnit=item=>item.metric==='steps'&&item.unit==='count'?'passos':item.unit;
 const digits={steps:0,resting_heart_rate_bpm:0,hrv_sdnn_ms:0,respiratory_rate_bpm:1,oxygen_saturation_pct:1};
 
 function signalRows(series){
   if(!series.length)return '<div class="empty">Ainda não há registros adicionais neste período.</div>';
   return `<div class="mealList recoveryEvidenceList">${series.map(item=>{
     const definition=labels[item.metric]||item.metric;
-    const first=item.first?`${fmtNum(item.first.value,digits[item.metric]??1)} ${esc(item.unit)}`:'Contagem em revisão';
-    const last=item.last?`${fmtNum(item.last.value,digits[item.metric]??1)} ${esc(item.unit)}`:null;
+    const first=item.first?`${fmtNum(item.first.value,digits[item.metric]??1)} ${esc(signalUnit(item))}`:'Contagem em revisão';
+    const last=item.last?`${fmtNum(item.last.value,digits[item.metric]??1)} ${esc(signalUnit(item))}`:null;
     const review=item.reviewDays?` · ${countLabel(item.reviewDays,'dia em revisão','dias em revisão')}`:'';
-    return `<div class="mealRow recoveryEvidenceRow"><div><b>${esc(definition)}</b><small>${esc(item.baseLabel)} · ${esc(item.identity)} · ${esc(item.unit)}</small></div><span>${first}${last?` → ${last}`:''}</span><em>${item.first?`${fmtDate(item.first.date)} → ${fmtDate(item.last.date)}`:'Sem contagem inteira utilizável'} · ${countLabel(item.points.length,'ponto preservado','pontos preservados')}${esc(review)}${(item.reviewRows||[]).map(row=>` · ${fmtDate(row.date)}: ${esc(stepValueText(row.value))}`).join('')}</em></div>`;
+    return `<div class="mealRow recoveryEvidenceRow"><div><b>${esc(definition)}</b><small>${esc(item.baseLabel)} · ${esc(item.identity)} · ${esc(signalUnit(item))}</small></div><span>${first}${last?` → ${last}`:''}</span><em>${item.first?`${fmtDate(item.first.date)} → ${fmtDate(item.last.date)}`:'Sem contagem inteira utilizável'} · ${countLabel(item.points.length,'ponto preservado','pontos preservados')}${esc(review)}${(item.reviewRows||[]).map(row=>` · ${fmtDate(row.date)}: ${esc(stepValueText(row.value))}`).join('')}</em></div>`;
   }).join('')}</div>`;
 }
 
