@@ -88,6 +88,11 @@ try{
     assert.ok(readingGeometry.every(el=>!el.overflow&&el.height<500),'closed readings remain readable and bounded, without clipping text');
     const factBaselines=await readings.locator('.ltsReadingFacts').evaluateAll(els=>els.filter(el=>el.children.length===3).map(el=>[...el.querySelectorAll('dd')].map(dd=>dd.getBoundingClientRect().top)));
     assert.ok(factBaselines.every(ys=>Math.max(...ys)-Math.min(...ys)<2),'three fact values share a baseline when their labels wrap');
+    await page.locator('[data-reading-kind="sleep"] [data-report-section="reportRecovery"]').click();
+    assert.equal(await page.locator('[data-disclosure="report-workspace-routine"]').getAttribute('open'),'','the sleep action opens the actual recovery history');
+    assert.equal(new URL(page.url()).hash,'#analise','the recovery jump preserves the active app route');
+    await page.locator('#reportRecovery').waitFor({state:'visible'});
+    await page.locator('[data-disclosure="report-workspace-routine"]>summary').click();
     await page.locator('[data-disclosure="review-numeric-contrasts"]>summary').click();
     assert.match(await page.locator('#reviewPanel>details .ltsReviewContrasts').innerText(),/1\.200 mL.*1\.000 mL/s);
     assert.equal(await page.locator('.ltsReviewCoverage,.ltsReviewOverlap').count(),0);await noOverflow(page);
