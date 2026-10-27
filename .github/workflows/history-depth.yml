@@ -53,7 +53,7 @@ jobs:
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
       - name: Start application
         id: app-server
         run: |

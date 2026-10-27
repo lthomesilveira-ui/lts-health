@@ -13,7 +13,7 @@ const manifest={
     "analysis.css": "eab9c40cf89e4250d43f3211a1415ce0d05dc4d5c61896563f345f5e61263c1c",
     "bio.css": "9ec3191e86f2e53cbc29486c01303a480e021b0d9d6a9efba0078938a4732562",
     "body-interval.css": "ea7509f603febe4147f6411737b7e015b336cdaea3ddc13f15b9e17abd16061e",
-    "calendar-reports.css": "a116ecf6713e7bdb65b58eb43a9279335fa138ff2cc1172a0f567801c46a39ac",
+    "calendar-reports.css": "6fb74e3dc2ca8f59254fbe28c70d5416379a4d1ffc70e9cf5dd96efc526464d0",
     "cockpit.css": "75d94843fa9861bafc82bb8870c305fddbf140b5c2ba31b3308f186ea88a51bd",
     "composition-model-v2.css": "102b76d3d205b326e6ad633313f083c55b55b425d929e1b27544e5952607b119",
     "dashboard-final-polish.css": "e827badad263a43f1283c7d120e732872d85342f206bb37afa926842353cfa67",
@@ -109,7 +109,7 @@ const manifest={
     "src/home-useful-content.js": "2be13d47f2b8beab91347fc47588a50f4df6fdc4c19f8615dae861b9d440062e",
     "src/hydration.js": "ac08d5f9c599e7937da7f6c73019d3faaf73b08c87039760d2c89cd2aeeb24ff",
     "src/integrated-analysis.js": "3a32d46636af4853d20cf02a6692d1751c3351d9446cbf6cec7d405afc677ea4",
-    "src/integrated-review-view.js": "c2d7a62cd2e0178942176685c2143c55c69f6623f71836f593aa6c63cadec485",
+    "src/integrated-review-view.js": "b2f00dc31ccfcfbdcaea257fac12ff90c405d7d8f6a66ae7ea2f3a7bcb1d3a95",
     "src/integrated-review.js": "0a2b5f6414b706e06fa385bed405b9108ddca7c41140207a8b3908fef508b631",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
     "src/labs-layout-v2.js": "c9b599e414434ddcec489243b4100dd0e1b226dbff6879e9fbcaca2e67f74f68",
@@ -133,7 +133,7 @@ const manifest={
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "35a8b855e4f1767e385ac243abefa4059352af9d1efb8c6f46a7b07a1dc7c13a",
     "src/reports-model.js": "65c0443fce458fc83c1e733b80af65702ccc348241cb67a237beb0cb03963d84",
-    "src/reports-screen.js": "53c4354a71ef713e9bf12778cc00020e891781ec9f1dedafcb288a2dfe40d045",
+    "src/reports-screen.js": "2a0e0e558e71ba9190a0c87dc67646eb59591dc798272d21f9b5852c5056c275",
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-display.js": "319c9f7061543315fffefaaa27dc9f8c3450ce0d12626dcfe2c6fd6c5ff3e6e8",
     "src/source-status.js": "0e014bf134388984f847eedd571ce0564ce7ed72cedea945cef71114b06325b7",
@@ -183,8 +183,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261026\.87/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261026.87'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261027\.88/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261027.88'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

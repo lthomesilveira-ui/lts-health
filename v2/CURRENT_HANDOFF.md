@@ -1,3 +1,11 @@
+# Lower report reading reopened — candidate .88, 27/10/2026
+
+The owner praised the opening three visual summaries and rejected the quality of the page below. This partial approval does not accept the whole app. Fresh manual authentication and actual public .87 scrolling confirmed long prose cards, repeated framing and inconsistent lower-page hierarchy.
+
+`PKG-REPORT-LOWER-003` preserves the opening calendar report and gives its lower domains compact value/date readings with complete interpretation, source references and limits in native expandable details. The historical window remains independent from the week/month summary. Full workspaces, section jumps, source selectors, consultation export and both PDF modes remain available. No model, clinical record, prescription, authentication/write implementation, ingestion, receiver, key, schedule or support action is changed.
+
+Local verification is in progress. Exact responsive candidate evidence, normal publication and fresh authenticated public inspection are required before claiming completion. The water cases remain open independently; no restoration or physical-iPhone acceptance is claimed. Authority: `EXECUTION_STATE.json`.
+
 # Monthly endpoint axis correction published — .87, 26/10/2026
 
 Final monthly page-one inspection found the last two date ticks overlapping in .86. The .87 correction reserves the last date and omits only a nearby intermediate axis label. Every daily point, value, date in the evidence, source and mean remains intact. Browser checks now measure actual SVG date-text glyph boxes, including both concise PDF modes; the older document geometry excluded SVG text.

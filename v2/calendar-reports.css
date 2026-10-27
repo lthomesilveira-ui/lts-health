@@ -257,3 +257,73 @@
 }
 
 @media screen and (min-width:851px){.ltsReportPlot>svg{height:200px}.ltsReportTrainingColumn>.ltsReportInsights{margin:20px 0 0}.ltsReportTrainingColumn .ltsReportInsight{padding:13px 0}.ltsReportTrainingColumn .ltsReportInsight p{font-size:12px}.ltsReportSignals{margin-top:16px}}
+/* The lower report keeps the summary's visual rhythm. Scope excludes Home,
+   the calendar overview and both native PDF layouts. */
+.ltsReportHistory{margin:30px 0 0;min-width:0;border-top:1px solid #d8e3ed;padding-top:26px}
+.ltsReportHistoryIntro>span,.ltsReportHistory .ltsReportLibrary>header>span{font-size:10px;letter-spacing:.12em;font-weight:750;color:#50657b}
+.ltsReportHistoryIntro .ltsCalendarDetailedTitle{font-size:24px;line-height:1.25;margin:7px 0 5px;letter-spacing:-.03em}
+.ltsReportHistoryIntro>p{font-size:14px;line-height:1.5;color:#50657b;margin:0}
+.ltsReportHistory>.ltsReportHeader{display:flex;align-items:center;gap:18px;margin:18px 0 24px;padding:14px 16px;background:#edf3f8;border-radius:12px;border:1px solid #dce6ee}
+.ltsReportHistory>.ltsReportHeader .ltsField{margin:0;flex:0 0 200px;font-size:12px;font-weight:650;color:#50657b}
+.ltsReportHistory>.ltsReportHeader select{min-height:44px;padding:8px 10px;margin-top:5px;font-size:14px;font-weight:650;border-color:#c6d5e2}
+.ltsReportHistory>.ltsReportHeader p{font-size:13px;line-height:1.5;color:#20394f;text-align:right}
+.ltsReportHistory>.ltsReportHeader small{font-size:12px;line-height:1.5;color:#50657b}
+.ltsReportHistory>.ltsIntegratedReview{border:0;border-radius:0;background:transparent;padding:0;margin:24px 0}
+.ltsReportHistory .ltsIntegratedReview>header>span{display:none}
+.ltsReportHistory .ltsIntegratedReview>header h2{font-size:20px;line-height:1.3;margin:0 0 5px;letter-spacing:-.025em}
+.ltsReportHistory .ltsIntegratedReview>header p{font-size:13px;margin:0 0 16px}
+.ltsReportHistory .ltsReviewTabs{gap:4px;margin:0 0 16px;padding:4px;border:1px solid #dce6ee;border-radius:11px;background:#eaf1f7}
+.ltsReportHistory .ltsReviewTabs button{font-size:12px;line-height:1.4;padding:9px 12px;min-height:44px;border-radius:8px;min-width:0}
+.ltsReportHistory .ltsReviewContrasts{gap:14px;align-items:start}
+.ltsReportHistory .ltsReviewReading{--reading-color:#255f99;--reading-wash:#eaf3fd;padding:18px;border-radius:14px;background:#fff;border:1px solid #d9e4ee;box-shadow:0 2px 7px #1d385306;overflow-wrap:anywhere}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="labs"]{--reading-color:#a03953;--reading-wash:#fbeef2}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="training"]{--reading-color:#236b52;--reading-wash:#e9f5ef}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="nutrition"]{--reading-color:#965219;--reading-wash:#fcf1e5}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="sleep"]{--reading-color:#70519a;--reading-wash:#f2edfa}
+.ltsReportHistory .ltsReviewReading>header{display:flex;align-items:center;gap:9px;margin-bottom:13px;color:var(--reading-color);font-size:12px;font-weight:750;letter-spacing:.02em}
+.ltsReportHistory .ltsReadingIcon{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--reading-wash);font-size:19px;font-weight:500}
+.ltsReportHistory .ltsReviewReading>h3{font-size:16px;line-height:1.4;letter-spacing:-.015em;margin:0 0 14px;color:#20394f}
+.ltsReportHistory .ltsReadingFacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:12px;margin:0;padding:14px 0;border-top:1px solid #e6edf3;border-bottom:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingFacts>div{min-width:0}
+.ltsReportHistory .ltsReadingFacts:has(>div:nth-child(3)) dt{min-height:2.8em}
+.ltsReportHistory .ltsReadingFacts dt{font-size:12px;line-height:1.4;color:#50657b;margin:0 0 6px}
+.ltsReportHistory .ltsReadingFacts dd{display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 5px;margin:0;font-size:25px;line-height:1.2;letter-spacing:-.04em;font-weight:750;font-variant-numeric:tabular-nums;color:#20394f}
+.ltsReportHistory .ltsReadingFacts dd>span{font-size:12px;font-weight:500;letter-spacing:0;color:#50657b}
+.ltsReportHistory .ltsReadingFacts small{font-size:11px;line-height:1.5;margin-top:5px;color:#50657b}
+.ltsReportHistory .ltsReadingLabValues{display:grid;gap:0;margin:0;border-top:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingLabValues>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingLabValues span{font-size:12px;line-height:1.5;color:#50657b}
+.ltsReportHistory .ltsReadingLabValues strong{font-size:18px;line-height:1.4;color:#20394f;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere;max-width:100%}
+.ltsReportHistory .ltsReadingPair{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-block:1px solid #e6edf3;padding:14px 0;font-size:25px;line-height:1.3;font-variant-numeric:tabular-nums}
+.ltsReportHistory .ltsReadingPair>span{color:#50657b}.ltsReportHistory .ltsReadingPair>i{font-size:19px;color:#50657b;font-style:normal}
+.ltsReportHistory .ltsReadingPair strong{color:#20394f}.ltsReportHistory .ltsReadingPair small{display:inline;font-size:12px}
+.ltsReportHistory .ltsReviewReading .ltsReadingOrigin{font-size:11px;line-height:1.5;margin:6px 0 10px;color:#50657b;overflow-wrap:anywhere}
+.ltsReportHistory .ltsReviewReading .ltsReadingContext{font-size:12px;line-height:1.55;margin:10px 0;color:#50657b}
+.ltsReportHistory .ltsReviewReading>.ltsReadingEvidence{margin-top:12px;border-top:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingEvidence>summary{display:flex;align-items:center;justify-content:space-between;font-size:12px;min-height:44px;color:#34536e;list-style:none;padding:10px 0}
+.ltsReportHistory .ltsReadingEvidence>summary::-webkit-details-marker{display:none}
+.ltsReportHistory .ltsReadingEvidence>summary:after{content:'+';font-size:19px;font-weight:400;color:#50657b}.ltsReportHistory .ltsReadingEvidence[open]>summary:after{content:'−'}
+.ltsReportHistory .ltsReadingEvidence>p,.ltsReportHistory .ltsReadingEvidence>small{font-size:12px;line-height:1.65;margin:6px 0 12px;color:#50657b}
+.ltsReportHistory .ltsReviewReading>button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;margin:0;padding:10px 0 0;border:0;border-radius:0;background:transparent;color:var(--reading-color);text-align:left;font-size:12px;line-height:1.5;font-weight:650;box-shadow:none}
+.ltsReportHistory .ltsIntegratedReview>.ltsReviewSources{margin:16px 0 0;padding:0;border-top:1px solid #dce6ee;border-bottom:0}
+.ltsReportHistory .ltsIntegratedReview>.ltsReviewSources>summary{font-size:12px;color:#50657b}
+.ltsReportHistory .ltsReviewNote{font-size:12px;line-height:1.6;margin:14px 0;color:#50657b}
+.ltsReportHistory .ltsReportLibrary{border-top:1px solid #d8e3ed;margin-top:26px;padding-top:24px}
+.ltsReportHistory .ltsReportLibrary>header h2{font-size:20px;margin:6px 0;letter-spacing:-.025em}.ltsReportHistory .ltsReportLibrary>header p{font-size:13px;color:#50657b;margin:0 0 16px;line-height:1.5}
+.ltsReportHistory .ltsReportJump{gap:6px;margin-bottom:16px}.ltsReportHistory .ltsReportJump a{font-size:12px;min-height:44px;padding:7px 12px;background:transparent;border-color:#d5e1eb;color:#34536e}
+.ltsReportHistory .ltsReportWorkspaces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.ltsReportHistory .ltsReportWorkspace{margin:0;border-radius:13px;border:1px solid #d9e4ee;background:#fff;min-width:0}
+.ltsReportHistory .ltsReportWorkspace>summary{min-height:98px;padding:16px;gap:10px;align-items:center}
+.ltsReportHistory .ltsReportWorkspace>summary b{font-size:14px;line-height:1.4}.ltsReportHistory .ltsReportWorkspace>summary small{font-size:12px;line-height:1.5;margin-top:5px;color:#50657b}
+.ltsReportHistory .ltsReportWorkspace[open]{grid-column:1/-1}.ltsReportHistory .ltsReportWorkspace[open]>summary{min-height:72px;border-bottom:1px solid #e2eaf1}
+.ltsReportHistory .ltsWorkspaceContent{padding:0 16px 16px}
+.ltsReportHistory .ltsReportWorkspace .ltsReportSection{margin:16px 0;box-shadow:none}
+.ltsReportHistory:has(.ltsBodyInterval)>.ltsReportHeader{display:none}
+@media(max-width:760px){
+ .ltsReportHistory{margin-top:24px;padding-top:22px}.ltsReportHistoryIntro .ltsCalendarDetailedTitle{font-size:22px}
+ .ltsReportHistory>.ltsReportHeader{padding:12px;gap:10px;align-items:end;margin:14px 0 22px}.ltsReportHistory>.ltsReportHeader .ltsField{flex:0 0 43%;font-size:10px}.ltsReportHistory>.ltsReportHeader p{font-size:12px;margin:0;min-width:0}.ltsReportHistory>.ltsReportHeader small{font-size:10px}
+ .ltsReportHistory .ltsReviewTabs:has(#reviewTab-interval){display:grid;grid-template-columns:1fr 1fr}.ltsReportHistory .ltsReviewTabs button{font-size:12px;padding:9px 7px}
+ .ltsReportHistory .ltsReviewContrasts{gap:12px}.ltsReportHistory .ltsReviewReading{padding:16px}.ltsReportHistory .ltsReviewReading>h3{font-size:15px}.ltsReportHistory .ltsReadingFacts{gap:10px}.ltsReportHistory .ltsReadingFacts dd{font-size:24px}
+ .ltsReportHistory .ltsReportWorkspaces{grid-template-columns:1fr;gap:10px}.ltsReportHistory .ltsReportWorkspace>summary{min-height:78px;padding:14px}.ltsReportHistory .ltsWorkspaceContent{padding:0 10px 10px}
+ .ltsReportHistory .ltsReadingLabValues>div{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ltsReportHistory .ltsReadingLabValues strong{font-size:17px}
+}

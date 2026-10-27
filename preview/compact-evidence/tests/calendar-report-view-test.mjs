@@ -135,7 +135,7 @@ assert.match(css,/#calendarPrintRoot \.ltsCalendarEyebrow\{letter-spacing:normal
 assert.match(css,/#calendarPrintRoot \.ltsCalendarSession,#calendarPrintRoot \.ltsCalendarLabRow,#calendarPrintRoot \.ltsCalendarLabs \.ltsCalendarEvidence>ul>li\{break-inside:avoid;page-break-inside:avoid\}/);
 assert.match(css,/\.ltsCalendarModes button\{padding-inline:8px;white-space:nowrap\}/);
 assert.doesNotMatch(source,/\blocalStorage\b|\bsessionStorage\b|\bfetch\s*\(|console\.|window\.open|navigator\.sendBeacon/);
-assert.match(main,/state\.ui\.calendarReportSources=/);assert.match(reports,/renderCalendarReport\(\)/);assert.match(reports,/Explorar outras janelas/);assert.match(reports,/renderIntegratedReview\(m\)/);assert.match(reports,/renderEvidenceInsights/);
+assert.match(main,/state\.ui\.calendarReportSources=/);assert.match(reports,/renderCalendarReport\(\)/);assert.match(reports,/Além deste resumo/);assert.match(reports,/renderIntegratedReview\(m\)/);assert.match(reports,/renderEvidenceInsights/);
 console.log('Calendar report view: independent windows, all eight metric values/coverage, chart gaps and zero, origin isolation, dated labs, training and plan limits, escaped full print evidence, A4/mobile CSS, synchronous print/cancel/error/repeat lifecycle, and preserved old workspaces passed. Browser layout and native iPhone saving require separate acceptance tests.');
 
 assert.match(css, /ltsCalendarPrintComparison td:last-child\{word-spacing:1pt\}/, 'PDF zero differences keep a visible, extractable separator before the unit');
