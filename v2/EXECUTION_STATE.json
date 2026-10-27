@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-26",
+  "updated_on": "2026-10-27",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/MOBILE_REPORT_READING_20261026.md"
+    "latest_release": "v2/releases/REPORT_LOWER_READING_20261027.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,38 +49,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CALENDAR-MOBILE-002",
-    "status": "done",
-    "goal": "Rebuild the rejected mobile report around the approved compact summary, legible daily charts and progressive source evidence; provide a concise default PDF and preserve the full export.",
+    "id": "PKG-REPORT-LOWER-003",
+    "status": "in_progress",
+    "goal": "Bring the lower report to the visual quality of the opening summary, preserving that opening and complete source evidence.",
     "task_ids": [
-      "LTS-CALENDAR-HIGHLIGHTS-001"
+      "LTS-REPORT-LOWER-READING-001"
     ],
-    "candidate_build": "health-integrated-20261026.87",
+    "candidate_build": "health-integrated-20261027.88",
     "public_build": "health-integrated-20261026.87",
-    "release_state": "published; bounded monthly axis fix passed actual SVG glyph geometry, inspected weekly/monthly PDF output and fresh authenticated production verification; owner acceptance not granted",
+    "release_state": "candidate; inspected the actual authenticated public report; implementation and local contracts being verified",
     "completed_evidence": [
-      "Both approved visual references actually reopened; private original mobile reference digest matched; illustrative values were not copied.",
-      "All twelve exact candidate workflows passed at 2b0551e89c5272deb2edc04505ce3096fbb6936c.",
-      "Calendar run 40414166313: 32 scenarios, Chromium/WebKit, 320/393/1440 plus reduced 393x650, 1187 captures and seven actual A4 PDFs; zero detected failures. Daily bars and date labels fit above reduced-mobile navigation.",
-      "Final calendar artifact 12694971974 SHA256 20e2325ed9aa1fec42cb1b5a1014f34ab644d2000123558029d1351b46fd4867 verified. Default reduced-mobile screens in both engines, desktop overview and weekly/monthly summary pages visually inspected at readable resolution.",
-      "Two synthetic concise summaries are two pages each; all expected words and numeric tokens survived native PDF export. Full daily-evidence export remains separate and untruncated.",
-      "Final integrated artifact 12693614420 SHA256 0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368 verified; 320/393 and desktop report screens inspected.",
-      "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
-      "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
-      "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed.",
-      ".87 changes only intermediate axis tick selection and date-text marking; every plotted daily point, value, source and all data/auth/write implementations are preserved.",
-      "Exact candidate 97c5b94c267a99c4d959a23a0571bb14046e7e79: affected Calendar/PDF 40417145816, full isolated preview 40417145847 and nine other workflows completed successfully. Integrated Production 40417145815 was still preparing its browser and is not counted as passed.",
-      "Axis-aware Calendar run 40417145816: 32 scenarios, 1187 captures, seven actual A4 exports, no failures. Real SVG date glyph boxes are checked in weekly/monthly screens and concise PDF; all daily plotted dates and full evidence remain intact.",
-      "Final .87 artifact 12696103650 SHA256 97dddf8159d61d778d5527560fc0f1725dd7a92fc4cf67bbbb0dd5d5854f6ee3 verified. Monthly summary page one actually reopened; final date label is separate. Both synthetic concise summaries remain two pages with all expected text and numeric tokens.",
-      "Normal PR407 merged at b1b2e8276fef5751bfca17fa77caa412d2df7c05. Deploy 40418509252, public smokes 40418564504/40418564604 and fresh actual-authenticated production workflow 40418509121 passed. Cloud Browser independently confirmed the .87 public entry; it remains signed out. No physical-device or owner acceptance is inferred."
+      "Owner praised the opening three visual summaries and rejected the lower-page experience. This is partial visual approval only.",
+      "Fresh manual authentication and actual public .87 navigation identified the abrupt transition to long prose and repeated framing.",
+      "Candidate changes only report presentation; Home, the calendar overview and both exports retain their implementations."
     ],
-    "pending_evidence": [],
-    "candidate_commit": "97c5b94c267a99c4d959a23a0571bb14046e7e79",
-    "runtime_merge": "b1b2e8276fef5751bfca17fa77caa412d2df7c05",
-    "owner_acceptance": "not_granted",
-    "nonblocking_rechecks": [
-      "40417145815 browser preparation was ongoing at the bounded-axis release checkpoint; no success is claimed for it."
-    ]
+    "pending_evidence": [
+      "Exact candidate responsive lower-page screenshots, expanded evidence, routing and provenance tests.",
+      "Normal merge, public deployment, authenticated public scrolling and source-value verification."
+    ],
+    "owner_acceptance": "not_granted"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -97,6 +84,26 @@
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
+    {
+      "id": "LTS-REPORT-LOWER-READING-001",
+      "status": "in_progress",
+      "priority": "P0",
+      "owner": "Codex",
+      "source_request": "Owner feedback 2026-10-27: opening three charts are promising; quality deteriorates while scrolling. Access, assess and improve the lower page.",
+      "evidence": [
+        "Actual authenticated .87 browser inspection before editing."
+      ],
+      "blocker": null,
+      "area": "Reports",
+      "summary": "Improve the lower report after explicit partial approval of its opening.",
+      "acceptance": [
+        "Preserve the praised report opening, all original data, source selection, chronology and export paths.",
+        "Give lower domains clear value/date hierarchy and reversible access to complete evidence.",
+        "Inspect actual lower-page rendering at desktop, mobile and reduced mobile sizes; no overflow, clipping, overlapping controls or invented values.",
+        "Verify existing interactions and publish by normal merge, then inspect the authenticated public result."
+      ],
+      "next_action": "Finish responsive evidence, visually inspect the entire lower page, publish and inspect actual authenticated .88."
+    },
     {
       "id": "LTS-FLEURY-SOURCE-VALIDATION-001",
       "area": "laboratory source fidelity",
@@ -2666,6 +2673,40 @@
       "pending_evidence": [],
       "public_build": "health-integrated-20261026.85",
       "acceptance_superseded_by": "Owner rejection of the mobile report on 2026-10-26; technical passes do not establish useful UX."
+    },
+    {
+      "id": "PKG-CALENDAR-MOBILE-002",
+      "status": "done",
+      "goal": "Rebuild the rejected mobile report around the approved compact summary, legible daily charts and progressive source evidence; provide a concise default PDF and preserve the full export.",
+      "task_ids": [
+        "LTS-CALENDAR-HIGHLIGHTS-001"
+      ],
+      "candidate_build": "health-integrated-20261026.87",
+      "public_build": "health-integrated-20261026.87",
+      "release_state": "published; bounded monthly axis fix passed actual SVG glyph geometry, inspected weekly/monthly PDF output and fresh authenticated production verification; owner acceptance not granted",
+      "completed_evidence": [
+        "Both approved visual references actually reopened; private original mobile reference digest matched; illustrative values were not copied.",
+        "All twelve exact candidate workflows passed at 2b0551e89c5272deb2edc04505ce3096fbb6936c.",
+        "Calendar run 40414166313: 32 scenarios, Chromium/WebKit, 320/393/1440 plus reduced 393x650, 1187 captures and seven actual A4 PDFs; zero detected failures. Daily bars and date labels fit above reduced-mobile navigation.",
+        "Final calendar artifact 12694971974 SHA256 20e2325ed9aa1fec42cb1b5a1014f34ab644d2000123558029d1351b46fd4867 verified. Default reduced-mobile screens in both engines, desktop overview and weekly/monthly summary pages visually inspected at readable resolution.",
+        "Two synthetic concise summaries are two pages each; all expected words and numeric tokens survived native PDF export. Full daily-evidence export remains separate and untruncated.",
+        "Final integrated artifact 12693614420 SHA256 0193496de3442344712e604584f80cd5fb1461d6ceb7bbfdbbf46ff3615cd368 verified; 320/393 and desktop report screens inspected.",
+        "Existing private source snapshot agrees with all five displayed nutrient means and exact eligible plot dates; original source rows remain unchanged. This was not a new database read.",
+        "PR405 merged normally at 6dc88dcf1b595dbf0e817332f40591c2a64915ec; deploy 40415651289 passed. Cloud Browser confirmed public build .86 at the versioned report link; this browser has no authenticated session.",
+        "Actual authenticated production workflow 40415650888 passed, including compact displayed values and eligible graph dates, full records and reduced 393x650. Public Pages smokes 40415699004 and 40415698902 passed. Cloud Browser confirmed exact .86 entry but has no authenticated session; no physical-iPhone acceptance is claimed.",
+        ".87 changes only intermediate axis tick selection and date-text marking; every plotted daily point, value, source and all data/auth/write implementations are preserved.",
+        "Exact candidate 97c5b94c267a99c4d959a23a0571bb14046e7e79: affected Calendar/PDF 40417145816, full isolated preview 40417145847 and nine other workflows completed successfully. Integrated Production 40417145815 was still preparing its browser and is not counted as passed.",
+        "Axis-aware Calendar run 40417145816: 32 scenarios, 1187 captures, seven actual A4 exports, no failures. Real SVG date glyph boxes are checked in weekly/monthly screens and concise PDF; all daily plotted dates and full evidence remain intact.",
+        "Final .87 artifact 12696103650 SHA256 97dddf8159d61d778d5527560fc0f1725dd7a92fc4cf67bbbb0dd5d5854f6ee3 verified. Monthly summary page one actually reopened; final date label is separate. Both synthetic concise summaries remain two pages with all expected text and numeric tokens.",
+        "Normal PR407 merged at b1b2e8276fef5751bfca17fa77caa412d2df7c05. Deploy 40418509252, public smokes 40418564504/40418564604 and fresh actual-authenticated production workflow 40418509121 passed. Cloud Browser independently confirmed the .87 public entry; it remains signed out. No physical-device or owner acceptance is inferred."
+      ],
+      "pending_evidence": [],
+      "candidate_commit": "97c5b94c267a99c4d959a23a0571bb14046e7e79",
+      "runtime_merge": "b1b2e8276fef5751bfca17fa77caa412d2df7c05",
+      "owner_acceptance": "not_granted",
+      "nonblocking_rechecks": [
+        "40417145815 browser preparation was ongoing at the bounded-axis release checkpoint; no success is claimed for it."
+      ]
     }
   ],
   "latest_published_release": {
