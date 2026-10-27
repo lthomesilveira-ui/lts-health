@@ -121,9 +121,9 @@ async function auditExerciseGeometry(label){
   const result=await page.evaluate(()=>{
     const card=document.querySelector('.ltsRefExerciseCard'),header=card?.querySelector(':scope > header'),copy=header?.querySelector(':scope > div:nth-child(2)'),title=copy?.querySelector('b'),sets=card?.querySelector('.ltsRefSetTable'),action=card?.querySelector('.ltsRefExerciseHistory');
     const rect=el=>el?.getBoundingClientRect()||null,c=rect(card),h=rect(header),x=rect(copy),t=rect(title),s=rect(sets),a=rect(action);
-    return{display:card?getComputedStyle(card).display:'missing',cardWidth:c?.width||0,headerWidth:h?.width||0,copyWidth:x?.width||0,titleWidth:t?.width||0,setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),actionWidth:a?.width||0};
+    return{display:card?getComputedStyle(card).display:'missing',cardWidth:c?.width||0,headerWidth:h?.width||0,copyWidth:x?.width||0,titleWidth:t?.width||0,setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),actionWidth:a?.width||0,actionHeight:a?.height||0,actionInHeader:Boolean(header&&action&&header.contains(action)),actionContained:Boolean(h&&a&&a.left>=h.left-1&&a.right<=h.right+1&&a.top>=h.top-1&&a.bottom<=h.bottom+1),actionLabel:action?.getAttribute('aria-label')||''};
   });
-  if(result.display!=='block'||result.headerWidth<result.cardWidth*.85||result.copyWidth<110||result.titleWidth<110||!result.setsBelow||result.actionWidth<120)throw new Error(`${label}: real Training exercise geometry is broken ${JSON.stringify(result)}`);
+  if(result.display!=='block'||result.headerWidth<result.cardWidth*.85||result.copyWidth<110||result.titleWidth<110||!result.setsBelow||result.actionWidth<43.5||result.actionHeight<43.5||!result.actionInHeader||!result.actionContained||result.actionLabel!=='Histórico deste exercício')throw new Error(`${label}: real Training exercise geometry is broken ${JSON.stringify(result)}`);
 }
 async function assertLightReadableCards(selector,label){
   const result=await page.evaluate(selector=>{
