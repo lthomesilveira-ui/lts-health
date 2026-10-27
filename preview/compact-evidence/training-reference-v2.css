@@ -966,3 +966,7 @@
  .ltsTrainingRecentBars>button{min-width:44px}
  .ltsTrainingRecentTrack{height:70px}
 }
+
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefMeasurementNote{margin:0;padding:0 12px;border-radius:12px}
+.ltsRefMeasurementNote>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:12px;font-weight:700;line-height:1.4;color:#675a38}
+.ltsRefMeasurementNote>p{font-size:12px;line-height:1.55;margin:0 0 12px;color:#675a38}

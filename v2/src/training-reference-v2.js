@@ -34,7 +34,7 @@ function workoutCounts(workout){
 
 function measurementNote(workout){
   if(!hasReportedMeasurementIssue(workout,state.data.workoutEvidence||[]))return '';
-  return '<p class="ltsRefMeasurementNote">Você relatou possível mau posicionamento do sensor. A frequência cardíaca e as calorias foram preservadas como medidas pelo Polar, com confiabilidade limitada; não confirmam a intensidade real do treino.</p>';
+  return '<details class="ltsRefMeasurementNote"><summary>FC e calorias: leitura com ressalva</summary><p>Você relatou possível mau posicionamento do sensor. A frequência cardíaca e as calorias foram preservadas como medidas pelo Polar, com confiabilidade limitada; não confirmam a intensidade real do treino.</p></details>';
 }
 
 function exerciseNotes(exercise,sets){
