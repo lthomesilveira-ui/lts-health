@@ -198,6 +198,9 @@ async function checkShell(page,id=SUMMARY_IDS.current){
   assert.equal(await page.locator('.ltsRefTrainMetric').count(),4,'Keep all four existing metric cards');
   assert.equal(await page.locator('.ltsRefHrPanel').count(),1);
   assert.equal(await page.locator('.ltsRefSessionOverview').count(),1);
+  const tabGeometry=await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').evaluateAll(nodes=>nodes.map(el=>{const b=el.getBoundingClientRect();return {top:b.top,bottom:b.bottom};}));
+  assert.ok(tabGeometry.every(box=>Math.abs(box.top-tabGeometry[0].top)<2),'all four destinations share one row');
+  assert.equal(await page.locator('.ltsRefTrainPrimaryTabs').evaluate(el=>getComputedStyle(el).position),'static','tabs cannot cover chart marks when scrolling');
   assert.doesNotMatch(await page.locator('#screenHost').innerText(),/\b(?:NaN|undefined|Infinity)\b/);
 }
 async function checkCurrent(page){
