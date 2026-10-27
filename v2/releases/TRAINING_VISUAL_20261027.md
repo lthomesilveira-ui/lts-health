@@ -1,3 +1,9 @@
+# Final automatic verification — Training .91, 27/10/2026 UTC
+
+Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 is still pending and is not counted as successful. Runtime assets remain the exact manually inspected .91.
+
+The earlier pending actual-auth note below is superseded by this successful final verification. No executable app asset changes in this checkpoint. Owner acceptance, source/history dependencies and water restoration remain open; no physical-iPhone claim.
+
 # Training .91 published and manually inspected — 27/10/2026 UTC
 
 The owner rejected the dense Training experience. The recovered approved private mobile reference was actually viewed. Build .91 restores compact identity and aligned exercise series/load/repetitions, adds source-backed charts of registered primary series by literal group and recent recorded-session duration, removes decorative physiological marks, and preserves full original records, notes, extensions and source caveats. Four mobile tabs stay in one row without covering graphs. Exercises begin directly with their groups and series; history uses a contained accessible44px header action. No physiological effort, HR zone or historical data is inferred.
