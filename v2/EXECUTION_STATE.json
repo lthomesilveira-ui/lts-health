@@ -60,7 +60,8 @@
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "Fresh authenticated public navigation confirms the reported previous-day workout is already visible in Training and Home. Selecting the current report week includes that session; the initial completed-week report excludes its date.",
-      "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display."
+      "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display.",
+      "Timeline also exposes the recent session and its preserved original narrative. Recovery transport units now use human display wording; exact source keys and units remain unchanged."
     ],
     "pending_evidence": [
       "Exact candidate browser checks, publication and authenticated public regression."
@@ -88,14 +89,15 @@
       "blocker": null,
       "id": "LTS-UI-SOURCE-KEYS-001",
       "status": "in_progress",
-      "summary": "Remove serialized source identifiers from nutrition chart point titles without changing source grouping or observations.",
+      "summary": "Remove serialized nutrition source titles and transport step units from the consumer UI without changing any observations or grouping.",
       "acceptance": [
         "Human source names in every point tooltip and accessible name.",
         "Exact original values and grouping keys preserved.",
         "Responsive/browser tests and actual published authenticated verification."
       ],
       "evidence": [
-        "Confirmed by fresh authenticated Nutrition DOM; local full consumer-copy regression passes."
+        "Confirmed by fresh authenticated Nutrition DOM; local full consumer-copy regression passes.",
+        "Authenticated recovery inspection also found transport count units in live selectors; display-only passos mapping and actual renderer nonmutation regression pass locally."
       ],
       "next_action": "Finish candidate checks and inspect published chart titles."
     },

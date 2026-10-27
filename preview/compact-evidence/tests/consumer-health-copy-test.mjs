@@ -99,3 +99,14 @@ const chartTitles=[...nutritionHtml.matchAll(/<title>([\s\S]*?)<\/title>/g)].map
 assert.ok(chartTitles.length>0,'exercise real nutrition chart titles');
 assert.doesNotMatch(chartTitles,/canonical|&quot;nutrition&quot;|\[&quot;/,'internal source tuples never reach point titles');
 assert.deepEqual(f.data,chartBefore,'presentation retains all original observations and grouping identities');
+
+// A real recovery select and evidence list must not print transport units.
+const {renderUsefulReports}=await import('../src/reports-screen.js');
+const {renderRecoveryDepth}=await import('../src/recovery-layout-v2.js');
+state.data=structuredClone(f.data);state.domainStatus={...f.status};state.ui={reportPeriod:'30',analysisPeriod:'30'};
+state.data.sourceMetrics.push(...[1,2].map(i=>({source_record_id:`synthetic-step-copy-${i}`,metric_date:f.date(i),metric_type:'steps',unit:'count',value:1000+i,source_name:'Synthetic watch',source_family:'synthetic',canonical_status:'candidate'})));
+const recoveryBefore=structuredClone(state.data);
+const recoveryHtml=renderUsefulReports()+renderRecoveryDepth();
+assert.match(recoveryHtml,/Synthetic watch[\s\S]*?passos/);
+assert.doesNotMatch(text(recoveryHtml),/\bcount\b/,'transport count is presented as passos');
+assert.deepEqual(state.data,recoveryBefore,'display units preserve source records');

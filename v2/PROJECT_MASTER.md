@@ -2,7 +2,7 @@
 
 The owner explicitly reports unresolved technical frontend language and missing recent activity and rejects completion. Fresh authenticated inspection confirms the reported recent workout already appears in Training and Home; the completed-week report initially ends before that date, while its current-week selection includes the session. No duplicate session should be created. Original-chat completeness is not established by this UI finding.
 
-Nutrition chart point titles expose serialized source-key tuples. The candidate uses the existing human row context while preserving exact internal grouping, all observations and source-selection rules. Consumer-copy regression passes locally. Exact candidate browser verification, normal publication and authenticated public inspection remain pending. No claim of project-wide completion is made.
+Nutrition chart point titles expose serialized source-key tuples. The candidate uses the existing human row context while preserving exact internal grouping, all observations and source-selection rules. Recovery selectors, charts and evidence also translate the transport step unit to passos without changing original units. Actual rendered consumer-copy and nonmutation regressions pass locally. Exact candidate browser verification, normal publication and authenticated public inspection remain pending. No claim of project-wide completion is made.
 
 Personal Context is unavailable in this run; two equivalent Library searches returned no matches, which does not mean prior records were never supplied. Preserve all existing blocked tasks and originals. Do not invent missing measurement, treatment, equipment or session metadata. Water and existing support triggers remain unchanged. Authority: EXECUTION_STATE.json.
 
