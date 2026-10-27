@@ -90,3 +90,12 @@ console.log('Consumer health copy: seven cards, empty/partial/conflicting/failed
 const mainSource=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
 assert.match(mainSource,/loadingState[\s\S]*?<span>Aguarde um instante\.<\/span>/,'loading copy is brief and consumer-facing');
 assert.doesNotMatch(mainSource,/Os dados já carregados continuam preservados/);
+
+// Source identity controls grouping; chart titles must use its human label.
+const {homeCockpitModel,nutritionPanel}=await import('../src/home-cockpit.js');
+const chartBefore=structuredClone(f.data);
+const nutritionHtml=nutritionPanel(homeCockpitModel(f.data,f.status,'30',{},f.today));
+const chartTitles=[...nutritionHtml.matchAll(/<title>([\s\S]*?)<\/title>/g)].map(m=>m[1]).join(' ');
+assert.ok(chartTitles.length>0,'exercise real nutrition chart titles');
+assert.doesNotMatch(chartTitles,/canonical|&quot;nutrition&quot;|\[&quot;/,'internal source tuples never reach point titles');
+assert.deepEqual(f.data,chartBefore,'presentation retains all original observations and grouping identities');

@@ -11,7 +11,7 @@ import {labCohorts,labCohortPoints,labResultText,labReferenceLabel,labReferenceS
 const value=(n,unit='',digits=1)=>num(n)==null?'Sem dado':`${fmtNum(n,digits)}${unit?` ${unit}`:''}`;
 const change=(n,unit='',digits=1)=>num(n)==null?'Sem comparação':`${n>0?'+':''}${value(n,unit==='%'?'p.p.':unit,digits)}`;
 const recordedLoadUnit=unit=>Object.hasOwn(loadInsightUnits,unit)?loadInsightUnits[unit]:unit||'unidade não informada';
-const points=(rows,read,cohort)=>rows.filter(r=>num(read(r))!=null).map(r=>({date:r.date,value:num(read(r)),cohort,context:r.source}));
+const points=(rows,read,cohort)=>rows.filter(r=>num(read(r))!=null).map(r=>({date:r.date,value:num(read(r)),cohort,context:r.context||r.source}));
 const bodyLimits={unavailable:['Dados indisponíveis','A composição não carregou nesta atualização.'],empty:['Sem medição na janela','A última avaliação é mostrada com sua data; amplie a janela para comparar.'],single:['Uma avaliação','Falta outra medição compatível na janela para calcular a evolução.'],source_changed:['Comparação não confirmada','A mesma origem e o aparelho não estão confirmados nas duas avaliações; as curvas permanecem separadas.'],ambiguous:['Avaliações em revisão','Há mais de uma medição para a mesma data. Nenhuma foi escolhida automaticamente.']};
 
 export function homeCockpitModel(data,status,period,ui={},today){

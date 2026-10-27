@@ -1,3 +1,11 @@
+# Product audit reopened — candidate .89, 27/10/2026
+
+The owner explicitly reports unresolved technical frontend language and missing recent activity and rejects completion. Fresh authenticated inspection confirms the reported recent workout already appears in Training and Home; the completed-week report initially ends before that date, while its current-week selection includes the session. No duplicate session should be created. Original-chat completeness is not established by this UI finding.
+
+Nutrition chart point titles expose serialized source-key tuples. The candidate uses the existing human row context while preserving exact internal grouping, all observations and source-selection rules. Consumer-copy regression passes locally. Exact candidate browser verification, normal publication and authenticated public inspection remain pending. No claim of project-wide completion is made.
+
+Personal Context is unavailable in this run; two equivalent Library searches returned no matches, which does not mean prior records were never supplied. Preserve all existing blocked tasks and originals. Do not invent missing measurement, treatment, equipment or session metadata. Water and existing support triggers remain unchanged. Authority: EXECUTION_STATE.json.
+
 # Lower report .88 published and inspected — 27/10/2026 UTC
 
 The owner praised the opening three visual summaries and rejected the quality of the page below. Build `health-integrated-20261027.88` preserves that opening and replaces the lower prose stack with dated domain readings, prominent original values, visible origins and native expandable interpretation/evidence. Source controls are consolidated. Values stay aligned when mobile labels wrap, and the sleep action opens the actual recovery workspace and graph. Complete workspaces, calendar windows, source choices, consultation export and both PDF modes remain available.

@@ -49,32 +49,21 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-REPORT-LOWER-003",
-    "status": "done",
-    "goal": "Bring the lower report to the visual quality of the opening summary, preserving that opening and complete source evidence.",
+    "id": "PKG-PRODUCT-AUDIT-004",
+    "status": "in_progress",
+    "goal": "Audit user journeys and reconcile reported missing activity and technical frontend text.",
     "task_ids": [
-      "LTS-REPORT-LOWER-READING-001"
+      "LTS-UI-SOURCE-KEYS-001"
     ],
-    "candidate_build": "health-integrated-20261027.88",
+    "candidate_build": "health-integrated-20261027.89",
     "public_build": "health-integrated-20261027.88",
-    "release_state": "published and technically verified; complete lower report actually inspected with authenticated public data and responsive synthetic evidence; owner acceptance not granted",
-    "completed_evidence": [
-      "Owner praised the opening three visual summaries and rejected the lower-page experience. This is partial visual approval only.",
-      "Fresh manual authentication and actual public .87 navigation identified the abrupt transition to long prose and repeated framing.",
-      "Candidate changes only report presentation; Home, the calendar overview and both exports retain their implementations.",
-      "Final exact candidate 9b91a854ec30d7e2e435c6c132d7760a575c914a passed Integrated Production40430182458, Functional Depth40430182435, Calendar/PDF40430182475 and eight source/model workflows. One isolated-preview browser installation remains pending and is not counted green.",
-      "Final functional artifact12702540120 SHA2560b840a3f92d22972c4e36e88af0d771bdaf12eb7bcb1f9321d2878c2d7d03c05 verified; 88 screens extracted. All six reduced-mobile readings plus corrected 320/393 alignment and desktop reading visually inspected at readable resolution.",
-      "Chromium/WebKit at1536/390/393x650/320 passed lower-domain values, full evidence, source/window state, failed-reader handling, rendered value alignment and the recovery jump. The prior full-layout candidate passed all twelve workflows.",
-      "Normal PR409 runtime merge5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42 retains exact reviewed tree110d4e402f81a974439d07642a7aba6b5f6593c9.",
-      "Deploy40431045790, actual-auth E2E40431045562, homologation40431079212 and public40431079193 attempt2 passed. The initial public smoke received a503 resource error; its single failed job was rerun without weakening checks.",
-      "Fresh manual authenticated Cloud Browser confirmed exact .88 at the versioned report URL. All six actual readings, complete laboratory references, source/date preservation, lower library and sleep-to-recovery graph were inspected; all cards/page had no horizontal overflow. No physical-iPhone test or project-wide acceptance is claimed."
-    ],
-    "pending_evidence": [],
     "owner_acceptance": "not_granted",
-    "candidate_commit": "9b91a854ec30d7e2e435c6c132d7760a575c914a",
-    "runtime_merge": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
-    "nonblocking_rechecks": [
-      "Isolated Preview40430182554 was still installing its pinned browser at this checkpoint; no success is claimed for that preparation."
+    "completed_evidence": [
+      "Fresh authenticated public navigation confirms the reported previous-day workout is already visible in Training and Home. Selecting the current report week includes that session; the initial completed-week report excludes its date.",
+      "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display."
+    ],
+    "pending_evidence": [
+      "Exact candidate browser checks, publication and authenticated public regression."
     ]
   },
   "last_verified_release": {
@@ -92,6 +81,42 @@
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
+    {
+      "area": "Product audit",
+      "priority": "P0",
+      "owner": "Codex",
+      "blocker": null,
+      "id": "LTS-UI-SOURCE-KEYS-001",
+      "status": "in_progress",
+      "summary": "Remove serialized source identifiers from nutrition chart point titles without changing source grouping or observations.",
+      "acceptance": [
+        "Human source names in every point tooltip and accessible name.",
+        "Exact original values and grouping keys preserved.",
+        "Responsive/browser tests and actual published authenticated verification."
+      ],
+      "evidence": [
+        "Confirmed by fresh authenticated Nutrition DOM; local full consumer-copy regression passes."
+      ],
+      "next_action": "Finish candidate checks and inspect published chart titles."
+    },
+    {
+      "area": "Product audit",
+      "priority": "P0",
+      "owner": "Codex",
+      "blocker": "Original chat retrieval is unavailable in this run; original source cannot be certified from UI values alone.",
+      "id": "LTS-CHAT-RECONCILIATION-001",
+      "status": "blocked_external",
+      "summary": "Reconcile remaining prior chat requests and original workout details without asking for duplicate submissions or inferring absent values.",
+      "acceptance": [
+        "Original prior requests retrieved and reconciled to evidence and saved state."
+      ],
+      "evidence": [
+        "Personal Context explicitly unavailable in this conversation.",
+        "Two equivalent Library searches yielded no matches; this does not establish that records were not supplied.",
+        "Existing execution queue and fresh actual workout/session/report views were read."
+      ],
+      "next_action": "Recover original chat access and compare source requests; retain all existing records and keep global acceptance open."
+    },
     {
       "id": "LTS-REPORT-LOWER-READING-001",
       "status": "done",
@@ -2718,6 +2743,35 @@
       "owner_acceptance": "not_granted",
       "nonblocking_rechecks": [
         "40417145815 browser preparation was ongoing at the bounded-axis release checkpoint; no success is claimed for it."
+      ]
+    },
+    {
+      "id": "PKG-REPORT-LOWER-003",
+      "status": "done",
+      "goal": "Bring the lower report to the visual quality of the opening summary, preserving that opening and complete source evidence.",
+      "task_ids": [
+        "LTS-REPORT-LOWER-READING-001"
+      ],
+      "candidate_build": "health-integrated-20261027.88",
+      "public_build": "health-integrated-20261027.88",
+      "release_state": "published and technically verified; complete lower report actually inspected with authenticated public data and responsive synthetic evidence; owner acceptance not granted",
+      "completed_evidence": [
+        "Owner praised the opening three visual summaries and rejected the lower-page experience. This is partial visual approval only.",
+        "Fresh manual authentication and actual public .87 navigation identified the abrupt transition to long prose and repeated framing.",
+        "Candidate changes only report presentation; Home, the calendar overview and both exports retain their implementations.",
+        "Final exact candidate 9b91a854ec30d7e2e435c6c132d7760a575c914a passed Integrated Production40430182458, Functional Depth40430182435, Calendar/PDF40430182475 and eight source/model workflows. One isolated-preview browser installation remains pending and is not counted green.",
+        "Final functional artifact12702540120 SHA2560b840a3f92d22972c4e36e88af0d771bdaf12eb7bcb1f9321d2878c2d7d03c05 verified; 88 screens extracted. All six reduced-mobile readings plus corrected 320/393 alignment and desktop reading visually inspected at readable resolution.",
+        "Chromium/WebKit at1536/390/393x650/320 passed lower-domain values, full evidence, source/window state, failed-reader handling, rendered value alignment and the recovery jump. The prior full-layout candidate passed all twelve workflows.",
+        "Normal PR409 runtime merge5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42 retains exact reviewed tree110d4e402f81a974439d07642a7aba6b5f6593c9.",
+        "Deploy40431045790, actual-auth E2E40431045562, homologation40431079212 and public40431079193 attempt2 passed. The initial public smoke received a503 resource error; its single failed job was rerun without weakening checks.",
+        "Fresh manual authenticated Cloud Browser confirmed exact .88 at the versioned report URL. All six actual readings, complete laboratory references, source/date preservation, lower library and sleep-to-recovery graph were inspected; all cards/page had no horizontal overflow. No physical-iPhone test or project-wide acceptance is claimed."
+      ],
+      "pending_evidence": [],
+      "owner_acceptance": "not_granted",
+      "candidate_commit": "9b91a854ec30d7e2e435c6c132d7760a575c914a",
+      "runtime_merge": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
+      "nonblocking_rechecks": [
+        "Isolated Preview40430182554 was still installing its pinned browser at this checkpoint; no success is claimed for that preparation."
       ]
     }
   ],
