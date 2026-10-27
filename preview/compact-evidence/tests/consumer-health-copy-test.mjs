@@ -110,3 +110,24 @@ const recoveryHtml=renderUsefulReports()+renderRecoveryDepth();
 assert.match(recoveryHtml,/Synthetic watch[\s\S]*?passos/);
 assert.doesNotMatch(text(recoveryHtml),/\bcount\b/,'transport count is presented as passos');
 assert.deepEqual(state.data,recoveryBefore,'display units preserve source records');
+
+// Historical text-only sessions do not become a zero baseline for set growth.
+const {reportBounds,trainingSummary}=await import('../src/reports-model.js');
+const windows=reportBounds('30');
+state.ui={analysisPeriod:'30'};state.data=structuredClone(f.data);state.domainStatus={...f.status};
+state.data.workouts=[{source_record_id:'synthetic-text-prior',workout_date:windows.previous.end,is_canonical:true,notes:'Synthetic preserved original: 3 x 8',duration_minutes:30},{source_record_id:'synthetic-structured-current',workout_date:windows.current.start,is_canonical:true,duration_minutes:30}];
+state.data.exercises=[{source_record_id:'synthetic-current-ex',workout_source_record_id:'synthetic-structured-current',exercise:'Synthetic exercise'}];
+state.data.sets=[{workout_source_record_id:'synthetic-structured-current',exercise_source_record_id:'synthetic-current-ex',set_index:1}];
+const setsBefore=structuredClone(state.data),priorSummary=trainingSummary(state.data,state.domainStatus,windows.previous);
+assert.equal(priorSummary.sets,0,'original structured row count is retained');
+assert.equal(priorSummary.setCoverage,0);assert.equal(priorSummary.setComplete,false);
+let periodHtml=renderUsefulReports().match(/<tr><th scope="row">Séries estruturadas<\/th>([\s\S]*?)<\/tr>/)?.[1]||'';
+assert.match(periodHtml,/Sem séries estruturadas/);assert.match(periodHtml,/0 de 1 sessões/);assert.match(periodHtml,/Cobertura incompleta/);assert.doesNotMatch(periodHtml,/\+1/);
+state.data.workouts.push({source_record_id:'synthetic-text-current',workout_date:windows.current.end,is_canonical:true,notes:'Preserved original series',duration_minutes:30});
+const mixedSummary=trainingSummary(state.data,state.domainStatus,windows.current);
+assert.equal(mixedSummary.sets,1);assert.equal(mixedSummary.setCoverage,1);assert.equal(mixedSummary.setTotal,2);assert.equal(mixedSummary.setComplete,false);
+periodHtml=renderUsefulReports().match(/<tr><th scope="row">Séries estruturadas<\/th>([\s\S]*?)<\/tr>/)?.[1]||'';
+assert.match(periodHtml,/1 de 2 sessões/);assert.match(periodHtml,/Cobertura incompleta/);
+state.data.workouts.pop();assert.deepEqual(state.data,setsBefore,'original notes and records survive period presentation');
+const noSession=trainingSummary({...state.data,workouts:[]},state.domainStatus,windows.current);
+assert.equal(noSession.sets,0);assert.equal(noSession.setComplete,true,'known empty session selection is distinct from missing details');
