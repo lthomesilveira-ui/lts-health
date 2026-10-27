@@ -49,30 +49,23 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-PRODUCT-AUDIT-004",
-    "status": "blocked_external",
-    "goal": "Audit user journeys and reconcile reported missing activity and technical frontend text.",
+    "id": "PKG-TRAINING-VISUAL-005",
+    "status": "in_progress",
+    "goal": "Replace the rejected text-heavy Training area with a readable source-backed visual session report and aligned exercise detail.",
     "task_ids": [
-      "LTS-UI-SOURCE-KEYS-001",
-      "LTS-TRAINING-SETS-COVERAGE-001",
-      "LTS-CHAT-RECONCILIATION-001"
+      "LTS-TRAINING-VISUAL-001"
     ],
-    "candidate_build": "health-integrated-20261027.90",
+    "candidate_build": "health-integrated-20261027.91",
     "public_build": "health-integrated-20261027.90",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Fresh authenticated public navigation confirms the reported previous-day workout is already visible in Training and Home. Selecting the current report week includes that session; the initial completed-week report excludes its date.",
-      "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display.",
-      "Timeline also exposes the recent session and its preserved original narrative. Recovery transport units now use human display wording; exact source keys and units remain unchanged.",
-      "Exact published .89 manually authenticated: nutrition titles are human-readable, recovery option and selected step chart use passos. Deploy40585959736 passed.",
-      "Published .90 by PR412f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4. Eleven candidate workflows including new actual-browser row coverage/geometry and Calendar/PDF pass; synthetic artifacts verified and inspected. Exact public .90 manually authenticated, and the actual historical missing-detail row and blocked difference inspected.",
-      "Real-auth40587794809 and both .90 public smokes40587844814/40587844826 passed. The separate Isolated Preview40586663624 remains pending and is not counted as passed."
+      "Fresh authenticated .90 Training screen and approved original private visual reference were opened and inspected.",
+      "Candidate restores compact session identity, source-backed group/session charts and aligned sets; local original-text/nonmutation/source-failure checks pass."
     ],
     "pending_evidence": [
-      "Recover original chat availability and reconcile remaining prior requests without duplicate submissions.",
-      "Global owner acceptance and the preserved independent external/source/form dependencies remain open."
-    ],
-    "blocker": "Original prior-chat retrieval is unavailable this run; source-preserved workout inspection is not a complete historical reconciliation."
+      "Exact candidate rendered browser evidence at desktop/mobile/320 and reduced viewport; inspect readable screenshots before normal publication.",
+      "Verify exact public authenticated build and preserve all prior source and global acceptance dependencies."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -89,6 +82,27 @@
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
+    {
+      "id": "LTS-TRAINING-VISUAL-001",
+      "area": "Training UX",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Address the explicit rejection of Training as an agglutinated text surface, using the recovered approved reference and actual source-backed visual report.",
+      "acceptance": [
+        "Compact session identity and clear metric hierarchy; preserve session/history/exercise navigation.",
+        "Group chart reconciles accepted primary records and separates extensions; recent-session chart uses recorded durations and retains missing values.",
+        "Aligned exercise loads/repetitions and phases explained without repeated unknown labels; preserve all literal notes and original report.",
+        "Visible graphs and controls fit desktop, mobile and 320px; source read failures cannot leave stale values.",
+        "Inspect readable exact-candidate captures and final authenticated public app; owner acceptance remains separate."
+      ],
+      "evidence": [
+        "Approved private mobile reference recovered and SHA256 verified; no private reference is committed to the public repo.",
+        "Current authenticated .90 Training inspected. Candidate uses existing accepted-session model and immutable source records."
+      ],
+      "next_action": "Complete rendered visual verification, correct observed layout failures and inspect exact published app."
+    },
     {
       "id": "LTS-TRAINING-SETS-COVERAGE-001",
       "area": "Historical report coverage",
@@ -2184,6 +2198,32 @@
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-PRODUCT-AUDIT-004",
+      "status": "blocked_external",
+      "goal": "Audit user journeys and reconcile reported missing activity and technical frontend text.",
+      "task_ids": [
+        "LTS-UI-SOURCE-KEYS-001",
+        "LTS-TRAINING-SETS-COVERAGE-001",
+        "LTS-CHAT-RECONCILIATION-001"
+      ],
+      "candidate_build": "health-integrated-20261027.90",
+      "public_build": "health-integrated-20261027.90",
+      "owner_acceptance": "not_granted",
+      "completed_evidence": [
+        "Fresh authenticated public navigation confirms the reported previous-day workout is already visible in Training and Home. Selecting the current report week includes that session; the initial completed-week report excludes its date.",
+        "Actual nutrition chart point titles expose serialized source identity tuples. Candidate preserves those tuples for grouping and uses existing human context for display.",
+        "Timeline also exposes the recent session and its preserved original narrative. Recovery transport units now use human display wording; exact source keys and units remain unchanged.",
+        "Exact published .89 manually authenticated: nutrition titles are human-readable, recovery option and selected step chart use passos. Deploy40585959736 passed.",
+        "Published .90 by PR412f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4. Eleven candidate workflows including new actual-browser row coverage/geometry and Calendar/PDF pass; synthetic artifacts verified and inspected. Exact public .90 manually authenticated, and the actual historical missing-detail row and blocked difference inspected.",
+        "Real-auth40587794809 and both .90 public smokes40587844814/40587844826 passed. The separate Isolated Preview40586663624 remains pending and is not counted as passed."
+      ],
+      "pending_evidence": [
+        "Recover original chat availability and reconcile remaining prior requests without duplicate submissions.",
+        "Global owner acceptance and the preserved independent external/source/form dependencies remain open."
+      ],
+      "blocker": "Original prior-chat retrieval is unavailable this run; source-preserved workout inspection is not a complete historical reconciliation."
+    },
     {
       "id": "PKG-PRODUCT-EXPERIENCE-001",
       "status": "done",
