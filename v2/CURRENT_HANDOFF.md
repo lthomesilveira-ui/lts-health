@@ -1,3 +1,15 @@
+# Continuity verified — 27/10/2026
+
+The restart reconciled main `588e25129692bae5ecb7e4ef4d83be4176619db8` with the current private checkpoint and preserved both reference branches. Runtime remains `health-integrated-20261027.91`; this checkpoint changes operational documentation only.
+
+Previously pending exact-candidate Isolated Preview `40594408965` is now confirmed completed/success. Latest main deploy `40595462170`, public smokes `40595562480`/`40595562432`, Integrated `40595462153`, Visual `40595462081` and Functional `40595462009` also passed. Fresh authenticated public Training and Data/Sources were actually opened and inspected; the existing recent workout and source coverage are present. No new workout, clinical value or screenshot is published by this checkpoint.
+
+The owner-scoped read-only source audit confirms continued general receipts without establishing water restoration. Both existing support threads were read again; no answer follows the already-recorded technical questions. No duplicate email, connection reset, report, permission, purchase or phone action was requested. Existing support triggers and the separate weekly schedule remain unchanged.
+
+Original-chat context search is callable on this restart, but returned neither the exact missing laboratory proposal nor a recovered original current Health request. The available search result and known checkpoint are not a complete original-chat reconciliation. Related blockers are corrected to describe missing evidence rather than an unavailable search tool. No laboratory proposal or clinical change is reconstructed.
+
+There are no ready/in_progress root tasks and no open external issues. Source/history completeness, original water import and recurrence, supported provider batching, exact laboratory proposal, basal coverage, genuine ordinary-form save/reopen and physical-device/owner acceptance remain independently open. A genuine non-duplicating form update is still required for that write path; no fake health record is created. This restart supplies evidence, not global acceptance. Authority: `EXECUTION_STATE.json`. Earlier checkpoints below remain history.
+
 # Final automatic verification — Training .91, 27/10/2026 UTC
 
 Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 is still pending and is not counted as successful. Runtime assets remain the exact manually inspected .91.

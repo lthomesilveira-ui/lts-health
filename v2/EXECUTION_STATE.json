@@ -64,7 +64,7 @@
       "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected.",
       "Normal PR414 merge d5cc8a8704a010e603827561417f14d3c2835aa5, deploy40594746820 and both public smokes40594802510/40594802593 pass. Fresh manual authenticated exact public .91 inspected in all four Training tabs; chart-driven session switching, exercise-history action and return tested. Existing records preserved; no physical-iPhone claim.",
       "Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending.",
-      "Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 is still pending and is not counted as successful. Runtime assets remain the exact manually inspected .91."
+      "Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91."
     ],
     "pending_evidence": [],
     "acceptance_note": "Bounded implementation verified; global and subjective owner acceptance not granted. Source/history/water dependencies remain open."
@@ -76,7 +76,7 @@
     "runtime_promotion_commit": "d5cc8a8704a010e603827561417f14d3c2835aa5",
     "published_on": "2026-10-27",
     "verified_on": "2026-10-27",
-    "automated_runtime_and_responsive_status": "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected. Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 is still pending and is not counted as successful. Runtime assets remain the exact manually inspected .91.",
+    "automated_runtime_and_responsive_status": "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected. Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91.",
     "manual_exact_public_status": "fresh_manual_authenticated_public_91_verified; four Training tabs, real current session, source-backed graphs, older-session switching and exercise-history return inspected",
     "manual_exact_public_verified_on": "2026-10-27",
     "acceptance_note": "Owner rejects global completion. This bounded Training redesign does not prove original-history completeness, water restoration, ordinary-form persistence or physical-device acceptance.",
@@ -105,7 +105,8 @@
         "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected.",
         "Normal PR414 merge d5cc8a8704a010e603827561417f14d3c2835aa5, deploy40594746820 and both public smokes40594802510/40594802593 pass. Fresh manual authenticated exact public .91 inspected in all four Training tabs; chart-driven session switching, exercise-history action and return tested. Existing records preserved; no physical-iPhone claim.",
         "Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending.",
-        "Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 is still pending and is not counted as successful. Runtime assets remain the exact manually inspected .91."
+        "Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91.",
+        "Continuity restart: exact-candidate Isolated Preview40594408965 completed/success; latest main Visual40595462081, Integrated40595462153, Functional40595462009, deploy40595462170 and both public smokes passed. Fresh authenticated public Training visually inspected; acceptance remains not_granted."
       ],
       "next_action": "Preserve this verified visual report and all source records; owner feedback can reopen product acceptance. Existing global source and water blockers remain independent."
     },
@@ -156,7 +157,7 @@
       "area": "Product audit",
       "priority": "P0",
       "owner": "Codex",
-      "blocker": "Original chat retrieval is unavailable in this run; original source cannot be certified from UI values alone.",
+      "blocker": "Full original Health conversation and missing literal requests are not recovered. The context-search capability is available, but this run did not return the original evidence required for completeness.",
       "id": "LTS-CHAT-RECONCILIATION-001",
       "status": "blocked_external",
       "summary": "Reconcile remaining prior chat requests and original workout details without asking for duplicate submissions or inferring absent values.",
@@ -166,9 +167,10 @@
       "evidence": [
         "Personal Context explicitly unavailable in this conversation.",
         "Two equivalent Library searches yielded no matches; this does not establish that records were not supplied.",
-        "Existing execution queue and fresh actual workout/session/report views were read."
+        "Existing execution queue and fresh actual workout/session/report views were read.",
+        "Continuity restart: original-chat context search was callable, but returned no literal missing Health request or full original conversation. Unrelated Wealth snippets and the known checkpoint do not establish complete reconciliation."
       ],
-      "next_action": "Recover original chat access and compare source requests; retain all existing records and keep global acceptance open."
+      "next_action": "Recover the original Health request or conversation from a durable source, then compare source requests; preserve existing records and keep global acceptance open. Do not infer absence from an unsuccessful search."
     },
     {
       "id": "LTS-REPORT-LOWER-READING-001",
@@ -1719,7 +1721,8 @@
         "2026-10-26: fresh genuine accepted receiver requests still lack the expected water block. Native device report delivery is tracked separately in LTS-WATER-NATIVE-REPORT-001.",
         "Native report submission confirmed by owner. The provider missing-report reply was sent before this submission; a subsequent notification was sent and independently reread.",
         "The provider acknowledged the native report and states that the water API request returns no records without an error. Account mismatch remains a hypothesis; no reset or new report was performed.",
-        "2026-10-26 later checkpoint: owner completed same-account reset and post-reset native report; the specifically consented source screenshot was sent and acknowledged. The provider proposes Deauthorize without yet explaining its distinction from the completed icon reset; clarification has already been sent in the existing case."
+        "2026-10-26 later checkpoint: owner completed same-account reset and post-reset native report; the specifically consented source screenshot was sent and acknowledged. The provider proposes Deauthorize without yet explaining its distinction from the completed icon reset; clarification has already been sent in the existing case.",
+        "Continuity restart: both support conversations re-read, with no reply after the previously recorded operational questions. Fresh owner-scoped receipt audit and authenticated Data/Sources still do not establish water restoration. Existing completed phone actions and unanswered questions remain preserved."
       ],
       "next_action": "Await the already-requested technical distinction between Deauthorize and the completed reset, confirmation of post-reset API findings and supported escalation. Preserve all completed steps; do not duplicate replies or ask for new ingestion/screenshots/reports.",
       "blocker": "Empty API response remains unexplained; no restoration or new indispensable native step is established.",
@@ -1742,7 +1745,8 @@
         "Public PR 367 contains disposable synthetic tests, not an executable private approval or real target list.",
         "Searches of project records and recent private file metadata did not recover the original exact manifest. A broader set of ambiguous results is not substituted for that list.",
         "Completeness review searched the available conversations, exact proposal references and private file metadata again; the original exact manifest was not recovered. Existing broader ambiguous records are not substituted.",
-        "Further focused available-conversation search found no original exact manifest. Unrelated project material and later summaries were excluded; laboratory data remains untouched."
+        "Further focused available-conversation search found no original exact manifest. Unrelated project material and later summaries were excluded; laboratory data remains untouched.",
+        "Continuity restart: targeted context and Library searches did not recover the exact original fifteen-record manifest. No substitute list was generated and no laboratory record was changed."
       ],
       "next_action": "Recover the original private proposal from a durable source; keep this as agent-side continuity work and do not ask the owner to repeat the medical history.",
       "blocker": "The exact original private fifteen-record manifest is not currently recovered."
@@ -2981,5 +2985,27 @@
       "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
       "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
     }
-  ]
+  ],
+  "last_continuity_review": {
+    "reviewed_on": "2026-10-27",
+    "source_main_commit": "588e25129692bae5ecb7e4ef4d83be4176619db8",
+    "source_tree": "6e3bba3a231da660cdc5a9b08d51138e1a8c33dd",
+    "reference_heads": {
+      "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
+      "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
+    },
+    "runtime_build": "health-integrated-20261027.91",
+    "runtime_changed": false,
+    "executable_task_count": 0,
+    "open_external_issue_count": 0,
+    "evidence": [
+      "Fresh authenticated public Training and Data/Sources inspected; existing recent workout and readable source coverage confirmed without a new record.",
+      "Latest main deployment40595462170, public smokes40595562480/40595562432 and Integrated40595462153, Visual40595462081 and Functional40595462009 all completed successfully.",
+      "Previously pending exact-candidate Isolated Preview40594408965 completed successfully; its result was read directly on restart.",
+      "Read-only owner-scoped private source audit confirms newer general receipts while water continuity remains absent; no zero consumption inferred.",
+      "Both existing support threads were re-read. No reply follows the already-recorded questions; no duplicate email or phone step was created.",
+      "Original-chat context search is now callable, but this attempt returned no exact laboratory proposal or independently recovered current Health request. Full original-chat reconciliation remains unproven."
+    ],
+    "acceptance_note": "No global owner or physical-device acceptance; preserved source/history, genuine ordinary-form and water dependencies remain open."
+  }
 }
