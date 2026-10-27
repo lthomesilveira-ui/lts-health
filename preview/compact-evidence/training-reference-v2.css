@@ -972,7 +972,7 @@
 .ltsRefMeasurementNote>p{font-size:12px;line-height:1.55;margin:0 0 12px;color:#675a38}
 
 /* Keep the session navigation in one row and outside the chart scroll area. */
-.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPrimaryTabs{grid-template-columns:repeat(4,minmax(0,1fr))!important;position:static!important;top:auto!important;z-index:auto!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPrimaryTabs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;position:static!important;top:auto!important;z-index:auto!important}
 .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPrimaryTabs button{padding:8px 4px!important;white-space:normal!important;line-height:1.25!important}
 .ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header{grid-template-columns:28px minmax(0,1fr) 44px!important;align-items:start!important}
 .ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header .ltsRefExerciseHistory{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0!important;border:0;background:#f0f5f3;color:#27614f;font-size:20px!important;border-radius:9px}

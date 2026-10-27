@@ -63,12 +63,16 @@ async function trainingFinalRendererGuard(page,label){
       titleWidth:t?.width||0,
       setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),
       actionWidth:a?.width||0,
+      actionHeight:a?.height||0,
+      actionInHeader:Boolean(action&&header?.contains(action)),
+      actionLabel:action?.getAttribute('aria-label')||'',
+      actionContained:Boolean(a&&h&&a.left>=h.left&&a.right<=h.right+1&&a.top>=h.top-1&&a.bottom<=h.bottom+1),
       minFont:Math.min(...fontSizes)
     };
   });
   if(exercises.display!=='block')throw new Error(`${label}/treinos: final exercise card inherited the legacy grid ${JSON.stringify(exercises)}`);
   if(exercises.headerWidth<exercises.cardWidth*.85||exercises.copyWidth<110||exercises.titleWidth<110)throw new Error(`${label}/treinos: exercise identity is crushed ${JSON.stringify(exercises)}`);
-  if(!exercises.setsBelow||exercises.actionWidth<120)throw new Error(`${label}/treinos: exercise detail hierarchy is broken ${JSON.stringify(exercises)}`);
+  if(!exercises.setsBelow||exercises.actionWidth<43.5||exercises.actionHeight<43.5||!exercises.actionInHeader||!exercises.actionContained||exercises.actionLabel!=='Histórico deste exercício')throw new Error(`${label}/treinos: exercise detail hierarchy is broken ${JSON.stringify(exercises)}`);
   if(exercises.minFont<9.5)throw new Error(`${label}/treinos: exercise detail contains unreadable type ${JSON.stringify(exercises)}`);
   await noOverflow(page,label,'treinos-exercises');
   await page.screenshot({path:`${evidenceDir}/${label}-training-exercises.png`,fullPage:true});
