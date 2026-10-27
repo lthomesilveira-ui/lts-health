@@ -351,6 +351,8 @@ try{
 
       await chooseTab(page,'exercises');
       assert.equal(await page.locator('.ltsRefExerciseCard').count(),4);
+      assert.equal(await page.locator('.ltsRefTrainHero').count(),0,'exercise detail does not repeat the summary identity card');
+      const firstSeries=await page.locator('.ltsRefSetTable > div').first().boundingBox();assert.ok(firstSeries&&firstSeries.top<650,'first recorded series is reached in the reduced phone viewport');
       await capture(page,`${label}-exercises`);
       await chooseTab(page,'summary');await checkCurrent(page);
       await chooseTab(page,'history');await capture(page,`${label}-history`);

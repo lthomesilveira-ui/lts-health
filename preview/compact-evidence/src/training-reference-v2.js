@@ -133,7 +133,7 @@ function exerciseCards(workout){
 
 function exercisesView(workout){
   const model=trainingSessionSummary(workout,state.data,state.domainStatus);
-  return `${sessionHero(workout)}<section class="ltsRefTrainPanel ltsRefExercisesPanel"><header><div><span>Detalhe</span><h2>Exercícios e séries</h2></div></header>${model.phases.unknown?`<p class="ltsTrainingPhaseNote">Tipo de série não informado em ${model.phases.unknown} ${model.phases.unknown===1?'série':'séries'}. Cargas e repetições foram preservadas.</p>`:''}${exerciseCards(workout)}</section>`;
+  return `<section class="ltsRefTrainPanel ltsRefExercisesPanel"><header><div><h2>Exercícios e séries</h2></div></header>${exerciseCards(workout)}${model.phases.unknown?`<details class="ltsTrainingPhaseDetails"><summary>Sobre os tipos de série</summary><p class="ltsTrainingPhaseNote">Tipo de série não informado em ${model.phases.unknown} ${model.phases.unknown===1?'série':'séries'}. Cargas e repetições foram preservadas.</p></details>`:''}</section>`;
 }
 
 function tabs(view){

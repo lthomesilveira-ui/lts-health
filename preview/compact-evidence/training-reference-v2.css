@@ -981,3 +981,9 @@
 .ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingSetColumns{margin-top:10px;padding:6px 0}
 .ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable i>em{white-space:normal!important;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box;padding:2px 3px;border-radius:5px}
 .ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header small{white-space:normal!important;overflow:visible!important;overflow-wrap:anywhere}
+
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExercisesPanel{padding:0!important;border:0!important;background:transparent!important;box-shadow:none}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExercisesPanel>header{margin:2px 0 10px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingExerciseGroup{margin:0;padding:9px 12px;border:0;border-radius:8px;background:#eaf1ee}
+.ltsTrainingPhaseDetails{margin-top:12px;border-top:1px solid #dce5eb;font-size:12px;color:#52657a}
+.ltsTrainingPhaseDetails>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:650}
