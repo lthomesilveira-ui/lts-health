@@ -50,48 +50,60 @@
   },
   "current_package": {
     "id": "PKG-REPORT-LOWER-003",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Bring the lower report to the visual quality of the opening summary, preserving that opening and complete source evidence.",
     "task_ids": [
       "LTS-REPORT-LOWER-READING-001"
     ],
     "candidate_build": "health-integrated-20261027.88",
-    "public_build": "health-integrated-20261026.87",
-    "release_state": "candidate; inspected the actual authenticated public report; implementation and local contracts being verified",
+    "public_build": "health-integrated-20261027.88",
+    "release_state": "published and technically verified; complete lower report actually inspected with authenticated public data and responsive synthetic evidence; owner acceptance not granted",
     "completed_evidence": [
       "Owner praised the opening three visual summaries and rejected the lower-page experience. This is partial visual approval only.",
       "Fresh manual authentication and actual public .87 navigation identified the abrupt transition to long prose and repeated framing.",
-      "Candidate changes only report presentation; Home, the calendar overview and both exports retain their implementations."
+      "Candidate changes only report presentation; Home, the calendar overview and both exports retain their implementations.",
+      "Final exact candidate 9b91a854ec30d7e2e435c6c132d7760a575c914a passed Integrated Production40430182458, Functional Depth40430182435, Calendar/PDF40430182475 and eight source/model workflows. One isolated-preview browser installation remains pending and is not counted green.",
+      "Final functional artifact12702540120 SHA2560b840a3f92d22972c4e36e88af0d771bdaf12eb7bcb1f9321d2878c2d7d03c05 verified; 88 screens extracted. All six reduced-mobile readings plus corrected 320/393 alignment and desktop reading visually inspected at readable resolution.",
+      "Chromium/WebKit at1536/390/393x650/320 passed lower-domain values, full evidence, source/window state, failed-reader handling, rendered value alignment and the recovery jump. The prior full-layout candidate passed all twelve workflows.",
+      "Normal PR409 runtime merge5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42 retains exact reviewed tree110d4e402f81a974439d07642a7aba6b5f6593c9.",
+      "Deploy40431045790, actual-auth E2E40431045562, homologation40431079212 and public40431079193 attempt2 passed. The initial public smoke received a503 resource error; its single failed job was rerun without weakening checks.",
+      "Fresh manual authenticated Cloud Browser confirmed exact .88 at the versioned report URL. All six actual readings, complete laboratory references, source/date preservation, lower library and sleep-to-recovery graph were inspected; all cards/page had no horizontal overflow. No physical-iPhone test or project-wide acceptance is claimed."
     ],
-    "pending_evidence": [
-      "Exact candidate responsive lower-page screenshots, expanded evidence, routing and provenance tests.",
-      "Normal merge, public deployment, authenticated public scrolling and source-value verification."
-    ],
-    "owner_acceptance": "not_granted"
+    "pending_evidence": [],
+    "owner_acceptance": "not_granted",
+    "candidate_commit": "9b91a854ec30d7e2e435c6c132d7760a575c914a",
+    "runtime_merge": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
+    "nonblocking_rechecks": [
+      "Isolated Preview40430182554 was still installing its pinned browser at this checkpoint; no success is claimed for that preparation."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261026.85",
-    "main_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
-    "runtime_promotion_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
-    "published_on": "2026-10-26",
-    "verified_on": "2026-10-26",
-    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, source arithmetic, Chromium/WebKit calendar/PDF and deployment/public smokes passed; full actual-auth workflow 40403947325 passed",
-    "manual_exact_public_status": "exact_public_entry_verified; no authenticated Cloud Browser session; private render behavior verified through existing actual-auth CI",
-    "manual_exact_public_verified_on": "2026-10-26",
-    "acceptance_note": "Calendar daily extrema, source/coverage and common-scale registered primary-series charts are published and verified in screen/PDF. Seven Home cards and all records/writes are unchanged. The revised visual email received positive owner feedback; app-wide acceptance, water delivery, exact laboratory proposal, basal eligibility, ordinary production saving and physical-device verification remain separate open tasks.",
-    "real_auth_verification_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
+    "build_id": "health-integrated-20261027.88",
+    "main_commit": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
+    "runtime_promotion_commit": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
+    "published_on": "2026-10-27",
+    "verified_on": "2026-10-27",
+    "automated_runtime_and_responsive_status": "verified affected candidate integration, Functional Depth, native calendar/PDF, source/model checks; actual-auth and both public smokes passed; one isolated-preview browser preparation is explicitly pending",
+    "manual_exact_public_status": "fresh_manual_authenticated_public_88_verified; six lower readings, full references, lower library and recovery jump inspected; no page/card overflow",
+    "manual_exact_public_verified_on": "2026-10-27",
+    "acceptance_note": "Opening summary is preserved and lower report is technically verified; partial owner praise does not accept the app. Project-wide acceptance, water delivery, original-source and ordinary-form dependencies, and physical-device verification remain separate.",
+    "real_auth_verification_commit": "5fd5d3c9c42e1a2c8d87bcf91918cc3192d6ed42",
     "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
   },
   "tasks": [
     {
       "id": "LTS-REPORT-LOWER-READING-001",
-      "status": "in_progress",
+      "status": "done",
       "priority": "P0",
       "owner": "Codex",
       "source_request": "Owner feedback 2026-10-27: opening three charts are promising; quality deteriorates while scrolling. Access, assess and improve the lower page.",
       "evidence": [
-        "Actual authenticated .87 browser inspection before editing."
+        "Actual authenticated .87 browser inspection before editing.",
+        "v2/releases/REPORT_LOWER_READING_20261027.md",
+        "PR409 normal merge and exact reviewed-tree parity; affected candidate browser/model/export gates passed.",
+        "Digest-verified final responsive evidence, manual authenticated public scrolling, full references and correct recovery graph.",
+        "Fresh actual-auth/public checks passed; isolated-preview repeated browser setup remains an explicitly unclaimed nonblocking recheck."
       ],
       "blocker": null,
       "area": "Reports",
@@ -102,7 +114,7 @@
         "Inspect actual lower-page rendering at desktop, mobile and reduced mobile sizes; no overflow, clipping, overlapping controls or invented values.",
         "Verify existing interactions and publish by normal merge, then inspect the authenticated public result."
       ],
-      "next_action": "Finish responsive evidence, visually inspect the entire lower page, publish and inspect actual authenticated .88."
+      "next_action": "Preserve the verified opening/lower hierarchy and complete evidence; project-wide owner acceptance, water, source and ordinary-form dependencies remain separate."
     },
     {
       "id": "LTS-FLEURY-SOURCE-VALIDATION-001",
