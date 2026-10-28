@@ -1,3 +1,17 @@
+# Health cockpit published and directly verified — .93, 2026-10-28 UTC
+
+The owner request is implemented in the public application. The opening now answers known state, recorded change, follow-up priorities and the path to original evidence through five dated domains and compact body/training/laboratory readings. Source algorithms and lengthy comparisons use native details. Original daily metrics, source choice, calendar controls and clinical text remain accessible.
+
+PR418 published the cockpit as .92. Actual authenticated review exercised the latest workout, selected laboratory marker, body assessment,7/90-day/day views, source details and full-history disclosure. That review found a raw importer flag in a laboratory history. PR419 translated only that known code and boolean flag as .93, preserving original results, annotated precision, stored flags and free-form clinical annotations. The corrected original-history row and .93 Home were actually reopened and visually inspected. Final public build: health-integrated-20261027.93; runtime commit348222ed5c9e563a20fe559ea64cbda0ac61ad6c; tree0c243564da635dd030b569f2758c0e8726c32753.
+
+Final candidate 2115bc3fbc9445d23e53a78810c498bf3651538f: 11 completed successful workflows, including Integrated40611520470, Cockpit Experience40611520644, Dashboard40611520481 and cockpit-smoke40611520581. Extended repetitions remain explicitly pending and are not counted as passed: LTS Health calendar reports and local PDF 40611520619; LTS Health Isolated Preview 40611520584; LTS Health Functional Depth 40611520437. Exact .93 real-auth40611693026, deploy40611692991, public smoke40611762230 and homologation40611762076 passed.
+
+Synthetic artifact12782907974 SHA25613da73e4a77bfb2b410eb1588f6446aee51ed2ceb28b9535139fb3d7edcd35c7 verified; all six full/sparse cases passed. Readable final393px opening and320px day captures inspected. Earlier exact .92 desktop, laboratory, metrics and sparse-body panels were inspected; the .93 Home assets are unchanged.
+
+LTS-HEALTH-COCKPIT-UX-002 / PKG-HEALTH-COCKPIT-006 are done for this bounded implementation, with no remaining executable task in this package. Owner acceptance is not granted. The extended regression repetitions above remain explicit and are not claimed green. The earlier .92 preview failures were test journeys that did not open the new native parent disclosure; their source/numeric assertions were retained and the paths were corrected before .93 promotion. No clinical record, source selection or write implementation changed.
+
+Water continuity remains blocked_external and must remain in project checkpoints; its return requires a genuine source observation and attributable transfer. Original source/history reconciliation, exact lab-proposal recovery, genuine ordinary-form validation and physical-iPhone/owner acceptance remain independent. No completed phone step or support message was repeated. Authority: EXECUTION_STATE.json. Earlier notes below are history and pending candidate statements are superseded by this entry.
+
 # Health cockpit reopened — 27/10/2026, candidate .92
 
 The owner explicitly rejects .91 as scattered information and requests a genuine health cockpit, direct app review, meaningful questions and answers, and removal of technical/empty prose. This feedback reopens Home product acceptance. The preceding no-executable-task checkpoint is historical and does not apply to this request.
