@@ -28,6 +28,7 @@ try{
   });
   await page.clock.install({time:new Date(TODAY+'T15:00:00Z')});
   await page.goto(base+'#hoje');
+  await page.locator('[data-disclosure="cockpit-details"]>summary').click();
   const training=page.locator('[data-dashboard-change-domain="training"]');
   await page.waitForFunction(()=>document.querySelector('[data-dashboard-change-domain="training"]')?.textContent.includes('aumentou 5 kg'));
   assert.equal(await page.locator('[data-dashboard-card]').count(),7);assert.equal(await page.locator('[data-dashboard-change-domain]').count(),3);
@@ -42,12 +43,12 @@ try{
   assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'bio','body drilldown owns its route styling');
   assert.match(await page.locator('.ltsHistoryContext').first().innerText(),/11\/10\/2026/);
   assert.match(await page.locator('.ltsRecordDetails').first().innerText(),/80,0 kg/);
-  await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-dashboard-change-domain="training"]');
+  await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-health-cockpit]');if(!await page.locator('[data-disclosure="cockpit-details"]').evaluate(el=>el.open))await page.locator('[data-disclosure="cockpit-details"]>summary').click();
   await page.locator('[data-dashboard-change="training:workout-1:exercise-1"]').click();
   await page.waitForSelector('[data-workout-id="workout-1"]');
   assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'treinos','training drilldown owns its route styling');
   assert.match(await page.locator('[data-workout-id="workout-1"]').innerText(),/25/);
-  await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-dashboard-change-domain="labs"]');
+  await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-health-cockpit]');if(!await page.locator('[data-disclosure="cockpit-details"]').evaluate(el=>el.open))await page.locator('[data-disclosure="cockpit-details"]>summary').click();
   await page.locator('[data-dashboard-change-domain="labs"] [data-dashboard-change]').click();
   await page.waitForSelector('[data-lab-asof]');
   assert.match(await page.locator('.ltsLabsHero').innerText(),/15\/10\/2026/);assert.match(await page.locator('.ltsLabsHero').innerText(),/13 u/);

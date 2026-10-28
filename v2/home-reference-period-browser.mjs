@@ -115,7 +115,7 @@ async function assertMetrics(page,fixture,ui={}){
       assert.equal(await card.locator('.healthCoverage').innerText(),`${m.count}/${m.expectedDays} dias usados na média`);
       assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'period window is shared above the cards');
       assert.ok((await page.locator('.healthWindow').innerText()).includes(`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`),'shared period window remains exact');
-      if(m.source)assert.ok((await card.locator('.healthPeriodSource').innerText()).includes(m.source.label),'full synthetic origin remains visible');
+      if(m.source)assert.ok((await card.locator('.healthPeriodSource').textContent()).includes(m.source.label),'full synthetic origin remains available inside native details');
     }else{
       assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'daily date is shared above the seven cards');
       assert.equal(await card.locator(':scope > .healthAggregation').count(),0,'daily partial copy is not repeated in the cards');
@@ -127,9 +127,10 @@ async function assertMetrics(page,fixture,ui={}){
 async function returnHome(page,width){
   const nav=width<=840?'#mobileNav':'#primaryNav';await page.locator(`${nav} [data-route="hoje"]`).click();
   await page.waitForURL('**/#hoje');await stableHome(page);
+  await openDetails(page,'[data-disclosure="cockpit-details"]');
 }
 async function visitAndReturn(page,width,route,from,expected){
-  if(from)await from.click();
+  if(from){await openDetails(page,'[data-disclosure="cockpit-details"]');await from.click();}
   else if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator(`#moreSheet [data-route="${route}"]`).click();}
   else await page.locator(`#primaryNav [data-route="${route}"]`).click();
   await page.waitForURL(`**/#${route}`);
@@ -167,6 +168,7 @@ try{
       await quality(page,`${name}/default`);
       if(width<=840){assert.deepEqual(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.map(node=>node.dataset.route)),['hoje','treinos','evolucao','mais']);assert.ok(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.every(node=>node.getBoundingClientRect().height>=44)));}
       await capture(page,`${name}-period-7-top`);
+      await openDetails(page,'[data-disclosure="cockpit-details"]');
       for(const [section,selector] of [['metrics','.healthMetricGrid'],['guidance','.healthGuidance'],['training','[data-study-domain="training"]'],['labs','[data-study-domain="labs"]'],['protocols','[data-study-domain="protocols"]'],['body','[data-study-domain="body"]']])await capture(page,`${name}-${section}`,selector);
       const training=page.locator('[data-study-domain="training"]'),laboratory=page.locator('[data-study-domain="labs"]'),protocols=page.locator('[data-study-domain="protocols"]');
       assert.deepEqual(await training.locator('.healthTrainingCounts strong').evaluateAll(nodes=>nodes.map(node=>Number(node.firstChild.textContent.trim()))),sparse?[0,0]:[3,2]);

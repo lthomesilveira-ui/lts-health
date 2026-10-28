@@ -33,13 +33,13 @@ try{
   const model=healthDashboardModel(f.data,f.status,{dashboardPeriod:'7'},today),cards=page.locator('[data-dashboard-card]');
   assert.equal(await cards.count(),7);assert.equal(await page.locator('.healthPeriodContext').count(),1);
   assert.match(await page.locator('.healthWindow').innerText(),/hoje fora das médias/);
-  assert.match(await page.locator('.healthPeriodContext').innerText(),/sem somar origens.*revisão.*fora da média/);
+  assert.equal(await page.locator('.healthPeriodContext').isVisible(),false);assert.match(await page.locator('.healthPeriodContext').textContent(),/médias usam os dias com registro.*conflitantes.*fora da média/s);
   for(const metric of model.metrics){
    const card=page.locator(`[data-dashboard-card="${metric.key}"]`);
    assert.equal(await card.locator('.healthMetricValue strong').innerText(),numberLabel(metric.value,metric.key));
    assert.equal(await card.locator('.healthCoverage').innerText(),`${metric.count}/${metric.expectedDays} dias usados na média`);
-   assert.ok((await card.locator('.healthPeriodSource').innerText()).includes(metric.source.label),'full selected human origin stays visible');
-   assert.match(await card.locator('.healthPeriodSource').innerText(),/Automática/);
+   assert.ok((await card.locator('.healthPeriodSource').textContent()).includes(metric.source.label),'full selected human origin is preserved inside details');
+   assert.match(await card.locator('.healthPeriodSource').textContent(),/Automática/);
    assert.equal(await card.locator('details').evaluate(el=>el.open),false);
    assert.equal(await card.locator(':scope > .healthTodayValue,:scope > .healthMetricPeriod,:scope > .healthAggregation').count(),0);
   }

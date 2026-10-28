@@ -54,6 +54,8 @@ async function stableHome(page){
     if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
     return ++window.__gateHomeStableFrames>=3;
   });
+  const details=page.locator('[data-disclosure="cockpit-details"]');
+  if(await details.count()&&!await details.evaluate(el=>el.open))await details.locator(':scope > summary').click();
 }
 async function overflow(page){
   const result=await page.evaluate(()=>({doc:document.documentElement.scrollWidth-window.innerWidth,host:document.getElementById('screenHost').scrollWidth-document.getElementById('screenHost').clientWidth}));

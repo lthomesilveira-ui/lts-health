@@ -1,3 +1,11 @@
+# Health cockpit reopened — 27/10/2026, candidate .92
+
+The owner explicitly rejects .91 as scattered information and requests a genuine health cockpit, direct app review, meaningful questions and answers, and removal of technical/empty prose. This feedback reopens Home product acceptance. The preceding no-executable-task checkpoint is historical and does not apply to this request.
+
+Fresh authenticated public .91 Home and both approved visual references were actually inspected. The existing Home lets source-selection explanation, coverage and repeated long panels dominate the health reading. Candidate .92 starts with five dated health domains, source-backed review priorities and compact body/training/laboratory readings. Changes use the existing comparison rules. Seven daily metrics, period/day controls, explicit source choices, original clinical text and full histories remain accessible; operational explanations and extensive comparisons use native disclosures. No new clinical interpretation, score, data write, source aggregation, estimated physiology or alteration of prescriptions is introduced.
+
+`PKG-HEALTH-COCKPIT-006` / `LTS-HEALTH-COCKPIT-UX-002` are in_progress. Local integrity/render/source-preservation checks pass. Responsive candidate evidence, normal publication and fresh authenticated exact-public inspection are pending. Owner acceptance is not granted. Water, original source/history, genuine-form and physical-device dependencies remain independent. Authority: `EXECUTION_STATE.json`. Earlier entries below remain history.
+
 # Continuity verified — 27/10/2026
 
 The restart reconciled main `588e25129692bae5ecb7e4ef4d83be4176619db8` with the current private checkpoint and preserved both reference branches. Runtime remains `health-integrated-20261027.91`; this checkpoint changes operational documentation only.

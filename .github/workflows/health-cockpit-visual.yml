@@ -1,0 +1,39 @@
+name: LTS Health Cockpit Experience
+on:
+  pull_request:
+    paths: ['preview/compact-evidence/**', 'v2/**', '.github/workflows/health-cockpit-visual.yml']
+  push:
+    branches: [main]
+    paths: ['preview/compact-evidence/**', 'v2/**', '.github/workflows/health-cockpit-visual.yml']
+permissions:
+  contents: read
+jobs:
+  cockpit-experience:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source-backed cockpit and preservation boundaries
+        run: |
+          node preview/compact-evidence/tests/health-cockpit-test.mjs
+          node v2/production-integration-contract.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
+      - name: Install pinned browser API
+        run: npm install --no-save playwright@1.56.1
+      - name: Check the cockpit user story at desktop and mobile sizes
+        run: |
+          python3 -m http.server 4173 >/tmp/health-cockpit-test.log 2>&1 &
+          LTS_HEALTH_BASE_URL=http://127.0.0.1:4173/v2/ node preview/compact-evidence/tests/health-cockpit-browser.mjs
+      - name: Keep synthetic visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-cockpit-synthetic
+          path: health-cockpit-visual/
+          retention-days: 7

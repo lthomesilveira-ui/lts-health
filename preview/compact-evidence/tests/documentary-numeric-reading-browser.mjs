@@ -408,6 +408,8 @@ try{
         try{
           if((await page.evaluate(()=>window.__languageApp.state.route))!=='hoje')await navigate(page,'hoje',width);
           await page.locator('#dashboard-period').selectOption('all');await stable(page,'hoje');
+          const cockpit=page.locator('[data-disclosure="cockpit-details"]');
+          if(!(await cockpit.evaluate(el=>el.open)))await cockpit.locator(':scope > summary').click();
           for(const name of ['dashboard-other-labs','dashboard-historical-labs']){
             const details=page.locator(`[data-disclosure="${name}"]`);if(await details.count()&&!(await details.evaluate(el=>el.open)))await details.locator(':scope > summary').click();
           }

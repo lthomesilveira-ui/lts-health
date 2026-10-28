@@ -30,13 +30,14 @@ const manifest={
     "evolution.css": "1ec73c327865ecbe99acc8ccc9fd1816dc288ccc9f492085feb72561d7d6f63e",
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
     "health-auto-export.css": "de23cf04121625dfa1ce4dd60039708903e0cc8348e27e11099e51441433cb6a",
+    "health-cockpit.css": "e3d7cecd42308edfc85b32ef9d6f4d061b1728447cdd474309572dbbfefe5350",
     "health-dashboard.css": "09ff060fc1f7311f3d7e17b90dcff4e42973f45400a32b924c6557887661f96c",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
     "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "a5114ba2a3139585e86de315f9651230b31cae2979f0cae9fc4f7e0cbf083287",
+    "index.html": "ff840e987bc67cfc98ae56fc580e8f589f7949bc4eeab1e842ecd5b2afc678bf",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "96bff087685d9b00bc4f9a9a911f38bd35c41e6d4b74709877007878f329d40f",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
@@ -64,8 +65,8 @@ const manifest={
     "src/body-interval-model.js": "339fbc37a19b23af45e9987b5deaf9ddedf769df7fcd9bc95bd3218490fec923",
     "src/body-interval-view.js": "59b21ecf7f6bab1da1ee5f0e6362e7cd5c1a3390b27c46953ac4062c2af7c7c8",
     "src/calendar-report-highlights.js": "3cccf50528715fe13fee11c016694f339358ecb0e7bea12344e1b31c2de614e7",
-    "src/calendar-report-overview.js": "66eb6012ac5b1b68d2dbec6a38b373cf2f48ffed96aad11817ae97430fdae02c",
     "src/calendar-report-model.js": "a5ea0b15586a2592ac3c4a2bff5983db02942cfde01b47d8f92db56895ef2fd7",
+    "src/calendar-report-overview.js": "66eb6012ac5b1b68d2dbec6a38b373cf2f48ffed96aad11817ae97430fdae02c",
     "src/calendar-report-view.js": "904b951eb23a0ebe9d26986f7e509a928a961c561909bc67e70db0d3a4a0de8c",
     "src/care-followup.js": "d27adde998c8a5c643c357c22e010206f1abf3ac819479832e3cacc115d5c7e8",
     "src/composition-layout-v2.js": "00c7be2e44cfecd15e2030ddcc24c512043bdb5e59a0cc8637233c330dcddc3a",
@@ -87,6 +88,7 @@ const manifest={
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/health-auto-export-connection.js": "24a945e4a2d8bda077412504fe0176925e827a9a8325714a2eaae93f3442c836",
     "src/health-auto-export-data.js": "241dd41d8a5372f25dbd7c395028c51ebb43b25490f135a22b5fcffde5b415f2",
+    "src/health-cockpit.js": "46b7fc7bb8805c6f698ca1784c34e5078dcfdef09fcc2dce9777fe26b5ddd03e",
     "src/health-context.js": "26af9d2436d1145f0e4b155eb1ea26c7138adf6a68db12e26d7dd7fe4c359bf7",
     "src/health-dashboard-body.js": "29c26568e4f0cca387df73a40b1cc157d22bd46e73476e5eb156a70416134f42",
     "src/health-dashboard-context.js": "af6986230dab59649a4fe68e226e5a7e4f543c2e1c155ee2d6efb25368cdb12c",
@@ -94,7 +96,7 @@ const manifest={
     "src/health-dashboard-labs.js": "ff872dce35a698e382bbe557bd33d169edb6d6825aa15cb22736eddd5fd86bdf",
     "src/health-dashboard-model.js": "05a095956ccd5866c09a2f7269eae1cc5c66486dbe37335c7075d7528a197921",
     "src/health-dashboard-training.js": "309e7137ba62c5e44797a31fa70968cf6fb30484bce436254e840c0178d8925d",
-    "src/health-dashboard.js": "a67d69bf056bf23e3eac22eea06b6bfa1c685c63ef92eb8eff0bcbda52228e7c",
+    "src/health-dashboard.js": "dda27e36a4bd7fc8f83cccd3f53f205dafca702e081abf1ead2a2c7317de99b9",
     "src/health-lab-documentary-numeric.js": "d6ffaced7ecd6e09c78b37b79019fce42573155690c844ce3490ef37dca61b7e",
     "src/health-lab-reviewed-numeric.js": "d3ee1812c2df272d579c791df3abeb0458960cb24e02dfc7695bf5d3d1509b66",
     "src/health-screen.js": "0fa9211bcd57d80e4a000c92c646389e37ffb45f98872f677433c106b2309895",
@@ -146,10 +148,10 @@ const manifest={
     "src/training-comparability.js": "29cbde79fed598028c4fffcf6789d8793909b7df64c9f7bec31c2a3a8919cc99",
     "src/training-history.js": "3b0e33c3ac7ec9bddbf9c9990fc792dc717c5aad0a74d324b2239dbd3d606a11",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
-    "src/training-session-visuals.js": "c5818d875368342aeb0aa36d5cf80f0647d14d916feb4419400f484fa918399a",
     "src/training-reference-v2.js": "90fc4313e69cb39c0d3269e265390969d528dd80dc8a5521b04b2f8d00244817",
     "src/training-screen.js": "255481f1cfc2439d091bc7e0b138259206f1920804b8fcf795c53d90a229c759",
     "src/training-session-summary.js": "48bd4cad251ec9d2ea5b4d20f4fda79496a8874da1128f53ba246a1516e4bd43",
+    "src/training-session-visuals.js": "c5818d875368342aeb0aa36d5cf80f0647d14d916feb4419400f484fa918399a",
     "src/training-session.js": "82bd2d255b7c9c5ef6aa44f6eca4427d963fb324bf74ad4fe33b984d7e217538",
     "src/treatment-screen.js": "5de4943db5b64aee1d1312e082b613956200bcb43652d67a4100bb3518df4870",
     "src/user-facing-errors.js": "bd8af0c7ac826a0d911a09906b64b547962f81402902d8a819e682f605cb5b2a",
@@ -184,7 +186,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261027\.91/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261027\.92/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261027.91'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);

@@ -230,12 +230,13 @@ export async function runRenderTests(){
   for(const sparse of [false,true]){
     const f=periodReadabilityFixture({sparse}),before=structuredClone(f.data),d=healthDashboardModel(f.data,f.status,{},f.today),html=renderHealthDashboard(f.data,f.status,{},f.today);
     assert.equal((html.match(/class="healthPeriodContext"/g)||[]).length,1,'period calculation context appears once');
-    assert.match(visibleHtmlText(html),/sem somar origens.*revisão.*fora da média/);
+    assert.match(visibleHtmlText(html,{expanded:true}),/médias usam os dias com registro.*conflitantes.*fora da média/s);
     for(const m of d.metrics){
       const content=card(html,m.key),top=primary(content);
       assert.doesNotMatch(top,/healthAggregation|healthMetricPeriod|healthSourceWindow|Hoje parcial/,'period source controls and repeated methodology are secondary');
-      assert.ok(top.includes(sourceDisplayLabel(m.source,m.sources)),'full origin identity stays readable');
-      assert.match(top,/Automática/);assert.match(top,new RegExp(`${m.count}/${m.expectedDays} dias usados na média`));
+      assert.ok(content.includes(sourceDisplayLabel(m.source,m.sources)),'full origin identity remains available in the card disclosure');
+      assert.ok(!top.includes('healthPeriodSource'),'internal source selection does not dominate the card');
+      assert.match(content,/Automática/);assert.match(top,new RegExp(`${m.count}/${m.expectedDays} dias usados na média`));
       assert.match(content,/<details[\s\S]*data-dashboard-source=/,'the source picker remains in the card disclosure');
     }
     assert.match(primary(card(html,'activeEnergy')),/Ainda não confirmado/);

@@ -74,7 +74,13 @@ for(const config of [
   if(home.hostBottom>home.navTop+1)throw new Error(`${config.label}/home: content overlaps navigation`);
   if(home.hostPaddingBottom>30)throw new Error(`${config.label}/home: duplicate bottom reserve ${home.hostPaddingBottom}px`);
   if(home.overflow>3)throw new Error(`${config.label}/home: horizontal overflow ${home.overflow}px`);
-  if(await page.locator('[data-dashboard-card]:visible').count()!==7||await page.locator('[data-study-domain]:visible').count()!==4)throw new Error(`${config.label}/home: mobile hides analytical content`);
+  assert.equal(await page.locator('[data-dashboard-card]:visible').count(),7,'seven daily readings remain visible');
+  assert.equal(await page.locator('[data-cockpit-summary]:visible').count(),5,'five health domains lead the mobile cockpit');
+  assert.equal(await page.locator('[data-cockpit-panel]:visible').count(),3,'body, training and labs have visible primary readings');
+  const historical=page.locator('[data-disclosure="cockpit-details"]');
+  assert.equal(await historical.evaluate(el=>el.open),false,'extensive evidence starts closed');
+  await historical.locator(':scope > summary').click();
+  assert.equal(await page.locator('[data-study-domain]:visible').count(),4,'all four detailed domains are reachable through the native disclosure');
   for(const [kind,keys] of [['data-dashboard-card',['water','protein','energy','activeEnergy','totalEnergy','steps','sleep']],['data-study-domain',['body','training','labs','protocols']]])for(const key of keys){const header=page.locator(`[${kind}="${key}"]>header`);await header.scrollIntoViewIfNeeded();const reachable=await header.evaluate(el=>{const r=el.getBoundingClientRect(),n=document.querySelector('#mobileNav').getBoundingClientRect();return r.height>0&&r.top>=0&&r.bottom<=n.top+1;});if(!reachable)throw new Error(`${config.label}/home: ${key} header cannot be reached above navigation`);}
   const clipped=await page.locator('.healthMetricValue strong,.healthMetricPeriod,.healthCoverage').evaluateAll(nodes=>nodes.filter(node=>node.scrollWidth>node.clientWidth+1).map(node=>node.textContent));assert.deepEqual(clipped,[],'metric value/date/coverage text cannot clip');
   await page.locator('.studyHeading').scrollIntoViewIfNeeded();

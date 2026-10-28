@@ -110,6 +110,7 @@ async function homeChecks(page,f,label){
   const model=await page.evaluate(async today=>{const{state}=await import('./src/core.js');const{healthDashboardModel}=await import('./src/health-dashboard-model.js');return healthDashboardModel(state.data,state.domainStatus,state.ui,today);},LANGUAGE_TODAY);
   for(const metric of model.metrics){const card=page.locator(`[data-dashboard-card="${metric.key}"]`);if(metric.value!=null)assert.equal(await card.locator('.healthMetricValue strong').innerText(),metric.value.toLocaleString('pt-BR',{minimumFractionDigits:metric.key==='sleep'?1:0,maximumFractionDigits:metric.key==='sleep'?1:0}));assert.ok((await card.locator('.healthCoverage').innerText()).includes(`${metric.count}/${metric.expectedDays}`),'coverage stays primary, not CSS-hidden');}
   if(f.kind==='empty')return;
+  await disclose(page,'cockpit-details');
   assert.equal(await page.locator('[data-disclosure="nutrition-plan-comparison"]').evaluate(el=>el.open),false);
   assert.match(await page.locator('.nutritionPlanTitle').innerText(),/Início de uso não informado/);
   await capture(page,`${label}-plan-collapsed`,'.nutritionPlanTitle');
