@@ -127,9 +127,10 @@ async function assertMetrics(page,fixture,ui={}){
 async function returnHome(page,width){
   const nav=width<=840?'#mobileNav':'#primaryNav';await page.locator(`${nav} [data-route="hoje"]`).click();
   await page.waitForURL('**/#hoje');await stableHome(page);
+  await openDetails(page,'[data-disclosure="cockpit-details"]');
 }
 async function visitAndReturn(page,width,route,from,expected){
-  if(from)await from.click();
+  if(from){await openDetails(page,'[data-disclosure="cockpit-details"]');await from.click();}
   else if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator(`#moreSheet [data-route="${route}"]`).click();}
   else await page.locator(`#primaryNav [data-route="${route}"]`).click();
   await page.waitForURL(`**/#${route}`);
