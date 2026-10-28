@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-27",
+  "updated_on": "2026-10-28",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,37 +50,62 @@
   },
   "current_package": {
     "id": "PKG-HEALTH-COCKPIT-006",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Reopen the rejected Home as a coherent health cockpit with dated answers, meaningful changes, review priorities and progressive source/detail access.",
     "task_ids": [
       "LTS-HEALTH-COCKPIT-UX-002"
     ],
     "candidate_build": "health-integrated-20261027.93",
-    "public_build": "health-integrated-20261027.92",
+    "public_build": "health-integrated-20261027.93",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Owner rejects .91 as scattered information and explicitly asks for direct app review and a health cockpit; this reopens product acceptance despite earlier technical checks.",
-      "Fresh authenticated .91 Home actually inspected: long source-selection prose and seven metric cards displace body, training and laboratory context. Original desktop and private approved mobile references reopened.",
-      "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending.",
-      "Published .92 manually inspected with real data; exact last-workout and laboratory-marker actions passed. The source flag reported_outside_reference was observed as raw technical copy in the original history. Candidate .93 translates only that importer annotation and boolean flags, preserving stored flags, original results and all free-form clinical text."
+      "Owner feedback rejecting scattered information was reopened and acted on after fresh authenticated .91 inspection and reopening the supplied references.",
+      "Five dated health domains, source-backed review priorities and compact body/training/laboratory readings now lead Home; seven original metrics, exact histories, source controls and day/period behavior remain accessible through native controls.",
+      "Normal PR418 promoted .92 at5d0bb585b619a198da39a1cea851c0043f1b3880. Fresh manual inspection found an importer code in a laboratory history; normal PR419 promoted the bounded human-copy correction as .93 at348222ed5c9e563a20fe559ea64cbda0ac61ad6c. Final runtime tree0c243564da635dd030b569f2758c0e8726c32753.",
+      "Final candidate 2115bc3fbc9445d23e53a78810c498bf3651538f: 11 completed successful workflows, including Integrated40611520470, Cockpit Experience40611520644, Dashboard40611520481 and cockpit-smoke40611520581. Extended repetitions remain explicitly pending and are not counted as passed: LTS Health calendar reports and local PDF 40611520619; LTS Health Isolated Preview 40611520584; LTS Health Functional Depth 40611520437. Exact .93 real-auth40611693026, deploy40611692991, public smoke40611762230 and homologation40611762076 passed.",
+      "Synthetic artifact12782907974 SHA25613da73e4a77bfb2b410eb1588f6446aee51ed2ceb28b9535139fb3d7edcd35c7 verified; all six full/sparse cases passed. Readable final393px opening and320px day captures inspected. Earlier exact .92 desktop, laboratory, metrics and sparse-body panels were inspected; the .93 Home assets are unchanged.",
+      "Exact authenticated public .93 inspected in Cloud Browser: build meta, five dated domains, seven original readings, 7-day default, closed native detail hierarchy and no page overflow confirmed. The affected laboratory history was reopened from Home and visually inspected: recognized importer flag is human-readable and the original annotated result/date remain intact. .92/identical Home paths were actually exercised through exact latest workout, laboratory marker, body, 7/90-day/day and source/native history controls. No records or source selections were changed; final tab returned to .93 Home.",
+      "Rendered regression verifies recognized importer flags have human copy, original censored precision and free-form source annotations remain literal, and input records do not mutate. Clinical/source calculations and write boundaries are unchanged.",
+      "Bounded cockpit implementation is verified. Global owner acceptance is not granted; water/source/original-history, exact lab proposal, ordinary genuine-form and physical-device dependencies remain independent."
     ],
-    "pending_evidence": [
-      "Candidate responsive visual inspection, normal publication and fresh exact-public authenticated review."
-    ]
+    "pending_evidence": [],
+    "completed_on": "2026-10-28"
   },
   "last_verified_release": {
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261027.91",
-    "main_commit": "b01de5d99d5f521124838104c7820238ea751f8a",
-    "runtime_promotion_commit": "d5cc8a8704a010e603827561417f14d3c2835aa5",
-    "published_on": "2026-10-27",
-    "verified_on": "2026-10-27",
-    "automated_runtime_and_responsive_status": "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected. Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91.",
-    "manual_exact_public_status": "fresh_manual_authenticated_public_91_verified; four Training tabs, real current session, source-backed graphs, older-session switching and exercise-history return inspected",
-    "manual_exact_public_verified_on": "2026-10-27",
-    "acceptance_note": "Owner rejects global completion. This bounded Training redesign does not prove original-history completeness, water restoration, ordinary-form persistence or physical-device acceptance.",
-    "real_auth_verification_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
-    "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/?v=20261027.93#hoje",
+    "build_id": "health-integrated-20261027.93",
+    "main_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "runtime_promotion_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "published_on": "2026-10-28",
+    "verified_on": "2026-10-28",
+    "verified_at_utc": "2026-10-28T00:57:58+00:00",
+    "automated_runtime_and_responsive_status": "Final candidate 2115bc3fbc9445d23e53a78810c498bf3651538f: 11 completed successful workflows, including Integrated40611520470, Cockpit Experience40611520644, Dashboard40611520481 and cockpit-smoke40611520581. Extended repetitions remain explicitly pending and are not counted as passed: LTS Health calendar reports and local PDF 40611520619; LTS Health Isolated Preview 40611520584; LTS Health Functional Depth 40611520437. Exact .93 real-auth40611693026, deploy40611692991, public smoke40611762230 and homologation40611762076 passed. Synthetic artifact12782907974 SHA25613da73e4a77bfb2b410eb1588f6446aee51ed2ceb28b9535139fb3d7edcd35c7 verified; all six full/sparse cases passed. Readable final393px opening and320px day captures inspected. Earlier exact .92 desktop, laboratory, metrics and sparse-body panels were inspected; the .93 Home assets are unchanged.",
+    "manual_exact_public_status": "fresh_manual_authenticated_public_93_verified",
+    "manual_exact_public_verified_on": "2026-10-28",
+    "manual_exact_public_evidence": "Exact authenticated public .93 inspected in Cloud Browser: build meta, five dated domains, seven original readings, 7-day default, closed native detail hierarchy and no page overflow confirmed. The affected laboratory history was reopened from Home and visually inspected: recognized importer flag is human-readable and the original annotated result/date remain intact. .92/identical Home paths were actually exercised through exact latest workout, laboratory marker, body, 7/90-day/day and source/native history controls. No records or source selections were changed; final tab returned to .93 Home.",
+    "acceptance_note": "Bounded cockpit implementation is verified. Global owner acceptance is not granted; water/source/original-history, exact lab proposal, ordinary genuine-form and physical-device dependencies remain independent.",
+    "real_auth_verification_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "verification_runtime_preparation": "Official Playwright v1.56.1 Noble runtime and existing protected one-time audit identity; no credentials or clinical values are published.",
+    "pending_validation_repetitions": [
+      {
+        "id": 40611520619,
+        "name": "LTS Health calendar reports and local PDF",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 40611520584,
+        "name": "LTS Health Isolated Preview",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 40611520437,
+        "name": "LTS Health Functional Depth",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ]
   },
   "tasks": [
     {
@@ -1834,7 +1859,8 @@
         "Completeness review and bounded historical-context persistence are verified privately; source display/status improvements are in the current candidate package. Overall delivery is not accepted.",
         "Further original-file reconciliation found and repaired omitted historical context/source text. Candidate qualifiers and receiver diagnostics remain in progress; owner acceptance is not inferred.",
         "Latest mobile report UX rejection is agent-actionable and reopens product delivery; physical-source dependencies remain separately tracked.",
-        "The .85 mobile report rejection was addressed in published .86 through a visually inspected compact reading and separate concise/full PDF exports. Exact runtime/source and real authenticated checks passed, without inferring owner acceptance."
+        "The .85 mobile report rejection was addressed in published .86 through a visually inspected compact reading and separate concise/full PDF exports. Exact runtime/source and real authenticated checks passed, without inferring owner acceptance.",
+        "Published .93 cockpit and human laboratory-flag copy are verified through actual authenticated public inspection and real-auth E2E. This closes only LTS-HEALTH-COCKPIT-UX-002; global owner acceptance and independent source/form/device dependencies remain open."
       ],
       "next_action": "Continue provider/source follow-up from existing proof and preserve separate clinical-source, ordinary-form and physical-device dependencies; do not repeat completed phone steps.",
       "blocker": "The rebuilt report has no new owner acceptance. Actual water continuity and physical-device acceptance remain unverified; existing native evidence is already available."
@@ -2210,7 +2236,7 @@
       "area": "Product experience",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Reopen the rejected Home as a coherent health cockpit with dated answers, meaningful changes, review priorities and progressive source/detail access.",
       "acceptance": [
@@ -2221,12 +2247,17 @@
         "Candidate checks, public deployment, authenticated exact-public review and original-data preservation are verified; owner acceptance remains separate."
       ],
       "evidence": [
-        "Owner rejects .91 as scattered information and explicitly asks for direct app review and a health cockpit; this reopens product acceptance despite earlier technical checks.",
-        "Fresh authenticated .91 Home actually inspected: long source-selection prose and seven metric cards displace body, training and laboratory context. Original desktop and private approved mobile references reopened.",
-        "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending.",
-        "Published .92 manually inspected with real data; exact last-workout and laboratory-marker actions passed. The source flag reported_outside_reference was observed as raw technical copy in the original history. Candidate .93 translates only that importer annotation and boolean flags, preserving stored flags, original results and all free-form clinical text."
+        "Owner feedback rejecting scattered information was reopened and acted on after fresh authenticated .91 inspection and reopening the supplied references.",
+        "Five dated health domains, source-backed review priorities and compact body/training/laboratory readings now lead Home; seven original metrics, exact histories, source controls and day/period behavior remain accessible through native controls.",
+        "Normal PR418 promoted .92 at5d0bb585b619a198da39a1cea851c0043f1b3880. Fresh manual inspection found an importer code in a laboratory history; normal PR419 promoted the bounded human-copy correction as .93 at348222ed5c9e563a20fe559ea64cbda0ac61ad6c. Final runtime tree0c243564da635dd030b569f2758c0e8726c32753.",
+        "Final candidate 2115bc3fbc9445d23e53a78810c498bf3651538f: 11 completed successful workflows, including Integrated40611520470, Cockpit Experience40611520644, Dashboard40611520481 and cockpit-smoke40611520581. Extended repetitions remain explicitly pending and are not counted as passed: LTS Health calendar reports and local PDF 40611520619; LTS Health Isolated Preview 40611520584; LTS Health Functional Depth 40611520437. Exact .93 real-auth40611693026, deploy40611692991, public smoke40611762230 and homologation40611762076 passed.",
+        "Synthetic artifact12782907974 SHA25613da73e4a77bfb2b410eb1588f6446aee51ed2ceb28b9535139fb3d7edcd35c7 verified; all six full/sparse cases passed. Readable final393px opening and320px day captures inspected. Earlier exact .92 desktop, laboratory, metrics and sparse-body panels were inspected; the .93 Home assets are unchanged.",
+        "Exact authenticated public .93 inspected in Cloud Browser: build meta, five dated domains, seven original readings, 7-day default, closed native detail hierarchy and no page overflow confirmed. The affected laboratory history was reopened from Home and visually inspected: recognized importer flag is human-readable and the original annotated result/date remain intact. .92/identical Home paths were actually exercised through exact latest workout, laboratory marker, body, 7/90-day/day and source/native history controls. No records or source selections were changed; final tab returned to .93 Home.",
+        "Rendered regression verifies recognized importer flags have human copy, original censored precision and free-form source annotations remain literal, and input records do not mutate. Clinical/source calculations and write boundaries are unchanged.",
+        "Bounded cockpit implementation is verified. Global owner acceptance is not granted; water/source/original-history, exact lab proposal, ordinary genuine-form and physical-device dependencies remain independent."
       ],
-      "next_action": "Inspect candidate responsive renders and exact record navigation, repair observed defects, publish normally, then inspect the real authenticated Home."
+      "next_action": "Keep independent water/source and owner/device acceptance tasks separate; reassess Home only from new concrete feedback or observed regressions.",
+      "completed_on": "2026-10-28"
     }
   ],
   "package_history": [
@@ -2902,18 +2933,40 @@
     }
   ],
   "latest_published_release": {
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
-    "build_id": "health-integrated-20261026.85",
-    "main_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
-    "runtime_promotion_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
-    "published_on": "2026-10-26",
-    "verified_on": "2026-10-26",
-    "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, source arithmetic, Chromium/WebKit calendar/PDF and deployment/public smokes passed; full actual-auth workflow 40403947325 passed",
-    "manual_exact_public_status": "exact_public_entry_verified; no authenticated Cloud Browser session; private render behavior verified through existing actual-auth CI",
-    "manual_exact_public_verified_on": "2026-10-26",
-    "acceptance_note": "Calendar daily extrema, source/coverage and common-scale registered primary-series charts are published and verified in screen/PDF. Seven Home cards and all records/writes are unchanged. The revised visual email received positive owner feedback; app-wide acceptance, water delivery, exact laboratory proposal, basal eligibility, ordinary production saving and physical-device verification remain separate open tasks.",
-    "real_auth_verification_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
-    "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/?v=20261027.93#hoje",
+    "build_id": "health-integrated-20261027.93",
+    "main_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "runtime_promotion_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "published_on": "2026-10-28",
+    "verified_on": "2026-10-28",
+    "verified_at_utc": "2026-10-28T00:57:58+00:00",
+    "automated_runtime_and_responsive_status": "Final candidate 2115bc3fbc9445d23e53a78810c498bf3651538f: 11 completed successful workflows, including Integrated40611520470, Cockpit Experience40611520644, Dashboard40611520481 and cockpit-smoke40611520581. Extended repetitions remain explicitly pending and are not counted as passed: LTS Health calendar reports and local PDF 40611520619; LTS Health Isolated Preview 40611520584; LTS Health Functional Depth 40611520437. Exact .93 real-auth40611693026, deploy40611692991, public smoke40611762230 and homologation40611762076 passed. Synthetic artifact12782907974 SHA25613da73e4a77bfb2b410eb1588f6446aee51ed2ceb28b9535139fb3d7edcd35c7 verified; all six full/sparse cases passed. Readable final393px opening and320px day captures inspected. Earlier exact .92 desktop, laboratory, metrics and sparse-body panels were inspected; the .93 Home assets are unchanged.",
+    "manual_exact_public_status": "fresh_manual_authenticated_public_93_verified",
+    "manual_exact_public_verified_on": "2026-10-28",
+    "manual_exact_public_evidence": "Exact authenticated public .93 inspected in Cloud Browser: build meta, five dated domains, seven original readings, 7-day default, closed native detail hierarchy and no page overflow confirmed. The affected laboratory history was reopened from Home and visually inspected: recognized importer flag is human-readable and the original annotated result/date remain intact. .92/identical Home paths were actually exercised through exact latest workout, laboratory marker, body, 7/90-day/day and source/native history controls. No records or source selections were changed; final tab returned to .93 Home.",
+    "acceptance_note": "Bounded cockpit implementation is verified. Global owner acceptance is not granted; water/source/original-history, exact lab proposal, ordinary genuine-form and physical-device dependencies remain independent.",
+    "real_auth_verification_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "verification_runtime_preparation": "Official Playwright v1.56.1 Noble runtime and existing protected one-time audit identity; no credentials or clinical values are published.",
+    "pending_validation_repetitions": [
+      {
+        "id": 40611520619,
+        "name": "LTS Health calendar reports and local PDF",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 40611520584,
+        "name": "LTS Health Isolated Preview",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 40611520437,
+        "name": "LTS Health Functional Depth",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ]
   },
   "release_history": [
     {
@@ -3027,29 +3080,84 @@
       "acceptance_note": "Calendar carbohydrate, fat and fiber now have values, coverage, origins, charts and daily evidence in week/month reports and local PDF. Independent current owner arithmetic agrees. Seven Home indicators, original records and write boundaries are preserved. Water restoration, original MFP history, exact fifteen-record lab proposal, basal validation, ordinary production forms and physical-device/owner acceptance remain open. Overall delivery is not accepted.",
       "real_auth_verification_commit": "d68110a4927b1090bd4892b90418a59a60daaf05",
       "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261027.91",
+      "main_commit": "b01de5d99d5f521124838104c7820238ea751f8a",
+      "runtime_promotion_commit": "d5cc8a8704a010e603827561417f14d3c2835aa5",
+      "published_on": "2026-10-27",
+      "verified_on": "2026-10-27",
+      "automated_runtime_and_responsive_status": "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected. Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91.",
+      "manual_exact_public_status": "fresh_manual_authenticated_public_91_verified; four Training tabs, real current session, source-backed graphs, older-session switching and exercise-history return inspected",
+      "manual_exact_public_verified_on": "2026-10-27",
+      "acceptance_note": "Owner rejects global completion. This bounded Training redesign does not prove original-history completeness, water restoration, ordinary-form persistence or physical-device acceptance.",
+      "real_auth_verification_commit": "f292ef0f8241f5ffa06493cb0874a5e8c8a5b0d4",
+      "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
+      "build_id": "health-integrated-20261026.85",
+      "main_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
+      "runtime_promotion_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
+      "published_on": "2026-10-26",
+      "verified_on": "2026-10-26",
+      "automated_runtime_and_responsive_status": "verified; twelve exact candidate workflows, source arithmetic, Chromium/WebKit calendar/PDF and deployment/public smokes passed; full actual-auth workflow 40403947325 passed",
+      "manual_exact_public_status": "exact_public_entry_verified; no authenticated Cloud Browser session; private render behavior verified through existing actual-auth CI",
+      "manual_exact_public_verified_on": "2026-10-26",
+      "acceptance_note": "Calendar daily extrema, source/coverage and common-scale registered primary-series charts are published and verified in screen/PDF. Seven Home cards and all records/writes are unchanged. The revised visual email received positive owner feedback; app-wide acceptance, water delivery, exact laboratory proposal, basal eligibility, ordinary production saving and physical-device verification remain separate open tasks.",
+      "real_auth_verification_commit": "d788abfc2888b46176c5d82c4a3e6266cad58ce0",
+      "verification_runtime_preparation": "Official Playwright v1.56.1 Noble image matches the pinned package; all authentication, assertions, encrypted artifacts, cleanup and permissions preserved through PR401."
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-10-27",
-    "source_main_commit": "588e25129692bae5ecb7e4ef4d83be4176619db8",
-    "source_tree": "6e3bba3a231da660cdc5a9b08d51138e1a8c33dd",
+    "reviewed_on": "2026-10-28",
+    "reviewed_at_utc": "2026-10-28T00:57:58+00:00",
+    "source_main_commit": "348222ed5c9e563a20fe559ea64cbda0ac61ad6c",
+    "source_tree": "0c243564da635dd030b569f2758c0e8726c32753",
     "reference_heads": {
       "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
       "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
     },
-    "runtime_build": "health-integrated-20261027.91",
-    "runtime_changed": false,
+    "runtime_build": "health-integrated-20261027.93",
+    "runtime_changed": true,
     "executable_task_count": 0,
     "open_external_issue_count": 0,
     "evidence": [
-      "Fresh authenticated public Training and Data/Sources inspected; existing recent workout and readable source coverage confirmed without a new record.",
-      "Latest main deployment40595462170, public smokes40595562480/40595562432 and Integrated40595462153, Visual40595462081 and Functional40595462009 all completed successfully.",
-      "Previously pending exact-candidate Isolated Preview40594408965 completed successfully; its result was read directly on restart.",
-      "Read-only owner-scoped private source audit confirms newer general receipts while water continuity remains absent; no zero consumption inferred.",
-      "Both existing support threads were re-read. No reply follows the already-recorded questions; no duplicate email or phone step was created.",
-      "Original-chat context search is now callable, but this attempt returned no exact laboratory proposal or independently recovered current Health request. Full original-chat reconciliation remains unproven."
+      "Owner feedback rejecting scattered information was reopened and acted on after fresh authenticated .91 inspection and reopening the supplied references.",
+      "Five dated health domains, source-backed review priorities and compact body/training/laboratory readings now lead Home; seven original metrics, exact histories, source controls and day/period behavior remain accessible through native controls.",
+      "Normal PR418 promoted .92 at5d0bb585b619a198da39a1cea851c0043f1b3880. Fresh manual inspection found an importer code in a laboratory history; normal PR419 promoted the bounded human-copy correction as .93 at348222ed5c9e563a20fe559ea64cbda0ac61ad6c. Final runtime tree0c243564da635dd030b569f2758c0e8726c32753.",
+      "Final candidate 2115bc3fbc9445d23e53a78810c498bf3651538f: 11 completed successful workflows, including Integrated40611520470, Cockpit Experience40611520644, Dashboard40611520481 and cockpit-smoke40611520581. Extended repetitions remain explicitly pending and are not counted as passed: LTS Health calendar reports and local PDF 40611520619; LTS Health Isolated Preview 40611520584; LTS Health Functional Depth 40611520437. Exact .93 real-auth40611693026, deploy40611692991, public smoke40611762230 and homologation40611762076 passed.",
+      "Synthetic artifact12782907974 SHA25613da73e4a77bfb2b410eb1588f6446aee51ed2ceb28b9535139fb3d7edcd35c7 verified; all six full/sparse cases passed. Readable final393px opening and320px day captures inspected. Earlier exact .92 desktop, laboratory, metrics and sparse-body panels were inspected; the .93 Home assets are unchanged.",
+      "Exact authenticated public .93 inspected in Cloud Browser: build meta, five dated domains, seven original readings, 7-day default, closed native detail hierarchy and no page overflow confirmed. The affected laboratory history was reopened from Home and visually inspected: recognized importer flag is human-readable and the original annotated result/date remain intact. .92/identical Home paths were actually exercised through exact latest workout, laboratory marker, body, 7/90-day/day and source/native history controls. No records or source selections were changed; final tab returned to .93 Home.",
+      "Rendered regression verifies recognized importer flags have human copy, original censored precision and free-form source annotations remain literal, and input records do not mutate. Clinical/source calculations and write boundaries are unchanged.",
+      "Bounded cockpit implementation is verified. Global owner acceptance is not granted; water/source/original-history, exact lab proposal, ordinary genuine-form and physical-device dependencies remain independent."
     ],
-    "acceptance_note": "No global owner or physical-device acceptance; preserved source/history, genuine ordinary-form and water dependencies remain open.",
-    "superseded_by": "PKG-HEALTH-COCKPIT-006"
-  }
+    "acceptance_note": "Bounded cockpit implementation is verified. Global owner acceptance is not granted; water/source/original-history, exact lab proposal, ordinary genuine-form and physical-device dependencies remain independent."
+  },
+  "continuity_review_history": [
+    {
+      "reviewed_on": "2026-10-27",
+      "source_main_commit": "588e25129692bae5ecb7e4ef4d83be4176619db8",
+      "source_tree": "6e3bba3a231da660cdc5a9b08d51138e1a8c33dd",
+      "reference_heads": {
+        "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
+        "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
+      },
+      "runtime_build": "health-integrated-20261027.91",
+      "runtime_changed": false,
+      "executable_task_count": 0,
+      "open_external_issue_count": 0,
+      "evidence": [
+        "Fresh authenticated public Training and Data/Sources inspected; existing recent workout and readable source coverage confirmed without a new record.",
+        "Latest main deployment40595462170, public smokes40595562480/40595562432 and Integrated40595462153, Visual40595462081 and Functional40595462009 all completed successfully.",
+        "Previously pending exact-candidate Isolated Preview40594408965 completed successfully; its result was read directly on restart.",
+        "Read-only owner-scoped private source audit confirms newer general receipts while water continuity remains absent; no zero consumption inferred.",
+        "Both existing support threads were re-read. No reply follows the already-recorded questions; no duplicate email or phone step was created.",
+        "Original-chat context search is now callable, but this attempt returned no exact laboratory proposal or independently recovered current Health request. Full original-chat reconciliation remains unproven."
+      ],
+      "acceptance_note": "No global owner or physical-device acceptance; preserved source/history, genuine ordinary-form and water dependencies remain open.",
+      "superseded_by": "PKG-HEALTH-COCKPIT-006"
+    }
+  ]
 }
