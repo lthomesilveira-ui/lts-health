@@ -52,6 +52,8 @@ async function stableHome(page){
     if(window.__qaStableRoot!==root){window.__qaStableRoot=root;window.__qaStableFrames=0;}
     return ++window.__qaStableFrames>=3;
   });
+  const cockpit=page.locator('[data-disclosure="cockpit-details"]');
+  if(!(await cockpit.evaluate(el=>el.open)))await cockpit.locator(':scope > summary').click();
 }
 
 try {

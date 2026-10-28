@@ -70,6 +70,8 @@ async function stableHome(page){
     if(window.__qaPlanRoot!==root){window.__qaPlanRoot=root;window.__qaPlanFrames=0;}
     return ++window.__qaPlanFrames>=3;
   });
+  const cockpit=page.locator('[data-disclosure="cockpit-details"]');
+  if(!(await cockpit.evaluate(el=>el.open)))await cockpit.locator(':scope > summary').click();
 }
 async function open(page,disclosure){const detail=page.locator(`[data-disclosure="${disclosure}"]`);if(!await detail.evaluate(el=>el.open))await detail.locator(':scope > summary').click();assert.equal(await detail.evaluate(el=>el.open),true);}
 async function selectPeriod(page,period){await page.locator('[data-dashboard-period]').selectOption(period);await stableHome(page);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),period);}

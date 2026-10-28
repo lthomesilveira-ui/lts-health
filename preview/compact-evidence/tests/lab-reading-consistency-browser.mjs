@@ -227,6 +227,8 @@ async function historyControls(page,fixture,label){
 async function homeProofConsistency(page,fixture,width,label){
   await navigate(page,'hoje',width);assert.equal(await page.locator('[data-dashboard-card]').count(),7,'Approved Home metric layout is unchanged');
   await page.locator('#dashboard-period').selectOption('all');await stable(page,'hoje');
+  const cockpit=page.locator('[data-disclosure="cockpit-details"]');
+  if(!(await cockpit.evaluate(el=>el.open)))await cockpit.locator(':scope > summary').click();
   for(const key of ['dashboard-other-labs','dashboard-historical-labs']){
     const details=page.locator(`[data-disclosure="${key}"]`);
     if(await details.count()&&!(await details.evaluate(el=>el.open)))await details.locator(':scope > summary').click();
