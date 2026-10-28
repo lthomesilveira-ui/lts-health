@@ -31,3 +31,7 @@
 @media(max-width:360px){.healthDashboard{padding:12px 8px 24px}.healthDashboard .studyHeading h1{font-size:25px}.healthCockpitBody dd{font-size:18px}.healthCockpitBody dt{font-size:10px}.healthCockpitPriorities article>div{display:block}.healthCockpitPriorities .healthCockpitAction{margin-top:2px}.healthCockpitSummaryCard{flex-basis:164px}}
 
 @media(max-width:360px){.healthDashboard .studyHeading>.healthControls{flex-wrap:nowrap!important;gap:8px!important}.healthDashboard .healthMode button{min-width:54px!important;padding-left:8px!important;padding-right:8px!important}.healthDashboard .healthPeriodControl select{min-width:124px!important;width:124px!important}}
+
+/* Day mode adds a Today action and a native date field. Give them a complete
+   row on narrow phones instead of squeezing them beside the mode switch. */
+@media(max-width:360px){.healthDashboard .studyHeading>.healthControls:has(.healthDayControl){flex-wrap:wrap!important}.healthDashboard .healthDayControl{width:100%;min-width:0;justify-content:space-between}.healthDashboard .healthDayControl label{min-width:0}.healthDashboard .healthDayControl input{max-width:100%}}

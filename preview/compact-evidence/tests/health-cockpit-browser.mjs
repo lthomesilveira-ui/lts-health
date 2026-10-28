@@ -14,6 +14,8 @@ async function settled(page){
 }
 async function quality(page){
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'page fits width');
+ const geometry=await page.locator('[data-health-dashboard]').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth}));
+ assert.ok(geometry.scroll<=geometry.width+1,`dashboard fits its own content width: ${JSON.stringify(geometry)}`);
  const defects=await page.locator('[data-health-dashboard]').evaluate(root=>[...root.querySelectorAll('button,input,select,summary,[role="button"]')].filter(el=>el.checkVisibility({checkVisibilityCSS:true})&&!el.disabled).flatMap(el=>{const b=el.getBoundingClientRect();return b.width>=43.5&&b.height>=43.5?[]:[{text:el.textContent.trim().slice(0,60),width:b.width,height:b.height}];}));
  assert.deepEqual(defects,[],'all visible actions have a 44px target');
  const clipped=await page.locator('.healthCockpitSummaryCard,.healthCockpitPanel,.healthMetric').evaluateAll(nodes=>nodes.filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>({class:el.className,text:el.textContent.slice(0,80)})));
@@ -40,7 +42,7 @@ try{
   if(width>840){const boxes=await page.locator('[data-cockpit-summary]').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().top));assert.ok(Math.max(...boxes)-Math.min(...boxes)<2,'five domains share the first row');}
   else {const rail=page.locator('.healthCockpitSummary');assert.ok(await rail.evaluate(el=>el.scrollWidth>el.clientWidth),'mobile panorama is a horizontal rail, not a long stack');await quality(page);}
   await page.locator('[data-disclosure="cockpit-details"]>summary').click();assert.ok(await page.locator('.healthContextGrid').isVisible());assert.ok(await page.locator('[data-dashboard-change-domain="body"]').isVisible());await quality(page);
-  await page.locator('[data-dashboard-mode="day"]').click();await settled(page);assert.equal(await page.locator('[data-dashboard-card]').count(),7);await quality(page);
+  await page.locator('[data-dashboard-mode="day"]').click();await settled(page);assert.equal(await page.locator('[data-dashboard-card]').count(),7);await quality(page);await page.locator('.studyHeading').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${width}-${sparse?'sparse':'full'}-day.png`});
   await page.locator('[data-dashboard-mode="period"]').click();await settled(page);await page.locator('#dashboard-period').selectOption('90');await settled(page);await quality(page);
   const source=page.locator('[data-disclosure="dashboard-metric-protein"]>summary');await source.click();assert.ok(await page.locator('[data-dashboard-source="protein"]').isVisible(),'source choice remains reachable');
   const workout=page.locator('[data-cockpit-panel="training"] [data-home-workout]');if(await workout.count()){const id=await workout.getAttribute('data-home-workout');await workout.click();await page.locator('#productTrainingTitle').waitFor();assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.openWorkout;}),id,'workout action opens the exact selected session');}

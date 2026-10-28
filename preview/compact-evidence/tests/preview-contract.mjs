@@ -30,7 +30,7 @@ const manifest={
     "evolution.css": "1ec73c327865ecbe99acc8ccc9fd1816dc288ccc9f492085feb72561d7d6f63e",
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
     "health-auto-export.css": "de23cf04121625dfa1ce4dd60039708903e0cc8348e27e11099e51441433cb6a",
-    "health-cockpit.css": "d2fd682f5cc15c4778b608e4684300e10b134bb18658c0d006b48dcaf39944a2",
+    "health-cockpit.css": "4c920c86ed45d862bfa11894f46af1c6ab39bd201cd79430f15baf0f13c03f29",
     "health-dashboard.css": "09ff060fc1f7311f3d7e17b90dcff4e42973f45400a32b924c6557887661f96c",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
     "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
