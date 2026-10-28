@@ -167,6 +167,7 @@ async function capture(page,name){
 async function probeStates(page,f){
   for(const [state,status,rows] of [['loading','loading',f.data.nutritionPlans],['error','error',f.data.nutritionPlans],['empty','ready',[]],['invalid','ready',[f.data.nutritionPlans[0],{...f.data.nutritionPlans[1],checksum:'invalid'}]]]){
     await page.evaluate(async({status,rows})=>{const {state}=await import('./src/core.js');const {renderHealthDashboard}=await import('./src/health-dashboard.js');state.domainStatus.nutritionPlans=status;state.data.nutritionPlans=rows;document.querySelector('#screenHost').innerHTML=renderHealthDashboard(state.data,state.domainStatus,state.ui);window.__qaPlanProbeCard=document.querySelector('[data-nutrition-plan]');},{status,rows});
+    await open(page,'cockpit-details');
     await page.waitForSelector(`[data-nutrition-plan][data-plan-state="${state}"]`);
     // The compatibility controller sees these changed inputs on its next 250 ms
     // poll. Await that real replacement before screenshots, not just the injected

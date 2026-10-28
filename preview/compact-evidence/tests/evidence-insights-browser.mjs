@@ -28,6 +28,8 @@ async function stableHome(page){
     if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
     return ++window.__gateHomeStableFrames>=3;
   });
+  const details=page.locator('[data-disclosure="cockpit-details"]');
+  if(await details.count()&&!await details.evaluate(el=>el.open))await details.locator(':scope > summary').click();
 }
 // Route rendering and the compatibility controller can replace the first DOM.
 // Require a stable live root and geometry beyond its 250 ms settling cycle.

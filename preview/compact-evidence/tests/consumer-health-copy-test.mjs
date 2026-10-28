@@ -62,6 +62,14 @@ state.data.labs=[{source_record_id:'synthetic-old-lab',collection_date:f.date(40
 const labHome=renderHealthDashboard(state.data,state.domainStatus,{},f.today);
 assert.match(labHome,/Última coleta:/);assert.match(labHome,/fora do período/);assert.match(labHome,/&lt; 0,004 mg\/L/);
 assert.match(renderProductLabs(),/&lt; 0,004 mg\/L/,'clinical censor and exact written precision survive');
+// An observed importer code must read as a report annotation, while the stored
+// flag and all clinical text/precision remain intact.
+state.data.labs[0].flag='reported_outside_reference';
+const flagBefore=structuredClone(state.data),flagHistory=renderProductLabs();
+assert.match(flagHistory,/Fora da referência no laudo/);assert.doesNotMatch(flagHistory,/reported_outside_reference/);assert.match(flagHistory,/&lt; 0,004 mg\/L/);assert.deepEqual(state.data,flagBefore);
+state.data.labs[0].flag='Observação original: conferir método e nota (1).';
+assert.ok(renderProductLabs().includes(state.data.labs[0].flag),'free-form source annotations stay literal');
+state.data.labs[0].flag=true;assert.match(renderProductLabs(),/Sinalizado no laudo/);delete state.data.labs[0].flag;
 const note='Nota clínica original: payload e source_record_id são palavras citadas; 8+2 repetições.';
 state.data.exercises[0].notes=note;state.ui.openWorkout=state.data.workouts[0].source_record_id;state.ui.productTrainingView='exercises';
 const training=renderProductTraining();
