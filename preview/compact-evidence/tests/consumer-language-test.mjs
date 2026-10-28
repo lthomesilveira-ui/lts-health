@@ -91,8 +91,8 @@ assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7,'approved seven-
 const dashboard=healthDashboardModel(f.data,f.status,{},LANGUAGE_TODAY);
 for(const metric of dashboard.metrics){assert.ok(primary.includes(`${metric.count}/${dashboard.bounds.days}`),`${metric.key}: n/N coverage stays visible`);assert.ok(html.includes(`<strong>${value(metric.value,metric.key==='sleep'?1:0)}</strong>`),`${metric.key}: numeric value is preserved`);}
 assert.ok(primary.includes(label(dashboard.bounds.start))&&primary.includes(label(dashboard.bounds.end)),'selected calendar is visible');
-assert.ok(primary.includes('<4 g/dL')&&primary.includes('1,2345 g/dL'),'censored and exact original lab values remain readable');
-assert.match(primary,/Início de uso não informado|início.*não.*informado/i,'document receipt is not treatment start');
+assert.ok(all.includes('<4 g/dL')&&all.includes('1,2345 g/dL'),'censored and exact original lab values remain readable in detailed history');
+assert.match(all,/Início de uso não informado|início.*não.*informado/i,'document receipt is not treatment start');
 assert.ok(all.includes(LANGUAGE_NOTE));assert.ok(!primary.includes(LANGUAGE_NOTE),'original documentary notes are preserved under expansion');
 assert.doesNotMatch(primary,/(?:[↑↓]|Diferença registrada:).*3[,.]7655/,'censored lab result cannot become exact comparison');
 setup(f,{productTrainingView:'exercises'});html=renderers.treinos();assert.ok(htmlText(html,{expanded:true}).includes(LANGUAGE_NOTE),'original exercise and set notes remain intact');assert.ok(!htmlText(html).includes(LANGUAGE_NOTE));assert.match(htmlText(html),/42,5|42\.5/);assert.match(htmlText(html),/8 \+ 2 assistidas/,'raw repetition qualification is not converted to numeric reps');

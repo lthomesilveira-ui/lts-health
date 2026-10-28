@@ -1,3 +1,5 @@
+Atualização de autoridade — 27/10/2026: o proprietário rejeitou a .91 como informações espalhadas. A abertura deve responder estado conhecido, mudança e pontos para acompanhar, com cinco domínios datados e ações para seus históricos. Texto de sincronização, algoritmo de seleção de fontes e comparações extensas são detalhes secundários. As sete métricas diárias, período/dia, escolhas explícitas de origem e limites dos dados continuam íntegros. Esta exigência substitui prioridades anteriores que faziam contagens e linguagem operacional dominar a Home.
+
 # LTS Health — arquitetura canônica de produto
 
 Status: fonte de verdade de produto. Este documento registra o que o LTS Health precisa resolver, como as áreas se relacionam e quais perguntas cada tela deve responder. Não contém dados pessoais de saúde.

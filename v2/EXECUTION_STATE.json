@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/TRAINING_VISUAL_20261027.md"
+    "latest_release": "v2/releases/HEALTH_COCKPIT_20261027.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -49,25 +49,23 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-TRAINING-VISUAL-005",
-    "status": "done",
-    "goal": "Replace the rejected text-heavy Training area with a readable source-backed visual session report and aligned exercise detail.",
+    "id": "PKG-HEALTH-COCKPIT-006",
+    "status": "in_progress",
+    "goal": "Reopen the rejected Home as a coherent health cockpit with dated answers, meaningful changes, review priorities and progressive source/detail access.",
     "task_ids": [
-      "LTS-TRAINING-VISUAL-001"
+      "LTS-HEALTH-COCKPIT-UX-002"
     ],
-    "candidate_build": "health-integrated-20261027.91",
+    "candidate_build": "health-integrated-20261027.92",
     "public_build": "health-integrated-20261027.91",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Fresh authenticated .90 Training screen and approved original private visual reference were opened and inspected.",
-      "Candidate restores compact session identity, source-backed group/session charts and aligned sets; local original-text/nonmutation/source-failure checks pass.",
-      "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected.",
-      "Normal PR414 merge d5cc8a8704a010e603827561417f14d3c2835aa5, deploy40594746820 and both public smokes40594802510/40594802593 pass. Fresh manual authenticated exact public .91 inspected in all four Training tabs; chart-driven session switching, exercise-history action and return tested. Existing records preserved; no physical-iPhone claim.",
-      "Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending.",
-      "Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91."
+      "Owner rejects .91 as scattered information and explicitly asks for direct app review and a health cockpit; this reopens product acceptance despite earlier technical checks.",
+      "Fresh authenticated .91 Home actually inspected: long source-selection prose and seven metric cards displace body, training and laboratory context. Original desktop and private approved mobile references reopened.",
+      "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending."
     ],
-    "pending_evidence": [],
-    "acceptance_note": "Bounded implementation verified; global and subjective owner acceptance not granted. Source/history/water dependencies remain open."
+    "pending_evidence": [
+      "Candidate responsive visual inspection, normal publication and fresh exact-public authenticated review."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
@@ -2205,6 +2203,28 @@
       ],
       "next_action": "Preserve actual SVG date spacing and every daily plotted point; a future visual defect or owner rejection reopens the affected acceptance.",
       "blocker": null
+    },
+    {
+      "id": "LTS-HEALTH-COCKPIT-UX-002",
+      "area": "Product experience",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Reopen the rejected Home as a coherent health cockpit with dated answers, meaningful changes, review priorities and progressive source/detail access.",
+      "acceptance": [
+        "Five health domains present actual readings with dates and no unsupported wellness score or clinical interpretation.",
+        "First-screen source algorithms and repeated operational prose move to native details; seven daily readings and explicit source choices remain fully usable.",
+        "Body, training and laboratory panels provide exact-history actions, original result qualifications and strict unavailable/ambiguous/as-of behavior.",
+        "Desktop, 393x650 and 320 layouts have legible charts and values, 44px actions, no page clipping and accessible details; synthetic evidence is actually inspected.",
+        "Candidate checks, public deployment, authenticated exact-public review and original-data preservation are verified; owner acceptance remains separate."
+      ],
+      "evidence": [
+        "Owner rejects .91 as scattered information and explicitly asks for direct app review and a health cockpit; this reopens product acceptance despite earlier technical checks.",
+        "Fresh authenticated .91 Home actually inspected: long source-selection prose and seven metric cards displace body, training and laboratory context. Original desktop and private approved mobile references reopened.",
+        "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending."
+      ],
+      "next_action": "Inspect candidate responsive renders and exact record navigation, repair observed defects, publish normally, then inspect the real authenticated Home."
     }
   ],
   "package_history": [
@@ -2856,6 +2876,27 @@
       "nonblocking_rechecks": [
         "Isolated Preview40430182554 was still installing its pinned browser at this checkpoint; no success is claimed for that preparation."
       ]
+    },
+    {
+      "id": "PKG-TRAINING-VISUAL-005",
+      "status": "done",
+      "goal": "Replace the rejected text-heavy Training area with a readable source-backed visual session report and aligned exercise detail.",
+      "task_ids": [
+        "LTS-TRAINING-VISUAL-001"
+      ],
+      "candidate_build": "health-integrated-20261027.91",
+      "public_build": "health-integrated-20261027.91",
+      "owner_acceptance": "not_granted",
+      "completed_evidence": [
+        "Fresh authenticated .90 Training screen and approved original private visual reference were opened and inspected.",
+        "Candidate restores compact session identity, source-backed group/session charts and aligned sets; local original-text/nonmutation/source-failure checks pass.",
+        "Final candidate7867dc42ff07402675b9988d613032f4b68e24dd: Visual40594408858 (84 captures/failures none), Integrated40594408891, Cockpit40594408940, Dashboard40594408926 and source checks pass. Artifact12776010403 SHA2565191a92f8682dbce645e7f287209ef44e2a136a9b0505b1ceab132c4737e28b2 verified and final narrow/desktop captures actually inspected.",
+        "Normal PR414 merge d5cc8a8704a010e603827561417f14d3c2835aa5, deploy40594746820 and both public smokes40594802510/40594802593 pass. Fresh manual authenticated exact public .91 inspected in all four Training tabs; chart-driven session switching, exercise-history action and return tested. Existing records preserved; no physical-iPhone claim.",
+        "Automated real-auth40594746938 fails its obsolete 120px footer-action assertion after the intended move to a contained accessible 44px header action. Actual public DOM confirms44x44, header containment, accessible name and sets below. Update only that assertion, preserving linkage/source/overflow checks; automated repetition remains pending, not passed. Broader Functional/Calendar/Isolated repetitions are explicitly pending.",
+        "Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 was re-read on the continuity restart and completed successfully for exact candidate7867dc42ff07402675b9988d613032f4b68e24dd. Runtime assets remain the exact manually inspected .91."
+      ],
+      "pending_evidence": [],
+      "acceptance_note": "Bounded implementation verified; global and subjective owner acceptance not granted. Source/history/water dependencies remain open."
     }
   ],
   "latest_published_release": {
@@ -3006,6 +3047,7 @@
       "Both existing support threads were re-read. No reply follows the already-recorded questions; no duplicate email or phone step was created.",
       "Original-chat context search is now callable, but this attempt returned no exact laboratory proposal or independently recovered current Health request. Full original-chat reconciliation remains unproven."
     ],
-    "acceptance_note": "No global owner or physical-device acceptance; preserved source/history, genuine ordinary-form and water dependencies remain open."
+    "acceptance_note": "No global owner or physical-device acceptance; preserved source/history, genuine ordinary-form and water dependencies remain open.",
+    "superseded_by": "PKG-HEALTH-COCKPIT-006"
   }
 }

@@ -167,6 +167,7 @@ try{
       await quality(page,`${name}/default`);
       if(width<=840){assert.deepEqual(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.map(node=>node.dataset.route)),['hoje','treinos','evolucao','mais']);assert.ok(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.every(node=>node.getBoundingClientRect().height>=44)));}
       await capture(page,`${name}-period-7-top`);
+      await openDetails(page,'[data-disclosure="cockpit-details"]');
       for(const [section,selector] of [['metrics','.healthMetricGrid'],['guidance','.healthGuidance'],['training','[data-study-domain="training"]'],['labs','[data-study-domain="labs"]'],['protocols','[data-study-domain="protocols"]'],['body','[data-study-domain="body"]']])await capture(page,`${name}-${section}`,selector);
       const training=page.locator('[data-study-domain="training"]'),laboratory=page.locator('[data-study-domain="labs"]'),protocols=page.locator('[data-study-domain="protocols"]');
       assert.deepEqual(await training.locator('.healthTrainingCounts strong').evaluateAll(nodes=>nodes.map(node=>Number(node.firstChild.textContent.trim()))),sparse?[0,0]:[3,2]);
