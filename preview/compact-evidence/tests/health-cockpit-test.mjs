@@ -21,6 +21,9 @@ assert.deepEqual(f,before,'presentation must not mutate originals or UI selectio
 f=changesFixture();f.data.body.push({...f.data.body[1],source_record_id:'ambiguous-newest'});html=render(f);
 assert.doesNotMatch(html,/79,0 kg|diminuiu 1 kg/,'an ambiguous newest assessment never becomes a current value or trend');
 assert.match(html,/mais de uma avaliação/);
+assert.match(html,/Conferir avaliações/,'ambiguous body records are not mislabelled as an absent assessment');
+f=changesFixture();f.data.workouts=[{...f.data.workouts[1],duration_minutes:40},{...f.data.workouts[1],duration_minutes:80}];html=render(f);
+assert.match(html,/Conferir sessões/,'conflicting existing sessions are distinguished from no workout');assert.doesNotMatch(html,/0 treinos|Nenhum treino registrado neste período/);
 f=changesFixture();f.status.body='error';f.status.labs='error';f.status.workouts='error';html=render(f);
 assert.doesNotMatch(html,/79,0 kg|34,1 kg|2 treinos|workout-1/,'failed domains cannot retain stale current readings or drilldowns');
 assert.match(html,/Os exames não carregaram/);assert.match(html,/Os treinos não carregaram/);

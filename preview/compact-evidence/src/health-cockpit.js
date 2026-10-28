@@ -12,6 +12,7 @@ const icon=key=>`<span class="healthCockpitIcon ${key}" aria-hidden="true"><svg 
 const action=(route,label,attrs='')=>`<button type="button" class="healthCockpitAction" data-route="${route}" ${attrs}>${esc(label)}${arrow}</button>`;
 const unavailable=text=>`<p class="healthCockpitEmpty">${esc(text)}</p>`;
 const flagged=metric=>metric?.source&&['candidate','held'].includes(metric.source.status);
+const review=metric=>flagged(metric)?'Em conferência':metric?.availability==='partial'?'Leitura parcial':'';
 const actualMetric=m=>m&&!['error','unavailable'].includes(m.availability)&&number(m.value)!=null;
 const periodLabel=d=>d.mode==='day'?'neste dia':'no período';
 const changeLabel=(m,d)=>{
@@ -23,17 +24,17 @@ const changeLabel=(m,d)=>{
 };
 
 function summaryCard(key,route,label,reading,context,detail,caution=false){
- return `<button type="button" class="healthCockpitSummaryCard ${key}" data-route="${route}" data-cockpit-summary="${key}"><span class="healthCockpitSummaryLabel">${icon(key)}${esc(label)}</span><strong>${esc(reading)}</strong><span class="healthCockpitSummaryContext">${esc(context)}</span>${detail?`<small>${esc(detail)}</small>`:''}${caution?'<span class="healthCockpitReview">Em conferência</span>':''}</button>`;
+ return `<button type="button" class="healthCockpitSummaryCard ${key}" data-route="${route}" data-cockpit-summary="${key}"><span class="healthCockpitSummaryLabel">${icon(key)}${esc(label)}</span><strong>${esc(reading)}</strong><span class="healthCockpitSummaryContext">${esc(context)}</span>${detail?`<small>${esc(detail)}</small>`:''}${caution?`<span class="healthCockpitReview">${esc(typeof caution==='string'?caution:'Em conferência')}</span>`:''}</button>`;
 }
 
 function overview(d,c,b){
  const metrics=d.metricsByKey,body=b.available&&!b.latestKnownAmbiguous?b.latest:null,t=c.training,l=c.labs,s=l.latestCollectionSummary||{},food=metrics.protein,sleep=metrics.sleep;
  const attention=l.available?number(s.attention):null;
  return `<nav class="healthCockpitSummary" aria-label="Panorama da sua saúde">${[
-  summaryCard('body','bio','Corpo',body?value(body.weight_kg,'kg',1):'Sem avaliação',body?`Avaliação de ${date(body.date)}`:b.available?'Sem avaliação até esta data':'Não carregou',body?`Gordura ${number(body.body_fat_pct)!=null?value(body.body_fat_pct,'%',1):value(body.fat_mass_kg,'kg',1)} · Músculo ${value(body.skeletal_muscle_mass_kg,'kg',1)}`:null),
-  summaryCard('training','treinos','Treinos',t.available?count(t.sessions||0,'treino','treinos'):'Indisponível',periodLabel(d),t.latest?`Último ${date(t.latest.date)}`:t.available?'Nenhuma sessão até esta data':null),
-  summaryCard('nutrition','nutricao','Alimentação',actualMetric(food)?value(food.value,d.mode==='day'?'g':'g/dia'):'Sem informação','Proteína registrada',[actualMetric(metrics.energy)?value(metrics.energy.value,d.mode==='day'?'kcal':'kcal/dia'):null,changeLabel(food,d)].filter(Boolean).join(' · '),flagged(food)),
-  summaryCard('sleep','analise','Sono',actualMetric(sleep)?value(sleep.value,'h',1):'Sem informação',d.mode==='day'?'Neste dia':'Média por noite registrada',changeLabel(sleep,d)||(sleep.count?count(sleep.count,'dia com registro','dias com registro'):null),flagged(sleep)),
+  summaryCard('body','bio','Corpo',body?value(body.weight_kg,'kg',1):b.latestKnownAmbiguous?'Conferir avaliações':b.available?'Sem avaliação':'Indisponível',body?`Avaliação de ${date(body.date)}`:b.latestKnownAmbiguous?'Mais de uma avaliação na última data':b.available?'Sem avaliação até esta data':'Não carregou',body?`Gordura ${number(body.body_fat_pct)!=null?value(body.body_fat_pct,'%',1):value(body.fat_mass_kg,'kg',1)} · Músculo ${value(body.skeletal_muscle_mass_kg,'kg',1)}`:null),
+  summaryCard('training','treinos','Treinos',t.available?(t.sessions===0&&t.partial?'Conferir sessões':count(t.sessions||0,'treino','treinos')):'Indisponível',periodLabel(d),t.latest?`Último ${date(t.latest.date)}`:t.partial?'Resumo em conferência':t.available?'Nenhuma sessão até esta data':null,t.partial?'Leitura parcial':''),
+  summaryCard('nutrition','nutricao','Alimentação',actualMetric(food)?value(food.value,d.mode==='day'?'g':'g/dia'):'Sem informação','Proteína registrada',[actualMetric(metrics.energy)?value(metrics.energy.value,d.mode==='day'?'kcal':'kcal/dia'):null,changeLabel(food,d)].filter(Boolean).join(' · '),review(food)),
+  summaryCard('sleep','analise','Sono',actualMetric(sleep)?value(sleep.value,'h',1):'Sem informação',d.mode==='day'?'Neste dia':'Média por noite registrada',changeLabel(sleep,d)||(sleep.count?count(sleep.count,'dia com registro','dias com registro'):null),review(sleep)),
   summaryCard('labs','saude','Exames',attention!=null?count(attention,'sinalizado','sinalizados'):l.available?'Sem coleta':'Indisponível',l.latestCollectionDate?`Coleta de ${date(l.latestCollectionDate)}`:'Até a data selecionada',attention!=null?(s.unclassified?`${s.unclassified} sem faixa classificada`:'Pelas referências do laudo'):null)
  ].join('')}</nav>`;
 }
@@ -63,7 +64,7 @@ function trainingChart(t,d){
 
 function trainingPanel(t,d){
  const w=t.latest;
- return `<article class="healthCockpitPanel training" data-cockpit-panel="training"><header>${icon('training')}<div><h2>Seu ritmo de treino</h2><p>${d.mode==='day'?'Na data selecionada':'No período selecionado'}</p></div></header>${!t.available?unavailable('Os treinos não carregaram.'):t.sessions?`<div class="healthCockpitTrainingTotal"><strong>${t.sessions}</strong><span>${t.sessions===1?'treino registrado':'treinos registrados'}${number(t.recordedMinutes)!=null?`<small>${value(t.recordedMinutes,'min')} com duração informada</small>`:''}</span></div>${trainingChart(t,d)}`:unavailable('Nenhum treino registrado neste período.')}${w?`<div class="healthCockpitLastSession"><span>Último treino · ${date(w.date)}</span><strong>${esc(w.workout_type||w.type||'Treino registrado')}</strong><small>${w.exerciseCount!=null?count(w.exerciseCount,'exercício','exercícios'):''}${w.setCount!=null?` · ${count(w.setCount,'série','séries')}`:''}${w.inPeriod===false?' · anterior ao período':''}</small></div>${action('treinos','Abrir último treino',`data-home-workout="${esc(w.source_record_id||w.sourceRecordId||w.key)}"`)}`:action('treinos','Ver histórico de treinos')}</article>`;
+ return `<article class="healthCockpitPanel training" data-cockpit-panel="training"><header>${icon('training')}<div><h2>Seu ritmo de treino</h2><p>${d.mode==='day'?'Na data selecionada':'No período selecionado'}</p></div></header>${!t.available?unavailable('Os treinos não carregaram.'):t.sessions?`<div class="healthCockpitTrainingTotal"><strong>${t.sessions}</strong><span>${t.sessions===1?'treino registrado':'treinos registrados'}${number(t.recordedMinutes)!=null?`<small>${value(t.recordedMinutes,'min')} com duração informada</small>`:''}</span></div>${trainingChart(t,d)}`:unavailable(t.partial?'O resumo deste período precisa ser conferido.':'Nenhum treino registrado neste período.')}${t.partial||t.detailsPartial?'<p class="healthCockpitNote">Parte do histórico precisa de conferência. Os detalhes disponíveis estão preservados.</p>':''}${w?`<div class="healthCockpitLastSession"><span>Último treino · ${date(w.date)}</span><strong>${esc(w.workout_type||w.type||'Treino registrado')}</strong><small>${w.exerciseCount!=null?count(w.exerciseCount,'exercício','exercícios'):''}${w.setCount!=null?` · ${count(w.setCount,'série','séries')}`:''}${w.inPeriod===false?' · anterior ao período':''}</small></div>${action('treinos','Abrir último treino',`data-home-workout="${esc(w.source_record_id||w.sourceRecordId||w.key)}"`)}`:action('treinos','Ver histórico de treinos')}</article>`;
 }
 
 function labPanel(l,labAction,labValue){
