@@ -193,6 +193,12 @@ export function labsModel(){
   return{allRows,rows,bounds,groups,ranked,item,cohort,latestRows,latest,lastDate,period,recent,history,matches,asOf};
 }
 const header=()=>`<header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1 tabindex="-1" id="productLabsTitle">Exames</h1><p>Seus resultados, referências e coletas anteriores.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>`;
+// Translate the importer flag without changing its stored value or free-form source text.
+function labFlagText(flag){
+  if(flag===true)return 'Sinalizado no laudo';
+  const raw=String(flag??'');
+  return raw.trim()==='reported_outside_reference'?'Fora da referência no laudo':raw;
+}
 function resultMeta(row){return [origin(row)||'Origem não informada',unit(row)||'Unidade não informada',row.reference_range?`Referência: ${row.reference_range}`:'Referência não informada',method(row)?`Método: ${method(row)}`:''].filter(Boolean).join(' · ');}
 
 function collectionOverview(rows,identityConflicts=new Set()){
@@ -228,7 +234,7 @@ export function renderProductLabs(){
       <p class="ltsDepthNote">${m.recent.length} pontos exibidos de ${c.all.length} resultados desta série. Os demais resultados permanecem no histórico, com suas notas, limites e referências originais. A janela usa o período de Exames; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>
     </section>
 
-    <section class="ltsSection ltsLabsHistory" id="productLabsHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2 tabindex="-1">Histórico completo do marcador</h2></div><small>Todas as origens e unidades</small></div><div class="ltsLabsHistoryList" data-lab-history-total="${m.history.total}">${m.history.rows.map(row=>`<article class="ltsLabsHistoryRow"><time>${esc(fmtDate(row.collection_date))}</time><div><b>${esc(labResultText(row))}</b><small>${esc(resultMeta(row))}</small></div>${row.flag?`<span class="ltsRecordFlag" title="Sinalização transcrita da fonte">${esc(row.flag)}</span>`:''}</article>`).join('')}</div>${pager(m.history,'productLabPage')}</section>
+    <section class="ltsSection ltsLabsHistory" id="productLabsHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2 tabindex="-1">Histórico completo do marcador</h2></div><small>Todas as origens e unidades</small></div><div class="ltsLabsHistoryList" data-lab-history-total="${m.history.total}">${m.history.rows.map(row=>`<article class="ltsLabsHistoryRow"><time>${esc(fmtDate(row.collection_date))}</time><div><b>${esc(labResultText(row))}</b><small>${esc(resultMeta(row))}</small></div>${row.flag?`<span class="ltsRecordFlag" title="Sinalização transcrita da fonte">${esc(labFlagText(row.flag))}</span>`:''}</article>`).join('')}</div>${pager(m.history,'productLabPage')}</section>
     ${collectionOverview(m.rows,m.item.group.identityConflicts)}
     <section class="ltsLabsHero"><div class="ltsLabsHeroTop"><div><span>${esc(group.label)}</span><strong>${esc(latestValue)}</strong><small>${esc(m.lastDate?fmtDate(m.lastDate):'Data não informada')} · ${esc(c.origin||'Origem não informada')}</small></div><span class="ltsLabsGlyph" aria-hidden="true">✦</span></div><div class="ltsLabsHeroContext"><div><span>Último resultado desta origem</span><b>${m.latest?'Resultado como aparece no laudo.':'Nenhum resultado foi escolhido automaticamente.'}</b></div><div><span>Referência registrada</span><b>${esc(m.latest?.reference_range||'Consulte o contexto de cada resultado no histórico.')}</b></div></div></section>
 

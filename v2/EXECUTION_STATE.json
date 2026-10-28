@@ -55,13 +55,14 @@
     "task_ids": [
       "LTS-HEALTH-COCKPIT-UX-002"
     ],
-    "candidate_build": "health-integrated-20261027.92",
-    "public_build": "health-integrated-20261027.91",
+    "candidate_build": "health-integrated-20261027.93",
+    "public_build": "health-integrated-20261027.92",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "Owner rejects .91 as scattered information and explicitly asks for direct app review and a health cockpit; this reopens product acceptance despite earlier technical checks.",
       "Fresh authenticated .91 Home actually inspected: long source-selection prose and seven metric cards displace body, training and laboratory context. Original desktop and private approved mobile references reopened.",
-      "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending."
+      "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending.",
+      "Published .92 manually inspected with real data; exact last-workout and laboratory-marker actions passed. The source flag reported_outside_reference was observed as raw technical copy in the original history. Candidate .93 translates only that importer annotation and boolean flags, preserving stored flags, original results and all free-form clinical text."
     ],
     "pending_evidence": [
       "Candidate responsive visual inspection, normal publication and fresh exact-public authenticated review."
@@ -2222,7 +2223,8 @@
       "evidence": [
         "Owner rejects .91 as scattered information and explicitly asks for direct app review and a health cockpit; this reopens product acceptance despite earlier technical checks.",
         "Fresh authenticated .91 Home actually inspected: long source-selection prose and seven metric cards displace body, training and laboratory context. Original desktop and private approved mobile references reopened.",
-        "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending."
+        "Candidate .92 uses existing source-isolated models; local model/render/consumer-language and new cockpit integrity checks pass. Candidate browser evidence and publication remain pending.",
+        "Published .92 manually inspected with real data; exact last-workout and laboratory-marker actions passed. The source flag reported_outside_reference was observed as raw technical copy in the original history. Candidate .93 translates only that importer annotation and boolean flags, preserving stored flags, original results and all free-form clinical text."
       ],
       "next_action": "Inspect candidate responsive renders and exact record navigation, repair observed defects, publish normally, then inspect the real authenticated Home."
     }
