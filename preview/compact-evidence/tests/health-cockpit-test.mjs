@@ -32,4 +32,8 @@ f=changesFixture();f.data.labs[1].result_numeric=null;f.data.labs[1].result_raw=
 assert.match(html,/<4/,'the caller owns original result escaping/formatting; the cockpit does not numerically reconstruct censored values');
 f=changesFixture();f.data.workouts[1].workout_type='<img src=x onerror=alert(1)>';html=render(f);assert.ok(html.includes('&lt;img'));assert.ok(!html.includes('<img'));
 assert.doesNotMatch(html,/\b(?:undefined|NaN|Infinity)\b/);
+const {makeDashboardFixture}=await import('./health-dashboard-render-test.mjs');
+f=makeDashboardFixture();f.ui={};html=render(f);
+assert.doesNotMatch(html,/[-+]0,0 h vs\./,'a small observed change must not become negative-zero sleep');
+assert.match(html,/Variação menor que 0,1 h vs\. período anterior/,'rounded changes retain their actual precision limit');
 console.log('Cockpit story: actual dated values, five domains, strict comparison/ambiguity, as-of cutoff, stale water, failure boundaries, original results and exact workout actions passed.');

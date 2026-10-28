@@ -26,6 +26,8 @@ try{
   const expectedBuild=await page.locator('meta[name="lts-build"]').getAttribute('content');
   await auditIntegratedDashboard(page,{expectedBuild});
   await page.locator('[data-dashboard-card="water"]').scrollIntoViewIfNeeded();
+  assert.ok(await page.locator('[data-last-known="water"]').isVisible(),'last genuine water remains dated in the primary card');
+  await page.locator('[data-disclosure="dashboard-metric-water"]>summary').click();
   assert.match(await page.locator('[data-dashboard-card="water"]').innerText(),/Sem informação.*1\.750 mL.*08\/08\/2024.*Recebido em 09\/08\/2024, 08:20/s);
   await page.screenshot({path:`water-continuity-visual/missing-water-${width}.png`});
   await page.goto(base+'#evolucao');await page.locator('.ltsEvolutionOverview').waitFor();

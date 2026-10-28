@@ -14,7 +14,13 @@ const unavailable=text=>`<p class="healthCockpitEmpty">${esc(text)}</p>`;
 const flagged=metric=>metric?.source&&['candidate','held'].includes(metric.source.status);
 const actualMetric=m=>m&&!['error','unavailable'].includes(m.availability)&&number(m.value)!=null;
 const periodLabel=d=>d.mode==='day'?'neste dia':'no período';
-const changeLabel=(m,d)=>d.mode==='period'&&m?.comparison?.comparable?`${m.comparison.delta>0?'+':''}${value(m.comparison.delta,m.unit,m.key==='sleep'?1:0)} vs. período anterior`:null;
+const changeLabel=(m,d)=>{
+ if(d.mode!=='period'||!m?.comparison?.comparable)return null;
+ const delta=m.comparison.delta,precision=m.key==='sleep'?1:0,minimum=10**-precision;
+ if(delta===0)return 'Sem mudança numérica vs. período anterior';
+ if(Math.abs(delta)<minimum/2)return `Variação menor que ${value(minimum,m.unit,precision)} vs. período anterior`;
+ return `${delta>0?'+':''}${value(delta,m.unit,precision)} vs. período anterior`;
+};
 
 function summaryCard(key,route,label,reading,context,detail,caution=false){
  return `<button type="button" class="healthCockpitSummaryCard ${key}" data-route="${route}" data-cockpit-summary="${key}"><span class="healthCockpitSummaryLabel">${icon(key)}${esc(label)}</span><strong>${esc(reading)}</strong><span class="healthCockpitSummaryContext">${esc(context)}</span>${detail?`<small>${esc(detail)}</small>`:''}${caution?'<span class="healthCockpitReview">Em conferência</span>':''}</button>`;
