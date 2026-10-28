@@ -115,7 +115,7 @@ async function assertMetrics(page,fixture,ui={}){
       assert.equal(await card.locator('.healthCoverage').innerText(),`${m.count}/${m.expectedDays} dias usados na média`);
       assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'period window is shared above the cards');
       assert.ok((await page.locator('.healthWindow').innerText()).includes(`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`),'shared period window remains exact');
-      if(m.source)assert.ok((await card.locator('.healthPeriodSource').innerText()).includes(m.source.label),'full synthetic origin remains visible');
+      if(m.source)assert.ok((await card.locator('.healthPeriodSource').textContent()).includes(m.source.label),'full synthetic origin remains available inside native details');
     }else{
       assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'daily date is shared above the seven cards');
       assert.equal(await card.locator(':scope > .healthAggregation').count(),0,'daily partial copy is not repeated in the cards');

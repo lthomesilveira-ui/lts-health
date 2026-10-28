@@ -36,7 +36,7 @@ try{
   assert.equal(await page.locator('.healthPeriodContext').isVisible(),false,'source-selection algorithm is secondary');
   assert.equal(await page.locator('[data-cockpit-panel="body"]').locator('dl').count(),1,'last known body state is present even outside short period');
   await quality(page);await page.screenshot({path:`${dir}/${width}-${sparse?'sparse':'full'}-opening.png`});
-  for(const selector of ['.healthCockpitPanels','.healthMetricGrid']){await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${width}-${sparse?'sparse':'full'}-${selector.slice(1)}.png`});}
+  for(const [name,selector] of [['body','[data-cockpit-panel="body"]'],['training','[data-cockpit-panel="training"]'],['labs','[data-cockpit-panel="labs"]'],['metrics','[data-dashboard-card="protein"]']]){await page.locator(selector).scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${width}-${sparse?'sparse':'full'}-${name}.png`});}
   if(width>840){const boxes=await page.locator('[data-cockpit-summary]').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().top));assert.ok(Math.max(...boxes)-Math.min(...boxes)<2,'five domains share the first row');}
   else {const rail=page.locator('.healthCockpitSummary');assert.ok(await rail.evaluate(el=>el.scrollWidth>el.clientWidth),'mobile panorama is a horizontal rail, not a long stack');await quality(page);}
   await page.locator('[data-disclosure="cockpit-details"]>summary').click();assert.ok(await page.locator('.healthContextGrid').isVisible());assert.ok(await page.locator('[data-dashboard-change-domain="body"]').isVisible());await quality(page);
