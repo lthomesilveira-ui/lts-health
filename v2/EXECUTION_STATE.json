@@ -49,29 +49,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-HEALTH-ICON-011",
-    "status": "done",
-    "goal": "Deliver a recognizable Health Home Screen symbol and reconcile confirmed installation without altering clinical records or stable app identity.",
+    "id": "PKG-PLAN-ORIGINAL-012",
+    "status": "in_progress",
+    "goal": "Open confirmed source PDFs from the selected training and dietary comparison while preserving private account access and unlinked inventory boundaries.",
     "task_ids": [
-      "LTS-HEALTH-ICON-001"
+      "LTS-PLAN-ORIGINAL-001"
     ],
-    "candidate_build": "health-integrated-20261029.96",
+    "candidate_build": "health-integrated-20261029.97",
     "public_build": "health-integrated-20261029.96",
     "icon_revision": "heart-pulse-20261029",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged.",
-      "Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain.",
-      "Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim.",
-      "Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
-      "Owner-reported Home Screen installation is complete. Existing icon replacement remains OS-controlled; stable identity/name/start are preserved and no forced removal, sign-out or duplicated health record is introduced.",
-      "Fresh private source/support and original-workout-context review did not supply the independent water/basal lineage, complete original chat or provider evidence needed to close the fourteen separate conditions. Training reference-only preference and all source boundaries remain intact."
+      "Both existing source PDFs were freshly read through their existing private native identities; no duplicate upload or clinical record was created.",
+      "Local identity/destination/failure/nonmutation, full documentary comparison, exact preview parity, production graph and cross-screen privacy checks pass."
     ],
-    "pending_gates": [],
-    "published_icon_revision": "heart-pulse-20261029",
-    "promotion_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
-    "clinical_runtime_changed": false,
-    "verified_at_utc": "2026-10-29T22:05:30.247144Z"
+    "pending_gates": [
+      "Exact candidate Chromium/WebKit320/393/1440 link navigation, geometry and opener/referrer isolation.",
+      "Normal publication, protected real-auth source-to-href checks, public smoke and exact public inspection."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -2032,10 +2027,11 @@
         "A separate technical support request has been sent using the official channel without medical values, images or credentials.",
         "Receiver version 9 is deployed and numeric transport diagnostics now operate on genuine complete accepted requests below the unchanged limit. The original oversized body remains unknown; the export-provider reply and supported batching remain pending.",
         "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested.",
-        "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested."
+        "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested.",
+        "2026-10-29 continuation: current primary REST documentation explicitly supports JSON Batch Requests. The existing SQL projection recomputes touched days from all stored same-source metrics, including split-by-metric requests. Archived 25/10 receiver headers show accepted small bodies and one small503, but do not recover the original rejected413 body. No receiver limit, source identity, key, cadence or phone configuration changed."
       ],
-      "next_action": "Use the provider response and a genuine bounded diagnostic to establish request composition and supported batching; preserve current keys and accepted records.",
-      "blocker": "Rejected request composition and supported export batching are not yet established."
+      "next_action": "Use supported JSON batching only with a genuine diagnostic identifying the rejected request and current export configuration; verify a later accepted real batch and metric-specific coverage without repeating completed phone setup.",
+      "blocker": "The original rejected request size/composition/interval and actual device batching configuration are unobserved; documented feature support alone does not prove recovery of missing metrics."
     },
     {
       "id": "LTS-HISTORICAL-CONTEXT-002",
@@ -2538,6 +2534,27 @@
         "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
       ],
       "next_action": "Preserve the verified .96 reference/status view and immutable originals. Reopen only on new owner feedback, genuine updated source or reproducible defect; keep clinical start and genuine application events separate.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-PLAN-ORIGINAL-001",
+      "area": "documentary source access",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Open confirmed private original PDFs from their validated training and nutrition comparisons.",
+      "acceptance": [
+        "Only a source-verified selected PDF with a supported native file identity receives a link; inventory metadata and invalid or failed latest-plan reads receive no guessed fallback.",
+        "The fixed native-account destination opens separately with no opener or referrer, no public-file generation and no token or health-value query parameters.",
+        "Mobile/desktop browser navigation and touch geometry, protected actual source-to-link agreement, normal deployment and public inspection pass."
+      ],
+      "evidence": [
+        "preview/compact-evidence/tests/plan-original-link-test.mjs",
+        "v2/training-plan-browser.mjs",
+        "v2/real-auth-plan-checks.mjs",
+        "v2/releases/PLAN_ORIGINAL_ACCESS_20261029.md"
+      ],
+      "next_action": "Complete exact candidate browser evidence, normal publication and fresh protected actual-data checks.",
       "blocker": null
     }
   ],
@@ -3331,6 +3348,31 @@
       "pending_gates": [
         "Physical Safari Add to Home Screen and opening on the owner iPhone; technical implementation/publication are verified."
       ]
+    },
+    {
+      "id": "PKG-HEALTH-ICON-011",
+      "status": "done",
+      "goal": "Deliver a recognizable Health Home Screen symbol and reconcile confirmed installation without altering clinical records or stable app identity.",
+      "task_ids": [
+        "LTS-HEALTH-ICON-001"
+      ],
+      "candidate_build": "health-integrated-20261029.96",
+      "public_build": "health-integrated-20261029.96",
+      "icon_revision": "heart-pulse-20261029",
+      "owner_acceptance": "not_granted",
+      "completed_evidence": [
+        "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged.",
+        "Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain.",
+        "Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim.",
+        "Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
+        "Owner-reported Home Screen installation is complete. Existing icon replacement remains OS-controlled; stable identity/name/start are preserved and no forced removal, sign-out or duplicated health record is introduced.",
+        "Fresh private source/support and original-workout-context review did not supply the independent water/basal lineage, complete original chat or provider evidence needed to close the fourteen separate conditions. Training reference-only preference and all source boundaries remain intact."
+      ],
+      "pending_gates": [],
+      "published_icon_revision": "heart-pulse-20261029",
+      "promotion_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+      "clinical_runtime_changed": false,
+      "verified_at_utc": "2026-10-29T22:05:30.247144Z"
     }
   ],
   "latest_published_release": {

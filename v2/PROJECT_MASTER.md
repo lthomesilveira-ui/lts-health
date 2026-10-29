@@ -1,3 +1,9 @@
+# Confirmed original-plan access — candidate .97, 29/10/2026
+
+The autonomous continuation found that the existing validated training and dietary comparisons did not offer their confirmed original PDFs. Both originals were freshly resolved privately. Candidate .97 adds a fixed native ChatGPT account link from each selected source-verified plan, with a visible external-account notice, a separate window, no opener/referrer and a touch-sized control. Invalid/latest/read-failure and unlinked-inventory states never receive an inferred fallback. No source IDs, patient values or private file URLs enter public fixtures.
+
+Local documentary/source, privacy, exact preview hash and production graph checks pass. Exact Chromium/WebKit mobile/desktop navigation, actual authenticated source-to-href agreement, normal promotion and public inspection remain pending. Clinical data, plan targets/start status, comparisons, receiver1MiB, connection keys, icon identity, schedules and existing support threads are unchanged. Existing water/basal/source dependencies and overall owner acceptance remain open. Authority: EXECUTION_STATE.json. Earlier checkpoints below remain history.
+
 # Final automatic verification — Training .91, 27/10/2026 UTC
 
 Final actual-auth40595119003 passed after normal PR415 merge b01de5d99d5f521124838104c7820238ea751f8a, including full histories and private encrypted visual capture. Deploy40595118987 and public smokes40595167145/40595167249 passed. Final candidate Functional40594408888 and Calendar/PDF40594408933 passed; Isolated Preview40594408965 is still pending and is not counted as successful. Runtime assets remain the exact manually inspected .91.

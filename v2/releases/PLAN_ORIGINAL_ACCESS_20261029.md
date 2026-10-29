@@ -1,0 +1,11 @@
+# Confirmed original plans — 29/10/2026
+
+The existing dietary and training references are source-validated private records. Their comparisons now provide “Abrir PDF original no ChatGPT” for a selected, verified native PDF identity, so the owner can consult the actual document. The destination stays protected by the existing ChatGPT account. A visible note explains that the separate window may ask for account access; this is not an in-app PDF renderer or a public download.
+
+The link builder accepts only the two supported plan types, a strict native identity bound to that type, a SHA256 digest, a PDF filename and complete source-verification pages. Call sites already use the existing latest-plan validators; malformed, ambiguous or failed reads have no previous-document fallback. No new raw projection, storage path, credential, medical field or DB mutation is introduced. Native file IDs are read from the private validated record and never hard-coded into public assets or tests. Other document inventory entries stay separate from available originals.
+
+The fixed HTTPS destination has only the native file identity and personal-account selector. Target isolation, no-referrer policy,44px link geometry and containment are checked in Chromium/WebKit320/393/1440. Browser tests open only a synthetic mocked destination and retain all previous source/coverage/temporary-mapping/retrospective/zero-write assertions. The protected existing actual-auth workflow checks each real selected source against its rendered link without logging the private identity or navigating patient documents into public evidence.
+
+Local source/destination/invalid/failure/nonmutation checks, documentary models, production graph, exact preview parity and cross-screen privacy pass. Exact candidate browser evidence, publication and fresh actual-auth/public evidence are pending. Build: health-integrated-20261029.97. Stable icon revision: heart-pulse-20261029.
+
+Water restoration, original source lineage, verified daily basal coverage, the exact laboratory proposal, original-only laboratory expansion, a genuine ordinary form update, native-device acceptance and overall product acceptance remain independent. No vendor message, phone setup repetition, fake health record or source relabeling belongs to this package.
