@@ -22,7 +22,7 @@ async function fit(page){
  const defects=await page.locator('[data-health-dashboard]').evaluate(root=>[...root.querySelectorAll('button,select,summary,input,[role="button"]')].filter(el=>el.checkVisibility({checkVisibilityCSS:true})&&!el.disabled).flatMap(el=>{const b=el.getBoundingClientRect();return b.width>=43.5&&b.height>=43.5?[]:[{text:el.textContent.slice(0,70),width:b.width,height:b.height}];}));
  assert.deepEqual(defects,[],'all opened controls have 44px targets');
  assert.deepEqual(await page.locator('[data-coverage-audit]').evaluateAll(nodes=>nodes.filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>el.dataset.coverageAudit)),[],'daily audit does not clip');
- const cramped=await page.locator('[data-coverage-audit][open] li>span').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().width<100).map(el=>({text:el.textContent,width:el.getBoundingClientRect().width})));
+ const cramped=await page.locator('[data-health-dashboard] [data-coverage-audit][open] li>span').evaluateAll(nodes=>nodes.filter(el=>el.checkVisibility({checkVisibilityCSS:true})&&el.getBoundingClientRect().width<100).map(el=>({text:el.textContent,width:el.getBoundingClientRect().width})));
  assert.deepEqual(cramped,[],'daily explanations have enough width for words, not a column of individual letters');
 }
 try{
