@@ -10,11 +10,15 @@ assert.equal(new URL(actual.scope,base).href,base.href);assert.equal(new URL(act
 assert.equal(new URL(legacy.start_url,oldBase).href,base.href+'#hoje');assert.equal(actual.display,'standalone');assert.equal(actual.name,'LTS Health');
 assert.equal(new URL(actual.start_url,base).search,'','installation never pins a build');
 assert.match(html,/rel="manifest" href="\.\/manifest.webmanifest"/);assert.match(html,/rel="apple-touch-icon" sizes="180x180"/);
+const iconRevision='heart-pulse-20261029',appleIcon=new URL(html.match(/rel="apple-touch-icon"[^>]*href="([^"]+)"/)[1],base);
+assert.equal(appleIcon.searchParams.get('v'),iconRevision,'Apple icon has an explicit new asset revision');
+for(const [manifest,origin] of [[actual,base],[legacy,oldBase]])for(const icon of manifest.icons)assert.equal(new URL(icon.src,origin).searchParams.get('v'),iconRevision,'all install entry icons use the same revision');
 assert.match(html,/name="apple-mobile-web-app-capable" content="yes"/);assert.match(html,/name="apple-mobile-web-app-title" content="LTS Health"/);
 assert.equal((html.match(/data-health-install>/g)||[]).length,2,'installation help is reachable from login and More');
 assert.doesNotMatch(read('../preview/compact-evidence/index.html'),/apple-mobile-web-app|healthInstallGuide|app-install\.js|rel="manifest"/,'read-only preview is not an install destination');
-for(const size of [180,192,512]){
- const b=fs.readFileSync(new URL(`app-icons/icon-${size}.png`,root));assert.equal(b.subarray(1,4).toString(),'PNG');assert.equal(b.readUInt32BE(16),size);assert.equal(b.readUInt32BE(20),size);assert.equal(b[25],2,'opaque RGB app icon');
+for(const [size,name] of [[180,'icon-180.png'],[192,'icon-192.png'],[512,'icon-512.png'],[512,'icon-maskable-512.png']]){
+ const b=fs.readFileSync(new URL(`app-icons/${name}`,root));assert.equal(b.subarray(1,4).toString(),'PNG');assert.equal(b.readUInt32BE(16),size);assert.equal(b.readUInt32BE(20),size);assert.equal(b[25],2,'opaque RGB app icon');
+ assert.deepEqual(b,fs.readFileSync(new URL(`../tools/health-home-screen/icons/${name}`,root)),'published bitmap is the exact reviewed source');
 }
 assert.ok(actual.icons.some(icon=>icon.purpose==='maskable'&&icon.sizes==='512x512'));
 const inventory=deployedRuntimeAssets(html,url=>fs.readFileSync(url,'utf8'),root);

@@ -49,27 +49,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-NUTRITION-COMPARISON-QA-010",
-    "status": "done",
-    "goal": "Close the newly completed stale preview gate while preserving documentary-only training comparison and all published source/privacy behavior.",
+    "id": "PKG-HEALTH-ICON-011",
+    "status": "in_progress",
+    "goal": "Deliver a recognizable Health Home Screen symbol and reconcile confirmed installation without altering clinical records or stable app identity.",
     "task_ids": [
-      "LTS-NUTRITION-COMPARISON-QA-002"
+      "LTS-HEALTH-ICON-001"
     ],
     "candidate_build": "health-integrated-20261029.96",
     "public_build": "health-integrated-20261029.96",
+    "icon_revision": "heart-pulse-20261029",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
-      "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
-      "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
-      "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
-      "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
-      "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
+      "Existing icon inspected; the owner requests a stronger health association after confirming installation.",
+      "A vector heart/pulse design was rendered to four opaque RGB sizes and actually inspected at60/120/180px. Source colors, full glyph safe zone and production-source byte parity checked.",
+      "Fresh aggregated source and existing support-thread review shows the previously blocked data/source conditions remain separate. Previous metadata publication has all16 workflows successful."
     ],
-    "pending_gates": [],
-    "runtime_changed": false,
-    "verification_only": true,
-    "verified_at_utc": "2026-10-29T21:32:39.326524Z"
+    "pending_gates": [
+      "Exact candidate Home Screen/browser and integration checks",
+      "Public icon and stable-entry verification"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -115,6 +113,27 @@
     }
   },
   "tasks": [
+    {
+      "id": "LTS-HEALTH-ICON-001",
+      "area": "Home Screen identity",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Replace the letter-first Home Screen icon with a recognizable heart and pulse mark.",
+      "acceptance": [
+        "Opaque Apple and manifest icons render the reviewed health symbol clearly at Home Screen sizes and within maskable safe areas.",
+        "New icon URLs carry a consistent revision while installation ID, name, start URL, authorization, health data, app behavior and other-app caches remain intact.",
+        "Exact candidate installation/privacy/asset/browser checks pass; publish and verify the actual new public icon and stable entry.",
+        "Record owner-confirmed installation separately from native-device/global acceptance and make no automatic installed-icon replacement promise."
+      ],
+      "evidence": [
+        "Existing icon inspected; the owner requests a stronger health association after confirming installation.",
+        "A vector heart/pulse design was rendered to four opaque RGB sizes and actually inspected at60/120/180px. Source colors, full glyph safe zone and production-source byte parity checked.",
+        "Fresh aggregated source and existing support-thread review shows the previously blocked data/source conditions remain separate. Previous metadata publication has all16 workflows successful."
+      ],
+      "next_action": "Run affected contracts and the pinned installation browser gate, inspect captures, promote normally and verify exact public image bytes and entry."
+    },
     {
       "id": "LTS-NUTRITION-COMPARISON-QA-002",
       "area": "Nutrition verification",
@@ -1909,10 +1928,11 @@
         "2026-10-29: later owner feedback accepts the improved cockpit layout as better, then specifically reopens short daily coverage and absent total expenditure. This supersedes the description of the latest layout as wholly rejected, without granting global acceptance.",
         "PKG-DATA-QUALITY-007 published .94 and completed its bounded source-specific coverage/unavailable-energy acceptance. Overall acceptance is not inferred from this technical completion.",
         "The bounded .95 Home Screen implementation, public entry and existing real-auth checks are verified. Physical owner installation, genuine-form updates and all original-source/provider acceptance conditions remain separate.",
-        "Owner has not yet reviewed the prior publication and provides a new source plan/current-use correction. Bounded .96 comparison/status implementation is now technically verified; global acceptance is not inferred."
+        "Owner has not yet reviewed the prior publication and provides a new source plan/current-use correction. Bounded .96 comparison/status implementation is now technically verified; global acceptance is not inferred.",
+        "Owner-reported Home Screen installation is confirmed on29/10. Icon feedback is actionable and tracked separately; overall acceptance is not granted."
       ],
-      "next_action": "Preserve verified .96; resume executable work on new genuine source/provider/original-record evidence or owner feedback. Actual Home Screen installation, genuine form updates and global acceptance stay separate.",
-      "blocker": "The owner acknowledges the improved cockpit layout. Overall acceptance, actual water continuity, original source/history evidence and physical-device verification remain unmet; bounded data-quality presentation is now published and technically verified."
+      "next_action": "Complete the bounded icon package and continue source/provider/original-record work when evidence exists. Preserve training reference-only semantics and keep global acceptance separate from installation.",
+      "blocker": "The owner confirms Home Screen installation, requests a more recognizable health icon and still sees unresolved items. Overall owner acceptance, actual water continuity, original source/history evidence and remaining physical/native verification remain open."
     },
     {
       "id": "LTS-COMPLETENESS-REVIEW-001",
@@ -2384,7 +2404,7 @@
         "Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim.",
         "PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair."
       ],
-      "next_action": "Preserve the published stable installation entry; track physical Safari installation separately in LTS-IPHONE-INSTALL-VERIFY-001.",
+      "next_action": "The owner has confirmed Home Screen installation. Preserve stable identity and opening; the requested icon revision has its own bounded package.",
       "blocker": null
     },
     {
@@ -2413,18 +2433,23 @@
       "id": "LTS-IPHONE-INSTALL-VERIFY-001",
       "area": "physical iPhone Home Screen",
       "priority": "P1",
-      "status": "blocked_user",
+      "status": "done",
       "owner": "Owner",
-      "summary": "Add the published Health web app to the actual iPhone Home Screen and confirm opening by its icon.",
+      "summary": "Owner explicitly confirms the published Health web app was added to the physical iPhone Home Screen.",
       "acceptance": [
-        "In Safari, open the stable published Health entry, use Share / Add to Home Screen, enable Open as Web App and add it.",
-        "Open the resulting Health icon on the actual iPhone and confirm the cockpit fits the real safe areas after normal login if needed."
+        "The owner confirms adding the published Health app to the actual iPhone Home Screen.",
+        "Keep the unobserved physical layout, native HealthKit and global owner acceptance conditions separate in LTS-OWNER-DELIVERY-20261025 and LTS-IOS-HEALTH-001."
       ],
       "evidence": [
-        "The published technical installation and simulated standalone/browser gates pass; remote browser control cannot perform or certify the owner physical-device OS action."
+        "The published technical installation and simulated standalone/browser gates pass; remote browser control cannot perform or certify the owner physical-device OS action.",
+        "On29/10 the owner explicitly states the app has been added to the iPhone Home Screen and asks for an icon more related to health. This is owner-reported installation confirmation; no agent-observed phone layout, native HealthKit, data completeness or overall acceptance is inferred."
       ],
-      "next_action": "On the iPhone: Safari → Share → Add to Home Screen → Open as Web App → Add, then open Health. This web app step does not close the separate native HealthKit/signing gate.",
-      "blocker": "The final iOS installation and physical opening must be performed on the owner iPhone."
+      "next_action": "Installation is confirmed. Address the separately tracked icon feedback; preserve the stable entry and independent physical/native/data acceptance conditions.",
+      "blocker": null,
+      "prior_acceptance": [
+        "In Safari, open the stable published Health entry, use Share / Add to Home Screen, enable Open as Web App and add it.",
+        "Open the resulting Health icon on the actual iPhone and confirm the cockpit fits the real safe areas after normal login if needed."
+      ]
     },
     {
       "id": "LTS-TRAINING-PLAN-COMPARISON-001",
@@ -2503,6 +2528,29 @@
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-NUTRITION-COMPARISON-QA-010",
+      "status": "done",
+      "goal": "Close the newly completed stale preview gate while preserving documentary-only training comparison and all published source/privacy behavior.",
+      "task_ids": [
+        "LTS-NUTRITION-COMPARISON-QA-002"
+      ],
+      "candidate_build": "health-integrated-20261029.96",
+      "public_build": "health-integrated-20261029.96",
+      "owner_acceptance": "not_granted",
+      "completed_evidence": [
+        "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
+        "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
+        "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
+        "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
+        "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
+        "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
+      ],
+      "pending_gates": [],
+      "runtime_changed": false,
+      "verification_only": true,
+      "verified_at_utc": "2026-10-29T21:32:39.326524Z"
+    },
     {
       "id": "PKG-DOCUMENTED-PLAN-COMPARISON-009",
       "status": "done",

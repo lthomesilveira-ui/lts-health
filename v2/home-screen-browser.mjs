@@ -32,6 +32,8 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
    assert.equal(new URL(manifest.data.start_url,manifest.url).href,base+'#hoje');assert.equal(new URL(manifest.data.start_url,manifest.url).search,'');assert.equal(manifest.data.display,'standalone');
    await page.locator('#email').fill('synthetic-unsaved@example.invalid');await page.locator('#login [data-health-install]').click();assert.ok(await page.locator('#healthInstallGuide').isVisible());
    assert.match(await page.locator('#healthInstallGuide').innerText(),/Safari.*Compartilhar.*Adicionar à Tela de Início.*Abrir como App da Web/s);await fit(page);
+   const icon=await page.locator('#healthInstallGuide img').evaluate(async image=>{await image.decode();return {width:image.naturalWidth,height:image.naturalHeight,src:image.currentSrc,apple:document.querySelector('link[rel="apple-touch-icon"]').href};});
+   assert.equal(icon.width,180);assert.equal(icon.height,180);assert.equal(icon.src,icon.apple);assert.equal(new URL(icon.src).searchParams.get('v'),'heart-pulse-20261029','the new health icon loads in the actual installation guide');
    await page.screenshot({path:`${dir}/${engine}-${width}-guide.png`});await page.locator('[data-health-install-close]').click();assert.equal(await page.locator('#email').inputValue(),'synthetic-unsaved@example.invalid');assert.equal(await page.locator('#healthInstallGuide').isVisible(),false);
    assert.deepEqual(await page.evaluate(()=>window.__pwaWrites),[]);assert.deepEqual(errors,[]);assert.deepEqual(blocked,[]);results.push({engine,width,height,guide:true,stableStart:true,zeroWrites:true});await context.close();
   }
