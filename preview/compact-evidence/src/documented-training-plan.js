@@ -69,8 +69,9 @@ export function trainingPlanComparison(data={},status={},ui={},today){
   const summary=workout?trainingSessionSummary(workout,data,status):null,links=ui.trainingPlanLinks||{},exercises=summary?.acceptedExercises||[];
   const matches=template.exercises.map(e=>{
     if(Object.hasOwn(links,e.id))return {e,matches:exercises.filter(x=>x.source_record_id===links[e.id]),explicit:true};
-    const names=[e.name,...e.alternatives.map(a=>a.name)].map(norm);
-    return {e,matches:exercises.filter(x=>names.includes(norm(x.exercise))),explicit:false};
+    // An alternative can have another rep range or a clinical condition. Its
+    // printed presence alone does not authorize applying the primary target.
+    return {e,matches:exercises.filter(x=>norm(e.name)===norm(x.exercise)),explicit:false};
   });
   const ids=matches.flatMap(m=>m.matches.length===1?[m.matches[0].source_record_id]:[]);
   const rows=matches.map(({e,matches,explicit})=>{
@@ -79,9 +80,10 @@ export function trainingPlanComparison(data={},status={},ui={},today){
     const primary=sets.filter(s=>!isSetExtension(s)),working=primary.filter(s=>s.phase==='working'),unknown=primary.filter(s=>!['working','warmup','other'].includes(s.phase));
     const phaseComplete=sets.length>0&&unknown.length===0;
     const measured=working.map(s=>s.reps_numeric).filter(v=>typeof v==='number'&&Number.isFinite(v));
-    return {reference:e,exercise,explicit,ambiguous:matches.length>1||matches.length===1&&!exercise,sets:summary?.setsAvailable&&exercise?sets:null,
+    const sameName=Boolean(exercise&&norm(exercise.exercise)===norm(e.name));
+    return {reference:e,exercise,explicit,sameName,ambiguous:matches.length>1||matches.length===1&&!exercise,sets:summary?.setsAvailable&&exercise?sets:null,
       working:phaseComplete?working.length:null,knownWorking:working.length,unknownPhases:unknown.length,reps:measured,
-      outsideRange:working.length&&measured.length===working.length?measured.filter(n=>n<e.reps[0]||n>e.reps[1]).length:null};
+      outsideRange:sameName&&working.length&&measured.length===working.length?measured.filter(n=>n<e.reps[0]||n>e.reps[1]).length:null};
   });
   const failure=summary?.setsAvailable?summary.effort.failure:null,extensions=summary?.setsAvailable?summary.counts.extensions:null;
   const gaps=weekly.length>1?weekly.slice().sort((a,b)=>a.workout_date.localeCompare(b.workout_date)).slice(1).map((w,i)=>({days:(Date.parse(w.workout_date)-Date.parse(weekly.slice().sort((a,b)=>a.workout_date.localeCompare(b.workout_date))[i].workout_date))/86400000})):[];

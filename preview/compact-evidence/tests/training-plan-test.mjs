@@ -23,6 +23,9 @@ const conflict=clone(f);conflict.data.exercises.push({...conflict.data.exercises
 const sameLink=trainingPlanComparison(f.data,f.status,{trainingPlanLinks:{A1:'synthetic-ex-a',A2:'synthetic-ex-a'}},PLAN_TODAY);assert.ok(sameLink.rows.every(r=>r.exercise===null));
 const wrongParent=clone(f);wrongParent.data.sets[1].workout_source_record_id='wrong';assert.equal(trainingPlanComparison(wrongParent.data,wrongParent.status,{},PLAN_TODAY).rows[0].working,1);
 const manual=clone(f);manual.data.exercises[0].exercise='Different literal name';assert.equal(trainingPlanComparison(manual.data,manual.status,{},PLAN_TODAY).rows[0].exercise,null);assert.equal(trainingPlanComparison(manual.data,manual.status,{trainingPlanLinks:{A1:'synthetic-ex-a'}},PLAN_TODAY).rows[0].working,2);
+assert.equal(trainingPlanComparison(manual.data,manual.status,{trainingPlanLinks:{A1:'synthetic-ex-a'}},PLAN_TODAY).rows[0].outsideRange,null);
+manual.data.trainingPlans[0].training_plan.sessions[0].exercises[0].alternatives=[{name:'Different literal name',note:'A documented alternative can have a different range.'}];
+assert.equal(trainingPlanComparison(manual.data,manual.status,{},PLAN_TODAY).rows[0].exercise,null);
 const historic=trainingPlanComparison(f.data,f.status,{trainingPlanWeek:'2026-01-12'},PLAN_TODAY);assert.equal(historic.historical,true);assert.equal(historic.plan.initial_rir[0],3);
 const chosenMissing=trainingPlanComparison(f.data,f.status,{trainingPlanWorkout:'missing'},PLAN_TODAY);assert.equal(chosenMissing.workout,null);assert.ok(chosenMissing.rows.every(r=>!r.exercise));
 const p=syntheticTrainingPlan();p.training_plan.raw_secret='Synthetic private field';p.training_plan.sessions[0].raw_secret='Synthetic private field';assert.ok(!JSON.stringify(documentedTrainingPlan(p)).includes('raw_secret'));
