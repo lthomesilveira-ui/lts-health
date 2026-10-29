@@ -18,6 +18,11 @@ export function deployedRuntimeAssets(html,read,root){
   requests.set(request,{file:relative,request});
   if(files.has(relative))return;files.add(relative);
   const body=read(url);
+  if(relative.endsWith('.webmanifest')){
+   const manifest=JSON.parse(body);
+   for(const icon of manifest.icons||[])add(icon.src,url);
+   if(relative==='manifest.webmanifest')add('./sw.js');
+  }
   if(relative.endsWith('.css')){
    for(const [,asset]of body.matchAll(/@import\s*["']([^"']+)["']/g))add(asset,url);
    for(const [,asset]of body.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g))add(asset.trim(),url);

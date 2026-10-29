@@ -1,10 +1,3 @@
-const CACHE='lts-health-shell-product-v63';
-const SHELL=['./','./index.html','./styles.css','./v11.css','./v12.css','./v13.css','./v14.css','./v15.css','./v16.css','./product.css','./training-product.css','./training-progression-deep.css','./structured-workout-entry.css','./evolution-product.css','./segmental-history.css','./today-product.css','./today-current.css','./today-evidence.css','./timeline-product.css','./nutrition-product.css','./health-product.css','./health-longitudinal.css','./health-evidence-bundles.css','./nutrition-analytics.css','./inbox-operations.css','./source-coverage.css','./source-onboarding.css','./insights-evidence.css','./search-product.css','./claude-parity.css','./claude-cockpit.css','./canonical-status.css','./config.js','./app.js','./app-v8.js','./app-v11.js','./app-v12.js','./app-v13.js','./app-v14.js','./app-v15.js','./app-v16.js','./product.js','./training-product.js','./training-progression-deep.js','./structured-workout-entry.js','./evolution-product.js','./segmental-history.js','./today-product.js','./today-current.js','./today-evidence.js','./timeline-product.js','./nutrition-product.js','./health-product.js','./health-longitudinal.js','./health-evidence-bundles.js','./nutrition-analytics.js','./inbox-operations.js','./source-coverage.js','./source-onboarding.js','./insights-evidence.js','./search-product.js','./claude-parity.js','./claude-cockpit.js','./canonical-status.js','./manifest.webmanifest'];
-self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',event=>{
-  const u=new URL(event.request.url);
-  if(event.request.method!=='GET'||u.origin!==self.location.origin)return;
-  if(u.hostname.includes('supabase.co'))return;
-  event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(c=>c.put(event.request,copy)).catch(()=>{});return response}).catch(()=>caches.match(event.request).then(r=>r||caches.match('./index.html'))));
-});
+// Retire the former root shell cache without affecting Wealth or other apps.
+self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('lts-health-shell-')).map(key=>caches.delete(key)))).then(()=>self.registration.unregister())));

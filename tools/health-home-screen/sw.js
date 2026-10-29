@@ -1,0 +1,9 @@
+// Network-only navigation. No health responses, credentials or assets are cached.
+const offline=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131f"><title>LTS Health · Sem conexão</title><style>*{box-sizing:border-box}body{margin:0;min-height:100dvh;display:grid;place-items:center;padding:calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));font:16px/1.6 system-ui,sans-serif;color:#17324f;background:#f4f8fe}main{max-width:420px}small{color:#176dc6;font-weight:700}h1{font-size:27px;line-height:1.2}button{min-height:48px;padding:12px 20px;border:0;border-radius:12px;background:#176dc6;color:white;font:inherit;cursor:pointer}</style></head><body><main><small>LTS Health</small><h1>Você está sem conexão</h1><p>Conecte-se à internet para abrir seu histórico de saúde e atualizar os registros.</p><button onclick="location.reload()">Tentar novamente</button></main></body></html>`;
+self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('lts-health-shell-')).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{
+  const url=new URL(event.request.url),scope=new URL(self.registration.scope);
+  if(event.request.method!=='GET'||event.request.mode!=='navigate'||url.origin!==scope.origin||!url.pathname.startsWith(scope.pathname))return;
+  event.respondWith(fetch(new Request(event.request,{cache:'no-store'})).catch(()=>new Response(offline,{status:503,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}})));
+});

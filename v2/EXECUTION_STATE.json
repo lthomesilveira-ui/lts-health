@@ -49,28 +49,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-DATA-QUALITY-007",
-    "status": "done",
-    "goal": "Distinguish actual daily receipt coverage from selected-origin eligibility, explain each excluded day and render unavailable total energy without a false zero.",
+    "id": "PKG-IPHONE-HOME-SCREEN-008",
+    "status": "in_progress",
+    "goal": "Deliver stable iPhone Home Screen access with Health identity, current-version launches, safe standalone layout and preserved private-data/authentication boundaries.",
     "task_ids": [
-      "LTS-DAILY-COVERAGE-001"
+      "LTS-IPHONE-HOME-SCREEN-001",
+      "LTS-PUBLIC-ENTRY-RELIABILITY-001"
     ],
-    "candidate_build": "health-integrated-20261029.94",
+    "candidate_build": "health-integrated-20261029.95",
     "public_build": "health-integrated-20261029.94",
-    "owner_acceptance": "positive_layout_feedback_global_acceptance_open",
+    "owner_acceptance": "not_requested",
     "completed_evidence": [
-      "Unique received-date coverage is now separate from the unchanged selected-origin mean; native per-day evidence explains other-origin, repeated, partial, invalid, unreceived and unverified days without creating source lineage.",
-      "Absent total energy remains an em dash with an explicit unavailable message; genuine zero remains zero. Daily partial/reviewed observations retain their recorded value and are distinguished from eligibility for a closed-period mean.",
-      "Local synthetic model/render, parity, privacy, bounded-write and continuity checks pass. Original values, source choices, comparison rules, prescriptions and operational write/auth implementations are preserved.",
-      "Final responsive cockpit/source gate40884910213 passed, including six full/sparse cockpit cases, three split-origin/overlap daily-quality cases at320/393/1536px and the complete original fractional steps/date journey at390/1280px. Zero synthetic writes. Open mobile details occupy the available width; a minimum100px reason column is checked.",
-      "Inspected and SHA256-verified synthetic artifact12901626131 digest87b40dfbd935f2ae149d4363424e8b569413794aa12267f5501ad220d61e9478. Final320px/393px daily details are readable. The subsequent commit changes only the legacy steps test selector and gate; runtime assets remain byte-identical. Final test-head artifact12901828141 digest7d59a4b1d0ffc00abfcfd8d9192086a3c24d7a039e5b340d911003862fb4a54c records successful repetition.",
-      "Normal PR421 published .94 at 0eb8d03733d941435aa90fd437a45a285179c79f. Deploy40885412278, public Pages40885492942, homologation40885492805 and actual authenticated production workflow40885412168 passed. The existing authenticated journey checks actual values, daily receipt/selection coverage and total-energy availability across all windows; no health record is written.",
-      "Cloud Browser independently opened the exact public .94 URL and confirmed build meta, protected login and no page overflow. That browser session is signed out; this is not a fresh manual authenticated dashboard inspection or a physical-iPhone acceptance.",
-      "Fresh source audit, official export-contract review, existing support-thread reads and targeted context recovery completed. Missing original identity, verified full-day basal coverage, historical water and the exact fifteen-record proposal remain independently blocked; they are not solved by interface copy.",
-      "All fourteen final candidate workflows completed successfully at30abe8cc5235073186a96c8deb2d65a30f911563, including Isolated Preview40884910179, Integrated40884910150, Calendar/PDF40884910018, Functional40884910100 and Cockpit40884910213. Earlier candidate failures and pending statements are superseded by these completed exact-candidate checks."
+      "Owner explicitly requests Health on the iPhone Home Screen as already done for Wealth, alongside autonomous backlog continuation.",
+      "Production v2 lacked installation metadata and icons; the dormant root worker cached shell files with a broad cleanup policy.",
+      "Generic stable manifests, opaque app icons, login/More installation guidance, network-only navigation and scoped retirement of old Health caches implemented. Static installation, current graph, privacy and read-only-preview contracts pass."
     ],
-    "pending_gates": [],
-    "completed_on": "2026-10-29"
+    "pending_gates": [
+      "Chromium/WebKit and actual service-worker lifecycle evidence",
+      "Normal publication, public verification and established real-authenticated checks"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/?v=20261029.94#hoje",
@@ -838,7 +835,8 @@
       ],
       "evidence": [
         "ios/LTSHealthCompanion",
-        "v2/apple-bridge-contract-smoke.mjs"
+        "v2/apple-bridge-contract-smoke.mjs",
+        "Home Screen web installation is tracked separately in LTS-IPHONE-HOME-SCREEN-001. It does not close the native HealthKit/signing/physical-device gate."
       ],
       "next_action": "Run the physical-device gate after Apple signing and device setup exist.",
       "blocker": "Apple signing, TestFlight/device setup, and real source evidence are external to the current environment."
@@ -1469,7 +1467,8 @@
         "The first actual bridge water delivery was independently verified; it followed an owner-triggered export.",
         "Phone automations and permissions are configured. That first receipt alone does not establish automatic recurrence.",
         "Read-only restart and exact public inspection on 2026-10-12 confirm further genuine water observations beyond the first manual receipt. Multiple dates alone do not distinguish manual export from iOS automatic execution; do not guarantee cadence.",
-        "2026-10-13 restart: later actual bridge receipt with hydration rechecked. Receipt metadata does not independently identify a manual or background trigger; recurring automation remains unclaimed."
+        "2026-10-13 restart: later actual bridge receipt with hydration rechecked. Receipt metadata does not independently identify a manual or background trigger; recurring automation remains unclaimed.",
+        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten."
       ],
       "next_action": "Read the next genuine source/receiver update when it exists and distinguish it from manually triggered export. Preserve keys, selections and prior records.",
       "blocker": "A later independently identifiable automatic source update has not yet been observed; iOS background execution is best effort."
@@ -1731,7 +1730,8 @@
         "The provider acknowledged the native report and states that the water API request returns no records without an error. Account mismatch remains a hypothesis; no reset or new report was performed.",
         "2026-10-26 later checkpoint: owner completed same-account reset and post-reset native report; the specifically consented source screenshot was sent and acknowledged. The provider proposes Deauthorize without yet explaining its distinction from the completed icon reset; clarification has already been sent in the existing case.",
         "Continuity restart: both support conversations re-read, with no reply after the previously recorded operational questions. Fresh owner-scoped receipt audit and authenticated Data/Sources still do not establish water restoration. Existing completed phone actions and unanswered questions remain preserved.",
-        "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested."
+        "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested.",
+        "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested."
       ],
       "next_action": "Await the already-requested technical distinction between Deauthorize and the completed reset, confirmation of post-reset API findings and supported escalation. Preserve all completed steps; do not duplicate replies or ask for new ingestion/screenshots/reports.",
       "blocker": "Empty API response remains unexplained; no restoration or new indispensable native step is established.",
@@ -1756,7 +1756,8 @@
         "Completeness review searched the available conversations, exact proposal references and private file metadata again; the original exact manifest was not recovered. Existing broader ambiguous records are not substituted.",
         "Further focused available-conversation search found no original exact manifest. Unrelated project material and later summaries were excluded; laboratory data remains untouched.",
         "Continuity restart: targeted context and Library searches did not recover the exact original fifteen-record manifest. No substitute list was generated and no laboratory record was changed.",
-        "2026-10-29: targeted durable-context recovery again returns references to the missing proposal, without the exact fifteen targets, original values or per-record authority. No clinical proposal is reconstructed."
+        "2026-10-29: targeted durable-context recovery again returns references to the missing proposal, without the exact fifteen targets, original values or per-record authority. No clinical proposal is reconstructed.",
+        "Historical supplied migration/handoff files were inspected. They do not provide the original exact fifteen-record correction manifest; no earlier clinical assumptions are promoted or reimported."
       ],
       "next_action": "Recover the original private proposal from a durable source; keep this as agent-side continuity work and do not ask the owner to repeat the medical history.",
       "blocker": "The exact original private fifteen-record manifest is not currently recovered."
@@ -1777,7 +1778,8 @@
         "Read-only candidate audit confirms prospectively captured observations, no verified coverage and absent source identification.",
         "Existing dashboard total-energy contract accepts only explicitly supplied totals and does not add basal candidates.",
         "Current private candidate recheck still has no independently identified original source, interval boundaries or verified coverage; candidates remain excluded from totals.",
-        "2026-10-29: private aggregate review still finds no source-identified, interval-bounded, verified full-day basal coverage. Candidates remain private and non-additive; no energy total is inferred."
+        "2026-10-29: private aggregate review still finds no source-identified, interval-bounded, verified full-day basal coverage. Candidates remain private and non-additive; no energy total is inferred.",
+        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten."
       ],
       "next_action": "Inspect a genuine origin-bearing full-day export when available; preserve the current non-additive boundary.",
       "blocker": "Available prospective candidates do not establish source identity or full-day coverage."
@@ -1937,7 +1939,8 @@
         "A receiver request was rejected before parsing at the existing payload limit; its body is unknown.",
         "A separate technical support request has been sent using the official channel without medical values, images or credentials.",
         "Receiver version 9 is deployed and numeric transport diagnostics now operate on genuine complete accepted requests below the unchanged limit. The original oversized body remains unknown; the export-provider reply and supported batching remain pending.",
-        "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested."
+        "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested.",
+        "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested."
       ],
       "next_action": "Use the provider response and a genuine bounded diagnostic to establish request composition and supported batching; preserve current keys and accepted records.",
       "blocker": "Rejected request composition and supported export batching are not yet established."
@@ -2293,10 +2296,53 @@
       "evidence": [
         "Authenticated daily exports contain an explicitly absent original source, without a recoverable hidden source identifier in the available payload metadata.",
         "Official exporter health-metric documentation permits source omission for cumulative and heart-rate data on iOS 27 and later. This is a plausible mechanism, not a proven diagnosis of this connection.",
-        "Synthetic receipt coverage is repaired independently of source lineage and must not pool means or rename historical records."
+        "Synthetic receipt coverage is repaired independently of source lineage and must not pool means or rename historical records.",
+        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten."
       ],
       "next_action": "Use an original source-bearing export or a supported provider mapping when it becomes available; retain separate source segments in the meantime.",
       "blocker": "No attributable original source identity or stable mapping exists in the currently received metadata."
+    },
+    {
+      "id": "LTS-IPHONE-HOME-SCREEN-001",
+      "area": "iPhone Home Screen access",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Deliver stable iPhone Home Screen access with Health identity, current-version launches, safe standalone layout and preserved private-data/authentication boundaries.",
+      "acceptance": [
+        "Production entry exposes stable Home Screen identity, name and real Apple/manifest icons; start URL opens the current cockpit without pinning a build.",
+        "Installation guidance is reachable at login and More; standalone layout reserves safe areas without covering charts or navigation.",
+        "Cold navigation requests current HTML; warm updates require an explicit action and preserve unfinished inputs until that action.",
+        "Offline navigation shows a neutral connection screen; no patient response or credentials enter CacheStorage, and other apps/cache/session storage are preserved.",
+        "Verify install metadata, Chromium/WebKit layout, actual worker offline/reconnect/update behavior, publication and normal protected login; physical owner installation remains explicit."
+      ],
+      "evidence": [
+        "Owner explicitly requests Health on the iPhone Home Screen as already done for Wealth, alongside autonomous backlog continuation.",
+        "Production v2 lacked installation metadata and icons; the dormant root worker cached shell files with a broad cleanup policy.",
+        "Generic stable manifests, opaque app icons, login/More installation guidance, network-only navigation and scoped retirement of old Health caches implemented. Static installation, current graph, privacy and read-only-preview contracts pass."
+      ],
+      "next_action": "Complete synthetic browser lifecycle tests, inspect captures, publish and verify the exact public installation entry.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-PUBLIC-ENTRY-RELIABILITY-001",
+      "area": "deployed entry verification",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Resolve a fresh signed-out public-gate failure and keep equivalent authentication/isolation checks with useful readiness diagnostics.",
+      "acceptance": [
+        "Inspect the failed job and distinguish a bootstrap timeout from a proven data/auth isolation defect.",
+        "Retain all clean signed-out/private-route/backend-write assertions; verify fresh public checks after publication.",
+        "Record only static readiness flags on failure and use the same pinned browser runtime as the supported tests."
+      ],
+      "evidence": [
+        "Previous main public homologation run40887036730 timed out awaiting the login; counterpart public Pages check passed. No root cause is inferred from that timeout alone.",
+        "One bounded rerun of the same failed job completed successfully at the same unchanged main (attempt2).",
+        "Public readiness now waits on the actual login condition with an explicit deadline and writes bounded static flags on failure. The homologation job uses the established pinned official browser image."
+      ],
+      "next_action": "Verify the modified gate against candidate and published .95 without weakening any source/authentication assertions.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -2992,6 +3038,30 @@
       ],
       "pending_evidence": [],
       "completed_on": "2026-10-28"
+    },
+    {
+      "id": "PKG-DATA-QUALITY-007",
+      "status": "done",
+      "goal": "Distinguish actual daily receipt coverage from selected-origin eligibility, explain each excluded day and render unavailable total energy without a false zero.",
+      "task_ids": [
+        "LTS-DAILY-COVERAGE-001"
+      ],
+      "candidate_build": "health-integrated-20261029.94",
+      "public_build": "health-integrated-20261029.94",
+      "owner_acceptance": "positive_layout_feedback_global_acceptance_open",
+      "completed_evidence": [
+        "Unique received-date coverage is now separate from the unchanged selected-origin mean; native per-day evidence explains other-origin, repeated, partial, invalid, unreceived and unverified days without creating source lineage.",
+        "Absent total energy remains an em dash with an explicit unavailable message; genuine zero remains zero. Daily partial/reviewed observations retain their recorded value and are distinguished from eligibility for a closed-period mean.",
+        "Local synthetic model/render, parity, privacy, bounded-write and continuity checks pass. Original values, source choices, comparison rules, prescriptions and operational write/auth implementations are preserved.",
+        "Final responsive cockpit/source gate40884910213 passed, including six full/sparse cockpit cases, three split-origin/overlap daily-quality cases at320/393/1536px and the complete original fractional steps/date journey at390/1280px. Zero synthetic writes. Open mobile details occupy the available width; a minimum100px reason column is checked.",
+        "Inspected and SHA256-verified synthetic artifact12901626131 digest87b40dfbd935f2ae149d4363424e8b569413794aa12267f5501ad220d61e9478. Final320px/393px daily details are readable. The subsequent commit changes only the legacy steps test selector and gate; runtime assets remain byte-identical. Final test-head artifact12901828141 digest7d59a4b1d0ffc00abfcfd8d9192086a3c24d7a039e5b340d911003862fb4a54c records successful repetition.",
+        "Normal PR421 published .94 at 0eb8d03733d941435aa90fd437a45a285179c79f. Deploy40885412278, public Pages40885492942, homologation40885492805 and actual authenticated production workflow40885412168 passed. The existing authenticated journey checks actual values, daily receipt/selection coverage and total-energy availability across all windows; no health record is written.",
+        "Cloud Browser independently opened the exact public .94 URL and confirmed build meta, protected login and no page overflow. That browser session is signed out; this is not a fresh manual authenticated dashboard inspection or a physical-iPhone acceptance.",
+        "Fresh source audit, official export-contract review, existing support-thread reads and targeted context recovery completed. Missing original identity, verified full-day basal coverage, historical water and the exact fifteen-record proposal remain independently blocked; they are not solved by interface copy.",
+        "All fourteen final candidate workflows completed successfully at30abe8cc5235073186a96c8deb2d65a30f911563, including Isolated Preview40884910179, Integrated40884910150, Calendar/PDF40884910018, Functional40884910100 and Cockpit40884910213. Earlier candidate failures and pending statements are superseded by these completed exact-candidate checks."
+      ],
+      "pending_gates": [],
+      "completed_on": "2026-10-29"
     }
   ],
   "latest_published_release": {
@@ -3191,27 +3261,20 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-10-29",
-    "reviewed_at_utc": "2026-10-29T13:54:12.781911+00:00",
-    "source_main_commit": "0eb8d03733d941435aa90fd437a45a285179c79f",
-    "source_tree": "5c43a946cefe21fc4ef1a75f8548bd2315510fbe",
+    "reviewed_at_utc": "2026-10-29T18:27:33.769841+00:00",
+    "source_main_commit": "6da2ee5e53e57bebf379c546015e3978950c1173",
+    "source_tree": "e1f86ddcc9615939df3415029b9c176b5fb0fff7",
     "reference_heads": {
       "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
       "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
     },
     "runtime_build": "health-integrated-20261029.94",
-    "runtime_changed": true,
-    "executable_task_count": 0,
+    "runtime_changed": false,
+    "executable_task_count": 2,
     "open_external_issue_count": 0,
     "evidence": [
-      "Unique received-date coverage is now separate from the unchanged selected-origin mean; native per-day evidence explains other-origin, repeated, partial, invalid, unreceived and unverified days without creating source lineage.",
-      "Absent total energy remains an em dash with an explicit unavailable message; genuine zero remains zero. Daily partial/reviewed observations retain their recorded value and are distinguished from eligibility for a closed-period mean.",
-      "Local synthetic model/render, parity, privacy, bounded-write and continuity checks pass. Original values, source choices, comparison rules, prescriptions and operational write/auth implementations are preserved.",
-      "Final responsive cockpit/source gate40884910213 passed, including six full/sparse cockpit cases, three split-origin/overlap daily-quality cases at320/393/1536px and the complete original fractional steps/date journey at390/1280px. Zero synthetic writes. Open mobile details occupy the available width; a minimum100px reason column is checked.",
-      "Inspected and SHA256-verified synthetic artifact12901626131 digest87b40dfbd935f2ae149d4363424e8b569413794aa12267f5501ad220d61e9478. Final320px/393px daily details are readable. The subsequent commit changes only the legacy steps test selector and gate; runtime assets remain byte-identical. Final test-head artifact12901828141 digest7d59a4b1d0ffc00abfcfd8d9192086a3c24d7a039e5b340d911003862fb4a54c records successful repetition.",
-      "Normal PR421 published .94 at 0eb8d03733d941435aa90fd437a45a285179c79f. Deploy40885412278, public Pages40885492942, homologation40885492805 and actual authenticated production workflow40885412168 passed. The existing authenticated journey checks actual values, daily receipt/selection coverage and total-energy availability across all windows; no health record is written.",
-      "Cloud Browser independently opened the exact public .94 URL and confirmed build meta, protected login and no page overflow. That browser session is signed out; this is not a fresh manual authenticated dashboard inspection or a physical-iPhone acceptance.",
-      "Fresh source audit, official export-contract review, existing support-thread reads and targeted context recovery completed. Missing original identity, verified full-day basal coverage, historical water and the exact fifteen-record proposal remain independently blocked; they are not solved by interface copy.",
-      "All fourteen final candidate workflows completed successfully at30abe8cc5235073186a96c8deb2d65a30f911563, including Isolated Preview40884910179, Integrated40884910150, Calendar/PDF40884910018, Functional40884910100 and Cockpit40884910213. Earlier candidate failures and pending statements are superseded by these completed exact-candidate checks."
+      "Fresh refs, authoritative queue, open issues/PRs/workflows and existing support evidence reconciled.",
+      "One new executable Home Screen package is active; remaining original-data/provider/native-device conditions stay independent."
     ],
     "acceptance_note": "Owner acknowledged the improved layout; data-quality implementation is complete. Overall owner, genuine-form, original-source/history and physical-device acceptance remain separate."
   },
@@ -3286,6 +3349,25 @@
         "Normal PR421 published .94 at 0eb8d03733d941435aa90fd437a45a285179c79f. Deploy40885412278, public Pages40885492942, homologation40885492805 and actual authenticated production workflow40885412168 passed. The existing authenticated journey checks actual values, daily receipt/selection coverage and total-energy availability across all windows; no health record is written.",
         "Cloud Browser independently opened the exact public .94 URL and confirmed build meta, protected login and no page overflow. That browser session is signed out; this is not a fresh manual authenticated dashboard inspection or a physical-iPhone acceptance.",
         "Fresh source audit, official export-contract review, existing support-thread reads and targeted context recovery completed. Missing original identity, verified full-day basal coverage, historical water and the exact fifteen-record proposal remain independently blocked; they are not solved by interface copy."
+      ],
+      "acceptance_note": "Owner acknowledged the improved layout; data-quality implementation is complete. Overall owner, genuine-form, original-source/history and physical-device acceptance remain separate."
+    },
+    {
+      "reviewed_on": "2026-10-29",
+      "reviewed_at_utc": "2026-10-29T18:27:33.769841+00:00",
+      "source_main_commit": "6da2ee5e53e57bebf379c546015e3978950c1173",
+      "source_tree": "e1f86ddcc9615939df3415029b9c176b5fb0fff7",
+      "reference_heads": {
+        "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
+        "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
+      },
+      "runtime_build": "health-integrated-20261029.94",
+      "runtime_changed": false,
+      "executable_task_count": 2,
+      "open_external_issue_count": 0,
+      "evidence": [
+        "Fresh refs, authoritative queue, open issues/PRs/workflows and existing support evidence reconciled.",
+        "One new executable Home Screen package is active; remaining original-data/provider/native-device conditions stay independent."
       ],
       "acceptance_note": "Owner acknowledged the improved layout; data-quality implementation is complete. Overall owner, genuine-form, original-source/history and physical-device acceptance remain separate."
     }

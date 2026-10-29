@@ -1,3 +1,13 @@
+# iPhone Home Screen package — candidate .95, 29/10/2026
+
+The owner requests Health on the iPhone Home Screen, as already done for Wealth, while continuing backlog remediation. PKG-IPHONE-HOME-SCREEN-008 owns LTS-IPHONE-HOME-SCREEN-001 and LTS-PUBLIC-ENTRY-RELIABILITY-001; both are in_progress.
+
+The current v2 entry lacked installation metadata/icons. Candidate .95 adds stable current-cockpit launch, explicit Health identity, Apple icons, login/More help and standalone safe areas. The worker requests current navigation from the network and never caches health responses or credentials; obsolete Health shell caches are retired without deleting other apps' caches. Warm updates require a deliberate action, preserving an unfinished form. Read-only preview, source-specific calculations and authentication/write implementations are preserved.
+
+The last public homologation timeout was inspected; one bounded same-code repeat passed. Its exact cause is not inferred. Readiness diagnostics/deadlines and the pinned browser image are strengthened; all isolation assertions remain. Fresh source/support review supplies no recovery of missing water or verified daily expenditure and no substantive new provider answer. Historical supplied migration documents do not recover the exact fifteen-record proposal. No completed phone step or source file is requested again.
+
+Static boundaries pass. Responsive browser/worker evidence, normal publication and real authenticated/public checks are pending. The final Add to Home Screen action is performed on the owner's iPhone; this package does not install or test the separate native HealthKit companion. Earlier entries below are history; EXECUTION_STATE.json is authoritative.
+
 # Daily data quality published and verified — .94, 29/10/2026
 
 All fourteen final candidate workflows completed successfully at30abe8cc5235073186a96c8deb2d65a30f911563, including Isolated Preview40884910179, Integrated40884910150, Calendar/PDF40884910018, Functional40884910100 and Cockpit40884910213. Earlier candidate failures and pending statements are superseded by these completed exact-candidate checks.

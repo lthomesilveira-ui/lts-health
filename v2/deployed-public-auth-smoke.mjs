@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {mkdirSync,readFileSync} from 'node:fs';
+import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
 // Fresh signed-out contexts only. No credentials, fixture mode or authenticated data.
 const root=new URL(process.env.LTS_PUBLIC_ROOT||'https://lthomesilveira-ui.github.io/lts-health/');
@@ -19,7 +19,15 @@ try{
   });
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   const url=new URL(root);if(process.env.LTS_DEPLOY_SHA)url.searchParams.set('lts_sha',process.env.LTS_DEPLOY_SHA);
-  await page.goto(url.href,{waitUntil:'networkidle'});await page.locator('#login:not(.hidden)').waitFor();
+  await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:60000});
+  try{await page.locator('#login:not(.hidden)').waitFor({timeout:60000});}
+  catch(error){
+   // Only static readiness flags: no source rows, credentials or private DOM.
+   const readiness=await page.evaluate(()=>({build:document.querySelector('meta[name="lts-build"]')?.content||null,loginVisible:!document.querySelector('#login')?.classList.contains('hidden'),privateShellVisible:!document.querySelector('#app')?.classList.contains('hidden'),dataRendererCount:document.querySelectorAll('[data-health-dashboard],[data-executive-dashboard]').length})).catch(()=>({pageUnavailable:true}));
+   writeFileSync(`artifacts/public-entry-readiness-${label}.json`,JSON.stringify({...readiness,errorCount:errors.length,blockedRequestCount:blocked.length},null,2));
+   throw error;
+  }
+  await page.waitForLoadState('networkidle');
   assert.equal(new URL(page.url()).pathname,root.pathname+'v2/','public root promotes to the actual app');
   assert.equal(new URL(page.url()).searchParams.has('fixture'),false);
   assert.equal(await page.locator('meta[name="lts-build"]').getAttribute('content'),expectedBuild);
