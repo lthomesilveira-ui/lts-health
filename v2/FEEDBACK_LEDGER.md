@@ -1,3 +1,17 @@
+# Nutrition comparison verification closed — 29/10/2026
+
+LTS-NUTRITION-COMPARISON-QA-002 is complete. The previously pending preview repetitions exposed an obsolete disclosure/window expectation after the visible Nutrition comparison shipped. The corrected browser verifies independent recent windows, equal-window values and the compact Home return while preserving all original source, precision, retrospective, geometry, escaping and no-write assertions. The same focused test runs earlier and provides bounded synthetic diagnostics; no test is duplicated or removed.
+
+Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.
+
+The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.
+
+Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.
+
+Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.
+
+The published application stays at .96. Training remains a received documentary reference compared with actual records, without inferred adoption or automatic progression. No clinical records, source receipts, prescriptions, authentication, write paths, cache behavior or schedules change. Overall owner acceptance, physical iPhone opening and the fourteen source/provider/original-history/genuine-form/native-device conditions remain independent. The final queue has 78 done, 14 blocked_external, 1 blocked_user and 2 accepted_gap; zero ready/in_progress.
+
 # Comparison verification follow-up — 29/10/2026
 
 Training comparison remains a documentary reference against recorded activity. A received plan does not establish adoption, adherence, a clinical start or automatic progression. Any later decision to follow a reference requires its own explicit evidence; differences remain descriptive.

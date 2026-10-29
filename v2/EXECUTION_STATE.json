@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-NUTRITION-COMPARISON-QA-010",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Close the newly completed stale preview gate while preserving documentary-only training comparison and all published source/privacy behavior.",
     "task_ids": [
       "LTS-NUTRITION-COMPARISON-QA-002"
@@ -59,14 +59,17 @@
     "public_build": "health-integrated-20261029.96",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Previously pending candidate40949297821 and production40949743449 completed with the same timeout at the retired Nutrition disclosure selector. All preceding preview steps and the newer documentary-plan/public/actual-auth gates passed.",
-      "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass.",
-      "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check."
+      "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
+      "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
+      "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
+      "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
+      "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
+      "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
     ],
-    "pending_gates": [
-      "Exact candidate isolated preview browser",
-      "Post-merge isolated preview browser"
-    ]
+    "pending_gates": [],
+    "runtime_changed": false,
+    "verification_only": true,
+    "verified_at_utc": "2026-10-29T21:32:39.326524Z"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -76,7 +79,7 @@
     "published_on": "2026-10-29",
     "verified_on": "2026-10-29",
     "verified_at_utc": "2026-10-29T20:33:47Z",
-    "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
+    "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy 40949743688, public smokes 40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim. Verification-only follow-up closes the former preview repetitions: repaired exact candidate40956685751 and normal post-merge40957168100 pass with all 14 candidate and all 18 post-merge workflows. Published runtime and build remain identical.",
     "manual_exact_public_status": "exact_public_96_stable_entry_verified_signed_out",
     "manual_exact_public_verified_on": "2026-10-29",
     "manual_exact_public_evidence": "Cloud Browser stable entry confirms .96, login protection, manifest and no page overflow. Session signed out. Real private view checks are executed by the existing protected actual-auth workflow; no physical iPhone claim.",
@@ -86,12 +89,29 @@
     "pending_validation_repetitions": [],
     "validation_followup": {
       "task_id": "LTS-NUTRITION-COMPARISON-QA-002",
-      "status": "in_progress",
-      "failed_runs": [
+      "status": "done",
+      "verified_at_utc": "2026-10-29T21:32:39.326524Z",
+      "resolved_failed_runs": [
         40949297821,
-        40949743449
+        40949743449,
+        40955075854
       ],
-      "reason": "Stale Nutrition disclosure expectation after the independently selected expanded comparison shipped; no unresolved production runtime failure established."
+      "candidate_commit": "f57c05fdabc95e94fc17d040848e0e521f797737",
+      "candidate_run": 40956685751,
+      "promotion_commit": "6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc",
+      "post_merge_run": 40957168100,
+      "runtime_changed": false,
+      "build_id": "health-integrated-20261029.96",
+      "candidate_workflows_passed": 14,
+      "post_merge_workflows_passed": 18,
+      "evidence": [
+        "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
+        "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
+        "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
+        "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
+        "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
+        "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
+      ]
     }
   },
   "tasks": [
@@ -100,7 +120,7 @@
       "area": "Nutrition verification",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Repair the stale preview browser expectation after the visible Nutrition comparison gained its own recent-period selector.",
       "acceptance": [
@@ -111,9 +131,15 @@
       "evidence": [
         "Previously pending candidate40949297821 and production40949743449 completed with the same timeout at the retired Nutrition disclosure selector. All preceding preview steps and the newer documentary-plan/public/actual-auth gates passed.",
         "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass.",
-        "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check."
+        "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check.",
+        "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
+        "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
+        "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
+        "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
+        "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
+        "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
       ],
-      "next_action": "Run the repaired exact-head browser gate, inspect synthetic captures, promote the test-only change normally, and reconcile the final evidence."
+      "next_action": "Closed with full candidate and post-merge evidence. Preserve the visible independent comparison and all source/privacy constraints; reopen only for a concrete regression or newly available source condition."
     },
     {
       "id": "LTS-TRAINING-VISUAL-001",
