@@ -2,6 +2,7 @@ import {state,esc,fmtDate,norm,unique,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
 import {medicationContext} from './health-context.js';
 import {renderCareFollowup} from './care-followup.js';
+import {renderCurrentTreatmentStatus} from './training-plan-view.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus?.[key]==='error';
@@ -30,6 +31,7 @@ export function renderTreatmentHub(){
   for(const r of filteredEvents){const k=monthKey(r.event_date);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
   const regimenByName=new Map(allRegimens.map(r=>[r.medication,r]));
   return `${title('Protocolos','Seus protocolos e aplicações ao longo do tempo. Consulte datas e detalhes registrados.')}
+    ${renderCurrentTreatmentStatus(state.data,state.domainStatus)}
     ${renderCareFollowup(state.data.docs||[],state.domainStatus?.docs,{nutritionPlans:state.data.nutritionPlans||[],nutritionPlanStatus:state.domainStatus?.nutritionPlans})}
     <div class="card sectionGap"><b>Últimas aplicações: ${dates.length?fmtDate(dates.at(-1)):'sem registros'}</b><p>Consulte abaixo horário, local e lado efetivamente registrados. Uma aplicação passada não define a próxima nem confirma um protocolo atual.</p></div>
     <section class="card sectionGap"><div class="cardHead"><div><b>Seus protocolos</b><small>Resumo por item, sem reconstruir orientação de uso ou situação atual.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar protocolo ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="protocolSummaryGrid">${filteredNames.map(name=>itemSummary(name,allEvents,regimenByName.get(name))).join('')||empty('Ainda não há protocolo para mostrar com esta busca.')}</div></section>

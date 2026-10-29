@@ -49,29 +49,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-IPHONE-HOME-SCREEN-008",
-    "status": "blocked_user",
-    "goal": "Deliver stable iPhone Home Screen access with Health identity, current-version launches, safe standalone layout and preserved private-data/authentication boundaries.",
+    "id": "PKG-DOCUMENTED-PLAN-COMPARISON-009",
+    "status": "in_progress",
+    "goal": "Make received training/dietary references and the owner current-use confirmation usable in the private app without treating documents as clinical start or adherence.",
     "task_ids": [
-      "LTS-IPHONE-HOME-SCREEN-001",
-      "LTS-PUBLIC-ENTRY-RELIABILITY-001",
-      "LTS-IPHONE-INSTALL-VERIFY-001"
+      "LTS-TRAINING-PLAN-COMPARISON-001",
+      "LTS-NUTRITION-PLAN-ACCESS-001",
+      "LTS-TREATMENT-USE-STATEMENT-001"
     ],
-    "candidate_build": "health-integrated-20261029.95",
+    "candidate_build": "health-integrated-20261029.96",
     "public_build": "health-integrated-20261029.95",
-    "owner_acceptance": "physical_installation_not_yet_verified",
+    "owner_acceptance": "not_requested",
     "completed_evidence": [
-      "Owner explicitly requests Health on the iPhone Home Screen as already done for Wealth, alongside autonomous backlog continuation.",
-      "Production v2 lacked installation metadata and icons; the dormant root worker cached shell files with a broad cleanup policy.",
-      "Generic stable manifests, opaque app icons, login/More installation guidance, network-only navigation and scoped retirement of old Health caches implemented. Static installation, current graph, privacy and read-only-preview contracts pass.",
-      "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed.",
-      "Home Screen Chromium/WebKit gate 40934423076 passes eleven cases: six guide viewports, four real-route browser/standalone layouts and actual network-only worker lifecycle with real server outage/reconnect, unrelated app cache/session preserved and explicit warm update. No health writes.",
-      "Reviewed synthetic artifact 12922504244, sha256:0c4a82e38d3864c53d13b9ec50ff1ce52992dc9bb883e34dd82d49ea12c173bf, from the runtime-identical preceding candidate. The final head differs only in synthetic review test isolation. Narrow guide, standalone safe areas, offline and update captures inspected at readable resolution.",
-      "Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim.",
-      "PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair."
+      "Uploaded source fully read and visually inspected; private source binding and owner confirmation preserved.",
+      "Exact private insertion/readback and unchanged prior histories verified; no schema, authorization or auth/write implementation changed."
     ],
     "pending_gates": [
-      "Physical Safari Add to Home Screen and opening on the owner iPhone; technical implementation/publication are verified."
+      "Chromium/WebKit browser evidence and readable visual inspection",
+      "Normal publication, fresh public and existing protected actual-auth verification"
     ]
   },
   "last_verified_release": {
@@ -82,33 +77,14 @@
     "published_on": "2026-10-29",
     "verified_on": "2026-10-29",
     "verified_at_utc": "2026-10-29T18:55:44Z",
-    "automated_runtime_and_responsive_status": "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed. Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim. PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair.",
+    "automated_runtime_and_responsive_status": "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed. Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim. PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair. Continuation recheck: candidate Isolated Preview40934423145 and runtime repetitions40935144284/40935144205 are now completed successfully, superseding their earlier pending snapshot.",
     "manual_exact_public_status": "exact_public_95_stable_entry_verified_signed_out",
     "manual_exact_public_verified_on": "2026-10-29",
     "manual_exact_public_evidence": "Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim.",
     "acceptance_note": "Technical Home Screen delivery verified. Actual owner installation, global owner acceptance, original-source/history, genuine-form and native-device gates remain separate.",
     "real_auth_verification_commit": "74971058550ac1a4e78b7f8cb9d94a093143e2c1",
     "verification_runtime_preparation": "Existing protected actual-auth workflow; no new auth path, session copying, private-data cache or notification permission.",
-    "pending_validation_repetitions": [
-      {
-        "id": 40934423145,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40935144284,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40935144205,
-        "name": "LTS Health calendar reports and local PDF",
-        "status": "in_progress",
-        "conclusion": null
-      }
-    ]
+    "pending_validation_repetitions": []
   },
   "tasks": [
     {
@@ -2394,6 +2370,66 @@
       ],
       "next_action": "On the iPhone: Safari → Share → Add to Home Screen → Open as Web App → Add, then open Health. This web app step does not close the separate native HealthKit/signing gate.",
       "blocker": "The final iOS installation and physical opening must be performed on the owner iPhone."
+    },
+    {
+      "id": "LTS-TRAINING-PLAN-COMPARISON-001",
+      "area": "Training plan comparison",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show a received source-backed training reference beside actual linked records, without inventing clinical start, phases, equivalence, effort or adherence.",
+      "acceptance": [
+        "Verify the private source identity and exact readback while preserving existing histories.",
+        "Use only authenticated supported projections; no private payload or clinical values in public files.",
+        "Verify normal routes, mobile/desktop layout, missing/conflicting source states, publication and protected real-auth flow."
+      ],
+      "evidence": [
+        "Fresh owner request and received source inspected. Existing food plan and comparison are present but the comparison is collapsed below other content.",
+        "Two new privately guarded documentary records inserted and read back exactly; existing documents, medication regimens and application histories are unchanged. No application, dose or start date was inferred.",
+        "New read-only projections and comparison/status views implemented; directly affected source and dietary unit contracts pass locally."
+      ],
+      "next_action": "Complete browser and source/privacy checks, publish normally and verify the exact authenticated release.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-NUTRITION-PLAN-ACCESS-001",
+      "area": "Dietary plan discoverability",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Expose the existing received dietary reference against recent observed intake with a visible independent period, retained sources and explicit retrospective choice.",
+      "acceptance": [
+        "Verify the private source identity and exact readback while preserving existing histories.",
+        "Use only authenticated supported projections; no private payload or clinical values in public files.",
+        "Verify normal routes, mobile/desktop layout, missing/conflicting source states, publication and protected real-auth flow."
+      ],
+      "evidence": [
+        "Fresh owner request and received source inspected. Existing food plan and comparison are present but the comparison is collapsed below other content.",
+        "Two new privately guarded documentary records inserted and read back exactly; existing documents, medication regimens and application histories are unchanged. No application, dose or start date was inferred.",
+        "New read-only projections and comparison/status views implemented; directly affected source and dietary unit contracts pass locally."
+      ],
+      "next_action": "Complete browser and source/privacy checks, publish normally and verify the exact authenticated release.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-TREATMENT-USE-STATEMENT-001",
+      "area": "Owner-confirmed current use",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Persist and display the owner current-use statement separately from prescriptions, applications and historical doses.",
+      "acceptance": [
+        "Verify the private source identity and exact readback while preserving existing histories.",
+        "Use only authenticated supported projections; no private payload or clinical values in public files.",
+        "Verify normal routes, mobile/desktop layout, missing/conflicting source states, publication and protected real-auth flow."
+      ],
+      "evidence": [
+        "Fresh owner request and received source inspected. Existing food plan and comparison are present but the comparison is collapsed below other content.",
+        "Two new privately guarded documentary records inserted and read back exactly; existing documents, medication regimens and application histories are unchanged. No application, dose or start date was inferred.",
+        "New read-only projections and comparison/status views implemented; directly affected source and dietary unit contracts pass locally."
+      ],
+      "next_action": "Complete browser and source/privacy checks, publish normally and verify the exact authenticated release.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -3113,6 +3149,33 @@
       ],
       "pending_gates": [],
       "completed_on": "2026-10-29"
+    },
+    {
+      "id": "PKG-IPHONE-HOME-SCREEN-008",
+      "status": "blocked_user",
+      "goal": "Deliver stable iPhone Home Screen access with Health identity, current-version launches, safe standalone layout and preserved private-data/authentication boundaries.",
+      "task_ids": [
+        "LTS-IPHONE-HOME-SCREEN-001",
+        "LTS-PUBLIC-ENTRY-RELIABILITY-001",
+        "LTS-IPHONE-INSTALL-VERIFY-001"
+      ],
+      "candidate_build": "health-integrated-20261029.95",
+      "public_build": "health-integrated-20261029.95",
+      "owner_acceptance": "physical_installation_not_yet_verified",
+      "completed_evidence": [
+        "Owner explicitly requests Health on the iPhone Home Screen as already done for Wealth, alongside autonomous backlog continuation.",
+        "Production v2 lacked installation metadata and icons; the dormant root worker cached shell files with a broad cleanup policy.",
+        "Generic stable manifests, opaque app icons, login/More installation guidance, network-only navigation and scoped retirement of old Health caches implemented. Static installation, current graph, privacy and read-only-preview contracts pass.",
+        "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed.",
+        "Home Screen Chromium/WebKit gate 40934423076 passes eleven cases: six guide viewports, four real-route browser/standalone layouts and actual network-only worker lifecycle with real server outage/reconnect, unrelated app cache/session preserved and explicit warm update. No health writes.",
+        "Reviewed synthetic artifact 12922504244, sha256:0c4a82e38d3864c53d13b9ec50ff1ce52992dc9bb883e34dd82d49ea12c173bf, from the runtime-identical preceding candidate. The final head differs only in synthetic review test isolation. Narrow guide, standalone safe areas, offline and update captures inspected at readable resolution.",
+        "Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim.",
+        "PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair.",
+        "Fresh continuation confirms the three previously pending broad repetitions completed successfully. The physical Home Screen action remains separate and unconfirmed."
+      ],
+      "pending_gates": [
+        "Physical Safari Add to Home Screen and opening on the owner iPhone; technical implementation/publication are verified."
+      ]
     }
   ],
   "latest_published_release": {
@@ -3123,33 +3186,14 @@
     "published_on": "2026-10-29",
     "verified_on": "2026-10-29",
     "verified_at_utc": "2026-10-29T18:55:44Z",
-    "automated_runtime_and_responsive_status": "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed. Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim. PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair.",
+    "automated_runtime_and_responsive_status": "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed. Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim. PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair. Continuation recheck: candidate Isolated Preview40934423145 and runtime repetitions40935144284/40935144205 are now completed successfully, superseding their earlier pending snapshot.",
     "manual_exact_public_status": "exact_public_95_stable_entry_verified_signed_out",
     "manual_exact_public_verified_on": "2026-10-29",
     "manual_exact_public_evidence": "Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim.",
     "acceptance_note": "Technical Home Screen delivery verified. Actual owner installation, global owner acceptance, original-source/history, genuine-form and native-device gates remain separate.",
     "real_auth_verification_commit": "74971058550ac1a4e78b7f8cb9d94a093143e2c1",
     "verification_runtime_preparation": "Existing protected actual-auth workflow; no new auth path, session copying, private-data cache or notification permission.",
-    "pending_validation_repetitions": [
-      {
-        "id": 40934423145,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40935144284,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40935144205,
-        "name": "LTS Health calendar reports and local PDF",
-        "status": "in_progress",
-        "conclusion": null
-      }
-    ]
+    "pending_validation_repetitions": []
   },
   "release_history": [
     {
@@ -3357,7 +3401,7 @@
     },
     "runtime_build": "health-integrated-20261029.95",
     "runtime_changed": true,
-    "executable_task_count": 0,
+    "executable_task_count": 3,
     "open_external_issue_count": 0,
     "evidence": [
       "Exact candidate 2fd374e172936ca9148ca79788c94a3e6be17fe7, tree ebf9cd3efee8018ead7c4a81208e736a9b58ab25: 13 of fourteen workflows passed. LTS Health Functional Depth 40934423141, LTS Health Integrated Production 40934423113, cockpit-smoke 40934423095, LTS Health Fleury source audit 40934423166, LTS Health Recovery Depth Smoke 40934423122, LTS Health Polar background 40934423147, LTS Health Auto Export 40934423240, LTS Health Dashboard Reference Contract 40934423217, LTS Health v2 Nutrition History Smoke 40934423055, LTS Health Visual Training Report 40934423203, LTS Health iPhone Home Screen 40934423076, LTS Health Cockpit Experience 40934423213, LTS Health calendar reports and local PDF 40934423121. The unrelated unchanged-preview repetition [{'id': 40934423145, 'name': 'LTS Health Isolated Preview', 'status': 'in_progress', 'conclusion': None}] remains explicitly pending and is not counted as passed. Its static isolation contract passed; no preview runtime changed.",
@@ -3367,7 +3411,8 @@
       "PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair.",
       "Fresh private aggregate source and existing support-thread review confirms ongoing general receipts without restoration of the independently blocked metrics. No new provider instruction warrants repeating completed phone steps.",
       "Historical supplied migration material does not supersede the current database and does not recover the exact original fifteen-record proposal. All fourteen source/provider/original-history/genuine-form/native-device dependencies remain explicit.",
-      "Queue reconciled: {'done': 74, 'blocked_external': 14, 'accepted_gap': 2, 'blocked_user': 1}. Physical iPhone installation is the sole new user action; no technical task remains ready or in progress."
+      "Queue reconciled: {'done': 74, 'blocked_external': 14, 'accepted_gap': 2, 'blocked_user': 1}. Physical iPhone installation is the sole new user action; no technical task remains ready or in progress.",
+      "New owner request adds a bounded documentary-comparison/current-use package; prior unresolved source/provider/physical conditions remain independent."
     ],
     "acceptance_note": "Technical Home Screen delivery verified. Actual owner installation, global owner acceptance, original-source/history, genuine-form and native-device gates remain separate."
   },

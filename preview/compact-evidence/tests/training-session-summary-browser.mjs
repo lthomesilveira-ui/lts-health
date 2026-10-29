@@ -192,8 +192,8 @@ async function literalText(page,selector,expected,{mustWrap=false}={}){
 }
 async function checkShell(page,id=SUMMARY_IDS.current){
   assert.equal(await page.locator(trainingSelector('summary',id)).count(),1);
-  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').allTextContents(),['Resumo','Exercícios','Sessões','Por exercício'],'Keep session views and expose the requested exercise history');
-  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').evaluateAll(nodes=>nodes.map(el=>el.dataset.depthTrainingView)),['summary','exercises','history','progress'],'Original session destinations remain intact beside the exercise index');
+  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').allTextContents(),['Resumo','Exercícios','Sessões','Por exercício','Plano'],'Keep session views and expose the requested exercise history');
+  assert.deepEqual(await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').evaluateAll(nodes=>nodes.map(el=>el.dataset.depthTrainingView)),['summary','exercises','history','progress','plan'],'Original session destinations remain intact beside the exercise index');
   assert.equal(await page.locator('.ltsRefTrainHero').count(),1);
   assert.equal(await page.locator('.ltsRefTrainMetric').count(),4,'Keep all four existing metric cards');
   assert.equal(await page.locator('.ltsRefHrPanel').count(),1);

@@ -60,7 +60,14 @@ const polarProjection=dataLayer.match(/polarSessions:\(\)=>fetchAll\('health_pol
 if(!polarProjection||/source_payload|user_id|tokens_encrypted/.test(polarProjection))throw new Error('Polar session projection exposed private connection/raw data');
 if(/health_polar_(connections|oauth_states)/.test(dataLayer+core))throw new Error('service-only credentials entered client table access');
 if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions']"))throw new Error('Cockpit no longer loads protocol context on first open');
-if(!dataLayer.includes("tratamentos:['treatments','regimens','docs','nutritionPlans']"))throw new Error('Protocol route no longer loads event, context and consultation records together');
+if(!dataLayer.includes("tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses']"))throw new Error('Protocol route no longer loads events, source documents and the separate owner statement together');
+if(!dataLayer.includes("treinos:['trainingPlans']"))throw new Error('Training route no longer waits for its private documentary reference');
+const planReferences=await readFile(new URL('./src/documented-training-plan.js',import.meta.url),'utf8');
+for(const [domain,projection,type,alias] of [['trainingPlans','trainingPlanProjection','training_plan','training_plan_ui'],['treatmentStatuses','treatmentStatusProjection','patient_status','treatment_status_ui']]){
+ const fields=planReferences.match(new RegExp('export const '+projection+"='([^']+)'"))?.[1];
+ if(!fields||fields.split(',').some(field=>['*','source_payload','user_id','notes'].includes(field))||!fields.includes(':source_payload->'+alias))throw Error('Documentary projection exceeded its supported private subdocument');
+ if(!dataLayer.includes(`${domain}:()=>fetchAll('health_documents',${projection},'document_date',false,'source_record_id',sb,{document_type:'${type}'})`))throw Error('Documentary loader lost its type filter or explicit projection');
+}
 const documentLoader=dataLayer.match(/docs:\(\)=>fetchAll\('health_documents','([^']+)'/)?.[1]||'';
 if(documentLoader.split(',').includes('source_payload'))throw new Error('raw document payload entered the UI');
 if(!documentLoader.includes('care_context:source_payload->care_ui'))throw new Error('bounded consultation projection missing');

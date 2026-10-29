@@ -31,7 +31,7 @@ const manifest={
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
     "health-auto-export.css": "de23cf04121625dfa1ce4dd60039708903e0cc8348e27e11099e51441433cb6a",
     "health-cockpit.css": "e3d7cecd42308edfc85b32ef9d6f4d061b1728447cdd474309572dbbfefe5350",
-    "health-dashboard.css": "74847c3bb29bb31599aa1a3635827f06cacaedcb081876b3060bdf51b63d03a7",
+    "health-dashboard.css": "ce399c5edcf949f50aa60d9e2b1ef4a1432a1f392838642a747fa22b1f8ffd61",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
     "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
@@ -73,9 +73,10 @@ const manifest={
     "src/core.js": "64c10d70a53477cccd917da6d18aeeb0b15694d1501bab841fcc3a40f278d55d",
     "src/dashboard-changes.js": "2826da829e3fe46cd62c1939e53e9cb2faa3b097d3bea11757a188faa991fc7a",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
-    "src/data-layer.js": "3e22647a1dca4ea4175243a71628d7a6161dce00008c3ae4761c703402042861",
+    "src/data-layer.js": "7bc709afcdbc93286907989b659a79ba6e99b1495322263da6c88d3645e65938",
     "src/data-screen.js": "8db1b4235655a94a872df78f8abdd2da26c522c499bf3b5fc80349dc5dff9f01",
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
+    "src/documented-training-plan.js": "6d0d1415c129327585047b8e8c3477ddcec178fdb8c4c9ad43a25524a56d3bf5",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
     "src/entry.js": "47bda0c131be40b18555c0f4b02285199094541a3ff47a9a22e1ffb28ddac925",
     "src/evidence-insights-view.js": "b2dababf8c8ae008af62c3f49362e9e2f62173653eb566dec5504c28a58a6141",
@@ -125,14 +126,14 @@ const manifest={
     "src/mobile-study.js": "110f7b52b14bf6c2a893fd953bdb84f3f59bb1f7af3eaac6008efd1065c1529b",
     "src/nutrition-archive.js": "3e9cb8ca446b34bb206543f010b54c1164b8bdff1d929f073f2dfa342499c34a",
     "src/nutrition-plan-comparison.js": "ec7ae5bbe82c4425001b7ae34e8b64a290d7b0311d87e04e4dee0ac22505efd8",
-    "src/nutrition-plan-view.js": "d62ee0f80fe7d05f7d903b4c3ac3c7a01d7f3d25f4553e38cdea07a1d5b3435b",
-    "src/nutrition-product.js": "b88dcb191dcb8ac5fe3d8bf56eb7159f2b0672096a6b172faddebd853109f80c",
+    "src/nutrition-plan-view.js": "bcffbb499ba9fc4416d81c039aae813a1d0e4727a251322e2923c034422e0ac7",
+    "src/nutrition-product.js": "8a2c7ff6507bfc7912073109b61be0c8c223817e4fbda7370dd9edf04f1ee4e2",
     "src/nutrition-screen.js": "25efdbf671db9358d6fbec292ae1fd6580869baf8731b4c0b3be634019434aba",
     "src/nutrition-source-review.js": "47709c72d0fb86d6391241d2c0677492dd1d657c80f71c7f2b4f693733bc865b",
     "src/personal-goals.js": "8451a8c46108fb01124e1774958f4319498a46b8dc991279bd49f381c03b6d3f",
     "src/polar-connection.js": "18ce96581a1449b1f665d694f016c3e2ad8580b1e12cf47f03aa1ea064e9eca4",
     "src/preview-readonly.js": "ca267422b70a50f4bbddb3edfad7f5ed6d7d1bef8edad324e546f043a944a994",
-    "src/product-layout-runtime.js": "6a46a5c64c4659ef6b4b0abedc471c60c5e47ecdc6681e406261f25e59a88d05",
+    "src/product-layout-runtime.js": "2b3b0d52abd0b09dd80da64d77533e1af73d6d6fe218aae0ac0d46ba8467126f",
     "src/product-layout-v2.js": "a70967aea9eed353798c630bcd6d3f576d9b1c7709af3c3cfd7164f508452a16",
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "154e8ae21f55df9de451049ee82c7f401ed51bc62dea66792d1e32643d0f0beb",
@@ -149,20 +150,21 @@ const manifest={
     "src/today-screen.js": "0686db7acb46bd8147e9c5bf8aa6e30d2bd5f670fdfa0e1a1c5eab397bf4313c",
     "src/training-comparability.js": "29cbde79fed598028c4fffcf6789d8793909b7df64c9f7bec31c2a3a8919cc99",
     "src/training-history.js": "3b0e33c3ac7ec9bddbf9c9990fc792dc717c5aad0a74d324b2239dbd3d606a11",
+    "src/training-plan-view.js": "a4eded08638e3f9629b2f984a6fc0027fa3e5a64bbf82af1753553d306e4d92d",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
-    "src/training-reference-v2.js": "90fc4313e69cb39c0d3269e265390969d528dd80dc8a5521b04b2f8d00244817",
+    "src/training-reference-v2.js": "47e1b936b2bac552153805f35e90f1fa9f1796c830df718ac38f57fef8f68e28",
     "src/training-screen.js": "255481f1cfc2439d091bc7e0b138259206f1920804b8fcf795c53d90a229c759",
     "src/training-session-summary.js": "48bd4cad251ec9d2ea5b4d20f4fda79496a8874da1128f53ba246a1516e4bd43",
     "src/training-session-visuals.js": "c5818d875368342aeb0aa36d5cf80f0647d14d916feb4419400f484fa918399a",
     "src/training-session.js": "82bd2d255b7c9c5ef6aa44f6eca4427d963fb324bf74ad4fe33b984d7e217538",
-    "src/treatment-screen.js": "5de4943db5b64aee1d1312e082b613956200bcb43652d67a4100bb3518df4870",
+    "src/treatment-screen.js": "22862bd58022a1eb584e594eae202ed0b8e1fde56914da2795fae547e16cc623",
     "src/user-facing-errors.js": "bd8af0c7ac826a0d911a09906b64b547962f81402902d8a819e682f605cb5b2a",
     "src/water-reference-context.js": "05f44d253519d19db310bac7a586a05bbc1b5959f0aedc2aaf1dec13d1271ae5",
     "src/workout-evidence.js": "d964bca40266d0651ff269cb4d586b29945db1ff7b6bc9c629bb8f0b812f0960",
     "src/writes.js": "2056c98acaaf7b40e29e6d86e146965c0d2227b65098e99ee2b82f1310ecf60d",
     "styles.css": "90ca5a32254ba77ebb7394dffc85254f1790b7a70d6071c5772cf5b60336a274",
     "today.css": "c52c17b8471960e744307201f228dd3fcc6e3ed58819489add627a349f1fd21d",
-    "training-reference-v2.css": "9ba42ffad40ff4df7200e65903b997fb7797938a77fb1bb05b4c639553da9d8e",
+    "training-reference-v2.css": "528dbe9c5db05b94bf0dab25564285f46dbe6d4c6ed69b57de39193903d29983",
     "training-reference.css": "4336e64042148a3ea94353dc3f98d3e5010930f14635d90158c480a440c6df10",
     "training.css": "123b48543b6e97893371bba86c15784644fad7096da4e4a2a1d38a99d72970ce",
     "ux-coherence.css": "5f51f49e3d9312c54523257544daa86769ee093f31a35c349aefb73b0abbe6f7",
@@ -188,8 +190,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261029\.95/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261029.95'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261029\.96/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261029.96'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

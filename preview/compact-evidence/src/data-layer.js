@@ -2,14 +2,15 @@ import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
 import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFitnessPalViaApple} from './source-status.js';
 import {visibleWorkoutEvidence,decorateWorkoutProvenance} from './workout-evidence.js';
 import {nutritionWithAutoExport} from './health-auto-export-data.js';
+import {trainingPlanProjection,treatmentStatusProjection} from './documented-training-plan.js';
 
 const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
   bio:[],
-  treinos:[],
+  treinos:['trainingPlans'],
   evolucao:['labs'],
   analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans'],
-  tratamentos:['treatments','regimens','docs','nutritionPlans'],
+  tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses'],
   hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
@@ -38,6 +39,8 @@ export function fetchNutritionPlans(client=sb){
 }
 
 const loaders={
+  trainingPlans:()=>fetchAll('health_documents',trainingPlanProjection,'document_date',false,'source_record_id',sb,{document_type:'training_plan'}),
+  treatmentStatuses:()=>fetchAll('health_documents',treatmentStatusProjection,'document_date',false,'source_record_id',sb,{document_type:'patient_status'}),
   nutritionPlans:()=>fetchNutritionPlans(),
   waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,water_reference:source_payload->water_reference_ui,clinical_baseline:source_payload->clinical_baseline','document_date',false),
   goals:()=>fetchAll('health_personal_goals','effective_from,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,notes','effective_from',true,null),
