@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-HEALTH-ICON-011",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Deliver a recognizable Health Home Screen symbol and reconcile confirmed installation without altering clinical records or stable app identity.",
     "task_ids": [
       "LTS-HEALTH-ICON-001"
@@ -60,30 +60,34 @@
     "icon_revision": "heart-pulse-20261029",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Existing icon inspected; the owner requests a stronger health association after confirming installation.",
-      "A vector heart/pulse design was rendered to four opaque RGB sizes and actually inspected at60/120/180px. Source colors, full glyph safe zone and production-source byte parity checked.",
-      "Fresh aggregated source and existing support-thread review shows the previously blocked data/source conditions remain separate. Previous metadata publication has all16 workflows successful."
+      "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged.",
+      "Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain.",
+      "Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim.",
+      "Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
+      "Owner-reported Home Screen installation is complete. Existing icon replacement remains OS-controlled; stable identity/name/start are preserved and no forced removal, sign-out or duplicated health record is introduced.",
+      "Fresh private source/support and original-workout-context review did not supply the independent water/basal lineage, complete original chat or provider evidence needed to close the fourteen separate conditions. Training reference-only preference and all source boundaries remain intact."
     ],
-    "pending_gates": [
-      "Exact candidate Home Screen/browser and integration checks",
-      "Public icon and stable-entry verification"
-    ]
+    "pending_gates": [],
+    "published_icon_revision": "heart-pulse-20261029",
+    "promotion_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+    "clinical_runtime_changed": false,
+    "verified_at_utc": "2026-10-29T22:05:30.247144Z"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
     "build_id": "health-integrated-20261029.96",
-    "main_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
-    "runtime_promotion_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
+    "main_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+    "runtime_promotion_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
     "published_on": "2026-10-29",
     "verified_on": "2026-10-29",
-    "verified_at_utc": "2026-10-29T20:33:47Z",
-    "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy 40949743688, public smokes 40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim. Verification-only follow-up closes the former preview repetitions: repaired exact candidate40956685751 and normal post-merge40957168100 pass with all 14 candidate and all 18 post-merge workflows. Published runtime and build remain identical.",
-    "manual_exact_public_status": "exact_public_96_stable_entry_verified_signed_out",
+    "verified_at_utc": "2026-10-29T22:05:30.247144Z",
+    "automated_runtime_and_responsive_status": "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged. Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain. Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim. Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
+    "manual_exact_public_status": "exact_public_heart_icon_verified_signed_out",
     "manual_exact_public_verified_on": "2026-10-29",
-    "manual_exact_public_evidence": "Cloud Browser stable entry confirms .96, login protection, manifest and no page overflow. Session signed out. Real private view checks are executed by the existing protected actual-auth workflow; no physical iPhone claim.",
-    "acceptance_note": "The owner has not reviewed this release. Technical plan/status delivery, global owner acceptance, original-source/history, genuine-form and physical/native-device gates remain separate.",
-    "real_auth_verification_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
-    "verification_runtime_preparation": "Existing protected actual-auth flow, with a read-only check of the new private plan/current-use and visible dietary views. Existing auth/write implementations, keys, receiver and schedules preserved.",
+    "manual_exact_public_evidence": "Stable public Health entry and installation guide opened in Cloud Browser after deployment. The new heart/pulse is visible and login protection remains. The owner reports prior installation; physical icon replacement and overall acceptance are not inferred.",
+    "acceptance_note": "Owner-reported Home Screen installation is confirmed. The revised icon is technically published and visually verified; physical refresh, global owner acceptance and independent source/native/genuine-form conditions remain separate.",
+    "real_auth_verification_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+    "verification_runtime_preparation": "Existing protected actual-auth run40962504819 passed. Clinical/auth/write modules, receiver keys, source selection, lifecycle and schedules are unchanged.",
     "pending_validation_repetitions": [],
     "validation_followup": {
       "task_id": "LTS-NUTRITION-COMPARISON-QA-002",
@@ -110,7 +114,9 @@
         "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
         "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
       ]
-    }
+    },
+    "icon_revision": "heart-pulse-20261029",
+    "release_kind": "home_screen_icon_assets_only"
   },
   "tasks": [
     {
@@ -118,7 +124,7 @@
       "area": "Home Screen identity",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Replace the letter-first Home Screen icon with a recognizable heart and pulse mark.",
       "acceptance": [
@@ -130,9 +136,15 @@
       "evidence": [
         "Existing icon inspected; the owner requests a stronger health association after confirming installation.",
         "A vector heart/pulse design was rendered to four opaque RGB sizes and actually inspected at60/120/180px. Source colors, full glyph safe zone and production-source byte parity checked.",
-        "Fresh aggregated source and existing support-thread review shows the previously blocked data/source conditions remain separate. Previous metadata publication has all16 workflows successful."
+        "Fresh aggregated source and existing support-thread review shows the previously blocked data/source conditions remain separate. Previous metadata publication has all16 workflows successful.",
+        "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged.",
+        "Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain.",
+        "Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim.",
+        "Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
+        "Owner-reported Home Screen installation is complete. Existing icon replacement remains OS-controlled; stable identity/name/start are preserved and no forced removal, sign-out or duplicated health record is introduced.",
+        "Fresh private source/support and original-workout-context review did not supply the independent water/basal lineage, complete original chat or provider evidence needed to close the fourteen separate conditions. Training reference-only preference and all source boundaries remain intact."
       ],
-      "next_action": "Run affected contracts and the pinned installation browser gate, inspect captures, promote normally and verify exact public image bytes and entry."
+      "next_action": "Preserve the published health symbol and stable entry. Existing physical icon refresh is controlled by the owner device; continue the independent source/provider/original-history conditions when usable evidence exists."
     },
     {
       "id": "LTS-NUTRITION-COMPARISON-QA-002",
@@ -245,7 +257,8 @@
         "Two equivalent Library searches yielded no matches; this does not establish that records were not supplied.",
         "Existing execution queue and fresh actual workout/session/report views were read.",
         "Continuity restart: original-chat context search was callable, but returned no literal missing Health request or full original conversation. Unrelated Wealth snippets and the known checkpoint do not establish complete reconciliation.",
-        "Home Screen continuation: one fresh focused context search returns secondary project summaries and prior unsuccessful searches, without the literal fifteen-record original or exact authorization. This does not prove that the original was never supplied; the blocker remains open and no clinical changes are made."
+        "Home Screen continuation: one fresh focused context search returns secondary project summaries and prior unsuccessful searches, without the literal fifteen-record original or exact authorization. This does not prove that the original was never supplied; the blocker remains open and no clinical changes are made.",
+        "Focused Library and context retrieval found secondary consolidated documentation and a partial original exercise fact, but not the full original source needed for complete reconciliation. Existing canonical records are preserved; no full original recovery is claimed."
       ],
       "next_action": "Recover the original Health request or conversation from a durable source, then compare source requests; preserve existing records and keep global acceptance open. Do not infer absence from an unsuccessful search."
     },
@@ -1929,10 +1942,11 @@
         "PKG-DATA-QUALITY-007 published .94 and completed its bounded source-specific coverage/unavailable-energy acceptance. Overall acceptance is not inferred from this technical completion.",
         "The bounded .95 Home Screen implementation, public entry and existing real-auth checks are verified. Physical owner installation, genuine-form updates and all original-source/provider acceptance conditions remain separate.",
         "Owner has not yet reviewed the prior publication and provides a new source plan/current-use correction. Bounded .96 comparison/status implementation is now technically verified; global acceptance is not inferred.",
-        "Owner-reported Home Screen installation is confirmed on29/10. Icon feedback is actionable and tracked separately; overall acceptance is not granted."
+        "Owner-reported Home Screen installation is confirmed on29/10. Icon feedback is actionable and tracked separately; overall acceptance is not granted.",
+        "The requested heart/pulse icon is published and independently visible in the stable public app after normal PR430 promotion. Candidate13/13 and post-merge17/17 workflows passed; physical refresh and overall acceptance are not inferred."
       ],
-      "next_action": "Complete the bounded icon package and continue source/provider/original-record work when evidence exists. Preserve training reference-only semantics and keep global acceptance separate from installation.",
-      "blocker": "The owner confirms Home Screen installation, requests a more recognizable health icon and still sees unresolved items. Overall owner acceptance, actual water continuity, original source/history evidence and remaining physical/native verification remain open."
+      "next_action": "Preserve the verified heart/pulse revision and stable entry. Continue the independent source/provider/original-record work when usable evidence exists; keep global acceptance separate from installation.",
+      "blocker": "Home Screen installation is owner-confirmed and the revised health icon is published. Overall owner acceptance, actual water continuity, original source/history evidence and remaining physical/native verification stay open."
     },
     {
       "id": "LTS-COMPLETENESS-REVIEW-001",
@@ -2404,7 +2418,7 @@
         "Normal PR423 promotion 74971058550ac1a4e78b7f8cb9d94a093143e2c1, deploy 40935144428, public smokes [40935194042, 40935194123] and established actual-auth 40935144215 passed. Stable public entry opened in Cloud Browser at 2026-10-29T18:55:44Z: exact .95 metadata, protected login, installation help and no page overflow. Manual browser signed out; no manual authenticated or physical-device claim.",
         "PR424 820fefc074d8f012a4d54d4772bb1ca6bd9b8917 changes only two legacy workflow checks that incorrectly required the retired shell cache. All original asset/config/source/safety checks remain; the replacement executable worker contract passes locally and Smoke/Timeline runs [{'id': 40935457169, 'name': 'LTS Health Timeline Smoke', 'conclusion': 'success'}, {'id': 40935457351, 'name': 'LTS Health Smoke', 'conclusion': 'success'}] pass. Runtime files are unchanged by this repair."
       ],
-      "next_action": "The owner has confirmed Home Screen installation. Preserve stable identity and opening; the requested icon revision has its own bounded package.",
+      "next_action": "Owner installation and the health-symbol revision are delivered. Preserve stable identity, opening and the independent native/source acceptance conditions.",
       "blocker": null
     },
     {
@@ -2444,7 +2458,7 @@
         "The published technical installation and simulated standalone/browser gates pass; remote browser control cannot perform or certify the owner physical-device OS action.",
         "On29/10 the owner explicitly states the app has been added to the iPhone Home Screen and asks for an icon more related to health. This is owner-reported installation confirmation; no agent-observed phone layout, native HealthKit, data completeness or overall acceptance is inferred."
       ],
-      "next_action": "Installation is confirmed. Address the separately tracked icon feedback; preserve the stable entry and independent physical/native/data acceptance conditions.",
+      "next_action": "Owner-reported installation is confirmed and the requested health icon is published. Preserve the stable entry; broader physical/native/data acceptance stays in its separate tasks.",
       "blocker": null,
       "prior_acceptance": [
         "In Safari, open the stable published Health entry, use Share / Add to Home Screen, enable Open as Web App and add it.",
@@ -3322,58 +3336,92 @@
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
     "build_id": "health-integrated-20261029.96",
-    "main_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
-    "runtime_promotion_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
+    "main_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+    "runtime_promotion_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
     "published_on": "2026-10-29",
     "verified_on": "2026-10-29",
-    "verified_at_utc": "2026-10-29T20:33:47Z",
-    "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
-    "manual_exact_public_status": "exact_public_96_stable_entry_verified_signed_out",
+    "verified_at_utc": "2026-10-29T22:05:30.247144Z",
+    "automated_runtime_and_responsive_status": "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged. Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain. Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim. Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
+    "manual_exact_public_status": "exact_public_heart_icon_verified_signed_out",
     "manual_exact_public_verified_on": "2026-10-29",
-    "manual_exact_public_evidence": "Cloud Browser stable entry confirms .96, login protection, manifest and no page overflow. Session signed out. Real private view checks are executed by the existing protected actual-auth workflow; no physical iPhone claim.",
-    "acceptance_note": "The owner has not reviewed this release. Technical plan/status delivery, global owner acceptance, original-source/history, genuine-form and physical/native-device gates remain separate.",
-    "real_auth_verification_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
-    "verification_runtime_preparation": "Existing protected actual-auth flow, with a read-only check of the new private plan/current-use and visible dietary views. Existing auth/write implementations, keys, receiver and schedules preserved.",
-    "pending_validation_repetitions": [
-      {
-        "id": 40949297821,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949297764,
-        "name": "LTS Health calendar reports and local PDF",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743871,
-        "name": "LTS Health Integrated Production",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743449,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743526,
-        "name": "LTS Health calendar reports and local PDF",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743732,
-        "name": "LTS Health Functional Depth",
-        "status": "in_progress",
-        "conclusion": null
-      }
-    ]
+    "manual_exact_public_evidence": "Stable public Health entry and installation guide opened in Cloud Browser after deployment. The new heart/pulse is visible and login protection remains. The owner reports prior installation; physical icon replacement and overall acceptance are not inferred.",
+    "acceptance_note": "Owner-reported Home Screen installation is confirmed. The revised icon is technically published and visually verified; physical refresh, global owner acceptance and independent source/native/genuine-form conditions remain separate.",
+    "real_auth_verification_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+    "verification_runtime_preparation": "Existing protected actual-auth run40962504819 passed. Clinical/auth/write modules, receiver keys, source selection, lifecycle and schedules are unchanged.",
+    "pending_validation_repetitions": [],
+    "validation_followup": {
+      "task_id": "LTS-NUTRITION-COMPARISON-QA-002",
+      "status": "done",
+      "verified_at_utc": "2026-10-29T21:32:39.326524Z",
+      "resolved_failed_runs": [
+        40949297821,
+        40949743449,
+        40955075854
+      ],
+      "candidate_commit": "f57c05fdabc95e94fc17d040848e0e521f797737",
+      "candidate_run": 40956685751,
+      "promotion_commit": "6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc",
+      "post_merge_run": 40957168100,
+      "runtime_changed": false,
+      "build_id": "health-integrated-20261029.96",
+      "candidate_workflows_passed": 14,
+      "post_merge_workflows_passed": 18,
+      "evidence": [
+        "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
+        "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
+        "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
+        "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
+        "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
+        "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
+      ]
+    },
+    "icon_revision": "heart-pulse-20261029",
+    "release_kind": "home_screen_icon_assets_only"
   },
   "release_history": [
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261029.96",
+      "main_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
+      "runtime_promotion_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
+      "published_on": "2026-10-29",
+      "verified_on": "2026-10-29",
+      "verified_at_utc": "2026-10-29T20:33:47Z",
+      "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy 40949743688, public smokes 40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim. Verification-only follow-up closes the former preview repetitions: repaired exact candidate40956685751 and normal post-merge40957168100 pass with all 14 candidate and all 18 post-merge workflows. Published runtime and build remain identical.",
+      "manual_exact_public_status": "exact_public_96_stable_entry_verified_signed_out",
+      "manual_exact_public_verified_on": "2026-10-29",
+      "manual_exact_public_evidence": "Cloud Browser stable entry confirms .96, login protection, manifest and no page overflow. Session signed out. Real private view checks are executed by the existing protected actual-auth workflow; no physical iPhone claim.",
+      "acceptance_note": "The owner has not reviewed this release. Technical plan/status delivery, global owner acceptance, original-source/history, genuine-form and physical/native-device gates remain separate.",
+      "real_auth_verification_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
+      "verification_runtime_preparation": "Existing protected actual-auth flow, with a read-only check of the new private plan/current-use and visible dietary views. Existing auth/write implementations, keys, receiver and schedules preserved.",
+      "pending_validation_repetitions": [],
+      "validation_followup": {
+        "task_id": "LTS-NUTRITION-COMPARISON-QA-002",
+        "status": "done",
+        "verified_at_utc": "2026-10-29T21:32:39.326524Z",
+        "resolved_failed_runs": [
+          40949297821,
+          40949743449,
+          40955075854
+        ],
+        "candidate_commit": "f57c05fdabc95e94fc17d040848e0e521f797737",
+        "candidate_run": 40956685751,
+        "promotion_commit": "6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc",
+        "post_merge_run": 40957168100,
+        "runtime_changed": false,
+        "build_id": "health-integrated-20261029.96",
+        "candidate_workflows_passed": 14,
+        "post_merge_workflows_passed": 18,
+        "evidence": [
+          "Verification-only candidate f57c05fdabc95e94fc17d040848e0e521f797737, tree ce752d528400b6dc6dd74925e73e5de1fcb142b4: all 14 workflows passed, including repaired Isolated Preview 40956685751. Published application runtime and build are unchanged.",
+          "The focused Nutrition browser passes 320/393/1180/1440px: six exact values, independent 7/30-day windows, equivalent-window arithmetic, preserved Home window with compact return, retrospective opt-in, partial/zero/missing/source boundaries, precision, escaping, 44px controls and zero writes. No prior assertion is removed.",
+          "Early synthetic artifact 12933413700 sha256:13656ff0a050f307b58b059a4f84db2f46b3a39ac182916ee0a6c515fe28bea5 verified before reading all four successful results. Exact-head plan artifact 12933198383 sha256:3dcd40908b1e124d010f71024d68a6d1ef20dbdb2e9e5f79d7417fdef27c5272 verified; readable narrow Nutrition, Training reference entry and desktop Nutrition captures actually inspected. Six Chromium/WebKit plan/status/food cases retain zero writes.",
+          "Normal PR428 merge 6cbc5b2dbf1b2fc7550403b0abb6fcf82b05e5fc preserves the exact tested tree. All18 post-merge workflows passed, including Isolated Preview 40957168100, deploy 40957168149 and public smokes 40957216654/40957216686. No new manual authenticated or physical-device claim.",
+          "Local syntax, existing eight view cases, twenty-two comparison cases, training documentary boundaries, exact runtime/preview parity, continuity and public-payload guards passed. A local browser launch was unavailable due to the execution environment and is not counted as a successful browser test; the pinned remote runs supply the executed evidence.",
+          "Fresh private source/support and original-proposal review preserve the independent upstream/original-source/basal/genuine-form/native-device dependencies. Training remains a documentary comparison without inferred adoption, clinical start or adherence. Owner acceptance and physical installation remain unconfirmed."
+        ]
+      }
+    },
     {
       "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/",
       "build_id": "evolution-final-20261013.50",
@@ -3587,29 +3635,55 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-10-29",
-    "reviewed_at_utc": "2026-10-29T20:33:47Z",
-    "source_main_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
-    "source_tree": "04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05",
+    "reviewed_at_utc": "2026-10-29T22:05:30.247144Z",
+    "source_main_commit": "1fb9927e16249e76b3d37a0a790adba8f9ccdc91",
+    "source_tree": "dc5fbaae46eaa173dd86e3002d65b662e8fe7396",
     "reference_heads": {
       "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
       "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
     },
     "runtime_build": "health-integrated-20261029.96",
+    "icon_revision": "heart-pulse-20261029",
     "runtime_changed": true,
+    "runtime_change_scope": "public_icon_assets_and_installation_metadata_only",
+    "clinical_runtime_changed": false,
     "executable_task_count": 0,
     "open_external_issue_count": 0,
     "evidence": [
-      "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
-      "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-      "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
-      "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
-      "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment.",
-      "Two existing support threads rechecked: no new substantive reply. Fresh aggregate source review still does not establish water restoration or verified total expenditure. No vendor message or completed phone action is repeated.",
-      "All historical original-source/provider/genuine-form/native-device dependencies remain independent. Queue: {'done': 77, 'blocked_external': 14, 'accepted_gap': 2, 'blocked_user': 1}"
+      "Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged.",
+      "Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain.",
+      "Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim.",
+      "Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.",
+      "Owner-reported Home Screen installation is complete. Existing icon replacement remains OS-controlled; stable identity/name/start are preserved and no forced removal, sign-out or duplicated health record is introduced.",
+      "Fresh private source/support and original-workout-context review did not supply the independent water/basal lineage, complete original chat or provider evidence needed to close the fourteen separate conditions. Training reference-only preference and all source boundaries remain intact."
     ],
-    "acceptance_note": "The owner has not reviewed this release. Technical plan/status delivery, global owner acceptance, original-source/history, genuine-form and physical/native-device gates remain separate."
+    "acceptance_note": "Owner-reported Home Screen installation is confirmed. The revised icon is technically published and visually verified; physical refresh, global owner acceptance and independent source/native/genuine-form conditions remain separate."
   },
   "continuity_review_history": [
+    {
+      "reviewed_on": "2026-10-29",
+      "reviewed_at_utc": "2026-10-29T20:33:47Z",
+      "source_main_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
+      "source_tree": "04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05",
+      "reference_heads": {
+        "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
+        "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
+      },
+      "runtime_build": "health-integrated-20261029.96",
+      "runtime_changed": true,
+      "executable_task_count": 0,
+      "open_external_issue_count": 0,
+      "evidence": [
+        "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
+        "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
+        "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment.",
+        "Two existing support threads rechecked: no new substantive reply. Fresh aggregate source review still does not establish water restoration or verified total expenditure. No vendor message or completed phone action is repeated.",
+        "All historical original-source/provider/genuine-form/native-device dependencies remain independent. Queue: {'done': 77, 'blocked_external': 14, 'accepted_gap': 2, 'blocked_user': 1}"
+      ],
+      "acceptance_note": "The owner has not reviewed this release. Technical plan/status delivery, global owner acceptance, original-source/history, genuine-form and physical/native-device gates remain separate."
+    },
     {
       "reviewed_on": "2026-10-27",
       "source_main_commit": "588e25129692bae5ecb7e4ef4d83be4176619db8",
