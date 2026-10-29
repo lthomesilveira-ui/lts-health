@@ -1,3 +1,19 @@
+# Daily data quality published and verified — .94, 29/10/2026
+
+All fourteen final candidate workflows completed successfully at30abe8cc5235073186a96c8deb2d65a30f911563, including Isolated Preview40884910179, Integrated40884910150, Calendar/PDF40884910018, Functional40884910100 and Cockpit40884910213. Earlier candidate failures and pending statements are superseded by these completed exact-candidate checks.
+
+The owner acknowledges the improved cockpit and requested autonomous data-quality remediation. PKG-DATA-QUALITY-007 / LTS-DAILY-COVERAGE-001 are done for the bounded published implementation. Unique received dates are distinct from selected-origin mean eligibility. Native daily evidence explains exclusions and unverified gaps; missing total expenditure is explicitly unavailable and real zeros remain zeros. Open mobile metric details occupy the available width. The five-domain cockpit, seven readings, exact records, source choices, clinical text and auth/write boundaries are preserved.
+
+Final responsive cockpit/source gate40884910213 passed, including six full/sparse cockpit cases, three split-origin/overlap daily-quality cases at320/393/1536px and the complete original fractional steps/date journey at390/1280px. Zero synthetic writes. Open mobile details occupy the available width; a minimum100px reason column is checked.
+
+Inspected and SHA256-verified synthetic artifact12901626131 digest87b40dfbd935f2ae149d4363424e8b569413794aa12267f5501ad220d61e9478. Final320px/393px daily details are readable. The subsequent commit changes only the legacy steps test selector and gate; runtime assets remain byte-identical. Final test-head artifact12901828141 digest7d59a4b1d0ffc00abfcfd8d9192086a3c24d7a039e5b340d911003862fb4a54c records successful repetition.
+
+Normal PR421 published .94 at 0eb8d03733d941435aa90fd437a45a285179c79f. Deploy40885412278, public Pages40885492942, homologation40885492805 and actual authenticated production workflow40885412168 passed. The existing authenticated journey checks actual values, daily receipt/selection coverage and total-energy availability across all windows; no health record is written.
+
+Cloud Browser independently opened the exact public .94 URL and confirmed build meta, protected login and no page overflow. That browser session is signed out; this is not a fresh manual authenticated dashboard inspection or a physical-iPhone acceptance.
+
+No ready/in_progress root tasks remain. Existing water, missing source identity, full-day basal provenance, original-history/proposal, genuine ordinary-form and physical-device dependencies remain open. Provider access was freshly rechecked and still presents a site-served security block. Existing support cases have no new substantive answer; no completed phone step or duplicate message was repeated. Overall owner acceptance remains separate. EXECUTION_STATE.json is authoritative; earlier candidate/pending/rejection statements below are history.
+
 # Daily data quality remediation — candidate .94, 29/10/2026
 
 The owner acknowledges the improved cockpit and requests autonomous correction of daily coverage, total expenditure and remaining dependencies. PKG-DATA-QUALITY-007 / LTS-DAILY-COVERAGE-001 are in_progress. Candidate health-integrated-20261029.94 distinguishes unique received dates across sources from days eligible for the unchanged selected-origin mean. Native daily details explain other-origin, repeated, invalid, partial and unverified observations. Missing total expenditure is explicitly unavailable, never shown as a fabricated zero or estimated from unverified basal snapshots.
