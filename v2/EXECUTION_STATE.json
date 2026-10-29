@@ -60,7 +60,8 @@
     "owner_acceptance": "positive_layout_feedback_data_quality_open",
     "completed_evidence": [
       "Fresh read-only source audit and official exporter documentation establish that missing provenance is not recoverable by relabelling the current records.",
-      "Synthetic unit/render checks cover receipt-date union, independent origin means, overlap, partial/invalid/duplicate/null/zero observations, failed readers and absent total energy."
+      "Synthetic unit/render checks cover receipt-date union, independent origin means, overlap, partial/invalid/duplicate/null/zero observations, failed readers and absent total energy.",
+      "First candidate passed its responsive geometry and source arithmetic assertions, but actual 320px capture review found a cramped day-reason column. Mobile open metric details now span the available grid width; a minimum 100px reason-column assertion and bounded scrollable audit list address the observed defect. Final candidate evidence remains pending."
     ],
     "pending_gates": [
       "Responsive browser and visual inspection",
@@ -2277,7 +2278,8 @@
       ],
       "evidence": [
         "Fresh read-only source audit and official exporter documentation establish that missing provenance is not recoverable by relabelling the current records.",
-        "Synthetic unit/render checks cover receipt-date union, independent origin means, overlap, partial/invalid/duplicate/null/zero observations, failed readers and absent total energy."
+        "Synthetic unit/render checks cover receipt-date union, independent origin means, overlap, partial/invalid/duplicate/null/zero observations, failed readers and absent total energy.",
+        "First candidate passed its responsive geometry and source arithmetic assertions, but actual 320px capture review found a cramped day-reason column. Mobile open metric details now span the available grid width; a minimum 100px reason-column assertion and bounded scrollable audit list address the observed defect. Final candidate evidence remains pending."
       ],
       "next_action": "Finish responsive evidence, inspect captures, publish normally and verify the exact deployed runtime.",
       "blocker": null

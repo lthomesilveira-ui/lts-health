@@ -44,3 +44,6 @@
 .healthDailyCoverage li{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.25rem .6rem;padding:.65rem 0;border-top:1px solid var(--line,#e2e8f0);font-size:.78rem;line-height:1.5;overflow-wrap:anywhere}
 .healthDailyCoverage li small{grid-column:1/-1;color:var(--muted,#64748b);font-size:.72rem}
 @media print{.healthDailyCoverage{display:none}}
+
+@media(max-width:840px){.healthMetricGrid>.healthMetric:has(>details[open]){grid-column:1/-1}}
+.healthDailyCoverage>ul{max-height:26rem;overflow-y:auto}
