@@ -4,6 +4,7 @@ import {failed,errorCard} from './history-tools.js';
 import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './training-session.js';
 import {trainingSessionSummary} from './training-session-summary.js';
 import {sessionGroupChart,sessionHistoryChart} from './training-session-visuals.js';
+import {renderTrainingPlan} from './training-plan-view.js';
 
 const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
 
@@ -137,7 +138,7 @@ function exercisesView(workout){
 }
 
 function tabs(view){
-  const options=[['summary','Resumo'],['exercises','Exercícios'],['history','Sessões'],['progress','Por exercício']];
+  const options=[['summary','Resumo'],['exercises','Exercícios'],['history','Sessões'],['progress','Por exercício'],['plan','Plano']];
   return `<div class="ltsRefTrainTabs ltsRefTrainPrimaryTabs" role="tablist" aria-label="Detalhes do treino">${options.map(([key,label])=>`<button type="button" data-depth-training-view="${key}" role="tab" aria-selected="${view===key}" class="${view===key?'active':''}">${label}</button>`).join('')}</div>`;
 }
 
@@ -147,13 +148,13 @@ export function renderProductTraining(){
   const rows=workoutRows();
   const selected=rows.find(w=>w.source_record_id===state.ui.openWorkout)||rows[0]||null;
   const requested=state.ui.productTrainingView;
-  const view=['summary','exercises','history','exercise','progress'].includes(requested)?requested:(requested==='session'?'summary':'summary');
-  const heading=view==='progress'?'Histórico por exercício':view==='history'?'Treinos':view==='exercise'?exerciseHistoryTitle():selected?safe(selected.workout_type,'Sessão'):'Treinos';
-  const subtitle=view==='progress'?'Escolha um exercício para ver datas, cargas e repetições registradas.':view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Datas, cargas e repetições registradas por sessão.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
+  const view=['summary','exercises','history','exercise','progress','plan'].includes(requested)?requested:(requested==='session'?'summary':'summary');
+  const heading=view==='plan'?'Plano x realizado':view==='progress'?'Histórico por exercício':view==='history'?'Treinos':view==='exercise'?exerciseHistoryTitle():selected?safe(selected.workout_type,'Sessão'):'Treinos';
+  const subtitle=view==='plan'?'Referência recebida e seus registros, lado a lado.':view==='progress'?'Escolha um exercício para ver datas, cargas e repetições registradas.':view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Datas, cargas e repetições registradas por sessão.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
   return `<section class="ltsTrainingV2 ltsTrainingReference" data-training-design="visual-session" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
     <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino">+</button></header>
     ${view==='exercise'?exerciseNav():tabs(view)}
-    ${failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='progress'?renderExerciseDirectory():view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Ainda não há treinos registrados.</div>'}
+    ${view==='plan'?renderTrainingPlan(state.data,state.domainStatus,state.ui):failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='progress'?renderExerciseDirectory():view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Ainda não há treinos registrados.</div>'}
   </section>`;
 }
 

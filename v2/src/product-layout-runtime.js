@@ -84,7 +84,16 @@ if(!fixtureMode){
     // main.js owns canonical rendering. Depth controls redraw explicitly; no DOM rewrite observer.
     window.addEventListener('hashchange',settle);window.addEventListener('online',settle);
     document.addEventListener('input',event=>{if(textFields.has(event.target.dataset?.depthField))fieldChanged(event.target);});
-    document.addEventListener('change',event=>{if(selectFields.has(event.target.dataset?.depthField))fieldChanged(event.target);});
+    document.addEventListener('change',event=>{
+      const target=event.target;
+      if(route()==='nutricao'&&target.hasAttribute('data-nutrition-plan-period')&&['7','30','60','90','6m','1y'].includes(target.value)){state.ui.nutritionPlanPeriod=target.value;redraw();return;}
+      if(route()==='treinos'&&target.dataset?.trainingPlanControl){
+        const key={week:'trainingPlanWeek',template:'trainingPlanTemplate',workout:'trainingPlanWorkout'}[target.dataset.trainingPlanControl];
+        if(key){state.ui[key]=target.value;state.ui.trainingPlanLinks={};redraw();}return;
+      }
+      if(route()==='treinos'&&target.dataset?.trainingPlanMap){state.ui.trainingPlanLinks={...(state.ui.trainingPlanLinks||{}),[target.dataset.trainingPlanMap]:target.value};redraw();return;}
+      if(selectFields.has(target.dataset?.depthField))fieldChanged(target);
+    });
     document.addEventListener('click',event=>{
       const target=event.target instanceof Element?event.target:null;if(!target)return;
       const jump=target.closest('[data-ux-scroll]');if(jump&&['productCompositionHistory','productCompositionTrend','productLabsTrend','productLabsHistory','productLabsCollection'].includes(jump.dataset.uxScroll)){const el=document.getElementById(jump.dataset.uxScroll);if(el){el.scrollIntoView({block:'start'});const heading=el.querySelector('h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}}return;}

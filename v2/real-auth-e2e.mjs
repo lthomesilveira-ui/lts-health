@@ -2,6 +2,7 @@ import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import {runDepthChecks} from './real-auth-depth-checks.mjs';
 import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-dashboard-checks.mjs';
+import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
 if(!tokenHash)throw new Error('authenticated token hash missing');
@@ -286,6 +287,7 @@ try{
   await waitForRoute('tratamentos');
   if(await page.locator('.timelineItem').count()<1)throw new Error('real protocol history missing');
   await assertLightReadableCards('.protocolSummaryCard','desktop Protocols');
+  await verifyDocumentedPlanFlows(page,waitForRoute);
   await waitForRoute('dados');
   if(await page.locator('.qualityRow').count()<1)throw new Error('real quality history missing');
   const resolvedCount=await page.locator('.qualityRow').filter({hasText:'resolvido'}).count();

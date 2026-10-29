@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const source=path.join(root,'preview/compact-evidence'),target=path.join(root,'v2');
-const build='health-integrated-20261029.95';
+const build='health-integrated-20261029.96';
 const preserved=['src/core.js','src/writes.js','src/entry.js'];
 for(const name of preserved)assert.equal(fs.readFileSync(path.join(source,name),'utf8'),fs.readFileSync(path.join(target,name),'utf8'),`Operational boundary must be reviewed before changing ${name}`);
 const files=fs.readdirSync(source).filter(name=>/\.(css|svg)$/.test(name)&&name!=='preview-readonly.css').concat(fs.readdirSync(path.join(source,'src')).filter(name=>name.endsWith('.js')&&name!=='preview-readonly.js').map(name=>'src/'+name));
