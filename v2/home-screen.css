@@ -8,3 +8,5 @@ html[data-health-display="standalone"] .healthInstallOpen{display:none}
 .healthAppUpdate:not([hidden]){position:fixed;z-index:180;top:calc(12px + var(--health-safe-top));left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 24px));padding:14px 16px;border:1px solid #bad2e8;border-radius:14px;background:#fff;color:#17324f;box-shadow:0 8px 32px #15304930;font:14px/1.5 system-ui,sans-serif}.healthAppUpdate p{margin:0 0 8px}.healthAppUpdate>div{display:flex;gap:8px}.healthAppUpdate button{min-height:44px;flex:1;border:1px solid #c8d9e8;border-radius:9px;background:#eef5fd;color:#1765ad;font:600 13px/1.4 system-ui,sans-serif;cursor:pointer}.healthAppUpdate button:first-child{background:#176dc6;color:white;border-color:#176dc6}
 .healthInstallOpen:focus-visible,.healthInstallGuide button:focus-visible,.healthAppUpdate button:focus-visible{outline:3px solid #2588e8;outline-offset:3px}
 @media print{.healthInstallOpen,.healthInstallGuide,.healthAppUpdate{display:none!important}}
+
+html[data-health-display="standalone"]::before{content:'';position:fixed;z-index:190;top:0;left:0;right:0;height:var(--health-safe-top);background:#07131f;pointer-events:none}
