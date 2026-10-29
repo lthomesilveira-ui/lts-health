@@ -11,6 +11,10 @@ const update=document.getElementById('healthAppUpdate');
 document.querySelector('[data-health-update]')?.addEventListener('click',()=>location.reload());
 document.querySelector('[data-health-update-later]')?.addEventListener('click',()=>{update.hidden=true;});
 let lastCheck=-Infinity,checking=false,offered=null;
+function newerBuild(value){
+  const parse=text=>/^health-integrated-(\d{8})\.(\d+)$/.exec(text||''),a=parse(value),b=parse(build);
+  return Boolean(a&&b&&(Number(a[1])>Number(b[1])||a[1]===b[1]&&Number(a[2])>Number(b[2])));
+}
 async function checkVersion(){
   if(!navigator.onLine||document.hidden||checking||Date.now()-lastCheck<60000)return;
   checking=true;lastCheck=Date.now();
@@ -20,7 +24,7 @@ async function checkVersion(){
     const html=new DOMParser().parseFromString(await response.text(),'text/html');
     const latest=html.querySelector('meta[name="lts-build"]')?.content;
     // Offer an update; never reload an open health form in the background.
-    if(latest?.startsWith('health-integrated-')&&latest!==build&&latest!==offered){offered=latest;update.hidden=false;}
+    if(newerBuild(latest)&&latest!==offered){offered=latest;update.hidden=false;}
   }catch{}finally{checking=false;}
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkVersion();});
