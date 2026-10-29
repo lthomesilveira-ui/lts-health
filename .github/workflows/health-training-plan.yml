@@ -24,6 +24,7 @@ jobs:
       - name: Verify documentary boundaries and source parity
         run: |
           node preview/compact-evidence/tests/training-plan-test.mjs
+          node preview/compact-evidence/tests/plan-original-link-test.mjs
           node preview/compact-evidence/tests/nutrition-plan-view-test.mjs
           node preview/compact-evidence/tests/nutrition-plan-comparison-test.mjs
           node preview/compact-evidence/tests/preview-contract.mjs
