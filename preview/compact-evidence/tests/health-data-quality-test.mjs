@@ -37,6 +37,11 @@ const failed=renderHealthDashboard(f.data,f.status,{dashboardPeriod:'7'},f.today
 x=metric();assert.equal(x.value,101);assert.equal(x.coverageAudit.receivedDays,1);assert.equal(x.coverageAudit.rows.length,7,'today stays outside a closed-day audit');
 x=metric({dashboardMode:'day'});assert.equal(x.value,99);assert.equal(x.coverageAudit.rows[0].reason,'in_progress');assert.equal(x.coverageAudit.receivedDays,1);
 x=metric({dashboardCalendar:{bounds:{start:f.date(2),end:f.today}}});assert.equal(x.expectedDays,2);assert.equal(x.coverageAudit.rows.length,2);assert.equal(x.coverageAudit.receivedDays,1);
+({f,add,metric}=make());add(1,'Synthetic A',150,{knownPartial:true});
+x=metric({dashboardMode:'day',dashboardDate:f.date(1)});assert.equal(x.value,150);assert.equal(x.count,1);assert.equal(x.coverageAudit.rows[0].reason,'day_partial');assert.equal(x.coverageAudit.excludedDays,0,'a received daily value is distinguished from eligibility for a period mean');
+f.data.nutrition=[];f.data.sourceMetrics=[{source_record_id:'synthetic-invalid-review',metric_date:f.date(1),metric_type:'dietary_protein_g',value:100,unit:'g',source_name:'Synthetic review',canonical_status:'canonical',nutrition_review:{schema:'synthetic-unsupported-review'}}];
+x=metric();assert.equal(x.count,0);assert.equal(x.coverageAudit.excludedDays,1);assert.equal(x.coverageAudit.rows.at(-1).reason,'review');
+x=metric({dashboardMode:'day',dashboardDate:f.date(1)});assert.equal(x.value,100);assert.equal(x.count,1);assert.equal(x.coverageAudit.rows[0].reason,'day_review');assert.equal(x.coverageAudit.excludedDays,0);
 let html=renderHealthDashboard(f.data,f.status,{},FIXED_TODAY),total=html.match(/data-dashboard-card="totalEnergy"[^>]*>([\s\S]*?)<\/article>/)[1];
 assert.match(total,/<strong>—<\/strong>/);assert.match(total,/Gasto total indisponível nesta leitura/);assert.doesNotMatch(total,/<strong>0<\/strong>/);
 for(const mode of ['period','day']){

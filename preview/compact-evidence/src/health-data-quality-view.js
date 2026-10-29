@@ -1,7 +1,7 @@
 import {esc} from './core.js';
 import {sourceDisplayLabel} from './source-display.js';
 const date=value=>value.split('-').reverse().join('/');
-const reasons={used:'Usado na média',day_value:'Valor disponível neste dia',in_progress:'Dia em andamento',
+const reasons={used:'Usado na média',day_value:'Valor disponível neste dia',day_review:'Valor recebido; em conferência',day_partial:'Valor recebido; registro incompleto',in_progress:'Dia em andamento',
   multiple_values:'Mais de um valor na mesma origem; fora da média',review:'Informação em conferência; fora da média',
   partial:'Registro identificado como incompleto; fora da média',invalid_value:'Valor recebido precisa de conferência; fora da média',
   other_source:'Recebido em outra origem; fora desta média',not_received:'Sem valor recebido nas fontes consultadas',not_verified:'Recebimento não pôde ser confirmado'};

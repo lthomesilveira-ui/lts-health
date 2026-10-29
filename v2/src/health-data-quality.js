@@ -8,11 +8,11 @@ export function dailyCoverageAudit(metric,{mode='period',today,domains=[],status
     const sources=bySource.filter(item=>received(item.dates.get(point.date))).map(item=>item.source.key);
     const selectedReceived=received(point),hasOtherSource=sources.some(key=>key!==metric.source?.key);
     let reason;
-    if(selectedReceived&&point.ambiguous)reason='multiple_values';
+    if(mode==='day'&&point.value!=null)reason=point.date===today?'in_progress':point.reviewInvalid?'day_review':point.knownPartial?'day_partial':'day_value';
+    else if(selectedReceived&&point.ambiguous)reason='multiple_values';
     else if(selectedReceived&&point.reviewInvalid)reason='review';
     else if(selectedReceived&&(point.knownPartial||point.excludeFromClosedMeans)&&mode!=='day')reason='partial';
     else if(selectedReceived&&(point.stepReviewReason||point.value==null))reason='invalid_value';
-    else if(mode==='day'&&point.value!=null)reason=point.date===today?'in_progress':'day_value';
     else if(point.eligible)reason='used';
     else if(hasOtherSource)reason='other_source';
     else reason=complete?'not_received':'not_verified';
