@@ -33,7 +33,9 @@ const noOverflow=async page=>assert.ok(await page.evaluate(()=>document.document
 const capture=async(page,selector,path)=>{await page.evaluate(s=>document.querySelector(s)?.scrollIntoView({block:'start',behavior:'auto'}),selector);await page.screenshot({path});};
 try{
   for(const[label,width,height]of [['desktop',1536,864],['mobile',390,844],['physical-viewport',393,650],['small',320,740]]){
-    const page=await browser.newPage({viewport:{width,height},acceptDownloads:true});page.on('pageerror',e=>errors.push(e.message));
+    // Keep the SDK mock authoritative across reloads: worker-owned requests bypass
+    // page routing. The actual worker/offline/update flow has its own real-server gate.
+    const page=await browser.newPage({viewport:{width,height},acceptDownloads:true,serviceWorkers:'block'});page.on('pageerror',e=>errors.push(e.message));
     await page.route('**/*',route=>{const request=route.request(),url=new URL(request.url());if(url.hostname==='cdn.jsdelivr.net'&&url.pathname==='/npm/@supabase/supabase-js@2'&&request.method()==='GET')return route.fulfill({contentType:'application/javascript',body:service});if(url.origin===origin.origin&&['GET','HEAD'].includes(request.method()))return route.continue();(['GET','HEAD'].includes(request.method())?external:networkWrites).push(request.url());return route.abort('blockedbyclient');});
     await page.goto(base+'#hoje');await page.waitForSelector('[data-health-dashboard]');
     await page.screenshot({path:`${dir}/${label}-home.png`});
