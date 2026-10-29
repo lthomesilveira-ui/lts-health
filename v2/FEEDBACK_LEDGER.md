@@ -2,7 +2,7 @@
 
 Training comparison remains a documentary reference against recorded activity. A received plan does not establish adoption, adherence, a clinical start or automatic progression. Any later decision to follow a reference requires its own explicit evidence; differences remain descriptive.
 
-The two previously pending isolated-preview repetitions completed with a stale selector timeout: the Nutrition comparison is now expanded, but the old test still attempted to open its removed disclosure and assumed the Home window was shared. LTS-NUTRITION-COMPARISON-QA-002 owns the repair. Preserve all original source/arithmetic/privacy/geometry checks; verify visible metrics, the independent recent window, equivalent-window values and Home state preservation. No application runtime or build change is proposed.
+The two previously pending isolated-preview repetitions completed with a stale selector timeout: the Nutrition comparison is now expanded, but the old test still attempted to open its removed disclosure and assumed the Home window was shared. LTS-NUTRITION-COMPARISON-QA-002 owns the repair. Preserve all original source/arithmetic/privacy/geometry checks; verify visible metrics, the independent recent window, equivalent-window values and Home window preservation and the established compact disclosure default. The initial repair added an incorrect cross-route expanded-state assumption; this is corrected without changing production behavior. The focused nutrition check is moved ahead of the broader browser suite and publishes early synthetic diagnostics. No assertion is removed and no application runtime or build change is proposed.
 
 # Documented plan comparison — .96 published and verified, 29/10/2026
 

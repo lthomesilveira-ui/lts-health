@@ -247,7 +247,8 @@ try{
       await page.waitForFunction(()=>document.querySelector('[data-plan-metric="calories_kcal"] > small')?.textContent.includes('/7 dias com registro'));
       await assertPlan(page,f,{product:true,source:'Synthetic B food',waterSource:'Synthetic B food'});
       await page.locator(`${width<=840?'#mobileNav':'#primaryNav'} [data-route="hoje"]`).click();await stableHome(page);assert.equal(await page.locator('[data-plan-food-source]').inputValue(),foodB);assert.equal(await page.locator('[data-dashboard-source="water"]').inputValue(),waterB);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'30');
-      assert.equal(await page.locator('[data-disclosure="nutrition-plan-comparison"]').evaluate(el=>el.open),true,'Home keeps its original disclosure state');
+      assert.equal(await page.locator('[data-disclosure="nutrition-plan-comparison"]').evaluate(el=>el.open),false,'Home returns to its original compact default');
+      await open(page,'nutrition-plan-comparison');
       assert.equal(await page.locator('.nutritionPlanMetrics').innerText(),routeBefore,'Nutrition window changes preserve the Home comparison');
       if(width===1440)await probeStates(page,f);
       const guard=await page.evaluate(()=>{const client=window.supabase.createClient('synthetic','synthetic'),blocked=[];for(const [name,operation] of [['insert',()=>client.from('synthetic').insert({})],['update',()=>client.from('synthetic').update({})],['delete',()=>client.from('synthetic').delete()],['rpc',()=>client.rpc('synthetic')],['invoke',()=>client.functions.invoke('synthetic')]]){try{operation();blocked.push({name,blocked:false});}catch(error){blocked.push({name,blocked:error.code==='preview_read_only'});}}return {blocked,...window.__healthQA};});

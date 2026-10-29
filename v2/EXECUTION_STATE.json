@@ -60,7 +60,8 @@
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "Previously pending candidate40949297821 and production40949743449 completed with the same timeout at the retired Nutrition disclosure selector. All preceding preview steps and the newer documentary-plan/public/actual-auth gates passed.",
-      "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass."
+      "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass.",
+      "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check."
     ],
     "pending_gates": [
       "Exact candidate isolated preview browser",
@@ -104,12 +105,13 @@
       "summary": "Repair the stale preview browser expectation after the visible Nutrition comparison gained its own recent-period selector.",
       "acceptance": [
         "All original arithmetic, provenance, source separation, retrospective choice, zero/missing coverage, responsive and no-write assertions remain.",
-        "The browser verifies the visible Nutrition comparison without a disclosure, its independent 7/30-day window and the preserved Home window/disclosure.",
+        "The browser verifies the visible Nutrition comparison without a disclosure, its independent 7/30-day window, and the preserved Home window with its compact disclosure default.",
         "The exact candidate and post-merge isolated-preview runs pass; runtime files and build remain unchanged."
       ],
       "evidence": [
         "Previously pending candidate40949297821 and production40949743449 completed with the same timeout at the retired Nutrition disclosure selector. All preceding preview steps and the newer documentary-plan/public/actual-auth gates passed.",
-        "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass."
+        "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass.",
+        "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check."
       ],
       "next_action": "Run the repaired exact-head browser gate, inspect synthetic captures, promote the test-only change normally, and reconcile the final evidence."
     },
