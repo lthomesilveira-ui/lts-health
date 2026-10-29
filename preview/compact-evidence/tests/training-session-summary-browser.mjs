@@ -200,7 +200,11 @@ async function checkShell(page,id=SUMMARY_IDS.current){
   assert.equal(await page.locator('.ltsRefSessionOverview').count(),1);
   const tabGeometry=await page.locator('.ltsRefTrainPrimaryTabs [role="tab"]').evaluateAll(nodes=>nodes.map(el=>{const b=el.getBoundingClientRect();return {top:b.top,bottom:b.bottom};}));
   assert.ok(tabGeometry.every(box=>Math.abs(box.top-tabGeometry[0].top)<2),'all four destinations share one row');
-  assert.equal(await page.locator('.ltsRefTrainPrimaryTabs').evaluate(el=>getComputedStyle(el).position),'static','tabs cannot cover chart marks when scrolling');
+  // Read the connected node and its style in one page execution. A renderer
+  // remount between locator resolution and evaluation returns an empty style.
+  const tabStyle=await page.evaluate(()=>{const tabs=document.querySelector('.ltsRefTrainPrimaryTabs');return {connected:Boolean(tabs?.isConnected),position:tabs?getComputedStyle(tabs).position:null};});
+  assert.equal(tabStyle.connected,true,'measure the current connected tab row');
+  assert.equal(tabStyle.position,'static','tabs cannot cover chart marks when scrolling');
   assert.doesNotMatch(await page.locator('#screenHost').innerText(),/\b(?:NaN|undefined|Infinity)\b/);
 }
 async function checkCurrent(page){

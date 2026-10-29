@@ -1,11 +1,32 @@
 {
+  "id": "./v2/",
   "name": "LTS Health",
   "short_name": "LTS Health",
-  "description": "Cockpit longitudinal de saúde e performance com histórico e proveniência preservados.",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Seu histórico de saúde, em contexto.",
+  "start_url": "./v2/#hoje",
+  "scope": "./v2/",
   "display": "standalone",
-  "background_color": "#f6f8fb",
-  "theme_color": "#102c47",
-  "lang": "pt-BR"
+  "background_color": "#f4f8fe",
+  "theme_color": "#07131f",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "./v2/app-icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./v2/app-icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./v2/app-icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }
