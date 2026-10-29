@@ -26,9 +26,9 @@ jobs:
             test -f "$m.js"
             test -f "$m.css"
             grep -q "$m.js" config.js
-            grep -q "$m.js" sw.js
           done
-          grep -q "lts-health-shell-product-v63" sw.js
+          # The root worker retires the old shell cache; v2 uses network-only navigation.
+          node v2/home-screen-contract-test.mjs
           ! grep -q "ux-cleanup.js" config.js
           ! grep -q "today-hero-polish.js" config.js
           ! grep -q "runtime-stability.js" config.js
