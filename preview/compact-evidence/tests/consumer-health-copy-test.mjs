@@ -13,7 +13,10 @@ const {nutritionTrainingContrast}=await import('../src/evidence-insights.js');
 const {state}=await import('../src/core.js');
 const text=html=>html.replace(/<[^>]*>/g,' ');
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-dashboard-card="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
-const primary=html=>html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g,'');
+// Remove innermost disclosures first, so a nested receipt audit cannot leak
+// its outer source explanation into assertions about the visible primary card.
+const primary=html=>{let next;do{next=html.replace(/<details\b[^>]*>(?:(?!<details\b)[\s\S])*?<\/details>/g,'');if(next===html)return html;html=next;}while(true);};
+assert.equal(primary('<p>A</p><details><summary>X</summary><details><summary>Y</summary><p>Hidden</p></details><p>Also hidden</p></details><p>B</p>'),'<p>A</p><p>B</p>');
 const blocked=/dados não conferidos|fonte candidata|canônic[oa]|canonical_status|source_record_id|payload|care_followup|valor elegível|datas inequívocas|deduplicação|não validada/i;
 const f=makeDashboardFixture(),before=structuredClone(f.data);
 const full=renderHealthDashboard(f.data,f.status,{},f.today);

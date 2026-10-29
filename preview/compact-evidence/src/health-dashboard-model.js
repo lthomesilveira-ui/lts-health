@@ -1,3 +1,4 @@
+import {dailyCoverageAudit} from './health-data-quality.js';
 import {homePeriodSnapshot} from './home-period-model.js';
 import {nutritionSourceReview} from './nutrition-source-review.js';
 import {stepCountReview,stepEvidence} from './steps-evidence.js';
@@ -113,7 +114,7 @@ function observationsFor(definition,data,status,today){
           JSON.stringify([domain,norm(family),norm(label),statusName,unit]);
       const knownPartial=partialFlag(row)||Boolean(review?.partial);
       observations.push({date,value,key,label,domain,status:statusName,unit,displayUnit:definition.unit,sourceFamily:family,
-        receivedValue:steps?.receivedValue??value,receivedRaw:steps?.receivedRaw??value,stepReviewReason:steps?.reason||null,receivedAt:row.updated_at||null,
+        hasReceivedValue:raw!=null&&!(typeof raw==='string'&&!raw.trim()),receivedValue:steps?.receivedValue??value,receivedRaw:steps?.receivedRaw??value,stepReviewReason:steps?.reason||null,receivedAt:row.updated_at||null,
         unresolvedOverlap:definition.key==='steps'&&label.includes('|'),partial:knownPartial||date===today,knownPartial,excludeFromClosedMeans:knownPartial||Boolean(review?.excludeFromClosedMeans),
         reviewVerified:Boolean(review?.verified),reviewInvalid:review?.state==='review_invalid',exportedAt:review?.exportedAt||null});
     }
@@ -134,10 +135,10 @@ function sourceCatalog(observations,today){
       const knownPartial=list.some(row=>row.knownPartial),reviewInvalid=list.some(row=>row.reviewInvalid);
       // Preserve every received observation for inspection, including equal or
       // conflicting duplicates. A withheld aggregate never destroys evidence.
-      const observations=list.map(row=>({date:row.date,value:row.value,receivedValue:row.receivedValue,receivedRaw:row.receivedRaw,stepReviewReason:row.stepReviewReason,receivedAt:row.receivedAt,source:key,label:row.label,sourceLabel:row.label,unit:row.unit,displayUnit:row.displayUnit,
+      const observations=list.map(row=>({date:row.date,value:row.value,hasReceivedValue:row.hasReceivedValue,receivedValue:row.receivedValue,receivedRaw:row.receivedRaw,stepReviewReason:row.stepReviewReason,receivedAt:row.receivedAt,source:key,label:row.label,sourceLabel:row.label,unit:row.unit,displayUnit:row.displayUnit,
         sourceStatus:row.status,sourceFamily:row.sourceFamily,partial:row.partial,knownPartial:row.knownPartial,ambiguous,reviewInvalid:row.reviewInvalid,
         eligible:!ambiguous&&row.value!=null&&row.date<today&&!row.excludeFromClosedMeans}));
-      return {date,value,rawValue,rawValues:observations.map(row=>row.value),observations,unresolvedOverlap,unit:first.unit,displayUnit:first.displayUnit,source:key,sourceLabel:first.label,sourceStatus:first.status,sourceFamily:first.sourceFamily,
+      return {date,value,rawValue,hasReceivedValue:list.some(row=>row.hasReceivedValue),rawValues:observations.map(row=>row.value),observations,unresolvedOverlap,unit:first.unit,displayUnit:first.displayUnit,source:key,sourceLabel:first.label,sourceStatus:first.status,sourceFamily:first.sourceFamily,
         cohort:key,context:first.label,open:date===today,partial:knownPartial||date===today,knownPartial,ambiguous,duplicateCount:ambiguous?list.length:0,extraDuplicateCount:ambiguous?list.length-1:0,
         stepReviewReason:list.find(row=>row.stepReviewReason)?.stepReviewReason||null,receivedAt:list.find(row=>row.receivedAt)?.receivedAt||null,
         reviewInvalid,reviewVerified:list.every(row=>row.reviewVerified),exportedAt:list.find(row=>row.exportedAt)?.exportedAt||null,
@@ -207,7 +208,7 @@ function makeMetric(definition,catalog,status,ui,calendar,bounds=calendar.bounds
   const lastMetricDate=source?.rows.filter(row=>row.date<=bounds.end&&row.observations.some(item=>item.receivedValue!=null||item.receivedRaw!=null)).at(-1)?.date||null;
   const count=mode==='day'?(value!=null?1:0):eligible.length,expectedDays=mode==='day'?1:bounds.closedDays;
   const todayPoint=source?.rows.find(row=>row.date===today)||null;
-  return {key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,
+  const metric={key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,
     latestRecorded:latestRecorded?{date:latestRecorded.date,value:latestRecorded.value,receivedAt:latestRecorded.receivedAt,sourceLabel:source.label,partial:latestRecorded.partial}:null,lastMetricDate,
     stepEvidence:definition.key==='steps'?stepEvidence(sources,bounds,today):null,aggregation:mode==='day'?'recorded_day':'observed_mean',
     source:source?{key:source.key,label:source.label,domain:source.domain,status:source.status,unit:source.unit,displayUnit:source.displayUnit,sourceFamily:source.sourceFamily}:null,
@@ -222,6 +223,8 @@ function makeMetric(definition,catalog,status,ui,calendar,bounds=calendar.bounds
     requestedSource:requested,requestedSourceMissing:Boolean(requested&&!source),
     coverageLabel:`${count}/${expectedDays} ${mode==='day'?'dia com valor':'dias encerrados com valor'}`,
     note:definition.key==='totalEnergy'?'Somente total diário explicitamente registrado. Energia ativa e basal não são somadas aqui.':definition.key==='activeEnergy'?'Energia ativa registrada; não representa o gasto energético total.':'Ausência não significa zero. Dias registrados não comprovam diário completo.'};
+  metric.coverageAudit=dailyCoverageAudit(metric,{mode,today,domains:definition.domains,status});
+  return metric;
 }
 
 /** Main public model: all seven metrics use one explicit calendar, separate
