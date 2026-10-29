@@ -1,3 +1,17 @@
+# Original-plan access .97 published and verified — 29/10/2026
+
+Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.
+
+Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.
+
+Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence.
+
+Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.
+
+Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass.
+
+The bounded package PKG-PLAN-ORIGINAL-012 is technically done. Broader pending repetitions remain explicit rather than counted as passed. Private document access may require the owner’s ChatGPT account; no public PDF URL is created. Global acceptance and independent source/native/genuine-form conditions remain open. Authority: EXECUTION_STATE.json. Earlier checkpoints below are preserved history.
+
 # Confirmed original-plan access — candidate .97, 29/10/2026
 
 The autonomous continuation found that the existing validated training and dietary comparisons did not offer their confirmed original PDFs. Both originals were freshly resolved privately. Candidate .97 adds a fixed native ChatGPT account link from each selected source-verified plan, with a visible external-account notice, a separate window, no opener/referrer and a touch-sized control. Invalid/latest/read-failure and unlinked-inventory states never receive an inferred fallback. No source IDs, patient values or private file URLs enter public fixtures.
