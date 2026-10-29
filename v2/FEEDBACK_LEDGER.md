@@ -1,3 +1,19 @@
+# Health icon published and installation confirmed — 29/10/2026
+
+The heart/pulse revision is published at the stable Health entry. LTS-HEALTH-ICON-001 and the owner-reported Home Screen installation are complete. The previous installation criteria remain in history; remaining physical/native/global acceptance conditions are preserved in their existing tasks. No repeat installation confirmation is requested for the completed action.
+
+Exact icon candidate a2f7afdcaaeab9740ff6727142fb18ff53b389c9, tree dc5fbaae46eaa173dd86e3002d65b662e8fe7396: all 13 candidate workflows passed, including installation browser 40962118075 and integrated production 40962117980. The clinical/auth/write modules and lifecycle code are unchanged.
+
+Eleven Chromium/WebKit cases pass: six guide sizes with the real revised icon decoded, four actual browser/standalone routes and a real network-only worker outage/reconnect/update lifecycle. Artifact 12936711242 sha256:436c12c8560a610ac47593d0a657d1c4ed21660c557a3ffdac0a53cc6d5bb56f was verified before reading results and inspecting readable 320/393/1536px guide captures. Every case records zero writes; prior other-app cache/session and explicit-update assertions remain.
+
+Normal PR 430 merge 1fb9927e16249e76b3d37a0a790adba8f9ccdc91 has the same tested tree. Deploy 40962504729, public smokes 40962571468/40962571536, post-merge installation 40962504906 and actual-auth 40962504819 passed. The stable public entry was independently opened in Cloud Browser; the new heart/pulse is visibly rendered in its guide. Manual session signed out; no new private manual or physical-icon-refresh claim.
+
+Post-merge snapshot: 17/17 completed successfully. Remaining broad repetitions: none. Pending repetitions are never counted as passed. All affected installation/public/authentication gates completed; no clinical/data-source code changed.
+
+Owner-reported Home Screen installation is complete. Existing icon replacement remains OS-controlled; stable identity/name/start are preserved and no forced removal, sign-out or duplicated health record is introduced.
+
+The source/private-history dependencies remain open on their own evidence. No clinical record, medication use, automatic plan start or adherence is inferred. Queue: 80 done, 14 blocked_external, 2 accepted_gap; zero ready/in_progress/blocked_user.
+
 # Home Screen confirmation and health icon — 29/10/2026
 
 The owner explicitly confirms adding Health to the actual iPhone Home Screen and requests a symbol more related to health. LTS-IPHONE-INSTALL-VERIFY-001 closes the reported installation portion; its previous broader criteria are retained in history and the unobserved physical layout/native/global acceptance conditions remain in the existing delivery/device tasks. No repeated installation request is needed for the completed step.
