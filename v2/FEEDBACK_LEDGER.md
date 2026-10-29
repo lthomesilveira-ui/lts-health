@@ -1,3 +1,9 @@
+# Comparison verification follow-up — 29/10/2026
+
+Training comparison remains a documentary reference against recorded activity. A received plan does not establish adoption, adherence, a clinical start or automatic progression. Any later decision to follow a reference requires its own explicit evidence; differences remain descriptive.
+
+The two previously pending isolated-preview repetitions completed with a stale selector timeout: the Nutrition comparison is now expanded, but the old test still attempted to open its removed disclosure and assumed the Home window was shared. LTS-NUTRITION-COMPARISON-QA-002 owns the repair. Preserve all original source/arithmetic/privacy/geometry checks; verify visible metrics, the independent recent window, equivalent-window values and Home window preservation and the established compact disclosure default. The initial repair added an incorrect cross-route expanded-state assumption; this is corrected without changing production behavior. The focused nutrition check is moved ahead of the broader browser suite and publishes early synthetic diagnostics. No assertion is removed and no application runtime or build change is proposed.
+
 # Documented plan comparison — .96 published and verified, 29/10/2026
 
 The stable public entry is https://lthomesilveira-ui.github.io/lts-health/v2/#hoje. Training / Plano compares the received initial documentary reference with canonical session records. It preserves unknown phases, missing effort and failed readers; name matches are exact or chosen temporarily for that reading. Alternatives and different manual links do not inherit primary rep ranges. The document date does not start a clinical phase, trigger automatic progression or establish adherence. Source contents and personal values remain private.

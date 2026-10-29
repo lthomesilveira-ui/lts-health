@@ -89,7 +89,7 @@ function expected(f,key,{source='Synthetic A food',waterSource=source,mode='peri
 async function assertPlan(page,f,ui={}){
   const card=page.locator('[data-nutrition-plan]');assert.equal(await card.getAttribute('data-plan-state'),'ready');
   assert.deepEqual(await card.locator('[data-plan-metric]').evaluateAll(nodes=>nodes.map(node=>node.dataset.planMetric)),fields);
-  const actual=await page.evaluate(async today=>{const {state}=await import('./src/core.js');const {nutritionPlanComparison}=await import('./src/nutrition-plan-comparison.js');return nutritionPlanComparison(state.data,state.domainStatus,state.ui,today);},FIXED_TODAY);
+  const actual=await page.evaluate(async({today,product,period})=>{const {state}=await import('./src/core.js');const {nutritionPlanComparison}=await import('./src/nutrition-plan-comparison.js');const comparisonUi=product?{...state.ui,dashboardMode:'period',dashboardPeriod:period}:state.ui;return nutritionPlanComparison(state.data,state.domainStatus,comparisonUi,today);},{today:FIXED_TODAY,product:ui.product===true,period:ui.period||'7'});
   const precision=[];
   for(const {key,label,unit} of nutritionPlanFields){
     const metric=card.locator(`[data-plan-metric="${key}"]`),e=expected(f,key,ui),target=f.data.nutritionPlans.at(-1).nutrition_plan.daily_targets[key].value,raw=actual.metrics.find(metric=>metric.key===key),delta=e.value==null?null:e.value-target;
@@ -142,8 +142,8 @@ async function captureTile(page,name,target){
   await page.screenshot({path:`${dir}/${name}.png`,animations:'disabled'});
 }
 async function capture(page,name){
-  const card=page.locator('[data-nutrition-plan]'),comparison=card.locator('[data-disclosure="nutrition-plan-comparison"]'),expanded=await comparison.count()&&await comparison.evaluate(element=>element.open);
-  await captureTile(page,`${name}-viewport`,expanded?comparison.locator(':scope > summary'):card);
+  const card=page.locator('[data-nutrition-plan]'),comparison=card.locator('[data-disclosure="nutrition-plan-comparison"]'),product=await card.locator('.nutritionPlanExpanded').count()===1,expanded=product||await comparison.count()&&await comparison.evaluate(element=>element.open);
+  await captureTile(page,`${name}-viewport`,product?card.locator('.nutritionPlanExpanded > header'):expanded?comparison.locator(':scope > summary'):card);
   // A tall element screenshot is clipped by the mobile app's scroll container.
   // Capture actual viewport tiles centered on content, without changing styles.
   if(!expanded){await card.screenshot({path:`${dir}/${name}-card.png`,animations:'disabled'});return;}
@@ -233,9 +233,23 @@ try{
       await page.locator('[data-dashboard-mode="period"]').click();await stableHome(page);await selectPeriod(page,'30');await page.locator('[data-plan-food-source]').selectOption(foodB);await stableHome(page);
       const routeBefore=await page.locator('.nutritionPlanMetrics').innerText();
       if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator('#moreSheet [data-route="nutricao"]').click();}else await page.locator('#primaryNav [data-route="nutricao"]').click();
-      await page.waitForURL('**/#nutricao');await page.waitForSelector('.ltsNutritionProduct [data-nutrition-plan]');await open(page,'nutrition-plan-comparison');
-      assert.equal(await page.locator('[data-plan-food-source]').inputValue(),foodB);assert.equal(await page.locator('.nutritionPlanMetrics').innerText(),routeBefore,'Nutrição loads the same plan, source, water and calendar comparison');await quality(page,`${label}/nutrition-route`);await capture(page,`${label}-nutrition-route`);
+      await page.waitForURL('**/#nutricao');await page.waitForSelector('.ltsNutritionProduct .nutritionPlanExpanded [data-plan-metric]');
+      assert.equal(await page.locator('[data-disclosure="nutrition-plan-comparison"]').count(),0,'Nutrition comparison is visible without opening a disclosure');
+      assert.equal(await page.locator('[data-nutrition-plan-period]').inputValue(),'7','Nutrition defaults to its own recent window');
+      assert.equal(await page.locator('[data-plan-food-source]').inputValue(),foodB);
+      await assertPlan(page,f,{product:true,source:'Synthetic B food',waterSource:'Synthetic B food'});
+      await quality(page,`${label}/nutrition-route`);await capture(page,`${label}-nutrition-route`);
+      await page.locator('[data-nutrition-plan-period]').selectOption('30');
+      await page.waitForFunction(()=>document.querySelector('[data-plan-metric="calories_kcal"] > small')?.textContent.includes('/30 dias com registro'));
+      await assertPlan(page,f,{product:true,source:'Synthetic B food',waterSource:'Synthetic B food',period:'30'});
+      assert.equal(await page.locator('.nutritionPlanMetrics').innerText(),routeBefore,'Equal explicit windows preserve the same plan, source, water and arithmetic across routes');
+      await page.locator('[data-nutrition-plan-period]').selectOption('7');
+      await page.waitForFunction(()=>document.querySelector('[data-plan-metric="calories_kcal"] > small')?.textContent.includes('/7 dias com registro'));
+      await assertPlan(page,f,{product:true,source:'Synthetic B food',waterSource:'Synthetic B food'});
       await page.locator(`${width<=840?'#mobileNav':'#primaryNav'} [data-route="hoje"]`).click();await stableHome(page);assert.equal(await page.locator('[data-plan-food-source]').inputValue(),foodB);assert.equal(await page.locator('[data-dashboard-source="water"]').inputValue(),waterB);assert.equal(await page.locator('[data-dashboard-period]').inputValue(),'30');
+      assert.equal(await page.locator('[data-disclosure="nutrition-plan-comparison"]').evaluate(el=>el.open),false,'Home returns to its original compact default');
+      await open(page,'nutrition-plan-comparison');
+      assert.equal(await page.locator('.nutritionPlanMetrics').innerText(),routeBefore,'Nutrition window changes preserve the Home comparison');
       if(width===1440)await probeStates(page,f);
       const guard=await page.evaluate(()=>{const client=window.supabase.createClient('synthetic','synthetic'),blocked=[];for(const [name,operation] of [['insert',()=>client.from('synthetic').insert({})],['update',()=>client.from('synthetic').update({})],['delete',()=>client.from('synthetic').delete()],['rpc',()=>client.rpc('synthetic')],['invoke',()=>client.functions.invoke('synthetic')]]){try{operation();blocked.push({name,blocked:false});}catch(error){blocked.push({name,blocked:error.code==='preview_read_only'});}}return {blocked,...window.__healthQA};});
       assert.ok(guard.blocked.every(item=>item.blocked));assert.deepEqual(guard.writes,[]);assert.deepEqual(networkWrites,[]);assert.deepEqual(external,[]);assert.deepEqual(errors,[]);

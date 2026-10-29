@@ -49,27 +49,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-DOCUMENTED-PLAN-COMPARISON-009",
-    "status": "done",
-    "goal": "Make received training/dietary references and the owner current-use confirmation usable in the private app without treating documents as clinical start or adherence.",
+    "id": "PKG-NUTRITION-COMPARISON-QA-010",
+    "status": "in_progress",
+    "goal": "Close the newly completed stale preview gate while preserving documentary-only training comparison and all published source/privacy behavior.",
     "task_ids": [
-      "LTS-TRAINING-PLAN-COMPARISON-001",
-      "LTS-NUTRITION-PLAN-ACCESS-001",
-      "LTS-TREATMENT-USE-STATEMENT-001"
+      "LTS-NUTRITION-COMPARISON-QA-002"
     ],
     "candidate_build": "health-integrated-20261029.96",
     "public_build": "health-integrated-20261029.96",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Uploaded source fully read and visually inspected; private source binding and owner confirmation preserved.",
-      "Exact private insertion/readback and unchanged prior histories verified; no schema, authorization or auth/write implementation changed.",
-      "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
-      "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-      "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
-      "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
-      "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
+      "Previously pending candidate40949297821 and production40949743449 completed with the same timeout at the retired Nutrition disclosure selector. All preceding preview steps and the newer documentary-plan/public/actual-auth gates passed.",
+      "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass.",
+      "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check."
     ],
-    "pending_gates": []
+    "pending_gates": [
+      "Exact candidate isolated preview browser",
+      "Post-merge isolated preview browser"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -86,46 +83,38 @@
     "acceptance_note": "The owner has not reviewed this release. Technical plan/status delivery, global owner acceptance, original-source/history, genuine-form and physical/native-device gates remain separate.",
     "real_auth_verification_commit": "3a2845b1398d5a6404f780ef8d2d132837412540",
     "verification_runtime_preparation": "Existing protected actual-auth flow, with a read-only check of the new private plan/current-use and visible dietary views. Existing auth/write implementations, keys, receiver and schedules preserved.",
-    "pending_validation_repetitions": [
-      {
-        "id": 40949297821,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949297764,
-        "name": "LTS Health calendar reports and local PDF",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743871,
-        "name": "LTS Health Integrated Production",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743449,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743526,
-        "name": "LTS Health calendar reports and local PDF",
-        "status": "in_progress",
-        "conclusion": null
-      },
-      {
-        "id": 40949743732,
-        "name": "LTS Health Functional Depth",
-        "status": "in_progress",
-        "conclusion": null
-      }
-    ]
+    "pending_validation_repetitions": [],
+    "validation_followup": {
+      "task_id": "LTS-NUTRITION-COMPARISON-QA-002",
+      "status": "in_progress",
+      "failed_runs": [
+        40949297821,
+        40949743449
+      ],
+      "reason": "Stale Nutrition disclosure expectation after the independently selected expanded comparison shipped; no unresolved production runtime failure established."
+    }
   },
   "tasks": [
+    {
+      "id": "LTS-NUTRITION-COMPARISON-QA-002",
+      "area": "Nutrition verification",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Repair the stale preview browser expectation after the visible Nutrition comparison gained its own recent-period selector.",
+      "acceptance": [
+        "All original arithmetic, provenance, source separation, retrospective choice, zero/missing coverage, responsive and no-write assertions remain.",
+        "The browser verifies the visible Nutrition comparison without a disclosure, its independent 7/30-day window, and the preserved Home window with its compact disclosure default.",
+        "The exact candidate and post-merge isolated-preview runs pass; runtime files and build remain unchanged."
+      ],
+      "evidence": [
+        "Previously pending candidate40949297821 and production40949743449 completed with the same timeout at the retired Nutrition disclosure selector. All preceding preview steps and the newer documentary-plan/public/actual-auth gates passed.",
+        "The browser test now preserves the separate recent comparison window, verifies equivalent explicit windows against independent arithmetic, and captures actual expanded content. Local syntax, eight view cases, twenty-two model cases and training-reference boundaries pass.",
+        "First repair candidate4dbc45446ec69449656e8033acf703786b4fc152 passed the new visible Nutrition/source/window/arithmetic checks, then exposed an incorrect added assumption that Home should remain expanded across routes. The established compact Home default is retained; the corrected test reopens its native detail before comparing values. The focused test now runs first with an early synthetic failure diagnostic, without repeating or removing any broader check."
+      ],
+      "next_action": "Run the repaired exact-head browser gate, inspect synthetic captures, promote the test-only change normally, and reconcile the final evidence."
+    },
     {
       "id": "LTS-TRAINING-VISUAL-001",
       "area": "Training UX",
@@ -2488,6 +2477,29 @@
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-DOCUMENTED-PLAN-COMPARISON-009",
+      "status": "done",
+      "goal": "Make received training/dietary references and the owner current-use confirmation usable in the private app without treating documents as clinical start or adherence.",
+      "task_ids": [
+        "LTS-TRAINING-PLAN-COMPARISON-001",
+        "LTS-NUTRITION-PLAN-ACCESS-001",
+        "LTS-TREATMENT-USE-STATEMENT-001"
+      ],
+      "candidate_build": "health-integrated-20261029.96",
+      "public_build": "health-integrated-20261029.96",
+      "owner_acceptance": "not_granted",
+      "completed_evidence": [
+        "Uploaded source fully read and visually inspected; private source binding and owner confirmation preserved.",
+        "Exact private insertion/readback and unchanged prior histories verified; no schema, authorization or auth/write implementation changed.",
+        "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
+        "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
+        "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
+      ],
+      "pending_gates": []
+    },
     {
       "id": "PKG-PRODUCT-AUDIT-004",
       "status": "blocked_external",

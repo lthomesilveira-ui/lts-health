@@ -38,6 +38,18 @@ jobs:
         run: |
           python3 -m http.server 4173 >/tmp/health-preview-server.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
+      - name: Verify documentary nutrition comparisons and responsive details
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: node preview/compact-evidence/tests/nutrition-plan-browser.mjs
+      - name: Keep early synthetic nutrition diagnostics
+        if: ${{ always() && steps.app_server.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nutrition-plan-isolated-diagnostics
+          path: |
+            nutrition-plan-visual/results.json
+            nutrition-plan-visual/*-failure.png
+          retention-days: 7
       - name: Verify substantive changes and exact drilldowns
         if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: |
@@ -81,9 +93,6 @@ jobs:
       - name: Verify preview periods, sources, routes and responsive layout
         if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/health-dashboard-browser.mjs
-      - name: Verify documentary nutrition comparisons and responsive details
-        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
-        run: node preview/compact-evidence/tests/nutrition-plan-browser.mjs
       - name: Verify full dietary archive, historical routes and responsive navigation
         if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node preview/compact-evidence/tests/nutrition-history-access-browser.mjs
