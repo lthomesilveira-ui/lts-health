@@ -1,3 +1,9 @@
+# Home Screen confirmation and health icon — 29/10/2026
+
+The owner explicitly confirms adding Health to the actual iPhone Home Screen and requests a symbol more related to health. LTS-IPHONE-INSTALL-VERIFY-001 closes the reported installation portion; its previous broader criteria are retained in history and the unobserved physical layout/native/global acceptance conditions remain in the existing delivery/device tasks. No repeated installation request is needed for the completed step.
+
+LTS-HEALTH-ICON-001 replaces the letter-first mark with a white heart and teal pulse on the established dark palette. Four opaque RGB icons come from one vector; a dedicated asset revision covers Apple, favicon, guide and both manifest aliases. Stable identity/name/start and clinical/auth/write/cache behavior stay unchanged. The operating system controls already-installed icon replacement, so publication is not represented as physical icon refresh. Source/provider conditions stay independent; no private values are committed.
+
 # Nutrition comparison verification closed — 29/10/2026
 
 LTS-NUTRITION-COMPARISON-QA-002 is complete. The previously pending preview repetitions exposed an obsolete disclosure/window expectation after the visible Nutrition comparison shipped. The corrected browser verifies independent recent windows, equal-window values and the compact Home return while preserving all original source, precision, retrospective, geometry, escaping and no-write assertions. The same focused test runs earlier and provides bounded synthetic diagnostics; no test is duplicated or removed.
