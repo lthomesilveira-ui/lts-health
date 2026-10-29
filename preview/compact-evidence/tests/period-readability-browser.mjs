@@ -40,7 +40,7 @@ try{
    assert.equal(await card.locator('.healthCoverage').innerText(),`${metric.count}/${metric.expectedDays} dias usados na média`);
    assert.ok((await card.locator('.healthPeriodSource').textContent()).includes(metric.source.label),'full selected human origin is preserved inside details');
    assert.match(await card.locator('.healthPeriodSource').textContent(),/Automática/);
-   assert.equal(await card.locator('details').evaluate(el=>el.open),false);
+   assert.equal(await card.locator(':scope > details').evaluate(el=>el.open),false);
    assert.equal(await card.locator(':scope > .healthTodayValue,:scope > .healthMetricPeriod,:scope > .healthAggregation').count(),0);
   }
   assert.match(await page.locator('[data-dashboard-card="activeEnergy"] > .healthSourceCaution').innerText(),/não confirmado/);
@@ -52,7 +52,7 @@ try{
   await page.screenshot({path:`${directory}/393-${sparse?'sparse':'dense'}-top.png`});await steps.scrollIntoViewIfNeeded();await page.screenshot({path:`${directory}/393-${sparse?'sparse':'dense'}-steps.png`});
   for(const box of geometry)assert.ok(box.height<=(box.key==='steps'?430:350),`${box.key}: natural height ${box.height}px exceeds ${box.key==='steps'?430:350}px`);
   // Source choice stays explicit across windows; empty choices do not fall back.
-  const protein=page.locator('[data-dashboard-card="protein"]'),details=protein.locator('details');
+  const protein=page.locator('[data-dashboard-card="protein"]'),details=protein.locator(':scope > details');
   await details.locator(':scope > summary').click();assert.equal(await details.evaluate(el=>el.open),true);
   const source=model.metricsByKey.protein.source.key;assert.ok(source);
   await protein.locator('[data-dashboard-source]').selectOption(source);await stable(page);assert.match(await protein.locator('.healthPeriodSource').innerText(),/Escolhida por você/);

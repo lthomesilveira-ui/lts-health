@@ -32,3 +32,18 @@
 /* Period-only hierarchy; the accepted daily grid and sizing are unchanged. */
 .healthPeriodContext{font-size:12px;line-height:1.5;color:#61758b;margin:6px 0 10px}.healthPeriodMetric .healthPeriodSource{font-size:11px;line-height:1.35;color:#536f89;margin:6px 0;overflow-wrap:anywhere}.healthPeriodSource>span{display:block;font-size:10px;color:#61758b;margin-top:2px}.healthPeriodMetric .healthSpark{margin-top:8px}.healthPeriodMetric .healthSparkEmpty{min-height:32px;margin-top:8px}.healthPeriodSourceException{display:block;font-size:11px;line-height:1.35;font-weight:400;color:#93672b;margin-bottom:5px}.healthPeriodMetric .healthSourceCaution{line-height:1.35}.healthPeriodMetric details>summary{line-height:1.35}
 .healthPeriodMetric{align-self:start}.healthPeriodMetric>header{margin-bottom:8px}
+
+/* Daily receipt audit: separate origins and explicit exclusions, usable at 320px. */
+.healthReceiptCoverage{font-size:.78rem;line-height:1.5;color:var(--muted,#64748b);margin:.2rem 0 .55rem}
+.healthEnergyUnavailable{font-size:.8rem;line-height:1.55;margin:.45rem 0 .7rem;color:var(--muted,#64748b)}
+.healthDailyCoverage{margin-top:.65rem;border-top:1px solid var(--line,#e2e8f0);padding-top:.35rem;min-width:0}
+.healthDailyCoverage>summary{min-height:44px;display:flex;align-items:center;gap:.5rem;cursor:pointer;line-height:1.4}
+.healthDailyCoverage>summary::before{content:'+';font-size:1rem;flex:none}
+.healthDailyCoverage[open]>summary::before{content:'−'}
+.healthDailyCoverage>ul{list-style:none;padding:0;margin:.7rem 0;display:grid;gap:0}
+.healthDailyCoverage li{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.25rem .6rem;padding:.65rem 0;border-top:1px solid var(--line,#e2e8f0);font-size:.78rem;line-height:1.5;overflow-wrap:anywhere}
+.healthDailyCoverage li small{grid-column:1/-1;color:var(--muted,#64748b);font-size:.72rem}
+@media print{.healthDailyCoverage{display:none}}
+
+@media(max-width:840px){.healthMetricGrid>.healthMetric:has(>details[open]){grid-column:1/-1}}
+.healthDailyCoverage>ul{max-height:26rem;overflow-y:auto}

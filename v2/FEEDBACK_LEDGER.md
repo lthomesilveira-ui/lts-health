@@ -1,3 +1,13 @@
+# Daily data quality remediation — candidate .94, 29/10/2026
+
+The owner acknowledges the improved cockpit and requests autonomous correction of daily coverage, total expenditure and remaining dependencies. PKG-DATA-QUALITY-007 / LTS-DAILY-COVERAGE-001 are in_progress. Candidate health-integrated-20261029.94 distinguishes unique received dates across sources from days eligible for the unchanged selected-origin mean. Native daily details explain other-origin, repeated, invalid, partial and unverified observations. Missing total expenditure is explicitly unavailable, never shown as a fabricated zero or estimated from unverified basal snapshots.
+
+Local synthetic boundaries pass; responsive evidence, normal promotion and fresh authenticated production checks remain pending. Source choices, numerical means, original records, clinical text, auth/write implementations, seven Home readings and the acknowledged cockpit hierarchy are preserved. Print exports retain their existing complete source evidence without adding a long daily audit to the concise PDF.
+
+The latest .93 main checks have all completed successfully; the previous pending Isolated/Calendar/Functional statements below are historical. Existing support cases have no new substantive answer; completed phone steps are not repeated. Targeted context recovery did not recover the exact fifteen-record clinical proposal. Unknown source identity and full-day basal provenance remain source dependencies, not problems that can be solved by relabelling records. Official source-omission behavior is documented at https://help.healthyapps.dev/en/health-auto-export/export-format/health-metrics/ ; its applicability to the owner's exact switch is an inference, not a proved cause.
+
+Owner acceptance of the complete project remains open. This entry supersedes historical queue and rejection descriptions below; EXECUTION_STATE.json is authoritative.
+
 # Health cockpit published and directly verified — .93, 2026-10-28 UTC
 
 The owner request is implemented in the public application. The opening now answers known state, recorded change, follow-up priorities and the path to original evidence through five dated domains and compact body/training/laboratory readings. Source algorithms and lengthy comparisons use native details. Original daily metrics, source choice, calendar controls and clinical text remain accessible.

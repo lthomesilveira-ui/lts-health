@@ -20,6 +20,7 @@ jobs:
           node-version: '22'
       - name: Verify source-backed cockpit and preservation boundaries
         run: |
+          node preview/compact-evidence/tests/health-data-quality-test.mjs
           node preview/compact-evidence/tests/health-cockpit-test.mjs
           node v2/production-integration-contract.mjs
           node v2/continuity-contract-smoke.mjs
@@ -30,6 +31,8 @@ jobs:
         run: |
           python3 -m http.server 4173 >/tmp/health-cockpit-test.log 2>&1 &
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4173/v2/ node preview/compact-evidence/tests/health-cockpit-browser.mjs
+          LTS_HEALTH_BASE_URL=http://127.0.0.1:4173/v2/ node preview/compact-evidence/tests/health-data-quality-browser.mjs
+          node preview/compact-evidence/tests/steps-evidence-browser.mjs
       - name: Keep synthetic visual evidence
         if: always()
         uses: actions/upload-artifact@v4

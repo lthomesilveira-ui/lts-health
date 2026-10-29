@@ -16,10 +16,20 @@ async function inspectIntegratedDashboard(page,{expectedBuild}){
    const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
    const d=healthDashboardModel(state.data,state.domainStatus,state.ui);
    const matched=d.metrics.every(m=>document.querySelector(`[data-dashboard-card="${m.key}"] .healthMetricValue strong`)?.textContent===(m.value==null?'—':fmtNum(m.value,m.key==='sleep'?1:0)));
-   return {matched,overflow:document.documentElement.scrollWidth>innerWidth+1,missingWater:d.metricsByKey.water.value==null,ambiguousWater:Boolean(d.metricsByKey.water.ambiguousDays),latestWater:d.metricsByKey.water.latestRecorded?.date||null};
+   const qualityMatched=d.metrics.every(m=>{
+    const audit=m.coverageAudit,card=document.querySelector(`[data-dashboard-card="${m.key}"]`),detail=card?.querySelector(`[data-coverage-audit="${m.key}"]`);
+    if(!audit||!detail||audit.usedDays!==m.count||audit.receivedDays>m.expectedDays||new Set(audit.rows.map(row=>row.date)).size!==audit.rows.length)return false;
+    if(detail.querySelectorAll('[data-coverage-date]').length!==Math.min(31,audit.rows.length))return false;
+    const receipt=card.querySelector('[data-received-coverage]'),shouldShow=d.mode==='period'&&audit.receivedDays>audit.usedDays;
+    if(Boolean(receipt)!==shouldShow||shouldShow&&!receipt.textContent.includes(`${audit.receivedDays}/${audit.expectedDays}`))return false;
+    if(m.key==='totalEnergy'&&Boolean(card.querySelector('[data-total-energy-unavailable]'))!==(m.value==null))return false;
+    return audit.rows.every(row=>row.date>=d.bounds.start&&row.date<=d.bounds.end&&(d.mode==='day'||row.date<d.today));
+   });
+   return {matched,qualityMatched,overflow:document.documentElement.scrollWidth>innerWidth+1,missingWater:d.metricsByKey.water.value==null,ambiguousWater:Boolean(d.metricsByKey.water.ambiguousDays),latestWater:d.metricsByKey.water.latestRecorded?.date||null};
   });
   assert.equal(reading.matched,true,'actual seven-card readings match the loaded source-specific calendar');
   assert.equal(reading.overflow,false,'actual dashboard fits viewport');
+  assert.equal(reading.qualityMatched,true,'actual daily receipt audit, source-specific coverage and total-energy absence agree across all windows');
   if(reading.missingWater&&!reading.ambiguousWater){assert.equal(await page.locator('[data-dashboard-card="water"] .healthMetricValue strong').innerText(),'—');}
   return reading;
  };
