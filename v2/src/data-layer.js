@@ -3,6 +3,7 @@ import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFi
 import {visibleWorkoutEvidence,decorateWorkoutProvenance} from './workout-evidence.js';
 import {nutritionWithAutoExport} from './health-auto-export-data.js';
 import {trainingPlanProjection,treatmentStatusProjection} from './documented-training-plan.js';
+import {labOriginalColumns,labOriginalDocumentColumns,attachLabOriginals} from './lab-original-link.js';
 
 const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
@@ -38,6 +39,15 @@ export function fetchNutritionPlans(client=sb){
   return fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,nutrition_plan:source_payload->nutrition_plan_ui','document_date',false,'source_record_id',client,{document_type:'nutrition_plan'});
 }
 
+export async function fetchLaboratoryRows(client=sb){
+  const [results,originals]=await Promise.allSettled([
+    fetchAll('health_lab_results','id,source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,numeric_kind:source_payload->>numeric_kind,reference_verification:source_payload->reference_verification,numeric_reading_verification:source_payload->numeric_reading_verification,source,source_file,confidence,notes,'+labOriginalColumns,'collection_date',false,'source_record_id',client),
+    fetchAll('health_documents',labOriginalDocumentColumns,'document_date',false,'source_record_id',client,{document_type:'laboratory_report'})
+  ]);
+  if(results.status==='rejected')throw results.reason;
+  return attachLabOriginals(results.value,originals.status==='fulfilled'?originals.value:[],originals.status==='fulfilled');
+}
+
 const loaders={
   trainingPlans:()=>fetchAll('health_documents',trainingPlanProjection,'document_date',false,'source_record_id',sb,{document_type:'training_plan'}),
   treatmentStatuses:()=>fetchAll('health_documents',treatmentStatusProjection,'document_date',false,'source_record_id',sb,{document_type:'patient_status'}),
@@ -51,7 +61,7 @@ const loaders={
   workoutEvidence:()=>fetchAll('health_workout_source_evidence','source_record_id,workout_source_record_id,workout_date,source_family,source_name,evidence_kind,evidence_status,field_names,confidence,source_file,notes','workout_date',false),
   exercises:()=>fetchAll('health_workout_exercises','source_record_id,workout_source_record_id,workout_date,order_index,exercise,machine,muscle_group,sets,reps,weight_kg,source_text,source,confidence,notes','workout_date',false),
   sets:()=>fetchAll('health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,workout_date,exercise_name,exercise_order,set_index,phase,weight,weight_unit,reps_numeric,reps_raw,failure,near_failure,technique,source,confidence,notes','workout_date',false),
-  labs:()=>fetchAll('health_lab_results','id,source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,numeric_kind:source_payload->>numeric_kind,reference_verification:source_payload->reference_verification,numeric_reading_verification:source_payload->numeric_reading_verification,source,source_file,confidence,notes','collection_date',false),
+  labs:()=>fetchLaboratoryRows(),
   docs:()=>fetchAll('health_documents','source_record_id,document_date,title,document_type,source_file,source,extraction_status,confidence,notes,care_context:source_payload->care_ui','document_date',false),
   treatments:()=>fetchAll('health_medication_events','source_record_id,event_date,medication,event_type,source,source_file,confidence,local_time:source_payload->>local_time,recorded_timezone:source_payload->>timezone,recorded_site:source_payload->>site,recorded_side:source_payload->>side','event_date',false),
   regimens:()=>fetchAll('health_medication_regimens','source_record_id,medication,source,source_file,confidence,document_date:source_payload->>documented_on,recorded_status:source_payload->>status,start_date:source_payload->>start_date,started_by_user_confirmation:source_payload->started_by_user_confirmation','medication',true),

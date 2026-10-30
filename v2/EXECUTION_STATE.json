@@ -49,36 +49,26 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-PUBLIC-ENTRY-DIAGNOSTICS-013",
-    "status": "done",
-    "goal": "Retain safe signed-out failure evidence and recover publication without artifact ambiguity across reruns.",
+    "id": "PKG-LAB-ORIGINAL-014",
+    "status": "in_progress",
+    "goal": "Expose only independently confirmed laboratory originals while enabling authorized recurring continuation.",
     "task_ids": [
-      "LTS-PUBLIC-ENTRY-DIAGNOSTICS-001",
-      "LTS-PAGES-ATTEMPT-ARTIFACT-001"
+      "LTS-CONTINUATION-AUTOMATION-001",
+      "LTS-LAB-ORIGINAL-001"
     ],
-    "candidate_build": "health-integrated-20261029.97",
+    "candidate_build": "health-integrated-20261030.98",
     "public_build": "health-integrated-20261029.97",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
-      "Latest metadata-publication smoke40988063351 failed on a browser503 console error before the success screenshot. The artifact step then had no file; the old readiness-only catch did not cover this assertion.",
-      "Only the failed job was rerun, without code/assertion changes, and passed. This establishes recovery for that run, not the specific original resource or a permanent provider remedy.",
-      "Local public-path/query redaction, bounded HTTP/transport event handling, listener cleanup, upload-path coverage, syntax, source parity and privacy checks pass.",
-      "Exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8: all13 workflows passed; focused public-entry diagnostics41056494569 covers seven actual Chromium synthetic outcomes. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before reading all reports and inspecting both safe320/1536px login-region captures.",
-      "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow.",
-      "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
-      "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
-      "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
-      "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
-      "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
-      "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
-      "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
+      "A previously supplied original was freshly resolved privately; its exact digest and physical pages match existing result/document metadata. The relevant page was visually inspected.",
+      "The current laboratory view lacks a direct original-file action even when those existing source fields agree.",
+      "Local26-case source rejection, duplicate/conflict, failed-reader preservation, bounded-projection, source nonmutation and rendered-history checks pass."
     ],
-    "pending_gates": [],
-    "runtime_changed": false,
-    "clinical_runtime_changed": false,
-    "pending_broader_repetitions": [],
-    "promotion_commit": "41d92844d831d7136dcc08e679c5b914017b0072",
-    "verified_at_utc": "2026-10-30T14:39:53.780Z"
+    "pending_gates": [
+      "Exact Chromium/WebKit source-link and failed-reader story.",
+      "Normal publication, public entry and real authenticated source agreement."
+    ],
+    "clinical_runtime_changed": false
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -2988,6 +2978,47 @@
       ],
       "next_action": "Closed with exact-candidate, production publication and public evidence. Preserve all assertions and source/privacy boundaries; reopen only for a reproduced defect.",
       "blocker": null
+    },
+    {
+      "id": "LTS-CONTINUATION-AUTOMATION-001",
+      "area": "continuity",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "done",
+      "summary": "Run successive authorized remediation rounds without requiring a new owner prompt.",
+      "acceptance": [
+        "Create one enabled hourly continuation using the current owner authorization and selected timezone.",
+        "Read current durable state, preserve concurrent work and source privacy, execute viable work and suppress unchanged notifications.",
+        "Keep the existing weekly report and support-event subscriptions separate; pause on verified completion."
+      ],
+      "evidence": [
+        "Owner explicitly requests autonomous successive rounds on30/10/2026.",
+        "Native automation creation confirms success and enabled hourly condition-watch status in America/Sao_Paulo. Its exact private identity is retained in the owner checkpoint.",
+        "Private task inventory checked first: no active remediation continuation exists for Health; the paused historical rebuild was preserved."
+      ],
+      "next_action": "Continue bounded authorized rounds, pause at verified closure or on owner instruction, and preserve independent source acceptance.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-LAB-ORIGINAL-001",
+      "area": "laboratory source access",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Open an existing confirmed laboratory original from its exact chart point and historical result.",
+      "acceptance": [
+        "Offer a fixed native-account destination only when one validated document agrees with the reviewed result identity, digest, physical page count, file name and collection date.",
+        "Preserve all clinical results, comparison arithmetic, source uncertainty, missing originals and failed-reader distinctions; do not add a parser or write data.",
+        "Verify mobile/desktop Chromium/WebKit navigation, window isolation, touch geometry, textual results, failed readers and zero writes.",
+        "Publish normally and validate actual authenticated result/document agreement and public entry."
+      ],
+      "evidence": [
+        "A previously supplied original was freshly resolved privately; its exact digest and physical pages match existing result/document metadata. The relevant page was visually inspected.",
+        "The current laboratory view lacks a direct original-file action even when those existing source fields agree.",
+        "Local26-case source rejection, duplicate/conflict, failed-reader preservation, bounded-projection, source nonmutation and rendered-history checks pass."
+      ],
+      "next_action": "Complete exact candidate browser evidence, normal publication and protected actual-auth verification.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -3832,6 +3863,38 @@
       "promotion_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
       "clinical_runtime_changed": false,
       "verified_at_utc": "2026-10-29T23:07:28.085Z"
+    },
+    {
+      "id": "PKG-PUBLIC-ENTRY-DIAGNOSTICS-013",
+      "status": "done",
+      "goal": "Retain safe signed-out failure evidence and recover publication without artifact ambiguity across reruns.",
+      "task_ids": [
+        "LTS-PUBLIC-ENTRY-DIAGNOSTICS-001",
+        "LTS-PAGES-ATTEMPT-ARTIFACT-001"
+      ],
+      "candidate_build": "health-integrated-20261029.97",
+      "public_build": "health-integrated-20261029.97",
+      "owner_acceptance": "not_granted",
+      "completed_evidence": [
+        "Latest metadata-publication smoke40988063351 failed on a browser503 console error before the success screenshot. The artifact step then had no file; the old readiness-only catch did not cover this assertion.",
+        "Only the failed job was rerun, without code/assertion changes, and passed. This establishes recovery for that run, not the specific original resource or a permanent provider remedy.",
+        "Local public-path/query redaction, bounded HTTP/transport event handling, listener cleanup, upload-path coverage, syntax, source parity and privacy checks pass.",
+        "Exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8: all13 workflows passed; focused public-entry diagnostics41056494569 covers seven actual Chromium synthetic outcomes. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before reading all reports and inspecting both safe320/1536px login-region captures.",
+        "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow.",
+        "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+        "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+        "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+        "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+        "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+        "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+        "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
+      ],
+      "pending_gates": [],
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "pending_broader_repetitions": [],
+      "promotion_commit": "41d92844d831d7136dcc08e679c5b914017b0072",
+      "verified_at_utc": "2026-10-30T14:39:53.780Z"
     }
   ],
   "latest_published_release": {
@@ -4821,5 +4884,13 @@
       "acceptance_note": "Original-plan access is technically delivered. User installation is confirmed, while global owner acceptance, water/source coverage, genuine ordinary form persistence and native physical-device conditions remain independent.",
       "ci_completion_verified_at_utc": "2026-10-30T01:47:09.795449+00:00"
     }
-  ]
+  ],
+  "continuation_automation": {
+    "status": "enabled",
+    "cadence": "hourly",
+    "timezone": "America/Sao_Paulo",
+    "notification_policy": "material_progress_or_indispensable_owner_action",
+    "private_identity_location": "owner_checkpoint",
+    "authorization": "explicit_owner_successive_round_request_20261030"
+  }
 }
