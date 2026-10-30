@@ -302,7 +302,8 @@ test('an ambiguous collection exposes separate proofs without choosing one aggre
 });
 test('the loader projects only required identity and new review, never the full private payload',()=>{
   const source=readFileSync(new URL('../src/data-layer.js',import.meta.url),'utf8');
-  const line=source.split('\n').find(line=>line.includes("labs:()=>fetchAll('health_lab_results'"));
+  assert.match(source,/labs:\(\)=>fetchLaboratoryRows\(\)/);
+  const line=source.split('\n').find(line=>line.includes("fetchAll('health_lab_results',"));
   assert.ok(line.includes("'id,source_record_id,"));assert.ok(line.includes('numeric_reading_verification:source_payload->numeric_reading_verification'));
   assert.ok(line.includes('reference_verification:source_payload->reference_verification'));assert.doesNotMatch(line,/'\*'|,source_payload,/);
 });
