@@ -170,7 +170,8 @@ test('reviewed Hb/Ht interpretation preserves raw, numeric, method and reference
 
 test('production loader projects only the documentary review in addition to numeric kind',()=>{
   const source=readFileSync(new URL('../src/data-layer.js',import.meta.url),'utf8');
-  const select=source.match(/labs:\(\)=>fetchAll\('health_lab_results','([^']+)'/)[1].split(',');
+  assert.match(source,/labs:\(\)=>fetchLaboratoryRows\(\)/,'the laboratory loader delegates to the verified reader');
+  const select=source.match(/fetchAll\('health_lab_results','([^']+)'/)[1].split(',');
   assert.ok(select.includes('numeric_kind:source_payload->>numeric_kind'));
   assert.ok(select.includes('reference_verification:source_payload->reference_verification'));
   assert.ok(!select.includes('source_payload'));assert.ok(!select.includes('*'));

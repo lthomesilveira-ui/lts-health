@@ -1,5 +1,6 @@
 import {labResultReading,compareLabResults,knownLabMetadata,labHistoryConflicts} from './health-dashboard-labs.js';
 import {selectedCalendar} from './home-period-model.js';
+import {renderLabOriginalLink} from './lab-original-link.js';
 import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
 import {validDay,pageOf,pager,searchField,periodControl,emptyCard,errorCard,failed} from './history-tools.js';
 
@@ -150,7 +151,7 @@ export function labPointChart(cohort,{label='Evolução',selected=null}={}){
     <div class="ltsDepthAxis"><span>${esc(fmtDate(clean[0].date))}</span><b>${esc(u)}</b><span>${esc(fmtDate(clean.at(-1).date))}</span></div>
     ${labSeriesDetails(cohort)}
     <p class="ltsLabScaleNote">Escala ajustada aos valores${m.band?' e à faixa do laudo':''}. O eixo não precisa começar em zero. A altura da curva não indica melhora ou piora.</p>
-    <div class="ltsPointReadout"><label class="ltsField">Consultar ponto<select id="productLabPoint" data-depth-field="productLabPoint">${clean.map((point,i)=>`<option value="${i}" ${i===index?'selected':''}>${esc(fmtDate(point.date))}</option>`).join('')}</select></label><p role="status"><b>${esc(labChartValue(focus.value,u))}</b><span>${esc(fmtDate(focus.date))} · ${esc(focus.row.reference_range?`Referência da coleta: ${focus.row.reference_range}`:'Referência não informada')}</span><span>Resultado original: ${esc(labResultText(focus.row))}</span></p></div>
+    <div class="ltsPointReadout"><label class="ltsField">Consultar ponto<select id="productLabPoint" data-depth-field="productLabPoint">${clean.map((point,i)=>`<option value="${i}" ${i===index?'selected':''}>${esc(fmtDate(point.date))}</option>`).join('')}</select></label><p role="status"><b>${esc(labChartValue(focus.value,u))}</b><span>${esc(fmtDate(focus.date))} · ${esc(focus.row.reference_range?`Referência da coleta: ${focus.row.reference_range}`:'Referência não informada')}</span><span>Resultado original: ${esc(labResultText(focus.row))}</span></p>${renderLabOriginalLink(focus.row)}</div>
   </div>`;
 }
 
@@ -234,7 +235,7 @@ export function renderProductLabs(){
       <p class="ltsDepthNote">${m.recent.length} pontos exibidos de ${c.all.length} resultados desta série. Os demais resultados permanecem no histórico, com suas notas, limites e referências originais. A janela usa o período de Exames; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>
     </section>
 
-    <section class="ltsSection ltsLabsHistory" id="productLabsHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2 tabindex="-1">Histórico completo do marcador</h2></div><small>Todas as origens e unidades</small></div><div class="ltsLabsHistoryList" data-lab-history-total="${m.history.total}">${m.history.rows.map(row=>`<article class="ltsLabsHistoryRow"><time>${esc(fmtDate(row.collection_date))}</time><div><b>${esc(labResultText(row))}</b><small>${esc(resultMeta(row))}</small></div>${row.flag?`<span class="ltsRecordFlag" title="Sinalização transcrita da fonte">${esc(labFlagText(row.flag))}</span>`:''}</article>`).join('')}</div>${pager(m.history,'productLabPage')}</section>
+    <section class="ltsSection ltsLabsHistory" id="productLabsHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2 tabindex="-1">Histórico completo do marcador</h2></div><small>Todas as origens e unidades</small></div>${m.allRows.some(row=>row.original_pdf_status==='error')?'<p class="ltsDepthNote" role="status" data-lab-original-read-error>Os resultados estão disponíveis, mas os laudos originais não carregaram agora.</p>':''}<div class="ltsLabsHistoryList" data-lab-history-total="${m.history.total}">${m.history.rows.map(row=>`<article class="ltsLabsHistoryRow"><time>${esc(fmtDate(row.collection_date))}</time><div><b>${esc(labResultText(row))}</b><small>${esc(resultMeta(row))}</small>${renderLabOriginalLink(row)}</div>${row.flag?`<span class="ltsRecordFlag" title="Sinalização transcrita da fonte">${esc(labFlagText(row.flag))}</span>`:''}</article>`).join('')}</div>${pager(m.history,'productLabPage')}</section>
     ${collectionOverview(m.rows,m.item.group.identityConflicts)}
     <section class="ltsLabsHero"><div class="ltsLabsHeroTop"><div><span>${esc(group.label)}</span><strong>${esc(latestValue)}</strong><small>${esc(m.lastDate?fmtDate(m.lastDate):'Data não informada')} · ${esc(c.origin||'Origem não informada')}</small></div><span class="ltsLabsGlyph" aria-hidden="true">✦</span></div><div class="ltsLabsHeroContext"><div><span>Último resultado desta origem</span><b>${m.latest?'Resultado como aparece no laudo.':'Nenhum resultado foi escolhido automaticamente.'}</b></div><div><span>Referência registrada</span><b>${esc(m.latest?.reference_range||'Consulte o contexto de cada resultado no histórico.')}</b></div></div></section>
 
