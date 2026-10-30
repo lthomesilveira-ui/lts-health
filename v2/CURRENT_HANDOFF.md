@@ -1,3 +1,9 @@
+# Laboratory .98 published — full authenticated gate under investigation, 30/10/2026
+
+PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b is published. Deploy41093311389, public Pages41093384905/41093384835 and focused eight-case laboratory-original41093311150 pass. Exact candidate b9a59c96f325fba0af31b33a2de0da5856fa028b passes its focused41092770427; the reviewed runtime differs from the first visually inspected candidate only in two regression-test adaptations. Synthetic source navigation, absence/conflict/failure preservation, window isolation, touch geometry and zero writes passed. Public Cloud Browser confirms .98, hidden private shell and no overflow; it remains signed out.
+
+Actual-auth41093311367 reached the end of full-history/depth checks but failed its final gate. The private failure artifact12994648681 was digest-verified (sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce); it contains36 encrypted PNG envelopes, not public patient captures. The underlying cause is not established by the generic log. A bounded follow-up reuses the reviewed public-resource redaction/allowlist and adds only error-kind counts, sanitized network failures and a separate sign-out stage. No raw console/error/body/private URL is logged; no failing assertion is removed or counted as passed. Exact authenticated completion remains required. Application .98, clinical data and all external/acceptance conditions remain unchanged. EXECUTION_STATE.json is authoritative; earlier entries retain their historical scope.
+
 # Laboratory original access — candidate .98, 30/10/2026
 
 The autonomous continuation separates a viable source-access improvement from the still-blocked general parser and missing originals. A known private source was freshly resolved, digest/page-count matched to its existing validated document/result metadata and a representative physical page visually inspected. No clinical record is edited or imported.

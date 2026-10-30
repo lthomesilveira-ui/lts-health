@@ -4,6 +4,8 @@ import {runDepthChecks} from './real-auth-depth-checks.mjs';
 import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-dashboard-checks.mjs';
 import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
 import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs';
+import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
+import {observePublicFailures} from './public-entry-diagnostics.mjs';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
 if(!tokenHash)throw new Error('authenticated token hash missing');
@@ -16,12 +18,18 @@ const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
 const evidenceDir='v2/real-auth-evidence';
 mkdirSync(evidenceDir,{recursive:true});
 let runtimeErrorCount=0;
+const runtimeErrorKinds={console:0,page:0};
 let verificationStage='authentication';
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
 const page=await context.newPage();
-page.on('pageerror',()=>runtimeErrorCount++);
-page.on('console',m=>{if(m.type()==='error')runtimeErrorCount++;});
+page.on('pageerror',()=>{runtimeErrorCount++;runtimeErrorKinds.page++;});
+page.on('console',m=>{if(m.type()==='error'){runtimeErrorCount++;runtimeErrorKinds.console++;}});
+// Reuse the reviewed public-asset allowlist. Backend/private URLs, queries,
+// console text, error messages and response bodies never enter diagnostics.
+const diskRoot=new URL('./',import.meta.url),html=readFileSync(new URL('index.html',diskRoot),'utf8');
+const allowedResources=new Set(['','index.html','favicon.ico',...deployedRuntimeAssets(html,url=>readFileSync(url,'utf8'),diskRoot).map(asset=>asset.file)]);
+const networkFailures=observePublicFailures(page,appUrl,allowedResources);
 
 const routeReadySelectors=Object.freeze({
   hoje:'.ltsHomeReference',
@@ -290,6 +298,7 @@ try{
   await assertLightReadableCards('.protocolSummaryCard','desktop Protocols');
   await verifyDocumentedPlanFlows(page,waitForRoute);
   await verifyLaboratoryOriginalFlow(page,waitForRoute);
+  console.log('Laboratory original source agreement verified; no private source identity or patient PDF was logged or opened.');
   await waitForRoute('dados');
   if(await page.locator('.qualityRow').count()<1)throw new Error('real quality history missing');
   const resolvedCount=await page.locator('.qualityRow').filter({hasText:'resolvido'}).count();
@@ -495,12 +504,14 @@ try{
   verificationStage='deep-history';
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
 
+  verificationStage='sign-out';
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
-  if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
+  if(runtimeErrorCount){const error=new Error('Browser runtime errors occurred during real authenticated E2E');error.auditCode='runtime-errors';throw error;}
   console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
 }catch(error){
   const auditCode=String(error?.auditCode||'');
-  if(/^depth-check-\d{1,3}$/.test(auditCode)||auditCode==='nutrition-contrast')verificationStage+=` (${auditCode})`;
+  if(/^depth-check-\d{1,3}$/.test(auditCode)||['nutrition-contrast','runtime-errors'].includes(auditCode))verificationStage+=` (${auditCode})`;
+  console.log('Real-auth bounded failure evidence: '+JSON.stringify({runtimeErrorCount,runtimeErrorKinds,network:networkFailures.failures,networkCounts:networkFailures.counts}));
   try{await page.screenshot({path:`${evidenceDir}/e2e-failure.png`,fullPage:true});}catch{}
   throw new Error(`Real authenticated verification failed in ${verificationStage}; private details are withheld from public logs. Inspect the encrypted evidence.`);
-}finally{await browser.close();}
+}finally{networkFailures.stop();await browser.close();}
