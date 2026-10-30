@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import {mkdirSync,readFileSync} from 'node:fs';
+import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
+import {withPublicEntryEvidence} from './public-entry-diagnostics.mjs';
 import {chromium} from 'playwright';
 // Fresh signed-out contexts only. No credentials, fixture mode or authenticated data.
 const root=new URL(process.env.LTS_PUBLIC_ROOT||'https://lthomesilveira-ui.github.io/lts-health/');
@@ -7,6 +9,8 @@ const publicDeployment=root.href==='https://lthomesilveira-ui.github.io/lts-heal
 const localCandidate=root.protocol==='http:'&&['127.0.0.1','localhost'].includes(root.hostname)&&root.pathname==='/'&&!root.search&&!root.hash;
 assert.ok(publicDeployment||localCandidate,'only the approved public deployment or loopback repository root');
 const expectedBuild=readFileSync(new URL('./index.html',import.meta.url),'utf8').match(/name="lts-build" content="([^"]+)"/)[1];
+const diskRoot=new URL('./',import.meta.url),html=readFileSync(new URL('index.html',diskRoot),'utf8');
+const allowed=new Set(['','index.html','favicon.ico','v2/','v2/index.html',...deployedRuntimeAssets(html,url=>readFileSync(url,'utf8'),diskRoot).map(asset=>'v2/'+asset.file)]);
 mkdirSync('artifacts',{recursive:true});
 const browser=await chromium.launch({headless:true});
 try{
@@ -18,15 +22,10 @@ try{
    blocked.push({origin:url.origin,path:url.pathname,method:request.method()});return route.abort('blockedbyclient');
   });
   const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+  try{await withPublicEntryEvidence(page,{label,root,allowed,expectedBuild,errorCount:()=>errors.length,blockedCount:()=>blocked.length},async()=>{
   const url=new URL(root);if(process.env.LTS_DEPLOY_SHA)url.searchParams.set('lts_sha',process.env.LTS_DEPLOY_SHA);
   await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:60000});
-  try{await page.locator('#login:not(.hidden)').waitFor({timeout:60000});}
-  catch(error){
-   // Only static readiness flags: no source rows, credentials or private DOM.
-   const readiness=await page.evaluate(()=>({build:document.querySelector('meta[name="lts-build"]')?.content||null,loginVisible:!document.querySelector('#login')?.classList.contains('hidden'),privateShellVisible:!document.querySelector('#app')?.classList.contains('hidden'),dataRendererCount:document.querySelectorAll('[data-health-dashboard],[data-executive-dashboard]').length})).catch(()=>({pageUnavailable:true}));
-   writeFileSync(`artifacts/public-entry-readiness-${label}.json`,JSON.stringify({...readiness,errorCount:errors.length,blockedRequestCount:blocked.length},null,2));
-   throw error;
-  }
+  await page.locator('#login:not(.hidden)').waitFor({timeout:60000});
   await page.waitForLoadState('networkidle');
   assert.equal(new URL(page.url()).pathname,root.pathname+'v2/','public root promotes to the actual app');
   assert.equal(new URL(page.url()).searchParams.has('fixture'),false);
@@ -43,7 +42,8 @@ try{
   assert.match((await page.locator('#login').innerText()).toLocaleLowerCase('pt-BR'),/área privada[\s\S]*acesse seu health/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'login fits the viewport');
   assert.deepEqual(blocked,[],'no backend data, authentication or write requests while signed out');assert.deepEqual(errors,[]);
-  await page.screenshot({path:`artifacts/deployed-public-login-${label}.png`});await context.close();
+  await page.screenshot({path:`artifacts/deployed-public-login-${label}.png`});
+  });}finally{await context.close();}
  }
 }finally{await browser.close();}
 console.log('Public deployment: current entry identity, clean signed-out route isolation, responsive login and zero backend/write requests passed.');
