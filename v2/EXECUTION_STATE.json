@@ -50,7 +50,7 @@
   },
   "current_package": {
     "id": "PKG-PUBLIC-ENTRY-DIAGNOSTICS-013",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Retain safe signed-out failure evidence and recover publication without artifact ambiguity across reruns.",
     "task_ids": [
       "LTS-PUBLIC-ENTRY-DIAGNOSTICS-001",
@@ -64,14 +64,21 @@
       "Only the failed job was rerun, without code/assertion changes, and passed. This establishes recovery for that run, not the specific original resource or a permanent provider remedy.",
       "Local public-path/query redaction, bounded HTTP/transport event handling, listener cleanup, upload-path coverage, syntax, source parity and privacy checks pass.",
       "Exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8: all13 workflows passed; focused public-entry diagnostics41056494569 covers seven actual Chromium synthetic outcomes. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before reading all reports and inspecting both safe320/1536px login-region captures.",
-      "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow."
+      "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow.",
+      "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+      "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+      "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+      "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+      "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+      "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+      "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
     ],
-    "pending_gates": [
-      "Publish attempt-scoped Pages artifact recovery and verify the normal deployment/public checks.",
-      "Resolve the post-merge cockpit workflow that failed without any job or assertion log; no root cause is inferred."
-    ],
+    "pending_gates": [],
     "runtime_changed": false,
-    "clinical_runtime_changed": false
+    "clinical_runtime_changed": false,
+    "pending_broader_repetitions": [],
+    "promotion_commit": "41d92844d831d7136dcc08e679c5b914017b0072",
+    "verified_at_utc": "2026-10-30T14:39:53.780Z"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -79,12 +86,12 @@
     "main_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
     "runtime_promotion_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
     "published_on": "2026-10-29",
-    "verified_on": "2026-10-29",
-    "verified_at_utc": "2026-10-29T23:07:28.085Z",
+    "verified_on": "2026-10-30",
+    "verified_at_utc": "2026-10-30T14:39:53.780Z",
     "automated_runtime_and_responsive_status": "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain. Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position. Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence. Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass. Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions.",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_verified_on": "2026-10-29",
-    "manual_exact_public_evidence": "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
+    "manual_exact_public_verified_on": "2026-10-30",
+    "manual_exact_public_evidence": "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
     "acceptance_note": "Original-plan access is technically delivered. User installation is confirmed, while global owner acceptance, water/source coverage, genuine ordinary form persistence and native physical-device conditions remain independent.",
     "real_auth_verification_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
     "verification_runtime_preparation": "Existing protected actual-auth40970443464 passes with new private source-to-href checks. Clinical/auth/write and source-selection implementations are unchanged.",
@@ -361,7 +368,115 @@
           }
         ]
       }
-    }
+    },
+    "verification_followups": [
+      {
+        "package_id": "PKG-PUBLIC-ENTRY-DIAGNOSTICS-013",
+        "verified_at_utc": "2026-10-30T14:39:53.780Z",
+        "runtime_changed": false,
+        "clinical_runtime_changed": false,
+        "diagnostic_pr": 435,
+        "diagnostic_candidate": "c7e82561c563b32ea72a47ae8c924160d67e5db8",
+        "recovery_pr": 436,
+        "recovery_candidate": "30b0730192a30bf1bd585b331297bf94aba81128",
+        "publication_commit": "41d92844d831d7136dcc08e679c5b914017b0072",
+        "diagnostic_workflows": 13,
+        "recovery_candidate_workflows": 12,
+        "production_workflows": 16,
+        "production_runs": [
+          {
+            "id": 41072795246,
+            "name": "LTS Health v2 Homologation Pages Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072795292,
+            "name": "LTS Health v2 Pages Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635325,
+            "name": "LTS Health Auto Export",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635328,
+            "name": "Deploy LTS Health",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635333,
+            "name": "LTS Health iPhone Home Screen",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635123,
+            "name": "LTS Health Visual Training Report",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635200,
+            "name": "LTS Health Cockpit Experience",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635185,
+            "name": "LTS Health Integrated Production",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635225,
+            "name": "LTS Health Documented Plan Comparison",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635293,
+            "name": "LTS Health Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635353,
+            "name": "LTS Health Fleury source audit",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635309,
+            "name": "LTS Health Polar background",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635176,
+            "name": "LTS Health Timeline Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635370,
+            "name": "LTS Health Recovery Depth Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635199,
+            "name": "LTS Health v2 Nutrition History Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635213,
+            "name": "LTS Health Functional Depth",
+            "conclusion": "success"
+          }
+        ],
+        "evidence": [
+          "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+          "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+          "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+          "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+          "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+          "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+          "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
+        ]
+      }
+    ],
+    "operational_publication_commit": "41d92844d831d7136dcc08e679c5b914017b0072"
   },
   "tasks": [
     {
@@ -2820,7 +2935,7 @@
       "id": "LTS-PUBLIC-ENTRY-DIAGNOSTICS-001",
       "area": "public availability verification",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Keep safe failure diagnostics when the clean public entry verification fails before its success screenshot.",
       "acceptance": [
@@ -2835,9 +2950,16 @@
         "v2/public-entry-diagnostics-browser.mjs",
         "v2/releases/PUBLIC_ENTRY_DIAGNOSTICS_20261030.md",
         "Exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8: all13 workflows passed; focused public-entry diagnostics41056494569 covers seven actual Chromium synthetic outcomes. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before reading all reports and inspecting both safe320/1536px login-region captures.",
-        "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow."
+        "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow.",
+        "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+        "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+        "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+        "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+        "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+        "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+        "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
       ],
-      "next_action": "Complete attempt-scoped artifact recovery, verify normal publication and public checks, then close this package.",
+      "next_action": "Closed with exact-candidate, production publication and public evidence. Preserve all assertions and source/privacy boundaries; reopen only for a reproduced defect.",
       "blocker": null
     },
     {
@@ -2845,7 +2967,7 @@
       "area": "release recovery",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "summary": "Ensure a failed Pages deployment can be rerun without ambiguously selecting artifacts from earlier attempts.",
       "acceptance": [
         "Upload and deployment use one identical artifact name scoped to run identity and attempt, supported by the official actions' inputs.",
@@ -2855,9 +2977,16 @@
       "evidence": [
         "Observed initial deploy41071473970 provider HTTP500, followed by retry failure from two github-pages artifacts in the same run.",
         "Official actions/upload-pages-artifact v3 action.yml supports name and actions/deploy-pages v4 action.yml supports artifact_name; both defaults explain the collision.",
-        "The recovery changes only both artifact names to include github.run_id and github.run_attempt; no artifact deletion, security bypass or app change is used."
+        "The recovery changes only both artifact names to include github.run_id and github.run_attempt; no artifact deletion, security bypass or app change is used.",
+        "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+        "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+        "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+        "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+        "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+        "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+        "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
       ],
-      "next_action": "Publish the bounded workflow correction through normal candidate checks; verify deployment and post-publication tests.",
+      "next_action": "Closed with exact-candidate, production publication and public evidence. Preserve all assertions and source/privacy boundaries; reopen only for a reproduced defect.",
       "blocker": null
     }
   ],
@@ -3711,12 +3840,12 @@
     "main_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
     "runtime_promotion_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
     "published_on": "2026-10-29",
-    "verified_on": "2026-10-29",
-    "verified_at_utc": "2026-10-29T23:07:28.085Z",
+    "verified_on": "2026-10-30",
+    "verified_at_utc": "2026-10-30T14:39:53.780Z",
     "automated_runtime_and_responsive_status": "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain. Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position. Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence. Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass. Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions.",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_verified_on": "2026-10-29",
-    "manual_exact_public_evidence": "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
+    "manual_exact_public_verified_on": "2026-10-30",
+    "manual_exact_public_evidence": "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
     "acceptance_note": "Original-plan access is technically delivered. User installation is confirmed, while global owner acceptance, water/source coverage, genuine ordinary form persistence and native physical-device conditions remain independent.",
     "real_auth_verification_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
     "verification_runtime_preparation": "Existing protected actual-auth40970443464 passes with new private source-to-href checks. Clinical/auth/write and source-selection implementations are unchanged.",
@@ -3993,7 +4122,115 @@
           }
         ]
       }
-    }
+    },
+    "verification_followups": [
+      {
+        "package_id": "PKG-PUBLIC-ENTRY-DIAGNOSTICS-013",
+        "verified_at_utc": "2026-10-30T14:39:53.780Z",
+        "runtime_changed": false,
+        "clinical_runtime_changed": false,
+        "diagnostic_pr": 435,
+        "diagnostic_candidate": "c7e82561c563b32ea72a47ae8c924160d67e5db8",
+        "recovery_pr": 436,
+        "recovery_candidate": "30b0730192a30bf1bd585b331297bf94aba81128",
+        "publication_commit": "41d92844d831d7136dcc08e679c5b914017b0072",
+        "diagnostic_workflows": 13,
+        "recovery_candidate_workflows": 12,
+        "production_workflows": 16,
+        "production_runs": [
+          {
+            "id": 41072795246,
+            "name": "LTS Health v2 Homologation Pages Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072795292,
+            "name": "LTS Health v2 Pages Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635325,
+            "name": "LTS Health Auto Export",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635328,
+            "name": "Deploy LTS Health",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635333,
+            "name": "LTS Health iPhone Home Screen",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635123,
+            "name": "LTS Health Visual Training Report",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635200,
+            "name": "LTS Health Cockpit Experience",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635185,
+            "name": "LTS Health Integrated Production",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635225,
+            "name": "LTS Health Documented Plan Comparison",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635293,
+            "name": "LTS Health Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635353,
+            "name": "LTS Health Fleury source audit",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635309,
+            "name": "LTS Health Polar background",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635176,
+            "name": "LTS Health Timeline Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635370,
+            "name": "LTS Health Recovery Depth Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635199,
+            "name": "LTS Health v2 Nutrition History Smoke",
+            "conclusion": "success"
+          },
+          {
+            "id": 41072635213,
+            "name": "LTS Health Functional Depth",
+            "conclusion": "success"
+          }
+        ],
+        "evidence": [
+          "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+          "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+          "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+          "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+          "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+          "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+          "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
+        ]
+      }
+    ],
+    "operational_publication_commit": "41d92844d831d7136dcc08e679c5b914017b0072"
   },
   "release_history": [
     {
@@ -4343,33 +4580,29 @@
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-10-29",
-    "reviewed_at_utc": "2026-10-29T23:07:28.085Z",
-    "source_main_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
-    "source_tree": "a067c373bfdde06a501b392d59dc1bad6ce4c220",
+    "reviewed_on": "2026-10-30",
+    "reviewed_at_utc": "2026-10-30T14:39:53.780Z",
+    "source_main_commit": "41d92844d831d7136dcc08e679c5b914017b0072",
     "reference_heads": {
       "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
       "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
     },
     "runtime_build": "health-integrated-20261029.97",
     "icon_revision": "heart-pulse-20261029",
-    "runtime_changed": true,
-    "runtime_change_scope": "private_original_plan_links_and_visible_external_account_notice",
+    "runtime_changed": false,
     "clinical_runtime_changed": false,
     "executable_task_count": 0,
     "open_external_issue_count": 0,
     "evidence": [
-      "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.",
-      "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
-      "Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence.",
-      "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
-      "Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass.",
-      "The two existing original PDFs were resolved privately and reused through their native account identities. No duplicate document/file or health record was created. Other unlinked document inventory entries stay separate from available originals; prescribed targets, clinical starts, current-use statement, comparison arithmetic, auth/writes, receiver1MiB, keys, cadence, schedules and the heart/pulse icon are preserved.",
-      "Fresh source/support review supplies no new independently attributable water, verified daily basal coverage, original-chat/lab proposal or provider resolution. Supported JSON batching is documented, but neither the original413 body nor actual device batching configuration is recovered. Existing external/accepted gaps remain separate; no duplicate support message or repeated completed phone setup is introduced.",
-      "Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions."
+      "PR435 exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8 completed all13 workflows successfully. Diagnostic41056494569 exercises seven actual Chromium cases: real503/404/transport failures at320/1536px, private-renderer, filled-login, absent-login, closed-page and success boundaries. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before all reports and both safe captures were inspected.",
+      "Normal PR435 promotion63a024a7a7064b86f9d618f73801d64d50311d1a encountered Pages HTTP500. One failed-job repeat then found two default-named artifacts. A separate cockpit run41071473849 had no jobs; its public run page explicitly reports Internal server error. GitHub refused to retry that no-job run. The successful exact candidate and subsequent production cockpit41072635200 cover its assertions; no deterministic assertion was waived or root cause invented.",
+      "PR436 candidate30b0730192a30bf1bd585b331297bf94aba81128 completed all12 workflows successfully. Both official action inputs were verified; run/attempt-scoped upload and deployment artifact names match. Local parsing verifies distinct attempt identities and unchanged permissions. No artifact deletion is used.",
+      "Normal PR436 promotion41d92844d831d7136dcc08e679c5b914017b0072: all16 workflows completed successfully, including deployment41072635328, public Pages41072795292, homologation41072795246, Integrated41072635185, Functional41072635213 and Cockpit41072635200. The deployed artifact is github-pages-41072635328-1; application runtime/build remains .97.",
+      "First public Pages attempt41072795292 failed waiting for login after an actual503 from known public module v2/src/hydration.js. The new guard retained only sanitized diagnostic JSON and correctly withheld an unverified screenshot. Artifact12986470966 sha256:546104011502f32e0518952b6f4478c30b9f5592738ab9ad7a77de87c8234f8e was independently verified/read. One failed-job rerun at unchanged code passed every original assertion. This establishes recovery for this run, not a permanent CDN remedy or any restoration of water data.",
+      "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
+      "Fresh private aggregate/source and Gmail review confirms receipt continues without independently attributable water, verified daily basal coverage, source lineage or a new provider resolution. All fourteen existing external dependencies and two accepted gaps remain. No health record, medication use, source merge, phone setup, vendor message, key, receiver limit or schedule changed."
     ],
-    "acceptance_note": "Original-plan access is technically delivered. User installation is confirmed, while global owner acceptance, water/source coverage, genuine ordinary form persistence and native physical-device conditions remain independent.",
-    "ci_completion_verified_at_utc": "2026-10-30T01:47:09.795449+00:00"
+    "acceptance_note": "Bounded operational corrections are complete. Original water/history, source identity, daily expenditure coverage, exact laboratory proposal, ordinary genuine form, native-device and overall owner acceptance conditions remain independently open."
   },
   "continuity_review_history": [
     {
@@ -4558,6 +4791,35 @@
         "Fresh private source/support and original-workout-context review did not supply the independent water/basal lineage, complete original chat or provider evidence needed to close the fourteen separate conditions. Training reference-only preference and all source boundaries remain intact."
       ],
       "acceptance_note": "Owner-reported Home Screen installation is confirmed. The revised icon is technically published and visually verified; physical refresh, global owner acceptance and independent source/native/genuine-form conditions remain separate."
+    },
+    {
+      "reviewed_on": "2026-10-29",
+      "reviewed_at_utc": "2026-10-29T23:07:28.085Z",
+      "source_main_commit": "a9709712ecc3dd259ed83eb4dda61fd00e8d3524",
+      "source_tree": "a067c373bfdde06a501b392d59dc1bad6ce4c220",
+      "reference_heads": {
+        "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
+        "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
+      },
+      "runtime_build": "health-integrated-20261029.97",
+      "icon_revision": "heart-pulse-20261029",
+      "runtime_changed": true,
+      "runtime_change_scope": "private_original_plan_links_and_visible_external_account_notice",
+      "clinical_runtime_changed": false,
+      "executable_task_count": 0,
+      "open_external_issue_count": 0,
+      "evidence": [
+        "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.",
+        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
+        "Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence.",
+        "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
+        "Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass.",
+        "The two existing original PDFs were resolved privately and reused through their native account identities. No duplicate document/file or health record was created. Other unlinked document inventory entries stay separate from available originals; prescribed targets, clinical starts, current-use statement, comparison arithmetic, auth/writes, receiver1MiB, keys, cadence, schedules and the heart/pulse icon are preserved.",
+        "Fresh source/support review supplies no new independently attributable water, verified daily basal coverage, original-chat/lab proposal or provider resolution. Supported JSON batching is documented, but neither the original413 body nor actual device batching configuration is recovered. Existing external/accepted gaps remain separate; no duplicate support message or repeated completed phone setup is introduced.",
+        "Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions."
+      ],
+      "acceptance_note": "Original-plan access is technically delivered. User installation is confirmed, while global owner acceptance, water/source coverage, genuine ordinary form persistence and native physical-device conditions remain independent.",
+      "ci_completion_verified_at_utc": "2026-10-30T01:47:09.795449+00:00"
     }
   ]
 }
