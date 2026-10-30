@@ -1,3 +1,9 @@
+# All earlier validation repetitions complete — 30/10/2026
+
+Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced.
+
+Queue remains85 done,14 blocked_external,2 accepted_gap; hourly continuation remains enabled. Earlier entries below preserve the states observed at their timestamps.
+
 # Laboratory original access .98 verified — autonomous continuation enabled, 30/10/2026
 
 Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.

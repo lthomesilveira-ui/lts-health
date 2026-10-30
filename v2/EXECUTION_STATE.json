@@ -68,7 +68,8 @@
       "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
       "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
       "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
-      "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory."
+      "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory.",
+      "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
     ],
     "pending_gates": [],
     "clinical_runtime_changed": false,
@@ -84,7 +85,7 @@
     "operational_publication_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
     "published_on": "2026-10-30",
     "verified_on": "2026-10-30",
-    "verified_at_utc": "2026-10-30T16:59:22.628Z",
+    "verified_at_utc": "2026-10-30T17:04:01.959Z",
     "release_kind": "source_confirmed_private_laboratory_original_access",
     "icon_revision": "heart-pulse-20261029",
     "automated_runtime_and_responsive_status": "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass. Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime. Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed. PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage. Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed. PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
@@ -94,35 +95,9 @@
     "real_auth_verification_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
     "verification_runtime_preparation": "Protected source-to-href agreement uses independent bounded reads; diagnostics retain the prior failed gate without removing assertions. Runtime assets remain .98.",
     "acceptance_note": "Bounded original access is technically complete. Global owner acceptance, water/source/history, genuine form and native-device conditions remain independent.",
-    "pending_validation_repetitions": [
-      {
-        "id": 41092770381,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress"
-      },
-      {
-        "id": 41093311090,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress"
-      },
-      {
-        "id": 41094163690,
-        "name": "LTS Health Functional Depth",
-        "status": "in_progress"
-      },
-      {
-        "id": 41094336883,
-        "name": "LTS Health Functional Depth",
-        "status": "in_progress"
-      },
-      {
-        "id": 41094336743,
-        "name": "LTS Health Integrated Production",
-        "status": "in_progress"
-      }
-    ],
+    "pending_validation_repetitions": [],
     "ci_completion": {
-      "verified_at_utc": "2026-10-30T16:59:22.628Z",
+      "verified_at_utc": "2026-10-30T17:04:01.959Z",
       "runs": {
         "candidate": [
           {
@@ -192,12 +167,6 @@
             "conclusion": "success"
           },
           {
-            "id": 41092770381,
-            "name": "LTS Health Isolated Preview",
-            "status": "in_progress",
-            "conclusion": null
-          },
-          {
             "id": 41092770067,
             "name": "LTS Health Training Session",
             "status": "completed",
@@ -230,6 +199,12 @@
           {
             "id": 41092770479,
             "name": "LTS Health calendar reports and local PDF",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41092770381,
+            "name": "LTS Health Isolated Preview",
             "status": "completed",
             "conclusion": "success"
           }
@@ -288,12 +263,6 @@
             "name": "LTS Health calendar reports and local PDF",
             "status": "completed",
             "conclusion": "success"
-          },
-          {
-            "id": 41093311090,
-            "name": "LTS Health Isolated Preview",
-            "status": "in_progress",
-            "conclusion": null
           },
           {
             "id": 41093310939,
@@ -360,27 +329,15 @@
             "name": "LTS Health Visual Training Report",
             "status": "completed",
             "conclusion": "success"
+          },
+          {
+            "id": 41093311090,
+            "name": "LTS Health Isolated Preview",
+            "status": "completed",
+            "conclusion": "success"
           }
         ],
         "diagnostic_candidate": [
-          {
-            "id": 41094163690,
-            "name": "LTS Health Functional Depth",
-            "status": "in_progress",
-            "conclusion": null
-          },
-          {
-            "id": 41094163290,
-            "name": "LTS Health Fleury source audit",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094162984,
-            "name": "LTS Health Polar background",
-            "status": "completed",
-            "conclusion": "success"
-          },
           {
             "id": 41094163191,
             "name": "LTS Health Auto Export",
@@ -436,6 +393,24 @@
             "conclusion": "success"
           },
           {
+            "id": 41094163290,
+            "name": "LTS Health Fleury source audit",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41094162984,
+            "name": "LTS Health Polar background",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41094163690,
+            "name": "LTS Health Functional Depth",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
             "id": 41094162950,
             "name": "LTS Health Integrated Production",
             "status": "completed",
@@ -460,18 +435,6 @@
             "name": "LTS Health Laboratory Originals",
             "status": "completed",
             "conclusion": "success"
-          },
-          {
-            "id": 41094336883,
-            "name": "LTS Health Functional Depth",
-            "status": "in_progress",
-            "conclusion": null
-          },
-          {
-            "id": 41094336743,
-            "name": "LTS Health Integrated Production",
-            "status": "in_progress",
-            "conclusion": null
           },
           {
             "id": 41094336560,
@@ -550,6 +513,18 @@
             "name": "LTS Health Real Auth E2E",
             "status": "completed",
             "conclusion": "success"
+          },
+          {
+            "id": 41094336743,
+            "name": "LTS Health Integrated Production",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41094336883,
+            "name": "LTS Health Functional Depth",
+            "status": "completed",
+            "conclusion": "success"
           }
         ]
       }
@@ -564,7 +539,23 @@
       "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
       "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
       "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory."
-    ]
+    ],
+    "validation_followup": {
+      "status": "done",
+      "verified_at_utc": "2026-10-30T17:04:01.959Z",
+      "resolved_pending_run_ids": [
+        41092770381,
+        41093311090,
+        41094163690,
+        41094336883,
+        41094336743
+      ],
+      "preserved_failed_run_id": 41093311367,
+      "successful_fresh_auth_run_id": 41094336535,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "evidence": "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
+    }
   },
   "tasks": [
     {
@@ -4009,7 +4000,7 @@
     "operational_publication_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
     "published_on": "2026-10-30",
     "verified_on": "2026-10-30",
-    "verified_at_utc": "2026-10-30T16:59:22.628Z",
+    "verified_at_utc": "2026-10-30T17:04:01.959Z",
     "release_kind": "source_confirmed_private_laboratory_original_access",
     "icon_revision": "heart-pulse-20261029",
     "automated_runtime_and_responsive_status": "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass. Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime. Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed. PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage. Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed. PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
@@ -4019,35 +4010,9 @@
     "real_auth_verification_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
     "verification_runtime_preparation": "Protected source-to-href agreement uses independent bounded reads; diagnostics retain the prior failed gate without removing assertions. Runtime assets remain .98.",
     "acceptance_note": "Bounded original access is technically complete. Global owner acceptance, water/source/history, genuine form and native-device conditions remain independent.",
-    "pending_validation_repetitions": [
-      {
-        "id": 41092770381,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress"
-      },
-      {
-        "id": 41093311090,
-        "name": "LTS Health Isolated Preview",
-        "status": "in_progress"
-      },
-      {
-        "id": 41094163690,
-        "name": "LTS Health Functional Depth",
-        "status": "in_progress"
-      },
-      {
-        "id": 41094336883,
-        "name": "LTS Health Functional Depth",
-        "status": "in_progress"
-      },
-      {
-        "id": 41094336743,
-        "name": "LTS Health Integrated Production",
-        "status": "in_progress"
-      }
-    ],
+    "pending_validation_repetitions": [],
     "ci_completion": {
-      "verified_at_utc": "2026-10-30T16:59:22.628Z",
+      "verified_at_utc": "2026-10-30T17:04:01.959Z",
       "runs": {
         "candidate": [
           {
@@ -4117,12 +4082,6 @@
             "conclusion": "success"
           },
           {
-            "id": 41092770381,
-            "name": "LTS Health Isolated Preview",
-            "status": "in_progress",
-            "conclusion": null
-          },
-          {
             "id": 41092770067,
             "name": "LTS Health Training Session",
             "status": "completed",
@@ -4155,6 +4114,12 @@
           {
             "id": 41092770479,
             "name": "LTS Health calendar reports and local PDF",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41092770381,
+            "name": "LTS Health Isolated Preview",
             "status": "completed",
             "conclusion": "success"
           }
@@ -4213,12 +4178,6 @@
             "name": "LTS Health calendar reports and local PDF",
             "status": "completed",
             "conclusion": "success"
-          },
-          {
-            "id": 41093311090,
-            "name": "LTS Health Isolated Preview",
-            "status": "in_progress",
-            "conclusion": null
           },
           {
             "id": 41093310939,
@@ -4285,27 +4244,15 @@
             "name": "LTS Health Visual Training Report",
             "status": "completed",
             "conclusion": "success"
+          },
+          {
+            "id": 41093311090,
+            "name": "LTS Health Isolated Preview",
+            "status": "completed",
+            "conclusion": "success"
           }
         ],
         "diagnostic_candidate": [
-          {
-            "id": 41094163690,
-            "name": "LTS Health Functional Depth",
-            "status": "in_progress",
-            "conclusion": null
-          },
-          {
-            "id": 41094163290,
-            "name": "LTS Health Fleury source audit",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094162984,
-            "name": "LTS Health Polar background",
-            "status": "completed",
-            "conclusion": "success"
-          },
           {
             "id": 41094163191,
             "name": "LTS Health Auto Export",
@@ -4361,6 +4308,24 @@
             "conclusion": "success"
           },
           {
+            "id": 41094163290,
+            "name": "LTS Health Fleury source audit",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41094162984,
+            "name": "LTS Health Polar background",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41094163690,
+            "name": "LTS Health Functional Depth",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
             "id": 41094162950,
             "name": "LTS Health Integrated Production",
             "status": "completed",
@@ -4385,18 +4350,6 @@
             "name": "LTS Health Laboratory Originals",
             "status": "completed",
             "conclusion": "success"
-          },
-          {
-            "id": 41094336883,
-            "name": "LTS Health Functional Depth",
-            "status": "in_progress",
-            "conclusion": null
-          },
-          {
-            "id": 41094336743,
-            "name": "LTS Health Integrated Production",
-            "status": "in_progress",
-            "conclusion": null
           },
           {
             "id": 41094336560,
@@ -4475,6 +4428,18 @@
             "name": "LTS Health Real Auth E2E",
             "status": "completed",
             "conclusion": "success"
+          },
+          {
+            "id": 41094336743,
+            "name": "LTS Health Integrated Production",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 41094336883,
+            "name": "LTS Health Functional Depth",
+            "status": "completed",
+            "conclusion": "success"
           }
         ]
       }
@@ -4489,7 +4454,23 @@
       "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
       "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
       "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory."
-    ]
+    ],
+    "validation_followup": {
+      "status": "done",
+      "verified_at_utc": "2026-10-30T17:04:01.959Z",
+      "resolved_pending_run_ids": [
+        41092770381,
+        41093311090,
+        41094163690,
+        41094336883,
+        41094336743
+      ],
+      "preserved_failed_run_id": 41093311367,
+      "successful_fresh_auth_run_id": 41094336535,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "evidence": "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
+    }
   },
   "release_history": [
     {
@@ -5238,8 +5219,8 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-10-30",
-    "reviewed_at_utc": "2026-10-30T16:59:22.628Z",
-    "source_main_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
+    "reviewed_at_utc": "2026-10-30T17:04:01.959Z",
+    "source_main_commit": "f3b4ec8701387a78f5360572b2ba965b8b369600",
     "reference_heads": {
       "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
       "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
@@ -5264,7 +5245,8 @@
       "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
       "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
       "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
-      "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory."
+      "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory.",
+      "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
     ],
     "acceptance_note": "No ready/in-progress task remains after this bounded package. Future authorized rounds re-evaluate genuine source/provider evidence without inventing completion or repeating unchanged notifications."
   },
