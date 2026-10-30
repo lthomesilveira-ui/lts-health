@@ -1,3 +1,9 @@
+# All remaining .97 validation repetitions completed
+
+Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions.
+
+No new runtime, source merge, clinical write, phone setup, vendor message, key or schedule change. The current queue has81 done,14 blocked_external,2 accepted_gap and no ready/in_progress tasks. Earlier snapshots below retain their original timestamps and are superseded only for the identified CI repetitions.
+
 # Original-plan access .97 published and verified — 29/10/2026
 
 Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.
