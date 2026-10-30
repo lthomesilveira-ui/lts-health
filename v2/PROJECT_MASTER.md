@@ -1,3 +1,9 @@
+# Public-entry failure evidence reopened — 30/10/2026
+
+The latest metadata publication had a signed-out smoke failure40988063351: a503 browser resource error failed the existing assertion before any success screenshot. The always-upload step consequently had no image. One retry of only the failed job passes with every assertion unchanged; the original failing resource was not logged, so its precise cause is not reconstructed.
+
+PKG-PUBLIC-ENTRY-DIAGNOSTICS-013 adds bounded failed-resource HTTP/transport metadata and safe failure evidence around the complete existing check. It keeps the original assertion/exit outcome, admits no automatic retry, strips queries and unknown paths, and captures only a verified empty login region. Private/credential/absent/closed-page states withhold screenshots. Three existing workflows retain the diagnostic JSON. Local contracts pass; actual-browser injected failures and exact publication evidence remain pending. Application runtime/build .97, clinical data, auth/writes, keys, source selection, schedules and all provider/original-source conditions are unchanged. Authority: EXECUTION_STATE.json. Earlier snapshots remain history.
+
 # All remaining .97 validation repetitions completed
 
 Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions.

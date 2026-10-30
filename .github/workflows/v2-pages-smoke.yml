@@ -110,6 +110,7 @@ jobs:
           path: |
             artifacts/deployed-public-dashboard-*.png
             artifacts/deployed-public-login-*.png
+            artifacts/public-entry-diagnostic-*.json
           if-no-files-found: error
           retention-days: 90
       - name: Supplemental deployed legacy fixture route regressions

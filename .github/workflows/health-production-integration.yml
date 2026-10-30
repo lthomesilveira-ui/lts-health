@@ -81,6 +81,7 @@ jobs:
           path: |
             artifacts/production-integration/*.png
             artifacts/deployed-public-login-*.png
+            artifacts/public-entry-diagnostic-*.json
             dashboard-changes-visual/*.png
             source-window-visual/*
             period-readability-visual/*

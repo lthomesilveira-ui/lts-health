@@ -45,5 +45,6 @@ jobs:
           path: |
             artifacts/public-entry-readiness-*.json
             artifacts/deployed-public-login-*.png
+            artifacts/public-entry-diagnostic-*.json
           if-no-files-found: ignore
           retention-days: 7
