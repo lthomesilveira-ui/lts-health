@@ -1,3 +1,9 @@
+# Pages retry recovery — 30/10/2026
+
+PR435 exact candidate passed all13 checks and focused diagnostic artifact12977490738 was hash-verified and visually reviewed. Its normal promotion63a024a7a7064b86f9d618f73801d64d50311d1a hit Pages HTTP500. One failed-job retry then found two artifacts with the default github-pages name; neither deployment attempt passed. The existing .97 runtime remains reachable and was manually inspected signed out with private content hidden. No private session or physical-iPhone claim.
+
+LTS-PAGES-ATTEMPT-ARTIFACT-001 scopes both upload/deploy artifact names to the same run ID and attempt, using inputs verified in the official actions. This is a bounded recovery correction, without artifact deletion, additional permissions or runtime changes. Exact publication and public checks remain pending. The unrelated cockpit workflow failed without any job log and is investigated separately; no product assertion is waived. Authority: EXECUTION_STATE.json. Earlier snapshots are history.
+
 # Public-entry failure evidence reopened — 30/10/2026
 
 The latest metadata publication had a signed-out smoke failure40988063351: a503 browser resource error failed the existing assertion before any success screenshot. The always-upload step consequently had no image. One retry of only the failed job passes with every assertion unchanged; the original failing resource was not logged, so its precise cause is not reconstructed.
