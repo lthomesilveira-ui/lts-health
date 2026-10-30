@@ -57,16 +57,16 @@
       "LTS-LAB-ORIGINAL-001"
     ],
     "candidate_build": "health-integrated-20261030.98",
-    "public_build": "health-integrated-20261029.97",
+    "public_build": "health-integrated-20261030.98",
     "owner_acceptance": "not_granted",
     "completed_evidence": [
       "A previously supplied original was freshly resolved privately; its exact digest and physical pages match existing result/document metadata. The relevant page was visually inspected.",
       "The current laboratory view lacks a direct original-file action even when those existing source fields agree.",
-      "Local26-case source rejection, duplicate/conflict, failed-reader preservation, bounded-projection, source nonmutation and rendered-history checks pass."
+      "Local26-case source rejection, duplicate/conflict, failed-reader preservation, bounded-projection, source nonmutation and rendered-history checks pass.",
+      "PR438 is published normally at3c747f6a9494b2f060115a295d8df2e874a5d64b. Deploy41093311389, both public smokes41093384905/41093384835 and eight-case laboratory original41093311150 pass; signed-out Cloud Browser confirms exact .98 and private isolation."
     ],
     "pending_gates": [
-      "Exact Chromium/WebKit source-link and failed-reader story.",
-      "Normal publication, public entry and real authenticated source agreement."
+      "Actual-auth41093311367 failed after full-depth verification; retain its encrypted evidence, add bounded failure diagnostics and complete a fresh authenticated verification."
     ],
     "clinical_runtime_changed": false
   },
@@ -3015,9 +3015,10 @@
       "evidence": [
         "A previously supplied original was freshly resolved privately; its exact digest and physical pages match existing result/document metadata. The relevant page was visually inspected.",
         "The current laboratory view lacks a direct original-file action even when those existing source fields agree.",
-        "Local26-case source rejection, duplicate/conflict, failed-reader preservation, bounded-projection, source nonmutation and rendered-history checks pass."
+        "Local26-case source rejection, duplicate/conflict, failed-reader preservation, bounded-projection, source nonmutation and rendered-history checks pass.",
+        "PR438 is published normally at3c747f6a9494b2f060115a295d8df2e874a5d64b. Deploy41093311389, both public smokes41093384905/41093384835 and eight-case laboratory original41093311150 pass; signed-out Cloud Browser confirms exact .98 and private isolation."
       ],
-      "next_action": "Complete exact candidate browser evidence, normal publication and protected actual-auth verification.",
+      "next_action": "Resolve the final actual-auth failure with bounded diagnostics; retain every source, privacy and runtime assertion.",
       "blocker": null
     }
   ],
