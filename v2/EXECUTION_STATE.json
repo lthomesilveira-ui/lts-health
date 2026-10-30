@@ -51,9 +51,10 @@
   "current_package": {
     "id": "PKG-PUBLIC-ENTRY-DIAGNOSTICS-013",
     "status": "in_progress",
-    "goal": "Preserve safe resource-level evidence and the original failure when the signed-out public verification fails.",
+    "goal": "Retain safe signed-out failure evidence and recover publication without artifact ambiguity across reruns.",
     "task_ids": [
-      "LTS-PUBLIC-ENTRY-DIAGNOSTICS-001"
+      "LTS-PUBLIC-ENTRY-DIAGNOSTICS-001",
+      "LTS-PAGES-ATTEMPT-ARTIFACT-001"
     ],
     "candidate_build": "health-integrated-20261029.97",
     "public_build": "health-integrated-20261029.97",
@@ -61,11 +62,13 @@
     "completed_evidence": [
       "Latest metadata-publication smoke40988063351 failed on a browser503 console error before the success screenshot. The artifact step then had no file; the old readiness-only catch did not cover this assertion.",
       "Only the failed job was rerun, without code/assertion changes, and passed. This establishes recovery for that run, not the specific original resource or a permanent provider remedy.",
-      "Local public-path/query redaction, bounded HTTP/transport event handling, listener cleanup, upload-path coverage, syntax, source parity and privacy checks pass."
+      "Local public-path/query redaction, bounded HTTP/transport event handling, listener cleanup, upload-path coverage, syntax, source parity and privacy checks pass.",
+      "Exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8: all13 workflows passed; focused public-entry diagnostics41056494569 covers seven actual Chromium synthetic outcomes. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before reading all reports and inspecting both safe320/1536px login-region captures.",
+      "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow."
     ],
     "pending_gates": [
-      "Dedicated Chromium failure/privacy regression and synthetic artifact inspection.",
-      "Exact candidate integrated signed-out entry and normal publication/public checks."
+      "Publish attempt-scoped Pages artifact recovery and verify the normal deployment/public checks.",
+      "Resolve the post-merge cockpit workflow that failed without any job or assertion log; no root cause is inferred."
     ],
     "runtime_changed": false,
     "clinical_runtime_changed": false
@@ -2830,9 +2833,31 @@
         "v2/public-entry-diagnostics.mjs",
         "v2/public-entry-diagnostics-test.mjs",
         "v2/public-entry-diagnostics-browser.mjs",
-        "v2/releases/PUBLIC_ENTRY_DIAGNOSTICS_20261030.md"
+        "v2/releases/PUBLIC_ENTRY_DIAGNOSTICS_20261030.md",
+        "Exact candidate c7e82561c563b32ea72a47ae8c924160d67e5db8: all13 workflows passed; focused public-entry diagnostics41056494569 covers seven actual Chromium synthetic outcomes. Artifact12977490738 sha256:d331b59e4731973227c3f0a05664590a3a5af21a611eedc48247b625cf89307e verified before reading all reports and inspecting both safe320/1536px login-region captures.",
+        "Normal PR435 merged as63a024a7a7064b86f9d618f73801d64d50311d1a. First Pages publication41071473970 failed with provider HTTP500; one failed-job retry failed on two identically named github-pages artifacts. Neither attempt is counted as deployed. A fresh signed-out Cloud Browser confirms the established .97 runtime opens with protected private shell and no overflow."
       ],
-      "next_action": "Validate the exact candidate failure/privacy story and public entry, then promote normally and record recovered public verification.",
+      "next_action": "Complete attempt-scoped artifact recovery, verify normal publication and public checks, then close this package.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-PAGES-ATTEMPT-ARTIFACT-001",
+      "area": "release recovery",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Ensure a failed Pages deployment can be rerun without ambiguously selecting artifacts from earlier attempts.",
+      "acceptance": [
+        "Upload and deployment use one identical artifact name scoped to run identity and attempt, supported by the official actions' inputs.",
+        "Normal candidate checks pass; a new production Pages publication and public smoke checks complete successfully.",
+        "Preserve application bytes, audience, existing permissions, health data, keys, authentication and source boundaries."
+      ],
+      "evidence": [
+        "Observed initial deploy41071473970 provider HTTP500, followed by retry failure from two github-pages artifacts in the same run.",
+        "Official actions/upload-pages-artifact v3 action.yml supports name and actions/deploy-pages v4 action.yml supports artifact_name; both defaults explain the collision.",
+        "The recovery changes only both artifact names to include github.run_id and github.run_attempt; no artifact deletion, security bypass or app change is used."
+      ],
+      "next_action": "Publish the bounded workflow correction through normal candidate checks; verify deployment and post-publication tests.",
       "blocker": null
     }
   ],
