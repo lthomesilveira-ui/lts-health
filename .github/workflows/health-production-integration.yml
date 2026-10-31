@@ -28,6 +28,7 @@ jobs:
           node v2/polar-contract-test.mjs
           node v2/source-current-coverage-test.mjs
           node v2/workout-estimate-provenance-test.mjs
+          node v2/home-cockpit-test.mjs
       - name: Verify promoted analytical models using synthetic data
         run: |
           TESTDIR="$(mktemp -d v2/.integration-tests.XXXXXX)"
@@ -91,3 +92,4 @@ jobs:
             lab-visual-context-evidence/*
           if-no-files-found: error
           retention-days: 7
+
