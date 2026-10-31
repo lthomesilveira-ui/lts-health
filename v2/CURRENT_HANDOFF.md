@@ -1,3 +1,17 @@
+# Nutrition targets and dietary plans distinguished — .100 published, 31/10/2026
+
+Exact runtime candidate7b4738244db361ad52a75d5877282a2622d32464 passes17/18 workflows; isolated-preview41216753617 is pending, not passed. Focused goal-only/no-goal regression runs from its actual production test path in integrated CI41216753658. Prior candidate08c5a80851fcc4c4528b15462827c2a6b1fbcbb0 failed only because its new workflow entry looked for that test in the copied preview test folder; the correction retains every assertion and runtime bytes.
+
+Normal PR445 merge03415df62406a45c279403ed7a07fa154eb13445 publishes health-integrated-20261031.100. Deploy41217407507, public Pages41217472642, homologation41217472545, cockpit41217407535 and protected real-auth41217407521 pass. Current publication snapshot18/22 success; broader repetitions41217407612,41217407448,41217407528,41217407517 remain pending, not successful.
+
+Cloud Browser independently confirms exact public .100 metadata, visible intact login and no page overflow. Manual session remains signed out. Same production renderers were inspected with invented goal-only data at desktop and393x650: unavailable documentary plan coexists with recorded-target wording, historical year/day and alternate diary source remain independent. No new manual authenticated or physical-iPhone claim.
+
+Only two presentation text branches, mirrored source, focused regression, build/hash references, CI test wiring and continuity metadata change. Goal values, calories/macros, dates, clinical records, original plans, source selection, model arithmetic, authentication and writes remain unchanged. No provider message or phone changes.
+
+Fresh genuine aggregate receipt and existing-provider search provide no water restoration, verified source/basal coverage or new support response. Independent14 external dependencies,2 accepted gaps and overall acceptance stay open. Next rotating UX area: exams.
+
+Queue:87 done,14 blocked_external,2 accepted_gap; no ready/in_progress task. The pending broader repetitions are explicit, not evidence of success. Overall owner acceptance is independent. Next rotating UX area: exams. EXECUTION_STATE.json is authoritative; earlier entries retain their original scope.
+
 # Nutrition caption: recorded goals and documentary plans — candidate .100
 
 A concrete synthetic production-renderer review found a personal-goal caption asserting a current dietary plan while the documentary plan section correctly reported no available plan. The bounded correction says recorded targets are in the detail; absent validity refers to targets. It changes no values, dates, calculations, sources, plan selection, access, integrations or writes.
