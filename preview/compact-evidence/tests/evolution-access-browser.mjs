@@ -93,6 +93,23 @@ try{
   await page.locator('[data-depth-workout="workout-0"]').click();await page.waitForSelector('[data-workout-id="workout-0"]');
   await page.locator('[data-route="evolucao"]:visible').first().click();await page.waitForSelector('.ltsEvolutionOverview');await page.locator('.ltsEvolutionAccess [data-route="saude"]').click();await page.waitForSelector('#productLabQuery');
   assert.match(await page.locator('.ltsLabsV2').innerText(),/Synthetic marker/);await page.screenshot({path:`${directory}/labs-${width}.png`});
+  await page.getByRole('button',{name:'Histórico do marcador',exact:true}).click();
+  const labHistory=page.locator('#productLabsHistory .ltsLabsHistoryRow').first();
+  assert.ok(await labHistory.isVisible(),'The dated laboratory history remains reachable');
+  await page.waitForFunction(()=>{
+    const row=document.querySelector('#productLabsHistory .ltsLabsHistoryRow')?.getBoundingClientRect(),host=document.querySelector('#screenHost')?.getBoundingClientRect(),nav=document.querySelector('#mobileNav')?.getBoundingClientRect();
+    const bottom=Math.min(innerHeight,host?.bottom??innerHeight,nav?.width>0?nav.top:innerHeight);
+    return row&&row.top>=Math.max(0,host?.top??0)&&row.bottom<=bottom+1;
+  });
+  const historyReading=await labHistory.evaluate(el=>{
+    const time=el.querySelector('time'),value=el.querySelector('b'),meta=el.querySelector('small');
+    const rect=time.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(time);
+    return{dateFont:parseFloat(getComputedStyle(time).fontSize),valueFont:parseFloat(getComputedStyle(value).fontSize),metaFont:parseFloat(getComputedStyle(meta).fontSize),dateLines:range.getClientRects().length,dateFits:time.scrollWidth<=time.clientWidth+1&&rect.left>=0&&rect.right<=innerWidth,rowFits:el.scrollWidth<=el.clientWidth+1};
+  });
+  assert.ok(historyReading.dateFont>=14&&historyReading.metaFont>=14&&historyReading.valueFont>=16,'Dates, original results and provenance retain readable computed sizes');
+  assert.equal(historyReading.dateLines,1,'The full collection date fits on one line');
+  assert.ok(historyReading.dateFits&&historyReading.rowFits,'Readable history does not clip dates or create horizontal scrolling');
+  await page.screenshot({path:`${directory}/labs-history-${width}.png`});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   assert.deepEqual(await page.evaluate(()=>window.__changesQA.writes),[]);assert.deepEqual(errors,[]);await context.close();
  }
