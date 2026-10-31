@@ -76,3 +76,7 @@
 @media(max-width:360px){
   .ltsCompositionV2.ltsCompositionV2 .ltsPageHeader h1{font-size:20px!important;white-space:normal!important;overflow:visible!important;line-height:1.2!important}
 }
+
+/* Keep the recorded chart in view even when a source label wraps. */
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact .ltsCompositionMetrics{margin-top:4px!important}
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionTrend .ltsPeriodControl{margin:4px 0!important}
