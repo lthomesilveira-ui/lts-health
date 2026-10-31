@@ -1,3 +1,9 @@
+# Nutrition caption: recorded goals and documentary plans — candidate .100
+
+A concrete synthetic production-renderer review found a personal-goal caption asserting a current dietary plan while the documentary plan section correctly reported no available plan. The bounded correction says recorded targets are in the detail; absent validity refers to targets. It changes no values, dates, calculations, sources, plan selection, access, integrations or writes.
+
+Focused regressions cover goal-only and no-goal states and preserve goal values. Production parity/privacy, preview hash and continuity contracts pass. Desktop and393x650 manual synthetic inspection confirms corrected copy, diary source switching and historical dates without page overflow. Exact candidate CI, normal publication and public inspection remain pending. Independent provider/history and owner acceptance remain open.
+
 # Home .99 independent public inspection complete — 31/10/2026
 
 2026-10-31 independent Cloud Browser recovered: stable production URL opened exact lts-build health-integrated-20261031.99, login visually inspected at1363px, private shell hidden and no page overflow. This is signed-out public inspection, not new manual real-auth or physical-iPhone acceptance.

@@ -49,32 +49,21 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-HOME-READABILITY-015",
-    "status": "done",
-    "goal": "Improve readable context, observed-day coverage, missing-water freshness and body-history navigation without changing health values.",
+    "id": "PKG-NUTRITION-GOAL-COPY-016",
+    "status": "in_progress",
+    "goal": "Distinguish recorded personal targets from a documented dietary plan in the nutrition caption.",
     "task_ids": [
-      "LTS-HOME-READABILITY-001"
+      "LTS-NUTRITION-GOAL-COPY-001"
     ],
-    "candidate_build": "health-integrated-20261031.99",
+    "candidate_build": "health-integrated-20261031.100",
     "public_build": "health-integrated-20261031.99",
-    "owner_acceptance": "not_granted",
-    "pending_gates": [],
     "clinical_runtime_changed": false,
-    "completed_evidence": [
-      "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
-      "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
-      "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
-      "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
-      "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
-      "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged.",
-      "2026-10-31 independent Cloud Browser recovered: stable production URL opened exact lts-build health-integrated-20261031.99, login visually inspected at1363px, private shell hidden and no page overflow. This is signed-out public inspection, not new manual real-auth or physical-iPhone acceptance.",
-      "Independent read-only synthetic journey uses production .99 renderers/styles verified against current Git blob identities, with only local index SDK injection. Desktop and393x650: Home last workout to session, exercises/sets, exercise history and page2; dates,kg/repetitions, unknown duration/heart rate and provenance preserved; no horizontal page overflow. No navigation/interpretation defect requiring a runtime change observed in this bounded journey. No health writes. Next rotating area: composition.",
-      "Prior17 exact-runtime candidate and21 runtime-publication checks are complete/success;41203515673 and41203515535 now completed, not retrospectively counted before completion. PR443 normal merge c4b629e11e0bf60205b1e5630b6bbbc891939ae1 has17 successful returned checks; its final candidate repetition41204069505 also completed/success. No broad suite restarted.",
-      "Fresh owner-scoped aggregate receipt and existing-provider message search do not unlock water/source/total-energy dependencies. No clinical/source/auth/write/phone/runtime change. Overall owner acceptance stays independent."
-    ],
-    "publication_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
-    "completed_on": "2026-10-31",
-    "completed_at_utc": "2026-10-31T14:31:19.929Z"
+    "pending_gates": [
+      "candidate_ci",
+      "responsive_manual_preview",
+      "public_deployment",
+      "public_browser"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -2926,6 +2915,26 @@
       ],
       "next_action": "Maintain delivered readability and continue rotating bounded UX journeys; overall acceptance and independent source/provider conditions remain open.",
       "blocker": null
+    },
+    {
+      "id": "LTS-NUTRITION-GOAL-COPY-001",
+      "area": "nutrition experience",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Do not label personal goals as an available current dietary plan.",
+      "acceptance": [
+        "Goal-only state says recorded targets are in the detail and never claims a dietary plan is current.",
+        "Unconfirmed target validity is distinguished from missing documentary plan availability.",
+        "Existing goals, plan/source selection, history, comparisons, access and writes remain unchanged.",
+        "Focused model/presentation regression, mobile and desktop inspection, candidate CI and normal publication pass."
+      ],
+      "evidence": [
+        "Independent production-renderer synthetic inspection observed no available dietary document while nutrition caption asserted a current plan solely from personal goals.",
+        "Bounded caption correction; model-derived targets and all values preserved. Focused regression and production/parity/privacy contracts pass."
+      ],
+      "next_action": "Finish exact candidate and publication gates, inspect stable public build, then record technical closure.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -3831,6 +3840,34 @@
       "completed_on": "2026-10-30",
       "completed_at_utc": "2026-10-30T16:59:22.628Z",
       "runtime_changed": true
+    },
+    {
+      "id": "PKG-HOME-READABILITY-015",
+      "status": "done",
+      "goal": "Improve readable context, observed-day coverage, missing-water freshness and body-history navigation without changing health values.",
+      "task_ids": [
+        "LTS-HOME-READABILITY-001"
+      ],
+      "candidate_build": "health-integrated-20261031.99",
+      "public_build": "health-integrated-20261031.99",
+      "owner_acceptance": "not_granted",
+      "pending_gates": [],
+      "clinical_runtime_changed": false,
+      "completed_evidence": [
+        "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
+        "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
+        "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
+        "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+        "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
+        "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged.",
+        "2026-10-31 independent Cloud Browser recovered: stable production URL opened exact lts-build health-integrated-20261031.99, login visually inspected at1363px, private shell hidden and no page overflow. This is signed-out public inspection, not new manual real-auth or physical-iPhone acceptance.",
+        "Independent read-only synthetic journey uses production .99 renderers/styles verified against current Git blob identities, with only local index SDK injection. Desktop and393x650: Home last workout to session, exercises/sets, exercise history and page2; dates,kg/repetitions, unknown duration/heart rate and provenance preserved; no horizontal page overflow. No navigation/interpretation defect requiring a runtime change observed in this bounded journey. No health writes. Next rotating area: composition.",
+        "Prior17 exact-runtime candidate and21 runtime-publication checks are complete/success;41203515673 and41203515535 now completed, not retrospectively counted before completion. PR443 normal merge c4b629e11e0bf60205b1e5630b6bbbc891939ae1 has17 successful returned checks; its final candidate repetition41204069505 also completed/success. No broad suite restarted.",
+        "Fresh owner-scoped aggregate receipt and existing-provider message search do not unlock water/source/total-energy dependencies. No clinical/source/auth/write/phone/runtime change. Overall owner acceptance stays independent."
+      ],
+      "publication_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
+      "completed_on": "2026-10-31",
+      "completed_at_utc": "2026-10-31T14:31:19.929Z"
     },
     {
       "id": "PKG-HOME-READABILITY-015",
