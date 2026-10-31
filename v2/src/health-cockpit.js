@@ -14,6 +14,8 @@ const unavailable=text=>`<p class="healthCockpitEmpty">${esc(text)}</p>`;
 const flagged=metric=>metric?.source&&['candidate','held'].includes(metric.source.status);
 const review=metric=>flagged(metric)?'Em conferência':metric?.availability==='partial'?'Leitura parcial':'';
 const actualMetric=m=>m&&!['error','unavailable'].includes(m.availability)&&number(m.value)!=null;
+const missingMetric=m=>['error','unavailable'].includes(m?.availability)?'Não carregou':'Sem informação';
+const observedDays=(m,d)=>d.mode==='period'&&actualMetric(m)?`Média em ${m.count} de ${m.expectedDays} dias`:'';
 const periodLabel=d=>d.mode==='day'?'neste dia':'no período';
 const changeLabel=(m,d)=>{
  if(d.mode!=='period'||!m?.comparison?.comparable)return null;
@@ -33,8 +35,8 @@ function overview(d,c,b){
  return `<nav class="healthCockpitSummary" aria-label="Panorama da sua saúde">${[
   summaryCard('body','bio','Corpo',body?value(body.weight_kg,'kg',1):b.latestKnownAmbiguous?'Conferir avaliações':b.available?'Sem avaliação':'Indisponível',body?`Avaliação de ${date(body.date)}`:b.latestKnownAmbiguous?'Mais de uma avaliação na última data':b.available?'Sem avaliação até esta data':'Não carregou',body?`Gordura ${number(body.body_fat_pct)!=null?value(body.body_fat_pct,'%',1):value(body.fat_mass_kg,'kg',1)} · Músculo ${value(body.skeletal_muscle_mass_kg,'kg',1)}`:null),
   summaryCard('training','treinos','Treinos',t.available?(t.sessions===0&&t.partial?'Conferir sessões':count(t.sessions||0,'treino','treinos')):'Indisponível',periodLabel(d),t.latest?`Último ${date(t.latest.date)}`:t.partial?'Resumo em conferência':t.available?'Nenhuma sessão até esta data':null,t.partial?'Leitura parcial':''),
-  summaryCard('nutrition','nutricao','Alimentação',actualMetric(food)?value(food.value,d.mode==='day'?'g':'g/dia'):'Sem informação','Proteína registrada',[actualMetric(metrics.energy)?value(metrics.energy.value,d.mode==='day'?'kcal':'kcal/dia'):null,changeLabel(food,d)].filter(Boolean).join(' · '),review(food)),
-  summaryCard('sleep','analise','Sono',actualMetric(sleep)?value(sleep.value,'h',1):'Sem informação',d.mode==='day'?'Neste dia':'Média por noite registrada',changeLabel(sleep,d)||(sleep.count?count(sleep.count,'dia com registro','dias com registro'):null),review(sleep)),
+  summaryCard('nutrition','nutricao','Alimentação',actualMetric(food)?value(food.value,d.mode==='day'?'g':'g/dia'):missingMetric(food),'Proteína registrada',[observedDays(food,d),actualMetric(metrics.energy)?value(metrics.energy.value,d.mode==='day'?'kcal':'kcal/dia'):null,changeLabel(food,d)].filter(Boolean).join(' · '),review(food)),
+  summaryCard('sleep','analise','Sono',actualMetric(sleep)?value(sleep.value,'h',1):missingMetric(sleep),d.mode==='day'?'Neste dia':observedDays(sleep,d)||'Sono registrado',changeLabel(sleep,d),review(sleep)),
   summaryCard('labs','saude','Exames',attention!=null?count(attention,'sinalizado','sinalizados'):l.available?'Sem coleta':'Indisponível',l.latestCollectionDate?`Coleta de ${date(l.latestCollectionDate)}`:'Até a data selecionada',attention!=null?(s.unclassified?`${s.unclassified} sem faixa classificada`:'Pelas referências do laudo'):null)
  ].join('')}</nav>`;
 }
@@ -42,7 +44,7 @@ function overview(d,c,b){
 function priorities(d,c,g){
  const water=d.metricsByKey.water,labs=c.labs,items=[];
  if(['error','unavailable'].includes(water.availability))items.push({key:'water',title:'Água não carregou',text:'Atualize os dados para consultar este período.',route:'dados',action:'Ver conexão'});
- else if(water.value==null){const last=water.latestRecorded;items.push({key:'water',title:'Água sem atualização',text:last?`Último registro: ${date(last.date)}. O consumo atual não está disponível.`:'O consumo de água não está disponível neste período.',route:'dados',action:'Ver situação'});}
+ else if(water.value==null||water.latestRecorded?.date<d.bounds.end){const last=water.latestRecorded;items.push({key:'water',title:'Água sem atualização',text:last?`Último registro: ${date(last.date)}.${water.value!=null?' A média usa apenas os dias com registro; faltam dados até o fim do período.':' O consumo na data selecionada ou neste período não está disponível.'}`:'O consumo de água não está disponível neste período.',route:'dados',action:'Ver situação'});}
  if(labs.available&&labs.latestCollectionSummary?.attention)items.push({key:'labs',title:'Exames para revisar',text:`${count(labs.latestCollectionSummary.attention,'resultado sinalizado','resultados sinalizados')} no laudo de ${date(labs.latestCollectionDate)}.`,route:'saude',action:'Ver resultados'});
  const care=g.protocols?.care;
  if(care?.available&&care.pendingCount)items.push({key:'care',title:'Acompanhamento da consulta',text:`${count(care.pendingCount,'pendência documentada','pendências documentadas')} em ${date(care.date)}; confira a situação atual.`,route:'tratamentos',action:'Rever acompanhamento'});
@@ -50,9 +52,10 @@ function priorities(d,c,g){
  return `<section class="healthCockpitPriorities" aria-label="Pontos para acompanhar"><header><span>SEU FOCO</span><h2>O que merece atenção</h2></header><div style="--priority-count:${Math.min(3,items.length)}">${items.slice(0,3).map(item=>`<article>${icon(item.key)}<div><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p>${action(item.route,item.action)}</div></article>`).join('')}</div></section>`;
 }
 
-function bodyPanel(b,changes){
+function bodyPanel(b,changes,d){
  const body=b.available&&!b.latestKnownAmbiguous?b.latest:null,reading=changes.domains.find(x=>x.key==='body'),rows=reading?.rows||[];
- return `<article class="healthCockpitPanel body" data-cockpit-panel="body"><header>${icon('body')}<div><h2>Seu corpo</h2><p>${body?`Última avaliação · ${date(body.date)}`:'Avaliações corporais'}</p></div></header>${body?`<dl class="healthCockpitBody">${[['weight_kg','Peso'],['fat_mass_kg','Gordura estimada'],['skeletal_muscle_mass_kg','Músculo estimado']].map(([key,label])=>`<div><dt>${label}</dt><dd>${key==='fat_mass_kg'&&number(body.body_fat_pct)!=null?value(body.body_fat_pct,'%',1):value(body[key],'kg',1)}</dd>${key==='fat_mass_kg'&&number(body.body_fat_pct)!=null&&number(body.fat_mass_kg)!=null?`<small class="healthCockpitMass">${value(body.fat_mass_kg,'kg',1)}</small>`:''}${reading?.state==='comparison'&&rows.find(r=>r.key===key)?.change?`<small>${esc(rows.find(r=>r.key===key).change)}</small>`:''}</div>`).join('')}</dl><p class="healthCockpitNote">${reading?.state==='comparison'?`Comparação entre ${date(b.first?.date)} e ${date(body.date)}.`:b.outsidePeriod?'Sem nova avaliação neste período.':b.pair?'A comparação entre estas avaliações precisa ser conferida.':'Uma nova avaliação permitirá acompanhar a mudança.'}</p>`:unavailable(!b.available?'As avaliações não carregaram.':b.latestKnownAmbiguous?'Há mais de uma avaliação na última data. Abra o histórico para conferir.':'Ainda não há avaliação disponível até esta data.')}${action('bio','Ver evolução corporal')}</article>`;
+ const comparisonNote=reading?.state==='comparison'?`Comparação entre ${date(b.first?.date)} e ${date(body?.date)}.`:b.outsidePeriod?'Sem nova avaliação neste período. Consulte as avaliações anteriores no histórico.':b.pair?'A comparação entre estas avaliações precisa ser conferida.':d.mode==='day'?'Avaliação disponível até este dia. Abra o histórico para comparar outras datas.':d.period==='all'?'Ainda não há duas avaliações comparáveis neste histórico.':'Uma avaliação neste período. Amplie o período ou abra o histórico para procurar uma comparação.';
+ return `<article class="healthCockpitPanel body" data-cockpit-panel="body"><header>${icon('body')}<div><h2>Seu corpo</h2><p>${body?`Última avaliação · ${date(body.date)}`:'Avaliações corporais'}</p></div></header>${body?`<dl class="healthCockpitBody">${[['weight_kg','Peso'],['fat_mass_kg','Gordura estimada'],['skeletal_muscle_mass_kg','Músculo estimado']].map(([key,label])=>`<div><dt>${label}</dt><dd>${key==='fat_mass_kg'&&number(body.body_fat_pct)!=null?value(body.body_fat_pct,'%',1):value(body[key],'kg',1)}</dd>${key==='fat_mass_kg'&&number(body.body_fat_pct)!=null&&number(body.fat_mass_kg)!=null?`<small class="healthCockpitMass">${value(body.fat_mass_kg,'kg',1)}</small>`:''}${reading?.state==='comparison'&&rows.find(r=>r.key===key)?.change?`<small>${esc(rows.find(r=>r.key===key).change)}</small>`:''}</div>`).join('')}</dl><p class="healthCockpitNote">${esc(comparisonNote)}</p>`:unavailable(!b.available?'As avaliações não carregaram.':b.latestKnownAmbiguous?'Há mais de uma avaliação na última data. Abra o histórico para conferir.':'Ainda não há avaliação disponível até esta data.')}${action('bio','Ver evolução corporal')}</article>`;
 }
 
 function trainingChart(t,d){
@@ -74,5 +77,5 @@ function labPanel(l,labAction,labValue){
 }
 
 export function renderHealthCockpit(d,c,g,b,changes,{labAction,labValue}){
- return `<div class="healthCockpit" data-health-cockpit>${overview(d,c,b)}${priorities(d,c,g)}<section class="healthCockpitPanels" aria-label="Corpo, treino e exames">${bodyPanel(b,changes)}${trainingPanel(c.training,d)}${labPanel(c.labs,labAction,labValue)}</section></div>`;
+ return `<div class="healthCockpit" data-health-cockpit>${overview(d,c,b)}${priorities(d,c,g)}<section class="healthCockpitPanels" aria-label="Corpo, treino e exames">${bodyPanel(b,changes,d)}${trainingPanel(c.training,d)}${labPanel(c.labs,labAction,labValue)}</section></div>`;
 }

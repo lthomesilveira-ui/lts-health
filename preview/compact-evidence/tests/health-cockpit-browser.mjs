@@ -20,6 +20,8 @@ async function quality(page){
  assert.deepEqual(defects,[],'all visible actions have a 44px target');
  const clipped=await page.locator('.healthCockpitSummaryCard,.healthCockpitPanel,.healthMetric').evaluateAll(nodes=>nodes.filter(el=>el.scrollWidth>el.clientWidth+1).map(el=>({class:el.className,text:el.textContent.slice(0,80)})));
  assert.deepEqual(clipped,[],'readings do not clip');
+ const smallContext=await page.locator('.healthCockpitSummaryContext,.healthCockpitSummaryCard>small,.healthCockpitPriorities p,.healthCockpitNote,.healthCockpitBody dt,.healthCockpitBody small,.healthCockpitLastSession>span,.healthCockpitTrainingChart span').evaluateAll(nodes=>nodes.filter(el=>el.checkVisibility({checkVisibilityCSS:true})&&parseFloat(getComputedStyle(el).fontSize)<14).map(el=>({class:el.className,font:getComputedStyle(el).fontSize})));
+ assert.deepEqual(smallContext,[],'dates, mean coverage, caveats and chart dates remain readable at every viewport');
  const text=await page.locator('[data-health-dashboard]').innerText();assert.doesNotMatch(text,/\b(?:undefined|NaN|Infinity|canonical_status|source_record_id|payload|fail.closed)\b/);
 }
 try{
