@@ -21,3 +21,58 @@
 /* Override the older composition parity slab only for this compact summary. */
 .ltsCompositionV2 .ltsCompositionHeroCompact{padding:10px 12px!important;border-radius:12px!important;box-shadow:none!important}.ltsCompositionHeroCompact .ltsCompositionHeroTop>div>span{font-size:11px!important;letter-spacing:0!important}.ltsCompositionHeroCompact .ltsCompositionHeroTop small{margin-top:0!important;font-size:11px!important}.ltsCompositionHeroCompact .ltsCompositionMetrics{margin-top:8px!important}.ltsCompositionHeroCompact .ltsCompositionMetric{padding:5px 6px!important;background:transparent!important}.ltsCompositionHeroCompact .ltsCompositionMetric span{font-size:10px!important}.ltsCompositionHeroCompact .ltsCompositionMetric b{margin-top:2px!important;font-size:19px!important}.ltsCompositionHeroCompact .ltsCompositionMetric b small{font-size:10px!important}
 .ltsCompositionTrend .ltsCompositionTabs button,.ltsCompositionTrend .ltsPeriodControl button{min-height:44px!important;min-width:44px!important}
+
+/* Measurements, dates and provenance stay readable at the actual phone width. */
+.ltsCompositionV2.ltsCompositionV2 .ltsPageHeader p,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact .ltsCompositionHeroTop>div>span,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact .ltsCompositionHeroTop small,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact .ltsCompositionMetric span,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact .ltsCompositionMetric b small,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionChangeGrid span,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionTabs button,
+.ltsCompositionV2.ltsCompositionV2 .ltsPeriodControl button,
+.ltsCompositionV2.ltsCompositionV2 .ltsField,
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthNote,
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthAxis,
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthAxis b,
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthScale,
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthScale span,
+.ltsCompositionV2.ltsCompositionV2 .ltsPointReadout p span,
+.ltsCompositionV2.ltsCompositionV2 .ltsHistoryContext,
+.ltsCompositionV2.ltsCompositionV2 .ltsHistoryContext b,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHistoryRow time,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHistoryRow small,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHistoryRow>span,
+.ltsCompositionV2.ltsCompositionV2 .ltsDetailGrid span,
+.ltsCompositionV2.ltsCompositionV2 .ltsSegmentTable th,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionTrust p,
+.ltsCompositionV2.ltsCompositionV2 .ltsPager,
+.ltsCompositionV2.ltsCompositionV2 .ltsPager small,
+.ltsCompositionV2.ltsCompositionV2 .ltsPager button{font-size:14px!important;line-height:1.4!important}
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionChangeCard>p,
+.ltsCompositionV2.ltsCompositionV2 .ltsEmptyCard,
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthError,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHistoryRow b,
+.ltsCompositionV2.ltsCompositionV2 .ltsSegmentTable td,
+.ltsCompositionV2.ltsCompositionV2 .ltsField select{font-size:16px!important;line-height:1.45!important}
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionMetric span,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionChangeGrid span{letter-spacing:0;text-transform:none}
+.ltsCompositionV2.ltsCompositionV2 .ltsHistoryContext,
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroTop>div,
+.ltsCompositionV2.ltsCompositionV2 .ltsDetailGrid span{overflow-wrap:anywhere}
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthPlot{grid-template-columns:60px minmax(0,1fr)}
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthAxis{margin-left:64px}
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthPlot circle{stroke:var(--chart-color);stroke-width:4;fill:var(--chart-color)}
+.ltsCompositionV2.ltsCompositionV2 .ltsDepthPlot circle.selected{stroke:var(--chart-color);stroke-width:3;fill:#fff}
+@media(max-width:840px){
+  .ltsCompositionV2.ltsCompositionV2 .ltsCompositionHistoryRow{grid-template-columns:90px minmax(0,1fr)!important}
+  .ltsCompositionV2.ltsCompositionV2 .ltsSegmentTable th,
+  .ltsCompositionV2.ltsCompositionV2 .ltsSegmentTable td{padding:10px 4px;overflow-wrap:anywhere}
+}
+
+@media(max-width:600px){
+  .ltsCompositionV2.ltsCompositionV2 .ltsPageHeader p{display:none!important}
+}
+@media(max-width:360px){
+  .ltsCompositionV2.ltsCompositionV2 .ltsPageHeader h1{font-size:20px!important;white-space:normal!important;overflow:visible!important;line-height:1.2!important}
+}
