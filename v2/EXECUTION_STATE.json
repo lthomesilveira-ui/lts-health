@@ -56,15 +56,19 @@
       "LTS-REPORT-SLEEP-001"
     ],
     "candidate_build": "health-integrated-20261031.103",
-    "public_build": "health-integrated-20261031.102",
+    "public_build": "health-integrated-20261031.103",
     "clinical_runtime_changed": false,
     "pending_gates": [
-      "exact candidate calendar/browser/PDF checks",
-      "normal deployment and public smoke",
-      "exact public inspection",
-      "protected authenticated sleep binding"
+      "protected authenticated verification after exact9-key test correction"
     ],
-    "started_at_utc": "2026-10-31T20:24:46.153Z"
+    "started_at_utc": "2026-10-31T20:24:46.153Z",
+    "runtime_publication_commit": "05ff97654b65c6bd23451ed0c831b07813b85ef2",
+    "evidence": [
+      "PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completed17/17 workflows, including Calendar41240904364. Earlier7 and4 failures remain documented; the corrected positioned-PDF-word oracle retains all token/count, bounds/page/image checks with missing-number and missing-unit negative controls.",
+      "Normal merge05ff97654b65c6bd23451ed0c831b07813b85ef2 deploys .103 through41241583766. Independent Cloud Browser confirms exact .103, intact login, hidden private app and1363px without overflow. This is signed-out public inspection, separate from synthetic preview and protected authentication.",
+      "Protected Real Auth41241583773 failed in analise with zero recorded runtime/network errors. Encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. Source inspection finds an obsolete mandatory8-card predicate, which necessarily rejects the new9-card report. This follow-up changes it to an independent exact9-key set in both rendered cards and the model, keeping all nutrient value/coverage checks and the later sleep value/date/unit/source/coverage checks. The failed private gate is not declared passed before actual re-execution.",
+      "Only the authenticated test expectation and continuity evidence change. Public .103 runtime/values/source/date arithmetic, auth/security configuration and writes stay unchanged. The separately observed laboratory-history legibility package remains locally prepared and must follow successful closure of the report gate."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3012,9 +3016,13 @@
         "Candidate reuses the existing sleep/hour/day/source-window model. No database/schema/data write, new integration, authentication or clinical change.",
         "Forty-two model cases and the view/print lifecycle suite pass; distinct sleep devices, fractional hours, original dates, observed zero, null/conflict/partial/open dates and failed reads are covered.",
         "Existing browser fixture/oracle checks the ninth metric, hour precision and all export rows. Protected real-auth adds boolean-only value/date/unit/source/coverage binding without logging patient readings.",
-        "Exact candidate renderers/styles manually reviewed with invented data at desktop,393x650 and393x844: weekly/monthly origin switching, independent sources, current day outside means, readable context and no page overflow. Candidate/publication/protected-auth/PDF gates remain pending."
+        "Exact candidate renderers/styles manually reviewed with invented data at desktop,393x650 and393x844: weekly/monthly origin switching, independent sources, current day outside means, readable context and no page overflow. Candidate/publication/protected-auth/PDF gates remain pending.",
+        "PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completed17/17 workflows, including Calendar41240904364. Earlier7 and4 failures remain documented; the corrected positioned-PDF-word oracle retains all token/count, bounds/page/image checks with missing-number and missing-unit negative controls.",
+        "Normal merge05ff97654b65c6bd23451ed0c831b07813b85ef2 deploys .103 through41241583766. Independent Cloud Browser confirms exact .103, intact login, hidden private app and1363px without overflow. This is signed-out public inspection, separate from synthetic preview and protected authentication.",
+        "Protected Real Auth41241583773 failed in analise with zero recorded runtime/network errors. Encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. Source inspection finds an obsolete mandatory8-card predicate, which necessarily rejects the new9-card report. This follow-up changes it to an independent exact9-key set in both rendered cards and the model, keeping all nutrient value/coverage checks and the later sleep value/date/unit/source/coverage checks. The failed private gate is not declared passed before actual re-execution.",
+        "Only the authenticated test expectation and continuity evidence change. Public .103 runtime/values/source/date arithmetic, auth/security configuration and writes stay unchanged. The separately observed laboratory-history legibility package remains locally prepared and must follow successful closure of the report gate."
       ],
-      "next_action": "Finish exact candidate calendar/browser/PDF gates and normal publication/public/protected-auth verification; then close this bounded report gap while preserving independent source conditions."
+      "next_action": "Promote the bounded authenticated9-key expectation through a normal PR and verify the actual protected public .103 gate before closing; then execute the separate observed laboratory-history legibility package."
     }
   ],
   "package_history": [
@@ -4062,266 +4070,17 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261031.101",
-    "main_commit": "3f37e9070f35898391ba1b3ea49411ee6b03371d",
-    "runtime_promotion_commit": "3f37e9070f35898391ba1b3ea49411ee6b03371d",
+    "build_id": "health-integrated-20261031.103",
+    "main_commit": "05ff97654b65c6bd23451ed0c831b07813b85ef2",
+    "runtime_promotion_commit": "05ff97654b65c6bd23451ed0c831b07813b85ef2",
     "published_on": "2026-10-31",
-    "verified_at_utc": "2026-10-31T17:31:14.269Z",
-    "release_kind": "complete_available_marker_collection_overview",
-    "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Cloud Browser independently confirms exact public health-integrated-20261031.101, intact login and no horizontal overflow. Manual browser signed out; no new manual authenticated or physical-iPhone claim. Runtime change is bounded to collection presentation; no laboratory row, parser, numeric/source model, document, authentication or write changes.",
-    "automated_runtime_and_responsive_status": "Affected collection/browser, public and protected-auth gates pass; broader repetitions explicitly pending.",
+    "verification_status": "protected_auth_failed_pending_exact_cardinality_test_fix",
     "evidence": [
-      "Exact candidatec7bae5383f74d8e86e52c73b1651f699d4e85039:15/17 workflows passed, including integrated41224296421 with full-collection browser assertions and functional41224296520. Broader calendar41224296231 and isolated-preview41224296224 remain pending, not passed. Focused collection cases,14 visual-context tests, privacy/parity/integrity and continuity passed locally.",
-      "Manual synthetic inspection with exact production .101 renderers at desktop and393x650 confirms previously omitted markers visible in the selected collection, no page overflow and each new card reaches its own marker/history. Changed references still block automatic comparisons; original dates, units, raw/textual results and distinct origins remain intact.",
-      "Normal PR447 merge3f37e9070f35898391ba1b3ea49411ee6b03371d publishes .101. Deploy41224714054, public41224746829, homologation41224746842, cockpit41224714045 and protected real-auth41224714049 pass. Publication snapshot17/21 success; broader41224714110,41224714018,41224714095,41224714059 remain pending, not successful.",
-      "Cloud Browser independently confirms exact public health-integrated-20261031.101, intact login and no horizontal overflow. Manual browser signed out; no new manual authenticated or physical-iPhone claim. Runtime change is bounded to collection presentation; no laboratory row, parser, numeric/source model, document, authentication or write changes.",
-      "Prior .100 publication03415df62406a45c279403ed7a07fa154eb13445 completed22/22 and metadata candidateadd105ec53d4462fe2ee18fb47e9a86bc840c381 completed13/13. Later protected41223544013 on metadata publication6acfbe31fb6a22c98a012ff0cf0d8e142511cf51 failed with logged503/transport for public src/evolution-model.js and runtime-error sign-out. One failed-job retry passed with all assertions unchanged; preserve the original failure, encrypted artifact13050693961 and bounded recovery without claiming a permanent network remedy.",
-      "Fresh owner-scoped receipt/provider review does not unlock original water, source lineage, full-day basal coverage, export diagnostics or other independent history/native/form conditions. No third-party message or repeated phone setup. Next rotating UX area: reports. Overall owner acceptance remains independent."
-    ],
-    "ci_completion": {
-      "candidate": [
-        {
-          "id": 41224296313,
-          "name": "LTS Health Polar background",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296231,
-          "name": "LTS Health calendar reports and local PDF",
-          "status": "in_progress",
-          "conclusion": null
-        },
-        {
-          "id": 41224296224,
-          "name": "LTS Health Isolated Preview",
-          "status": "in_progress",
-          "conclusion": null
-        },
-        {
-          "id": 41224296377,
-          "name": "LTS Health Fleury source audit",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296448,
-          "name": "cockpit-smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296381,
-          "name": "LTS Health Auto Export",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296275,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296397,
-          "name": "LTS Health Recovery Depth Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296393,
-          "name": "LTS Health Training Session",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296452,
-          "name": "LTS Health Dashboard Reference Contract",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296486,
-          "name": "LTS Health Visual Training Report",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296237,
-          "name": "LTS Health iPhone Home Screen",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296316,
-          "name": "LTS Health Documented Plan Comparison",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296298,
-          "name": "LTS Health Cockpit Experience",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296348,
-          "name": "LTS Health Laboratory Originals",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296421,
-          "name": "LTS Health Integrated Production",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224296520,
-          "name": "LTS Health Functional Depth",
-          "status": "completed",
-          "conclusion": "success"
-        }
-      ],
-      "publication": [
-        {
-          "id": 41224746842,
-          "name": "LTS Health v2 Homologation Pages Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224746829,
-          "name": "LTS Health v2 Pages Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714015,
-          "name": "LTS Health Polar background",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714177,
-          "name": "LTS Health Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714110,
-          "name": "LTS Health calendar reports and local PDF",
-          "status": "in_progress",
-          "conclusion": null
-        },
-        {
-          "id": 41224714018,
-          "name": "LTS Health Functional Depth",
-          "status": "in_progress",
-          "conclusion": null
-        },
-        {
-          "id": 41224714095,
-          "name": "LTS Health Isolated Preview",
-          "status": "in_progress",
-          "conclusion": null
-        },
-        {
-          "id": 41224714059,
-          "name": "LTS Health Integrated Production",
-          "status": "in_progress",
-          "conclusion": null
-        },
-        {
-          "id": 41224714139,
-          "name": "LTS Health Training Session",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714084,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714054,
-          "name": "Deploy LTS Health",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714128,
-          "name": "LTS Health Timeline Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714026,
-          "name": "LTS Health Fleury source audit",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714047,
-          "name": "LTS Health Recovery Depth Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714083,
-          "name": "LTS Health Documented Plan Comparison",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714117,
-          "name": "LTS Health iPhone Home Screen",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714038,
-          "name": "LTS Health Auto Export",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714085,
-          "name": "LTS Health Laboratory Originals",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714102,
-          "name": "LTS Health Visual Training Report",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714045,
-          "name": "LTS Health Cockpit Experience",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41224714049,
-          "name": "LTS Health Real Auth E2E",
-          "status": "completed",
-          "conclusion": "success"
-        }
-      ]
-    },
-    "pending_validation_repetitions": [
-      41224296231,
-      41224296224,
-      41224714110,
-      41224714018,
-      41224714095,
-      41224714059
-    ],
-    "acceptance_note": "Bounded collection presentation complete; global owner acceptance and independent source/provider/history conditions remain open."
+      "PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completed17/17 workflows, including Calendar41240904364. Earlier7 and4 failures remain documented; the corrected positioned-PDF-word oracle retains all token/count, bounds/page/image checks with missing-number and missing-unit negative controls.",
+      "Normal merge05ff97654b65c6bd23451ed0c831b07813b85ef2 deploys .103 through41241583766. Independent Cloud Browser confirms exact .103, intact login, hidden private app and1363px without overflow. This is signed-out public inspection, separate from synthetic preview and protected authentication.",
+      "Protected Real Auth41241583773 failed in analise with zero recorded runtime/network errors. Encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. Source inspection finds an obsolete mandatory8-card predicate, which necessarily rejects the new9-card report. This follow-up changes it to an independent exact9-key set in both rendered cards and the model, keeping all nutrient value/coverage checks and the later sleep value/date/unit/source/coverage checks. The failed private gate is not declared passed before actual re-execution.",
+      "Only the authenticated test expectation and continuity evidence change. Public .103 runtime/values/source/date arithmetic, auth/security configuration and writes stay unchanged. The separately observed laboratory-history legibility package remains locally prepared and must follow successful closure of the report gate."
+    ]
   },
   "release_history": [
     {
@@ -6084,31 +5843,29 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-10-31",
-    "reviewed_at_utc": "2026-10-31T17:31:14.269Z",
-    "source_main_commit": "3f37e9070f35898391ba1b3ea49411ee6b03371d",
-    "runtime_build": "health-integrated-20261031.101",
+    "reviewed_at_utc": "2026-10-31T21:04:22.929529+00:00",
+    "source_main_commit": "05ff97654b65c6bd23451ed0c831b07813b85ef2",
+    "runtime_build": "health-integrated-20261031.103",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
-      "done": 88,
+      "done": 89,
       "blocked_external": 14,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "Exact candidatec7bae5383f74d8e86e52c73b1651f699d4e85039:15/17 workflows passed, including integrated41224296421 with full-collection browser assertions and functional41224296520. Broader calendar41224296231 and isolated-preview41224296224 remain pending, not passed. Focused collection cases,14 visual-context tests, privacy/parity/integrity and continuity passed locally.",
-      "Manual synthetic inspection with exact production .101 renderers at desktop and393x650 confirms previously omitted markers visible in the selected collection, no page overflow and each new card reaches its own marker/history. Changed references still block automatic comparisons; original dates, units, raw/textual results and distinct origins remain intact.",
-      "Normal PR447 merge3f37e9070f35898391ba1b3ea49411ee6b03371d publishes .101. Deploy41224714054, public41224746829, homologation41224746842, cockpit41224714045 and protected real-auth41224714049 pass. Publication snapshot17/21 success; broader41224714110,41224714018,41224714095,41224714059 remain pending, not successful.",
-      "Cloud Browser independently confirms exact public health-integrated-20261031.101, intact login and no horizontal overflow. Manual browser signed out; no new manual authenticated or physical-iPhone claim. Runtime change is bounded to collection presentation; no laboratory row, parser, numeric/source model, document, authentication or write changes.",
-      "Prior .100 publication03415df62406a45c279403ed7a07fa154eb13445 completed22/22 and metadata candidateadd105ec53d4462fe2ee18fb47e9a86bc840c381 completed13/13. Later protected41223544013 on metadata publication6acfbe31fb6a22c98a012ff0cf0d8e142511cf51 failed with logged503/transport for public src/evolution-model.js and runtime-error sign-out. One failed-job retry passed with all assertions unchanged; preserve the original failure, encrypted artifact13050693961 and bounded recovery without claiming a permanent network remedy.",
-      "Fresh owner-scoped receipt/provider review does not unlock original water, source lineage, full-day basal coverage, export diagnostics or other independent history/native/form conditions. No third-party message or repeated phone setup. Next rotating UX area: reports. Overall owner acceptance remains independent."
+      "PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completed17/17 workflows, including Calendar41240904364. Earlier7 and4 failures remain documented; the corrected positioned-PDF-word oracle retains all token/count, bounds/page/image checks with missing-number and missing-unit negative controls.",
+      "Normal merge05ff97654b65c6bd23451ed0c831b07813b85ef2 deploys .103 through41241583766. Independent Cloud Browser confirms exact .103, intact login, hidden private app and1363px without overflow. This is signed-out public inspection, separate from synthetic preview and protected authentication.",
+      "Protected Real Auth41241583773 failed in analise with zero recorded runtime/network errors. Encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. Source inspection finds an obsolete mandatory8-card predicate, which necessarily rejects the new9-card report. This follow-up changes it to an independent exact9-key set in both rendered cards and the model, keeping all nutrient value/coverage checks and the later sleep value/date/unit/source/coverage checks. The failed private gate is not declared passed before actual re-execution.",
+      "Only the authenticated test expectation and continuity evidence change. Public .103 runtime/values/source/date arithmetic, auth/security configuration and writes stay unchanged. The separately observed laboratory-history legibility package remains locally prepared and must follow successful closure of the report gate."
     ],
     "ux_review": {
-      "area": "exams",
-      "next_area": "reports",
-      "mode": "synthetic_production_renderers",
-      "viewport": "desktop and393x650",
-      "result": "collection_omission_corrected_and_published"
+      "area": "reports",
+      "next_area": "exams",
+      "mode": "synthetic_production_renderers_and_signed_out_exact_public",
+      "result": "runtime_published_protected_test_cardinality_followup_pending"
     }
   },
   "continuity_review_history": [
@@ -6468,6 +6225,35 @@
         "mode": "synthetic_production_renderers",
         "viewport": "desktop and393x650",
         "result": "bounded_caption_defect_corrected_and_published"
+      }
+    },
+    {
+      "reviewed_on": "2026-10-31",
+      "reviewed_at_utc": "2026-10-31T17:31:14.269Z",
+      "source_main_commit": "3f37e9070f35898391ba1b3ea49411ee6b03371d",
+      "runtime_build": "health-integrated-20261031.101",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 88,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Exact candidatec7bae5383f74d8e86e52c73b1651f699d4e85039:15/17 workflows passed, including integrated41224296421 with full-collection browser assertions and functional41224296520. Broader calendar41224296231 and isolated-preview41224296224 remain pending, not passed. Focused collection cases,14 visual-context tests, privacy/parity/integrity and continuity passed locally.",
+        "Manual synthetic inspection with exact production .101 renderers at desktop and393x650 confirms previously omitted markers visible in the selected collection, no page overflow and each new card reaches its own marker/history. Changed references still block automatic comparisons; original dates, units, raw/textual results and distinct origins remain intact.",
+        "Normal PR447 merge3f37e9070f35898391ba1b3ea49411ee6b03371d publishes .101. Deploy41224714054, public41224746829, homologation41224746842, cockpit41224714045 and protected real-auth41224714049 pass. Publication snapshot17/21 success; broader41224714110,41224714018,41224714095,41224714059 remain pending, not successful.",
+        "Cloud Browser independently confirms exact public health-integrated-20261031.101, intact login and no horizontal overflow. Manual browser signed out; no new manual authenticated or physical-iPhone claim. Runtime change is bounded to collection presentation; no laboratory row, parser, numeric/source model, document, authentication or write changes.",
+        "Prior .100 publication03415df62406a45c279403ed7a07fa154eb13445 completed22/22 and metadata candidateadd105ec53d4462fe2ee18fb47e9a86bc840c381 completed13/13. Later protected41223544013 on metadata publication6acfbe31fb6a22c98a012ff0cf0d8e142511cf51 failed with logged503/transport for public src/evolution-model.js and runtime-error sign-out. One failed-job retry passed with all assertions unchanged; preserve the original failure, encrypted artifact13050693961 and bounded recovery without claiming a permanent network remedy.",
+        "Fresh owner-scoped receipt/provider review does not unlock original water, source lineage, full-day basal coverage, export diagnostics or other independent history/native/form conditions. No third-party message or repeated phone setup. Next rotating UX area: reports. Overall owner acceptance remains independent."
+      ],
+      "ux_review": {
+        "area": "exams",
+        "next_area": "reports",
+        "mode": "synthetic_production_renderers",
+        "viewport": "desktop and393x650",
+        "result": "collection_omission_corrected_and_published"
       }
     }
   ],
