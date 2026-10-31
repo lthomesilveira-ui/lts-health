@@ -410,7 +410,9 @@ try{
     const {state}=await import('./src/core.js');
     const {calendarReport}=await import('./src/calendar-report-model.js');
     const model=calendarReport(state.data,state.domainStatus,state.ui);
-    if(document.querySelectorAll('#calendarReport [data-calendar-metric]').length!==8)return false;
+    const expectedKeys=['water','protein','energy','carbs','fat','fiber','steps','activeEnergy','sleep'].sort();
+    const renderedKeys=[...document.querySelectorAll('#calendarReport [data-calendar-metric]')].map(card=>card.dataset.calendarMetric).sort();
+    if(JSON.stringify(renderedKeys)!==JSON.stringify(expectedKeys)||JSON.stringify(model.metrics.map(metric=>metric.key).sort())!==JSON.stringify(expectedKeys))return false;
     return ['carbs','fat','fiber'].every(key=>{
       const metric=model.metricsByKey[key],card=document.querySelector(`#calendarReport [data-calendar-metric="${key}"]`);
       if(!card||!card.querySelector(`[data-calendar-source="${key}"]`))return false;

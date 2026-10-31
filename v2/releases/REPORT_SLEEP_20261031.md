@@ -1,3 +1,13 @@
+# .103 authenticated calendar expectation follow-up — 31/10/2026
+
+PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completed17/17 workflows, including Calendar41240904364. Earlier7 and4 failures remain documented; the corrected positioned-PDF-word oracle retains all token/count, bounds/page/image checks with missing-number and missing-unit negative controls.
+
+Normal merge05ff97654b65c6bd23451ed0c831b07813b85ef2 deploys .103 through41241583766. Independent Cloud Browser confirms exact .103, intact login, hidden private app and1363px without overflow. This is signed-out public inspection, separate from synthetic preview and protected authentication.
+
+Protected Real Auth41241583773 failed in analise with zero recorded runtime/network errors. Encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. Source inspection finds an obsolete mandatory8-card predicate, which necessarily rejects the new9-card report. This follow-up changes it to an independent exact9-key set in both rendered cards and the model, keeping all nutrient value/coverage checks and the later sleep value/date/unit/source/coverage checks. The failed private gate is not declared passed before actual re-execution.
+
+Only the authenticated test expectation and continuity evidence change. Public .103 runtime/values/source/date arithmetic, auth/security configuration and writes stay unchanged. The separately observed laboratory-history legibility package remains locally prepared and must follow successful closure of the report gate.
+
 # Sleep included in calendar reports — candidate .103, 31/10/2026
 
 Direct UI review found recorded sleep present in Home but omitted from calendar reports. Candidate .103 reuses the existing source-isolated hour/day model in weekly/monthly summaries, dated graph/source picker and both local exports. Sources are not pooled, original dates are not moved between nights and current-day values stay outside closed means. Source/date context is readable on screen; PDF values retain a searchable space before their unit.
