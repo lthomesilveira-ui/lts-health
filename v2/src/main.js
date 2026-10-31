@@ -285,7 +285,7 @@ function bindStaticEvents(){
     if(reviewDate&&!reviewDate.disabled&&reviewDate.dataset.reviewDate){state.ui.reviewDate=reviewDate.dataset.reviewDate;state.ui.healthContextDate=state.ui.reviewDate;scheduleRender();return;}
     if(event.target.closest('[data-review-export]')){downloadIntegratedSummary();return;}
     const sectionLink=event.target.closest('[data-report-section]');
-    if(sectionLink){event.preventDefault();const section=document.getElementById(sectionLink.dataset.reportSection);if(section){for(let ancestor=section.parentElement;ancestor;ancestor=ancestor.parentElement){if(ancestor.tagName==='DETAILS')ancestor.open=true;}section.scrollIntoView({block:'start',behavior:'auto'});section.tabIndex=-1;section.focus({preventScroll:true});}return;}
+    if(sectionLink){event.preventDefault();const section=document.getElementById(sectionLink.dataset.reportSection);if(section){for(let ancestor=section.parentElement;ancestor;ancestor=ancestor.parentElement){if(ancestor.tagName==='DETAILS')ancestor.open=true;}section.scrollIntoView({block:'start',behavior:'auto'});if(section.tagName!=='SUMMARY')section.tabIndex=-1;section.focus({preventScroll:true});}return;}
     const reportExercise=event.target.closest('[data-report-exercise]');
     if(reportExercise){state.ui.productExerciseId=reportExercise.dataset.reportExercise;state.ui.productExerciseUnit=reportExercise.dataset.reportLoadUnit;state.ui.productExercisePage=1;state.ui.productExercisePoint=null;state.ui.productTrainingView='exercise';setRoute('treinos');return;}
     const reportMarker=event.target.closest('[data-report-marker]');

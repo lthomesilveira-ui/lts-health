@@ -49,35 +49,22 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-LAB-HISTORY-READABILITY-020",
-    "status": "done",
-    "goal": "Make original laboratory dates, results and provenance readable in the existing marker history.",
+    "id": "PKG-NUTRITION-DETAIL-ACTIONS-021",
+    "status": "in_progress",
+    "goal": "Reveal existing Nutrition context through working consumption and water detail actions.",
     "task_ids": [
-      "LTS-LAB-HISTORY-READABILITY-001"
+      "LTS-NUTRITION-DETAIL-ACTIONS-001"
     ],
-    "candidate_build": "health-integrated-20261031.104",
+    "candidate_build": "health-integrated-20261031.105",
     "public_build": "health-integrated-20261031.104",
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "started_at_utc": "2026-10-31T21:12:53.612685+00:00",
-    "completed_on": "2026-10-31",
-    "completed_at_utc": "2026-10-31T21:22:27.432Z",
-    "publication_commit": "95e127c2569c8111d76a4a799c4873e3bf0e1c99",
-    "completed_evidence": [
-      "Actual desktop/phone marker-history inspection found correct dated/source data but computed phone dates10px, source/method/reference10.5px and results12px. The published history-only style keeps contextual text and source flags at14px, original results at16px, a full single-line collection date and wrapping provenance in the existing rows. Colors, hierarchy, graph/comparison/model rules and original records are unchanged.",
-      "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms readable dates/results/reference/method without horizontal overflow. A separate literal-limit/unit/long-laboratory-method-reference/original-flag variant also remains complete and readable at320px; the synthetic SDK was then restored byte for byte. Changed references still block numeric differences; no functional correction was needed for that data/navigation rule.",
-      "PR452 exact candidate b131d00d900b59df2e5070c121a4634e99bdf88d: 15/16 workflows completed/success. Integrated41242610169 and Functional41242610356 pass, including actual history navigation, computed14px/16px reading, full-date and row bounds at320/393/1280px. Existing chart-entry, touch, prior history and no-write assertions remain. Syntax, exact hashes/parity, production graph, public-payload and continuity contracts pass locally. Unfinished broad repetitions remain listed as pending, not passed.",
-      "Normal PR452 merge 95e127c2569c8111d76a4a799c4873e3bf0e1c99 publishes health-integrated-20261031.104. Deploy41243040182, public41243095698, homologation41243095573 and protected real-auth41243040235 pass. Publication snapshot17/20 success; unfinished candidate/publication repetitions [41242610405, 41243040227, 41243040212, 41243040257] stay pending, not passed.",
-      "Independent Cloud Browser confirms exact public .104, intact login, hidden private app and no horizontal overflow. The manual session is signed out. Synthetic health-area inspection and protected actual authentication are separate evidence; no new private manual or physical-iPhone claim.",
-      "Previous .103 delivery remains verified: runtime PR450 and the exact9-key protected-check follow-up PR451 preserve the original7/4 PDF failures and the first protected cardinality failure as history. The corrected PDF oracle retains all positioned words, counts, bounds/pages/images, with missing-number/unit negative controls. Later successful follow-up authentication is distinct from the failed original run. Prior pending repetitions are reconciled only where the fresh observed run actually completes/succeeds.",
-      "Read-only genuine receipt/provider review leaves original water, source identity, full-day basal coverage, export diagnostics and the other independent history/native/form conditions blocked. No external message, repeated phone configuration/test, invented production form record, clinical/laboratory/medication change or source inference. Next rotating UX area: nutrition. Actual owner acceptance remains independent."
+    "pending_gates": [
+      "exact affected responsive candidate checks",
+      "normal deployment/public smoke",
+      "exact public inspection",
+      "protected actual-auth verification"
     ],
-    "pending_validation_repetitions": [
-      41242610405,
-      41243040227,
-      41243040212,
-      41243040257
-    ]
+    "started_at_utc": "2026-10-31T22:24:25.226832+00:00"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3059,6 +3046,29 @@
         "Read-only genuine receipt/provider review leaves original water, source identity, full-day basal coverage, export diagnostics and the other independent history/native/form conditions blocked. No external message, repeated phone configuration/test, invented production form record, clinical/laboratory/medication change or source inference. Next rotating UX area: nutrition. Actual owner acceptance remains independent."
       ],
       "next_action": "Keep this bounded readability contract on future changes; resume independent data/history/native conditions only with their recorded genuine signals."
+    },
+    {
+      "id": "LTS-NUTRITION-DETAIL-ACTIONS-001",
+      "area": "Nutrition detail navigation",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Make Nutrition consumption and water detail actions reveal their existing context instead of returning to the current route.",
+      "acceptance": [
+        "Nutrition consumption/water detail actions open the matching existing disclosure and reveal its context below the header on desktop and phones.",
+        "The native summary receives focus, remains in the keyboard sequence and can still be opened/closed with Enter.",
+        "Origin, selected historical date/year/month/window, diary text and reads remain unchanged; unavailable domains offer refresh and cards outside Nutrition keep their route links.",
+        "Affected unit/integrity/privacy and responsive candidate gates pass, followed by normal publication, exact public inspection and protected actual-auth verification."
+      ],
+      "evidence": [
+        "Fresh main0e06f6bbed4d0740a19b68271c0115199608013b, reference heads/master, latest private checkpoint and open PRs were read before work. Only preserved legacy PRs367/354/348 remain; no overlapping recent implementation. Main metadata publication has17/17 completed/success workflows.",
+        "Actual signed-out public .104 inspection is separate from the invented-data preview. All162 production JS/CSS blobs were checked against the current main tree and mirrored into the preview; the synthetic SDK and session remain independent of production authentication.",
+        "Observed desktop and393px Nutrition detail actions routed back to the current screen, leaving their disclosures closed. The water action reproduced the same defect. The historical year/date/source journey itself retained the selected original context and did not require a data/model correction.",
+        "Bounded UI correction directs local nutrition/water detail actions to their existing native disclosures, opens the ancestor, focuses the summary and scrolls below the header without a route change, data reload or selection replacement. Native summary keyboard navigation remains intact. Unavailable domains offer the existing refresh action. Cards outside Nutrition retain the original route behavior.",
+        "Manual desktop and393x650 synthetic interaction confirms open/focused native summaries and visible contextual text. Existing archive unit suite14/14 passes, including unavailable refresh behavior and unchanged independent route links. Existing responsive history browser gate now checks click/keyboard, visible context and exact preservation of source/date/month/year/window/diary/read counts. Candidate/publication gates remain pending."
+      ],
+      "next_action": "Complete affected candidate/browser gates, normal deployment, exact public and protected actual-auth verification before marking this bounded defect done."
     }
   ],
   "package_history": [
@@ -7684,40 +7694,34 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-10-31",
-    "reviewed_at_utc": "2026-10-31T21:22:27.432Z",
-    "source_main_commit": "95e127c2569c8111d76a4a799c4873e3bf0e1c99",
+    "reviewed_at_utc": "2026-10-31T22:24:25.226832+00:00",
+    "source_main_commit": "0e06f6bbed4d0740a19b68271c0115199608013b",
     "runtime_build": "health-integrated-20261031.104",
+    "candidate_build": "health-integrated-20261031.105",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
       "done": 91,
       "blocked_external": 14,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "Actual desktop/phone marker-history inspection found correct dated/source data but computed phone dates10px, source/method/reference10.5px and results12px. The published history-only style keeps contextual text and source flags at14px, original results at16px, a full single-line collection date and wrapping provenance in the existing rows. Colors, hierarchy, graph/comparison/model rules and original records are unchanged.",
-      "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms readable dates/results/reference/method without horizontal overflow. A separate literal-limit/unit/long-laboratory-method-reference/original-flag variant also remains complete and readable at320px; the synthetic SDK was then restored byte for byte. Changed references still block numeric differences; no functional correction was needed for that data/navigation rule.",
-      "PR452 exact candidate b131d00d900b59df2e5070c121a4634e99bdf88d: 15/16 workflows completed/success. Integrated41242610169 and Functional41242610356 pass, including actual history navigation, computed14px/16px reading, full-date and row bounds at320/393/1280px. Existing chart-entry, touch, prior history and no-write assertions remain. Syntax, exact hashes/parity, production graph, public-payload and continuity contracts pass locally. Unfinished broad repetitions remain listed as pending, not passed.",
-      "Normal PR452 merge 95e127c2569c8111d76a4a799c4873e3bf0e1c99 publishes health-integrated-20261031.104. Deploy41243040182, public41243095698, homologation41243095573 and protected real-auth41243040235 pass. Publication snapshot17/20 success; unfinished candidate/publication repetitions [41242610405, 41243040227, 41243040212, 41243040257] stay pending, not passed.",
-      "Independent Cloud Browser confirms exact public .104, intact login, hidden private app and no horizontal overflow. The manual session is signed out. Synthetic health-area inspection and protected actual authentication are separate evidence; no new private manual or physical-iPhone claim.",
-      "Previous .103 delivery remains verified: runtime PR450 and the exact9-key protected-check follow-up PR451 preserve the original7/4 PDF failures and the first protected cardinality failure as history. The corrected PDF oracle retains all positioned words, counts, bounds/pages/images, with missing-number/unit negative controls. Later successful follow-up authentication is distinct from the failed original run. Prior pending repetitions are reconciled only where the fresh observed run actually completes/succeeds.",
-      "Read-only genuine receipt/provider review leaves original water, source identity, full-day basal coverage, export diagnostics and the other independent history/native/form conditions blocked. No external message, repeated phone configuration/test, invented production form record, clinical/laboratory/medication change or source inference. Next rotating UX area: nutrition. Actual owner acceptance remains independent."
+      "Fresh main0e06f6bbed4d0740a19b68271c0115199608013b, reference heads/master, latest private checkpoint and open PRs were read before work. Only preserved legacy PRs367/354/348 remain; no overlapping recent implementation. Main metadata publication has17/17 completed/success workflows.",
+      "Actual signed-out public .104 inspection is separate from the invented-data preview. All162 production JS/CSS blobs were checked against the current main tree and mirrored into the preview; the synthetic SDK and session remain independent of production authentication.",
+      "Observed desktop and393px Nutrition detail actions routed back to the current screen, leaving their disclosures closed. The water action reproduced the same defect. The historical year/date/source journey itself retained the selected original context and did not require a data/model correction.",
+      "Bounded UI correction directs local nutrition/water detail actions to their existing native disclosures, opens the ancestor, focuses the summary and scrolls below the header without a route change, data reload or selection replacement. Native summary keyboard navigation remains intact. Unavailable domains offer the existing refresh action. Cards outside Nutrition retain the original route behavior.",
+      "Manual desktop and393x650 synthetic interaction confirms open/focused native summaries and visible contextual text. Existing archive unit suite14/14 passes, including unavailable refresh behavior and unchanged independent route links. Existing responsive history browser gate now checks click/keyboard, visible context and exact preservation of source/date/month/year/window/diary/read counts. Candidate/publication gates remain pending."
     ],
     "ux_review": {
-      "area": "exams",
-      "next_area": "nutrition",
-      "mode": "synthetic_production_renderers_plus_protected_actual_auth",
-      "viewport": "desktop,320x650,393x650; existing CI320/393/1280",
-      "result": "bounded_original_history_readability_published_and_verified",
-      "functional_journey_without_change": "collection dates/units/references and changed-reference comparison rule remain correct"
-    },
-    "pending_validation_repetitions": [
-      41242610405,
-      41243040227,
-      41243040212,
-      41243040257
-    ]
+      "area": "nutrition",
+      "next_area": "training",
+      "mode": "synthetic_production_renderers",
+      "viewport": "desktop,393x650; candidate responsive gate pending",
+      "result": "observed_inert_local_detail_actions_corrected_pending_gates",
+      "journey_without_defect": "historical source/year/date and independent averages remained correct"
+    }
   },
   "continuity_review_history": [
     {
@@ -8202,6 +8206,43 @@
         "viewport": "desktop,320x650,393x650",
         "result": "bounded_history_readability_candidate_pending"
       }
+    },
+    {
+      "reviewed_on": "2026-10-31",
+      "reviewed_at_utc": "2026-10-31T21:22:27.432Z",
+      "source_main_commit": "95e127c2569c8111d76a4a799c4873e3bf0e1c99",
+      "runtime_build": "health-integrated-20261031.104",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 91,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Actual desktop/phone marker-history inspection found correct dated/source data but computed phone dates10px, source/method/reference10.5px and results12px. The published history-only style keeps contextual text and source flags at14px, original results at16px, a full single-line collection date and wrapping provenance in the existing rows. Colors, hierarchy, graph/comparison/model rules and original records are unchanged.",
+        "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms readable dates/results/reference/method without horizontal overflow. A separate literal-limit/unit/long-laboratory-method-reference/original-flag variant also remains complete and readable at320px; the synthetic SDK was then restored byte for byte. Changed references still block numeric differences; no functional correction was needed for that data/navigation rule.",
+        "PR452 exact candidate b131d00d900b59df2e5070c121a4634e99bdf88d: 15/16 workflows completed/success. Integrated41242610169 and Functional41242610356 pass, including actual history navigation, computed14px/16px reading, full-date and row bounds at320/393/1280px. Existing chart-entry, touch, prior history and no-write assertions remain. Syntax, exact hashes/parity, production graph, public-payload and continuity contracts pass locally. Unfinished broad repetitions remain listed as pending, not passed.",
+        "Normal PR452 merge 95e127c2569c8111d76a4a799c4873e3bf0e1c99 publishes health-integrated-20261031.104. Deploy41243040182, public41243095698, homologation41243095573 and protected real-auth41243040235 pass. Publication snapshot17/20 success; unfinished candidate/publication repetitions [41242610405, 41243040227, 41243040212, 41243040257] stay pending, not passed.",
+        "Independent Cloud Browser confirms exact public .104, intact login, hidden private app and no horizontal overflow. The manual session is signed out. Synthetic health-area inspection and protected actual authentication are separate evidence; no new private manual or physical-iPhone claim.",
+        "Previous .103 delivery remains verified: runtime PR450 and the exact9-key protected-check follow-up PR451 preserve the original7/4 PDF failures and the first protected cardinality failure as history. The corrected PDF oracle retains all positioned words, counts, bounds/pages/images, with missing-number/unit negative controls. Later successful follow-up authentication is distinct from the failed original run. Prior pending repetitions are reconciled only where the fresh observed run actually completes/succeeds.",
+        "Read-only genuine receipt/provider review leaves original water, source identity, full-day basal coverage, export diagnostics and the other independent history/native/form conditions blocked. No external message, repeated phone configuration/test, invented production form record, clinical/laboratory/medication change or source inference. Next rotating UX area: nutrition. Actual owner acceptance remains independent."
+      ],
+      "ux_review": {
+        "area": "exams",
+        "next_area": "nutrition",
+        "mode": "synthetic_production_renderers_plus_protected_actual_auth",
+        "viewport": "desktop,320x650,393x650; existing CI320/393/1280",
+        "result": "bounded_original_history_readability_published_and_verified",
+        "functional_journey_without_change": "collection dates/units/references and changed-reference comparison rule remain correct"
+      },
+      "pending_validation_repetitions": [
+        41242610405,
+        41243040227,
+        41243040212,
+        41243040257
+      ]
     }
   ],
   "continuation_automation": {

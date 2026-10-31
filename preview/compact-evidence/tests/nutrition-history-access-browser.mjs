@@ -51,6 +51,31 @@ async function assertDiary(page,date,source=HISTORY_SOURCE){
   else assert.equal(await metrics.count(),0,'missing or wholly ambiguous daily totals are not synthesized from meals');
   assert.doesNotMatch(await page.locator('#nutritionArchiveDiary').innerText(),/\b(?:NaN|undefined|Infinity)\b/);
 }
+async function inlineDetails(page,label){
+  const selection=await stateSelection(page),url=page.url();
+  const diary=await page.locator('#nutritionArchiveDiary').innerText();
+  const readCount=await page.evaluate(()=>window.__historyQA.reads.length);
+  for(const [kind,title] of [['nutrition','Consumo e plano alimentar'],['water','Água consumida']]){
+    const summary=page.locator(`#home-${kind}-detail`),details=page.locator(`[data-disclosure="home-${kind}-detail"]`);
+    assert.equal(await details.getAttribute('open'),null,'the disclosure starts collapsed');
+    await page.getByRole('button',{name:`Abrir ${title}`,exact:true}).click();
+    await page.waitForFunction(id=>{
+      const summary=document.getElementById(id),header=document.querySelector('.topbar');
+      if(!summary||!summary.parentElement.open||document.activeElement!==summary)return false;
+      const box=summary.getBoundingClientRect(),first=summary.nextElementSibling?.getBoundingClientRect(),nav=document.querySelector('#mobileNav'),bottom=nav?.checkVisibility()?nav.getBoundingClientRect().top:innerHeight;
+      return box.top>=Math.max(0,header.getBoundingClientRect().bottom)-1&&first?.bottom<=bottom+1;
+    },`home-${kind}-detail`);
+    assert.equal(await summary.evaluate(element=>element.tabIndex),0,'native summary stays in the keyboard sequence');
+    assert.equal(page.url(),url,'a local detail action does not navigate to its own route');
+    assert.deepEqual(await stateSelection(page),selection,'selected origin/date/month/year/window and domain states are preserved');
+    assert.equal(await page.locator('#nutritionArchiveDiary').innerText(),diary,'opening context cannot replace the selected diary');
+    assert.equal(await page.evaluate(()=>window.__historyQA.reads.length),readCount,'the action opens available context without reloading data');
+    await page.screenshot({path:`${dir}/${label}-${kind}-inline-detail.png`,animations:'disabled'});
+    await summary.press('Enter');assert.equal(await details.getAttribute('open'),null,'Enter closes the native disclosure');
+    await summary.press('Enter');assert.notEqual(await details.getAttribute('open'),null,'Enter opens the same native disclosure again');
+    await summary.click();assert.equal(await details.getAttribute('open'),null);
+  }
+}
 async function buttonQuality(page,label,selector){
   const issues=await page.locator(selector).evaluateAll(buttons=>buttons.filter(button=>button.checkVisibility({checkVisibilityCSS:true})).flatMap(button=>{const style=getComputedStyle(button),parent=getComputedStyle(button.parentElement),radii=[style.borderTopLeftRadius,style.borderTopRightRadius,style.borderBottomLeftRadius,style.borderBottomRightRadius];return radii.every(value=>parseFloat(value)>=8)&&style.fontFamily===parent.fontFamily?[]:[{text:button.textContent.trim(),radii,font:style.fontFamily,parentFont:parent.fontFamily}];}));
   assert.deepEqual(issues,[],`${label}: new archive actions use the rounded, inherited-font app styling`);
@@ -145,6 +170,7 @@ try{
       const originLabels=await page.locator('#nutritionArchiveSource option').allTextContents();assert.equal(new Set(originLabels).size,originLabels.length,'source options distinguish canonical, candidate and review identities');
       assert.equal(await page.locator('#nutritionArchiveMonth option:checked').textContent(),'fevereiro','month fits narrow controls without repeating the adjacent year');
       await quality(page,`${label}/earliest`);await capture(page,`${label}-earliest`);
+      await inlineDetails(page,label);
       // Existing summary selector and the archive use one explicit choice.
       const summaryDetail=page.locator('[data-disclosure="home-nutrition-detail"]');
       await summaryDetail.locator(':scope > summary').click();
