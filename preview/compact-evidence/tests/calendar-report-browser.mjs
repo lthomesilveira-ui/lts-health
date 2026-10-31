@@ -25,6 +25,17 @@ const flags={syntheticOnly:true,realDocumentsUsed:false,authenticatedWithRealAcc
 const dateLabel=date=>date.split('-').reverse().join('/');
 const normalized=value=>String(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const tokenCounts=value=>{const result=new Map();for(const token of normalized(value).match(/[\p{L}\p{N}]+/gu)||[])result.set(token,(result.get(token)||0)+1);return result;};
+const missingPdfWords=(expectedText,words)=>{
+  const actual=tokenCounts(words.map(word=>word.text).join(' ')),expected=tokenCounts(expectedText),missing=[];
+  for(const [token,count] of expected)if((actual.get(token)||0)<count)missing.push({token,expected:count,actual:actual.get(token)||0});
+  return missing;
+};
+// The positioned PDF words are the same evidence whose page bounds we check.
+// Plain `pdftotext -layout` can join 6 and h even when bbox output identifies
+// two separate painted words. Missing either the number or unit must fail.
+assert.deepEqual(missingPdfWords('Sono 6 h',[{text:'Sono'},{text:'6'},{text:'h'}]),[]);
+assert.deepEqual(missingPdfWords('Sono 6 h',[{text:'Sono'},{text:'h'}]),[{token:'6',expected:1,actual:0}]);
+assert.deepEqual(missingPdfWords('Sono 6 h',[{text:'Sono'},{text:'6'}]),[{token:'h',expected:1,actual:0}]);
 const save=()=>writeFileSync(`${dir}/results.json`,JSON.stringify({...flags,fixedDate:CALENDAR_TODAY,productionStartup:true,deepLink:'analise',engines:['chromium','webkit'],viewportWidths:sizes.map(([width])=>width),deviceScaleFactor:1,results,captures,pdfs,securityEvidence,failures},null,2));
 
 async function installProbe(page){
@@ -361,11 +372,10 @@ print(json.dumps(pages,ensure_ascii=False))
     if(!page.words.length)issues.push({page:index+1,reason:'blank page'});
     for(const word of page.words)if(word.xMin<8||word.yMin<8||word.xMax>page.width-8||word.yMax>page.height-8||word.xMax<=word.xMin||word.yMax<=word.yMin)issues.push({page:index+1,reason:'text outside printable page or degenerate bounding box',word});
   }
-  const extracted=readFileSync(plain,'utf8'),actual=tokenCounts(extracted),expected=tokenCounts(expectedText),missing=[];
-  for(const [token,count] of expected)if((actual.get(token)||0)<count)missing.push({token,expected:count,actual:actual.get(token)||0});
+  const missing=missingPdfWords(expectedText,parsed.flatMap(page=>page.words));
   // All visible print text must survive PDF pagination, not only a title or
   // the first screenshot. This detects content lost in clipped scroll boxes.
-  writeFileSync(`${dir}/${name}-pdf-layout.json`,JSON.stringify({...flags,pages:parsed,missingTokens:missing,issues},null,2));
+  writeFileSync(`${dir}/${name}-pdf-layout.json`,JSON.stringify({...flags,textComparison:'positioned_pdf_words',plainTextArtifact:`${name}-text.txt`,pages:parsed,missingTokens:missing,issues},null,2));
   execFileSync('pdftoppm',['-png','-r','144',path,`${dir}/${name}-pdf-page`],{maxBuffer:5*1024*1024});
   const images=readdirSync(dir).filter(file=>file.startsWith(`${name}-pdf-page-`)&&file.endsWith('.png'));
   assert.equal(images.length,pageCount,'Every PDF page has a native-resolution visual artifact');
