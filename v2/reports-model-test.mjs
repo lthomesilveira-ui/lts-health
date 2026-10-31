@@ -4,6 +4,7 @@ const {state}=await import('./src/core.js');
 const {reportBounds,compositionReport,segmentIdentity,segmentalReport,trainingSummary,nutritionSummary,hydrationSummary,laboratoryReport,usefulReports}=await import('./src/reports-model.js');
 const {contextChart}=await import('./src/health-context.js');
 const {renderUsefulReports}=await import('./src/reports-screen.js');
+const {renderProductTraining}=await import('./src/training-reference-v2.js');
 const status=Object.fromEntries(['body','segmental','workouts','exercises','sets','nutrition','labs','sourceMetrics'].map(k=>[k,'ready']));
 const {current,previous}=reportBounds('30','2025-03-02');
 assert.deepEqual(current,{start:'2025-02-01',end:'2025-03-02',days:30});
@@ -84,4 +85,9 @@ let periodHtml=renderUsefulReports().match(/id="reportPeriods"[\s\S]*?<\/section
 assert.match(periodHtml,/30 min<small>1 de 2 sessões com duração · parcial/);assert.match(periodHtml,/Cobertura incompleta/);assert.match(periodHtml,/Água por dia registrado/);assert.match(periodHtml,/\+1\.000 mL/);
 state.domainStatus={...status,sourceMetrics:'error'};
 const unavailable=renderUsefulReports();assert.match(unavailable,/Não foi possível atualizar os registros de água/);assert.match(unavailable,/Tente novamente em Atualizar/);assert.doesNotMatch(unavailable.match(/id="reportHydration"[\s\S]*?<\/section>/)?.[0]||'',/ltsContextPlot/);
-console.log('Useful reports: calendar windows, partial duration coverage, deduplicated hydration, source failures, segment/device boundaries, interval context, lab comparability and escaping passed.');
+assert.match(unavailable,/href="#treinos" data-route="treinos" data-return-route="analise"/,'the report keeps a contextual return when opening Training');
+state.data=data;state.domainStatus=status;state.ui={trainingReturnRoute:'analise'};
+assert.match(renderProductTraining(),/data-route="analise" data-consume-training-return/,'Training returns to the originating report once');
+state.ui={trainingReturnRoute:null};
+assert.match(renderProductTraining(),/data-route="hoje"/,'direct Training entry retains the Home fallback');
+console.log('Useful reports: calendar windows, partial duration coverage, deduplicated hydration, source failures, segment/device boundaries, interval context, lab comparability, contextual Training return and escaping passed.');
