@@ -139,6 +139,13 @@ try{
   await page.locator('#productCompositionSource').selectOption({label:'Modelo sintético de teste'});
   assert.equal(await page.locator('.ltsCompositionChart circle').count(),2,'the documented synthetic cohort is separate');
   assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),1);
+  const selectedDetail=page.locator('.ltsCompositionV2>[data-depth-composition-record]');
+  assert.equal(await selectedDetail.getAttribute('data-depth-composition-record'),'b-1','the contextual detail action follows the selected source');
+  assert.match(await selectedDetail.innerText(),/02\/01\/2024/,'the contextual detail action names the selected measurement date');
+  await selectedDetail.click();await page.waitForSelector('[data-composition-view="detail"]');
+  assert.match(await page.locator('.ltsHistoryContext').innerText(),/02\/01\/2024 · Modelo sintético de teste/,'detail keeps the selected source and date');
+  await page.locator('[data-depth-composition-back]').last().click();
+  assert.equal(await page.locator('#productCompositionSource option:checked').innerText(),'Modelo sintético de teste','return keeps the selected source');
   await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');await page.locator('#productCompareB').selectOption('b-1');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);
   assert.match(await page.locator('[data-disclosure="product-composition-compare"]').innerText(),/Peso\s*\+1,0 kg/,'positive control compares only the two documented records');await overflow(page);
 
