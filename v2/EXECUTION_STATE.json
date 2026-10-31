@@ -50,22 +50,27 @@
   },
   "current_package": {
     "id": "PKG-HOME-READABILITY-015",
-    "status": "in_progress",
+    "status": "blocked_external",
     "goal": "Improve readable context, observed-day coverage, missing-water freshness and body-history navigation without changing health values.",
     "task_ids": [
       "LTS-HOME-READABILITY-001"
     ],
     "candidate_build": "health-integrated-20261031.99",
-    "public_build": "health-integrated-20261030.98",
+    "public_build": "health-integrated-20261031.99",
     "owner_acceptance": "not_granted",
     "pending_gates": [
-      "exact_candidate_responsive_browser",
-      "candidate_workflows",
-      "public_deployment",
-      "protected_real_auth",
-      "public_manual_inspection"
+      "independent_final_public_browser_inspection"
     ],
-    "clinical_runtime_changed": false
+    "clinical_runtime_changed": false,
+    "completed_evidence": [
+      "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
+      "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
+      "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
+      "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+      "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
+      "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged."
+    ],
+    "publication_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3110,7 +3115,7 @@
       "area": "home experience",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "blocked_external",
       "summary": "Owner requests demanding ongoing app UX review; expose mean coverage, distinguish load failures, explain body comparison windows and retain water freshness.",
       "acceptance": [
         "Food and sleep summaries state the exact existing eligible-day denominator in period mode and distinguish load failure from no observation.",
@@ -3122,10 +3127,16 @@
       "evidence": [
         "2026-10-31: owner explicitly prioritizes iterative UX review over only rechecking blocked integrations.",
         "Public .98 opened signed out. A local copy of the exact production module graph was inspected with invented fixtures at desktop and393x650; no private manual-auth inspection is claimed.",
-        "Pure renderer regressions cover eligible-day counts, nonempty stale-water means, genuine zero, day-mode wording, unavailable reads, prior as-of and source-preservation boundaries."
+        "Pure renderer regressions cover eligible-day counts, nonempty stale-water means, genuine zero, day-mode wording, unavailable reads, prior as-of and source-preservation boundaries.",
+        "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
+        "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
+        "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
+        "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+        "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
+        "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged."
       ],
-      "next_action": "Complete exact candidate responsive checks, inspect narrow and desktop evidence, publish through normal PR and verify protected real-data/public entry.",
-      "blocker": null
+      "next_action": "When the Cloud Browser responds again, open exact .99 at the stable URL and verify the affected public experience. Preserve existing protected-auth evidence; finish the independent manual gate without repeating unrelated tests.",
+      "blocker": "Cloud Browser interaction, lightweight recovery and reset each timed out; independent final public .99 inspection is unverified. No new owner step is required."
     }
   ],
   "package_history": [
@@ -4035,483 +4046,262 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261030.98",
-    "main_commit": "3c747f6a9494b2f060115a295d8df2e874a5d64b",
-    "runtime_promotion_commit": "3c747f6a9494b2f060115a295d8df2e874a5d64b",
-    "operational_publication_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
-    "published_on": "2026-10-30",
-    "verified_on": "2026-10-30",
-    "verified_at_utc": "2026-10-30T17:04:01.959Z",
-    "release_kind": "source_confirmed_private_laboratory_original_access",
-    "icon_revision": "heart-pulse-20261029",
-    "automated_runtime_and_responsive_status": "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass. Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime. Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed. PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage. Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed. PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
-    "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_verified_on": "2026-10-30",
-    "manual_exact_public_evidence": "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
-    "real_auth_verification_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
-    "verification_runtime_preparation": "Protected source-to-href agreement uses independent bounded reads; diagnostics retain the prior failed gate without removing assertions. Runtime assets remain .98.",
-    "acceptance_note": "Bounded original access is technically complete. Global owner acceptance, water/source/history, genuine form and native-device conditions remain independent.",
-    "pending_validation_repetitions": [],
-    "ci_completion": {
-      "verified_at_utc": "2026-10-30T17:04:01.959Z",
-      "runs": {
-        "candidate": [
-          {
-            "id": 41092770269,
-            "name": "LTS Health workout source evidence smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770503,
-            "name": "LTS Health Fleury source audit",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770540,
-            "name": "LTS Health Recovery Depth Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770773,
-            "name": "LTS Health v2 Nutrition History Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770148,
-            "name": "LTS Health Auto Export",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770614,
-            "name": "cockpit-smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770477,
-            "name": "LTS Health Dashboard Reference Contract",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770878,
-            "name": "LTS Health iPhone Home Screen",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770046,
-            "name": "LTS Health Cockpit Experience",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770427,
-            "name": "LTS Health Laboratory Originals",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770364,
-            "name": "LTS Health Visual Training Report",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770067,
-            "name": "LTS Health Training Session",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770582,
-            "name": "LTS Health Polar background",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770183,
-            "name": "LTS Health Documented Plan Comparison",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770485,
-            "name": "LTS Health Integrated Production",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770163,
-            "name": "LTS Health Functional Depth",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770479,
-            "name": "LTS Health calendar reports and local PDF",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41092770381,
-            "name": "LTS Health Isolated Preview",
-            "status": "completed",
-            "conclusion": "success"
-          }
-        ],
-        "runtime_publication": [
-          {
-            "id": 41093384905,
-            "name": "LTS Health v2 Pages Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093384835,
-            "name": "LTS Health v2 Homologation Pages Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311636,
-            "name": "LTS Health Polar background",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311389,
-            "name": "Deploy LTS Health",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311359,
-            "name": "LTS Health Documented Plan Comparison",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311367,
-            "name": "LTS Health Real Auth E2E",
-            "status": "completed",
-            "conclusion": "failure"
-          },
-          {
-            "id": 41093311579,
-            "name": "LTS Health Functional Depth",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311397,
-            "name": "LTS Health Integrated Production",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311422,
-            "name": "LTS Health calendar reports and local PDF",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093310939,
-            "name": "LTS Health Fleury source audit",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311258,
-            "name": "LTS Health Training Session",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311215,
-            "name": "LTS Health Timeline Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311006,
-            "name": "LTS Health Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311323,
-            "name": "LTS Health Recovery Depth Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311156,
-            "name": "LTS Health v2 Nutrition History Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311150,
-            "name": "LTS Health Laboratory Originals",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311081,
-            "name": "LTS Health Cockpit Experience",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311180,
-            "name": "LTS Health iPhone Home Screen",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311086,
-            "name": "LTS Health Auto Export",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093310884,
-            "name": "LTS Health Visual Training Report",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41093311090,
-            "name": "LTS Health Isolated Preview",
-            "status": "completed",
-            "conclusion": "success"
-          }
-        ],
-        "diagnostic_candidate": [
-          {
-            "id": 41094163191,
-            "name": "LTS Health Auto Export",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163024,
-            "name": "LTS Health iPhone Home Screen",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163134,
-            "name": "LTS Health Dashboard Reference Contract",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094162957,
-            "name": "LTS Health Cockpit Experience",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094162996,
-            "name": "LTS Health Documented Plan Comparison",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163209,
-            "name": "LTS Health Laboratory Originals",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163085,
-            "name": "LTS Health v2 Nutrition History Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163206,
-            "name": "LTS Health Recovery Depth Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163311,
-            "name": "LTS Health Visual Training Report",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163290,
-            "name": "LTS Health Fleury source audit",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094162984,
-            "name": "LTS Health Polar background",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094163690,
-            "name": "LTS Health Functional Depth",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094162950,
-            "name": "LTS Health Integrated Production",
-            "status": "completed",
-            "conclusion": "success"
-          }
-        ],
-        "diagnostic_publication": [
-          {
-            "id": 41094414298,
-            "name": "LTS Health v2 Homologation Pages Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094414101,
-            "name": "LTS Health v2 Pages Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336779,
-            "name": "LTS Health Laboratory Originals",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336560,
-            "name": "LTS Health Polar background",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336904,
-            "name": "LTS Health Timeline Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094337053,
-            "name": "LTS Health Fleury source audit",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336699,
-            "name": "LTS Health Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336613,
-            "name": "LTS Health Recovery Depth Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336601,
-            "name": "LTS Health Auto Export",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336528,
-            "name": "LTS Health v2 Nutrition History Smoke",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336650,
-            "name": "Deploy LTS Health",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336583,
-            "name": "LTS Health Documented Plan Comparison",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336774,
-            "name": "LTS Health Visual Training Report",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336533,
-            "name": "LTS Health Cockpit Experience",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336591,
-            "name": "LTS Health iPhone Home Screen",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336535,
-            "name": "LTS Health Real Auth E2E",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336743,
-            "name": "LTS Health Integrated Production",
-            "status": "completed",
-            "conclusion": "success"
-          },
-          {
-            "id": 41094336883,
-            "name": "LTS Health Functional Depth",
-            "status": "completed",
-            "conclusion": "success"
-          }
-        ]
-      }
-    },
+    "build_id": "health-integrated-20261031.99",
+    "main_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
+    "runtime_promotion_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
+    "published_on": "2026-10-31",
+    "verified_at_utc": "2026-10-31T13:05:52.743Z",
+    "release_kind": "home_readability_and_observed_day_context",
+    "automated_runtime_and_responsive_status": "All17 exact candidate workflows, responsive cockpit and protected post-merge real-auth/public gates passed.",
+    "manual_exact_public_status": "pending_browser_tool_outage",
+    "manual_exact_public_evidence": "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+    "acceptance_note": "Technical publication is verified; independent final public visual inspection and global owner acceptance remain open.",
     "evidence": [
-      "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
-      "Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime.",
-      "Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed.",
-      "PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage.",
-      "Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed.",
-      "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
-      "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
-      "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
-      "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory."
+      "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
+      "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
+      "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
+      "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+      "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
+      "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged."
     ],
-    "validation_followup": {
-      "status": "done",
-      "verified_at_utc": "2026-10-30T17:04:01.959Z",
-      "resolved_pending_run_ids": [
-        41092770381,
-        41093311090,
-        41094163690,
-        41094336883,
-        41094336743
+    "ci_completion": {
+      "candidate": [
+        {
+          "id": 41202672732,
+          "name": "LTS Health Training Session",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672739,
+          "name": "LTS Health Polar background",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672757,
+          "name": "LTS Health Recovery Depth Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672798,
+          "name": "cockpit-smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672717,
+          "name": "LTS Health Cockpit Experience",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672775,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672790,
+          "name": "LTS Health Fleury source audit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672736,
+          "name": "LTS Health Laboratory Originals",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672718,
+          "name": "LTS Health iPhone Home Screen",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672854,
+          "name": "LTS Health Auto Export",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672755,
+          "name": "LTS Health Visual Training Report",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672749,
+          "name": "LTS Health Dashboard Reference Contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672751,
+          "name": "LTS Health Documented Plan Comparison",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672857,
+          "name": "LTS Health Integrated Production",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672791,
+          "name": "LTS Health Functional Depth",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672719,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41202672735,
+          "name": "LTS Health Isolated Preview",
+          "status": "completed",
+          "conclusion": "success"
+        }
       ],
-      "preserved_failed_run_id": 41093311367,
-      "successful_fresh_auth_run_id": 41094336535,
-      "runtime_changed": false,
-      "clinical_runtime_changed": false,
-      "evidence": "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
-    }
+      "publication": [
+        {
+          "id": 41203545780,
+          "name": "LTS Health v2 Homologation Pages Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203545748,
+          "name": "LTS Health v2 Pages Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515510,
+          "name": "LTS Health Polar background",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515673,
+          "name": "LTS Health Isolated Preview",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 41203515535,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 41203515686,
+          "name": "LTS Health Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515750,
+          "name": "LTS Health Training Session",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515696,
+          "name": "LTS Health Fleury source audit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515626,
+          "name": "LTS Health Timeline Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515663,
+          "name": "LTS Health Auto Export",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515571,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515560,
+          "name": "LTS Health Recovery Depth Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515600,
+          "name": "Deploy LTS Health",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515568,
+          "name": "LTS Health Laboratory Originals",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515551,
+          "name": "LTS Health iPhone Home Screen",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515494,
+          "name": "LTS Health Cockpit Experience",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515533,
+          "name": "LTS Health Documented Plan Comparison",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515537,
+          "name": "LTS Health Visual Training Report",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515524,
+          "name": "LTS Health Real Auth E2E",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515632,
+          "name": "LTS Health Integrated Production",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41203515619,
+          "name": "LTS Health Functional Depth",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    "pending_validation_repetitions": [
+      41203515673,
+      41203515535
+    ]
   },
   "release_history": [
     {
@@ -5256,40 +5046,515 @@
       "icon_revision": "heart-pulse-20261029",
       "release_kind": "home_screen_icon_assets_only",
       "archived_from": "latest_published_release"
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261030.98",
+      "main_commit": "3c747f6a9494b2f060115a295d8df2e874a5d64b",
+      "runtime_promotion_commit": "3c747f6a9494b2f060115a295d8df2e874a5d64b",
+      "operational_publication_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
+      "published_on": "2026-10-30",
+      "verified_on": "2026-10-30",
+      "verified_at_utc": "2026-10-30T17:04:01.959Z",
+      "release_kind": "source_confirmed_private_laboratory_original_access",
+      "icon_revision": "heart-pulse-20261029",
+      "automated_runtime_and_responsive_status": "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass. Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime. Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed. PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage. Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed. PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
+      "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
+      "manual_exact_public_verified_on": "2026-10-30",
+      "manual_exact_public_evidence": "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
+      "real_auth_verification_commit": "d15d24ee6050a2c3e8b168ca887d12b577cdc9dd",
+      "verification_runtime_preparation": "Protected source-to-href agreement uses independent bounded reads; diagnostics retain the prior failed gate without removing assertions. Runtime assets remain .98.",
+      "acceptance_note": "Bounded original access is technically complete. Global owner acceptance, water/source/history, genuine form and native-device conditions remain independent.",
+      "pending_validation_repetitions": [],
+      "ci_completion": {
+        "verified_at_utc": "2026-10-30T17:04:01.959Z",
+        "runs": {
+          "candidate": [
+            {
+              "id": 41092770269,
+              "name": "LTS Health workout source evidence smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770503,
+              "name": "LTS Health Fleury source audit",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770540,
+              "name": "LTS Health Recovery Depth Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770773,
+              "name": "LTS Health v2 Nutrition History Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770148,
+              "name": "LTS Health Auto Export",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770614,
+              "name": "cockpit-smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770477,
+              "name": "LTS Health Dashboard Reference Contract",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770878,
+              "name": "LTS Health iPhone Home Screen",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770046,
+              "name": "LTS Health Cockpit Experience",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770427,
+              "name": "LTS Health Laboratory Originals",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770364,
+              "name": "LTS Health Visual Training Report",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770067,
+              "name": "LTS Health Training Session",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770582,
+              "name": "LTS Health Polar background",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770183,
+              "name": "LTS Health Documented Plan Comparison",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770485,
+              "name": "LTS Health Integrated Production",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770163,
+              "name": "LTS Health Functional Depth",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770479,
+              "name": "LTS Health calendar reports and local PDF",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41092770381,
+              "name": "LTS Health Isolated Preview",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ],
+          "runtime_publication": [
+            {
+              "id": 41093384905,
+              "name": "LTS Health v2 Pages Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093384835,
+              "name": "LTS Health v2 Homologation Pages Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311636,
+              "name": "LTS Health Polar background",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311389,
+              "name": "Deploy LTS Health",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311359,
+              "name": "LTS Health Documented Plan Comparison",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311367,
+              "name": "LTS Health Real Auth E2E",
+              "status": "completed",
+              "conclusion": "failure"
+            },
+            {
+              "id": 41093311579,
+              "name": "LTS Health Functional Depth",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311397,
+              "name": "LTS Health Integrated Production",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311422,
+              "name": "LTS Health calendar reports and local PDF",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093310939,
+              "name": "LTS Health Fleury source audit",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311258,
+              "name": "LTS Health Training Session",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311215,
+              "name": "LTS Health Timeline Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311006,
+              "name": "LTS Health Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311323,
+              "name": "LTS Health Recovery Depth Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311156,
+              "name": "LTS Health v2 Nutrition History Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311150,
+              "name": "LTS Health Laboratory Originals",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311081,
+              "name": "LTS Health Cockpit Experience",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311180,
+              "name": "LTS Health iPhone Home Screen",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311086,
+              "name": "LTS Health Auto Export",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093310884,
+              "name": "LTS Health Visual Training Report",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41093311090,
+              "name": "LTS Health Isolated Preview",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ],
+          "diagnostic_candidate": [
+            {
+              "id": 41094163191,
+              "name": "LTS Health Auto Export",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163024,
+              "name": "LTS Health iPhone Home Screen",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163134,
+              "name": "LTS Health Dashboard Reference Contract",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094162957,
+              "name": "LTS Health Cockpit Experience",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094162996,
+              "name": "LTS Health Documented Plan Comparison",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163209,
+              "name": "LTS Health Laboratory Originals",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163085,
+              "name": "LTS Health v2 Nutrition History Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163206,
+              "name": "LTS Health Recovery Depth Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163311,
+              "name": "LTS Health Visual Training Report",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163290,
+              "name": "LTS Health Fleury source audit",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094162984,
+              "name": "LTS Health Polar background",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094163690,
+              "name": "LTS Health Functional Depth",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094162950,
+              "name": "LTS Health Integrated Production",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ],
+          "diagnostic_publication": [
+            {
+              "id": 41094414298,
+              "name": "LTS Health v2 Homologation Pages Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094414101,
+              "name": "LTS Health v2 Pages Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336779,
+              "name": "LTS Health Laboratory Originals",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336560,
+              "name": "LTS Health Polar background",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336904,
+              "name": "LTS Health Timeline Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094337053,
+              "name": "LTS Health Fleury source audit",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336699,
+              "name": "LTS Health Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336613,
+              "name": "LTS Health Recovery Depth Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336601,
+              "name": "LTS Health Auto Export",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336528,
+              "name": "LTS Health v2 Nutrition History Smoke",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336650,
+              "name": "Deploy LTS Health",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336583,
+              "name": "LTS Health Documented Plan Comparison",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336774,
+              "name": "LTS Health Visual Training Report",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336533,
+              "name": "LTS Health Cockpit Experience",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336591,
+              "name": "LTS Health iPhone Home Screen",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336535,
+              "name": "LTS Health Real Auth E2E",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336743,
+              "name": "LTS Health Integrated Production",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "id": 41094336883,
+              "name": "LTS Health Functional Depth",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        }
+      },
+      "evidence": [
+        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
+        "Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime.",
+        "Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed.",
+        "PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage.",
+        "Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed.",
+        "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
+        "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
+        "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
+        "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory."
+      ],
+      "validation_followup": {
+        "status": "done",
+        "verified_at_utc": "2026-10-30T17:04:01.959Z",
+        "resolved_pending_run_ids": [
+          41092770381,
+          41093311090,
+          41094163690,
+          41094336883,
+          41094336743
+        ],
+        "preserved_failed_run_id": 41093311367,
+        "successful_fresh_auth_run_id": 41094336535,
+        "runtime_changed": false,
+        "clinical_runtime_changed": false,
+        "evidence": "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
+      }
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-10-30",
-    "reviewed_at_utc": "2026-10-30T17:04:01.959Z",
-    "source_main_commit": "f3b4ec8701387a78f5360572b2ba965b8b369600",
+    "reviewed_on": "2026-10-31",
+    "reviewed_at_utc": "2026-10-31T13:05:52.743Z",
+    "source_main_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
     "reference_heads": {
       "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
       "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
     },
-    "runtime_build": "health-integrated-20261030.98",
-    "icon_revision": "heart-pulse-20261029",
+    "runtime_build": "health-integrated-20261031.99",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "executable_task_count": 0,
     "open_external_issue_count": 0,
     "status_counts": {
       "done": 85,
-      "blocked_external": 14,
+      "blocked_external": 15,
       "accepted_gap": 2
     },
     "evidence": [
-      "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
-      "Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime.",
-      "Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed.",
-      "PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage.",
-      "Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed.",
-      "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
-      "Independent private database fingerprints before/after execution agree for every laboratory result and document. No clinical record, numeric reader, medication use, canonical source selection, auth/write implementation, key, receiver limit or phone setup changed.",
-      "One authorized hourly continuation is enabled and privately confirmed, with concurrent-work protection and notices only for material progress or indispensable owner action. Existing weekly/support tasks and paused PRs367/354/348 remain separate; no vendor message was sent.",
-      "Fresh source/support/context review yields no independently attributable restored water, verified basal day coverage, total expenditure, source lineage, exact old laboratory correction manifest or additional original-history evidence. Preserve14 external dependencies,2 accepted gaps and independent overall owner acceptance. Technical source access does not validate a new parser or complete all original inventory.",
-      "Final verification follow-up at2026-10-30T17:04:01.959Z: all18 runtime-candidate, all13 diagnostic-candidate and all18 diagnostic-publication workflows completed successfully. The initial runtime publication has20 successful workflows and the preserved actual-auth41093311367 failure; its fresh equivalent41094336535 passes every assertion. All previously pending repetitions are now complete. This does not retroactively mark the old failure successful or establish its cause. No application/runtime/source/clinical change is introduced."
+      "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
+      "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
+      "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
+      "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+      "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
+      "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged."
     ],
-    "acceptance_note": "No ready/in-progress task remains after this bounded package. Future authorized rounds re-evaluate genuine source/provider evidence without inventing completion or repeating unchanged notifications."
+    "acceptance_note": "Prior source/provider gaps and the independent manual public .99 gate stay open; no new owner action."
   },
   "continuity_review_history": [
     {
@@ -5532,6 +5797,34 @@
       ],
       "acceptance_note": "Original-plan access is technically delivered. User installation is confirmed, while global owner acceptance, water/source coverage, genuine ordinary form persistence and native physical-device conditions remain independent.",
       "ci_completion_verified_at_utc": "2026-10-30T01:47:09.795449+00:00"
+    },
+    {
+      "reviewed_on": "2026-10-31",
+      "reviewed_at_utc": "2026-10-31T13:05:52.743Z",
+      "source_main_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
+      "reference_heads": {
+        "architecture-v2": "72e2d8ed0dc8c024642c57809b62d83e5bef4599",
+        "product-clarity-p0": "1233f2b334c3a7795de49429fcb22f1f9b1a4373"
+      },
+      "runtime_build": "health-integrated-20261031.99",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "executable_task_count": 0,
+      "open_external_issue_count": 0,
+      "status_counts": {
+        "done": 85,
+        "blocked_external": 15,
+        "accepted_gap": 2
+      },
+      "evidence": [
+        "Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.",
+        "Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.",
+        "Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.",
+        "Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.",
+        "The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.",
+        "Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged."
+      ],
+      "acceptance_note": "Prior source/provider gaps and the independent manual public .99 gate stay open; no new owner action."
     }
   ],
   "continuation_automation": {

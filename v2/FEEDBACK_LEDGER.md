@@ -1,3 +1,19 @@
+# Home readability .99 published — independent public-browser gate pending, 31/10/2026
+
+Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.
+
+Synthetic artifact13043013582 sha256:cf4b264f4c457217d903302af2d2943872360ff25e705f9d9f6cd5610fb787cb verified before inspecting desktop1536,393x650 opening and320 body captures. Six full/sparse viewport journeys and three source-quality cases passed; dates, coverage/caveats/chart labels are at least14px, targets44px, no clipped cards or page overflow and zero writes.
+
+Normal PR442 merge23fc6ad0298fba88c576ef6191c9f1ece2f05bcf publishes .99. Deploy41203515600, public41203545748/41203545780 and protected real-auth41203515524 pass. Post-merge cockpit41203515494 and integrated41203515632 pass. No private screenshot inspection is claimed.
+
+Manual Cloud Browser opened .98 signed out and production renderers were inspected locally with invented data in desktop/393x650. A later browser interaction stalled; lightweight documentation recovery and reset also timed out. The tool outage prevents the independent final .99 public-browser inspection. That gate remains explicitly open; CI and local preview do not replace it.
+
+The enabled hourly continuation now explicitly prioritizes concrete UX journeys, visible information, graph readability and navigation alongside source/provider work; do not merely recheck blocked integrations. Preserve concurrent work, genuine observations, access and existing phone setup.
+
+Only Home presentation, mirrored read-only source, focused regressions, integrity/version manifests and public metadata changed. Data models, calculations, values, sources, original documents, clinical records, parser, authentication, writes and integration settings are unchanged.
+
+Broader publication repetitions still recorded as pending: 41203515673, 41203515535. Pending is never counted as success. Queue:85 done,15 blocked_external,2 accepted_gap; no ready/in_progress task. The new external condition is the unavailable browser verification, separate from the fourteen pre-existing source/provider/history/owner conditions. EXECUTION_STATE.json is authoritative; earlier entries preserve their historical scope.
+
 # UX context and readability — candidate .99, 31/10/2026
 
 Owner explicitly requests successive autonomous UX review, including actual app visits and demanding assessment of useful information. Public .98 was opened but the manual session is signed out. Production renderers were inspected locally using invented records at desktop and393x650; no new authenticated manual or physical-device claim.
