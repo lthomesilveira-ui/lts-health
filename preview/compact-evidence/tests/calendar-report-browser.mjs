@@ -70,7 +70,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
   assert.equal(m.calendar.bounds.start,expected.start);assert.equal(m.calendar.bounds.end,expected.end);assert.equal(m.calendar.bounds.days,expected.days);
   assert.equal(m.calendar.partial,partial);assert.equal(m.calendar.nominalBounds.end,nominalEnd);
   assert.equal(await page.locator('#calendarReport .ltsReportHeading h2').getAttribute('aria-label'),`${dateLabel(expected.start)} a ${dateLabel(expected.end)}`,'The concise visible heading has the exact full date range as its accessible name');
-  assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),8);
+  assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),CALENDAR_KEYS.length);
   for(const key of CALENDAR_KEYS){
     const expectedMetric=expectedCalendarMetric(fixture,key,expected),metric=m.metricsByKey[key],card=page.locator(`#calendarReport [data-calendar-metric="${key}"]`);
     assert.equal(metric.count,expectedMetric.count,`${key}: only eligible observed days count`);
@@ -81,7 +81,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
     assert.deepEqual(await card.locator('[data-calendar-plot-date]').evaluateAll(nodes=>nodes.map(node=>node.dataset.calendarPlotDate).sort()),expectedMetric.dates,`${key}: chart includes exact eligible dates, gaps stay gaps and zero stays a point`);
     const coverage=await card.locator('.ltsCalendarCoverage').innerText();
     assert.equal(coverage,`${expectedMetric.count}/${metric.expectedDays} dias encerrados com valor`,`${key}: exact visible recorded-day coverage`);
-    const value=expectedMetric.value==null?'Sem dado':`${expectedMetric.value.toLocaleString('pt-BR',{maximumFractionDigits:0})} ${metric.unit}`;
+    const value=expectedMetric.value==null?'Sem dado':`${expectedMetric.value.toLocaleString('pt-BR',{maximumFractionDigits:key==='sleep'?1:0})} ${metric.unit}`;
     assert.equal(await card.locator('.ltsCalendarMetricValue').innerText(),value,`${key}: the independently calculated observed mean is visible`);
     assert.ok((await card.locator('.ltsCalendarSource').innerText()).trim(),`${key}: visible source`);
     assert.ok((await card.locator('.ltsCalendarComparison').innerText()).trim(),`${key}: visible comparison or explanation`);
@@ -394,7 +394,7 @@ async function printContract(page,name,{pdf=false,engine='chromium',summary=fals
   });
   assert.ok(printText.length>500,'The print root contains the full report');
   assert.doesNotMatch(printText,/\b(?:NaN|undefined|Infinity|SQLSTATE|source_record_id|canonical_status)\b/);
-  if(summary){assert.equal(await page.locator('#calendarPrintRoot .ltsReportPrintSources tbody tr').count(),8);assert.equal(await page.locator('#calendarPrintRoot [data-calendar-day]').count(),0);assert.match(printText,/Dados completos/);}else for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
+  if(summary){assert.equal(await page.locator('#calendarPrintRoot .ltsReportPrintSources tbody tr').count(),CALENDAR_KEYS.length);assert.equal(await page.locator('#calendarPrintRoot [data-calendar-day]').count(),0);assert.match(printText,/Dados completos/);}else for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
   writeFileSync(`${dir}/${name}-print-dom.txt`,printText);
   // A capture failure is still a test failure, but must not prevent creating
   // the real PDF and every page image needed to diagnose print pagination.
