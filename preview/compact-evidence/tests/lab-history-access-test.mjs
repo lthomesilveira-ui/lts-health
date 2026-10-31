@@ -29,3 +29,23 @@ state.ui.productLabAsOf=null;state.ui.productLabPage=3;model=labsModel();assert.
 state.domainStatus.labs='error';assert.match(renderProductLabs(),/não carregaram agora/);assert.doesNotMatch(renderProductLabs(),/828 resultados/);
 assert.deepEqual(state.data,original,'read-only presentation cannot change clinical data or provenance');
 console.log('Exames access: independent full-history default, 828 synthetic rows, top controls/graph/history, exact as-of, text results, source/unit cohorts, pagination, errors and immutable data passed.');
+
+// Collection overview includes markers outside the curated panels, without
+// replacing distinct results or importing another collection's values.
+state.domainStatus={labs:'ready'};state.ui={productLabPeriod:'all',productLabCollection:'2025-05-20'};
+state.data={labs:[
+ {source_record_id:'synthetic-collection-known',collection_date:'2025-05-20',biomarker:'Glicose',result_raw:'90',result_numeric:90,unit:'u',laboratory:'Synthetic A'},
+ {source_record_id:'synthetic-collection-other',collection_date:'2025-05-20',biomarker:'Synthetic uncommon marker',result_raw:'12',result_numeric:12,unit:'u',laboratory:'Synthetic A'},
+ {source_record_id:'synthetic-collection-text',collection_date:'2025-05-20',biomarker:'Synthetic text marker',result_raw:'Não reagente',unit:'',laboratory:'Synthetic A'},
+ {source_record_id:'synthetic-collection-distinct-a',collection_date:'2025-05-20',biomarker:'Synthetic distinct marker',result_raw:'3',result_numeric:3,unit:'u',laboratory:'Synthetic A'},
+ {source_record_id:'synthetic-collection-distinct-b',collection_date:'2025-05-20',biomarker:'Synthetic distinct marker',result_raw:'4',result_numeric:4,unit:'other u',laboratory:'Synthetic B'},
+ {source_record_id:'synthetic-collection-other-day',collection_date:'2025-04-20',biomarker:'Synthetic other date only',result_raw:'999',result_numeric:999,unit:'u',laboratory:'Synthetic A'}
+]};
+const collectionSnapshot=structuredClone(state.data);
+const collectionHtml=renderProductLabs().match(/<section class="ltsLabCollection"[\s\S]*?<\/section>/)[0];
+for(const name of ['Glicose','Synthetic uncommon marker','Synthetic text marker','Synthetic distinct marker'])assert.ok(collectionHtml.includes(name),name+' remains reachable in its collection');
+assert.match(collectionHtml,/Outros resultados da coleta/);assert.match(collectionHtml,/Não reagente/);
+assert.match(collectionHtml,/Resultados distintos/,'different origins and units are never chosen or summed');
+assert.doesNotMatch(collectionHtml,/Synthetic other date only|999/);
+assert.equal((collectionHtml.match(/data-lab-marker=/g)||[]).length,4,'one navigation card per marker; original results stay in history');
+assert.deepEqual(state.data,collectionSnapshot,'collection rendering preserves original rows and units');

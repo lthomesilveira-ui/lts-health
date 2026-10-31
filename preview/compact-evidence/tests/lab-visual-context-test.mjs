@@ -109,7 +109,7 @@ test('long selected methods remain in a labeled post-plot disclosure, not before
   assert.ok(html.indexOf('class="ltsLabEndpoints"')<html.indexOf('class="ltsLabSeriesDetails"'));
   assert.ok(html.indexOf('class="ltsDepthAxis"')<html.indexOf('class="ltsLabSeriesDetails"'));
   assert.match(html,/Série · laboratório e unidade/);
-  assert.doesNotMatch(html,/data-lab-marker="marcador visual sintetico"/);assert.match(html,/id="productLabMarkerSelect"/);
+  assert.doesNotMatch(html.match(/<div class="ltsLabsMarkerRail">([\s\S]*?)<\/div>/)[1],/data-lab-marker="marcador visual sintetico"/,"selected marker is not repeated in the shortcut rail");assert.match(html,/id="productLabMarkerSelect"/);
   assert.match(html,/10\/01\/2025 → 20\/05\/2025: \+0,60 u\/L/);assert.match(html,/Diferença numérica entre coletas; não é uma avaliação clínica/);
   const delta=html.match(/<div class="ltsHistoryContext ltsLabDelta">([\s\S]*?)<\/div>/)[1];
   assert.doesNotMatch(delta,/melhorou|piorou|melhora clínica|piora clínica|diagnóstico confirmado/i,'the documentary clinical-language guard remains unchanged');
