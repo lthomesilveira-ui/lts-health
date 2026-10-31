@@ -34,3 +34,36 @@
 /* Day mode adds a Today action and a native date field. Give them a complete
    row on narrow phones instead of squeezing them beside the mode switch. */
 @media(max-width:360px){.healthDashboard .studyHeading>.healthControls:has(.healthDayControl){flex-wrap:wrap!important}.healthDashboard .healthDayControl{width:100%;min-width:0;justify-content:space-between}.healthDashboard .healthDayControl label{min-width:0}.healthDashboard .healthDayControl input{max-width:100%}}
+
+/* Keep the dated context and limits readable without opening a disclosure. */
+.healthDashboard .healthCockpitSummaryLabel{font-size:14px}
+.healthDashboard .healthCockpitSummaryContext,
+.healthDashboard .healthCockpitSummaryCard>small{font-size:14px;line-height:1.5}
+.healthDashboard .healthCockpitReview{font-size:12px}
+.healthDashboard .healthCockpitPriorities h3{font-size:15px}
+.healthDashboard .healthCockpitPriorities p,
+.healthDashboard .healthCockpitPanel>header p,
+.healthDashboard .healthCockpitNote,
+.healthDashboard .healthCockpitEmpty,
+.healthDashboard .healthCockpitBody dt,
+.healthDashboard .healthCockpitBody small,
+.healthDashboard .healthCockpitLastSession>span,
+.healthDashboard .healthCockpitLastSession>small,
+.healthDashboard .healthCockpitTrainingTotal>span,
+.healthDashboard .healthCockpitTrainingTotal small,
+.healthDashboard .healthCockpitLabList h3,
+.healthDashboard .healthCockpitLabList span,
+.healthDashboard .healthCockpitChartCaption{font-size:14px;line-height:1.5}
+.healthDashboard .healthCockpitLastSession>strong{font-size:15px}
+.healthDashboard .healthCockpitAction,
+.healthDashboard .healthCockpitLabList .studyAction{font-size:14px}
+.healthDashboard .healthCockpitTrainingChart{height:112px;overflow-x:auto;gap:12px;padding-bottom:4px;scrollbar-width:thin}
+.healthDashboard .healthCockpitTrainingChart>div{flex:1 0 46px;min-width:46px}
+.healthDashboard .healthCockpitTrainingChart strong,
+.healthDashboard .healthCockpitTrainingChart span{font-size:14px;line-height:1.5}
+@media(max-width:840px){
+ .healthDashboard .healthCockpitSummaryCard{flex-basis:210px}
+ .healthDashboard .healthCockpitBody{gap:8px}
+ .healthDashboard .healthCockpitPriorities article>div{display:block}
+ .healthDashboard .healthCockpitPriorities .healthCockpitAction{margin-top:4px;max-width:none}
+}

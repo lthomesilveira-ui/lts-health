@@ -1,3 +1,9 @@
+# UX context and readability — candidate .99, 31/10/2026
+
+Owner explicitly requests successive autonomous UX review, including actual app visits and demanding assessment of useful information. Public .98 was opened but the manual session is signed out. Production renderers were inspected locally using invented records at desktop and393x650; no new authenticated manual or physical-device claim.
+
+The bounded package adds existing eligible-day counts to food/sleep summaries, separates failed reads from absent information, keeps missing final-day water visible even with an older period mean, and directs body comparisons toward wider windows/history. Dated context, caveats and training-chart dates are more readable; chart observations remain inside their own scroll area. No health value, source choice, calculation, clinical record, integration, auth or write implementation changes. Exact candidate, responsive, publication and protected-auth gates remain pending. Independent external dependencies stay open. EXECUTION_STATE.json is authoritative.
+
 # Laboratory original access .98 verified — autonomous continuation enabled, 30/10/2026
 
 Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.

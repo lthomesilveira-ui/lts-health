@@ -30,7 +30,7 @@ const manifest={
     "evolution.css": "1ec73c327865ecbe99acc8ccc9fd1816dc288ccc9f492085feb72561d7d6f63e",
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
     "health-auto-export.css": "de23cf04121625dfa1ce4dd60039708903e0cc8348e27e11099e51441433cb6a",
-    "health-cockpit.css": "e3d7cecd42308edfc85b32ef9d6f4d061b1728447cdd474309572dbbfefe5350",
+    "health-cockpit.css": "b777ae081a5ad2a98ff66aed98ed3f938e829e2e4107d5a3476da7f5e199342e",
     "health-dashboard.css": "5dd6e3c582eb513323f6cfcc9ed41be5b88af4bdd710a02f2e63350116bee90b",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
     "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
@@ -89,7 +89,7 @@ const manifest={
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/health-auto-export-connection.js": "24a945e4a2d8bda077412504fe0176925e827a9a8325714a2eaae93f3442c836",
     "src/health-auto-export-data.js": "241dd41d8a5372f25dbd7c395028c51ebb43b25490f135a22b5fcffde5b415f2",
-    "src/health-cockpit.js": "46b7fc7bb8805c6f698ca1784c34e5078dcfdef09fcc2dce9777fe26b5ddd03e",
+    "src/health-cockpit.js": "fce24cdbe1b44f1428c81f3a39b3d8cb37737eb14abbe9dc799cc43e59c1f96d",
     "src/health-context.js": "26af9d2436d1145f0e4b155eb1ea26c7138adf6a68db12e26d7dd7fe4c359bf7",
     "src/health-dashboard-body.js": "29c26568e4f0cca387df73a40b1cc157d22bd46e73476e5eb156a70416134f42",
     "src/health-dashboard-context.js": "af6986230dab59649a4fe68e226e5a7e4f543c2e1c155ee2d6efb25368cdb12c",
@@ -192,8 +192,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261030\.98/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261030.98'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261031\.99/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261031.99'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';
