@@ -1,3 +1,15 @@
+# Home .99 independent public inspection complete — 31/10/2026
+
+2026-10-31 independent Cloud Browser recovered: stable production URL opened exact lts-build health-integrated-20261031.99, login visually inspected at1363px, private shell hidden and no page overflow. This is signed-out public inspection, not new manual real-auth or physical-iPhone acceptance.
+
+Independent read-only synthetic journey uses production .99 renderers/styles verified against current Git blob identities, with only local index SDK injection. Desktop and393x650: Home last workout to session, exercises/sets, exercise history and page2; dates,kg/repetitions, unknown duration/heart rate and provenance preserved; no horizontal page overflow. No navigation/interpretation defect requiring a runtime change observed in this bounded journey. No health writes. Next rotating area: composition.
+
+Prior17 exact-runtime candidate and21 runtime-publication checks are complete/success;41203515673 and41203515535 now completed, not retrospectively counted before completion. PR443 normal merge c4b629e11e0bf60205b1e5630b6bbbc891939ae1 has17 successful returned checks; its final candidate repetition41204069505 also completed/success. No broad suite restarted.
+
+Fresh owner-scoped aggregate receipt and existing-provider message search do not unlock water/source/total-energy dependencies. No clinical/source/auth/write/phone/runtime change. Overall owner acceptance stays independent.
+
+Queue:86 done,14 blocked_external,2 accepted_gap; no ready/in_progress item in this snapshot. This does not exhaust ongoing UX review or grant owner acceptance. Next rotating journey: composition. EXECUTION_STATE.json is authoritative; entries below retain their original historical scope.
+
 # Home readability .99 published — independent public-browser gate pending, 31/10/2026
 
 Exact candidate7560f274121fb42449624d906a57bc0215e156ad, tree9e8e0412cf2596e7ad38837fefccbaaf7c7a3682: all17 workflows passed, including cockpit41202672717, integrated41202672857, full-depth41202672791 and dashboard-contract41202672749.
