@@ -49,32 +49,21 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-NUTRITION-GOAL-COPY-016",
-    "status": "done",
-    "goal": "Distinguish recorded personal targets from a documented dietary plan in the nutrition caption.",
+    "id": "PKG-LAB-COLLECTION-COVERAGE-017",
+    "status": "in_progress",
+    "goal": "Make the selected collection include available markers outside the curated panels without changing laboratory values.",
     "task_ids": [
-      "LTS-NUTRITION-GOAL-COPY-001"
+      "LTS-LAB-COLLECTION-COVERAGE-001"
     ],
-    "candidate_build": "health-integrated-20261031.100",
+    "candidate_build": "health-integrated-20261031.101",
     "public_build": "health-integrated-20261031.100",
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "completed_on": "2026-10-31",
-    "completed_at_utc": "2026-10-31T16:02:10.700Z",
-    "publication_commit": "03415df62406a45c279403ed7a07fa154eb13445",
-    "completed_evidence": [
-      "Exact runtime candidate7b4738244db361ad52a75d5877282a2622d32464 passes17/18 workflows; isolated-preview41216753617 is pending, not passed. Focused goal-only/no-goal regression runs from its actual production test path in integrated CI41216753658. Prior candidate08c5a80851fcc4c4528b15462827c2a6b1fbcbb0 failed only because its new workflow entry looked for that test in the copied preview test folder; the correction retains every assertion and runtime bytes.",
-      "Normal PR445 merge03415df62406a45c279403ed7a07fa154eb13445 publishes health-integrated-20261031.100. Deploy41217407507, public Pages41217472642, homologation41217472545, cockpit41217407535 and protected real-auth41217407521 pass. Current publication snapshot18/22 success; broader repetitions41217407612,41217407448,41217407528,41217407517 remain pending, not successful.",
-      "Cloud Browser independently confirms exact public .100 metadata, visible intact login and no page overflow. Manual session remains signed out. Same production renderers were inspected with invented goal-only data at desktop and393x650: unavailable documentary plan coexists with recorded-target wording, historical year/day and alternate diary source remain independent. No new manual authenticated or physical-iPhone claim.",
-      "Only two presentation text branches, mirrored source, focused regression, build/hash references, CI test wiring and continuity metadata change. Goal values, calories/macros, dates, clinical records, original plans, source selection, model arithmetic, authentication and writes remain unchanged. No provider message or phone changes.",
-      "Fresh genuine aggregate receipt and existing-provider search provide no water restoration, verified source/basal coverage or new support response. Independent14 external dependencies,2 accepted gaps and overall acceptance stay open. Next rotating UX area: exams."
-    ],
-    "pending_validation_repetitions": [
-      41216753617,
-      41217407612,
-      41217407448,
-      41217407528,
-      41217407517
+    "pending_gates": [
+      "candidate_ci",
+      "responsive_browser",
+      "normal_publication",
+      "protected_real_auth",
+      "public_inspection"
     ]
   },
   "last_verified_release": {
@@ -2964,6 +2953,28 @@
       ],
       "next_action": "Preserve goals/documentary-plan distinction and continue rotating UX review; broader verification repetitions and independent provider/history conditions remain tracked.",
       "blocker": null
+    },
+    {
+      "id": "LTS-LAB-COLLECTION-COVERAGE-001",
+      "area": "laboratory experience",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Selected collection must expose available markers outside the fixed curated panel list.",
+      "acceptance": [
+        "All named markers from the selected recorded collection are reachable in its cards, including textual results and markers outside curated panels.",
+        "Different origins/units or repeated results remain distinct in history; no value is chosen, summed, converted or invented.",
+        "Other collection dates and conflicting identities do not borrow values/reference positions.",
+        "Desktop/mobile browser, focused lab rendering/history, privacy/parity and normal public/protected-auth gates pass."
+      ],
+      "evidence": [
+        "Independent production-renderer synthetic inspection found Coletas completas omitted every available marker outside a fixed list while search/history still contained them.",
+        "Bounded fallback group retains raw labels and source-safe existing result text; collection reference eligibility uses conflicts across all marker groups.",
+        "Focused regression covers known/unlisted/textual/mixed-origin-and-unit/different-date/immutability cases. Existing visual rail assertion is scoped to its intended shortcut rail; no safety assertion removed.",
+        "Corrected collection and card-to-history navigation manually inspected at desktop and393x650 with invented data; no page overflow."
+      ],
+      "next_action": "Complete exact candidate browser/CI, normal publication and real-auth/public verification, then close the bounded collection gap.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -3925,6 +3936,35 @@
       "publication_commit": "23fc6ad0298fba88c576ef6191c9f1ece2f05bcf",
       "completed_on": "2026-10-31",
       "completed_at_utc": "2026-10-31T14:31:19.929Z"
+    },
+    {
+      "id": "PKG-NUTRITION-GOAL-COPY-016",
+      "status": "done",
+      "goal": "Distinguish recorded personal targets from a documented dietary plan in the nutrition caption.",
+      "task_ids": [
+        "LTS-NUTRITION-GOAL-COPY-001"
+      ],
+      "candidate_build": "health-integrated-20261031.100",
+      "public_build": "health-integrated-20261031.100",
+      "clinical_runtime_changed": false,
+      "pending_gates": [],
+      "completed_on": "2026-10-31",
+      "completed_at_utc": "2026-10-31T16:02:10.700Z",
+      "publication_commit": "03415df62406a45c279403ed7a07fa154eb13445",
+      "completed_evidence": [
+        "Exact runtime candidate7b4738244db361ad52a75d5877282a2622d32464 passes17/18 workflows; isolated-preview41216753617 is pending, not passed. Focused goal-only/no-goal regression runs from its actual production test path in integrated CI41216753658. Prior candidate08c5a80851fcc4c4528b15462827c2a6b1fbcbb0 failed only because its new workflow entry looked for that test in the copied preview test folder; the correction retains every assertion and runtime bytes.",
+        "Normal PR445 merge03415df62406a45c279403ed7a07fa154eb13445 publishes health-integrated-20261031.100. Deploy41217407507, public Pages41217472642, homologation41217472545, cockpit41217407535 and protected real-auth41217407521 pass. Current publication snapshot18/22 success; broader repetitions41217407612,41217407448,41217407528,41217407517 remain pending, not successful.",
+        "Cloud Browser independently confirms exact public .100 metadata, visible intact login and no page overflow. Manual session remains signed out. Same production renderers were inspected with invented goal-only data at desktop and393x650: unavailable documentary plan coexists with recorded-target wording, historical year/day and alternate diary source remain independent. No new manual authenticated or physical-iPhone claim.",
+        "Only two presentation text branches, mirrored source, focused regression, build/hash references, CI test wiring and continuity metadata change. Goal values, calories/macros, dates, clinical records, original plans, source selection, model arithmetic, authentication and writes remain unchanged. No provider message or phone changes.",
+        "Fresh genuine aggregate receipt and existing-provider search provide no water restoration, verified source/basal coverage or new support response. Independent14 external dependencies,2 accepted gaps and overall acceptance stay open. Next rotating UX area: exams."
+      ],
+      "pending_validation_repetitions": [
+        41216753617,
+        41217407612,
+        41217407448,
+        41217407528,
+        41217407517
+      ]
     }
   ],
   "latest_published_release": {

@@ -1,3 +1,9 @@
+# Laboratory collection completeness — candidate .101
+
+A concrete synthetic desktop/mobile inspection found that Coletas completas only rendered markers on a fixed curated list. Other named markers remained searchable but were absent from the collection overview. A fallback group now exposes them through the existing source-safe card/history path. Raw names/text, dates, units and distinct results are preserved; no laboratory record, parser, numeric model, source or write changes.
+
+Focused regression covers curated/unlisted/textual markers, mixed origins/units, other dates and immutability. Reference conflict sets cover every marker. Existing visual shortcut-rail assertion is scoped to that rail; its intent remains intact. Manual desktop/393x650 collection/navigation inspection passes. Exact candidate CI/responsive/public/protected-auth gates remain pending. Independent original/source/provider and owner conditions stay open.
+
 # Nutrition targets and dietary plans distinguished — .100 published, 31/10/2026
 
 Exact runtime candidate7b4738244db361ad52a75d5877282a2622d32464 passes17/18 workflows; isolated-preview41216753617 is pending, not passed. Focused goal-only/no-goal regression runs from its actual production test path in integrated CI41216753658. Prior candidate08c5a80851fcc4c4528b15462827c2a6b1fbcbb0 failed only because its new workflow entry looked for that test in the copied preview test folder; the correction retains every assertion and runtime bytes.

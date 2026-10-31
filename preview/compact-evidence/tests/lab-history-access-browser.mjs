@@ -95,6 +95,18 @@ try{
       await page.locator('#productLabPoint').selectOption('0');await stable(page);
       assert.match(await page.locator('.ltsPointReadout p b').innerText(),/20,0 u\/L/);
       const jumps={};for(const id of ['productLabsTrend','productLabsHistory','productLabsCollection'])jumps[id]=await jump(page,id,width);
+      const collectionDate=await page.locator('#productLabCollection').inputValue();
+      const expectedMarkers=[...new Set(fixture.data.labs.filter(row=>row.collection_date===collectionDate).map(row=>row.biomarker))];
+      const collectionCards=page.locator('#productLabsCollection .ltsLabValueCard');
+      assert.equal(await collectionCards.count(),expectedMarkers.length,'all collection markers appear, including markers outside curated panels');
+      const collectionText=await page.locator('#productLabsCollection').innerText();
+      for(const marker of expectedMarkers)assert.ok(collectionText.includes(marker),'collection retains '+marker);
+      assert.ok(await collectionCards.evaluateAll(cards=>cards.every(card=>{const r=card.getBoundingClientRect();return r.width>=43.5&&r.height>=43.5;})),'all collection cards retain touch targets');
+      await collectionCards.first().click();await stable(page);
+      assert.equal(await page.locator('#productLabMarkerSelect').inputValue(),await collectionCards.first().getAttribute('data-lab-marker'),'collection card opens its own marker');
+      await page.locator('#productLabMarkerSelect').selectOption('marcador sintetico 01');await stable(page);
+      await page.locator('#productLabCohort').selectOption(cohort);await stable(page);
+
       await page.locator('[data-depth-page="productLabPage"][data-page="2"]').click();await stable(page);
       assert.equal(await page.locator('.ltsLabsHistoryRow').count(),10);
       await page.locator('[data-depth-page="productLabPage"][data-page="3"]').click();await stable(page);
