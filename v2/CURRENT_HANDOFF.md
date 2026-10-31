@@ -1,3 +1,19 @@
+# Available collection markers exposed — .101 verified, 31/10/2026
+
+Exact candidatec7bae5383f74d8e86e52c73b1651f699d4e85039:15/17 workflows passed, including integrated41224296421 with full-collection browser assertions and functional41224296520. Broader calendar41224296231 and isolated-preview41224296224 remain pending, not passed. Focused collection cases,14 visual-context tests, privacy/parity/integrity and continuity passed locally.
+
+Manual synthetic inspection with exact production .101 renderers at desktop and393x650 confirms previously omitted markers visible in the selected collection, no page overflow and each new card reaches its own marker/history. Changed references still block automatic comparisons; original dates, units, raw/textual results and distinct origins remain intact.
+
+Normal PR447 merge3f37e9070f35898391ba1b3ea49411ee6b03371d publishes .101. Deploy41224714054, public41224746829, homologation41224746842, cockpit41224714045 and protected real-auth41224714049 pass. Publication snapshot17/21 success; broader41224714110,41224714018,41224714095,41224714059 remain pending, not successful.
+
+Cloud Browser independently confirms exact public health-integrated-20261031.101, intact login and no horizontal overflow. Manual browser signed out; no new manual authenticated or physical-iPhone claim. Runtime change is bounded to collection presentation; no laboratory row, parser, numeric/source model, document, authentication or write changes.
+
+Prior .100 publication03415df62406a45c279403ed7a07fa154eb13445 completed22/22 and metadata candidateadd105ec53d4462fe2ee18fb47e9a86bc840c381 completed13/13. Later protected41223544013 on metadata publication6acfbe31fb6a22c98a012ff0cf0d8e142511cf51 failed with logged503/transport for public src/evolution-model.js and runtime-error sign-out. One failed-job retry passed with all assertions unchanged; preserve the original failure, encrypted artifact13050693961 and bounded recovery without claiming a permanent network remedy.
+
+Fresh owner-scoped receipt/provider review does not unlock original water, source lineage, full-day basal coverage, export diagnostics or other independent history/native/form conditions. No third-party message or repeated phone setup. Next rotating UX area: reports. Overall owner acceptance remains independent.
+
+Queue:88 done,14 blocked_external,2 accepted_gap; no ready/in_progress item. Pending broader repetitions are not counted as success. Next rotating UX area: reports. EXECUTION_STATE.json is authoritative; prior entries remain history.
+
 # Laboratory collection completeness — candidate .101
 
 A concrete synthetic desktop/mobile inspection found that Coletas completas only rendered markers on a fixed curated list. Other named markers remained searchable but were absent from the collection overview. A fallback group now exposes them through the existing source-safe card/history path. Raw names/text, dates, units and distinct results are preserved; no laboratory record, parser, numeric model, source or write changes.
