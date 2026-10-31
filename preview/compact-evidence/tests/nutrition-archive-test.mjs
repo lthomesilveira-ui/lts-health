@@ -23,6 +23,23 @@ function fixture(){
 function render(data,ui,st=status){state.data=data;state.domainStatus=st;state.ui={...ui,nutritionPeriod:'30'};return renderProductNutrition();}
 function diary(html){return html.match(/<section id="nutritionArchiveDiary"[\s\S]*?<\/section>/)[0];}
 
+test('Nutrition and water context links target native local disclosures; failed domains offer refresh',async()=>{
+  const data=fixture(),ui={reportNutritionSource:oldKey,nutritionDate:'2017-02-06'},before=structuredClone({data,ui});
+  const html=render(data,ui);
+  for(const kind of ['nutrition','water']){
+    assert.ok(html.includes(`data-report-section="home-${kind}-detail"`));
+    assert.ok(html.includes(`<summary id="home-${kind}-detail">Sobre estes dados</summary>`));
+  }
+  const unavailable=render(data,ui,{...status,nutrition:'error',sourceMetrics:'error',metrics:'error'});
+  assert.match(unavailable,/data-home-refresh aria-label="Atualizar Consumo e plano alimentar"/);
+  assert.match(unavailable,/data-home-refresh aria-label="Atualizar Água consumida"/);
+  assert.doesNotMatch(unavailable,/data-report-section="home-(?:nutrition|water)-detail"/);
+  const {homeCockpitModel,nutritionPanel,waterPanel}=await import('../src/home-cockpit.js');
+  const c=homeCockpitModel(data,status,'30',ui,today);
+  for(const card of [nutritionPanel(c),waterPanel(c)])assert.match(card,/data-route="nutricao"/,'cards outside Nutrition retain their route link');
+  assert.deepEqual({data,ui},before);
+});
+
 test('All-history source/year/month/day access reaches 2017 and 2023 outside a 30-day summary without rewriting inputs',()=>{
   const data=fixture(),ui={nutritionPeriod:'30',reportNutritionSource:oldKey,nutritionDate:'2017-02-06'},original=structuredClone({data,ui});
   const a=nutritionArchiveModel(data,status,ui,today);
