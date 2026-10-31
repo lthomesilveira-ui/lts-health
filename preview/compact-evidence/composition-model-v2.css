@@ -80,3 +80,6 @@
 /* Keep the recorded chart in view even when a source label wraps. */
 .ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact .ltsCompositionMetrics{margin-top:4px!important}
 .ltsCompositionV2.ltsCompositionV2 .ltsCompositionTrend .ltsPeriodControl{margin:4px 0!important}
+
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact{padding:8px 12px!important}
+.ltsCompositionV2.ltsCompositionV2 .ltsCompositionTrend{margin-top:8px!important}

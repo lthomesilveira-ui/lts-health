@@ -15,7 +15,7 @@ const manifest={
     "body-interval.css": "ea7509f603febe4147f6411737b7e015b336cdaea3ddc13f15b9e17abd16061e",
     "calendar-reports.css": "6fb74e3dc2ca8f59254fbe28c70d5416379a4d1ffc70e9cf5dd96efc526464d0",
     "cockpit.css": "75d94843fa9861bafc82bb8870c305fddbf140b5c2ba31b3308f186ea88a51bd",
-    "composition-model-v2.css": "67a26f517dcfb122313b52406da12b4df57da4155d7cbbe7ebf3243521f1ef90",
+    "composition-model-v2.css": "c855543d83584777fa963d7452580ed2818b138a1677e0db2d4b7266f0b6cf30",
     "dashboard-final-polish.css": "e827badad263a43f1283c7d120e732872d85342f206bb37afa926842353cfa67",
     "dashboard-parity.css": "c370a25ea7e501fc4bff32e5d9463cbcbb489f7cb6e026fbccf260485ea20826",
     "dashboard-pixel-parity.css": "391ee883ea04982dd5f8c133fd3621a64972f3e1b8bee093a4e3cf8772cfe639",
