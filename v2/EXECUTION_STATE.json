@@ -49,33 +49,31 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-NUTRITION-DETAIL-ACTIONS-021",
-    "status": "done",
-    "goal": "Reveal existing Nutrition context through working consumption and water detail actions.",
+    "id": "PKG-COMPOSITION-CONTEXT-022",
+    "status": "in_progress",
+    "goal": "Keep composition source selection, differences and measurement detail in one coherent dated context.",
     "task_ids": [
-      "LTS-NUTRITION-DETAIL-ACTIONS-001"
+      "LTS-COMPOSITION-CONTEXT-001"
     ],
-    "candidate_build": "health-integrated-20261031.105",
-    "public_build": "health-integrated-20261031.105",
+    "candidate_build": "health-integrated-20261031.106",
+    "public_build": null,
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "started_at_utc": "2026-10-31T22:24:25.226832+00:00",
-    "completed_on": "2026-10-31",
-    "completed_at_utc": "2026-10-31T22:40:11.010Z",
-    "publication_commit": "13f3a6326958796d0b428d328e4b5c9af06e4cf9",
-    "pending_validation_repetitions": [
-      41248994570,
-      41248994589,
-      41248994565,
-      41248994637
+    "pending_gates": [
+      "local_contracts",
+      "responsive_browser",
+      "exact_candidate_workflows",
+      "normal_publication",
+      "deploy_public_homologation",
+      "protected_real_auth",
+      "exact_public_manual_inspection"
     ],
+    "started_at_utc": "2026-10-31T22:59:16.560Z",
     "completed_evidence": [
-      "Observed desktop and393px consumption/water detail actions returned to the current Nutrition route and left the existing context closed. The bounded fix opens the matching native disclosure, focuses its summary and reveals context below the app header; unavailable domains offer refresh. Independent cards keep their route links.",
-      "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms open/focused context, no horizontal overflow, keyboard Enter close/reopen and the same historical diary/date. The historical source/year/date/independent averages journey was already correct; no data/model correction was manufactured.",
-      "PR454 exact candidate a155f673e3f384dc1fca8de8895e27600e98f5b7: 17/17 completed/success. Isolated preview41248110076 runs the responsive Nutrition archive check and verifies local click/Enter, visible context/native focus and unchanged source/date/month/year/window/diary/read count at320/393/1180/1440px. Existing historical pagination, source-isolation, missing/zero, conflict/error/recovery, keyboard, touch and no-write checks remain. Archive unit14/14, syntax, hashes/parity, production, public-payload and continuity contracts pass.",
-      "Normal PR454 merge 13f3a6326958796d0b428d328e4b5c9af06e4cf9 publishes health-integrated-20261031.105. The published tree is identical to the fully tested candidate tree. Publication snapshot17/21 completed/success, including deploy41248994618, public41249021557, homologation41249021527 and protected real-auth41248994573. Same-tree broad publication repetitions still pending:[41248994570, 41248994589, 41248994565, 41248994637]; these are explicit unfinished repetitions, not success or global acceptance.",
-      "Independent Cloud Browser confirms exact public .105 with intact login, hidden private app and no horizontal overflow. The manual session is signed out. Health-area inspection with invented data and protected actual authentication are distinct evidence; no private manual or new physical-iPhone acceptance is claimed.",
-      "Fresh current heads, latest private checkpoint, open PRs, genuine owner-scoped receipts and existing support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation or clinical/laboratory/medication mutation. Independent original-water, lineage, coverage, export/history/native/form conditions retain their exact genuine resumption signals. The additional393px training journey session → exercises → dated history → older page → return retained original units/working phases, absence markers and the selected session without an observed functional defect. Next rotating area: composition; global owner acceptance remains independent."
+      "Actual invented-data production-renderer inspection at desktop and393x650 selected an alternate documented device, showed its two dated points and safe differences, then observed that the contextual detail action opened the global latest measurement from another device. This is a concrete navigation/context defect, not a data correction.",
+      "The bounded correction derives the contextual detail target from the selected source series and names its date before navigation. With all origins selected it still opens the global latest unambiguous measurement. History rows remain independently actionable.",
+      "Manual desktop and393x650 verification confirms alternate-device selection → dated differences → detail opens the same 20/10/2026 source/file → return preserves the selected source. The phone detail remains393/393px with original values, units, date, device and file; no health write or synthetic production record.",
+      "Fresh main/reference heads, private checkpoint51 and open PRs were checked before editing. Only legacy PRs367/354/348 remain open; no recent overlapping implementation. Genuine owner-scoped receipts, basal coverage and existing water/export support threads have no new unlocking evidence.",
+      "Candidate gates remain pending. No clinical/source/model arithmetic, authentication, database, medication, laboratory or physical-iPhone state changed."
     ]
   },
   "last_verified_release": {
@@ -88,7 +86,7 @@
     "release_kind": "working_local_nutrition_detail_actions",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
     "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public .105 with intact login, hidden private app and no horizontal overflow. The manual session is signed out. Health-area inspection with invented data and protected actual authentication are distinct evidence; no private manual or new physical-iPhone acceptance is claimed.",
-    "automated_runtime_and_responsive_status": "All exact candidate workflows and published deploy/public/homologation/protected actual-auth gates completed/success; identical published tree verified. Broad repeated publication runs remain explicit pending where unfinished.",
+    "automated_runtime_and_responsive_status": "All exact .105 candidate, publication and metadata repetitions observed completed/success; historical dated snapshots remain preserved.",
     "evidence": [
       "Observed desktop and393px consumption/water detail actions returned to the current Nutrition route and left the existing context closed. The bounded fix opens the matching native disclosure, focuses its summary and reveals context below the app header; unavailable domains offer refresh. Independent cards keep their route links.",
       "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms open/focused context, no horizontal overflow, keyboard Enter close/reopen and the same historical diary/date. The historical source/year/date/independent averages journey was already correct; no data/model correction was manufactured.",
@@ -462,12 +460,7 @@
         }
       ]
     },
-    "pending_validation_repetitions": [
-      41248994570,
-      41248994589,
-      41248994565,
-      41248994637
-    ]
+    "pending_validation_repetitions": []
   },
   "tasks": [
     {
@@ -3230,6 +3223,29 @@
         "Fresh current heads, latest private checkpoint, open PRs, genuine owner-scoped receipts and existing support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation or clinical/laboratory/medication mutation. Independent original-water, lineage, coverage, export/history/native/form conditions retain their exact genuine resumption signals. The additional393px training journey session → exercises → dated history → older page → return retained original units/working phases, absence markers and the selected session without an observed functional defect. Next rotating area: composition; global owner acceptance remains independent."
       ],
       "next_action": "Keep the local-detail and native keyboard contract during affected releases; resume independent external conditions only with their genuine recorded signals."
+    },
+    {
+      "id": "LTS-COMPOSITION-CONTEXT-001",
+      "area": "UX / composition",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Keep the contextual measurement detail aligned with the composition source/device selected by the user.",
+      "acceptance": [
+        "Selecting a documented source/device makes the contextual detail action target and name that series latest measurement.",
+        "The detail view preserves the selected measurement date, device/source context, original file, values and units; returning keeps the source selection.",
+        "All-origins mode still targets the global latest unambiguous measurement; history rows keep their independent targets.",
+        "Desktop and phone browser gates pass without horizontal overflow or writes; exact candidate and publication gates complete."
+      ],
+      "evidence": [
+        "Actual invented-data production-renderer inspection at desktop and393x650 selected an alternate documented device, showed its two dated points and safe differences, then observed that the contextual detail action opened the global latest measurement from another device. This is a concrete navigation/context defect, not a data correction.",
+        "The bounded correction derives the contextual detail target from the selected source series and names its date before navigation. With all origins selected it still opens the global latest unambiguous measurement. History rows remain independently actionable.",
+        "Manual desktop and393x650 verification confirms alternate-device selection → dated differences → detail opens the same 20/10/2026 source/file → return preserves the selected source. The phone detail remains393/393px with original values, units, date, device and file; no health write or synthetic production record.",
+        "Fresh main/reference heads, private checkpoint51 and open PRs were checked before editing. Only legacy PRs367/354/348 remain open; no recent overlapping implementation. Genuine owner-scoped receipts, basal coverage and existing water/export support threads have no new unlocking evidence.",
+        "Candidate gates remain pending. No clinical/source/model arithmetic, authentication, database, medication, laboratory or physical-iPhone state changed."
+      ],
+      "next_action": "Run proportional source, responsive browser, privacy, production, authenticated and public delivery gates for the exact candidate."
     }
   ],
   "package_history": [
@@ -4453,7 +4469,7 @@
     "release_kind": "working_local_nutrition_detail_actions",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
     "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public .105 with intact login, hidden private app and no horizontal overflow. The manual session is signed out. Health-area inspection with invented data and protected actual authentication are distinct evidence; no private manual or new physical-iPhone acceptance is claimed.",
-    "automated_runtime_and_responsive_status": "All exact candidate workflows and published deploy/public/homologation/protected actual-auth gates completed/success; identical published tree verified. Broad repeated publication runs remain explicit pending where unfinished.",
+    "automated_runtime_and_responsive_status": "All exact .105 candidate, publication and metadata repetitions observed completed/success; historical dated snapshots remain preserved.",
     "evidence": [
       "Observed desktop and393px consumption/water detail actions returned to the current Nutrition route and left the existing context closed. The bounded fix opens the matching native disclosure, focuses its summary and reveals context below the app header; unavailable domains offer refresh. Independent cards keep their route links.",
       "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms open/focused context, no horizontal overflow, keyboard Enter close/reopen and the same historical diary/date. The historical source/year/date/independent averages journey was already correct; no data/model correction was manufactured.",
@@ -4827,12 +4843,7 @@
         }
       ]
     },
-    "pending_validation_repetitions": [
-      41248994570,
-      41248994589,
-      41248994565,
-      41248994637
-    ]
+    "pending_validation_repetitions": []
   },
   "release_history": [
     {
@@ -8350,44 +8361,34 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-10-31",
-    "reviewed_at_utc": "2026-10-31T22:40:11.010Z",
-    "source_main_commit": "13f3a6326958796d0b428d328e4b5c9af06e4cf9",
+    "reviewed_at_utc": "2026-10-31T22:59:16.560Z",
+    "source_main_commit": "b606d662b29a1330c31c3b735df82cf866291a18",
     "runtime_build": "health-integrated-20261031.105",
+    "candidate_build": "health-integrated-20261031.106",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
       "done": 92,
       "blocked_external": 14,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "Observed desktop and393px consumption/water detail actions returned to the current Nutrition route and left the existing context closed. The bounded fix opens the matching native disclosure, focuses its summary and reveals context below the app header; unavailable domains offer refresh. Independent cards keep their route links.",
-      "Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms open/focused context, no horizontal overflow, keyboard Enter close/reopen and the same historical diary/date. The historical source/year/date/independent averages journey was already correct; no data/model correction was manufactured.",
-      "PR454 exact candidate a155f673e3f384dc1fca8de8895e27600e98f5b7: 17/17 completed/success. Isolated preview41248110076 runs the responsive Nutrition archive check and verifies local click/Enter, visible context/native focus and unchanged source/date/month/year/window/diary/read count at320/393/1180/1440px. Existing historical pagination, source-isolation, missing/zero, conflict/error/recovery, keyboard, touch and no-write checks remain. Archive unit14/14, syntax, hashes/parity, production, public-payload and continuity contracts pass.",
-      "Normal PR454 merge 13f3a6326958796d0b428d328e4b5c9af06e4cf9 publishes health-integrated-20261031.105. The published tree is identical to the fully tested candidate tree. Publication snapshot17/21 completed/success, including deploy41248994618, public41249021557, homologation41249021527 and protected real-auth41248994573. Same-tree broad publication repetitions still pending:[41248994570, 41248994589, 41248994565, 41248994637]; these are explicit unfinished repetitions, not success or global acceptance.",
-      "Independent Cloud Browser confirms exact public .105 with intact login, hidden private app and no horizontal overflow. The manual session is signed out. Health-area inspection with invented data and protected actual authentication are distinct evidence; no private manual or new physical-iPhone acceptance is claimed.",
-      "Fresh current heads, latest private checkpoint, open PRs, genuine owner-scoped receipts and existing support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation or clinical/laboratory/medication mutation. Independent original-water, lineage, coverage, export/history/native/form conditions retain their exact genuine resumption signals. The additional393px training journey session → exercises → dated history → older page → return retained original units/working phases, absence markers and the selected session without an observed functional defect. Next rotating area: composition; global owner acceptance remains independent."
+      "Actual invented-data production-renderer inspection at desktop and393x650 selected an alternate documented device, showed its two dated points and safe differences, then observed that the contextual detail action opened the global latest measurement from another device. This is a concrete navigation/context defect, not a data correction.",
+      "The bounded correction derives the contextual detail target from the selected source series and names its date before navigation. With all origins selected it still opens the global latest unambiguous measurement. History rows remain independently actionable.",
+      "Manual desktop and393x650 verification confirms alternate-device selection → dated differences → detail opens the same 20/10/2026 source/file → return preserves the selected source. The phone detail remains393/393px with original values, units, date, device and file; no health write or synthetic production record.",
+      "Fresh main/reference heads, private checkpoint51 and open PRs were checked before editing. Only legacy PRs367/354/348 remain open; no recent overlapping implementation. Genuine owner-scoped receipts, basal coverage and existing water/export support threads have no new unlocking evidence.",
+      "Candidate gates remain pending. No clinical/source/model arithmetic, authentication, database, medication, laboratory or physical-iPhone state changed."
     ],
     "ux_review": {
-      "area": "nutrition",
-      "next_area": "composition",
-      "mode": "synthetic_production_renderers_plus_protected_actual_auth",
-      "viewport": "desktop,320x650,393x650; existing CI320/393/1180/1440",
-      "result": "local_detail_actions_published_and_verified",
-      "additional_journey": {
-        "area": "training",
-        "viewport": "393x650",
-        "result": "session_exercises_dated_history_older_page_return_without_observed_functional_defect"
-      },
-      "journey_without_defect": "historical source/year/date and independent averages retained context"
-    },
-    "pending_validation_repetitions": [
-      41248994570,
-      41248994589,
-      41248994565,
-      41248994637
-    ]
+      "area": "composition",
+      "next_area": "reports",
+      "mode": "synthetic_production_renderers",
+      "viewport": "desktop and393x650",
+      "result": "selected_source_detail_context_corrected_pending_gates",
+      "journey_without_additional_defect": "chart dates, device separation, safe same-device differences, original units and historical rows remained correct"
+    }
   },
   "continuity_review_history": [
     {
@@ -8939,6 +8940,37 @@
         "viewport": "desktop,393x650; candidate responsive gate pending",
         "result": "observed_inert_local_detail_actions_corrected_pending_gates",
         "journey_without_defect": "historical source/year/date and independent averages remained correct"
+      }
+    },
+    {
+      "reviewed_on": "2026-10-31",
+      "reviewed_at_utc": "2026-10-31T22:59:16.560Z",
+      "source_main_commit": "b606d662b29a1330c31c3b735df82cf866291a18",
+      "runtime_build": "health-integrated-20261031.105",
+      "candidate_build": "health-integrated-20261031.106",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 92,
+        "blocked_external": 14,
+        "accepted_gap": 2,
+        "in_progress": 1
+      },
+      "executable_task_count": 1,
+      "evidence": [
+        "Actual invented-data production-renderer inspection at desktop and393x650 selected an alternate documented device, showed its two dated points and safe differences, then observed that the contextual detail action opened the global latest measurement from another device. This is a concrete navigation/context defect, not a data correction.",
+        "The bounded correction derives the contextual detail target from the selected source series and names its date before navigation. With all origins selected it still opens the global latest unambiguous measurement. History rows remain independently actionable.",
+        "Manual desktop and393x650 verification confirms alternate-device selection → dated differences → detail opens the same 20/10/2026 source/file → return preserves the selected source. The phone detail remains393/393px with original values, units, date, device and file; no health write or synthetic production record.",
+        "Fresh main/reference heads, private checkpoint51 and open PRs were checked before editing. Only legacy PRs367/354/348 remain open; no recent overlapping implementation. Genuine owner-scoped receipts, basal coverage and existing water/export support threads have no new unlocking evidence.",
+        "Candidate gates remain pending. No clinical/source/model arithmetic, authentication, database, medication, laboratory or physical-iPhone state changed."
+      ],
+      "ux_review": {
+        "area": "composition",
+        "next_area": "reports",
+        "mode": "synthetic_production_renderers",
+        "viewport": "desktop and393x650",
+        "result": "selected_source_detail_context_corrected_pending_gates",
+        "journey_without_additional_defect": "chart dates, device separation, safe same-device differences, original units and historical rows remained correct"
       }
     }
   ],
