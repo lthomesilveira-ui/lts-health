@@ -25,6 +25,17 @@ const flags={syntheticOnly:true,realDocumentsUsed:false,authenticatedWithRealAcc
 const dateLabel=date=>date.split('-').reverse().join('/');
 const normalized=value=>String(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const tokenCounts=value=>{const result=new Map();for(const token of normalized(value).match(/[\p{L}\p{N}]+/gu)||[])result.set(token,(result.get(token)||0)+1);return result;};
+const missingPdfWords=(expectedText,words)=>{
+  const actual=tokenCounts(words.map(word=>word.text).join(' ')),expected=tokenCounts(expectedText),missing=[];
+  for(const [token,count] of expected)if((actual.get(token)||0)<count)missing.push({token,expected:count,actual:actual.get(token)||0});
+  return missing;
+};
+// The positioned PDF words are the same evidence whose page bounds we check.
+// Plain `pdftotext -layout` can join 6 and h even when bbox output identifies
+// two separate painted words. Missing either the number or unit must fail.
+assert.deepEqual(missingPdfWords('Sono 6 h',[{text:'Sono'},{text:'6'},{text:'h'}]),[]);
+assert.deepEqual(missingPdfWords('Sono 6 h',[{text:'Sono'},{text:'h'}]),[{token:'6',expected:1,actual:0}]);
+assert.deepEqual(missingPdfWords('Sono 6 h',[{text:'Sono'},{text:'6'}]),[{token:'h',expected:1,actual:0}]);
 const save=()=>writeFileSync(`${dir}/results.json`,JSON.stringify({...flags,fixedDate:CALENDAR_TODAY,productionStartup:true,deepLink:'analise',engines:['chromium','webkit'],viewportWidths:sizes.map(([width])=>width),deviceScaleFactor:1,results,captures,pdfs,securityEvidence,failures},null,2));
 
 async function installProbe(page){
@@ -70,7 +81,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
   assert.equal(m.calendar.bounds.start,expected.start);assert.equal(m.calendar.bounds.end,expected.end);assert.equal(m.calendar.bounds.days,expected.days);
   assert.equal(m.calendar.partial,partial);assert.equal(m.calendar.nominalBounds.end,nominalEnd);
   assert.equal(await page.locator('#calendarReport .ltsReportHeading h2').getAttribute('aria-label'),`${dateLabel(expected.start)} a ${dateLabel(expected.end)}`,'The concise visible heading has the exact full date range as its accessible name');
-  assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),8);
+  assert.equal(await page.locator('#calendarReport .ltsCalendarMetric[data-calendar-metric]').count(),CALENDAR_KEYS.length);
   for(const key of CALENDAR_KEYS){
     const expectedMetric=expectedCalendarMetric(fixture,key,expected),metric=m.metricsByKey[key],card=page.locator(`#calendarReport [data-calendar-metric="${key}"]`);
     assert.equal(metric.count,expectedMetric.count,`${key}: only eligible observed days count`);
@@ -81,7 +92,7 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
     assert.deepEqual(await card.locator('[data-calendar-plot-date]').evaluateAll(nodes=>nodes.map(node=>node.dataset.calendarPlotDate).sort()),expectedMetric.dates,`${key}: chart includes exact eligible dates, gaps stay gaps and zero stays a point`);
     const coverage=await card.locator('.ltsCalendarCoverage').innerText();
     assert.equal(coverage,`${expectedMetric.count}/${metric.expectedDays} dias encerrados com valor`,`${key}: exact visible recorded-day coverage`);
-    const value=expectedMetric.value==null?'Sem dado':`${expectedMetric.value.toLocaleString('pt-BR',{maximumFractionDigits:0})} ${metric.unit}`;
+    const value=expectedMetric.value==null?'Sem dado':`${expectedMetric.value.toLocaleString('pt-BR',{maximumFractionDigits:key==='sleep'?1:0})} ${metric.unit}`;
     assert.equal(await card.locator('.ltsCalendarMetricValue').innerText(),value,`${key}: the independently calculated observed mean is visible`);
     assert.ok((await card.locator('.ltsCalendarSource').innerText()).trim(),`${key}: visible source`);
     assert.ok((await card.locator('.ltsCalendarComparison').innerText()).trim(),`${key}: visible comparison or explanation`);
@@ -289,9 +300,14 @@ async function verifyViewportClippingDetector(browser,engine){
 
 async function captureTiles(page,name,target){
   assert.equal(await target.count(),1);assert.equal(await target.isVisible(),true);
+  // A complete monthly report now has nine metric histories. Bound the loop
+  // by its measured height instead of truncating legitimate evidence at 100
+  // tiles; no-gap, visible-text and strictly increasing coverage still apply.
+  const targetHeight=await target.evaluate(el=>el.getBoundingClientRect().height);
+  const maxTiles=Math.ceil(targetHeight/(page.viewportSize().height/2))+3;
   let offset=0,covered=0,index=0,finished=false;
   while(!finished){
-    assert.ok(index<100,'A target must remain reachable through its real scroll container');
+    assert.ok(index<maxTiles,'A target must remain reachable through its real scroll container within its measured-height tile budget');
     await target.evaluate((el,offset)=>{
       el.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
       let visibleTop=0,visibleBottom=innerHeight;
@@ -356,11 +372,10 @@ print(json.dumps(pages,ensure_ascii=False))
     if(!page.words.length)issues.push({page:index+1,reason:'blank page'});
     for(const word of page.words)if(word.xMin<8||word.yMin<8||word.xMax>page.width-8||word.yMax>page.height-8||word.xMax<=word.xMin||word.yMax<=word.yMin)issues.push({page:index+1,reason:'text outside printable page or degenerate bounding box',word});
   }
-  const extracted=readFileSync(plain,'utf8'),actual=tokenCounts(extracted),expected=tokenCounts(expectedText),missing=[];
-  for(const [token,count] of expected)if((actual.get(token)||0)<count)missing.push({token,expected:count,actual:actual.get(token)||0});
+  const missing=missingPdfWords(expectedText,parsed.flatMap(page=>page.words));
   // All visible print text must survive PDF pagination, not only a title or
   // the first screenshot. This detects content lost in clipped scroll boxes.
-  writeFileSync(`${dir}/${name}-pdf-layout.json`,JSON.stringify({...flags,pages:parsed,missingTokens:missing,issues},null,2));
+  writeFileSync(`${dir}/${name}-pdf-layout.json`,JSON.stringify({...flags,textComparison:'positioned_pdf_words',plainTextArtifact:`${name}-text.txt`,pages:parsed,missingTokens:missing,issues},null,2));
   execFileSync('pdftoppm',['-png','-r','144',path,`${dir}/${name}-pdf-page`],{maxBuffer:5*1024*1024});
   const images=readdirSync(dir).filter(file=>file.startsWith(`${name}-pdf-page-`)&&file.endsWith('.png'));
   assert.equal(images.length,pageCount,'Every PDF page has a native-resolution visual artifact');
@@ -394,7 +409,7 @@ async function printContract(page,name,{pdf=false,engine='chromium',summary=fals
   });
   assert.ok(printText.length>500,'The print root contains the full report');
   assert.doesNotMatch(printText,/\b(?:NaN|undefined|Infinity|SQLSTATE|source_record_id|canonical_status)\b/);
-  if(summary){assert.equal(await page.locator('#calendarPrintRoot .ltsReportPrintSources tbody tr').count(),8);assert.equal(await page.locator('#calendarPrintRoot [data-calendar-day]').count(),0);assert.match(printText,/Dados completos/);}else for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
+  if(summary){assert.equal(await page.locator('#calendarPrintRoot .ltsReportPrintSources tbody tr').count(),CALENDAR_KEYS.length);assert.equal(await page.locator('#calendarPrintRoot [data-calendar-day]').count(),0);assert.match(printText,/Dados completos/);}else for(const key of CALENDAR_KEYS){assert.equal(await page.locator(`#calendarPrintRoot [data-calendar-metric="${key}"]`).count(),1);assert.ok(await page.locator(`#calendarPrintRoot [data-calendar-evidence="${key}"]`).count(),'All daily evidence is present in print');}
   writeFileSync(`${dir}/${name}-print-dom.txt`,printText);
   // A capture failure is still a test failure, but must not prevent creating
   // the real PDF and every page image needed to diagnose print pagination.

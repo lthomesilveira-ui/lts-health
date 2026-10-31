@@ -9,7 +9,7 @@ import {calendarReportHighlights} from './calendar-report-highlights.js';
 // Read-only calendar reports. No database writes, recommendations, clinical
 // targets, inferred activity, causal scores, or aggregation across origins.
 const DAY=86400000;
-const keys=['water','protein','energy','carbs','fat','fiber','steps','activeEnergy'];
+const keys=['water','protein','energy','carbs','fat','fiber','steps','activeEnergy','sleep'];
 const date=value=>{
   if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
   const parsed=new Date(`${value}T12:00:00Z`);
@@ -212,7 +212,8 @@ export function calendarReport(data={},status={},ui={},today){
     'Ausência não significa zero. Dias com registros não comprovam diário completo. Duplicatas ambíguas e dias sabidamente parciais ficam fora das médias.',
     'A escolha explícita é mantida entre períodos. No modo automático, a origem pode mudar conforme a cobertura da janela; origens e dispositivos não são somados. Quando a origem ainda precisa de revisão, essa informação permanece visível.',
     'Somente referências alimentares documentadas são exibidas. Data de recebimento não confirma vigência, início de uso ou adesão. Retrospectivas exigem escolha explícita e ficam rotuladas.',
-    'Energia ativa não é gasto total. Não calculamos balanço energético a partir dela.',protocol.note];
+    'Energia ativa não é gasto total. Não calculamos balanço energético a partir dela.',
+    'Sono segue a data registrada pela origem. O relatório não transfere registros para a noite anterior ou seguinte.',protocol.note];
   if(calendar.selectionNotice)notes.unshift(calendar.selectionNotice);
   return {schemaVersion:1,calendar,today:calendar.today,bounds:calendar.bounds,previousBounds:calendar.previousBounds,metrics,metricsByKey:Object.fromEntries(metrics.map(metric=>[metric.key,metric])),todayMetrics,
     training,labs,protocol,nutritionPlan,highlights:calendarReportHighlights(metrics,calendar),summary:summaryFor(calendar,metrics,training,labs),notes,comparisonRule:healthDashboardComparisonRule,

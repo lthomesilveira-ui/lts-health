@@ -14,8 +14,8 @@ const status=()=>Object.fromEntries(domains.map(key=>[key,'ready']));
 const empty=()=>Object.fromEntries(domains.map(key=>[key,[]]));
 const add=(date,n)=>new Date(Date.parse(date+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);
 const food=(date,value=100,extra={})=>({nutrition_date:date,source:'Synthetic food A',protein_g:value,calories_kcal:value*20,water_ml:value*10,carbs_g:value*2,fat_g:value/2,fiber_g:value/10,...extra});
-const device=(date,type,value,extra={})=>({metric_date:date,metric_type:type,value,unit:type==='steps'?'count':'kcal',source_name:'Synthetic device A',source_family:'synthetic',canonical_status:'candidate',...extra});
-function filled(start='2024-02-26',days=14){const data=empty();for(let i=0;i<days;i++){const date=add(start,i);data.nutrition.push(food(date,i<7?100:110));data.sourceMetrics.push(device(date,'steps',5000+i),device(date,'active_energy_kcal',300+i));}return data;}
+const device=(date,type,value,extra={})=>({metric_date:date,metric_type:type,value,unit:type==='steps'?'count':type==='sleep_duration_h'?'h':'kcal',source_name:'Synthetic device A',source_family:'synthetic',canonical_status:'candidate',...extra});
+function filled(start='2024-02-26',days=14){const data=empty();for(let i=0;i<days;i++){const date=add(start,i);data.nutrition.push(food(date,i<7?100:110));data.sourceMetrics.push(device(date,'steps',5000+i),device(date,'active_energy_kcal',300+i),device(date,'sleep_duration_h',6+i/100));}return data;}
 const metric=(result,key='protein')=>result.metricsByKey[key];
 const bounds=(cal)=>[cal.bounds.start,cal.bounds.end,cal.bounds.days,cal.bounds.closedDays];
 function training(){
@@ -115,7 +115,7 @@ test('explicit dashboard calendar recomputes counts and rejects future, invalid,
 });
 test('weekly metrics reuse strict comparability, source identity and all requested nutrients and existing variables',()=>{
   const model=report(filled(),status(),{},today);
-  assert.deepEqual(model.metrics.map(row=>row.key),['water','protein','energy','carbs','fat','fiber','steps','activeEnergy']);
+  assert.deepEqual(model.metrics.map(row=>row.key),['water','protein','energy','carbs','fat','fiber','steps','activeEnergy','sleep']);
   for(const item of model.metrics){assert.equal(item.count,7);assert.equal(item.expectedDays,7);assert.equal(item.comparison.comparable,true);assert.equal(item.comparison.samePositions,true);assert.equal(item.comparison.currentDays,7);}
   assert.equal(metric(model).value,110);assert.equal(metric(model).comparison.previous,100);assert.equal(metric(model).comparison.delta,10);assert.deepEqual(model.todayMetrics,[]);
 });
@@ -291,4 +291,22 @@ test('today carries the same read diagnostics, including an observed zero from a
   const result=report(data,{...status(),sourceMetrics:'error'},{calendarReportSelection:'current'},today);
   const protein=result.todayMetrics.find(item=>item.key==='protein'),steps=result.todayMetrics.find(item=>item.key==='steps');
   assert.equal(protein.value,0);assert.equal(protein.readError,true);assert.equal(protein.coverageUnavailable,false);assert.equal(steps.value,null);assert.equal(steps.coverageUnavailable,true);assert.deepEqual(steps.failedDomains,['sourceMetrics']);
+});
+
+test('sleep reports reuse the selected dated origin without summing devices or moving nights',()=>{
+ const data=empty();
+ for(let i=0;i<14;i++){const day=add('2024-02-26',i);data.sourceMetrics.push(device(day,'sleep_duration_h',i<7?6:6.25,{source_name:'Synthetic sleep A'}),device(day,'sleep_duration_h',7.5,{source_name:'Synthetic sleep B'}));}
+ const before=structuredClone(data),m=report(deepFreeze(data),status(),{},today),a=m.metricsByKey.sleep;
+ assert.equal(a.count,7);assert.equal(a.value,6.25);assert.equal(a.unit,'h');assert.equal(a.comparison.delta,.25);assert.equal(a.comparison.comparable,true);
+ assert.deepEqual(a.points.filter(p=>p.eligible).map(p=>p.date).sort(),Array.from({length:7},(_,i)=>add('2024-03-04',i)));
+ const b=report(data,status(),{calendarReportSources:{sleep:a.sources.find(s=>s.label==='Synthetic sleep B').key}},today).metricsByKey.sleep;
+ assert.equal(b.value,7.5);assert.equal(b.count,7);assert.equal(b.comparison.delta,0);assert.deepEqual(data,before);
+ assert.ok(m.notes.some(note=>note.includes('Sono segue a data registrada')));
+});
+test('sleep preserves a recorded zero and excludes absent, conflicting, partial and open dates',()=>{
+ const data=empty();for(let i=0;i<7;i++)data.sourceMetrics.push(device(add('2024-03-04',i),'sleep_duration_h',i?6:0));
+ let m=report(data,status(),{},today).metricsByKey.sleep;assert.equal(m.count,7);assert.equal(m.value,36/7);assert.equal(m.points.find(p=>p.date==='2024-03-04').value,0);
+ data.sourceMetrics[1].value=null;data.sourceMetrics.push({...data.sourceMetrics[2],value:9});data.sourceMetrics[3].knownPartial=true;
+ data.sourceMetrics.push(device(today,'sleep_duration_h',12));m=report(data,status(),{},today).metricsByKey.sleep;assert.equal(m.count,4);assert.equal(m.value,4.5);assert.ok(m.points.filter(p=>p.eligible).every(p=>p.date<today));
+ m=report(data,{...status(),sourceMetrics:'error'},{},today).metricsByKey.sleep;assert.equal(m.value,null);assert.equal(m.coverageUnavailable,true);assert.equal(m.readError,true);
 });

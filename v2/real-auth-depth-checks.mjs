@@ -71,6 +71,20 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   await page.waitForSelector('#reportEvidenceInsights');
   await page.waitForFunction(()=>document.querySelector('#analysisPeriod')?.value==='all'&&document.querySelector('#reportNutritionSource'));
   try{await auditObservedNutritionContrast(page);}catch(error){error.auditCode='nutrition-contrast';throw error;}
+  // Boolean-only checks of the existing authorized state: no patient readings in logs.
+  const sleepReport=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js'),{calendarReport}=await import('./src/calendar-report-model.js'),{sourceDisplayLabel}=await import('./src/source-display.js');
+    const m=calendarReport(state.data,state.domainStatus,state.ui),metric=m.metricsByKey.sleep;
+    const card=document.querySelector('#calendarReport [data-calendar-metric="sleep"]'),signal=document.querySelector('#calendarReport [data-report-signal="sleep"]');
+    if(!metric||!card||!signal)return{present:false};
+    const value=card.querySelector('.ltsCalendarMetricValue')?.textContent.trim(),coverage=card.querySelector('.ltsCalendarCoverage')?.textContent.trim();
+    const mean=metric.value==null?!/^0(?:[,.]0)?\s*h$/.test(value):value===metric.value.toLocaleString('pt-BR',{maximumFractionDigits:1})+' '+metric.unit;
+    const expected=metric.points.filter(p=>p.eligible===true&&p.date>=m.bounds.start&&p.date<=m.bounds.closedEnd&&p.date<m.today&&!p.open&&!p.ambiguous&&!p.knownPartial&&!p.excludeFromClosedMeans&&!p.reviewInvalid&&typeof p.value==='number'&&Number.isFinite(p.value)&&p.value>=0).map(p=>p.date).sort();
+    const actual=Array.from(card.querySelectorAll('[data-calendar-plot-date]')).map(p=>p.dataset.calendarPlotDate).sort();
+    const origin=metric.source?sourceDisplayLabel(metric.source,metric.sources):null;
+    return{present:true,mean,coverage:metric.coverageUnavailable?coverage==='Cobertura indisponível':coverage===`${metric.count}/${metric.expectedDays} dias encerrados com valor`,dates:JSON.stringify(actual)===JSON.stringify(expected),origin:!origin||card.querySelector('.ltsCalendarSource')?.textContent.includes(origin),unit:metric.unit==='h',selector:!!card.querySelector('#calendar-source-sleep')};
+  });
+  check(Object.values(sleepReport).every(Boolean),'sleep report lost its recorded value, date, unit, source or coverage');
   const loadLink=page.locator('[data-report-exercise]').first();
   if(await loadLink.count()){
     await loadLink.click();await page.waitForSelector('.ltsExerciseHistory');
