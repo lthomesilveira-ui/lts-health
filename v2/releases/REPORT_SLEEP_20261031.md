@@ -1,6 +1,8 @@
 # Sleep included in calendar reports — candidate .103, 31/10/2026
 
-Direct UI review found recorded sleep present in Home but omitted from calendar reports. Candidate .103 reuses the existing source-isolated hour/day model in weekly/monthly summaries, dated graph/source picker and both local exports. Sources are not pooled, original dates are not moved between nights and current-day values stay outside closed means. Source/date context is readable on screen; print rules remain intact.
+Direct UI review found recorded sleep present in Home but omitted from calendar reports. Candidate .103 reuses the existing source-isolated hour/day model in weekly/monthly summaries, dated graph/source picker and both local exports. Sources are not pooled, original dates are not moved between nights and current-day values stay outside closed means. Source/date context is readable on screen; PDF values retain a searchable space before their unit.
+
+Candidate bfe268ec140af1eae3fa4c3219cf021ca1c3ce35 passed16/17 workflows; Calendar41238829353 reported7 failures. Artifact13057435003 SHA256f3fa50f912f17b9ad34115a60b08cf6c3569b0e1679d2cc62e707236429eb9d9 was downloaded, verified and inspected. Four PDF failures came from extracted “6h” merging two tokens despite visible ink. Two desktop captures exposed stretched blank card tails; cards now align to their content. The full monthly320px capture exceeded the old100-tile guard; its finite budget now derives from measured report height, preserving all no-gap, visible-text and strictly increasing coverage assertions. No assertion is waived. The corrected candidate still requires the full browser/PDF gate before publication.
 
 Forty-two model cases and view/print lifecycle tests pass locally. The existing independent browser oracle checks nine metrics, fractional hours and every export row. Protected real-auth adds boolean-only value/date/unit/source/coverage binding, without patient readings/identifiers in logs. Exact candidate renderers/styles were manually reviewed with invented data in desktop and phone journeys. Candidate browser/PDF, deployment/public and protected-auth gates remain pending; .102 remains the verified public release.
 
@@ -17,4 +19,5 @@ Independent Cloud Browser confirms exact public .102 with intact login, private 
 Earlier narrow geometry failures remain preserved. Final correction reclaims only summary/section spacing, with unchanged text size and150px gate; candidate9508c9f7d1377106da3a15de37c83f69a3530348 artifact13055604062 digest084a844fe64616c14d8ee27036ae016dae4ed9e3e3c2804353d1cecf7820c3e3 verified. Five limitation explanations use ordinary language; original values, units, source/device/link/comparison rules, clinical state, auth and writes are unchanged.
 
 EXECUTION_STATE.json is authoritative; earlier snapshots retain their original scope.
+
 

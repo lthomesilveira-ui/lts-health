@@ -329,6 +329,7 @@
 }
 
 /* Recorded sleep shares the source-isolated report, with readable coverage. */
+.ltsCalendarMetrics{align-items:start}
 .ltsReportSignals{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media screen{
  .ltsReportSignals span,.ltsReportSignals>div>small,.ltsReportSignals b small{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
@@ -341,4 +342,10 @@
  .ltsCalendarMetric span,.ltsCalendarMetric small,.ltsCalendarMetric label,
  .ltsCalendarMetric summary,.ltsCalendarMetric th,.ltsCalendarMetric td{font-size:14px!important;line-height:1.45!important}
  .ltsCalendarMetric select{font-size:16px!important}
+}
+/* Keep short hour units separate in searchable/copyable PDF text, too. */
+@media print{
+ #calendarPrintRoot .ltsReportSignals b,
+ #calendarPrintRoot .ltsCalendarMetricValue,
+ #calendarPrintRoot .ltsReportPrintSources td:nth-child(2){word-spacing:1pt}
 }

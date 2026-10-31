@@ -289,9 +289,14 @@ async function verifyViewportClippingDetector(browser,engine){
 
 async function captureTiles(page,name,target){
   assert.equal(await target.count(),1);assert.equal(await target.isVisible(),true);
+  // A complete monthly report now has nine metric histories. Bound the loop
+  // by its measured height instead of truncating legitimate evidence at 100
+  // tiles; no-gap, visible-text and strictly increasing coverage still apply.
+  const targetHeight=await target.evaluate(el=>el.getBoundingClientRect().height);
+  const maxTiles=Math.ceil(targetHeight/(page.viewportSize().height/2))+3;
   let offset=0,covered=0,index=0,finished=false;
   while(!finished){
-    assert.ok(index<100,'A target must remain reachable through its real scroll container');
+    assert.ok(index<maxTiles,'A target must remain reachable through its real scroll container within its measured-height tile budget');
     await target.evaluate((el,offset)=>{
       el.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
       let visibleTop=0,visibleBottom=innerHeight;
