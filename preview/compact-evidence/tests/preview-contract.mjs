@@ -15,7 +15,7 @@ const manifest={
     "body-interval.css": "ea7509f603febe4147f6411737b7e015b336cdaea3ddc13f15b9e17abd16061e",
     "calendar-reports.css": "6fb74e3dc2ca8f59254fbe28c70d5416379a4d1ffc70e9cf5dd96efc526464d0",
     "cockpit.css": "75d94843fa9861bafc82bb8870c305fddbf140b5c2ba31b3308f186ea88a51bd",
-    "composition-model-v2.css": "102b76d3d205b326e6ad633313f083c55b55b425d929e1b27544e5952607b119",
+    "composition-model-v2.css": "c855543d83584777fa963d7452580ed2818b138a1677e0db2d4b7266f0b6cf30",
     "dashboard-final-polish.css": "e827badad263a43f1283c7d120e732872d85342f206bb37afa926842353cfa67",
     "dashboard-parity.css": "c370a25ea7e501fc4bff32e5d9463cbcbb489f7cb6e026fbccf260485ea20826",
     "dashboard-pixel-parity.css": "391ee883ea04982dd5f8c133fd3621a64972f3e1b8bee093a4e3cf8772cfe639",
@@ -69,7 +69,7 @@ const manifest={
     "src/calendar-report-overview.js": "66eb6012ac5b1b68d2dbec6a38b373cf2f48ffed96aad11817ae97430fdae02c",
     "src/calendar-report-view.js": "904b951eb23a0ebe9d26986f7e509a928a961c561909bc67e70db0d3a4a0de8c",
     "src/care-followup.js": "d27adde998c8a5c643c357c22e010206f1abf3ac819479832e3cacc115d5c7e8",
-    "src/composition-layout-v2.js": "00c7be2e44cfecd15e2030ddcc24c512043bdb5e59a0cc8637233c330dcddc3a",
+    "src/composition-layout-v2.js": "1caea75ed7124b57841143d5f64f2b778f68f41a5f699e574574f746018a85a3",
     "src/core.js": "64c10d70a53477cccd917da6d18aeeb0b15694d1501bab841fcc3a40f278d55d",
     "src/dashboard-changes.js": "2826da829e3fe46cd62c1939e53e9cb2faa3b097d3bea11757a188faa991fc7a",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
@@ -192,8 +192,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261031\.101/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261031.101'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261031\.102/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261031.102'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';
