@@ -64,3 +64,17 @@
 .ltsLabsV2 .ltsLabOriginal a{display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;min-height:44px;max-width:100%;padding:9px 12px;border:1px solid #c8d7e9;border-radius:12px;background:#f4f8fd;color:#234e78;font-size:14px!important;font-weight:650;line-height:1.45;text-decoration:none;white-space:normal;overflow-wrap:anywhere}
 .ltsLabsV2 .ltsLabOriginal a:hover{background:#e8f1fb}.ltsLabsV2 .ltsLabOriginal a:focus-visible{outline:3px solid #367ac6;outline-offset:3px}
 .ltsLabsV2 .ltsLabOriginal small,.ltsLabsV2 .ltsLabsHistoryRow .ltsLabOriginal small{display:block;margin:0;color:#526075;font-size:14px!important;line-height:1.5!important;overflow-wrap:anywhere}
+
+/* Recorded laboratory history stays readable without changing its data model. */
+@media screen{
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow{grid-template-columns:92px minmax(0,1fr) auto;align-items:start;gap:10px 12px}
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow time,
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow small,
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow>.ltsRecordFlag{font-size:14px!important;line-height:1.5!important}
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow time{white-space:nowrap;font-variant-numeric:tabular-nums}
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow b{font-size:16px!important;line-height:1.5!important;overflow-wrap:anywhere}
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow>.ltsRecordFlag{white-space:normal;overflow:visible;text-overflow:clip;max-width:100%;overflow-wrap:anywhere}
+}
+@media screen and (max-width:840px){
+ .ltsLabsV2 #productLabsHistory .ltsLabsHistoryRow{grid-template-columns:86px minmax(0,1fr)!important;gap:8px 10px}
+}
