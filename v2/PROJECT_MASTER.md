@@ -1,3 +1,9 @@
+# Treinos — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+Revisão autônoma sem alteração de runtime ou dados. O artefato exato `training-visual-report-synthetic` 13072880353 (SHA-256 `e4ff3ecb3e1728affe4b1d714cc6f5f8cf792f0b6d5bd42bb2b1988b455c1439`) passou 4/4 cenários em 320/393/1180/1440 px. Resumo, distribuição, gráfico de sessões, exercícios/séries, histórico, registro anterior, texto literal, estados vazio/erro/recuperação e retorno preservaram datas, unidades, equipamento, grupos, fases, extensões e ausência sem zero, sem overflow ou defeito concreto. A entrada pública `.111` continuou desconectada e privada no Cloud Browser; o gate autenticado existente permanece evidência distinta.
+
+Heads, checkpoint privado versão 58, PRs, recebimentos e respostas existentes foram reconciliados. Somente PRs legados 367/354/348 permanecem; não surgiu resposta genuína nem desbloqueio externo. Supabase foi apenas lido e manteve água canônica até 13/10, ausência de gasto total explícito e candidatos basais sem origem/cobertura. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: composição.
+
 # Relatórios — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 A rodada reconciliou `main` `68827cfd1c33cc413a9ae851d00674a8aa1728b6`, checkpoint privado 57 e PRs abertos antes de escrever; só 367/354/348 permanecem, sem sobreposição. O artefato exato de relatórios 13070884236 conferiu com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`, e seus 32 cenários Chromium/WebKit passaram em 320/393/1440 px.
