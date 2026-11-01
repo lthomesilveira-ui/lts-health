@@ -1,5 +1,25 @@
 # LTS Health — protocolo de continuidade
 
+# Concluído — situação da água acessível e legível, .112
+
+`PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` está concluído. Os atalhos de água abrem e focam o recebimento do iPhone depois do carregamento, sem salto posterior ao topo. A consulta comum de Dados e fontes mantém sua entrada; o contexto vale uma vez. O estado da água fica separado dos demais envios. A ação principal está legível, os avisos e a configuração têm ao menos 14 px, e os ajustes de conexão ficam em detalhes secundários com as confirmações existentes.
+
+PR474: candidata exata `03ff7e7493eebd52eb007483124d1940c2b49670`, 17/17 workflows aprovados. Merge normal `4783dbab3c94391caa2d7d7291ad9924c17d2ca0`: 21/21 workflows de runtime publicados, incluindo acesso real protegido. Artefato sintético `13082995638`, `sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546`, inspecionado em 320/393/1440 px e 393x650. Cloud Browser confirmou `.112`, login desconectado e fronteira privada intacta; isso permanece distinto das imagens sintéticas e do teste autenticado. Nenhum teste físico de iPhone ou sessão privada manual foi presumido.
+
+A automação continua habilitada e evita PRs/publicações apenas para repetir auditoria sem mudança. A fila tem 100 concluídos, 14 bloqueios externos e 2 lacunas aceitas, sem executável interno neste pacote. A continuidade de água e as demais dependências originais permanecem abertas; não há aceite global nem alteração clínica, dado inventado, troca de origem, chave ou configuração do telefone. A jornada seguinte de Treinos também foi conferida com a .112 sem defeito novo; próxima área: Composição. Sem novidade material, registrar apenas checkpoint privado curto.
+
+
+# Histórico da candidata — acesso direto à situação da água, .112
+
+O feedback de continuidade de 01/11 reabre uma ação concreta de UX: os atalhos da água abriam Dados e fontes no topo, antes do diagnóstico correspondente. `PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` adiciona contexto de navegação de uso único, posiciona e foca o recebimento do iPhone após o carregamento e preserva a entrada comum de Dados e fontes. A falta de atualização de água ganha estado próprio; troca de chave e interrupção de envios permanecem na configuração secundária com as confirmações existentes. Nenhum dado, origem, chave, configuração física ou escrita é alterado. A correção está em validação, não publicada; os bloqueios independentes da integração e o aceite global continuam abertos.
+
+
+## Checkpoint mais recente — Relatórios mensais .111
+
+A publicação vigente permanece `health-integrated-20261101.111`; o head reconciliado antes desta rodada é `43c83ba8db8fa66c4a9d396832fa68a141c59956` e o checkpoint privado é a versão 62. A jornada mensal distinta retomou o artefato exato `calendar-report-synthetic-evidence` 13070884236, SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`. Seus 32 cenários Chromium/WebKit passaram em 320/393/1440 px. Em 393 px, o mês anterior preservou período encerrado, cobertura por métrica, unidades, origens, gráficos, treino, exames, comparação e navegação; o PDF mensal manteve as mesmas ressalvas e separou origens sem somá-las. O estado vazio usou traços e declarou que lacunas não são zero. Nenhum defeito concreto foi observado, e o diff desde o último commit de runtime contém somente controles de continuidade.
+
+Cloud Browser abriu a entrada pública `.111` em `#hoje`; após uma única recarga de recuperação, exibiu o login desconectado e a fronteira privada intacta. A inspeção sintética exata, a leitura pública desconectada e o gate autenticado já aprovado permanecem evidências distintas. Supabase foi somente lido: 66 recebimentos, sendo o mais recente aceito em 01/11/2026 10:09:21 UTC com 13 métricas e 1 candidato basal; 10 dias canônicos de água até 13/10, zero série explícita de gasto total, 118 candidatos basais sem fonte/limites/cobertura e 33 dias candidatos recentes de energia ativa até 31/10, ainda separados dos 98 dias canônicos até 05/05. Não houve nova resposta genuína de suporte, contato externo ou escrita. As quinze correções laboratoriais permanecem bloqueadas pelo manifesto original e autorização específica. Fila: 99 `done`, 14 `blocked_external`, 2 `accepted_gap` e zero executáveis; próxima inspeção: treinos.
+
 Objetivo: qualquer nova sessão deve conseguir retomar o projeto com o estado real, sem depender da memória do chat e sem reabrir decisões já comprovadas.
 
 ## Frase curta de retomada
@@ -63,7 +83,7 @@ O usuário autorizou e comprou a ponte anual Health Auto Export. Executar a inte
 
 ## Hidratação pendente
 
-`LTS-HYD-IMPORT-001` permanece `blocked_user` enquanto o banco não contiver uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. O app exibe um caminho explícito para continuar no notebook, sem sugerir digitação diária ou instalação de aplicativo; o ledger privado registra a solicitação; e uma trigger muda a solicitação para concluída quando o primeiro lote válido chegar.
+`LTS-HYD-IMPORT-001` permanece aberto até existir uma linha canônica de água do MyFitnessPal com proveniência de exportação autenticada. No checkpoint de 26/10/2026 UTC, é `blocked_external`, sob responsabilidade do Codex: o bloqueio de segurança do provedor impede o acesso autenticado do navegador do agente. Isso não é uma etapa de configuração do iPhone ainda não feita. O helper de notebook continua disponível, mas não justifica pedir novamente os testes já concluídos, exportações manuais recorrentes ou registros duplicados. O ledger privado e a trigger de conclusão continuam vinculados à chegada de um lote autêntico. Preservar o bloqueio do provedor, sem contorná-lo.
 
 Sem data e horário escolhidos, não existe notificação agendada. A pendência deve ser citada em cada checkpoint do projeto até ser concluída. Se o usuário definir quando deseja ser lembrado, criar uma automação separada e registrar sua existência no ledger.
 
@@ -86,3 +106,4 @@ O relatório final usa exatamente:
 - `Próximos passos`
 
 Ele informa o que foi comprovado, o que continua bloqueado e qual sinal encerra cada bloqueio. Nada importante pode existir apenas nesse relatório: o estado durável deve estar no repositório ou no ledger privado apropriado.
+

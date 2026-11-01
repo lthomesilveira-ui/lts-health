@@ -3,6 +3,7 @@ import {pathToFileURL} from 'node:url';
 import {healthDashboardModel} from '../src/health-dashboard-model.js';
 import {dashboardContext} from '../src/health-dashboard-context.js';
 import {dashboardGuidance} from '../src/health-dashboard-guidance.js';
+import {sourceDisplayLabel} from '../src/source-display.js';
 
 // Shared deterministic synthetic fixture. This module performs no I/O when
 // imported by the browser suite. No user records, accounts or credentials.
@@ -10,7 +11,7 @@ export const FIXED_TODAY='2026-10-17';
 export const METRIC_KEYS=['water','protein','energy','activeEnergy','totalEnergy','steps','sleep'];
 export const dateBefore=(today,age)=>new Date(Date.parse(`${today}T12:00:00Z`)-age*86400000).toISOString().slice(0,10);
 export const dateLabel=date=>date.split('-').reverse().join('/');
-export const numberLabel=(value,key)=>value==null?'Sem dado':Number(value).toLocaleString('pt-BR',{minimumFractionDigits:key==='sleep'?1:0,maximumFractionDigits:key==='sleep'?1:0});
+export const numberLabel=(value,key)=>value==null?'—':Number(value).toLocaleString('pt-BR',{minimumFractionDigits:key==='sleep'?1:0,maximumFractionDigits:key==='sleep'?1:0});
 const domains=['nutrition','sourceMetrics','metrics','body','segmental','workouts','workoutEvidence','exercises','sets','labs','treatments','regimens','docs','goals','waterReferences','polarSessions','meals','uploads'];
 export function makeDashboardFixture(today=FIXED_TODAY,{sparse=false}={}){
   const date=age=>dateBefore(today,age),data=Object.fromEntries(domains.map(key=>[key,[]])),status=Object.fromEntries(domains.map(key=>[key,'ready']));
@@ -57,6 +58,7 @@ export function expectedMetric(fixture,key,bounds,source='A'){
   return {value:points.length?points.reduce((sum,row)=>sum+row.value,0)/points.length:null,count:points.length};
 }
 const card=(html,key)=>html.match(new RegExp(`<article[^>]+data-dashboard-card="${key}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
+const primary=html=>html.split('<details')[0];
 const panel=(html,domain)=>html.match(new RegExp(`<article[^>]+data-study-domain="${domain}"[^>]*>([\\s\\S]*?)<\\/article>`))?.[1]||'';
 const freeze=value=>{if(value&&typeof value==='object'){Object.freeze(value);Object.values(value).forEach(freeze);}return value;};
 const escapeRegex=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -77,7 +79,7 @@ export async function runRenderTests(){
       assert.ok(content,key);assert.equal(metric.count,expected.count,`${key}: actual n`);
       assert.ok(metric.value===expected.value||Math.abs(metric.value-expected.value)<1e-10,`${key}: arithmetic mean`);
       assert.ok(content.includes(`<strong>${numberLabel(expected.value,key)}</strong>`),`${key}: displayed mean`);
-      assert.match(content,new RegExp(`${expected.count}/7 dias com valor elegível`));
+      assert.match(content,new RegExp(`${expected.count}/7 dias usados na média`));
       assert.ok(content.includes(dateLabel(f.date(7)))&&content.includes(dateLabel(f.date(1))));
       assert.match(content,/Origens separadas não são somadas/);
     }
@@ -85,10 +87,20 @@ export async function runRenderTests(){
       assert.match(card(html,'sleep'),/Variação menor que 0,1 h/, 'small nonzero changes are not displayed as a directional zero');
       assert.doesNotMatch(card(html,'sleep'),/[↑↓] 0,0 h/);
     }
+    const active=model.metricsByKey.activeEnergy;
+    assert.match(primary(card(html,'activeEnergy')),new RegExp(`Total registrado no período: ${escapeRegex(numberLabel(active.recordedTotal,'activeEnergy'))} kcal`));
+    assert.match(primary(card(html,'activeEnergy')),/Não é gasto total/);
+    assert.doesNotMatch(primary(card(html,'totalEnergy')),/Total registrado no período/,'active and total expenditure stay distinct');
     assert.deepEqual(f.data,before,'pure renderer leaves supplied records unchanged');
     assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);
     const current=renderHealthDashboard(f.data,f.status,{dashboardMode:'day'},f.today);
     assert.match(current,/hoje parcial/);assert.match(current,/value="2026-10-17"/);assert.doesNotMatch(current,/data-dashboard-period/);
+    assert.equal((current.match(/hoje parcial/g)||[]).length,1,'the shared day/partial context is stated once');
+    assert.deepEqual([...current.matchAll(/data-dashboard-card="([^"]+)"/g)].map(match=>match[1]),METRIC_KEYS,'approved seven-card order is unchanged');
+    for(const key of METRIC_KEYS){
+      const content=primary(card(current,key));
+      assert.doesNotMatch(content,/healthAggregation|healthMetricPeriod|Registro de hoje|O registro deste dia pode estar incompleto/,'daily date/partial copy is not repeated in each card');
+    }
     assert.match(card(current,'water'),/<strong>9\.000<\/strong>/);
     const historical=renderHealthDashboard(f.data,f.status,{dashboardMode:'day',dashboardDate:f.date(1)},f.today);
     assert.match(historical,/dia encerrado; registros podem estar incompletos/);
@@ -101,7 +113,7 @@ export async function runRenderTests(){
       for(const key of METRIC_KEYS){
         const expected=expectedMetric(f,key,d.bounds),content=card(output,key);
         assert.ok(content.includes(`<strong>${numberLabel(expected.value,key)}</strong>`),`${period}/${key}: selected-period value`);
-        assert.ok(content.includes(`${expected.count}/${d.bounds.days} dias com valor elegível`),`${period}/${key}: selected-period coverage`);
+        assert.ok(content.includes(`${expected.count}/${d.bounds.days} dias usados na média`),`${period}/${key}: selected-period coverage`);
         assert.ok(content.includes(dateLabel(d.bounds.start)),`${period}/${key}: selected-period date`);
       }
       assert.ok(panel(output,'training').includes(dateLabel(d.bounds.start)),`${period}: training period`);
@@ -115,8 +127,20 @@ export async function runRenderTests(){
     assert.equal(card(alternative,'protein'),card(html,'protein'),'changing water source does not change protein');
     const old=model.metricsByKey.water.sources.find(item=>item.label==='Synthetic older water').key;
     const older=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{water:old}},f.today),'water');
-    assert.match(older,/<strong>Sem dado<\/strong>/);
-    assert.match(older,new RegExp(`Última data recebida: ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date survives an empty selected period');
+    assert.match(older,/<strong>—<\/strong>/);
+    assert.match(primary(older),new RegExp(`Último valor desta origem: <b>5\\.555 mL</b> · ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date stays visible in an empty selected period');
+    assert.match(primary(older),/data-entry="water"[^>]*>Registrar água/,'an empty current window exposes genuine manual water entry');
+    assert.match(primary(older),/Ver sincronização/,'an empty current window exposes the existing water diagnostic path');
+    assert.equal((older.match(/Último valor desta origem/g)||[]).length,1,'latest-date provenance is not repeated inside the disclosure');
+    const noWaterFixture=makeDashboardFixture(f.today,{sparse});
+    noWaterFixture.data.nutrition=noWaterFixture.data.nutrition.map(row=>({...row,water_ml:null}));
+    noWaterFixture.data.sourceMetrics=noWaterFixture.data.sourceMetrics.filter(row=>row.metric_type!=='dietary_water_ml');
+    const noWater=primary(card(renderHealthDashboard(noWaterFixture.data,noWaterFixture.status,{},noWaterFixture.today),'water'));
+    assert.match(noWater,/data-entry="water"[^>]*>Registrar água/,'manual entry stays reachable when no historical water exists');
+    assert.match(noWater,/data-route="dados"[^>]*>Ver sincronização/,'source diagnostics stay reachable when no historical water exists');
+    const noWaterDay=primary(card(renderHealthDashboard(noWaterFixture.data,noWaterFixture.status,{dashboardMode:'day',dashboardDate:noWaterFixture.date(1)},noWaterFixture.today),'water'));
+    assert.match(noWaterDay,/data-entry="water"[^>]*>Registrar água/,'manual entry stays reachable from an empty day');
+    assert.match(noWaterDay,/data-route="dados"[^>]*>Ver sincronização/,'sync diagnostics stay reachable from an empty day');
     const context=dashboardContext(f.data,f.status,{bounds:model.bounds,today:f.today,mode:model.mode});
     assert.equal(context.training.sessions,sparse?0:3);assert.equal(context.training.recordedDays,sparse?0:2);
     if(!sparse){
@@ -135,7 +159,7 @@ export async function runRenderTests(){
       assert.match(panel(html,'body'),/Última avaliação conhecida · fora do período/);
     }
     const labs=panel(html,'labs');
-    assert.match(labs,/Último resultado conhecido · fora do período/);assert.match(labs,/aproximou da referência/);assert.match(labs,/Referência: 10 a 18/);assert.match(labs,/Última coleta:/);assert.match(labs,/resultados recebidos em 2 coletas/);
+    assert.match(labs,/Último resultado conhecido · fora do período/);assert.match(labs,/aproximou da referência/);assert.match(labs,/Referência: 10 a 18/);assert.match(labs,/Última coleta:/);assert.match(labs,/resultados registrados em 2 coletas/);
     for(const age of [20,60])assert.ok(labs.includes(dateLabel(f.date(age))));
     assert.equal(context.labs.items.find(item=>item.biomarker==='Synthetic B changed reference').comparable,false);
     assert.equal(context.labs.items.find(item=>item.biomarker==='Synthetic C unknown method').comparable,false);
@@ -151,12 +175,12 @@ export async function runRenderTests(){
   const unavailable=Object.fromEntries(Object.keys(empty.status).map(key=>[key,'error']));
   for(const status of [empty.status,unavailable])for(const dashboardPeriod of ['7','all']){
     const html=renderHealthDashboard(empty.data,status,{dashboardPeriod},empty.today);
-    assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7);assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);assert.match(html,/Sem dado/);
+    assert.equal((html.match(/data-dashboard-card=/g)||[]).length,7);assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);assert.match(html,/(?:Sem registro|Ainda não há|Não foi possível|Cobertura indisponível)/);
   }
   const failedFixture=makeDashboardFixture();
   const failedHtml=renderHealthDashboard(failedFixture.data,{...failedFixture.status,metrics:'error',sourceMetrics:'error'}, {},failedFixture.today);
   assert.match(card(failedHtml,'steps'),/(?:falh|não (?:carreg|foi possível)|indisponível)/i,'failed metric reads are labelled distinctly from no observations');
-  assert.match(card(failedHtml,'steps'),/<strong>Sem dado<\/strong>/,'failed sources never show stale recorded values');
+  assert.match(card(failedHtml,'steps'),/<strong>—<\/strong>/,'failed sources never show stale recorded values');
   const emptyHtml=renderHealthDashboard(empty.data,empty.status,{},empty.today);
   assert.doesNotMatch(card(emptyHtml,'steps'),/(?:leitura falhou|falha de leitura)/i,'a successful empty read is not described as a failure');
   const conflictingTraining=makeDashboardFixture();
@@ -169,8 +193,8 @@ export async function runRenderTests(){
   conflictingMetric.data.nutrition=[100,900].map((water_ml,index)=>({source_record_id:`synthetic-conflicting-water-${index}`,nutrition_date:conflictingMetric.date(1),source:'Synthetic conflicting diary',water_ml}));
   conflictingMetric.data.sourceMetrics=[];
   const conflictingMetricHtml=card(renderHealthDashboard(conflictingMetric.data,conflictingMetric.status,{},conflictingMetric.today),'water');
-  assert.match(conflictingMetricHtml,/<strong>Sem dado<\/strong>/);
-  assert.match(conflictingMetricHtml,/(?:conflit|amb[ií]gu|duplicad)/i,'ambiguous daily metric is visibly distinguished from an absent day');
+  assert.match(conflictingMetricHtml,/<strong>—<\/strong>/);
+  assert.match(conflictingMetricHtml,/(?:conflit|amb[ií]gu|duplicad|mais de um valor)/i,'ambiguous daily metric is visibly distinguished from an absent day');
   assert.match(conflictingMetricHtml,/100 mL/,'first ambiguous metric value stays available for review');
   assert.match(conflictingMetricHtml,/900 mL/,'second ambiguous metric value stays available for review');
   // Laboratory displays preserve reported notation and precision. A numeric
@@ -191,13 +215,58 @@ export async function runRenderTests(){
   assert.match(renderedLabs,/>4(?:[.,]0)? u</,'first ambiguous observation is readable');
   assert.match(renderedLabs,/>9(?:[.,]0)? u</,'second ambiguous observation is readable');
   assert.doesNotMatch(renderedLabs,/Diferença registrada/,'ambiguous collection never gets a fabricated delta');
-  const missingEvidence=makeDashboardFixture();const evidenceWarning=panel(renderHealthDashboard(missingEvidence.data,{...missingEvidence.status,workoutEvidence:'error'},{},missingEvidence.today),'training');assert.match(evidenceWarning,/vínculos de telemetria não carregaram/);assert.match(evidenceWarning,/9 exercícios/);assert.match(evidenceWarning,/Registros Polar/);
-  const conflictingEvidence=makeDashboardFixture();conflictingEvidence.data.workoutEvidence=['Synthetic A','Synthetic B'].map(source_name=>({source_record_id:'synthetic-conflicting-evidence',workout_source_record_id:conflictingEvidence.data.workouts[1].source_record_id,workout_date:conflictingEvidence.date(1),source_name,evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}));assert.match(panel(renderHealthDashboard(conflictingEvidence.data,conflictingEvidence.status,{},conflictingEvidence.today),'training'),/vínculos de telemetria conflitantes/);
+  const missingEvidence=makeDashboardFixture();const evidenceWarning=panel(renderHealthDashboard(missingEvidence.data,{...missingEvidence.status,workoutEvidence:'error'},{},missingEvidence.today),'training');assert.match(evidenceWarning,/Não foi possível atualizar as medidas do aparelho/);assert.match(evidenceWarning,/9 exercícios/);assert.match(evidenceWarning,/Registros Polar/);
+  const conflictingEvidence=makeDashboardFixture();conflictingEvidence.data.workoutEvidence=['Synthetic A','Synthetic B'].map(source_name=>({source_record_id:'synthetic-conflicting-evidence',workout_source_record_id:conflictingEvidence.data.workouts[1].source_record_id,workout_date:conflictingEvidence.date(1),source_name,evidence_kind:'telemetry',evidence_status:'confirmed',field_names:['duration_minutes']}));assert.match(panel(renderHealthDashboard(conflictingEvidence.data,conflictingEvidence.status,{},conflictingEvidence.today),'training'),/medidas do aparelho que não puderam ser associadas/);
   const qualifiers=makeDashboardFixture();qualifiers.data.sets.forEach(row=>{row.reps_raw='8+2';row.reps_numeric=8;row.weight=4;row.weight_unit='plate_index';});
   const qualifiedTraining=panel(renderHealthDashboard(qualifiers.data,qualifiers.status,{},qualifiers.today),'training');assert.match(qualifiedTraining,/8\+2 repetições registradas/);assert.match(qualifiedTraining,/índice de placa/);
+  for(const [weight,expected] of [[40,'40 kg'],[4.125,'4,125 kg'],[0.00001,'0,00001 kg']]){
+    const precision=makeDashboardFixture();precision.data.sets.forEach(row=>{row.weight=weight;row.weight_unit='kg';});
+    const text=panel(renderHealthDashboard(precision.data,precision.status,{},precision.today),'training');
+    assert.ok(text.includes(expected),'recorded load retains significant decimal precision');assert.doesNotMatch(text,/40,0000000000 kg/,'no artificial trailing decimal zeros');
+  }
+  const candidateFixture=makeDashboardFixture();candidateFixture.data.sourceMetrics.forEach(row=>{row.canonical_status='candidate';});const candidateHtml=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{},candidateFixture.today);assert.match(candidateHtml,/versão adicional do registro/);assert.doesNotMatch(candidateHtml,/Origem ainda não validada/);
+  const candidateDay=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{dashboardMode:'day'},candidateFixture.today);
+  assert.match(primary(card(candidateDay,'activeEnergy')),/Registro adicional, ainda sem confirmação/,'unconfirmed active energy remains visible without opening details');
+  const missingOriginDay=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{dashboardMode:'day',dashboardSources:{water:'synthetic-missing-origin'}},candidateFixture.today);
+  assert.match(primary(card(missingOriginDay,'water')),/origem escolhida não está disponível; nenhuma outra foi usada/,'an unavailable explicit daily origin never becomes an unexplained blank');
+  const documentary=makeDashboardFixture();documentary.data.goals=[];documentary.data.nutrition=documentary.data.nutrition.filter(row=>row.nutrition_date<documentary.today);documentary.data.sourceMetrics=[];
+  const docDate=documentary.date(3),checksum='a'.repeat(64);
+  documentary.data.waterReferences=[{source_record_id:'synthetic-documentary-water',document_type:'medical_plan',document_date:docDate,source_file:'Synthetic plan.pdf',source:'Synthetic documentary source',checksum,water_reference:{schema_version:1,type:'documented_water_base',base_ml_per_day:3000,source_page:3,documented_on:docDate,source_sha256:checksum,date_basis:'document_update',clinical_start:'not_explicit',exercise_addition:'Synthetic exercise context; not calculated automatically.'}}];
+  const documentaryCard=card(renderHealthDashboard(documentary.data,documentary.status,{dashboardMode:'day'},documentary.today),'water');
+  assert.match(primary(documentaryCard),/Sem informação neste dia/);
+  assert.match(primary(documentaryCard),new RegExp(`Último valor desta origem: <b>1\\.010 mL</b> · ${escapeRegex(dateLabel(documentary.date(1)))}`),'missing water retains its most recent date above details');
+  assert.doesNotMatch(primary(documentaryCard),/Referência documental/,'a documentary reference is secondary context, not a current target or water value');
+  assert.match(documentaryCard,/<details[\s\S]*Referência documental: 3\.000 mL\/dia[\s\S]*Vigência clínica não confirmada/,'documentary amount, date and validity warning stay together in the disclosure');
+  assert.match(primary(card(renderHealthDashboard(makeDashboardFixture().data,documentary.status,{dashboardMode:'day'},documentary.today),'water')),/Meta cadastrada: 2\.400 mL/,'a genuine personal target remains visible');
   const unsafe=makeDashboardFixture();unsafe.data.nutrition.forEach(row=>{row.source='Synthetic <img src=x onerror=alert(1)>';});
   const safe=renderHealthDashboard(unsafe.data,unsafe.status,{},unsafe.today);
   assert.ok(safe.includes('&lt;img'));assert.ok(!safe.includes('<img src=x'));
+  const {periodReadabilityFixture}=await import('./period-readability-fixture.mjs'),{htmlText:visibleHtmlText}=await import('./consumer-language-html.mjs');
+  for(const sparse of [false,true]){
+    const f=periodReadabilityFixture({sparse}),before=structuredClone(f.data),d=healthDashboardModel(f.data,f.status,{},f.today),html=renderHealthDashboard(f.data,f.status,{},f.today);
+    assert.equal((html.match(/class="healthPeriodContext"/g)||[]).length,1,'period calculation context appears once');
+    assert.match(visibleHtmlText(html,{expanded:true}),/médias usam os dias com registro.*conflitantes.*fora da média/s);
+    for(const m of d.metrics){
+      const content=card(html,m.key),top=primary(content);
+      assert.doesNotMatch(top,/healthAggregation|healthMetricPeriod|healthSourceWindow|Hoje parcial/,'period source controls and repeated methodology are secondary');
+      assert.ok(content.includes(sourceDisplayLabel(m.source,m.sources)),'full origin identity remains available in the card disclosure');
+      assert.ok(!top.includes('healthPeriodSource'),'internal source selection does not dominate the card');
+      assert.match(content,/Automática/);assert.match(top,new RegExp(`${m.count}/${m.expectedDays} dias usados na média`));
+      assert.match(content,/<details[\s\S]*data-dashboard-source=/,'the source picker remains in the card disclosure');
+    }
+    assert.match(primary(card(html,'activeEnergy')),/Ainda não confirmado/);
+    assert.match(primary(card(html,'steps')),/Parcial · 1 dia em revisão\. 1 dia divergente/);
+    assert.doesNotMatch(primary(card(html,'steps')),/Resumo parcial|valores fracionados ou inválidos/,'specific steps warning replaces repeated generic/method text');
+    assert.match(card(html,'steps'),/valores fracionados ou inválidos/,'full steps limitation remains available');
+    assert.match(primary(card(html,'water')),/Último valor desta origem/);
+    for(const source of [d.metricsByKey.protein.sources.find(source=>source.label==='Outro diário sintético').key,'synthetic-missing-origin']){
+      const emptyCard=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{protein:source}},f.today),'protein'),visible=visibleHtmlText(emptyCard);
+      assert.match(visible,/Escolhida por você/);assert.match(visible,/origem com registros, não somadas/);assert.match(visible,/Ver fontes e detalhes/);
+      assert.match(emptyCard,/<summary><span class="healthPeriodSourceException">/,'the visible empty-source warning itself is the native disclosure action');
+      assert.match(visible,/Sem valor utilizável|Origem escolhida indisponível; nenhuma outra usada/);
+    }
+    assert.deepEqual(f.data,before,'period presentation never mutates observations');
+  }
   assert.deepEqual(state,stateBefore,'pure renderer never writes shared application state');
   console.log('Health dashboard render: seven exact metrics, all windows, day/partial, source isolation, latest dates, sessions/groups, labs, protocols, empty/error states, escaping and pure inputs passed.');
 }

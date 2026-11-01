@@ -9,35 +9,47 @@ permissions:
 jobs:
   staging-smoke:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
-      - name: Verify promoted root, legacy fallback, v2 identity and deployed bytes
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Verify promoted root, legacy fallback, active production graph and deployed bytes
+        env:
+          LTS_DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           set -euo pipefail
           ROOT='https://lthomesilveira-ui.github.io/lts-health/'
           LEGACY='https://lthomesilveira-ui.github.io/lts-health/legacy.html'
           V2='https://lthomesilveira-ui.github.io/lts-health/v2/'
-          Q="lts_sha=${GITHUB_SHA}&attempt=${GITHUB_RUN_ATTEMPT}"
+          Q="lts_sha=${LTS_DEPLOY_SHA}&attempt=${GITHUB_RUN_ATTEMPT}"
           TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
           fetch(){ local url="$1" out="$2" sep='?'; [[ "$url" == *\?* ]] && sep='&'; curl --retry 5 --retry-delay 3 --retry-all-errors -fsSL "${url}${sep}${Q}" -o "$out"; }
           req(){ grep -Fq -- "$2" "$3" || { echo "::error::$1 missing"; exit 1; }; }
-          same(){ cmp -s "$2" "$3" || { echo "::error::$1 differs from checked-out main"; exit 1; }; }
+          same(){ cmp -s "$2" "$3" || { echo "::error::$1 differs from the checked-out deployment commit"; exit 1; }; }
           fetch "$ROOT" "$TMP/root.html"; fetch "$LEGACY" "$TMP/legacy.html"; fetch "$V2" "$TMP/v2.html"
           req root-promotion './v2/' "$TMP/root.html"
           req root-loading-copy 'Abrindo LTS Health' "$TMP/root.html"
           req legacy-fallback 'canonical v16' "$TMP/legacy.html"
           same root "$TMP/root.html" index.html
           same legacy "$TMP/legacy.html" legacy.html
+          same v2-entry "$TMP/v2.html" v2/index.html
+          node v2/production-integration-contract.mjs
+          node v2/deployed-runtime-assets.mjs
+          req v2-current-dashboard-css './health-dashboard.css' "$TMP/v2.html"
           req v2-title '<title>LTS Health</title>' "$TMP/v2.html"
           req v2-cockpit-css './cockpit.css' "$TMP/v2.html"
           req v2-dashboard-css './today.css' "$TMP/v2.html"
           req v2-analysis-css './analysis.css' "$TMP/v2.html"
           req v2-bio-css './bio.css' "$TMP/v2.html"
           for f in src/main.js src/data-layer.js src/core.js src/source-status.js src/data-screen.js src/today-screen.js src/integrated-analysis.js src/analysis-screen.js src/bio-screen.js cockpit.css today.css analysis.css bio.css product-finish.css dashboard-pixel-parity.css dashboard-final-polish.css ux-coherence.css src/dashboard-reference-runtime.js; do fetch "$V2/$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/$(basename "$f")-$(echo "$f"|tr '/' '_')" "v2/$f"; done
-          req dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
+          node v2/deployed-runtime-assets.mjs --list > "$TMP/active-runtime.txt"
+          while IFS=$'\t' read -r f request; do fetch "$V2/$request" "$TMP/current-$(echo "$f"|tr '/' '_')"; same "$f" "$TMP/current-$(echo "$f"|tr '/' '_')" "v2/$f"; done < "$TMP/active-runtime.txt"
+          req current-dashboard-owner 'data-health-dashboard' "$TMP/current-src_health-dashboard.js"
+          req current-dashboard-insights 'O que mudou nos registros' "$TMP/current-src_health-dashboard.js"
+          req current-source-boundary 'Origens separadas não são somadas' "$TMP/current-src_health-dashboard.js"
+          # Retained byte/copy checks below describe supplemental legacy fixture modules.
+          req legacy-dashboard-owner 'buildIntegratedAnalysis' "$TMP/today-screen.js-src_today-screen.js"
           req dashboard-copy 'Visão geral da sua saúde' "$TMP/today-screen.js-src_today-screen.js"
           req dashboard-insight 'Resumo da janela' "$TMP/today-screen.js-src_today-screen.js"
           req dashboard-change 'O que mudou' "$TMP/today-screen.js-src_today-screen.js"
@@ -53,7 +65,11 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install chromium
-      - name: Verify public root enters the approved cockpit and capture visual evidence
+      - name: Verify clean public entry stays signed out without accessing health data
+        env:
+          LTS_DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: node v2/deployed-public-auth-smoke.mjs
+      - name: Supplemental legacy fixture root routing and visual regression
         run: |
           mkdir -p artifacts
           node <<'NODE'
@@ -76,7 +92,7 @@ jobs:
               await page.waitForFunction(()=>document.querySelector('.cockpitWelcome h1')?.textContent?.includes('Visão geral da sua saúde'));
               await page.waitForTimeout(250);
               const title=await dashboard.locator('h1').first().textContent();
-              if(!String(title||'').includes('Visão geral da sua saúde')) throw new Error(`approved cockpit title missing: ${title}`);
+              if(!String(title||'').includes('Visão geral da sua saúde')) throw new Error(`legacy fixture cockpit title missing: ${title}`);
               const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
               if(overflow) throw new Error(`horizontal overflow at ${item.viewport.width}px`);
               if(errors.length) throw new Error(`${item.label}: browser errors ${errors.join(' | ')}`);
@@ -86,14 +102,18 @@ jobs:
             await browser.close();
           })();
           NODE
-      - name: Upload deployed Dashboard visual evidence
+      - name: Upload public signed-out and supplemental fixture evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deployed-dashboard-visual-evidence
-          path: artifacts/deployed-public-dashboard-*.png
+          path: |
+            artifacts/deployed-public-dashboard-*.png
+            artifacts/deployed-public-login-*.png
+            artifacts/public-entry-diagnostic-*.json
           if-no-files-found: error
           retention-days: 90
-      - name: Exercise deployed v2 desktop and mobile
+      - name: Supplemental deployed legacy fixture route regressions
         env:
           LTS_HEALTH_BASE_URL: https://lthomesilveira-ui.github.io/lts-health/v2/?fixture=1
         run: |

@@ -94,18 +94,25 @@ async function assertMetrics(page,fixture,ui={}){
         assert.ok(m.value===expected.value||Math.abs(m.value-expected.value)<1e-10,`${key}: independently computed arithmetic mean`);
         assert.equal(m.count,expected.count);
       }
-      assert.equal(await card.locator('.healthCoverage').innerText(),`${m.count}/${m.expectedDays} dias com valor elegível`);
-      assert.equal(await card.locator('.healthMetricPeriod').innerText(),`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`);
-    }else assert.equal(await card.locator('.healthMetricPeriod').innerText(),dateLabel(d.date));
+      assert.equal(await card.locator('.healthCoverage').innerText(),`${m.count}/${m.expectedDays} dias usados na média`);
+      assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'period window is shared above the cards');
+      assert.ok((await page.locator('.healthWindow').innerText()).includes(`${dateLabel(d.bounds.start)} a ${dateLabel(d.bounds.end)}`),'shared period window remains exact');
+      if(m.source)assert.ok((await card.locator('.healthPeriodSource').textContent()).includes(m.source.label),'full synthetic origin remains visible');
+    }else{
+      assert.equal(await card.locator(':scope > .healthMetricPeriod').count(),0,'daily date is shared above the seven cards');
+      assert.equal(await card.locator(':scope > .healthAggregation').count(),0,'daily partial copy is not repeated in the cards');
+      assert.ok((await page.locator('.healthWindow').innerText()).includes(dateLabel(d.date)),'selected daily date remains visible');
+    }
   }
   return d;
 }
 async function returnHome(page,width){
   const nav=width<=840?'#mobileNav':'#primaryNav';await page.locator(`${nav} [data-route="hoje"]`).click();
   await page.waitForURL('**/#hoje');await stableHome(page);
+  await openDetails(page,'[data-disclosure="cockpit-details"]');
 }
 async function visitAndReturn(page,width,route,from,expected){
-  if(from)await from.click();
+  if(from){await openDetails(page,'[data-disclosure="cockpit-details"]');await from.click();}
   else if(width<=840){await page.locator('#mobileNav [data-route="mais"]').click();await page.locator(`#moreSheet [data-route="${route}"]`).click();}
   else await page.locator(`#primaryNav [data-route="${route}"]`).click();
   await page.waitForURL(`**/#${route}`);
@@ -140,8 +147,9 @@ try{
       const initial=await assertMetrics(page,fixture);
       assert.deepEqual(await page.locator('[data-study-domain]').evaluateAll(nodes=>nodes.map(node=>node.dataset.studyDomain)),['training','labs','protocols','body']);
       await quality(page,`${name}/default`);
-      if(width<=840){assert.deepEqual(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.map(node=>node.dataset.route)),['hoje','treinos','analise','mais']);assert.ok(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.every(node=>node.getBoundingClientRect().height>=44)));}
+      if(width<=840){assert.deepEqual(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.map(node=>node.dataset.route)),['hoje','treinos','evolucao','mais']);assert.ok(await page.locator('#mobileNav [data-route]').evaluateAll(nodes=>nodes.every(node=>node.getBoundingClientRect().height>=44)));}
       await capture(page,`${name}-period-7-top`);
+      await openDetails(page,'[data-disclosure="cockpit-details"]');
       for(const [section,selector] of [['metrics','.healthMetricGrid'],['guidance','.healthGuidance'],['training','[data-study-domain="training"]'],['labs','[data-study-domain="labs"]'],['protocols','[data-study-domain="protocols"]'],['body','[data-study-domain="body"]']])await capture(page,`${name}-${section}`,selector);
       const training=page.locator('[data-study-domain="training"]'),laboratory=page.locator('[data-study-domain="labs"]'),protocols=page.locator('[data-study-domain="protocols"]');
       assert.deepEqual(await training.locator('.healthTrainingCounts strong').evaluateAll(nodes=>nodes.map(node=>Number(node.firstChild.textContent.trim()))),sparse?[0,0]:[3,2]);
@@ -164,8 +172,8 @@ try{
       const sourceControl=page.locator('[data-dashboard-source="water"]');
       const oldSource=initial.metricsByKey.water.sources.find(source=>source.label==='Synthetic older water').key;
       await sourceControl.focus();await sourceControl.selectOption(oldSource);await stableHome(page);await focusIs(page,'dashboard-source-water');
-      assert.equal(await page.locator('[data-dashboard-card="water"] .healthMetricValue strong').innerText(),'Sem dado');
-      assert.ok((await page.locator('[data-dashboard-card="water"]').innerText()).includes(`Última data recebida: ${dateLabel(fixture.date(40))}`));
+      assert.equal(await page.locator('[data-dashboard-card="water"] .healthMetricValue strong').innerText(),'—');
+      assert.ok((await page.locator('[data-dashboard-card="water"]').innerText()).includes(`Último valor desta origem: 5.555 mL · ${dateLabel(fixture.date(40))}`));
       assert.equal(await page.locator('[data-disclosure="dashboard-metric-water"]').evaluate(el=>el.open),true,'open source disclosure is retained');
       const sourceB=initial.metricsByKey.water.sources.find(source=>source.label==='Synthetic B food').key;
       await sourceControl.focus();await sourceControl.selectOption(sourceB);await stableHome(page);await focusIs(page,'dashboard-source-water');

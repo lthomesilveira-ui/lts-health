@@ -1,3 +1,6 @@
+// Supplemental legacy renderer regression, not the current production Home gate.
+// Current Home arithmetic/source/failure/responsive checks live in home-reference-period-browser.mjs;
+// current body interval and exact-record checks live in promoted model tests and dashboard-changes-browser.mjs.
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {mkdirSync} from 'node:fs';
@@ -12,7 +15,7 @@ try{
  const dates=await page.evaluate(async()=>{
   const {state}=await import('./src/core.js');
   const {localHealthDay}=await import('./src/health-context.js');
-  const {renderProductHomeReference}=await import('./src/home-reference.js');
+  const {renderReferenceHome}=await import('./src/home-reference-experience.js');const renderProductHomeReference=()=>renderReferenceHome(state.data,state.domainStatus,state.ui.homePeriod,state.ui);
   const today=localHealthDay(),date=n=>{const d=new Date(`${today}T12:00:00Z`);d.setUTCDate(d.getUTCDate()-n);return d.toISOString().slice(0,10);};
   state.ui.homePeriod='30';state.route='hoje';
   state.domainStatus=Object.fromEntries(['body','segmental','workouts','exercises','sets','nutrition','labs','metrics','sourceMetrics','treatments','goals','meals'].map(k=>[k,'ready']));
@@ -29,27 +32,29 @@ try{
   return{latest:date(2),old:date(60)};
  });
  assert.equal(await page.locator('.refSignal').count(),5);assert.equal(await page.locator('.refPanels>.refPanel:not(.mobileWorkout)').count(),6);
- assert.match(await page.locator('.refReading').innerText(),/Gordura −1,0 kg · músculo \+1,0 kg nos registros/,'observed deltas belong to selected period');
+ assert.match(await page.locator('.refReading').innerText(),/Gordura estimada −1,0 kg · Músculo estimado \+1,0 kg/,'observed deltas belong to selected period');
+ assert.match(await page.locator('.refReading').innerText(),/Condições das avaliações não confirmadas/,'numeric differences are not confirmation of tissue change');
  assert.match(await page.locator('.refLegend').innerText(),/16(?:,0)?.*15(?:,0)?.*30(?:,0)?.*31(?:,0)?/s,'both endpoint values remain accessible in the chart legend');
  assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\.050 kcal/,'sparse mean is explicitly an observed mean');
- assert.match(await page.locator('.refPanel.nutrition').innerText(),/2\/29 dias encerrados/);
- assert.match(await page.locator('.refPanel.labs').innerText(),/Nenhuma coleta nesta janela/);
+ await page.locator('.refPanel.nutrition details summary').click();
+ assert.match(await page.locator('.refPanel.nutrition').innerText(),/Dias encerrados com alimentação: 2\/29/);
+ assert.match(await page.locator('.refPanel.labs').innerText(),/Sem resultado numérico nesta janela/);
  assert.doesNotMatch(await page.locator('.refPanels').innerText(),/999|9\.000/);
  assert.equal(await page.locator('.refPanel.water .refPlot').count(),0,'no invented hydration chart');
- await page.evaluate(async selectedDate=>{const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.ui.overviewBodyDate=selectedDate;document.querySelector('#screenHost').innerHTML=renderProductHomeReference();},dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);
+ await page.evaluate(async selectedDate=>{const {state}=await import('./src/core.js');const {renderReferenceHome}=await import('./src/home-reference-experience.js');const renderProductHomeReference=()=>renderReferenceHome(state.data,state.domainStatus,state.ui.homePeriod,state.ui);state.ui.overviewBodyDate=selectedDate;document.querySelector('#screenHost').innerHTML=renderProductHomeReference();},dates.latest);assert.equal(await page.locator('#overview-body-date').inputValue(),dates.latest);
  for(const viewport of [{width:390,height:844},{width:1440,height:1000}]){
   await page.setViewportSize(viewport);
-  await page.evaluate(async()=>{const {renderProductHomeReference}=await import('./src/home-reference.js');document.querySelector('#screenHost').innerHTML=renderProductHomeReference();document.querySelector('#screenHost').scrollTop=0;});
+  await page.evaluate(async()=>{const {state}=await import('./src/core.js');const {renderReferenceHome}=await import('./src/home-reference-experience.js');const renderProductHomeReference=()=>renderReferenceHome(state.data,state.domainStatus,state.ui.homePeriod,state.ui);document.querySelector('#screenHost').innerHTML=renderProductHomeReference();document.querySelector('#screenHost').scrollTop=0;});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+3),'no horizontal overflow');
   const sizes=await page.locator('.refSignal small,.refFootnote').evaluateAll(es=>es.map(e=>parseFloat(getComputedStyle(e).fontSize)));
   assert.ok(sizes.every(n=>n>=11),'readable evidence and source text');
   await page.screenshot({path:`${evidenceDir}/${viewport.width<500?'mobile':'desktop'}-home.png`,fullPage:true});
  }
  await page.evaluate(async()=>{
-  const {state}=await import('./src/core.js');const {renderProductHomeReference}=await import('./src/home-reference.js');state.domainStatus.nutrition='error';document.querySelector('#screenHost').innerHTML=renderProductHomeReference();
+  const {state}=await import('./src/core.js');const {renderReferenceHome}=await import('./src/home-reference-experience.js');const renderProductHomeReference=()=>renderReferenceHome(state.data,state.domainStatus,state.ui.homePeriod,state.ui);state.domainStatus.nutrition='error';document.querySelector('#screenHost').innerHTML=renderProductHomeReference();
  });
  assert.match(await page.locator('.refSignal.nutrition').innerText(),/Dados não carregaram|Sem média disponível/);
  assert.doesNotMatch(await page.locator('.refPanel.nutrition').innerText(),/150 g|2\.050/);
  assert.equal(await page.locator('.refPanel.nutrition rect').count(),0,'failed read cannot retain stale food points');
- console.log('Home integrity: shared calendar, compatible tissue deltas, latest actual nutrition, bounded labs, sparse water, read failures and responsive evidence passed.');
+ console.log('Legacy renderer integrity: shared calendar, compatible tissue deltas, latest actual nutrition, bounded labs, sparse water, read failures and responsive evidence passed.');
 }finally{await browser.close();}

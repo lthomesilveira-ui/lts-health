@@ -19,8 +19,8 @@ const m=usefulReports(data,status,ui,today),r=integratedReview(data,status,m.cur
 assert.match(lines,/BASE DOCUMENTAL DE ÁGUA/);assert.match(lines,/Synthetic plan.pdf/);assert.match(lines,/Não aplicada como meta clínica/);
 const personal={...data,goals:[{effective_from:'2025-03-14',water_ml:2500,notes:'User supplied target'}]},both=waterReferenceContext(personal,status,date);assert.equal(both.selected.dateBasis,'personal_target');assert.equal(both.documented.value,3000,'personal target does not erase documentary context');
 assert.deepEqual(data,before);console.log('Documentary water consumers: separate document domain, exact provenance, no clinical start or retroactivity, independent failures, personal target coexistence and consultation context passed.');
-const emptyData={...data,nutrition:[]},emptyCockpit=homeCockpitModel(emptyData,status,'30',ui,today);assert.match(waterPanel(emptyCockpit),/Base documentada/);assert.doesNotMatch(waterPanel(emptyCockpit),/diferença do total recebido/);assert.match(consultationLines(emptyCockpit.r,emptyCockpit.m,emptyCockpit.evo).join('\n'),/Sem total recebido nesta janela/);
-const oldData={...data,nutrition:[{...data.nutrition[0],nutrition_date:'2025-03-12'}]},oldCockpit=homeCockpitModel(oldData,status,'30',ui,today);assert.match(waterPanel(oldCockpit),/Base documentada/);assert.doesNotMatch(waterPanel(oldCockpit),/diferença do total recebido/,'later documentary reference is not numerically applied to earlier intake');
+const emptyData={...data,nutrition:[]},emptyCockpit=homeCockpitModel(emptyData,status,'30',ui,today);assert.match(waterPanel(emptyCockpit),/Base documentada/);assert.doesNotMatch(waterPanel(emptyCockpit),/diferença do consumo registrado/);assert.match(consultationLines(emptyCockpit.r,emptyCockpit.m,emptyCockpit.evo).join('\n'),/Sem total registrado nesta janela/);
+const oldData={...data,nutrition:[{...data.nutrition[0],nutrition_date:'2025-03-12'}]},oldCockpit=homeCockpitModel(oldData,status,'30',ui,today);assert.match(waterPanel(oldCockpit),/Base documentada/);assert.doesNotMatch(waterPanel(oldCockpit),/diferença do consumo registrado/,'later documentary reference is not numerically applied to earlier intake');
 console.log('Documentary context remains visible without eligible intake; no invented zero or retroactive difference.');
 
 const legacyDocumentaryGoal={effective_from:'2025-03-13',water_ml:9900,notes:JSON.stringify({type:'documented_water_base',source:'Synthetic legacy record.pdf',source_page:3,documented_on:'2025-03-13',date_basis:'document_update',clinical_start:'not_explicit'})};
@@ -34,7 +34,7 @@ console.log('Legacy documentary goals cannot bypass the independent document loa
 const personalWithoutIntake={...personal,nutrition:[]},personalEmptyCockpit=homeCockpitModel(personalWithoutIntake,status,'30',ui,today);
 assert.doesNotThrow(()=>waterPanel(personalEmptyCockpit),'personal goal with no received intake must not dereference missing last value');
 assert.match(waterPanel(personalEmptyCockpit),/Meta informada para essa data/);
-assert.doesNotMatch(waterPanel(personalEmptyCockpit),/diferença registrada|diferença do total recebido/,'no intake means no numeric difference, for either reference kind');
+assert.doesNotMatch(waterPanel(personalEmptyCockpit),/diferença registrada|diferença do consumo registrado/,'no intake means no numeric difference, for either reference kind');
 const failedWaterCockpit=homeCockpitModel(personalWithoutIntake,{...status,nutrition:'error',sourceMetrics:'error'},'30',ui,today);
 assert.doesNotThrow(()=>waterPanel(failedWaterCockpit),'failure presentation cannot crash because a personal goal exists');
 console.log('Personal references without intake or with failed water sources remain safe and do not invent differences.');

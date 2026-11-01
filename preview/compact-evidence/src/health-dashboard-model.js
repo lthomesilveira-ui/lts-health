@@ -1,11 +1,14 @@
+import {dailyCoverageAudit} from './health-data-quality.js';
 import {homePeriodSnapshot} from './home-period-model.js';
 import {nutritionSourceReview} from './nutrition-source-review.js';
+import {stepCountReview,stepEvidence} from './steps-evidence.js';
 
 // Pure presentation model. No ingestion, database, browser or global UI state.
 const DAY=86400000;
 const norm=value=>String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 const scalar=value=>value==null||!['number','string'].includes(typeof value)||String(value).trim()===''||!Number.isFinite(Number(value))||Number(value)<0?null:Number(value);
 const mean=values=>values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null;
+const sum=values=>values.reduce((total,value)=>total+value,0);
 const dayOf=value=>{
   const text=String(value??'');
   if(!/^\d{4}-\d{2}-\d{2}(?:$|T|\s)/.test(text))return null;
@@ -29,6 +32,14 @@ const definitions=Object.freeze([
   {key:'steps',label:'Passos',unit:'passos',domains:['metrics','sourceMetrics'],types:['steps','step_count'],units:['count','steps','passos']},
   {key:'sleep',label:'Sono',unit:'h',domains:['metrics','sourceMetrics'],types:['sleep_duration_h'],units:['h'],maximum:24}
 ]);
+// Calendar-only nutrients reuse the same origin, gap and comparison policy.
+// They do not add cards to the approved seven-metric Home.
+const nutritionDefinitions=Object.freeze([
+  {key:'carbs',label:'Carboidratos',unit:'g',domains:['nutrition','sourceMetrics'],field:'carbs_g',types:['dietary_carbs_g','dietary_carbohydrates_g'],units:['g']},
+  {key:'fat',label:'Gorduras',unit:'g',domains:['nutrition','sourceMetrics'],field:'fat_g',types:['dietary_fat_g'],units:['g']},
+  {key:'fiber',label:'Fibras',unit:'g',domains:['nutrition','sourceMetrics'],field:'fiber_g',types:['dietary_fiber_g'],units:['g']}
+]);
+const nutritionKeys=['protein','energy','carbs','fat','fiber'];
 export const healthDashboardComparisonRule=Object.freeze({
   minimumDays:5,minimumCoverage:.7,matchingPositions:true,
   description:'Médias observadas da mesma variável, origem e unidade, com valores elegíveis nas mesmas posições relativas das duas janelas, ao menos 5 dias e 70% de cobertura em cada janela. Hoje, dias sabidamente parciais e duplicatas ambíguas são excluídos. Comparação descritiva; não comprova diário completo.'
@@ -47,6 +58,22 @@ function allDates(data,status,today){
  * anniversary of today; preceding windows have equal actual day counts. */
 export function healthDashboardCalendar(data={},status={},ui={},today=todayInSaoPaulo()){
   today=dayOf(today);if(!today)throw new RangeError('today must be a valid local calendar date');
+  // Calendar reports supply their own bounded, explicit calendar. Recompute
+  // all derived counts; caller-provided coverage or flags are never trusted.
+  // This branch is opt-in and leaves every existing dashboard window unchanged.
+  if(ui.dashboardCalendar!==undefined){
+    const explicit=ui.dashboardCalendar;
+    const validate=(value,name)=>{
+      const start=typeof value?.start==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.start)?dayOf(value.start):null;
+      const end=typeof value?.end==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.end)?dayOf(value.end):null;
+      if(!start||!end||start>end||end>today)throw new RangeError(`Invalid explicit ${name} calendar bounds`);
+      return boundsFor(start,end,today);
+    };
+    const bounds=validate(explicit?.bounds,'current');
+    const previousBounds=explicit.previousBounds==null?null:validate(explicit.previousBounds,'previous');
+    if(previousBounds&&(previousBounds.end>=bounds.start||previousBounds.closedDays!==bounds.closedDays))throw new RangeError('Explicit comparison windows must be disjoint and have equal closed day counts');
+    return {mode:'period',period:'calendar',date:today,today,emptyHistory:false,bounds,previousBounds,periodBounds:bounds,periodPreviousBounds:previousBounds};
+  }
   const mode=ui.dashboardMode==='day'?'day':'period';
   const period=['7','30','60','90','6m','1y','all'].includes(String(ui.dashboardPeriod))?String(ui.dashboardPeriod):'7';
   const requestedDate=dayOf(ui.dashboardDate),date=requestedDate&&requestedDate<=today?requestedDate:today;
@@ -78,15 +105,17 @@ function observationsFor(definition,data,status,today){
       const unit=domain==='nutrition'?definition.units[0]:norm(row.unit);
       if(!definition.units.includes(unit)){invalidRows++;continue;}
       const raw=domain==='nutrition'?row[definition.field]:row.value;
-      let value=scalar(raw);if(definition.maximum!=null&&value>definition.maximum)value=null;
+      const steps=definition.key==='steps'?stepCountReview(raw):null;
+      let value=steps?steps.value:scalar(raw);if(definition.maximum!=null&&value>definition.maximum)value=null;
       if(raw!=null&&value==null)invalidRows++;
-      const review=domain==='sourceMetrics'&&['protein','energy'].includes(definition.key)?nutritionSourceReview(row):null;
+      const review=domain==='sourceMetrics'&&nutritionKeys.includes(definition.key)?nutritionSourceReview(row):null;
       const family=row.source_family||null;
       const key=domain==='nutrition'?JSON.stringify(['nutrition',norm(label),'canonical',...(definition.key==='water'?['ml']:[])]):
-        ['protein','energy'].includes(definition.key)?JSON.stringify([domain,norm(family),norm(label),statusName,...(review?.verified?[review.sourceHash]:[])]):
+        nutritionKeys.includes(definition.key)?JSON.stringify([domain,norm(family),norm(label),statusName,...(review?.verified?[review.sourceHash]:[])]):
           JSON.stringify([domain,norm(family),norm(label),statusName,unit]);
       const knownPartial=partialFlag(row)||Boolean(review?.partial);
       observations.push({date,value,key,label,domain,status:statusName,unit,displayUnit:definition.unit,sourceFamily:family,
+        hasReceivedValue:raw!=null&&!(typeof raw==='string'&&!raw.trim()),receivedValue:steps?.receivedValue??value,receivedRaw:steps?.receivedRaw??value,stepReviewReason:steps?.reason||null,receivedAt:row.updated_at||null,
         unresolvedOverlap:definition.key==='steps'&&label.includes('|'),partial:knownPartial||date===today,knownPartial,excludeFromClosedMeans:knownPartial||Boolean(review?.excludeFromClosedMeans),
         reviewVerified:Boolean(review?.verified),reviewInvalid:review?.state==='review_invalid',exportedAt:review?.exportedAt||null});
     }
@@ -107,35 +136,39 @@ function sourceCatalog(observations,today){
       const knownPartial=list.some(row=>row.knownPartial),reviewInvalid=list.some(row=>row.reviewInvalid);
       // Preserve every received observation for inspection, including equal or
       // conflicting duplicates. A withheld aggregate never destroys evidence.
-      const observations=list.map(row=>({date:row.date,value:row.value,source:key,label:row.label,sourceLabel:row.label,unit:row.unit,displayUnit:row.displayUnit,
+      const observations=list.map(row=>({date:row.date,value:row.value,hasReceivedValue:row.hasReceivedValue,receivedValue:row.receivedValue,receivedRaw:row.receivedRaw,stepReviewReason:row.stepReviewReason,receivedAt:row.receivedAt,source:key,label:row.label,sourceLabel:row.label,unit:row.unit,displayUnit:row.displayUnit,
         sourceStatus:row.status,sourceFamily:row.sourceFamily,partial:row.partial,knownPartial:row.knownPartial,ambiguous,reviewInvalid:row.reviewInvalid,
         eligible:!ambiguous&&row.value!=null&&row.date<today&&!row.excludeFromClosedMeans}));
-      return {date,value,rawValue,rawValues:observations.map(row=>row.value),observations,unresolvedOverlap,unit:first.unit,displayUnit:first.displayUnit,source:key,sourceLabel:first.label,sourceStatus:first.status,sourceFamily:first.sourceFamily,
+      return {date,value,rawValue,hasReceivedValue:list.some(row=>row.hasReceivedValue),rawValues:observations.map(row=>row.value),observations,unresolvedOverlap,unit:first.unit,displayUnit:first.displayUnit,source:key,sourceLabel:first.label,sourceStatus:first.status,sourceFamily:first.sourceFamily,
         cohort:key,context:first.label,open:date===today,partial:knownPartial||date===today,knownPartial,ambiguous,duplicateCount:ambiguous?list.length:0,extraDuplicateCount:ambiguous?list.length-1:0,
+        stepReviewReason:list.find(row=>row.stepReviewReason)?.stepReviewReason||null,receivedAt:list.find(row=>row.receivedAt)?.receivedAt||null,
         reviewInvalid,reviewVerified:list.every(row=>row.reviewVerified),exportedAt:list.find(row=>row.exportedAt)?.exportedAt||null,
         excludeFromClosedMeans:list.some(row=>row.excludeFromClosedMeans),eligible:value!=null&&date<today&&!list.some(row=>row.excludeFromClosedMeans)};
     }).sort((a,b)=>a.date.localeCompare(b.date));
     return {key,label:first.label,domain:first.domain,status:first.status,unit:first.unit,displayUnit:first.displayUnit,sourceFamily:first.sourceFamily,rows,
       latest:rows.filter(row=>row.value!=null).at(-1)||null,lastDate:rows.filter(row=>row.value!=null).at(-1)?.date||null,lastReceivedDate:rows.at(-1)?.date||null,
-      lastReportedDate:rows.filter(row=>row.rawValue!=null).at(-1)?.date||null,unresolvedOverlap:rows.some(row=>row.unresolvedOverlap)};
+      lastReportedDate:rows.filter(row=>row.rawValue!=null||row.stepReviewReason&&row.observations.some(observation=>observation.receivedValue!=null)).at(-1)?.date||null,unresolvedOverlap:rows.some(row=>row.unresolvedOverlap)};
   }).sort((a,b)=>a.key.localeCompare(b.key));
 }
 function requestedSource(definition,ui){
-  const requested=ui.dashboardSources?.[definition.key];if(requested)return typeof requested==='object'?requested.key:requested;
-  if(['protein','energy'].includes(definition.key))return ui.homeNutritionSource||ui.reportNutritionSource||null;
+  const requested=ui.dashboardSources?.[definition.key];
+  if(Object.hasOwn(ui.dashboardSources||{},definition.key))return typeof requested==='object'?requested?.key||null:requested||null;
+  if(nutritionKeys.includes(definition.key))return ui.homeNutritionSource||ui.reportNutritionSource||null;
   if(definition.key==='water')return ui.homeWaterSource||ui.reviewWaterSource||null;
   if(definition.key==='sleep')return ui.homeSleepSource||ui.reviewSleepSource||null;
   return null;
 }
-function selectSource(sources,requested){
+function selectSource(sources,requested,bounds,mode){
   if(requested){
     const exact=sources.find(source=>source.key===requested);if(exact)return exact;
     const labelMatches=sources.filter(source=>norm(source.label)===norm(requested));return labelMatches.length===1?labelMatches[0]:null;
   }
-  // Stable over all loaded history, not the selected interval. Prefer the most
-  // recently observed origin, retaining candidate/held status. Never pool devices.
+  // Automatic selection is local to the displayed window. Explicit choices
+  // never fall back. Compare/average one origin only; never stitch histories.
   const rank={canonical:0,candidate:1,held:2};
-  return sources.slice().sort((a,b)=>(b.lastReportedDate||'').localeCompare(a.lastReportedDate||'')||rank[a.status]-rank[b.status]||b.rows.filter(row=>row.eligible).length-a.rows.filter(row=>row.eligible).length||a.key.localeCompare(b.key))[0]||null;
+  const coverage=source=>source.rows.filter(row=>inside(row.date,bounds)&&(mode==='day'?row.value!=null:row.eligible)).length;
+  const observed=source=>source.rows.filter(row=>inside(row.date,bounds)&&(row.value!=null||row.observations?.some(item=>item.receivedValue!=null||item.receivedRaw!=null))).length;
+  return sources.slice().sort((a,b)=>coverage(b)-coverage(a)||observed(b)-observed(a)||(b.lastReportedDate||'').localeCompare(a.lastReportedDate||'')||rank[a.status]-rank[b.status]||a.key.localeCompare(b.key))[0]||null;
 }
 function pointsFor(source,bounds,today){
   const byDate=new Map((source?.rows||[]).map(row=>[row.date,row]));
@@ -149,7 +182,7 @@ function duplicateStats(points){
 function availabilityFor(definition,status,count,points){
   const available=definition.domains.filter(domain=>ready(status,domain));
   if(!available.length)return definition.domains.some(domain=>status?.[domain]==='error')?'error':'unavailable';
-  if(available.length<definition.domains.length||points.some(point=>point.knownPartial||point.ambiguous||point.reviewInvalid||point.unresolvedOverlap))return 'partial';
+  if(available.length<definition.domains.length||points.some(point=>point.knownPartial||point.ambiguous||point.reviewInvalid||point.stepReviewReason||point.unresolvedOverlap))return 'partial';
   return count?'ready':'empty';
 }
 function compare(source,points,previousBounds,bounds,status,definition,today,mode){
@@ -167,22 +200,36 @@ function compare(source,points,previousBounds,bounds,status,definition,today,mod
     currentBounds:bounds,previousBounds,rule:healthDashboardComparisonRule};
 }
 function makeMetric(definition,catalog,status,ui,calendar,bounds=calendar.bounds,mode=calendar.mode){
-  const {today}=calendar,{sources,invalidRows,unknownRows}=catalog,requested=requestedSource(definition,ui),source=selectSource(sources,requested);
+  const {today}=calendar,{sources,invalidRows,unknownRows}=catalog,requested=requestedSource(definition,ui),source=selectSource(sources,requested,bounds,mode);
   const points=pointsFor(source,bounds,today),eligible=points.filter(point=>point.eligible),observed=points.filter(point=>point.value!=null);
   const dayPoint=mode==='day'?points[0]:null,value=mode==='day'?dayPoint?.value??null:mean(eligible.map(point=>point.value));
+  // A period total is useful for additive activity such as active energy, but
+  // it is never a substitute for explicit total energy expenditure. Sum only
+  // eligible observations from the one selected origin; gaps stay gaps.
+  const recordedTotal=mode==='day'?value:eligible.length?sum(eligible.map(point=>point.value)):null;
+  // A nutrition envelope can arrive without this metric. Keep receipt dates
+  // separate from actual values, and never present a historical value as today.
+  const latestRecorded=source?.rows.filter(row=>row.value!=null&&row.date<=bounds.end).at(-1)||null;
+  const lastMetricDate=source?.rows.filter(row=>row.date<=bounds.end&&row.observations.some(item=>item.receivedValue!=null||item.receivedRaw!=null)).at(-1)?.date||null;
   const count=mode==='day'?(value!=null?1:0):eligible.length,expectedDays=mode==='day'?1:bounds.closedDays;
   const todayPoint=source?.rows.find(row=>row.date===today)||null;
-  return {key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,aggregation:mode==='day'?'recorded_day':'observed_mean',
+  const metric={key:definition.key,label:definition.label,unit:definition.unit,value,recordedTotal,count,expectedDays,
+    latestRecorded:latestRecorded?{date:latestRecorded.date,value:latestRecorded.value,receivedAt:latestRecorded.receivedAt,sourceLabel:source.label,partial:latestRecorded.partial}:null,lastMetricDate,
+    stepEvidence:definition.key==='steps'?stepEvidence(sources,bounds,today):null,aggregation:mode==='day'?'recorded_day':'observed_mean',
     source:source?{key:source.key,label:source.label,domain:source.domain,status:source.status,unit:source.unit,displayUnit:source.displayUnit,sourceFamily:source.sourceFamily}:null,
-    sources:sources.map(item=>{const ps=pointsFor(item,bounds,today),good=ps.filter(point=>point.eligible);return {key:item.key,label:item.label,domain:item.domain,status:item.status,unit:item.unit,displayUnit:item.displayUnit,sourceFamily:item.sourceFamily,count:good.length,mean:mean(good.map(point=>point.value)),lastDate:item.lastDate,lastReceivedDate:item.lastReceivedDate,lastReportedDate:item.lastReportedDate,unresolvedOverlap:item.unresolvedOverlap,...duplicateStats(ps),points:ps};}),
+    sources:sources.map(item=>{const ps=pointsFor(item,bounds,today),good=ps.filter(point=>mode==='day'?point.value!=null:point.eligible);return {key:item.key,label:item.label,domain:item.domain,status:item.status,unit:item.unit,displayUnit:item.displayUnit,sourceFamily:item.sourceFamily,count:good.length,mean:mean(good.map(point=>point.value)),firstDate:good[0]?.date||null,periodLastDate:good.at(-1)?.date||null,lastDate:item.lastDate,lastReceivedDate:item.lastReceivedDate,lastReportedDate:item.lastReportedDate,unresolvedOverlap:item.unresolvedOverlap,...duplicateStats(ps),points:ps};}),
     points,...duplicateStats(points),lastDate:observed.at(-1)?.date||null,lastObservedDate:source?.lastDate||null,lastReceivedDate:source?.lastReceivedDate||null,todayValue:todayPoint?.value??null,todayPoint,
     partial:mode==='day'?Boolean(dayPoint?.partial):points.some(point=>point.knownPartial),knownPartial:points.some(point=>point.knownPartial),
     comparison:compare(source,points,mode==='day'?null:calendar.previousBounds,bounds,status,definition,today,mode),
     availability:availabilityFor(definition,status,count,points),available:definition.domains.some(domain=>ready(status,domain)),invalidRows,unknownRows,
     unresolvedOverlap:Boolean(source?.unresolvedOverlap),warning:source?.unresolvedOverlap?'Valor diário recebido; deduplicação entre dispositivos não confirmada. Comparação suspensa.':null,
+    sourceSelectionMode:requested?'explicit':'automatic',
+    otherSourcesWithData:sources.filter(item=>item.key!==source?.key&&pointsFor(item,bounds,today).some(point=>mode==='day'?point.value!=null:point.eligible)).length,
     requestedSource:requested,requestedSourceMissing:Boolean(requested&&!source),
     coverageLabel:`${count}/${expectedDays} ${mode==='day'?'dia com valor':'dias encerrados com valor'}`,
     note:definition.key==='totalEnergy'?'Somente total diário explicitamente registrado. Energia ativa e basal não são somadas aqui.':definition.key==='activeEnergy'?'Energia ativa registrada; não representa o gasto energético total.':'Ausência não significa zero. Dias registrados não comprovam diário completo.'};
+  metric.coverageAudit=dailyCoverageAudit(metric,{mode,today,domains:definition.domains,status});
+  return metric;
 }
 
 /** Main public model: all seven metrics use one explicit calendar, separate
@@ -205,6 +252,15 @@ export function healthDashboardModel(data={},status={},ui={},today=todayInSaoPau
   return {...calendar,label:calendar.mode==='day'?(calendar.date===calendar.today?'Hoje · parcial':calendar.date):calendar.emptyHistory?'Sem histórico encerrado':calendar.period==='all'?'Todo o histórico':calendar.period==='6m'?'6 meses':calendar.period==='1y'?'1 ano':`${calendar.period} dias`,
     snapshot,metrics,metricsByKey:Object.fromEntries(metrics.map(metric=>[metric.key,metric])),todayMetrics,
     day:{date:calendar.date,today:calendar.today,isToday:calendar.date===calendar.today,partial:calendar.date===calendar.today||dayMetrics.some(metric=>metric.knownPartial),bounds:dayBounds,metrics:dayMetrics},
-    comparisonRule:healthDashboardComparisonRule,sourceSelectionRule:'Escolha explícita é preservada. Padrão: origem mais recente em todo o histórico carregado, preservando o status candidato ou em revisão, e desempate estável. Trocar a janela não troca a origem.',
+    comparisonRule:healthDashboardComparisonRule,sourceSelectionRule:'Escolha explícita é preservada. Padrão automático: origem com mais dias utilizáveis na janela; pode mudar ao trocar o período. Empates usam registros no período, recência e identidade estável. Origens permanecem separadas e o status de revisão é preservado.',
     note:calendar.emptyHistory?'Nenhum registro encerrado recebido. A data de ontem é apenas um limite de calendário para a janela vazia; não representa um dia observado. Hoje, se houver registro, aparece separado.':'Médias observadas de dias encerrados, com n/N por variável. Hoje é parcial e aparece separado. Fontes e dispositivos não são somados; lacunas permanecem sem valor.'};
+}
+
+/** Additional report indicators only; no write, global UI change or Home card. */
+export function nutritionReportMetrics(data={},status={},ui={},today=todayInSaoPaulo()){
+  const calendar=healthDashboardCalendar(data,status,ui,today);
+  const todayBounds=boundsFor(calendar.today,calendar.today,calendar.today);
+  const catalogs=nutritionDefinitions.map(definition=>{const collected=observationsFor(definition,data,status,calendar.today);return {definition,catalog:{...collected,sources:sourceCatalog(collected.observations,calendar.today)}};});
+  return {metrics:catalogs.map(({definition,catalog})=>makeMetric(definition,catalog,status,ui,calendar)),
+    todayMetrics:catalogs.map(({definition,catalog})=>makeMetric(definition,catalog,status,ui,calendar,todayBounds,'day'))};
 }

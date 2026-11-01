@@ -1,0 +1,41 @@
+name: LTS Health iPhone Home Screen
+on:
+  pull_request:
+    paths: ['v2/**', 'tools/**', 'manifest.webmanifest', 'sw.js', '.github/workflows/health-home-screen.yml']
+  push:
+    branches: [main]
+    paths: ['v2/**', 'tools/**', 'manifest.webmanifest', 'sw.js', '.github/workflows/health-home-screen.yml']
+permissions:
+  contents: read
+jobs:
+  home-screen:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check installation, freshness and privacy boundaries
+        run: |
+          node v2/home-screen-contract-test.mjs
+          node v2/production-integration-contract.mjs
+          node v2/deployed-runtime-assets.mjs
+          node v2/privacy-contract-smoke.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
+      - name: Install pinned browser API
+        run: npm install --no-save playwright@1.56.1
+      - name: Exercise Home Screen shell, offline/reopen and update lifecycle
+        run: |
+          python3 -m http.server 4173 >/tmp/health-home-screen.log 2>&1 &
+          node v2/home-screen-browser.mjs
+      - name: Preserve synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-home-screen-synthetic
+          path: health-home-screen-visual/
+          retention-days: 7

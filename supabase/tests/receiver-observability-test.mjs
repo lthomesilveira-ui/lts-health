@@ -29,3 +29,38 @@ assert.equal(body.outcome,'accepted');assert.equal(body.nutrition_metrics_observ
 const originalWarn=console.warn; console.warn=()=>{throw Error('logging unavailable');};
 try{const invalid=metric();invalid.units='unsupported';const response=await receiveHealthExport(request([invalid]),db,{emit:()=>{throw Error('logging unavailable');}});assert.equal(response.status,422);assert.equal((await response.json()).error,'unsupported_unit');}finally{console.warn=originalWarn;}
 console.log('Zero writes, mixed batches and warning failure remain honest and response-safe.');
+// Unsupported basal content stays ignored. Only fixed-name block/point counts reach logs.
+const captured=[];const auditEvents=[];
+const auditDb={...db,rpc:async(name,args)=>{captured.push({name,args});return {data:{received:true,accepted_metrics:args.p_metrics.length}};}};
+const audited=async(metrics,{key=token,emit=x=>auditEvents.push(x)}={})=>{
+ const response=await receiveHealthExport(request(metrics,key),auditDb,{emit});
+ return {status:response.status,body:await response.json(),event:auditEvents.at(-1)};
+};
+const unsupported=(name='basal_energy_burned',data=[{qty:7654321,source:'PRIVATE_BASAL_SOURCE',date:'PRIVATE_BASAL_DATE',device:'PRIVATE_DEVICE'}])=>({name,units:'PRIVATE_BASAL_UNIT',data});
+const withoutCorrelation=body=>{const {correlation_id,...rest}=body;return rest;};
+const plain=await audited([metric()]);const originalCall=structuredClone(captured.at(-1));
+assert.equal(plain.event.ignored_basal_blocks,0);assert.equal(plain.event.ignored_basal_points,0);
+const mixed=await audited([metric(),unsupported(),unsupported('UNRELATED_PRIVATE_METRIC',[null,null])]);
+assert.equal(mixed.status,200);assert.deepEqual(captured.at(-1),originalCall);
+assert.equal(mixed.event.ignored_basal_blocks,1);assert.equal(mixed.event.ignored_basal_points,1);assert.equal(mixed.event.ignored_points,3);
+assert.deepEqual(withoutCorrelation(mixed.body),{...withoutCorrelation(plain.body),ignored_points:3});
+assert.ok(!Object.hasOwn(mixed.body,'ignored_basal_blocks'));assert.ok(!Object.hasOwn(mixed.body,'ignored_basal_points'));
+const emptyBasal=await audited([metric(),unsupported('basal_energy_burned',[])]);
+assert.equal(emptyBasal.event.ignored_basal_blocks,1);assert.equal(emptyBasal.event.ignored_basal_points,0);assert.deepEqual(withoutCorrelation(emptyBasal.body),withoutCorrelation(plain.body));
+const several=await audited([metric(),unsupported(),unsupported('basal_energy_burned',[null,{}])]);
+assert.equal(several.event.ignored_basal_blocks,2);assert.equal(several.event.ignored_basal_points,3);assert.deepEqual(captured.at(-1),originalCall);
+for(const name of ['basal_energy','Basal_energy_burned','basal_energy_burned_PRIVATE']){
+ const ignored=await audited([metric(),unsupported(name)]);assert.equal(ignored.event.ignored_basal_blocks,0);assert.equal(ignored.event.ignored_basal_points,0);assert.deepEqual(captured.at(-1),originalCall);
+}
+const beforeNoData=captured.length;const onlyBasal=await audited([unsupported()]);
+assert.equal(onlyBasal.status,200);assert.equal(onlyBasal.body.message,'no_supported_data');assert.equal(onlyBasal.event.ignored_basal_points,1);assert.equal(captured.length,beforeNoData);
+const rejected=await audited([unsupported(),metric('protein',-1)]);
+assert.equal(rejected.status,422);assert.ok(!Object.hasOwn(rejected.event,'ignored_basal_blocks'));assert.equal(captured.length,beforeNoData);
+const tooLarge=await audited([unsupported('basal_energy_burned',Array(2501).fill(null))]);
+assert.equal(tooLarge.status,422);assert.equal(tooLarge.body.error,'too_many_points');assert.ok(!Object.hasOwn(tooLarge.event,'ignored_basal_points'));
+const eventCount=auditEvents.length;assert.equal((await audited([unsupported()],{key:'bad'})).status,401);assert.equal(auditEvents.length,eventCount);
+const brokenLog=await audited([metric(),unsupported()],{emit:()=>{throw Error('logging unavailable');}});
+assert.equal(brokenLog.status,200);assert.deepEqual(captured.at(-1),originalCall);
+const logged=JSON.stringify(auditEvents);
+for(const secret of [token,'7654321','PRIVATE_BASAL_SOURCE','PRIVATE_BASAL_DATE','PRIVATE_DEVICE','PRIVATE_BASAL_UNIT','UNRELATED_PRIVATE_METRIC'])assert.ok(!logged.includes(secret));
+console.log('Private basal diagnostics: absent/empty/present/unknown/mixed/rejected/unauthenticated counts; unchanged writes and public responses; logger isolation.');

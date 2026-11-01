@@ -11,11 +11,14 @@ db.health_workouts=Array.from({length:36},(_,i)=>({source_record_id:`w-${i}`,wor
 db.health_workout_exercises=db.health_workouts.map((w,i)=>({source_record_id:`ex-${i}`,workout_source_record_id:w.source_record_id,workout_date:w.workout_date,order_index:1,exercise:'Exercício sintético',machine:'Equipamento sintético',source:'Teste'}));
 db.health_workout_sets=db.health_workouts.map((w,i)=>({source_record_id:`s-${i}`,workout_source_record_id:w.source_record_id,exercise_source_record_id:`ex-${i}`,workout_date:w.workout_date,set_index:1,phase:'working',weight:20+i%4,weight_unit:'kg',reps_numeric:10,source:'Teste'}));
 db.health_body_composition=Array.from({length:30},(_,i)=>({source_record_id:`b-${i}`,measured_at:`2024-${i<28?'01':'02'}-${String(i%28+1).padStart(2,'0')}`,source:'Teste',source_file:'synthetic.csv',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30,fat_mass_kg:14,body_water_l:40}));
+// Two invented records form a documented positive-control cohort; the other
+// 28 remain model-unknown and must never acquire comparison eligibility.
+for(const row of db.health_body_composition.slice(0,2))row.device_name='Modelo sintético de teste';
 db.health_segmental_composition=db.health_body_composition.map((r,i)=>({source_record_id:`seg-${i}`,measured_at:r.measured_at,source:'Teste',source_file:'synthetic.csv',lean_right_arm_kg:3,lean_left_arm_kg:3,lean_trunk_kg:20,lean_right_leg_kg:7,lean_left_leg_kg:7,fat_right_arm_kg:1,fat_left_arm_kg:1,fat_trunk_kg:6,fat_right_leg_kg:2,fat_left_leg_kg:2}));
 db.health_lab_results=Array.from({length:22},(_,i)=>Array.from({length:25},(_,j)=>({source_record_id:`lab-${i}-${j}`,biomarker:`Marcador ${String(i+1).padStart(2,'0')}`,collection_date:`2024-01-${String(j+1).padStart(2,'0')}`,laboratory:'Laboratório A sintético',unit:'u',result_numeric:10+j%4,result_raw:String(10+j%4),reference_range:'Faixa sintética',source:'Teste'}))).flat();
 db.health_lab_results.push({source_record_id:'text-only',biomarker:'Marcador textual único',collection_date:'2026-01-01',laboratory:'Laboratório A sintético',result_raw:'Resultado textual sintético',source:'Teste'});
 for(let j=1;j<4;j++)db.health_lab_results.push({source_record_id:`other-${j}`,biomarker:'Marcador 01',collection_date:`2025-02-0${j}`,laboratory:'Laboratório B sintético',unit:'outra unidade',result_numeric:j,result_raw:String(j),source:'Teste'});
-const service=`window.__depthDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},from(table){let from=0,to=999,orders=[];const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(k,opt={}){orders.push([k,opt.ascending!==false]);return q;},then(resolve,reject){let rows=[...(window.__depthDb[table]||[])];rows.sort((a,b)=>{for(const[k,asc]of orders){const c=String(a[k]||'').localeCompare(String(b[k]||''));if(c)return asc?c:-c;}return 0;});return Promise.resolve({data:window.__failTable===table?null:rows.slice(from,to+1),error:window.__failTable===table?{message:'Synthetic read failure'}:null}).then(resolve,reject);}};return q;}})};`;
+const service=`window.__depthDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},from(table){let from=0,to=999,orders=[];const filters=[];const q={select(){return q;},eq(key,value){filters.push([key,value]);return q;},range(a,b){from=a;to=b;return q;},order(k,opt={}){orders.push([k,opt.ascending!==false]);return q;},then(resolve,reject){let rows=(window.__depthDb[table]||[]).filter(row=>filters.every(([key,value])=>row[key]===value));rows.sort((a,b)=>{for(const[k,asc]of orders){const c=String(a[k]||'').localeCompare(String(b[k]||''));if(c)return asc?c:-c;}return 0;});return Promise.resolve({data:window.__failTable===table?null:rows.slice(from,to+1),error:window.__failTable===table?{message:'Synthetic read failure'}:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
 async function stableHome(page){
@@ -25,6 +28,8 @@ async function stableHome(page){
     if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
     return ++window.__gateHomeStableFrames>=3;
   });
+  const cockpit=page.locator('[data-disclosure="cockpit-details"]');
+  if(!(await cockpit.evaluate(el=>el.open)))await cockpit.locator(':scope > summary').click();
 }
 async function overflow(page){
   const result=await page.evaluate(()=>({doc:document.documentElement.scrollWidth-window.innerWidth,host:document.getElementById('screenHost').scrollWidth-document.getElementById('screenHost').clientWidth}));
@@ -44,6 +49,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'application/javascript',body:service}));
   await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await overflow(page);
+  const independentBefore=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return [state.ui.productCompositionPeriod,state.ui.productLabPeriod];});
   await page.locator('[data-home-period-select]').selectOption('all');
   await page.waitForFunction(()=>document.querySelector('[data-home-period-select]')?.value==='all');await stableHome(page);
   assert.equal(await page.locator('.studyCard.body').count(),1,'one shared body panel');
@@ -57,7 +63,8 @@ try{
    assert.equal(await row.locator('em').innerText(),delta);
   }
   const periods=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return ['homePeriod','analysisPeriod','trainingPeriod','nutritionPeriod','productCompositionPeriod','productLabPeriod'].map(key=>state.ui[key]);});
-  assert.deepEqual(periods,Array(6).fill('all'),'Home selection propagates one calendar to every domain');
+  assert.deepEqual(periods.slice(0,4),Array(4).fill('all'),'Home retains its shared training/nutrition/analysis calendar');
+  assert.deepEqual(periods.slice(4),independentBefore,'Home selection must not assign or overwrite body/lab windows');
   await page.locator('.studyCard.body details>summary').click();
   assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'original assessments remain reachable from the body summary');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-home.png`});
@@ -74,7 +81,7 @@ try{
   assert.ok((await page.locator('.ltsTrainingV2 h1').textContent()).includes('Sessão sintética 0'));
   await page.locator('[data-depth-training-view="exercises"]').first().click();
   await page.locator('[data-depth-exercise]').first().click();
-  await page.waitForSelector('.ltsExerciseHistory');assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
+  await page.waitForSelector('.ltsExerciseHistory');await page.locator('[data-disclosure="exercise-working-history"] > summary').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),36);
   await assertHistoricalPoints(page,'.ltsExerciseHistory',db.health_workout_sets,'workout_date','weight','kg','training history retains every older eligible load');
   await overflow(page);
   await page.locator('[data-depth-training-view="history"]').first().click();
@@ -85,7 +92,7 @@ try{
   await page.locator('[data-depth-clear="training"]').click();await page.locator('#productTrainingYear').selectOption('2025');assert.equal(await page.locator('[data-training-total]').getAttribute('data-training-total'),'18');
   await overflow(page);if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-training-history.png`});
 
-  await goto(page,'saude','.ltsLabsV2');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
+  await goto(page,'saude','.ltsLabsV2');assert.equal(await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Exames opens its own full-history default');await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();await page.waitForSelector('.ltsLabsHero');
   assert.equal(await page.locator('#productLabMarkerSelect option').count(),24,'all 23 markers plus placeholder');
   await page.locator('#productLabMarkerSelect').selectOption('marcador textual unico');
   assert.ok((await page.locator('.ltsLabsHero').innerText()).includes('Resultado textual sintético'));assert.equal(await page.locator('.ltsDepthLine').count(),0);
@@ -100,8 +107,10 @@ try{
   await page.locator('#productLabQuery').fill('Marcador 22');assert.equal(await page.locator('#productLabMarkerSelect option').count(),2);await page.locator('[data-lab-marker="marcador 22"]').click();await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-labs.png`});
 
-  await goto(page,'bio','.ltsCompositionV2 .ltsCompositionHero');
-  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').getAttribute('aria-pressed'),'true','Composition inherits the Home historical calendar');
+  await goto(page,'bio','[data-composition-overview]');
+  assert.equal(await page.locator('[data-depth-period="productCompositionPeriod"][data-value="365"]').getAttribute('aria-pressed'),'true','Composition opens its own recent-year default independently of Home');
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),0,'older observations are not substituted into the recent window');
+  assert.match(await page.locator('[data-composition-overview]').innerText(),/30 medições no histórico/,'the archive remains available before choosing all');
   await page.locator('[data-depth-period="productCompositionPeriod"][data-value="all"]').click();assert.equal(await page.locator('.ltsDepthPlot circle').count(),30);
   // Home intentionally shows a readable pair. Full raw series live in Composition.
   for(const [metric,label] of [['fat_mass_kg','fat'],['skeletal_muscle_mass_kg','muscle']]){
@@ -110,7 +119,16 @@ try{
   }
   await page.locator('#productCompositionPoint').selectOption('9');
   assert.equal(await page.locator('#productCompositionPoint').inputValue(),'9');
-  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'10/01/2024','an older measurement can be selected directly');
+  assert.equal(await page.locator('#productCompositionPoint option:checked').innerText(),'10/01/2024','an older measurement can be selected directly by its original date');
+  assert.equal(await page.locator('.ltsCompositionChart circle.selected title').textContent(),'10/01/2024: 30,0 kg','selected point binds that date to the original observed value');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] b').innerText(),'30,0 kg');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'Teste','selected point exposes its original source, not an invented device');
+  const pointDetail=page.locator('.ltsCompositionV2>[data-depth-composition-record]');
+  assert.match(await pointDetail.innerText(),/10\/01\/2024/,'the contextual detail action follows the explicitly selected point');
+  await pointDetail.click();await page.waitForSelector('[data-composition-view="detail"]');
+  assert.match(await page.locator('.ltsHistoryContext').innerText(),/10\/01\/2024 · Teste/,'detail keeps the selected point date and source');
+  await page.locator('[data-depth-composition-back]').last().click();
+  assert.equal(await page.locator('#productCompositionPoint').inputValue(),'9','return keeps the selected chart point');
   await page.locator('#productCompositionPoint').focus();await page.locator('#productCompositionPoint').press('ArrowDown');
   assert.equal(await page.locator('#productCompositionPoint').evaluate(el=>el===document.activeElement),true,'historical measurement selector retains keyboard focus');
   await page.locator('[data-composition-metric="weight_kg"]').click();assert.equal(await page.locator('[data-composition-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
@@ -119,7 +137,23 @@ try{
   await page.waitForSelector('.ltsSegmentTable');assert.equal(await page.locator('.ltsSegmentTable tbody tr').count(),5);await overflow(page);
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-measurement.png`});
   await page.locator('[data-depth-composition-back]').last().click();assert.equal(await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().getAttribute('data-depth-composition-record'),'b-0');
-  await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);await overflow(page);
+  assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'all-source observed history does not offer cross-source comparisons');
+  await page.locator('#productCompositionSource').selectOption({label:'Teste'});
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),28,'all model-unknown observations remain visible');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),0,'unknown model cannot create a connected line');
+  assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'unknown model cannot create an automatic difference');
+  await page.locator('#productCompositionSource').selectOption({label:'Modelo sintético de teste'});
+  assert.equal(await page.locator('.ltsCompositionChart circle').count(),2,'the documented synthetic cohort is separate');
+  assert.equal(await page.locator('.ltsCompositionChart .ltsDepthLine').count(),1);
+  const selectedDetail=page.locator('.ltsCompositionV2>[data-depth-composition-record]');
+  assert.equal(await selectedDetail.getAttribute('data-depth-composition-record'),'b-1','the contextual detail action follows the selected source');
+  assert.match(await selectedDetail.innerText(),/02\/01\/2024/,'the contextual detail action names the selected measurement date');
+  await selectedDetail.click();await page.waitForSelector('[data-composition-view="detail"]');
+  assert.match(await page.locator('.ltsHistoryContext').innerText(),/02\/01\/2024 · Modelo sintético de teste/,'detail keeps the selected source and date');
+  await page.locator('[data-depth-composition-back]').last().click();
+  assert.equal(await page.locator('#productCompositionSource option:checked').innerText(),'Modelo sintético de teste','return keeps the selected source');
+  await page.locator('[data-disclosure="product-composition-compare"] summary').click();await page.locator('#productCompareA').selectOption('b-0');await page.locator('#productCompareB').selectOption('b-1');assert.ok(await page.locator('[data-disclosure="product-composition-compare"]').getAttribute('open')!==null);
+  assert.match(await page.locator('[data-disclosure="product-composition-compare"]').innerText(),/Peso\s*\+1,0 kg/,'positive control compares only the two documented records');await overflow(page);
 
   await goto(page,'analise','.ltsUsefulReports');
   await page.locator('#analysisPeriod').selectOption('all');
@@ -170,6 +204,12 @@ try{
     const retry=await page.locator('#refreshBtn').boundingBox();
     assert.ok(retry?.width>=44&&retry?.height>=44,'report retry remains visible with a phone-sized touch target');
   }
+  const structuredSetsRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Séries estruturadas'});
+  const structuredSetsText=await structuredSetsRow.innerText();
+  assert.equal((structuredSetsText.match(/Sem séries estruturadas/g)||[]).length,2,'recorded sessions without structured sets must not form a zero baseline');
+  assert.ok(structuredSetsText.includes('Cobertura incompleta'),'missing historical set detail cannot produce a numerical difference');
+  const structuredSetCells=await structuredSetsRow.locator('td').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right};}));
+  assert.ok(structuredSetCells.every(r=>r.left>=0&&r.right<=width),'structured-set coverage remains readable inside the viewport');
   const durationRow=page.locator('#reportPeriods tbody tr').filter({hasText:'Tempo registrado dos treinos'});
   assert.ok((await durationRow.innerText()).includes('40 min'));
   assert.ok((await durationRow.innerText()).includes('Cobertura incompleta'));
@@ -187,7 +227,7 @@ try{
   await overflow(page);
   if(label!=='small'){await page.locator('#reportPeriods').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/synthetic-${label}-duration-water.png`});}
   await page.evaluate(()=>{window.__failTable='health_source_daily_metrics';});await page.locator('#refreshBtn').click();
-  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível verificar todas as fontes de água'));
+  await page.waitForFunction(()=>document.querySelector('#reportHydration')?.textContent.includes('Não foi possível atualizar os registros de água'));
   assert.equal(await page.locator('#reportHydration .ltsContextPlot').count(),0,'failed source must hide stale water');
   await page.evaluate(()=>{window.__failTable='';});
 

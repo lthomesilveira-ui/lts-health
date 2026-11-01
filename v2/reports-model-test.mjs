@@ -4,6 +4,7 @@ const {state}=await import('./src/core.js');
 const {reportBounds,compositionReport,segmentIdentity,segmentalReport,trainingSummary,nutritionSummary,hydrationSummary,laboratoryReport,usefulReports}=await import('./src/reports-model.js');
 const {contextChart}=await import('./src/health-context.js');
 const {renderUsefulReports}=await import('./src/reports-screen.js');
+const {renderProductTraining}=await import('./src/training-reference-v2.js');
 const status=Object.fromEntries(['body','segmental','workouts','exercises','sets','nutrition','labs','sourceMetrics'].map(k=>[k,'ready']));
 const {current,previous}=reportBounds('30','2025-03-02');
 assert.deepEqual(current,{start:'2025-02-01',end:'2025-03-02',days:30});
@@ -11,7 +12,7 @@ assert.deepEqual(previous,{start:'2025-01-02',end:'2025-01-31',days:30});
 const body=(date,device='Device A')=>({measured_at:date,source:'BIA',device_name:device,source_file:`${date}.pdf`,weight_kg:80,skeletal_muscle_mass_kg:30,fat_mass_kg:15,body_fat_pct:20});
 const segment=(date,lean)=>({measured_at:date,source:'Segmental BIA',source_file:`${date}.pdf`,lean_right_arm_kg:lean,fat_right_arm_kg:1});
 const workout=(id,date)=>({source_record_id:id,workout_date:date,is_canonical:true,duration_minutes:30});
-const lab=(date,value,method='Assay A')=>({collection_date:date,biomarker:'Synthetic marker',result_numeric:value,result_raw:String(value),unit:'u',laboratory:'Lab A',method});
+const lab=(date,value,method='Assay A')=>({collection_date:date,biomarker:'Synthetic marker',result_numeric:value,result_raw:String(value),unit:'u',laboratory:'Lab A',method,reference_range:'1 a 20 u'});
 const data={body:[body('2025-02-03'),body('2025-02-23')],segmental:[segment('2025-02-03',3.2),segment('2025-02-23',3)],workouts:[workout('prior','2025-01-20'),workout('current','2025-02-10'),{...workout('duplicate-origin','2025-02-10'),is_canonical:false}],exercises:[{source_record_id:'prior-ex',workout_source_record_id:'prior',muscle_group:'Bíceps'},{source_record_id:'current-ex',workout_source_record_id:'current',muscle_group:'Tríceps'},{source_record_id:'orphan-ex',workout_source_record_id:'duplicate-origin',muscle_group:'Bíceps'}],sets:[{exercise_source_record_id:'prior-ex',workout_source_record_id:'prior'},{exercise_source_record_id:'current-ex',workout_source_record_id:'current'},{exercise_source_record_id:'orphan-ex',workout_source_record_id:'duplicate-origin'},{exercise_source_record_id:'current-ex',workout_source_record_id:'unknown'}],nutrition:[{nutrition_date:'2025-02-10',protein_g:100,source:'Food A'},{nutrition_date:'2025-02-12',protein_g:null,source:'Food A'},{nutrition_date:'2025-01-20',protein_g:80,source:'Food A'}],labs:[lab('2025-02-05',10),lab('2025-02-25',12)],sourceMetrics:[]};
 const snapshot=JSON.stringify(data);
 let s=segmentalReport(data,status,current);
@@ -50,13 +51,15 @@ assert.equal(nutritionSummary({...data,nutrition:[...data.nutrition,data.nutriti
 assert.equal(nutritionSummary({...data,nutrition:[{nutrition_date:'2025-02-10',protein_g:0,source:'Food A'}]},status,current).means.protein_g,0,'recorded zero remains zero');
 assert.equal(laboratoryReport(data,status,current).selected.delta,2);
 for(const altered of [
+ {...data,labs:data.labs.map(r=>({...r,reference_range:null}))},
+ {...data,labs:[data.labs[0],{...data.labs[1],reference_range:'1 a 30 u'}]},
  {...data,labs:data.labs.map(r=>({...r,method:null}))},
  {...data,labs:[data.labs[0],{...data.labs[1],method:'Assay B'}]},
  {...data,labs:[data.labs[0],{...data.labs[1],unit:'other'}]},
  {...data,labs:[data.labs[0],{...data.labs[1],laboratory:'Lab B'}]},
  {...data,labs:[data.labs[0],{...data.labs[1],result_raw:'< 12'}]},
  {...data,labs:[...data.labs,data.labs[1]]}
-])assert.notEqual(laboratoryReport(altered,status,current).selected.comparable,true);
+]){const selected=laboratoryReport(altered,status,current).selected;assert.equal(selected.comparable,false);assert.equal(selected.delta,null,'missing or incompatible evidence cannot expose a delta');}
 const censored=laboratoryReport({...data,labs:[data.labs[0],{...data.labs[1],result_raw:'< 12'}]},status,current);
 assert.equal(censored.rows.at(-1).result_raw,'< 12');assert.equal(censored.points.length,1);
 const metrics=[{metric_date:'2025-02-10',metric_type:'sleep_duration_h',source_family:'Watch',source_name:'Device A',canonical_status:'candidate',unit:'h',value:7},{metric_date:'2025-01-20',metric_type:'sleep_duration_h',source_family:'Watch',source_name:'Device B',canonical_status:'candidate',unit:'h',value:8}];
@@ -81,5 +84,10 @@ state.data={...data,workouts:[workout('p',addDays(today,-40)),workout('c',today)
 let periodHtml=renderUsefulReports().match(/id="reportPeriods"[\s\S]*?<\/section>/)?.[0]||'';
 assert.match(periodHtml,/30 min<small>1 de 2 sessões com duração · parcial/);assert.match(periodHtml,/Cobertura incompleta/);assert.match(periodHtml,/Água por dia registrado/);assert.match(periodHtml,/\+1\.000 mL/);
 state.domainStatus={...status,sourceMetrics:'error'};
-const unavailable=renderUsefulReports();assert.match(unavailable,/Fontes de água não verificadas/);assert.match(unavailable,/Não foi possível verificar todas as fontes de água/);assert.doesNotMatch(unavailable.match(/id="reportHydration"[\s\S]*?<\/section>/)?.[0]||'',/ltsContextPlot/);
-console.log('Useful reports: calendar windows, partial duration coverage, deduplicated hydration, source failures, segment/device boundaries, interval context, lab comparability and escaping passed.');
+const unavailable=renderUsefulReports();assert.match(unavailable,/Não foi possível atualizar os registros de água/);assert.match(unavailable,/Tente novamente em Atualizar/);assert.doesNotMatch(unavailable.match(/id="reportHydration"[\s\S]*?<\/section>/)?.[0]||'',/ltsContextPlot/);
+assert.match(unavailable,/href="#treinos" data-route="treinos" data-return-route="analise"/,'the report keeps a contextual return when opening Training');
+state.data=data;state.domainStatus=status;state.ui={trainingReturnRoute:'analise'};
+assert.match(renderProductTraining(),/data-route="analise" data-consume-training-return/,'Training returns to the originating report once');
+state.ui={trainingReturnRoute:null};
+assert.match(renderProductTraining(),/data-route="hoje"/,'direct Training entry retains the Home fallback');
+console.log('Useful reports: calendar windows, partial duration coverage, deduplicated hydration, source failures, segment/device boundaries, interval context, lab comparability, contextual Training return and escaping passed.');

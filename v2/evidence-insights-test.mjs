@@ -9,7 +9,7 @@ const date=i=>`2025-01-${String(i).padStart(2,'0')}`;
 const nutrition=Array.from({length:10},(_,i)=>({nutrition_date:date(i+1),source:'Food A',protein_g:i<5?100+i*10:50+(i-5)*10,calories_kcal:2000,carbs_g:i===9?null:200,fat_g:0}));
 const workouts=Array.from({length:5},(_,i)=>workout(`w${i+1}`,date(i+1)));
 const exercise=(i,extra={})=>({source_record_id:`e${i}`,workout_source_record_id:`w${i}`,workout_date:date(i),exercise:'Test press',machine:'Test machine',source:'Test notes',...extra});
-const set=(i,weight,extra={})=>({source_record_id:`s${i}`,exercise_source_record_id:`e${i}`,workout_source_record_id:`w${i}`,workout_date:date(i),phase:'working',weight,weight_unit:'kg',reps_numeric:10,source:'Test notes',...extra});
+const set=(i,weight,extra={})=>({source_record_id:`s${i}`,exercise_source_record_id:`e${i}`,workout_source_record_id:`w${i}`,workout_date:date(i),phase:'working',weight,weight_unit:'kg',reps_numeric:10,technique:'standard',failure:false,near_failure:false,source:'Test notes',...extra});
 const data={workouts,nutrition,exercises:[exercise(1),exercise(2)],sets:[set(1,20),set(2,30),set(2,999,{source_record_id:'warmup',phase:'warmup'})]};
 const snapshot=JSON.stringify(data);
 let n=nutritionTrainingContrast(data,status,bounds,'',today);
@@ -24,7 +24,11 @@ n=nutritionTrainingContrast({...data,nutrition:[...nutrition,{nutrition_date:dat
 n=nutritionTrainingContrast({...data,workouts:[...workouts,workout('noncanonical',date(6),{is_canonical:false}),workout('quarantine',date(7),{record_status:'quarantined'})]},status,bounds,'',today);assert.equal(n.rows[0].withoutDays,5);
 assert.equal(nutritionTrainingContrast(data,{...status,workouts:'error'},bounds,'',today).available,false);
 assert.equal(nutritionTrainingContrast(data,{...status,nutrition:'loading'},bounds,'',today).available,false);
-let l=workingLoadChanges(data,status,bounds,today);assert.equal(l.rows.length,1);assert.equal(l.rows[0].delta,10);assert.equal(l.rows[0].previous.weight,20);assert.equal(l.rows[0].latest.weight,30);assert.equal(l.rows[0].points.length,2);
+let l=workingLoadChanges(data,status,bounds,today);assert.equal(l.rows.length,1);assert.equal(l.rows[0].conditionsConfirmed,false);assert.equal(l.rows[0].phaseConfirmedFromOriginal,false);assert.equal(l.rows[0].effortConfirmedFromOriginal,false);assert.equal(l.rows[0].delta,10);assert.equal(l.rows[0].previous.weight,20);assert.equal(l.rows[0].latest.weight,30);assert.equal(l.rows[0].points.length,2);
+for(const key of ['technique','failure','near_failure','source']){
+ const missing=workingLoadChanges({...data,sets:data.sets.map(row=>({...row,[key]:null}))},status,bounds,today);
+ assert.equal(missing.rows.length,0,`${key} cannot be inferred for a comparison`);assert.equal(missing.observed.length,1,'incomplete observations remain readable without numerical comparison');
+}
 for(const altered of [
  {...data,sets:[data.sets[0],set(2,30,{reps_numeric:12})]},
  {...data,exercises:[data.exercises[0],exercise(2,{machine:'Other machine'})]},
@@ -55,7 +59,7 @@ const preserved=JSON.stringify(state.data);
 for(const period of ['30','90','365','all']){
  state.ui.homePeriod=period;const home=renderProductHomeReference();
  assert.doesNotMatch(home,/ltsRefProgress|de 30 dias|de 90 dias|dias registrados no histórico/);
- assert.match(home,/Consumo de água/);assert.match(home,/Fontes e limitações/);
+ assert.match(home,/class="refPanel water"[\s\S]*?<h2>Água<\/h2>/);assert.match(home,/Fontes e limitações/);
 }
 state.data.nutrition=[];assert.match(renderProductHomeReference(),/Sem registros no período/);
 state.data.nutrition=JSON.parse(preserved).nutrition;assert.equal(JSON.stringify(state.data),preserved);

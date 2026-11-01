@@ -85,3 +85,23 @@ for(const reviewView of ['overview','day','consultation']){
 }
 assert.equal(state.ui.homeNutritionSource,absentSource);assert.equal(state.ui.reportNutritionSource,absentSource,'switching tabs does not replace the selected source');
 console.log('Integrated tab boundary: interval omits global source controls/warnings; overview, day and consultation preserve missing-source state.');
+
+// A compact presentation must retain the complete original interpretation and
+// must not turn a failed structured-set read into zero available sets.
+const {evolutionModel}=await import('../src/evolution-model.js');
+const {esc}=await import('../src/core.js');
+const compactData={...data,body:[{measured_at:'2025-04-15',source:'Synthetic scan',device_name:'Synthetic device',weight_kg:80,fat_mass_kg:16,skeletal_muscle_mass_kg:32}],labs:[{collection_date:'2025-04-15',biomarker:'Synthetic marker',laboratory:'Synthetic lab',source:'Synthetic lab',result_numeric:12,result_raw:'12',unit:'u',reference_range:'1 a 5 u'}],exercises:[],sets:[],segmental:[],meals:[],goals:[]};
+const compactBefore=structuredClone(compactData),compactStatus={...status,sets:'error'};
+state.data=compactData;state.domainStatus=compactStatus;state.ui={analysisPeriod:'30',reviewView:'overview'};
+const compactModel=usefulReports(compactData,compactStatus,state.ui,today),compactReview=integratedReview(compactData,compactStatus,compactModel.current,state.ui,today),evolution=evolutionModel(compactData,compactStatus,compactModel,compactReview,state.ui),compactHtml=renderIntegratedReview(compactModel);
+for(const reading of evolution.takeaways){
+ assert.ok(compactHtml.includes(esc(reading.meaning)),'complete meaning survives compaction');
+ assert.ok(compactHtml.includes(esc(reading.evidence)),'all dated source evidence survives compaction');
+ assert.ok(compactHtml.includes(esc(reading.limit)),'original interpretation limits remain available');
+ assert.match(compactHtml,new RegExp('data-disclosure="review-reading-'+reading.kind+'"'));
+}
+assert.match(compactHtml,/<dd>80,0<span>kg<\/span><\/dd>/);
+assert.match(compactHtml,/<dt>Séries principais<\/dt><dd>—<\/dd>/,'failed series are absent, not zero');
+assert.doesNotMatch(compactHtml,/NaN|Infinity|undefined|data-disclosure="review-reading-[^"]+" open/);
+assert.deepEqual(compactData,compactBefore,'presentation does not alter any original observation');
+console.log('Compact lower reading: complete meaning/evidence/limits, original values, missing sets and nonmutation passed.');

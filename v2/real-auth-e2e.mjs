@@ -1,6 +1,11 @@
 import { readFileSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import {runDepthChecks} from './real-auth-depth-checks.mjs';
+import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-dashboard-checks.mjs';
+import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
+import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs';
+import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
+import {observePublicFailures} from './public-entry-diagnostics.mjs';
 
 const tokenHash=readFileSync('/tmp/lts-health-token-hash','utf8').trim();
 if(!tokenHash)throw new Error('authenticated token hash missing');
@@ -13,11 +18,18 @@ const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
 const evidenceDir='v2/real-auth-evidence';
 mkdirSync(evidenceDir,{recursive:true});
 let runtimeErrorCount=0;
+const runtimeErrorKinds={console:0,page:0};
+let verificationStage='authentication';
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
 const page=await context.newPage();
-page.on('pageerror',()=>runtimeErrorCount++);
-page.on('console',m=>{if(m.type()==='error')runtimeErrorCount++;});
+page.on('pageerror',()=>{runtimeErrorCount++;runtimeErrorKinds.page++;});
+page.on('console',m=>{if(m.type()==='error'){runtimeErrorCount++;runtimeErrorKinds.console++;}});
+// Reuse the reviewed public-asset allowlist. Backend/private URLs, queries,
+// console text, error messages and response bodies never enter diagnostics.
+const diskRoot=new URL('./',import.meta.url),html=readFileSync(new URL('index.html',diskRoot),'utf8');
+const allowedResources=new Set(['','index.html','favicon.ico',...deployedRuntimeAssets(html,url=>readFileSync(url,'utf8'),diskRoot).map(asset=>asset.file)]);
+const networkFailures=observePublicFailures(page,appUrl,allowedResources);
 
 const routeReadySelectors=Object.freeze({
   hoje:'.ltsHomeReference',
@@ -29,10 +41,11 @@ const routeReadySelectors=Object.freeze({
   analise:'.ltsRecoveryV2',
   tratamentos:'.protocolSummaryGrid',
   dados:'[data-review-inbox]',
-  evolucao:'.evolutionChangeTable'
+  evolucao:'.ltsEvolutionOverview,.evolutionChangeTable'
 });
 
 async function waitForRoute(route){
+  verificationStage=route;
   const readySelector=routeReadySelectors[route];
   if(!readySelector)throw new Error(`no authenticated ready selector registered for ${route}`);
   const mobile=(await page.viewportSize()).width<=840;
@@ -51,7 +64,7 @@ async function waitForRoute(route){
       const rect=button.getBoundingClientRect(),style=getComputedStyle(button);
       return style.display!=='none'&&style.visibility!=='hidden'&&rect.width>=44&&rect.left>=-1&&rect.right<=window.innerWidth+1;
     });
-    const expectedMobileRoute=['hoje','treinos','analise'].includes(value)?value:'mais';
+    const expectedMobileRoute=['hoje','treinos','evolucao'].includes(value)?value:'mais';
     const mobileActive=mobileButtons.filter(button=>button.classList.contains('active'));
     const mobileShellReady=window.innerWidth>840||(mobileButtons.length===4&&mobileActive.length===1&&mobileActive[0].dataset.route===expectedMobileRoute);
     return location.hash===`#${value}`
@@ -74,13 +87,13 @@ async function assertStableMobileShell(label){
     if(window.innerWidth>840)return{desktop:true};
     const visible=element=>{const rect=element?.getBoundingClientRect(),style=element?getComputedStyle(element):null;return Boolean(element&&style.display!=='none'&&style.visibility!=='hidden'&&rect.width>0&&rect.height>0);};
     const buttons=[...document.querySelectorAll('#mobileNav button')].filter(visible).map(button=>{const rect=button.getBoundingClientRect();return{route:button.dataset.route,text:button.textContent.trim(),left:rect.left,right:rect.right,width:rect.width,active:button.classList.contains('active')};});
-    const brand=[document.querySelector('.refMobileBrand'),document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
+    const brand=[document.querySelector('.studyBrand'),document.querySelector('.refMobileBrand'),document.querySelector('.ltsOverview .ltsHomeMobileBrand'),document.querySelector('.topbar .brand b'),document.querySelector('.ltsEvolutionEyebrow')].find(visible);
     const routeAction=document.querySelector('#routeAction');
     return{desktop:false,route:document.body.dataset.productRoute||'',viewportWidth:window.innerWidth,buttons,brand:brand?.textContent?.trim()||'',routeActionVisible:visible(routeAction)};
   });
   if(result.desktop)return;
-  if(result.buttons.map(button=>button.route).join(',')!=='hoje,treinos,analise,mais'||result.buttons.length!==4||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
-  const expected=['hoje','treinos','analise'].includes(result.route)?result.route:'mais';
+  if(result.buttons.map(button=>button.route).join(',')!=='hoje,treinos,evolucao,mais'||result.buttons.length!==4||result.buttons.some(button=>button.width<44||button.left< -1||button.right>result.viewportWidth+1))throw new Error(`${label}: mobile navigation is not fully settled ${JSON.stringify(result.buttons)}`);
+  const expected=['hoje','treinos','evolucao'].includes(result.route)?result.route:'mais';
   const active=result.buttons.filter(button=>button.active);
   if(active.length!==1||active[0].route!==expected)throw new Error(`${label}: mobile navigation has competing or incorrect active destinations ${JSON.stringify({route:result.route,expected,active})}`);
   if(!result.brand.includes('LTS Health'))throw new Error(`${label}: mobile brand is not visible`);
@@ -98,6 +111,7 @@ async function assertMinimumReadableType(selector,minimum,label){
   if(result.minimum<minimum)throw new Error(`${label}: supporting type is too small (${result.minimum}px)`);
 }
 async function auditReferenceHome(label,expectedBuild){
+ if(await page.locator('[data-health-dashboard]').count()){await auditIntegratedDashboard(page,{expectedBuild});return;}
  const result=await page.evaluate(()=>{
   const top=s=>document.querySelector(s)?.getBoundingClientRect().top??99999;
   const visible=el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>0;};
@@ -117,9 +131,9 @@ async function auditExerciseGeometry(label){
   const result=await page.evaluate(()=>{
     const card=document.querySelector('.ltsRefExerciseCard'),header=card?.querySelector(':scope > header'),copy=header?.querySelector(':scope > div:nth-child(2)'),title=copy?.querySelector('b'),sets=card?.querySelector('.ltsRefSetTable'),action=card?.querySelector('.ltsRefExerciseHistory');
     const rect=el=>el?.getBoundingClientRect()||null,c=rect(card),h=rect(header),x=rect(copy),t=rect(title),s=rect(sets),a=rect(action);
-    return{display:card?getComputedStyle(card).display:'missing',cardWidth:c?.width||0,headerWidth:h?.width||0,copyWidth:x?.width||0,titleWidth:t?.width||0,setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),actionWidth:a?.width||0};
+    return{display:card?getComputedStyle(card).display:'missing',cardWidth:c?.width||0,headerWidth:h?.width||0,copyWidth:x?.width||0,titleWidth:t?.width||0,setsBelow:Boolean(h&&s&&s.top>=h.bottom-1),actionWidth:a?.width||0,actionHeight:a?.height||0,actionInHeader:Boolean(header&&action&&header.contains(action)),actionContained:Boolean(h&&a&&a.left>=h.left-1&&a.right<=h.right+1&&a.top>=h.top-1&&a.bottom<=h.bottom+1),actionLabel:action?.getAttribute('aria-label')||''};
   });
-  if(result.display!=='block'||result.headerWidth<result.cardWidth*.85||result.copyWidth<110||result.titleWidth<110||!result.setsBelow||result.actionWidth<120)throw new Error(`${label}: real Training exercise geometry is broken ${JSON.stringify(result)}`);
+  if(result.display!=='block'||result.headerWidth<result.cardWidth*.85||result.copyWidth<110||result.titleWidth<110||!result.setsBelow||result.actionWidth<43.5||result.actionHeight<43.5||!result.actionInHeader||!result.actionContained||result.actionLabel!=='Histórico deste exercício')throw new Error(`${label}: real Training exercise geometry is broken ${JSON.stringify(result)}`);
 }
 async function assertLightReadableCards(selector,label){
   const result=await page.evaluate(selector=>{
@@ -145,7 +159,7 @@ async function readIntegritySnapshot(){
       return{rows};
     }
     const specs=[
-      ['workouts','health_workouts','source_record_id,workout_date,is_canonical,record_status'],
+      ['workouts','health_workouts','source_record_id,workout_date,is_canonical,record_status,source_file,raw_exercises'],
       ['exercises','health_workout_exercises','source_record_id,workout_source_record_id'],
       ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,phase'],
       ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id,evidence_kind,evidence_status,field_names'],
@@ -173,6 +187,7 @@ async function readIntegritySnapshot(){
       orphanSetsByWorkout:data.sets.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
       orphanSetsByExercise:data.sets.filter(r=>r.exercise_source_record_id&&!exerciseIds.has(r.exercise_source_record_id)).length,
       orphanEvidence:data.evidence.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
+      legacyWorkoutsMissingSource:visibleWorkouts.filter(r=>String(r.source_file||'').includes('SEED_TREINOS')&&!String(r.raw_exercises||'').trim()).length,
       canonicalBoundaryViolations:data.sourceMetrics.filter(r=>String(r.canonical_status||'').toLowerCase()==='canonical'&&!allowedCanonical.has(`${String(r.source_family||'').toLowerCase()}|${String(r.metric_type||'').toLowerCase()}`)&&!validBridge(r)&&!validOriginalWater(r)).length,
       latestWorkoutId:latest?.source_record_id||null,
       latestWorkoutDate:latest?.workout_date||null,
@@ -214,11 +229,12 @@ try{
   const linkageFailures=integrity.orphanExercises+integrity.orphanSetsByWorkout+integrity.orphanSetsByExercise+integrity.orphanEvidence;
   if(linkageFailures)throw new Error(`real-data linkage integrity failed: ${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
   if(integrity.canonicalBoundaryViolations)throw new Error(`real-data canonical boundary failed: ${integrity.canonicalBoundaryViolations}`);
+  if(integrity.legacyWorkoutsMissingSource)throw new Error('Original legacy workout details are missing');
   if(!integrity.latestWorkoutId||integrity.latestExpectedExercises<1||integrity.latestExpectedSets<1)throw new Error('latest canonical workout has no structured linkage');
 
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
-  if(await page.locator('.refSignal').count()!==5||await page.locator('.refPanel:not(.mobileWorkout)').count()!==6)throw new Error('executive Home modules missing');
+  if(!await page.locator('[data-health-dashboard]').count()&&(await page.locator('.refSignal').count()!==5||await page.locator('.refPanel:not(.mobileWorkout)').count()!==6))throw new Error('executive Home modules missing');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
   await auditReferenceHome('desktop Home',expectedBuild);
   await assertNoHorizontalOverflow();
@@ -280,14 +296,22 @@ try{
   await waitForRoute('tratamentos');
   if(await page.locator('.timelineItem').count()<1)throw new Error('real protocol history missing');
   await assertLightReadableCards('.protocolSummaryCard','desktop Protocols');
+  await verifyDocumentedPlanFlows(page,waitForRoute);
+  await verifyLaboratoryOriginalFlow(page,waitForRoute);
+  console.log('Laboratory original source agreement verified; no private source identity or patient PDF was logged or opened.');
   await waitForRoute('dados');
   if(await page.locator('.qualityRow').count()<1)throw new Error('real quality history missing');
   const resolvedCount=await page.locator('.qualityRow').filter({hasText:'resolvido'}).count();
   if(resolvedCount<1)throw new Error('resolved real quality item missing');
-  const dataText=await page.locator('#screenHost').innerText();
-  if(integrity.uploadActionCount===0&&!dataText.includes('Nada exige sua ação agora'))throw new Error('real Data Inbox action state is contradictory');
-  if(integrity.uploadActionCount>0&&dataText.includes('Nada exige sua ação agora'))throw new Error('real Data Inbox hides required user action');
-  if(integrity.internalQualityCount>0&&!dataText.includes('Tratamento interno'))throw new Error('real Data Inbox internal-quality state is contradictory');
+  const inbox=page.locator('[data-review-inbox]');
+  const inboxHeadline=await inbox.locator('h2').innerText();
+  if(integrity.uploadActionCount===0&&inboxHeadline!=='Nenhuma ação sua é necessária')throw new Error('real Data Inbox action state is contradictory');
+  if(integrity.uploadActionCount>0&&inboxHeadline==='Nenhuma ação sua é necessária')throw new Error('real Data Inbox hides required user action');
+  if(await inbox.locator('[data-user-actions] .reviewActionRow').count()!==integrity.uploadActionCount)throw new Error('real Data Inbox user-action coverage differs from independent read');
+  if(await inbox.locator('[data-internal-quality] .reviewActionRow').count()!==Math.min(8,integrity.internalQualityCount))throw new Error('real Data Inbox internal-quality coverage differs from independent read');
+  await inbox.locator('details[data-disclosure="data-record-status"] > summary').click();
+  const inboxCounts=await inbox.locator('.reviewStat strong').allTextContents();
+  if(Number(inboxCounts[0])!==integrity.uploadActionCount||Number(inboxCounts[1])!==integrity.internalQualityCount)throw new Error('real Data Inbox disclosed counts differ from independent read');
   await assertLightReadableCards('.reviewInbox,.reviewStat,.sourceStatus','desktop Data');
 
   await waitForRoute('nutricao');
@@ -295,6 +319,11 @@ try{
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Nutrition duplicates its import action in the top bar');
   await page.screenshot({path:`${evidenceDir}/desktop-nutrition.png`});
   await waitForRoute('evolucao');
+  if(await page.locator('.ltsEvolutionOverview').count()){
+    await auditIntegratedEvolution(page);
+    await assertMinimumReadableType('.ltsEvolutionReading,.ltsEvolutionChartNote,[data-evolution-overview-metric]',10.5,'desktop Evolution');
+    await page.screenshot({path:`${evidenceDir}/desktop-evolution.png`,fullPage:true});
+  }else{
   await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'desktop Evolution');
   await page.screenshot({path:`${evidenceDir}/desktop-evolution.png`});
   await page.locator('.evolutionLowerGrid').scrollIntoViewIfNeeded();
@@ -307,6 +336,7 @@ try{
   await page.screenshot({path:`${evidenceDir}/desktop-evolution-lower.png`});
   await page.locator('.evolutionSegmental').scrollIntoViewIfNeeded();
   await page.screenshot({path:`${evidenceDir}/desktop-evolution-segmental.png`});
+  }
 
   await page.setViewportSize({width:390,height:844});
   await waitForRoute('hoje');
@@ -354,8 +384,67 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-nutrition-day.png`});
 
   await waitForRoute('analise');
-  const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:[...document.querySelectorAll('.ltsUsefulReports h2')].map(e=>e.textContent),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
-  if(!reports.period||!reports.sections.includes('Onde o corpo mudou')||!reports.sections.includes('Exames ao longo do tempo'))throw new Error('mobile useful reports are missing');
+  // Inspect the actual published report with the existing real authenticated
+  // session. Private values never enter public logs; screenshots stay in the
+  // established encrypted-artifact path. No form submission or data mutation.
+  await page.waitForSelector('#calendarReport .ltsReportKpis',{timeout:30000});
+  if(await page.locator('#calendarReport .ltsCalendarFullDetails').evaluate(el=>el.open))throw new Error('The report must start with its compact reading.');
+  const overviewMatches=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js'),{calendarReport}=await import('./src/calendar-report-model.js');
+    const model=calendarReport(state.data,state.domainStatus,state.ui);
+    const kpis=['energy','protein'].every(key=>{const m=model.metricsByKey[key],actual=document.querySelector(`[data-report-kpi="${key}"] b`)?.textContent;return actual===(m.value==null?'—':m.value.toLocaleString('pt-BR',{maximumFractionDigits:0}));});
+    const key=state.ui.calendarReportChart||'energy',metric=model.metricsByKey[key];
+    const expected=metric.points.filter(p=>p.eligible===true&&p.date<model.calendar.today&&typeof p.value==='number'&&p.value>=0&&!p.ambiguous&&!p.knownPartial&&!p.open&&!p.excludeFromClosedMeans&&!p.reviewInvalid).map(p=>p.date).sort();
+    const plotted=[...document.querySelectorAll('#calendarReport [data-report-plot-date]')].map(el=>el.dataset.reportPlotDate).sort();
+    return kpis&&JSON.stringify(plotted)===JSON.stringify(expected);
+  });
+  if(!overviewMatches)throw new Error('The actual compact report does not match its eligible source values/dates; private values withheld.');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-overview.png`});
+  const reportViewport=page.viewportSize();await page.setViewportSize({width:393,height:650});
+  await assertNoHorizontalOverflow();await assertStableMobileShell('mobile report reduced viewport');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-overview-393x650.png`});
+  await page.setViewportSize(reportViewport);
+  await page.locator('#calendarReport .ltsCalendarFullDetails > summary').click();
+  await page.waitForSelector('#calendarReport [data-calendar-metric="fiber"]',{timeout:30000});
+  const calendarNutrientsMatch=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {calendarReport}=await import('./src/calendar-report-model.js');
+    const model=calendarReport(state.data,state.domainStatus,state.ui);
+    const expectedKeys=['water','protein','energy','carbs','fat','fiber','steps','activeEnergy','sleep'].sort();
+    const renderedKeys=[...document.querySelectorAll('#calendarReport [data-calendar-metric]')].map(card=>card.dataset.calendarMetric).sort();
+    if(JSON.stringify(renderedKeys)!==JSON.stringify(expectedKeys)||JSON.stringify(model.metrics.map(metric=>metric.key).sort())!==JSON.stringify(expectedKeys))return false;
+    return ['carbs','fat','fiber'].every(key=>{
+      const metric=model.metricsByKey[key],card=document.querySelector(`#calendarReport [data-calendar-metric="${key}"]`);
+      if(!card||!card.querySelector(`[data-calendar-source="${key}"]`))return false;
+      const value=card.querySelector('.ltsCalendarMetricValue')?.textContent.trim();
+      const expected=metric.value==null?'Sem dado':`${metric.value.toLocaleString('pt-BR',{maximumFractionDigits:0})} g`;
+      return value===expected&&card.querySelector('.ltsCalendarCoverage')?.textContent===`${metric.count}/${metric.expectedDays} dias encerrados com valor`;
+    });
+  });
+  if(!calendarNutrientsMatch)throw new Error('Published calendar nutrient values or coverage do not match the authenticated loaded source model; private values withheld.');
+  const calendarHighlightsMatch=await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js');
+    const {calendarReport}=await import('./src/calendar-report-model.js');
+    const model=calendarReport(state.data,state.domainStatus,state.ui),ranges=model.highlights.ranges;
+    if(document.querySelectorAll('#calendarReport [data-calendar-highlight]').length!==ranges.length)return false;
+    if(!ranges.every(item=>{
+      const card=document.querySelector(`#calendarReport [data-calendar-highlight="${item.key}"]`),text=card?.textContent||'';
+      return text.includes(item.minimum.value.toLocaleString('pt-BR',{maximumFractionDigits:1}))&&text.includes(item.maximum.value.toLocaleString('pt-BR',{maximumFractionDigits:1}))&&text.includes(`${item.count}/${item.expectedDays} dias encerrados com valor`);
+    }))return false;
+    const coincidence=document.querySelector('#calendarReport [data-calendar-coincidence]');
+    if((coincidence?.dataset.calendarCoincidence||null)!==(model.highlights.coincidence?.date||null))return false;
+    const bars=[...document.querySelectorAll('#calendarReport .ltsCalendarGroupBar')],groups=model.training.recordedGroups;
+    if(bars.length){
+      if(bars.length!==groups.length)return false;
+      const maximum=Math.max(...groups.map(group=>group.primary));
+      if(!bars.every((bar,i)=>Number(bar.querySelector('rect:last-child')?.getAttribute('width'))===Number((280*groups[i].primary/maximum).toFixed(2))))return false;
+    }
+    return document.documentElement.scrollWidth<=innerWidth+1;
+  });
+  if(!calendarHighlightsMatch)throw new Error('Published descriptive ranges or training graphic do not match the authenticated dated source model; private values withheld.');
+  await page.screenshot({path:`${evidenceDir}/mobile-calendar-nutrients.png`,fullPage:true});
+  const reports=await page.evaluate(()=>({period:document.querySelector('#analysisPeriod')?.value||'',sections:['reportComposition','reportLabs'].map(id=>Boolean(document.querySelector('#'+id))),axes:[...document.querySelectorAll('.ltsUsefulReports .ltsContextAxis')].map(e=>e.textContent)}));
+  if(!reports.period||!reports.sections.every(Boolean))throw new Error('mobile useful reports are missing');
   if(reports.axes.length&&new Set(reports.axes).size!==1)throw new Error('mobile report calendars disagree');
   await assertNoHorizontalOverflow();
   await assertStableMobileShell('mobile Recovery');
@@ -373,6 +462,12 @@ try{
 
   await waitForRoute('evolucao');
   await assertNoHorizontalOverflow();
+  if(await page.locator('.ltsEvolutionOverview').count()){
+    await auditIntegratedEvolution(page);
+    await assertMinimumReadableType('.ltsEvolutionReading,.ltsEvolutionChartNote,[data-evolution-overview-metric]',10.5,'mobile Evolution');
+    await assertStableMobileShell('mobile Evolution');
+    await page.screenshot({path:`${evidenceDir}/mobile-evolution.png`,fullPage:true});
+  }else{
   await assertMinimumReadableType('.evoAxis,.evoDelta,.changeRow:not(.changeHead),[data-evolution-metric]',10.5,'mobile Evolution');
   await page.evaluate(()=>document.querySelector('#screenHost')?.scrollTo(0,0));
   await assertStableMobileShell('mobile Evolution');
@@ -388,6 +483,7 @@ try{
     await assertMinimumReadableType('.segmentKindTitle b,.segmentKindTitle small,.segmentPair span,.segmentPair strong,.sideDifferenceHead small',10.5,'mobile Evolution segmental');
     await assertStableMobileShell('mobile Evolution segmental');
     await page.screenshot({path:`${evidenceDir}/mobile-evolution-segmental.png`});
+  }
   }
 
   await waitForRoute('timeline');
@@ -407,9 +503,17 @@ try{
   await page.screenshot({path:`${evidenceDir}/mobile-more.png`});
   await page.locator('#moreSheet [data-route="evolucao"]').click();
 
+  verificationStage='deep-history';
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
 
+  verificationStage='sign-out';
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
-  if(runtimeErrorCount)throw new Error(`browser runtime errors occurred during real authenticated E2E: ${runtimeErrorCount}`);
+  if(runtimeErrorCount){const error=new Error('Browser runtime errors occurred during real authenticated E2E');error.auditCode='runtime-errors';throw error;}
   console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
-}finally{await browser.close();}
+}catch(error){
+  const auditCode=String(error?.auditCode||'');
+  if(/^depth-check-\d{1,3}$/.test(auditCode)||['nutrition-contrast','runtime-errors'].includes(auditCode))verificationStage+=` (${auditCode})`;
+  console.log('Real-auth bounded failure evidence: '+JSON.stringify({runtimeErrorCount,runtimeErrorKinds,network:networkFailures.failures,networkCounts:networkFailures.counts}));
+  try{await page.screenshot({path:`${evidenceDir}/e2e-failure.png`,fullPage:true});}catch{}
+  throw new Error(`Real authenticated verification failed in ${verificationStage}; private details are withheld from public logs. Inspect the encrypted evidence.`);
+}finally{networkFailures.stop();await browser.close();}

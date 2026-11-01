@@ -33,7 +33,7 @@ async function run(viewport,label){
 
   if(label==='desktop'){
     for(const group of ['Acompanhar','Áreas','Contexto','Sistema'])if(!await page.locator('#primaryNav .navGroupLabel',{hasText:group}).isVisible())throw new Error(`desktop: navigation group missing ${group}`);
-    if(await page.locator('#primaryNav > [data-route="evolucao"]').count())throw new Error('desktop: Evolução still competes in primary navigation');
+    if(await page.locator('#primaryNav > [data-route="evolucao"]').count()!==1||!await page.locator('#primaryNav > [data-route="evolucao"]').isVisible())throw new Error('desktop: observed history needs one discoverable Evolution destination');
     if(await page.locator('#routeAction').isVisible())throw new Error('desktop: duplicate overview action visible in top bar');
   }else{
     if(!await page.locator('#mobileNav').isVisible())throw new Error('mobile: primary mobile navigation is missing');
@@ -84,7 +84,7 @@ async function run(viewport,label){
   const isolation=await page.evaluate(()=>({appDisplay:getComputedStyle(document.querySelector('#app')).display,loginVisible:document.querySelector('#login')?.classList.contains('hidden')===false}));
   if(isolation.appDisplay!=='none'||!isolation.loginVisible)throw new Error(`${label}: authenticated shell leaks into login`);
   const loginText=(await page.locator('#login').innerText())||'';
-  for(const expected of ['Seu histórico de saúde, finalmente em contexto.','Uma linha do tempo','Leitura com evidência','Acesse seu cockpit'])if(!loginText.includes(expected))throw new Error(`${label}: login does not explain the product: ${expected}`);
+  for(const expected of ['Seu histórico de saúde, finalmente em contexto.','Uma linha do tempo','Informações claras','Resultados com datas, unidades e detalhes','Área privada','Acesse seu Health'])if(!loginText.toLocaleLowerCase('pt-BR').includes(expected.toLocaleLowerCase('pt-BR')))throw new Error(`${label}: login does not explain the product: ${expected}`);
 
   if(errors.length)throw new Error(`${label}: browser errors ${errors.join(' | ')}`);
   await browser.close();
@@ -92,4 +92,4 @@ async function run(viewport,label){
 
 await run({width:1440,height:1000},'desktop');
 await run({width:390,height:844},'mobile');
-console.log('LTS Health product architecture browser smoke passed');
+console.log('Supplemental legacy-fixture architecture journeys and shared navigation/auth isolation passed; actual observed Evolution is required by evolution-access-browser.');

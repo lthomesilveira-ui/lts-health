@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   product-architecture-contract:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -40,11 +40,7 @@ jobs:
 
       - name: Reject superseded presentation layers
         run: |
-          ! grep -q 'dashboard-parity.css' v2/index.html
-          ! grep -q 'dashboard-reference-contract.css' v2/index.html
-          ! grep -q 'executive-cockpit.js' v2/index.html
-          ! grep -q 'dashboard-reference-runtime.js' v2/index.html
-          ! grep -R "MutationObserver" v2/src v2/index.html
+          node v2/active-presentation-contract.mjs
           grep -q 'executive-shell.css' v2/index.html
           grep -q 'cockpit.css' v2/index.html
 

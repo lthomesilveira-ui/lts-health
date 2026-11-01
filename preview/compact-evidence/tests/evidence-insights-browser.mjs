@@ -18,7 +18,7 @@ for(const i of [2,4])for(let e=1;e<=10;e++){
   db.health_workout_exercises.push({source_record_id:`e${i}-${e}`,workout_source_record_id:`w${i}`,workout_date:date(i),exercise:`Synthetic press ${String(e).padStart(2,'0')}`,machine:'Synthetic machine',source:'Synthetic notes'});
   db.health_workout_sets.push({source_record_id:`s${i}-${e}`,exercise_source_record_id:`e${i}-${e}`,workout_source_record_id:`w${i}`,workout_date:date(i),phase:'working',weight:i===2?30:20,weight_unit:'kg',reps_numeric:10,source:'Synthetic notes',technique:'Synthetic standard technique',failure:false,near_failure:false});
 }
-const service=`window.__insightDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const q={select(){return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__insightDb[table]||[]).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
+const service=`window.__insightDb=${JSON.stringify(db)};window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})},functions:{invoke:async()=>({data:null,error:null})},from(table){let from=0,to=999;const filters=[];const q={select(){return q;},eq(key,value){filters.push([key,value]);return q;},range(a,b){from=a;to=b;return q;},order(){return q;},then(resolve,reject){return Promise.resolve({data:(window.__insightDb[table]||[]).filter(row=>filters.every(([key,value])=>row[key]===value)).slice(from,to+1),error:null}).then(resolve,reject);}};return q;}})};`;
 const browser=await chromium.launch({headless:true,...(process.env.LTS_BROWSER_PATH?{executablePath:process.env.LTS_BROWSER_PATH}:{}),args:['--no-sandbox']});
 const errors=[];
 async function stableHome(page){
@@ -28,6 +28,33 @@ async function stableHome(page){
     if(window.__gateHomeRoot!==root){window.__gateHomeRoot=root;window.__gateHomeStableFrames=0;}
     return ++window.__gateHomeStableFrames>=3;
   });
+  const details=page.locator('[data-disclosure="cockpit-details"]');
+  if(await details.count()&&!await details.evaluate(el=>el.open))await details.locator(':scope > summary').click();
+}
+// Route rendering and the compatibility controller can replace the first DOM.
+// Require a stable live root and geometry beyond its 250 ms settling cycle.
+async function stableExercise(page,id,name){
+  await page.evaluate(async()=>{
+    const {state}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');
+    window.__insightExerciseApp={state,isRouteReady};window.__insightExerciseCapture=null;
+  });
+  await page.waitForFunction(({id,name})=>{
+    const {state,isRouteReady}=window.__insightExerciseApp;
+    const root=document.querySelector('.ltsTrainingReference[data-training-view="exercise"]'),title=root?.querySelector('#productTrainingTitle');
+    if(!root||!title||!state.loaded||state.loading||!isRouteReady('treinos')||state.route!=='treinos'||location.hash!=='#treinos'||state.ui.productExerciseId!==id||title.textContent.trim()!==name||!root.querySelector('.ltsExerciseHistory')){
+      window.__insightExerciseCapture=null;return false;
+    }
+    const geometry=[root,title].flatMap(element=>{const r=element.getBoundingClientRect();return[r.x,r.y,r.width,r.height];}).join('|');
+    const previous=window.__insightExerciseCapture;
+    if(previous?.root!==root||previous.title!==title||previous.geometry!==geometry){
+      window.__insightExerciseCapture={root,title,geometry,id,name,since:performance.now()};return false;
+    }
+    return performance.now()-previous.since>=350;
+  },{id,name});
+}
+function exerciseCaptureUnchanged(){
+  const capture=window.__insightExerciseCapture,{state}=window.__insightExerciseApp;
+  return Boolean(capture&&capture.root===document.querySelector('.ltsTrainingReference[data-training-view="exercise"]')&&capture.title===document.querySelector('#productTrainingTitle')&&state.route==='treinos'&&state.ui.productExerciseId===capture.id&&capture.title.textContent.trim()===capture.name);
 }
 async function overflow(page){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no document horizontal overflow');}
 try{
@@ -35,7 +62,7 @@ try{
     const page=await browser.newPage({viewport:{width,height}});page.on('pageerror',error=>errors.push(error.message));
     await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:service}));
     await page.goto(base+'#hoje');await page.waitForSelector('[data-mobile-study]');await stableHome(page);await page.locator('[data-dashboard-period]').selectOption('90');await stableHome(page);
-    assert.equal(await page.locator('.studyCard.body svg').count(),0);assert.match(await page.locator('.studyCard.body').innerText(),/Sem avaliação corporal inequívoca nesta janela/);
+    assert.equal(await page.locator('.studyCard.body svg').count(),0);assert.match(await page.locator('.studyCard.body').innerText(),/Sem avaliação corporal sem conflito nesta janela/);
     assert.equal(await page.locator('.studyCard.body .studyPair').count(),0,'missing body records cannot create a comparison');
     assert.equal(await page.locator('.studyInsight [data-home-insight-details]').count(),0,'no body pair means no invented interval CTA');
     assert.ok(await page.locator('.studyCard.body [data-route="bio"]').isVisible(),'empty-body hero links to the original assessments');
@@ -43,8 +70,12 @@ try{
     // Without a body pair the hero opens Composition. Recovery remains reachable
     // through the existing navigation and keeps the same global calendar.
     await page.locator('.studyCard.body [data-route="bio"]').click();await page.waitForSelector('.ltsCompositionV2 .ltsEmptyCard');
-    const nav=width<=840?'#mobileNav':'#primaryNav';
-    await page.locator(`${nav} [data-route="analise"]`).click();
+    if(width<=840){
+      await page.locator('#mobileNav [data-route="mais"]').click();
+      const recovery=page.locator('#moreSheet [data-route="analise"]');
+      assert.ok(await recovery.isVisible(),'Recovery remains reachable through the mobile More menu');
+      await recovery.click();
+    }else await page.locator('#primaryNav [data-route="analise"]').click();
     await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     assert.equal(await page.locator('#analysisPeriod').inputValue(),'90','evidence details retain the Home calendar window');
     assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food a','canonical']));
@@ -57,16 +88,29 @@ try{
     await page.waitForFunction(()=>document.querySelectorAll('[data-report-exercise]').length===8);
     await page.waitForTimeout(300); // exercise the compatibility controller's settling pass
     assert.equal(await page.locator('[data-disclosure="report-workspace-routine"]').getAttribute('open'),'','period/pagination and settling preserve the current workspace');
-    await page.locator('#reportNutritionSource').selectOption({label:'Synthetic Food B'});
+    assert.match(await page.locator('#reportNutritionSource').innerText(),/Synthetic Food B · Histórico alimentar/);
+    await page.locator('#reportNutritionSource').selectOption(JSON.stringify(['nutrition','synthetic food b','canonical']));
+    assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food b','canonical']));
     await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('5 dias com valor'));
     assert.match(await protein.innerText(),/5 dias com valor/s,'source switch recalculates denominators');
-    await page.locator('#reportNutritionSource').selectOption({label:'Synthetic Food A'});
+    assert.match(await page.locator('#reportNutritionSource').innerText(),/Synthetic Food A · Histórico alimentar/);
+    await page.locator('#reportNutritionSource').selectOption(JSON.stringify(['nutrition','synthetic food a','canonical']));
+    assert.equal(await page.locator('#reportNutritionSource').inputValue(),JSON.stringify(['nutrition','synthetic food a','canonical']));
     await page.waitForFunction(()=>document.querySelector('#reportEvidenceInsights .ltsInsightTable tbody tr')?.innerText.includes('10 dias com valor'));
     await overflow(page);await page.evaluate(()=>document.querySelector('#reportNutritionSource').scrollIntoView({block:'center'}));
     await page.screenshot({path:`${dir}/synthetic-${label}-insights.png`,fullPage:false});
-    await page.locator('[data-report-exercise]').first().click();await page.waitForSelector('.ltsExerciseHistory');
-    assert.match(await page.locator('.ltsExerciseHistory').innerText(),/Synthetic press/,'evidence link opens the actual exercise');
+    const exerciseLink=page.locator('[data-report-exercise]').first(),exerciseId=await exerciseLink.getAttribute('data-report-exercise');
+    const expectedExercise=db.health_workout_exercises.find(row=>row.source_record_id===exerciseId);assert.ok(expectedExercise,'evidence link names an actual fixture record');
+    await exerciseLink.click();await stableExercise(page,exerciseId,expectedExercise.exercise);
+    assert.equal(await page.locator('#productTrainingTitle').innerText(),expectedExercise.exercise,'evidence link promotes the exact exercise name to the page title');
+    assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.productExerciseId;}),exerciseId,'the exact clicked record identity remains selected');
+    assert.match(await page.locator('.ltsExerciseSessionLatest .ltsExerciseRecordedSets').innerText(),/30 kg × 10/,'latest original load and reps lead the history');
     await overflow(page);
+    assert.equal(await page.evaluate(exerciseCaptureUnchanged),true,'exercise root remains identical before capture');
+    await page.evaluate(()=>{const {root,title}=window.__insightExerciseCapture;if(root!==document.querySelector('.ltsTrainingReference[data-training-view="exercise"]')||title!==document.querySelector('#productTrainingTitle'))throw new Error('Exercise DOM changed before scroll');title.scrollIntoView({block:'center',behavior:'instant'});});
+    assert.ok(await page.evaluate(()=>{const title=window.__insightExerciseCapture.title,r=title.getBoundingClientRect(),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return r.top>=0&&r.bottom<=innerHeight&&Boolean(hit&&(hit===title||title.contains(hit)));}),'exact exercise title is inside the captured viewport');
+    await page.screenshot({path:`${dir}/synthetic-${label}-exercise-history.png`,fullPage:false});
+    assert.equal(await page.evaluate(exerciseCaptureUnchanged),true,'exercise identity and DOM survive scrolling and screenshot');
     await page.evaluate(()=>{location.hash='#analise';});await page.waitForSelector('.ltsUsefulReports');await page.locator('[data-report-section="reportEvidenceInsights"]').click();await page.waitForSelector('#reportEvidenceInsights');
     await page.evaluate(async()=>{const {state}=await import('./src/core.js');state.data.sets=state.data.sets.map(row=>({...row,failure:null}));const {renderUsefulReports}=await import('./src/reports-screen.js');document.querySelector('#screenHost').innerHTML=renderUsefulReports();});
     await page.locator('[data-report-section="reportEvidenceInsights"]').click();

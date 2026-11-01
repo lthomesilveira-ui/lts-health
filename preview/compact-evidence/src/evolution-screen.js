@@ -8,7 +8,7 @@ const unavailable=text=>`<div class="errorState"><b>${esc(text)}</b><span>Os dem
 
 const metrics={
   weight_kg:{label:'Peso',unit:'kg'},
-  skeletal_muscle_mass_kg:{label:'MME',unit:'kg'},
+  skeletal_muscle_mass_kg:{label:'Músculo',unit:'kg'},
   fat_mass_kg:{label:'Gordura',unit:'kg'},
   body_fat_pct:{label:'Gordura',unit:'%'}
 };
@@ -65,7 +65,7 @@ function sideDifferences(current){
 
 function segmentComparison(current,baseline){
   if(failed('segmental'))return unavailable('As medições segmentares não carregaram agora.');
-  if(!current)return empty('Ainda não há análise segmentar estruturada.');
+  if(!current)return empty('Ainda não há medições por região do corpo.');
   const leanRows=[['Braço D','lean_right_arm_kg'],['Braço E','lean_left_arm_kg'],['Tronco','lean_trunk_kg'],['Perna D','lean_right_leg_kg'],['Perna E','lean_left_leg_kg']];
   const fatRows=[['Braço D','fat_right_arm_kg'],['Braço E','fat_left_arm_kg'],['Tronco','fat_trunk_kg'],['Perna D','fat_right_leg_kg'],['Perna E','fat_left_leg_kg']];
   const sourceMismatch=baseline&&knownSourceMismatch(current,baseline);
@@ -90,7 +90,7 @@ function bodyChangeTable(rows,reviewRequired=false){
   const pairs=rows.slice(1).map((current,i)=>({current,previous:rows[i],sourceMismatch:knownSourceMismatch(current,rows[i])})).slice(-12).reverse();
   const sourceChanges=pairs.filter(pair=>pair.sourceMismatch).length;
   return `${sourceChanges?`<div class="empty">${sourceChanges} ${sourceChanges===1?'intervalo tem':'intervalos têm'} mudança de origem. As diferenças nesses intervalos não foram calculadas.</div>`:''}<div class="evolutionChangeTable" role="table" aria-label="Mudança entre medições corporais">
-    <div class="changeRow changeHead" role="row"><span>Data</span><span>Peso</span><span>MME</span><span>Δ MME</span><span>Gordura</span><span>Δ gordura</span></div>
+    <div class="changeRow changeHead" role="row"><span>Data</span><span>Peso</span><span>Músculo</span><span>Δ músculo</span><span>Gordura</span><span>Δ gordura</span></div>
     ${pairs.map(({current,previous,sourceMismatch})=>`<div class="changeRow" role="row"><time>${fmtDate(current.measured_at)}</time><span>${fmtNum(current.weight_kg)} kg</span><span>${fmtNum(current.skeletal_muscle_mass_kg)} kg</span><strong>${sourceMismatch?'—':neutralDelta(current.skeletal_muscle_mass_kg,previous.skeletal_muscle_mass_kg,1,'kg')}</strong><span>${fmtNum(current.fat_mass_kg)} kg</span><strong>${sourceMismatch?'—':neutralDelta(current.fat_mass_kg,previous.fat_mass_kg,1,'kg')}</strong></div>`).join('')}
   </div>`;
 }
@@ -127,7 +127,7 @@ export function renderEvolutionHub(){
   const firstLastSourceMismatch=bodyHasSafeInterval&&knownSourceMismatch(first,last);
   const bodySub=bodyFailed?'indisponíveis agora':ambiguousBodyDates.size?`${ambiguousBodyDates.size} ${ambiguousBodyDates.size===1?'data em revisão':'datas em revisão'}${body.length?` · última comparável ${fmtDate(last?.measured_at)}`:''}`:body.length?`${fmtDate(first?.measured_at)} → ${fmtDate(last?.measured_at)}`:'sem registros';
   const segmentalSub=segFailed?'indisponíveis agora':ambiguousDates.size?`${ambiguousDates.size} ${ambiguousDates.size===1?'data em revisão':'datas em revisão'}${segmental.length?` · última comparável ${fmtDate(segmental.at(-1).measured_at)}`:''}`:segmental.length?`última ${fmtDate(segmental.at(-1).measured_at)}`:'sem registros';
-  return `${title('Evolução detalhada','Composição, análise segmentar e ritmo de treinos em uma rota preservada de aprofundamento.','Detalhe de Composição e Treinos')}
+  return `${title('Evolução detalhada','Acompanhe as medidas do corpo e a frequência dos treinos.','Detalhe de Composição e Treinos')}
     ${failures.length?`<div class="errorState"><b>Parte da evolução está indisponível agora.</b><span>Não foi possível carregar: ${esc(failures.join(', '))}. O restante continua visível.</span></div>`:''}
     <div class="grid cols4 sectionGap">
       ${metric('Medições corporais',bodyFailed?'—':String(rawBody.length),bodySub)}
@@ -139,7 +139,7 @@ export function renderEvolutionHub(){
     <div class="card sectionGap"><div class="cardHead"><div><b>Composição corporal</b><small>Escolha uma medida para acompanhar. O gráfico é descritivo.</small></div><div class="segmented">${Object.entries(metrics).map(([key,m])=>`<button type="button" data-evolution-metric="${key}" class="${key===metricKey?'active':''}" ${bodyFailed?'disabled':''}>${esc(m.label)}${key==='body_fat_pct'?' %':''}</button>`).join('')}</div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):lineChart(body,metricKey,`${meta.label} (${meta.unit})`,bodyReviewRequired)}${!bodyFailed&&bodyHasSafeInterval?`<div class="evoDelta"><span>Primeiro ${fmtNum(first[metricKey])} ${esc(meta.unit)}</span><b>${firstLastSourceMismatch?'Origem diferente · sem diferença calculada':`Diferença ${neutralDelta(last[metricKey],first[metricKey],1,meta.unit)}`}</b><span>Último ${fmtNum(last[metricKey])} ${esc(meta.unit)}</span></div>`:''}</div>
     <div class="card sectionGap"><div class="cardHead"><div><b>Mudança entre medições</b><small>Últimas mudanças consecutivas registradas. Sem classificação de melhor ou pior.</small></div></div>${bodyFailed?unavailable('As medições corporais não carregaram agora.'):bodyChangeTable(body,bodyReviewRequired)}</div>
     <div class="grid sectionGap evolutionLowerGrid">
-      <div class="card evolutionTrainingRhythm"><div class="cardHead"><div><b>Ritmo semanal de treinos</b><small>Dias com sessão estruturada nas últimas 12 semanas do histórico recente.</small></div></div>${workoutFailed?unavailable('Os treinos não carregaram; o ritmo semanal não pode ser calculado agora.'):weeks.length?`<div class="weekBars detailed weeklyRhythm">${weeks.map(w=>`<div title="${esc(fmtDate(w.a))} a ${esc(fmtDate(w.b))}"><i style="height:${w.days?Math.max(8,w.days/maxWeek*100):2}%"></i><b>${w.days}d</b><small>${w.sessions} ${w.sessions===1?'sessão':'sessões'}</small><span>${esc(w.label)}</span></div>`).join('')}</div><p class="footerNote">Cada barra mostra dias distintos com sessão de treino estruturada. Atividade geral de outras fontes não entra nessa contagem.</p>`:empty('Ainda não há sessões estruturadas para montar esta visão semanal.')}</div>
+      <div class="card evolutionTrainingRhythm"><div class="cardHead"><div><b>Ritmo semanal de treinos</b><small>Dias com treino registrado nas últimas 12 semanas do histórico recente.</small></div></div>${workoutFailed?unavailable('Os treinos não carregaram; o ritmo semanal não pode ser calculado agora.'):weeks.length?`<div class="weekBars detailed weeklyRhythm">${weeks.map(w=>`<div title="${esc(fmtDate(w.a))} a ${esc(fmtDate(w.b))}"><i style="height:${w.days?Math.max(8,w.days/maxWeek*100):2}%"></i><b>${w.days}d</b><small>${w.sessions} ${w.sessions===1?'sessão':'sessões'}</small><span>${esc(w.label)}</span></div>`).join('')}</div><p class="footerNote">Cada barra mostra dias distintos com treino registrado. Atividade geral de outras fontes não entra nessa contagem.</p>`:empty('Ainda não há treinos registrados para esta visão semanal.')}</div>
       <div class="card evolutionSegmental"><div class="cardHead segmentalHead"><div><b>Análise segmentar</b><small>Escolha a medição principal e compare livremente com outra data disponível.</small></div>${segmentCompareControl(segmental,currentSeg)}</div>${!segFailed&&ambiguousDates.size?`<div class="empty">${ambiguousDates.size===1?'1 data com mais de uma medição ficou fora da comparação.':'Datas com mais de uma medição ficaram fora da comparação.'} Os registros foram preservados para revisão.</div>`:''}<div class="segmented compactSeg segmentalDates">${segFailed?'':segmental.map(s=>`<button type="button" data-segmental-date="${esc(s.measured_at)}" class="${s.measured_at===state.ui.segmentalDate?'active':''}">${fmtDate(s.measured_at)}</button>`).join('')}</div>${segmentComparison(currentSeg,compareSeg)}<p class="footerNote">Diferenças entre datas e lados são descritivas; o app não atribui julgamento estético nem meta a esses valores.</p></div>
     </div>`;
 }

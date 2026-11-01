@@ -1,0 +1,351 @@
+/* Calendar reports are scoped to their own surface; the approved dashboard and
+   the existing detailed report workspaces keep their layout and controls. */
+.ltsCalendarReport{--calendar-ink:#213b59;--calendar-muted:#51657b;color:var(--calendar-ink);background:#fff;border:1px solid #dae4ee;border-radius:18px;padding:24px;margin:20px 0 30px;min-width:0;max-width:100%;overflow-wrap:anywhere}
+.ltsCalendarReport *{box-sizing:border-box}.ltsCalendarReport h2{font-size:25px;line-height:1.25;margin:4px 0 10px}.ltsCalendarReport h3{font-size:17px;line-height:1.4;margin:0 0 10px}.ltsCalendarReport h4{font-size:15px;line-height:1.45;margin:10px 0 5px}.ltsCalendarReport p,.ltsCalendarReport li{font-size:14px;line-height:1.6}.ltsCalendarReport p{margin:6px 0 10px}.ltsCalendarReport ul{padding-left:20px;margin:8px 0 14px}.ltsCalendarReport li{margin:6px 0}.ltsCalendarReport button,.ltsCalendarReport select,.ltsCalendarReport input{min-height:44px;font:inherit;font-size:15px;color:var(--calendar-ink);border:1px solid #bfd0e1;background:#fff;border-radius:9px;max-width:100%;min-width:0}.ltsCalendarReport button{padding:10px 14px;cursor:pointer;white-space:normal;line-height:1.35}.ltsCalendarReport button:disabled{opacity:.4;cursor:default}.ltsCalendarReport select,.ltsCalendarReport input{display:block;width:100%;padding:10px}.ltsCalendarReport button:focus-visible,.ltsCalendarReport select:focus-visible,.ltsCalendarReport input:focus-visible,.ltsCalendarReport summary:focus-visible{outline:3px solid #77a7db;outline-offset:3px}
+.ltsCalendarHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.ltsCalendarHeading>div{min-width:0}.ltsCalendarHeading>button{flex-shrink:0;background:#edf4fb;color:#174f86;font-weight:650}.ltsCalendarReport .ltsCalendarEyebrow{font-size:11px;letter-spacing:.11em;font-weight:750;color:#51657b;margin:0}.ltsCalendarReport .ltsCalendarPeriod{font-size:16px;font-weight:650}.ltsCalendarBadge{display:inline-block;font-size:12px;font-weight:550;padding:3px 7px;margin-left:7px;background:#eef3f8;border-radius:6px}.ltsCalendarReport .ltsCalendarNote,.ltsCalendarExportHelp{font-size:13px;line-height:1.6;color:var(--calendar-muted)}
+.ltsCalendarControls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;padding:18px 0;border-top:1px solid #e1e9f2;border-bottom:1px solid #e1e9f2;margin:15px 0 20px}.ltsCalendarControls label{display:block;font-size:13px;font-weight:600;min-width:0;flex:1 1 190px;max-width:280px}.ltsCalendarControls label select,.ltsCalendarControls label input{margin-top:5px}.ltsCalendarModes{display:flex;gap:5px}.ltsCalendarModes button[aria-pressed=true]{background:#213b59;color:#fff;border-color:#213b59}.ltsCalendarArrows{display:flex;gap:6px}.ltsCalendarArrows button{width:44px;font-size:24px;line-height:1;padding:7px}.ltsCalendarSummary{padding:18px 20px;background:#f4f7fb;border-radius:12px;margin-bottom:18px}.ltsCalendarSummary ul{margin-bottom:0}.ltsCalendarSummary li{font-size:15px}
+.ltsCalendarMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}.ltsCalendarMetric{border:1px solid #dce5ee;border-radius:12px;padding:16px;min-width:0}.ltsCalendarMetric .ltsCalendarAggregation{font-size:12px;color:var(--calendar-muted);margin-bottom:4px}.ltsCalendarMetric .ltsCalendarMetricValue{font-size:25px;line-height:1.25;font-weight:700;margin-bottom:10px}.ltsCalendarMetric .ltsCalendarCoverage{font-size:13px;font-weight:600}.ltsCalendarSource{font-size:12px!important;color:var(--calendar-muted)}.ltsCalendarSource span{display:block;margin-top:4px}.ltsCalendarComparison{border-top:1px solid #e2e9f1;padding-top:10px;margin-top:10px;font-size:13px}.ltsCalendarComparison b{font-size:14px}.ltsCalendarComparison p,.ltsCalendarComparison small{font-size:12px;line-height:1.6}.ltsCalendarComparison small{display:block;color:var(--calendar-muted)}.ltsCalendarSourcePicker{display:block;font-size:13px;margin:12px 0}.ltsCalendarSourcePicker select{margin-top:6px}.ltsCalendarEvidence{border-top:1px solid #e2e9f1;padding-top:10px;margin-top:14px}.ltsCalendarEvidence summary{cursor:pointer;min-height:44px;padding:10px 0;font-size:13px;font-weight:650}.ltsCalendarEvidence p{font-size:13px}.ltsCalendarDays{list-style:none;padding:0!important;margin:10px 0!important}.ltsCalendarDays li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:2px 8px;border-top:1px solid #e7edf3;padding:7px 0;margin:0;font-size:12px}.ltsCalendarDays b{text-align:right}.ltsCalendarDays small{grid-column:1/-1;font-size:11px;color:var(--calendar-muted)}
+.ltsCalendarToday{border:1px dashed #c1cfdd;border-radius:12px;padding:16px;margin:20px 0}.ltsCalendarToday ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.ltsCalendarToday li{font-size:13px;min-width:0}.ltsCalendarToday span{display:block;color:var(--calendar-muted);font-size:12px}.ltsCalendarSection{border-top:1px solid #dce5ee;margin-top:24px;padding-top:22px}.ltsCalendarTrainingCounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.ltsCalendarTrainingCounts b{font-size:24px;line-height:1.4;display:block}.ltsCalendarTrainingCounts span{display:block;font-size:13px;color:var(--calendar-muted)}.ltsCalendarGroups{list-style:none;padding:0!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ltsCalendarGroups li{padding:10px 12px;background:#f4f7fb;border-radius:8px;min-width:0}.ltsCalendarGroups span{display:block;font-size:13px}.ltsCalendarProgression{margin-top:20px}.ltsCalendarSessions,.ltsCalendarLabRows{list-style:none;padding:0!important}.ltsCalendarSession,.ltsCalendarLabRow{padding:12px 0;border-top:1px solid #e2e9f1}.ltsCalendarSession>h4,.ltsCalendarLabRow>h4{margin-top:0}.ltsCalendarSession ul li{margin-bottom:10px}.ltsCalendarPlan{border-top:1px solid #e2e9f1;padding-top:18px;margin-top:20px}.ltsCalendarPlanMetrics{list-style:none;padding:0!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ltsCalendarPlanMetrics li{border:1px solid #dce5ee;border-radius:8px;padding:12px;min-width:0}.ltsCalendarPlanMetrics p{font-size:13px}.ltsCalendarExportHelp{border-top:1px solid #e1e9f2;padding-top:16px;margin-top:20px!important}.ltsCalendarDetailedTitle{margin:24px 0 0;font-size:22px}.ltsCalendarPrintFooter{font-size:10px;margin-top:20px;border-top:1px solid #bcc8d4;padding-top:10px}#calendarPrintRoot{display:none}
+@media(max-width:1050px){.ltsCalendarMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ltsCalendarToday ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.ltsCalendarReport{padding:16px;border-radius:14px;margin-top:16px}.ltsCalendarReport h2{font-size:22px}.ltsCalendarHeading{display:block}.ltsCalendarHeading>button{width:100%;margin-top:10px}.ltsCalendarBadge{margin:6px 0 0;display:table}.ltsCalendarControls{gap:12px 8px}.ltsCalendarModes{flex:1 1 100%}.ltsCalendarModes button{flex:1}.ltsCalendarControls label{max-width:none;flex:1 1 calc(100% - 104px)}.ltsCalendarControls label:has(input){flex-basis:100%}.ltsCalendarMetrics,.ltsCalendarGroups,.ltsCalendarPlanMetrics{grid-template-columns:1fr}.ltsCalendarSummary{padding:14px}.ltsCalendarToday ul{grid-template-columns:1fr}.ltsCalendarTrainingCounts{grid-template-columns:1fr 1fr}.ltsCalendarTrainingCounts p:last-child{grid-column:1/-1}.ltsCalendarMetric .ltsCalendarMetricValue{font-size:27px}.ltsCalendarDetailedTitle{font-size:20px}}
+@media print{
+  @page{size:A4;margin:14mm 13mm 16mm}
+  body.ltsCalendarPrinting{display:block!important;background:#fff!important;padding:0!important;margin:0!important;overflow:visible!important;min-width:0!important;height:auto!important;color:#111!important}
+  body.ltsCalendarPrinting>*:not(#calendarPrintRoot){display:none!important}
+  body.ltsCalendarPrinting #calendarPrintRoot{display:block!important;position:static!important;margin:0!important;padding:0!important;width:auto!important;height:auto!important;overflow:visible!important}
+  #calendarPrintRoot .ltsCalendarReport{border:0;border-radius:0;padding:0;margin:0;max-width:none;color:#111;background:#fff;font-family:Arial,Helvetica,sans-serif;overflow:visible}
+  #calendarPrintRoot *{color:#111!important;text-shadow:none!important;box-shadow:none!important;max-height:none!important;overflow:visible!important;position:static!important}
+  #calendarPrintRoot h2{font-size:20pt;margin:4pt 0 8pt}#calendarPrintRoot h3{font-size:12pt;margin:8pt 0 6pt}#calendarPrintRoot h4{font-size:10pt;margin:8pt 0 4pt}
+  #calendarPrintRoot p,#calendarPrintRoot li{font-size:9pt;line-height:1.45}#calendarPrintRoot small,#calendarPrintRoot .ltsCalendarNote,#calendarPrintRoot .ltsCalendarSource,#calendarPrintRoot .ltsCalendarComparison p,#calendarPrintRoot .ltsCalendarComparison small{font-size:8pt!important;line-height:1.5}
+  #calendarPrintRoot h2,#calendarPrintRoot h3,#calendarPrintRoot h4{break-after:avoid;page-break-after:avoid}#calendarPrintRoot p{orphans:3;widows:3}
+  #calendarPrintRoot .ltsCalendarHeading{display:block}#calendarPrintRoot .ltsCalendarSummary{padding:8pt 10pt;border:1px solid #bbb;background:#fff;break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarBadge{border:1px solid #aaa;background:#fff}#calendarPrintRoot .ltsCalendarMetrics{display:block;margin:10pt 0}
+  #calendarPrintRoot .ltsCalendarMetric{display:block;padding:9pt 10pt;margin:0 0 8pt;border:1px solid #bbb;border-radius:0;break-inside:avoid;page-break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarMetricValue{font-size:18pt;margin:4pt 0}#calendarPrintRoot .ltsCalendarMetric h3{margin:0}#calendarPrintRoot .ltsCalendarMetric .ltsCalendarSource span{display:inline;margin-right:10pt}
+  #calendarPrintRoot .ltsCalendarComparison{margin-top:6pt;padding-top:5pt;border-color:#ccc}#calendarPrintRoot .ltsCalendarComparison b{font-size:10pt}
+  #calendarPrintRoot .ltsCalendarToday,#calendarPrintRoot .ltsCalendarSection,#calendarPrintRoot .ltsCalendarEvidence,#calendarPrintRoot .ltsCalendarPlan{border-radius:0;background:#fff;padding-top:8pt;margin-top:12pt;break-inside:auto;page-break-inside:auto}
+  #calendarPrintRoot .ltsCalendarToday ul,#calendarPrintRoot .ltsCalendarTrainingCounts,#calendarPrintRoot .ltsCalendarGroups,#calendarPrintRoot .ltsCalendarPlanMetrics{display:block}
+  #calendarPrintRoot .ltsCalendarTrainingCounts p{display:inline-block;vertical-align:top;width:31%;margin:0 1% 8pt 0}#calendarPrintRoot .ltsCalendarTrainingCounts b{font-size:16pt}#calendarPrintRoot .ltsCalendarTrainingCounts span{font-size:9pt}
+  #calendarPrintRoot .ltsCalendarGroups li,#calendarPrintRoot .ltsCalendarPlanMetrics li{background:#fff;border:0;border-bottom:1px solid #ccc;border-radius:0;padding:6pt 0;break-inside:avoid;page-break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarSession,#calendarPrintRoot .ltsCalendarLabRow,#calendarPrintRoot .ltsCalendarLabs .ltsCalendarEvidence>ul>li{break-inside:avoid;page-break-inside:avoid}#calendarPrintRoot .ltsCalendarLabRow p,#calendarPrintRoot .ltsCalendarSession li li{break-inside:avoid;page-break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarDays{display:block}#calendarPrintRoot .ltsCalendarDays li{display:block;border-color:#ddd;padding:4pt 0;break-inside:avoid;page-break-inside:avoid}#calendarPrintRoot .ltsCalendarDays li>span{display:inline-block;width:25%}#calendarPrintRoot .ltsCalendarDays li>b{display:inline-block;text-align:left;width:32%}#calendarPrintRoot .ltsCalendarDays li>small{display:inline;font-size:8pt}
+  #calendarPrintRoot .ltsCalendarAllEvidence{break-before:page;page-break-before:always}#calendarPrintRoot .ltsCalendarAllEvidence>.ltsCalendarEvidence{break-inside:auto;page-break-inside:auto}
+  #calendarPrintRoot ul{padding-left:14pt}#calendarPrintRoot li{orphans:2;widows:2}#calendarPrintRoot .ltsCalendarPrintFooter{font-size:8pt;break-inside:avoid}
+}
+
+/* The report starts with an editorial overview. Full source-specific records
+   remain in a native disclosure rather than competing with the main reading. */
+.ltsCalendarCompact{--report-orange:#c57830;--report-green:#2b7c68;background:transparent;border:0;padding:0;margin:12px 0 28px}
+.ltsCalendarCompact .ltsReportHeading{align-items:center;gap:12px}
+.ltsCalendarCompact .ltsReportHeading h2{font-size:25px;letter-spacing:-.035em;line-height:1.2;margin:6px 0}
+.ltsCalendarCompact .ltsReportHeading .ltsCalendarEyebrow{font-size:10px;color:#607185}
+.ltsCalendarCompact .ltsReportPeriodState{font-size:12px;color:#596c7e;margin:0}
+.ltsCalendarCompact .ltsReportHeading>button{width:auto;display:flex;align-items:center;gap:7px;padding:9px 12px;margin:0;background:#fff;border:1px solid #d9e2ec;font-size:12px;font-weight:650}
+.ltsReportHeading>button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ltsCalendarCompact .ltsCalendarControls{border:0;margin:16px 0;padding:0;display:grid;grid-template-columns:auto minmax(140px,1fr) auto;gap:8px;align-items:center}
+.ltsCalendarCompact .ltsCalendarModes{background:#e8edf3;border-radius:11px;padding:3px;gap:2px;grid-column:auto;grid-row:auto}
+.ltsCalendarCompact .ltsCalendarModes button{min-width:44px;border:0;background:transparent;min-height:44px;border-radius:8px;font-size:12px;padding:8px 12px}
+.ltsCalendarCompact .ltsCalendarModes button[aria-pressed=true]{background:#213b59;color:#fff;box-shadow:0 2px 6px #2039531a}
+.ltsCalendarCompact .ltsCalendarControls>label{grid-column:auto;width:100%;max-width:none;font-size:0;min-width:0}
+.ltsCalendarCompact .ltsCalendarControls label select{margin:0;font-size:12px;border-color:#d9e2ec;background-color:#fff;min-height:44px;padding:10px}
+.ltsCalendarCompact .ltsCalendarControls label:has(input){grid-column:1/-1;font-size:12px;max-width:300px}
+.ltsCalendarCompact .ltsCalendarArrows{grid-column:auto;grid-row:auto;gap:4px}
+.ltsCalendarCompact .ltsCalendarArrows button{border-color:#d9e2ec;background:#fff;font-size:22px}
+.ltsReportOverview{min-width:0}.ltsReportKpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#dfe6ed;border:1px solid #dfe6ed;border-radius:13px;overflow:hidden;margin:0 0 16px}
+.ltsReportKpi{background:#fff;min-width:0;padding:16px 18px}
+.ltsReportKpi>span{font-size:11px;font-weight:650;color:#637489}
+.ltsReportKpi>p{display:flex;align-items:baseline;gap:6px;margin:5px 0 4px;line-height:1.2;flex-wrap:wrap}
+.ltsReportKpi p b{font-size:31px;font-weight:700;letter-spacing:-.05em;color:#203752;font-variant-numeric:tabular-nums}
+.ltsReportKpi small{color:#728093;font-size:10px;font-weight:400;line-height:1.4}
+.ltsReportKpi p small{font-size:11px;color:#51657b}
+.ltsReportTrainingColumn{min-width:0}
+.ltsReportOverviewGrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+.ltsReportPanel{background:#fff;border:1px solid #e1e7ed;border-radius:14px;padding:20px;min-width:0}
+.ltsReportPanelHeading{display:flex;align-items:center;gap:10px;margin-bottom:16px;min-width:0}
+.ltsReportPanelHeading>div:nth-child(2){flex:1;min-width:0}
+.ltsReportPanelHeading h3{font-size:16px;letter-spacing:-.02em;line-height:1.2;margin:0 0 4px}
+.ltsReportPanelHeading p{font-size:11px;color:#607185;line-height:1.3;margin:0}
+.ltsReportDomainIcon{width:32px;height:32px;border-radius:10px;background:#fff1e3;color:var(--report-orange);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ltsReportDomainIcon svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ltsReportTraining .ltsReportDomainIcon{background:#eaf5f0;color:var(--report-green)}
+.ltsReportCoverage{color:#7d6751;background:#fbf4eb;padding:5px 7px;border-radius:6px;font-size:10px;white-space:nowrap}
+.ltsReportChartTabs{display:flex;gap:4px;margin:0 -2px 18px;min-width:0;flex-wrap:wrap}
+.ltsCalendarReport .ltsReportChartTabs button{min-width:44px;border:0;padding:7px 9px;min-height:44px;background:#f5f7fa;border-radius:7px;font-size:11px;color:#607185;line-height:1.3}
+.ltsCalendarReport .ltsReportChartTabs button[aria-pressed=true]{background:#fff0dd;color:#8b4b15;font-weight:700}
+.ltsReportChartReading>span{font-size:11px;color:#607185}
+.ltsReportChartReading p{margin:4px 0 0;line-height:1.15;display:flex;align-items:baseline;gap:7px}
+.ltsReportChartReading b{font-size:30px;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.ltsReportChartReading small{font-size:12px;color:#607185}
+.ltsReportNutrition[data-report-chart="energy"] .ltsReportChartReading p{display:none}
+.ltsReportPlot{margin:10px 0 12px;min-width:0}
+.ltsReportPlot>svg{width:100%;height:auto;display:block;fill:var(--report-orange);overflow:visible}
+.ltsReportPlot text{font-family:inherit;font-size:12px;fill:#607185;font-variant-numeric:tabular-nums}
+.ltsReportGrid{stroke:#edf0f4;stroke-width:1;fill:none}
+.ltsReportMean{stroke:#855d35;stroke-width:1;stroke-dasharray:4 4;fill:none}
+.ltsReportPlot figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;margin:0 0 12px;font-size:10px;color:#607185}
+.ltsReportPlot figcaption span{display:flex;align-items:center;gap:5px}
+.ltsReportPlot figcaption i{display:inline-block;background:var(--report-orange);width:7px;height:7px;border-radius:2px}
+.ltsReportPlot figcaption i.mean{height:0;width:12px;border-top:1px dashed #855d35;border-radius:0;background:none}
+.ltsCalendarReport .ltsReportChartSource{color:#607185;font-size:11px;line-height:1.5;margin:0 0 13px}
+.ltsReportNutrients{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;border-top:1px solid #edf0f4;padding-top:13px}
+.ltsReportNutrients>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ltsReportNutrients span{font-size:10px;color:#607185}.ltsReportNutrients b{font-size:15px;font-weight:650;letter-spacing:-.025em;white-space:normal;line-height:1.3;font-variant-numeric:tabular-nums}
+.ltsReportNutrients b small{font-size:10px;font-weight:400}.ltsReportNutrients>div>small{font-size:9px;color:#607185}
+.ltsCalendarReport .ltsReportFootnote{font-size:11px;color:#607185;line-height:1.6;margin:13px 0 0}
+.ltsReportAreaLink{font-size:11px;color:#2b7164;text-decoration:none;padding:10px 0 10px 6px;min-height:44px;display:flex;align-items:center;gap:7px}
+.ltsReportTrainingStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border-bottom:1px solid #edf0f4;padding-bottom:16px;margin-bottom:16px}
+.ltsReportTrainingStats p{margin:0}.ltsReportTrainingStats b{font-size:27px;display:block;letter-spacing:-.04em;line-height:1.3;font-variant-numeric:tabular-nums}.ltsReportTrainingStats span{font-size:10px;color:#607185;line-height:1.3;display:block}
+.ltsReportGroupChart{display:grid;gap:14px}.ltsReportGroupChart>div{display:grid;grid-template-columns:minmax(0,90px) minmax(40px,1fr) 24px;gap:10px;align-items:center;font-size:11px;line-height:1.4}
+.ltsReportGroupChart span{color:#5c7082}.ltsReportGroupChart b{text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+.ltsReportGroupChart svg{width:100%;height:8px;fill:var(--report-green)}.ltsReportGroupTrack{fill:#edf3f1}
+.ltsReportInsights{margin:24px 0 20px}.ltsReportInsights>h3{font-size:15px;margin:0 0 12px}
+.ltsReportInsights>div{display:grid;grid-template-columns:1fr;gap:0}
+.ltsReportInsight{display:flex;align-items:flex-start;gap:10px;padding:14px 0;border-top:1px solid #dae3ed;min-width:0}
+.ltsReportInsightIndex{font-size:11px;font-weight:650;color:#637489;line-height:1.5;padding-top:2px;flex:0 0 20px;min-width:20px;white-space:nowrap}
+.ltsReportInsight h4{font-size:13px;line-height:1.45;margin:0 0 6px}
+.ltsReportInsight p{font-size:12px;line-height:1.6;margin:0 0 5px;color:#536b81}
+.ltsReportInsight small{font-size:10px;color:#607185;line-height:1.5;display:block}
+.ltsReportSignals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:15px 0;border-top:1px solid #dfe6ed;border-bottom:1px solid #dfe6ed}
+.ltsReportSignals>div{display:flex;flex-direction:column;min-width:0;gap:5px}
+.ltsReportSignals span{font-size:10px;color:#607185}.ltsReportSignals b{font-size:13px;font-weight:600;line-height:1.4}.ltsReportSignals b small{font-size:10px;font-weight:400}.ltsReportSignals>div>small{font-size:10px;color:#607185}
+.ltsReportPlotEmpty{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#f8fafc;border-radius:9px;margin:14px 0}
+.ltsReportPlotEmpty>span{font-size:25px;color:#94a2af}.ltsReportPlotEmpty p{font-size:12px;margin:8px 14px}.ltsReportPlotEmpty small{font-size:10px;color:#607185}
+.ltsCalendarFullDetails{margin-top:20px;border:1px solid #dce4ed;background:#fff;border-radius:12px}
+.ltsCalendarFullDetails>summary{display:flex;align-items:center;justify-content:space-between;gap:15px;cursor:pointer;padding:16px 18px;font-size:14px;font-weight:650;list-style:none;min-height:64px}
+.ltsCalendarFullDetails>summary::-webkit-details-marker{display:none}.ltsCalendarFullDetails>summary small{display:block;font-size:11px;color:#607185;font-weight:400;margin-top:5px}.ltsCalendarFullDetails>summary>span:last-child{color:#748ca1;font-size:20px;font-weight:400}.ltsCalendarFullDetails[open]>summary>span:last-child{transform:rotate(45deg)}
+.ltsCalendarDetailBody{padding:0 18px 18px}.ltsCalendarDetailBody>.ltsCalendarSummary{margin-top:18px}
+.ltsCalendarCompact #calendarReportStatus:empty{display:none}
+@media(max-width:850px){.ltsReportOverviewGrid{grid-template-columns:1fr}.ltsReportInsights>div{grid-template-columns:1fr}.ltsReportInsight{padding:12px 0}.ltsReportInsights{margin:22px 0 16px}.ltsReportGroupChart>div{grid-template-columns:minmax(0,100px) minmax(40px,1fr) 24px}}
+@media(max-width:600px){
+ .ltsCalendarCompact{margin-top:4px;padding:0;border-radius:0}
+ .ltsCalendarCompact .ltsReportHeading h2{font-size:21px;max-width:245px;line-height:1.25}
+ .ltsCalendarCompact .ltsReportHeading{display:flex;gap:10px}
+ .ltsCalendarCompact .ltsCalendarControls{grid-template-columns:minmax(0,1fr) auto;gap:8px;margin:14px 0}
+ .ltsCalendarCompact .ltsCalendarControls>.ltsCalendarModes{grid-column:1;grid-row:1;width:max-content}
+ .ltsCalendarCompact .ltsCalendarModes button{min-height:44px;padding:7px 13px}
+ .ltsCalendarCompact .ltsCalendarArrows{grid-column:2;grid-row:1}
+ .ltsCalendarCompact .ltsCalendarControls>label{grid-column:1/-1;width:100%;max-width:none}
+ .ltsCalendarCompact .ltsCalendarControls label select{font-size:12px;padding:10px 12px;min-height:44px}
+ .ltsReportKpis{margin-bottom:12px;border-radius:11px}.ltsReportKpi{padding:12px 11px}.ltsReportKpi>p{display:block;line-height:1.15;margin:5px 0}.ltsReportKpi p b{font-size:27px}.ltsReportKpi p small{display:block;margin-top:3px;font-size:10px}.ltsReportKpi>span{font-size:10px}.ltsReportKpi>small{font-size:10px}
+ .ltsReportPanel{padding:16px;border-radius:12px}.ltsReportPanelHeading{margin-bottom:10px}.ltsReportPanelHeading h3{font-size:15px}.ltsReportChartTabs{gap:4px;margin-bottom:12px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+ .ltsCalendarReport .ltsReportChartTabs button{font-size:11px;padding:7px 3px;min-width:0;overflow-wrap:normal}
+ .ltsReportChartReading b{font-size:27px}.ltsReportChartReading>span{font-size:10px}.ltsReportNutrients{gap:7px}.ltsReportNutrients span{font-size:10px}.ltsReportNutrients b{font-size:14px}.ltsReportNutrients>div>small{font-size:10px}
+ .ltsReportGroupChart{gap:12px}.ltsReportGroupChart>div{font-size:11px;grid-template-columns:minmax(0,92px) minmax(40px,1fr) 22px}
+ .ltsReportSignals{gap:10px}.ltsReportSignals b{font-size:12px}.ltsCalendarFullDetails>summary{padding:14px}.ltsCalendarDetailBody{padding:0 12px 12px}
+ .ltsReportsExperience>.screenTitle{margin-bottom:18px;padding-top:0}.ltsReportsExperience>.screenTitle h1{font-size:25px;letter-spacing:-.03em}.ltsReportsExperience>.screenTitle p{font-size:12px;line-height:1.5;margin-top:6px}.ltsReportsExperience>.screenTitle .screenEyebrow{display:none}.ltsReportsExperience>.screenTitle .domainHomeAction{display:none}
+ .ltsReportsExperience>.screenTitle{margin-bottom:12px;padding-bottom:10px}.ltsReportsExperience>.screenTitle p{display:none}
+ .ltsCalendarCompact .ltsCalendarControls{margin:10px 0 12px}
+ .ltsCalendarCompact .ltsReportKpi{padding:12px 11px}
+ .ltsCalendarCompact .ltsReportKpi>span{display:block;line-height:1.2}
+ .ltsCalendarCompact .ltsReportKpi>p{line-height:1;margin:7px 0 5px}
+ .ltsCalendarCompact .ltsReportKpi p b{line-height:1}
+ .ltsCalendarCompact .ltsReportKpi p small{line-height:1.2;margin-top:5px}
+ .ltsCalendarCompact .ltsReportKpi>small{display:block;line-height:1.2}
+ .ltsReportsExperience>.screenTitle{display:none}
+ .ltsCalendarCompact .ltsReportHeading .ltsCalendarEyebrow{display:none}
+ .ltsCalendarCompact .ltsReportHeading h2{font-size:23px;margin:0 0 5px}
+ .ltsReportPlot>svg{height:150px}
+ .ltsReportChartReading{font-size:11px;line-height:1.3}
+ .ltsReportKpis{margin-bottom:8px}
+ .ltsReportNutrition{padding-top:14px}
+ .ltsReportPlot{margin-top:8px}
+}
+@media(min-width:375px) and (max-width:600px){
+ .ltsCalendarCompact .ltsCalendarControls{grid-template-columns:auto minmax(0,1fr) auto;gap:6px}
+ .ltsCalendarCompact .ltsCalendarControls>.ltsCalendarModes{grid-column:1;grid-row:1}
+ .ltsCalendarCompact .ltsCalendarModes button{font-size:11px;padding:7px 9px}
+ .ltsCalendarCompact .ltsCalendarControls>label{grid-column:2;grid-row:1;min-width:0}
+ .ltsCalendarCompact .ltsCalendarControls label select{font-size:11px;padding:10px 7px}
+ .ltsCalendarCompact .ltsCalendarArrows{grid-column:3;grid-row:1}
+ .ltsCalendarCompact .ltsCalendarControls>label:has(input){grid-column:1/-1;grid-row:2}
+}
+@media(max-width:355px){.ltsCalendarCompact .ltsReportHeading h2{font-size:18px}.ltsReportKpi{padding:11px 8px}.ltsReportKpi p b{font-size:24px}.ltsReportPanel{padding:13px}.ltsCalendarReport .ltsReportChartTabs button{font-size:11px}.ltsReportNutrients b{font-size:12px}.ltsReportNutrients span{font-size:10px}.ltsReportCoverage{font-size:10px}.ltsReportPanelHeading{gap:8px}}
+@media print{
+ #calendarPrintRoot .ltsCalendarSummaryDocument{--report-orange:#b16a22;--report-green:#286453}
+ #calendarPrintRoot .ltsReportPrintHeading{border-bottom:2px solid #253e59;padding-bottom:12pt;margin-bottom:14pt}
+ #calendarPrintRoot .ltsReportPrintHeading p{font-size:8pt;font-weight:700;margin:0 0 6pt}
+ #calendarPrintRoot .ltsReportPrintHeading h2{font-size:23pt;letter-spacing:-.5pt;margin:0 0 6pt}
+ #calendarPrintRoot .ltsReportPrintHeading>span{font-size:8pt;color:#617283!important}
+ #calendarPrintRoot .ltsReportKpis{margin-bottom:12pt;overflow:visible!important}
+ #calendarPrintRoot .ltsReportKpi{padding:10pt 12pt;background:#f6f8fa!important}
+ #calendarPrintRoot .ltsReportKpi p b{font-size:24pt}.ltsReportKpi p small{font-size:9pt}
+ #calendarPrintRoot .ltsReportOverviewGrid{display:block}
+ #calendarPrintRoot .ltsReportPanel{padding:12pt;border-radius:8pt;border-color:#ced7df;break-inside:avoid;page-break-inside:avoid}
+ #calendarPrintRoot .ltsReportPanelHeading{margin-bottom:10pt}
+ #calendarPrintRoot .ltsReportPanelHeading h3{font-size:12pt;margin:0 0 3pt}
+ #calendarPrintRoot .ltsReportPanelHeading p{font-size:8pt;margin:0}
+ #calendarPrintRoot .ltsReportDomainIcon{width:26pt;height:26pt}.ltsReportDomainIcon svg{width:18pt;height:18pt}
+ #calendarPrintRoot .ltsReportChartReading b{font-size:22pt}
+ #calendarPrintRoot .ltsReportPlot{margin:6pt 0}
+ #calendarPrintRoot .ltsReportPlot>svg{height:140pt;fill:#bc783c}
+ #calendarPrintRoot .ltsReportPlot text{font-size:10px;fill:#687a8b}
+ #calendarPrintRoot .ltsReportPlot figcaption,#calendarPrintRoot .ltsReportChartSource{font-size:7pt!important;margin:4pt 0 8pt}
+ #calendarPrintRoot .ltsReportNutrients{padding-top:9pt}.ltsReportNutrients span{font-size:8pt}
+ #calendarPrintRoot .ltsReportNutrients b{font-size:12pt}.ltsReportNutrients>div>small{font-size:7pt}
+ #calendarPrintRoot .ltsReportFootnote{font-size:7pt!important;line-height:1.4;margin:8pt 0 0}
+ #calendarPrintRoot .ltsReportTraining{margin-top:12pt;break-before:page;page-break-before:always}
+ #calendarPrintRoot .ltsReportTrainingStats{padding-bottom:10pt;margin-bottom:10pt}
+ #calendarPrintRoot .ltsReportTrainingStats b{font-size:22pt}.ltsReportTrainingStats span{font-size:8pt}
+ #calendarPrintRoot .ltsReportGroupChart{gap:8pt}
+ #calendarPrintRoot .ltsReportGroupChart>div{grid-template-columns:100pt 1fr 24pt;font-size:8pt;gap:12pt}
+ #calendarPrintRoot .ltsReportGroupChart svg{height:6pt;fill:#3d7867}
+ #calendarPrintRoot .ltsReportInsights{margin:12pt 0}
+ #calendarPrintRoot .ltsReportInsights>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12pt}
+ #calendarPrintRoot .ltsReportInsight{padding:8pt 0;gap:6pt;break-inside:avoid}
+ #calendarPrintRoot .ltsReportInsight h4{font-size:9pt;margin:0 0 4pt}
+ #calendarPrintRoot .ltsReportInsight p{font-size:8pt;margin:0 0 4pt}.ltsReportInsight small{font-size:7pt}
+ #calendarPrintRoot .ltsReportSignals{padding:9pt 0;margin:10pt 0}
+ #calendarPrintRoot .ltsReportSignals b{font-size:9pt}.ltsReportSignals span{font-size:7pt}
+ #calendarPrintRoot .ltsReportAreaLink{display:none!important}
+ #calendarPrintRoot .ltsReportPrintSources{margin-top:12pt}
+ #calendarPrintRoot .ltsReportPrintSources h3{font-size:11pt;margin:0 0 5pt}
+ #calendarPrintRoot .ltsReportPrintSources p{font-size:7pt;line-height:1.4}
+ #calendarPrintRoot .ltsReportPrintSources table{font-size:7pt;table-layout:fixed;margin:7pt 0}
+ #calendarPrintRoot .ltsReportPrintSources th,#calendarPrintRoot .ltsReportPrintSources td{border:0;border-bottom:1px solid #dbe2e9;padding:5pt 4pt}
+ #calendarPrintRoot .ltsReportPrintSources th:first-child{width:20%}#calendarPrintRoot .ltsReportPrintSources th:nth-child(2){width:20%}#calendarPrintRoot .ltsReportPrintSources th:nth-child(3){width:13%}#calendarPrintRoot .ltsReportPrintSources th:last-child{width:47%}
+}
+.ltsCalendarChart{margin:12px 0;min-width:0}.ltsCalendarChart svg{display:block;width:100%;height:76px;fill:#416f9b}.ltsCalendarChartBaseline{fill:none;stroke:#c2cfda;stroke-width:1}.ltsCalendarChart figcaption{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--calendar-muted)}.ltsCalendarChartEmpty{font-size:12px!important;color:var(--calendar-muted)}
+@media print{#calendarPrintRoot .ltsCalendarChart{margin:5pt 0;break-inside:avoid}#calendarPrintRoot .ltsCalendarChart svg{height:42pt;fill:#555}#calendarPrintRoot .ltsCalendarChart figcaption{font-size:7pt}#calendarPrintRoot .ltsCalendarPrintComparison{break-before:page;page-break-before:always}#calendarPrintRoot table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt;margin:10pt 0}#calendarPrintRoot th,#calendarPrintRoot td{vertical-align:top;text-align:left;border:1px solid #aaa;padding:6pt;overflow-wrap:anywhere}#calendarPrintRoot th:first-child{width:23%}#calendarPrintRoot th:nth-child(2){width:23%}#calendarPrintRoot th:nth-child(3){width:37%}#calendarPrintRoot th:last-child{width:17%}#calendarPrintRoot table small{display:block;margin-top:5pt;font-size:7pt!important}#calendarPrintRoot thead{display:table-header-group}#calendarPrintRoot tr{break-inside:avoid;page-break-inside:avoid}}
+.ltsCalendarChart .ltsCalendarChartScale{font-size:11px;line-height:1.4;color:var(--calendar-muted);margin:0 0 3px}
+@media print{#calendarPrintRoot .ltsCalendarChart .ltsCalendarChartScale{font-size:7pt}}
+/* Native WebKit menu controls can contribute their internal option width to a
+   disclosure's scroll width. Size the control itself, leaving the full source
+   name and every evidence paragraph outside it readable and wrapping. */
+.ltsCalendarSourcePicker{width:100%;max-width:100%;min-width:0}
+.ltsCalendarSourcePicker select{box-sizing:border-box;width:100%;max-width:100%;min-width:0;appearance:none;-webkit-appearance:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:32px;background-image:linear-gradient(45deg,transparent 50%,#51657b 50%),linear-gradient(135deg,#51657b 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+@media(max-width:600px){
+  /* Keep the full selected calendar period readable at 320 CSS pixels. */
+  .ltsCalendarControls{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end}
+  .ltsCalendarModes{grid-column:1;grid-row:1;min-width:0}
+  .ltsCalendarModes button{padding-inline:8px;white-space:nowrap}
+  .ltsCalendarArrows{grid-column:2;grid-row:1}
+  .ltsCalendarControls>label{grid-column:1/-1;width:100%;max-width:none;min-width:0}
+}
+@media print{
+  /* The application shell locks html as well as body to the viewport. Printing
+     must use normal document flow so all pages and evidence remain reachable. */
+  html:has(body.ltsCalendarPrinting){height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;background:#fff!important}
+  body.ltsCalendarPrinting{min-height:0!important;max-height:none!important}
+  #calendarPrintRoot .ltsCalendarSource span::before{content:' · '}
+  /* Preserve searchable/copyable words: PDF text extractors treat the screen
+     eyebrow's tracking as spaces inside LTS, HEALTH and RELATÓRIO. */
+  #calendarPrintRoot .ltsCalendarEyebrow{letter-spacing:normal}
+}
+
+/* Keep a recorded zero and its unit distinct in PDF text extraction as well as on paper. */
+@media print{#calendarPrintRoot .ltsCalendarPrintComparison td:last-child{word-spacing:1pt}}
+
+.ltsCalendarHighlights{margin:20px 0 24px;padding:18px;background:#f2f7f7;border:1px solid #d4e4e2;border-radius:12px}
+.ltsCalendarHighlights>p{color:var(--calendar-muted);font-size:13px}
+.ltsCalendarHighlightsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.ltsCalendarHighlight{min-width:0;border-top:3px solid #2f7473;padding:5px 0}
+.ltsCalendarHighlight h4{margin-top:7px}.ltsCalendarHighlight p{font-size:13px}
+.ltsCalendarHighlight .ltsCalendarHighlightRange{font-size:20px;font-weight:700;line-height:1.5;margin:8px 0}
+.ltsCalendarHighlightRange>span{font-size:13px;font-weight:400}
+.ltsCalendarCoincidence{border-top:1px solid #c9deda;padding-top:12px;margin-top:14px!important}
+.ltsCalendarGroupBar{display:block;width:100%;height:12px;fill:#2f7473;margin-top:9px}
+.ltsCalendarGroupBar .ltsCalendarGroupTrack{fill:#dce8e7}
+@media(max-width:750px){.ltsCalendarHighlightsGrid{grid-template-columns:1fr}.ltsCalendarHighlights{padding:14px}}
+@media print{
+  #calendarPrintRoot .ltsCalendarHighlights{background:#fff;border:1px solid #bbb;padding:9pt;margin:10pt 0;break-inside:avoid;page-break-inside:avoid}
+  #calendarPrintRoot .ltsCalendarHighlightsGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12pt}
+  #calendarPrintRoot .ltsCalendarHighlight{border-top:2pt solid #555}
+  #calendarPrintRoot .ltsCalendarHighlight .ltsCalendarHighlightRange{font-size:12pt}
+  #calendarPrintRoot .ltsCalendarHighlightRange>span{font-size:8pt}
+  #calendarPrintRoot .ltsCalendarGroupBar{height:8pt;fill:#555}
+  #calendarPrintRoot .ltsCalendarGroupTrack{fill:#eee}
+}
+
+@media screen and (min-width:851px){.ltsReportPlot>svg{height:200px}.ltsReportTrainingColumn>.ltsReportInsights{margin:20px 0 0}.ltsReportTrainingColumn .ltsReportInsight{padding:13px 0}.ltsReportTrainingColumn .ltsReportInsight p{font-size:12px}.ltsReportSignals{margin-top:16px}}
+/* The lower report keeps the summary's visual rhythm. Scope excludes Home,
+   the calendar overview and both native PDF layouts. */
+.ltsReportHistory{margin:30px 0 0;min-width:0;border-top:1px solid #d8e3ed;padding-top:26px}
+.ltsReportHistoryIntro>span,.ltsReportHistory .ltsReportLibrary>header>span{font-size:10px;letter-spacing:.12em;font-weight:750;color:#50657b}
+.ltsReportHistoryIntro .ltsCalendarDetailedTitle{font-size:24px;line-height:1.25;margin:7px 0 5px;letter-spacing:-.03em}
+.ltsReportHistoryIntro>p{font-size:14px;line-height:1.5;color:#50657b;margin:0}
+.ltsReportHistory>.ltsReportHeader{display:flex;align-items:center;gap:18px;margin:18px 0 24px;padding:14px 16px;background:#edf3f8;border-radius:12px;border:1px solid #dce6ee}
+.ltsReportHistory>.ltsReportHeader .ltsField{margin:0;flex:0 0 200px;font-size:12px;font-weight:650;color:#50657b}
+.ltsReportHistory>.ltsReportHeader select{min-height:44px;padding:8px 10px;margin-top:5px;font-size:14px;font-weight:650;border-color:#c6d5e2}
+.ltsReportHistory>.ltsReportHeader p{font-size:13px;line-height:1.5;color:#20394f;text-align:right}
+.ltsReportHistory>.ltsReportHeader small{font-size:12px;line-height:1.5;color:#50657b}
+.ltsReportHistory>.ltsIntegratedReview{border:0;border-radius:0;background:transparent;padding:0;margin:24px 0}
+.ltsReportHistory .ltsIntegratedReview>header>span{display:none}
+.ltsReportHistory .ltsIntegratedReview>header h2{font-size:20px;line-height:1.3;margin:0 0 5px;letter-spacing:-.025em}
+.ltsReportHistory .ltsIntegratedReview>header p{font-size:13px;margin:0 0 16px}
+.ltsReportHistory .ltsReviewTabs{gap:4px;margin:0 0 16px;padding:4px;border:1px solid #dce6ee;border-radius:11px;background:#eaf1f7}
+.ltsReportHistory .ltsReviewTabs button{font-size:12px;line-height:1.4;padding:9px 12px;min-height:44px;border-radius:8px;min-width:0}
+.ltsReportHistory .ltsReviewContrasts{gap:14px;align-items:start}
+.ltsReportHistory .ltsReviewReading{--reading-color:#255f99;--reading-wash:#eaf3fd;padding:18px;border-radius:14px;background:#fff;border:1px solid #d9e4ee;box-shadow:0 2px 7px #1d385306;overflow-wrap:anywhere}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="labs"]{--reading-color:#a03953;--reading-wash:#fbeef2}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="training"]{--reading-color:#236b52;--reading-wash:#e9f5ef}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="nutrition"]{--reading-color:#965219;--reading-wash:#fcf1e5}
+.ltsReportHistory .ltsReviewReading[data-reading-kind="sleep"]{--reading-color:#70519a;--reading-wash:#f2edfa}
+.ltsReportHistory .ltsReviewReading>header{display:flex;align-items:center;gap:9px;margin-bottom:13px;color:var(--reading-color);font-size:12px;font-weight:750;letter-spacing:.02em}
+.ltsReportHistory .ltsReadingIcon{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--reading-wash);font-size:19px;font-weight:500}
+.ltsReportHistory .ltsReviewReading>h3{font-size:16px;line-height:1.4;letter-spacing:-.015em;margin:0 0 14px;color:#20394f}
+.ltsReportHistory .ltsReadingFacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:12px;margin:0;padding:14px 0;border-top:1px solid #e6edf3;border-bottom:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingFacts>div{min-width:0}
+.ltsReportHistory .ltsReadingFacts:has(>div:nth-child(3)) dt{min-height:2.8em}
+.ltsReportHistory .ltsReadingFacts dt{font-size:12px;line-height:1.4;color:#50657b;margin:0 0 6px}
+.ltsReportHistory .ltsReadingFacts dd{display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 5px;margin:0;font-size:25px;line-height:1.2;letter-spacing:-.04em;font-weight:750;font-variant-numeric:tabular-nums;color:#20394f}
+.ltsReportHistory .ltsReadingFacts dd>span{font-size:12px;font-weight:500;letter-spacing:0;color:#50657b}
+.ltsReportHistory .ltsReadingFacts small{font-size:11px;line-height:1.5;margin-top:5px;color:#50657b}
+.ltsReportHistory .ltsReadingLabValues{display:grid;gap:0;margin:0;border-top:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingLabValues>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingLabValues span{font-size:12px;line-height:1.5;color:#50657b}
+.ltsReportHistory .ltsReadingLabValues strong{font-size:18px;line-height:1.4;color:#20394f;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere;max-width:100%}
+.ltsReportHistory .ltsReadingPair{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-block:1px solid #e6edf3;padding:14px 0;font-size:25px;line-height:1.3;font-variant-numeric:tabular-nums}
+.ltsReportHistory .ltsReadingPair>span{color:#50657b}.ltsReportHistory .ltsReadingPair>i{font-size:19px;color:#50657b;font-style:normal}
+.ltsReportHistory .ltsReadingPair strong{color:#20394f}.ltsReportHistory .ltsReadingPair small{display:inline;font-size:12px}
+.ltsReportHistory .ltsReviewReading .ltsReadingOrigin{font-size:11px;line-height:1.5;margin:6px 0 10px;color:#50657b;overflow-wrap:anywhere}
+.ltsReportHistory .ltsReviewReading .ltsReadingContext{font-size:12px;line-height:1.55;margin:10px 0;color:#50657b}
+.ltsReportHistory .ltsReviewReading>.ltsReadingEvidence{margin-top:12px;border-top:1px solid #e6edf3}
+.ltsReportHistory .ltsReadingEvidence>summary{display:flex;align-items:center;justify-content:space-between;font-size:12px;min-height:44px;color:#34536e;list-style:none;padding:10px 0}
+.ltsReportHistory .ltsReadingEvidence>summary::-webkit-details-marker{display:none}
+.ltsReportHistory .ltsReadingEvidence>summary:after{content:'+';font-size:19px;font-weight:400;color:#50657b}.ltsReportHistory .ltsReadingEvidence[open]>summary:after{content:'−'}
+.ltsReportHistory .ltsReadingEvidence>p,.ltsReportHistory .ltsReadingEvidence>small{font-size:12px;line-height:1.65;margin:6px 0 12px;color:#50657b}
+.ltsReportHistory .ltsReviewReading>button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;margin:0;padding:10px 0 0;border:0;border-radius:0;background:transparent;color:var(--reading-color);text-align:left;font-size:12px;line-height:1.5;font-weight:650;box-shadow:none}
+.ltsReportHistory .ltsIntegratedReview>.ltsReviewSources{margin:16px 0 0;padding:0;border-top:1px solid #dce6ee;border-bottom:0}
+.ltsReportHistory .ltsIntegratedReview>.ltsReviewSources>summary{font-size:12px;color:#50657b}
+.ltsReportHistory .ltsReviewNote{font-size:12px;line-height:1.6;margin:14px 0;color:#50657b}
+.ltsReportHistory .ltsReportLibrary{border-top:1px solid #d8e3ed;margin-top:26px;padding-top:24px}
+.ltsReportHistory .ltsReportLibrary>header h2{font-size:20px;margin:6px 0;letter-spacing:-.025em}.ltsReportHistory .ltsReportLibrary>header p{font-size:13px;color:#50657b;margin:0 0 16px;line-height:1.5}
+.ltsReportHistory .ltsReportJump{gap:6px;margin-bottom:16px}.ltsReportHistory .ltsReportJump a{font-size:12px;min-height:44px;padding:7px 12px;background:transparent;border-color:#d5e1eb;color:#34536e}
+.ltsReportHistory .ltsReportWorkspaces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.ltsReportHistory .ltsReportWorkspace{margin:0;border-radius:13px;border:1px solid #d9e4ee;background:#fff;min-width:0}
+.ltsReportHistory .ltsReportWorkspace>summary{min-height:98px;padding:16px;gap:10px;align-items:center}
+.ltsReportHistory .ltsReportWorkspace>summary b{font-size:14px;line-height:1.4}.ltsReportHistory .ltsReportWorkspace>summary small{font-size:12px;line-height:1.5;margin-top:5px;color:#50657b}
+.ltsReportHistory .ltsReportWorkspace[open]{grid-column:1/-1}.ltsReportHistory .ltsReportWorkspace[open]>summary{min-height:72px;border-bottom:1px solid #e2eaf1}
+.ltsReportHistory .ltsWorkspaceContent{padding:0 16px 16px}
+.ltsReportHistory .ltsReportWorkspace .ltsReportSection{margin:16px 0;box-shadow:none}
+.ltsReportHistory:has(.ltsBodyInterval)>.ltsReportHeader{display:none}
+@media(max-width:760px){
+ .ltsReportHistory{margin-top:24px;padding-top:22px}.ltsReportHistoryIntro .ltsCalendarDetailedTitle{font-size:22px}
+ .ltsReportHistory>.ltsReportHeader{padding:12px;gap:10px;align-items:end;margin:14px 0 22px}.ltsReportHistory>.ltsReportHeader .ltsField{flex:0 0 43%;font-size:10px}.ltsReportHistory>.ltsReportHeader p{font-size:12px;margin:0;min-width:0}.ltsReportHistory>.ltsReportHeader small{font-size:10px}
+ .ltsReportHistory .ltsReviewTabs:has(#reviewTab-interval){display:grid;grid-template-columns:1fr 1fr}.ltsReportHistory .ltsReviewTabs button{font-size:12px;padding:9px 7px}
+ .ltsReportHistory .ltsReviewContrasts{gap:12px}.ltsReportHistory .ltsReviewReading{padding:16px}.ltsReportHistory .ltsReviewReading>h3{font-size:15px}.ltsReportHistory .ltsReadingFacts{gap:10px}.ltsReportHistory .ltsReadingFacts dd{font-size:24px}
+ .ltsReportHistory .ltsReportWorkspaces{grid-template-columns:1fr;gap:10px}.ltsReportHistory .ltsReportWorkspace>summary{min-height:78px;padding:14px}.ltsReportHistory .ltsWorkspaceContent{padding:0 10px 10px}
+ .ltsReportHistory .ltsReadingLabValues>div{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ltsReportHistory .ltsReadingLabValues strong{font-size:17px}
+}
+
+/* Recorded sleep shares the source-isolated report, with readable coverage. */
+.ltsCalendarMetrics{align-items:start}
+.ltsReportSignals{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media screen{
+ .ltsReportSignals span,.ltsReportSignals>div>small,.ltsReportSignals b small{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+ .ltsReportSignals b{font-size:18px;line-height:1.4}
+}
+@media screen and (max-width:600px){.ltsReportSignals{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}}
+
+@media screen{
+ .ltsCalendarMetric p:not(.ltsCalendarMetricValue),
+ .ltsCalendarMetric span,.ltsCalendarMetric small,.ltsCalendarMetric label,
+ .ltsCalendarMetric summary,.ltsCalendarMetric th,.ltsCalendarMetric td{font-size:14px!important;line-height:1.45!important}
+ .ltsCalendarMetric select{font-size:16px!important}
+}
+/* Keep short hour units separate in searchable/copyable PDF text, too. */
+@media print{
+ #calendarPrintRoot .ltsReportSignals b,
+ #calendarPrintRoot .ltsCalendarMetricValue,
+ #calendarPrintRoot .ltsReportPrintSources td:nth-child(2){word-spacing:1pt}
+}

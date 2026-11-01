@@ -1,9 +1,12 @@
+import {stepCountReview} from './steps-evidence.js';
 import {num,norm,day} from './core.js';
 import {validDay} from './history-tools.js';
 import {localHealthDay,bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,labHighlights} from './health-context.js';
-import {labGroups,labCohorts} from './labs-layout-v2.js';
+import {labGroups,labCohorts,labCohortPoints} from './labs-layout-v2.js';
+import {compareLabResults} from './health-dashboard-labs.js';
 import {addDays,normalizeMuscleGroup} from './integrated-analysis.js';
 import {hydrationModel} from './hydration.js';
+import {nutritionPeriodModel} from './home-period-model.js';
 
 const ready=(status,key)=>status?.[key]==='ready';
 const ordered=(rows,key)=>rows.filter(r=>validDay(r[key])).slice().sort((a,b)=>day(a[key]).localeCompare(day(b[key])));
@@ -75,7 +78,9 @@ export function trainingSummary(data,status,bounds,region=null){
   const points=[...groups].filter(([,list])=>list.every(r=>num(r.duration_minutes)!=null)).map(([date,list])=>({date,value:list.reduce((s,r)=>s+num(r.duration_minutes),0),cohort:'recorded-duration'})).sort((a,b)=>a.date.localeCompare(b.date));
   const recordedMinutes=knownDuration.length?knownDuration.reduce((s,r)=>s+num(r.duration_minutes),0):null;
   const durationComplete=selected.length>0&&knownDuration.length===selected.length;
-  return {available:true,sessions,sets:sets?.length??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
+  const setCoverage=sets?selected.filter(workout=>sets.some(set=>set.workout_source_record_id===workout.source_record_id)).length:null;
+  const setComplete=sets!==null&&setCoverage===selected.length;
+  return {available:true,sessions,sets:sets?.length??null,minutes:durationComplete?recordedMinutes:null,recordedMinutes,durationCoverage:knownDuration.length,durationTotal:selected.length,durationComplete,setCoverage,setTotal:selected.length,setComplete,points,groups:[...new Set(exercises.map(e=>normalizeMuscleGroup(e.muscle_group)))],rows:selected};
 }
 export function hydrationSummary(data,status,bounds){
   // A failed overlapping source can hide a conflict; do not select the surviving one.
@@ -118,21 +123,26 @@ export function segmentalReport(data,status,bounds,source='all',selectedRegion='
 }
 export function laboratoryReport(data,status,bounds,requested=null){
   if(!ready(status,'labs'))return {available:false,groups:[],rows:[],points:[],comparisons:[]};
-  const groups=labGroups((data.labs||[]).filter(r=>inside(r.collection_date,bounds)));
-  const history=new Map(labGroups((data.labs||[]).filter(r=>validDay(r.collection_date)&&day(r.collection_date)<=bounds.end)).map(g=>[g.key,g]));
+  const evidenceRows=(data.labs||[]).filter(r=>validDay(r.collection_date)&&day(r.collection_date)<=bounds.end);
+  const groups=labGroups(evidenceRows.filter(r=>inside(r.collection_date,bounds)),evidenceRows);
+  const history=new Map(labGroups(evidenceRows).map(g=>[g.key,g]));
   const preferred=labHighlights.map(label=>groups.find(g=>g.key===norm(label))).filter(Boolean);
   const group=groups.find(g=>g.key===requested)||preferred[0]||groups[0];
   function comparison(g){
     const date=day(g.rows.at(-1)?.collection_date),latest=g.rows.filter(r=>day(r.collection_date)===date);
-    if(latest.length!==1)return {group:g,current:null,reason:'ambiguous'};
-    const current=latest[0],full=history.get(g.key)||g,cohorts=labCohorts(full),c=cohorts.find(c=>c.all.includes(current));
-    const exact=c?.rows.includes(current),previous=exact&&c.method?c.rows.filter(r=>day(r.collection_date)<date).at(-1):null;
-    // Values remain readable when methods are unknown; a numerical delta does not.
-    const prior=full.rows.filter(r=>day(r.collection_date)<date).at(-1),priorDate=day(prior?.collection_date),contextPrior=prior&&full.rows.filter(r=>day(r.collection_date)===priorDate).length===1?prior:null;
-    return {group:g,history:full,current,previous:previous||contextPrior,comparable:Boolean(previous),delta:previous?difference(current.result_numeric,previous.result_numeric):null,reason:previous?'comparable':!exact?'non_exact':!c?.method?'unknown_method':contextPrior?'incompatible':'single',baselineOutsideWindow:Boolean((previous||contextPrior)&&bounds.start&&day((previous||contextPrior).collection_date)<bounds.start)};
+    const full=history.get(g.key)||g,current=latest.length===1&&!full.identityConflicts?.has(latest[0])?latest[0]:null;
+    // Compare only with the immediately preceding collection. An intervening
+    // note, conflict or incompatible report must never be skipped for an older
+    // result that would happen to produce a numerical delta.
+    const priorDate=day(full.rows.filter(r=>day(r.collection_date)<date).at(-1)?.collection_date);
+    const previousRows=priorDate?full.rows.filter(r=>day(r.collection_date)===priorDate):[];
+    const previous=previousRows.length===1&&!full.identityConflicts?.has(previousRows[0])?previousRows[0]:null;
+    const compared=compareLabResults(current,previous,{ambiguous:latest.length!==1||previousRows.length>1||[...latest,...previousRows].some(row=>full.identityConflicts?.has(row))});
+    const reason=({comparable:'comparable',ambiguous_collection:'ambiguous',no_previous:'single',non_exact_value:'non_exact',unknown_method:'unknown_method'})[compared.comparisonReason]||'incompatible';
+    return {group:g,history:full,current,latestRows:latest,previous,previousRows,previousDate:priorDate||null,...compared,reason,baselineOutsideWindow:Boolean(priorDate&&bounds.start&&priorDate<bounds.start)};
   }
   const selected=group?comparison(group):null,cohorts=group?labCohorts(group):[],unit=String(selected?.current?.unit||cohorts[0]?.unit||'');
-  const points=cohorts.filter(c=>c.unit===unit).flatMap(c=>c.rows.map(r=>({date:day(r.collection_date),value:num(r.result_numeric),cohort:c.method?c.key:null,context:`${c.origin} · ${c.method||'método não informado'}`,row:r}))).sort((a,b)=>a.date.localeCompare(b.date));
+  const points=cohorts.filter(c=>c.unit===unit).flatMap(labCohortPoints).sort((a,b)=>a.date.localeCompare(b.date));
   const display=[...preferred,...groups.filter(g=>!preferred.includes(g))];
   return {available:true,groups,selected,unit,points,rows:group?.rows||[],comparisons:display.map(comparison)};
 }
@@ -145,9 +155,13 @@ export function recoveryReport(data,status,bounds,requested=null){
     const key=JSON.stringify([row.metric_type,row.source_family,row.source_name,row.unit]);
     if(!buckets.has(key))buckets.set(key,{key,metric:row.metric_type,label:labels.get(row.source_name)||row.source_name,unit:row.unit,rows:[]});buckets.get(key).rows.push(row);
   }
-  const series=[...buckets.values()].map(s=>({...s,points:ordered(uniqueDates(s.rows,'metric_date'),'metric_date').map(r=>({date:day(r.metric_date),value:num(r.value),cohort:s.key,context:s.label}))})).sort((a,b)=>(a.metric==='sleep_duration_h'?-1:0)-(b.metric==='sleep_duration_h'?-1:0)||a.key.localeCompare(b.key));
+  const series=[...buckets.values()].map(s=>({...s,reviewRows:s.metric==='steps'?s.rows.filter(row=>stepCountReview(row.value).reason):[],points:ordered(uniqueDates(s.rows,'metric_date'),'metric_date').filter(row=>s.metric!=='steps'||!stepCountReview(row.value).reason).map(r=>({date:day(r.metric_date),value:num(r.value),cohort:s.key,context:s.label}))})).sort((a,b)=>(a.metric==='sleep_duration_h'?-1:0)-(b.metric==='sleep_duration_h'?-1:0)||a.key.localeCompare(b.key));
   const selected=series.find(s=>s.key===requested)||series[0];
   return {available:true,series,selected,points:selected?.points||[]};
+}
+function selectedNutritionSummary(data,status,bounds,requested,today){
+  const n=nutritionPeriodModel(data,status,bounds,{reportNutritionSource:requested},today);
+  return {...n,days:n.available?n.closedRows.length:null,intervalDays:days(bounds.start,bounds.end),origins:n.source?[n.source.key]:[]};
 }
 export function usefulReports(data={},status={},ui={},today=localHealthDay()){
   const period=['30','90','365','all'].includes(ui.analysisPeriod)?ui.analysisPeriod:'90',windows=reportBounds(period,today);
@@ -155,12 +169,12 @@ export function usefulReports(data={},status={},ui={},today=localHealthDay()){
     const dates=[['body','measured_at'],['segmental','measured_at'],['labs','collection_date'],['workouts','workout_date'],['polarSessions','workout_date'],['nutrition','nutrition_date'],['sourceMetrics','metric_date']].flatMap(([key,dateKey])=>ready(status,key)?(data[key]||[]).map(r=>validDay(r[dateKey])).filter(d=>d&&d<=today):[]).sort();
     windows.current.start=dates[0]||today;
   }
-  const bounds=windows.current,body=compositionReport(data,status,bounds,ui.reportBodySource),segmental=segmentalReport(data,status,bounds,ui.reportSegmentSource,ui.reportRegion,ui.reportSegmentMetric),labs=laboratoryReport(data,status,bounds,ui.reportLabMarker),training=trainingSummary(data,status,bounds),nutrition=nutritionSummary(data,status,bounds),recovery=recoveryReport(data,status,bounds,ui.reportRecoverySource);
+  const bounds=windows.current,body=compositionReport(data,status,bounds,ui.reportBodySource),segmental=segmentalReport(data,status,bounds,ui.reportSegmentSource,ui.reportRegion,ui.reportSegmentMetric),labs=laboratoryReport(data,status,bounds,ui.reportLabMarker),training=trainingSummary(data,status,bounds),nutrition=selectedNutritionSummary(data,status,bounds,ui.homeNutritionSource||ui.reportNutritionSource,today),recovery=recoveryReport(data,status,bounds,ui.reportRecoverySource);
   const hydration=hydrationSummary(data,status,bounds);
-  const prior=windows.previous?{training:trainingSummary(data,status,windows.previous),nutrition:nutritionSummary(data,status,windows.previous),hydration:hydrationSummary(data,status,windows.previous),recovery:recoveryReport(data,status,windows.previous,recovery.selected?.key)}:null;
+  const prior=windows.previous?{training:trainingSummary(data,status,windows.previous),nutrition:selectedNutritionSummary(data,status,windows.previous,nutrition.source?.key||nutrition.requestedSource||'__no_selected_origin__',today),hydration:hydrationSummary(data,status,windows.previous),recovery:recoveryReport(data,status,windows.previous,recovery.selected?.key)}:null;
   // A prior device is never substituted for the selected current device.
   if(prior?.recovery.selected?.key!==recovery.selected?.key&&prior?.recovery)prior.recovery={...prior.recovery,selected:null,points:[]};
-  const sourcesMatch=nutrition.origins.length===1&&nutrition.origins[0]&&prior?.nutrition.origins.length===1&&nutrition.origins[0]===prior.nutrition.origins[0];
+  const sourcesMatch=!nutrition.unknownRows&&!prior?.nutrition.unknownRows&&nutrition.origins.length===1&&nutrition.origins[0]&&prior?.nutrition.origins.length===1&&nutrition.origins[0]===prior.nutrition.origins[0];
   const waterSourcesMatch=hydration.origins.length===1&&hydration.origins[0]&&prior?.hydration.origins.length===1&&hydration.origins[0]===prior.hydration.origins[0];
-  return {period,today,...windows,body,segmental,labs,training,polar:polarTrainingSummary(data,status,bounds),nutrition,hydration,recovery,prior,nutritionComparable:Boolean(sourcesMatch),hydrationComparable:Boolean(waterSourcesMatch),lastNutrition:ordered(ready(status,'nutrition')?data.nutrition||[]:[],'nutrition_date').at(-1)?.nutrition_date||null,lastWorkout:ordered(ready(status,'workouts')?(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'):[],'workout_date').at(-1)?.workout_date||null};
+  return {period,today,...windows,body,segmental,labs,training,polar:polarTrainingSummary(data,status,bounds),nutrition,hydration,recovery,prior,nutritionComparable:Boolean(sourcesMatch),hydrationComparable:Boolean(waterSourcesMatch),lastNutrition:nutritionPeriodModel(data,status,{end:today},{reportNutritionSource:nutrition.source?.key||nutrition.requestedSource||'__no_selected_origin__'},today).latest?.date||null,lastWorkout:ordered(ready(status,'workouts')?(data.workouts||[]).filter(r=>r.is_canonical===true&&r.record_status!=='quarantined'):[],'workout_date').at(-1)?.workout_date||null};
 }

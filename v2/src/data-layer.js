@@ -2,25 +2,28 @@ import {sb,state,fixtureMode,fixtureError,fixtureData} from './core.js';
 import {stableAppleMetricTypes,isAppleSource,isAppleActivitySummarySource,isMyFitnessPalViaApple} from './source-status.js';
 import {visibleWorkoutEvidence,decorateWorkoutProvenance} from './workout-evidence.js';
 import {nutritionWithAutoExport} from './health-auto-export-data.js';
+import {trainingPlanProjection,treatmentStatusProjection} from './documented-training-plan.js';
+import {labOriginalColumns,labOriginalDocumentColumns,attachLabOriginals} from './lab-original-link.js';
 
 const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
   bio:[],
-  treinos:[],
-  evolucao:[],
-  analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals'],
-  tratamentos:['treatments','regimens','docs'],
-  hoje:['nutrition','meals','metrics','sourceMetrics','labs','uploads','treatments','regimens','goals'],
+  treinos:['trainingPlans'],
+  evolucao:['labs'],
+  analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans'],
+  tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses'],
+  hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions'],
   timeline:['nutrition','activity','metrics','sourceMetrics','labs','docs','treatments'],
   saude:['labs','docs'],
-  nutricao:['nutrition','meals','sourceMetrics','goals'],
+  nutricao:['nutrition','meals','sourceMetrics','goals','waterReferences','nutritionPlans'],
   dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens','polarSessions']
 };
 
-export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb){
+export async function fetchAll(table,select='*',orderColumn=null,ascending=false,tieBreaker='source_record_id',client=sb,filters={}){
   const pageSize=1000,rows=[];
   for(let from=0;;from+=pageSize){
     let q=client.from(table).select(select).range(from,from+pageSize-1);
+    for(const [column,value] of Object.entries(filters))q=q.eq(column,value);
     if(orderColumn)q=q.order(orderColumn,{ascending});
     if(tieBreaker&&tieBreaker!==orderColumn)q=q.order(tieBreaker,{ascending:true});
     const{data,error}=await q;
@@ -32,19 +35,36 @@ export async function fetchAll(table,select='*',orderColumn=null,ascending=false
   return rows;
 }
 
+export function fetchNutritionPlans(client=sb){
+  return fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,nutrition_plan:source_payload->nutrition_plan_ui','document_date',false,'source_record_id',client,{document_type:'nutrition_plan'});
+}
+
+export async function fetchLaboratoryRows(client=sb){
+  const [results,originals]=await Promise.allSettled([
+    fetchAll('health_lab_results','id,source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,numeric_kind:source_payload->>numeric_kind,reference_verification:source_payload->reference_verification,numeric_reading_verification:source_payload->numeric_reading_verification,source,source_file,confidence,notes,'+labOriginalColumns,'collection_date',false,'source_record_id',client),
+    fetchAll('health_documents',labOriginalDocumentColumns,'document_date',false,'source_record_id',client,{document_type:'laboratory_report'})
+  ]);
+  if(results.status==='rejected')throw results.reason;
+  return attachLabOriginals(results.value,originals.status==='fulfilled'?originals.value:[],originals.status==='fulfilled');
+}
+
 const loaders={
+  trainingPlans:()=>fetchAll('health_documents',trainingPlanProjection,'document_date',false,'source_record_id',sb,{document_type:'training_plan'}),
+  treatmentStatuses:()=>fetchAll('health_documents',treatmentStatusProjection,'document_date',false,'source_record_id',sb,{document_type:'patient_status'}),
+  nutritionPlans:()=>fetchNutritionPlans(),
+  waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,water_reference:source_payload->water_reference_ui,clinical_baseline:source_payload->clinical_baseline','document_date',false),
   goals:()=>fetchAll('health_personal_goals','effective_from,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,notes','effective_from',true,null),
   polarSessions:()=>fetchAll('health_polar_sessions','source_record_id,workout_date,recorded_start,session_name,duration_minutes,heart_rate_avg,heart_rate_max,source_name','workout_date',false),
   body:()=>fetchAll('health_body_composition','source_record_id,measured_at,weight_kg,skeletal_muscle_mass_kg,fat_mass_kg,body_fat_pct,body_water_l,visceral_fat_level,score,waist_hip_ratio,bmr_kcal,source,source_file,confidence,notes,device_name:source_payload->>device','measured_at',true),
   segmental:()=>fetchAll('health_segmental_composition','source_record_id,measured_at,lean_right_arm_kg,lean_left_arm_kg,lean_trunk_kg,lean_right_leg_kg,lean_left_leg_kg,fat_right_arm_kg,fat_left_arm_kg,fat_trunk_kg,fat_right_leg_kg,fat_left_leg_kg,source,source_file,confidence,notes,body_source_record_id:source_payload->>body_source_record_id','measured_at',true),
-  workouts:()=>fetchAll('health_workouts','source_record_id,workout_date,workout_type,location,duration_minutes,calories_kcal,heart_rate_avg,heart_rate_min,heart_rate_max,muscle_groups,sets_by_group,raw_exercises,source,source_file,confidence,notes,record_status,is_canonical','workout_date',false),
+  workouts:()=>fetchAll('health_workouts','source_record_id,workout_date,workout_type,location,duration_minutes,calories_kcal,heart_rate_avg,heart_rate_min,heart_rate_max,muscle_groups,sets_by_group,raw_exercises,source,source_file,confidence,notes,record_status,is_canonical,session_comment:source_payload->>user_reported_completion_note,documented_energy_kind:source_payload->>energy_kind,documented_duration_kind:source_payload->>duration_kind','workout_date',false),
   workoutEvidence:()=>fetchAll('health_workout_source_evidence','source_record_id,workout_source_record_id,workout_date,source_family,source_name,evidence_kind,evidence_status,field_names,confidence,source_file,notes','workout_date',false),
   exercises:()=>fetchAll('health_workout_exercises','source_record_id,workout_source_record_id,workout_date,order_index,exercise,machine,muscle_group,sets,reps,weight_kg,source_text,source,confidence,notes','workout_date',false),
   sets:()=>fetchAll('health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,workout_date,exercise_name,exercise_order,set_index,phase,weight,weight_unit,reps_numeric,reps_raw,failure,near_failure,technique,source,confidence,notes','workout_date',false),
-  labs:()=>fetchAll('health_lab_results','source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,source,source_file,confidence,notes','collection_date',false),
+  labs:()=>fetchLaboratoryRows(),
   docs:()=>fetchAll('health_documents','source_record_id,document_date,title,document_type,source_file,source,extraction_status,confidence,notes,care_context:source_payload->care_ui','document_date',false),
   treatments:()=>fetchAll('health_medication_events','source_record_id,event_date,medication,event_type,source,source_file,confidence,local_time:source_payload->>local_time,recorded_timezone:source_payload->>timezone,recorded_site:source_payload->>site,recorded_side:source_payload->>side','event_date',false),
-  regimens:()=>fetchAll('health_medication_regimens','source_record_id,medication,source,source_file,confidence','medication',true),
+  regimens:()=>fetchAll('health_medication_regimens','source_record_id,medication,source,source_file,confidence,document_date:source_payload->>documented_on,recorded_status:source_payload->>status,start_date:source_payload->>start_date,started_by_user_confirmation:source_payload->started_by_user_confirmation','medication',true),
   uploads:()=>fetchAll('health_uploads','id,source_type,original_filename,mime_type,size_bytes,status,created_at,processed_at,notes','created_at',false,'id'),
   previews:()=>fetchAll('health_ingestion_previews','upload_id,source_type,parser_version,detected_format,detected_schema,row_count,date_min,date_max,status,warnings,error_message,updated_at','updated_at',false,'upload_id'),
   quality:()=>fetchAll('health_data_quality_issues','source_record_id,issue_code,category,severity,status,entity_name,record_ref,description,detected_at,resolution_notes','detected_at',false,'issue_code'),
@@ -52,7 +72,7 @@ const loaders={
   meals:()=>fetchAll('health_nutrition_meals','source_record_id,meal_date,meal_name,calories_kcal,protein_g,carbs_g,fat_g,source,source_file,confidence,record_status','meal_date',false),
   activity:()=>fetchAll('health_activity_records','source_record_id,activity_date,activity_name,activity_type,calories_kcal,duration_minutes,steps,source,source_file,confidence,record_status,is_adjustment','activity_date',false),
   metrics:()=>fetchAll('health_metrics','source_record_id,measured_at,metric_type,value,unit,source,source_file,confidence,notes','measured_at',false),
-  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file','metric_date',false)
+  sourceMetrics:()=>fetchAll('health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_file,updated_at,nutrition_review:source_payload->nutrition_review','metric_date',false)
 };
 
 const backupLoaders={...loaders};
@@ -114,7 +134,7 @@ function enforceStructuredWorkoutBoundary(){
 }
 
 function setFixture(){
-  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens};state.errors={};state.domainStatus={};
+  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,nutritionPlans:[]};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
   if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
     state.data[fixtureError]=[];
@@ -166,6 +186,7 @@ export async function ensureRouteData(route,onProgress=()=>{}){
   const keys=routeDomains[route]||[],missing=keys.filter(k=>state.domainStatus[k]!=='ready'&&state.domainStatus[k]!=='error');
   if(!missing.length)return;
   onProgress('Carregando…');await Promise.all(missing.map(k=>loadKey(k)));
+  state.ui.dashboardLoadedAt=new Date().toISOString();
   onProgress(missing.some(k=>state.domainStatus[k]==='error')?'Alguns dados não carregaram':'Atualizado');
 }
 
@@ -187,7 +208,7 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[]};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[],nutritionPlans:[]};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);

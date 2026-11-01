@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
+import {assertActivePresentation} from './active-presentation-contract.mjs';
 
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFile(new URL(path,root),'utf8');
@@ -9,10 +11,11 @@ const [index,core,main,css,contract,browserGate,rawState,...screens]=await Promi
 ]);
 const state=JSON.parse(rawState),screenText=screens.join('\n');
 
-assert.match(index,/lts-build" content="mobile-parity-20261014\.58/);
-assert.match(index,/ux-coherence\.css\?v=mobile-parity-20261014\.58/);
-assert.match(index,/main\.js\?v=mobile-parity-20261014\.58/);
-assert.doesNotMatch(index,/longitudinal-story/);
+const build=index.match(/<meta name="lts-build" content="([^"]+)">/)?.[1];
+assert.ok(build,'active build identity is required');
+for(const asset of ['ux-coherence.css','src/main.js'])assert.ok(index.includes(`./${asset}?v=${build}`),'active build must version '+asset);
+const graph=assertActivePresentation(index,url=>readFileSync(url,'utf8'),new URL('v2/',root));
+assert.ok(![...graph.scripts.keys()].some(file=>file.endsWith('/longitudinal-story.js')),'superseded story layer is not active');
 assert.match(core,/export function setGlobalPeriod/);
 assert.match(main,/function resetRouteScroll\(\)/);
 assert.match(main,/host\?\.scrollTo\(\{top:0,left:0,behavior:'auto'\}\)/);

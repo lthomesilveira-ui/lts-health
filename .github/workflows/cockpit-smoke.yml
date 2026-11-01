@@ -60,7 +60,7 @@ on:
   workflow_dispatch:
 jobs:
   cockpit-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -86,24 +86,32 @@ jobs:
           node --check v2/physical-iphone-layout-smoke.mjs
           node v2/public-audit-contract-smoke.mjs
       - name: Start fixture server
+        id: app_server
         run: |
           cd v2
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/lts-health-cockpit-server.log 2>&1 &
       - name: Cockpit desktop and mobile
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/cockpit-smoke.mjs
       - name: Consultation follow-up desktop and mobile
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/care-followup-browser-smoke.mjs
-      - name: Home information integrity on mobile
+      - name: Supplemental legacy Home information integrity
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/home-information-integrity-smoke.mjs
-      - name: Approved Home dashboard on desktop and mobile
+      - name: Supplemental legacy Home reference on desktop and mobile
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/home-dashboard-reference-smoke.mjs
-      - name: Physical iPhone reduced-viewport layout
+      - name: Emulated iPhone reduced-viewport layout
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
         run: node v2/physical-iphone-layout-smoke.mjs
       - name: Upload safe visual audit evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: public-audit-fixture-visuals
-          path: v2/public-audit-evidence/*.png
+          path: |
+            v2/public-audit-evidence/*.png
+            v2/public-audit-evidence/*-home-geometry.json
           if-no-files-found: warn
           retention-days: 14

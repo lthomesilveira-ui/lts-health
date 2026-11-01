@@ -1,0 +1,53 @@
+# Recorded sleep in reports — .103 published and verified, 31/10/2026
+
+PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completes17/17 workflows successfully, including Calendar41240904364. Forty-two model cases, view/print lifecycle, integrity/parity/privacy and continuity passed. Nine independent metric oracles and actual PDF text/bounds/page artifacts are enforced.
+
+Earlier candidate bfe268ec140af1eae3fa4c3219cf021ca1c3ce35 passed16/17; Calendar41238829353 reported7 failures. Artifact13057435003 SHA256f3fa50f912f17b9ad34115a60b08cf6c3569b0e1679d2cc62e707236429eb9d9 was verified and inspected. Four failures were short hour units joined to numbers during PDF text extraction; two were stretched blank card tails; one was the fixed100-tile limit on a complete monthly320px report. Content-aligned cards and a measured-height finite capture budget correct all3 layout/capture findings. Candidate c36993f6dd4dd8412365848d31f4667497f8ba88 retains4 PDF tokenization failures in Calendar41239951471; verified artifact13057441368 SHA25615b0437a9395ddfd9debaccc005f582d4730d9fcc032ef7ff6a94adf2c285b5e proves distinct positioned number/unit words with valid bounds. The oracle now compares those positioned words, retaining every token/count, bounds, page and image assertion and the plain-text diagnostic. Negative controls reject a missing number or unit; all4 original PDFs pass this comparison offline. No assertion permits lost content.
+
+Exact production renderers/styles inspected with invented data at desktop,393x650 and393x844: weekly/monthly sleep, fractional hours, separate source switching, original dated points, readable coverage and current-day exclusion. Supplementary exam journey follows report → full marker history on desktop/393x650, preserves collection dates/units/references, blocks changed-reference differences and has no horizontal overflow. No new functional defect in the exam data/navigation; computed phone history sizes expose a separate legibility defect (date10px, provenance10.5px, result12px), prepared locally for the next bounded package after this publication.
+
+Normal PR450 runtime merge 05ff97654b65c6bd23451ed0c831b07813b85ef2 publishes health-integrated-20261031.103. Its first protected run41241583773 failed in analise with zero recorded runtime/network errors; encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. PR451 fixes the obsolete8-card expectation by independently checking the exact9-key set in both model and DOM; existing nutrient and later sleep checks remain. Follow-up candidate7c3b449d8afbde079c7a986efeb42e9a69f3a3a4 completes13/13. Normal follow-up merge 37b08d0823439586815494be335465755d81bb7a changes only tests/continuity. Fresh Deploy41242291320, public41242319128, homologation41242319040 and protected real-auth41242291359 pass on that follow-up. Sleep value/date/unit/source/coverage checks emit booleans only. Follow-up publication snapshot17/18 success; unfinished repetitions [41242291335, 41241583731] stay pending, not passed. The first protected failure is retained separately and is not counted as success.
+
+Independent Cloud Browser confirms exact public health-integrated-20261031.103, intact login, hidden private app and no horizontal overflow. Manual browser remains signed out. Synthetic preview and protected actual authentication are separate evidence; no new private manual or physical-iPhone claim.
+
+Composition .102 final candidate f754fe7adc6a142513e810c3bab487443cfc9e12 completes17/17; publication5c4171b4b1ea86bd8e9e905dccc34226725b5564 completes21/21, including earlier pending41237716724,41238493122,41238493165 and41238493136. Earlier scoped snapshots and geometry failures remain historical evidence.
+
+Fresh read-only receipt/provider review leaves original water, source lineage, full-day basal coverage, export diagnostics and other independent history/native/form conditions blocked. No new third-party message, repeated phone setup, fabricated form record, source inference, laboratory correction or clinical action. Next rotating UX area: nutrition. Overall owner acceptance remains independent.
+
+Queue:90 done,14 blocked_external,2 accepted_gap; no ready/in_progress task after this package. External blocks require authentic upstream water/source/full-day coverage/transport evidence, missing exact originals with specific authority, supported signing/history/access, a genuine authorized form update or explicit owner acceptance as detailed per stable task. Continuous UX QA is retained; the next area is nutrition. No global completion is claimed.
+
+# .103 authenticated calendar expectation follow-up — 31/10/2026
+
+PR450 exact candidate d39f9e45bd10bb837bb0d2dde423da96283785ef completed17/17 workflows, including Calendar41240904364. Earlier7 and4 failures remain documented; the corrected positioned-PDF-word oracle retains all token/count, bounds/page/image checks with missing-number and missing-unit negative controls.
+
+Normal merge05ff97654b65c6bd23451ed0c831b07813b85ef2 deploys .103 through41241583766. Independent Cloud Browser confirms exact .103, intact login, hidden private app and1363px without overflow. This is signed-out public inspection, separate from synthetic preview and protected authentication.
+
+Protected Real Auth41241583773 failed in analise with zero recorded runtime/network errors. Encrypted artifact13058215202 SHA256a09b61d7ea6f3b5ee7b024c4eee2c90c43a0a372f3f0701163f1c65430e8a9e6 is preserved. Source inspection finds an obsolete mandatory8-card predicate, which necessarily rejects the new9-card report. This follow-up changes it to an independent exact9-key set in both rendered cards and the model, keeping all nutrient value/coverage checks and the later sleep value/date/unit/source/coverage checks. The failed private gate is not declared passed before actual re-execution.
+
+Only the authenticated test expectation and continuity evidence change. Public .103 runtime/values/source/date arithmetic, auth/security configuration and writes stay unchanged. The separately observed laboratory-history legibility package remains locally prepared and must follow successful closure of the report gate.
+
+# Sleep included in calendar reports — candidate .103, 31/10/2026
+
+Direct UI review found recorded sleep present in Home but omitted from calendar reports. Candidate .103 reuses the existing source-isolated hour/day model in weekly/monthly summaries, dated graph/source picker and both local exports. Sources are not pooled, original dates are not moved between nights and current-day values stay outside closed means. Source/date context is readable on screen; PDF values retain a searchable space before their unit.
+
+Candidate bfe268ec140af1eae3fa4c3219cf021ca1c3ce35 passed16/17 workflows; Calendar41238829353 reported7 failures. Artifact13057435003 SHA256f3fa50f912f17b9ad34115a60b08cf6c3569b0e1679d2cc62e707236429eb9d9 was downloaded, verified and inspected. Four PDF failures came from extracted “6h” merging two tokens despite visible ink. Two desktop captures exposed stretched blank card tails; cards now align to their content. The full monthly320px capture exceeded the old100-tile guard; its finite budget now derives from measured report height, preserving all no-gap, visible-text and strictly increasing coverage assertions. No assertion is waived. The corrected candidate still requires the full browser/PDF gate before publication.
+
+Candidate c36993f6dd4dd8412365848d31f4667497f8ba88 resolved all3 layout/capture findings; Calendar41239951471 retained4 PDF tokenization findings. Verified artifact13057441368 SHA25615b0437a9395ddfd9debaccc005f582d4730d9fcc032ef7ff6a94adf2c285b5e proves the short number and hour unit exist as distinct positioned words with valid bounds. The content oracle now compares those same positioned PDF words, retaining the plain-text artifact for diagnosis, every expected token/count, printable bounds, pagination and page-image checks. Negative controls require a missing number or a missing unit to fail. This repairs the demonstrated plain-text extraction false positive; it does not permit content loss. The new exact candidate must pass before publication.
+
+Forty-two model cases and view/print lifecycle tests pass locally. The existing independent browser oracle checks nine metrics, fractional hours and every export row. Protected real-auth adds boolean-only value/date/unit/source/coverage binding, without patient readings/identifiers in logs. Exact candidate renderers/styles were manually reviewed with invented data in desktop and phone journeys. Candidate browser/PDF, deployment/public and protected-auth gates remain pending; .102 remains the verified public release.
+
+Only report inclusion/presentation, focused checks, version/hash references and continuity metadata change. Original observations/identities, integration settings, auth/writes and clinical state are unchanged. Overall owner acceptance and fourteen external/two accepted source/history/native conditions stay independent. EXECUTION_STATE.json is authoritative.
+
+# Composition readability — .102 published and verified, 31/10/2026
+
+PR449 exact candidate f754fe7adc6a142513e810c3bab487443cfc9e12: 16/17 successful workflows at 2026-10-31T20:24:46.153Z; Integrated41237716727 and Functional41237716705 pass. Existing150px narrow chart-entry,14px labels/16px selects,44px controls, complete title, navigation, no-overflow and zero-write assertions remain enforced.
+
+Normal merge 5c4171b4b1ea86bd8e9e905dccc34226725b5564 publishes health-integrated-20261031.102. Deploy41238493135, Pages41238528590/41238528649 and protected real-auth41238493222 pass; publication snapshot 18/21. Unfinished broad repetitions remain explicit, not passed.
+
+Independent Cloud Browser confirms exact public .102 with intact login, private app hidden and no overflow; manual session signed out. Synthetic Composition desktop,320x650,393x650 and393x844 readings, source separation and partial regional detail were inspected separately. No physical-iPhone or new private manual claim.
+
+Earlier narrow geometry failures remain preserved. Final correction reclaims only summary/section spacing, with unchanged text size and150px gate; candidate9508c9f7d1377106da3a15de37c83f69a3530348 artifact13055604062 digest084a844fe64616c14d8ee27036ae016dae4ed9e3e3c2804353d1cecf7820c3e3 verified. Five limitation explanations use ordinary language; original values, units, source/device/link/comparison rules, clinical state, auth and writes are unchanged.
+
+EXECUTION_STATE.json is authoritative; earlier snapshots retain their original scope.
+
+

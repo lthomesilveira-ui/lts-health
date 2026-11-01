@@ -1,3 +1,13 @@
+Publicação .112 — situação de água com acesso contextual de uso único, foco após o último reposicionamento, avisos e configuração legíveis e ação principal de recebimento. Sem mudança de dados, origem ou confirmação de continuidade automática.
+
+Atualização de navegação de fontes — 01/11/2026: o atalho contextual da água abre e foca seu recebimento em Dados e fontes após o carregamento; o contexto vale uma vez. A consulta comum mantém o início da página. A situação da água fica separada do recebimento geral; ajustes técnicos permanecem em detalhes secundários com as confirmações existentes.
+
+Atualização de água/energia — 01/11/2026: uma janela sem água não termina em vazio sem saída. A Home mostra o último valor genuíno da origem quando existir e oferece registro manual confirmado e diagnóstico de sincronização no próprio cartão; ausência nunca vira zero. Energia ativa pode exibir soma dos dias registrados de uma única origem, sempre separada do gasto energético total e com cobertura explícita. Gasto total só aparece a partir de série total explícita; basal não é somado por inferência.
+
+Atualização de navegação — 01/11/2026: quando uma área especializada é aberta por uma ação contextual, o retorno deve preservar a origem uma vez; a entrada direta mantém seu destino canônico. Em Relatórios, Ver treinos → Voltar retorna ao relatório; Treinos aberto diretamente → Voltar retorna à Home. O contexto não altera dados, filtros, fontes ou autenticação.
+
+Atualização de autoridade — 27/10/2026: o proprietário rejeitou a .91 como informações espalhadas. A abertura deve responder estado conhecido, mudança e pontos para acompanhar, com cinco domínios datados e ações para seus históricos. Texto de sincronização, algoritmo de seleção de fontes e comparações extensas são detalhes secundários. As sete métricas diárias, período/dia, escolhas explícitas de origem e limites dos dados continuam íntegros. Esta exigência substitui prioridades anteriores que faziam contagens e linguagem operacional dominar a Home.
+
 # LTS Health — arquitetura canônica de produto
 
 Status: fonte de verdade de produto. Este documento registra o que o LTS Health precisa resolver, como as áreas se relacionam e quais perguntas cada tela deve responder. Não contém dados pessoais de saúde.
@@ -142,3 +152,4 @@ A imagem aprovada em 04/09/2026 foi recuperada e está preservada fora do reposi
 - `HANDOFF_LTS_HEALTH.md`, `MIGRATION_MANIFEST.md` e a implementação original fornecida;
 - código, testes, migrations, issues e pull requests existentes;
 - `PROJECT_BRIEF.md`, `PRODUCT_VISION_COCKPIT.md`, `REFERENCE_VISUAL_CONTRACT.md` e `DATA_AUDIT.md`.
+

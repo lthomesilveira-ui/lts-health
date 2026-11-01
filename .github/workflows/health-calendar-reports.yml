@@ -1,0 +1,47 @@
+name: LTS Health calendar reports and local PDF
+on:
+  pull_request:
+    paths:
+      - 'preview/compact-evidence/**'
+      - '.github/workflows/health-calendar-reports.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'preview/compact-evidence/**'
+      - '.github/workflows/health-calendar-reports.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-calendar-report-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      LTS_HEALTH_BASE_URL: http://127.0.0.1:4173/preview/compact-evidence/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify calendar, source and presentation contracts
+        run: |
+          node preview/compact-evidence/tests/calendar-report-model-test.mjs
+          node preview/compact-evidence/tests/calendar-report-view-test.mjs
+      - name: Install pinned browser engines and PDF inspection tools
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium webkit
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+      - name: Serve generic application for synthetic-only tests
+        run: |
+          python3 -m http.server 4173 >/tmp/health-calendar-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS "$LTS_HEALTH_BASE_URL" >/dev/null && break; sleep 1; done
+      - name: Exercise mobile reports, local print and actual PDF output
+        run: node preview/compact-evidence/tests/calendar-report-browser.mjs
+      - name: Upload synthetic-only report and PDF evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: calendar-report-synthetic-evidence
+          path: calendar-report-visual
+          retention-days: 7

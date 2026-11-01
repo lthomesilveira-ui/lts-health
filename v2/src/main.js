@@ -1,3 +1,8 @@
+import {renderEvolutionOverview} from './evolution-overview.js';
+import {dashboardChangeAction} from './dashboard-changes.js';
+import {printCalendarReport,updateCalendarReportSelection} from './calendar-report-view.js';
+import {userFacingError} from './user-facing-errors.js';
+import {bodyIntervalModel} from './body-interval-model.js';
 import {downloadReferencePeriodSummary} from './home-reference-experience.js';
 import {state,routes,fixtureMode,signIn,signOut,restoreSession,subscribeAuth,uploadFile,setGlobalPeriod} from './core.js';
 import {loadInitialData,ensureRouteData,isRouteReady,refreshData,downloadStructuredBackup} from './data-layer.js';
@@ -9,6 +14,7 @@ import {renderTreatmentHub} from './treatment-screen.js';
 import {renderHealthHub} from './health-screen.js';
 import {renderNutritionHub} from './nutrition-screen.js';
 import {renderProductNutrition} from './nutrition-product.js';
+import {nutritionArchiveModel,nutritionArchiveSelection,nutritionTimelineSelection} from './nutrition-archive.js';
 import {renderTodayHub} from './today-screen.js';
 import {renderDataHub} from './data-screen.js';
 import {renderTimelineHub} from './timeline-screen.js';
@@ -25,20 +31,21 @@ import {downloadIntegratedSummary} from './integrated-review-view.js';
 import {saveGoals} from './personal-goals.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
-const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
+const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,evolucao:renderEvolutionOverview,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
 const $=id=>document.getElementById(id);
 let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
 let renderedRoute=null;
-const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','evolucao','dados']);
+let routeScrollRevision=0;
+const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','dados','analise']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
 function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
 function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden');}
 
 function syncNav(){
-  document.querySelectorAll('#primaryNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&state.route==='evolucao'));});
+  document.querySelectorAll('#primaryNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route);});
   document.querySelectorAll('#moreSheet [data-route]').forEach(button=>button.classList.toggle('active',button.dataset.route===state.route));
   document.querySelectorAll('#mobileNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&mobileMoreRoutes.has(state.route)));});
   const action=$('routeAction');
@@ -55,21 +62,35 @@ function resetRouteScroll(){
 }
 
 function settleRouteScroll(route){
-  const reset=()=>{if(state.route===route)resetRouteScroll();};
+  const revision=++routeScrollRevision;
+  const current=()=>state.route===route&&revision===routeScrollRevision;
+  const reset=()=>{if(current())resetRouteScroll();};
   reset();
   requestAnimationFrame(()=>{reset();requestAnimationFrame(reset);});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(!current()||route!=='dados'||state.ui.sourceFocus!=='water')return;
+    const heading=document.getElementById('health-auto-export-title');
+    if(!heading)return;
+    state.ui.sourceFocus=null;
+    heading.closest('[data-health-auto-export]').scrollIntoView({block:'start',behavior:'auto'});
+    heading.focus({preventScroll:true});
+  }));
 }
 
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
-  state.route=route;$('moreSheet').classList.add('hidden');
+  if(route!=='dados')state.ui.sourceFocus=null;
+  state.route=route;
+  // pushState does not emit hashchange: apply route styling before rendering.
+  if(!fixtureMode)document.body.dataset.productRoute=route;
+  $('moreSheet').classList.add('hidden');
   try{localStorage.setItem('lts-health-v2-route',route);}catch{}
   const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
-  if(route==='dados'&&state.session&&!state.polarConnection)checkPolarConnection().then(scheduleRender);
-  if(route==='dados'&&state.session&&!state.autoExportConnection)checkAutoExportConnection().then(scheduleRender);
+  if(route==='dados'&&state.session)checkPolarConnection().then(scheduleRender);
+  if(route==='dados'&&state.session)checkAutoExportConnection().then(scheduleRender);
   settleRouteScroll(route);
 }
 
@@ -79,7 +100,7 @@ function routeFromLocation(){
   return'hoje';
 }
 
-function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Os dados já carregados continuam preservados enquanto esta área é preparada.</span></div>`;}
+function loadingView(text='Carregando seus dados'){return`<div class="loadingState"><div class="spinner"></div><b>${text}</b><span>Aguarde um instante.</span></div>`;}
 
 function disclosureKey(details){
   const explicit=details?.dataset?.disclosure;
@@ -128,6 +149,12 @@ function render(){
   const host=$('screenHost');
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
   if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
+  // Store the displayed default pair once, before either field is edited.
+  // Refreshes must preserve that pair even when one date becomes ambiguous.
+  if(state.route==='analise'&&state.ui.reviewView==='interval'&&!state.ui.bodyIntervalStart&&!state.ui.bodyIntervalEnd){
+    const initial=bodyIntervalModel(state.data,state.domainStatus,state.ui);
+    if(initial.available){state.ui.bodyIntervalStart=initial.selection.start;state.ui.bodyIntervalEnd=initial.selection.end;}
+  }
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
   const routeChanged=renderedRoute!==state.route;
   const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
@@ -144,7 +171,12 @@ function applyControlState(){
   for(const[id,value]of Object.entries(values)){const el=$(id);if(el&&value!=null)el.value=value;}
 }
 
-async function refresh(){if(state.loading)return;setSync('Atualizando…');scheduleRender();await refreshData(state.route,setSync);scheduleRender();}
+async function refresh(){
+  if(state.loading)return;
+  setSync('Atualizando…');scheduleRender();
+  await Promise.all([refreshData(state.route,setSync),...(state.session?[checkPolarConnection(),checkAutoExportConnection()]:[])]);
+  scheduleRender();
+}
 async function updatePolarOnOpen(){const updated=await checkPolarConnection({syncOnOpen:true});if(updated)await refreshData(state.route,setSync);scheduleRender();}
 
 export function uploadOutcomeMessage(result){
@@ -186,13 +218,55 @@ function openTimelineTarget(button){
   const route=button.dataset.timelineRoute,kind=button.dataset.timelineKind,ref=button.dataset.timelineRef||'',date=button.dataset.timelineDate||'';
   if(kind==='workout'){setGlobalPeriod('all');state.ui.openWorkout=ref;}
   else if(kind==='body'){state.ui.selectedBodyDate=ref||date;}
-  else if(kind==='nutrition'){setGlobalPeriod('all');state.ui.nutritionYear=String(date).slice(0,4);state.ui.nutritionDate=date;}
+  else if(kind==='nutrition'){
+    setGlobalPeriod('all');
+    const selection=nutritionTimelineSelection(state.data,state.domainStatus,button.dataset.timelineSource,date,ref);
+    if(selection)Object.assign(state.ui,selection);
+    else Object.assign(state.ui,{nutritionDate:date,nutritionYear:String(date).slice(0,4),nutritionMonth:String(date).slice(0,7),homeNutritionSource:'__unavailable_timeline_origin__',reportNutritionSource:'__unavailable_timeline_origin__'});
+  }
   else if(kind==='labs'){state.ui.selectedCollection=ref;state.ui.labQuery='';}
   if(route)setRoute(route,{replace:false});
 }
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    const overviewMetric=event.target.closest('[data-evolution-overview-metric]');if(overviewMetric){state.ui.evolutionOverviewMetric=overviewMetric.dataset.evolutionOverviewMetric;state.ui.evolutionOverviewPoint=null;render();return;}
+    const overviewPeriod=event.target.closest('[data-evolution-period]');if(overviewPeriod){state.ui.evolutionOverviewPeriod=overviewPeriod.dataset.evolutionPeriod;state.ui.evolutionOverviewPoint=null;render();return;}
+    const overviewPoint=event.target.closest('[data-evolution-point]');if(overviewPoint){event.preventDefault();state.ui.evolutionOverviewPoint=overviewPoint.dataset.evolutionPoint;render();return;}
+    const overviewBody=event.target.closest('[data-evolution-body]');if(overviewBody){state.ui.productCompositionRecord=overviewBody.dataset.evolutionBody;setRoute('bio',{replace:false});return;}
+    const overviewExercise=event.target.closest('[data-evolution-exercise]');if(overviewExercise){state.ui.productExerciseId=overviewExercise.dataset.evolutionExercise;state.ui.productExercisePage=1;state.ui.productExerciseUnit=null;state.ui.productTrainingView='exercise';setRoute('treinos',{replace:false});return;}
+    if(event.target.closest('[data-evolution-training]')){state.ui.productTrainingView='progress';setRoute('treinos',{replace:false});return;}
+    const calendarPrint=event.target.closest('[data-calendar-print]');if(calendarPrint){printCalendarReport(state.data,state.domainStatus,state.ui,undefined,{summary:calendarPrint.dataset.calendarPrint==='summary'});return;}
+    const calendarChart=event.target.closest('[data-calendar-chart]');if(calendarChart&&['energy','protein','carbs','fat','fiber'].includes(calendarChart.dataset.calendarChart)){state.ui.calendarReportChart=calendarChart.dataset.calendarChart;render();return;}
+    const calendarMode=event.target.closest('[data-calendar-mode]');if(calendarMode){const patch=updateCalendarReportSelection(state.ui,'mode',calendarMode.dataset.calendarMode);if(patch)Object.assign(state.ui,patch);render();return;}
+    const calendarStep=event.target.closest('[data-calendar-step]');if(calendarStep&&!calendarStep.disabled){const patch=updateCalendarReportSelection(state.ui,'step',calendarStep.dataset.calendarStep);if(patch)Object.assign(state.ui,patch);render();return;}
+    const archiveOpen=event.target.closest('[data-nutrition-archive-open]');
+    if(archiveOpen){
+      const archive=nutritionArchiveModel(state.data,state.domainStatus,state.ui),key=archiveOpen.dataset.nutritionArchiveOpen,date=archiveOpen.dataset.nutritionArchiveDate,source=archive.sources.find(item=>item.key===key);
+      if(source?.dates.includes(date)){
+        Object.assign(state.ui,nutritionArchiveSelection(archive,'source',key),nutritionArchiveSelection(archive,'date',date));
+        if(archiveOpen.dataset.nutritionArchiveRoute==='nutricao'){setRoute('nutricao',{replace:false});return;}
+      }
+      render();return;
+    }
+
+    const planRetrospective=event.target.closest('[data-plan-retrospective]');
+    if(planRetrospective){state.ui.nutritionPlanRetrospective=planRetrospective.dataset.planRetrospective==='true';render();return;}
+    const dashboardMode=event.target.closest('[data-dashboard-mode]');
+    if(dashboardMode){state.ui.dashboardMode=dashboardMode.dataset.dashboardMode;render();return;}
+    const dashboardChart=event.target.closest('[data-dashboard-chart]');
+    if(dashboardChart){const box=dashboardChart.getBoundingClientRect(),start=dashboardChart.dataset.start,end=dashboardChart.dataset.end;const span=Math.round((Date.parse(end)-Date.parse(start))/86400000),fraction=Math.min(1,Math.max(0,((event.clientX-box.left)/box.width*286-5)/276));state.ui.dashboardMode='day';state.ui.dashboardDate=event.detail===0?dashboardChart.dataset.last:new Date(Date.parse(start)+Math.round(fraction*span)*86400000).toISOString().slice(0,10);render();document.getElementById('dashboard-date')?.focus({preventScroll:true});resetRouteScroll();return;}
+    const dashboardDay=event.target.closest('[data-dashboard-day]');
+    if(dashboardDay){state.ui.dashboardMode='day';state.ui.dashboardDate=dashboardDay.dataset.dashboardDay;render();document.getElementById('dashboard-date')?.focus({preventScroll:true});resetRouteScroll();return;}
+    const dashboardChange=event.target.closest('[data-dashboard-change]');
+    if(dashboardChange){
+      const action=dashboardChangeAction(dashboardChange.dataset.dashboardChange,state.data,state.domainStatus,state.ui);
+      if(action){Object.assign(state.ui,action.ui);setRoute(action.route,{replace:false});}else render();
+      return;
+    }
+    if(event.target.closest('[data-lab-clear-asof]')){state.ui.productLabAsOf=null;render();return;}
+    const dashboardLab=event.target.closest('[data-dashboard-lab]');
+    if(dashboardLab){try{state.ui.productLabAsOf=null;Object.assign(state.ui,JSON.parse(dashboardLab.dataset.dashboardLab));}catch{event.preventDefault();return;}}
     const haeCheck=event.target.closest('[data-hae-check]');
     if(haeCheck){haeCheck.disabled=true;await checkAutoExportConnection();if(state.autoExportConnection?.received)await refreshData(state.route,setSync);scheduleRender();return;}
     const haeAction=event.target.closest('[data-hae-action]');
@@ -205,7 +279,7 @@ function bindStaticEvents(){
     if(polarAction){polarAction.disabled=true;const updated=await actOnPolar(polarAction.dataset.polarAction);if(updated)await refreshData(state.route,setSync);scheduleRender();return;}
     if(event.target.closest('[data-reference-export]')){downloadReferencePeriodSummary();return;}
     const homeInsight=event.target.closest('[data-home-insight-details]');
-    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;state.ui.reviewView='overview';setRoute('analise',{replace:false});return;}
+    if(homeInsight){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reportLoadPage=1;const start=homeInsight.dataset.bodyStart,end=homeInsight.dataset.bodyEnd;if(start&&end&&start<end){state.ui.bodyIntervalStart=start;state.ui.bodyIntervalEnd=end;state.ui.reviewView='interval';}else{state.ui.reviewView='overview';}setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-refresh]')){refresh();return;}
     if(event.target.closest('[data-home-consultation]')){setGlobalPeriod(state.ui.homePeriod||'90');state.ui.reviewView='consultation';setRoute('analise',{replace:false});return;}
     if(event.target.closest('[data-home-goals]')){const details=document.querySelector('.ltsGoalSettings');if(details){details.open=true;details.scrollIntoView({block:'start',behavior:'auto'});details.querySelector('input')?.focus({preventScroll:true});}return;}
@@ -218,12 +292,12 @@ function bindStaticEvents(){
     const reportPage=event.target.closest('[data-report-page]');
     if(reportPage&&['reportLabPage','reportPolarPage','reportLoadPage','reviewDayPage'].includes(reportPage.dataset.reportPage)&&!reportPage.disabled){state.ui[reportPage.dataset.reportPage]=Math.max(1,Number(reportPage.dataset.page)||1);scheduleRender();return;}
     const reviewView=event.target.closest('[data-review-view]');
-    if(reviewView&&['overview','day','consultation'].includes(reviewView.dataset.reviewView)){state.ui.reviewView=reviewView.dataset.reviewView;scheduleRender();return;}
+    if(reviewView&&['interval','overview','day','consultation'].includes(reviewView.dataset.reviewView)){state.ui.reviewView=reviewView.dataset.reviewView;scheduleRender();return;}
     const reviewDate=event.target.closest('[data-review-date]');
     if(reviewDate&&!reviewDate.disabled&&reviewDate.dataset.reviewDate){state.ui.reviewDate=reviewDate.dataset.reviewDate;state.ui.healthContextDate=state.ui.reviewDate;scheduleRender();return;}
     if(event.target.closest('[data-review-export]')){downloadIntegratedSummary();return;}
     const sectionLink=event.target.closest('[data-report-section]');
-    if(sectionLink){event.preventDefault();const section=document.getElementById(sectionLink.dataset.reportSection);if(section){for(let ancestor=section.parentElement;ancestor;ancestor=ancestor.parentElement){if(ancestor.tagName==='DETAILS')ancestor.open=true;}section.scrollIntoView({block:'start',behavior:'auto'});section.tabIndex=-1;section.focus({preventScroll:true});}return;}
+    if(sectionLink){event.preventDefault();const section=document.getElementById(sectionLink.dataset.reportSection);if(section){for(let ancestor=section.parentElement;ancestor;ancestor=ancestor.parentElement){if(ancestor.tagName==='DETAILS')ancestor.open=true;}section.scrollIntoView({block:'start',behavior:'auto'});if(section.tagName!=='SUMMARY')section.tabIndex=-1;section.focus({preventScroll:true});}return;}
     const reportExercise=event.target.closest('[data-report-exercise]');
     if(reportExercise){state.ui.productExerciseId=reportExercise.dataset.reportExercise;state.ui.productExerciseUnit=reportExercise.dataset.reportLoadUnit;state.ui.productExercisePage=1;state.ui.productExercisePoint=null;state.ui.productTrainingView='exercise';setRoute('treinos');return;}
     const reportMarker=event.target.closest('[data-report-marker]');
@@ -232,7 +306,7 @@ function bindStaticEvents(){
     if(backupButton){
       const msg=$('backupExportMsg');backupButton.disabled=true;if(msg)msg.textContent='Preparando backup…';
       try{const result=await downloadStructuredBackup(text=>{if(msg)msg.textContent=text;setSync(text);});if(msg)msg.textContent=`Backup criado: ${result.filename}`;setSync('Atualizado');}
-      catch(error){console.error(error);if(msg)msg.textContent='Não foi possível criar o backup agora.';setSync('Falha no backup');}
+      catch(error){console.error(error);if(msg)msg.textContent='Não foi possível criar o backup agora.';setSync('Não foi possível criar o backup');}
       finally{backupButton.disabled=false;}
       return;
     }
@@ -246,7 +320,7 @@ function bindStaticEvents(){
     const periodButton=event.target.closest('button[data-period]');if(periodButton){event.preventDefault();setGlobalPeriod(periodButton.dataset.period);scheduleRender();return;}
     const homeMetric=event.target.closest('[data-home-metric]');if(homeMetric){event.preventDefault();state.ui.homeMetric=homeMetric.dataset.homeMetric;render();return;}
     const healthDate=event.target.closest('[data-health-date]');if(healthDate){event.preventDefault();state.ui.healthContextDate=healthDate.dataset.healthDate;scheduleRender();return;}
-    const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();setRoute(routeButton.dataset.route,{replace:false});return;}
+    const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();const destination=routeButton.dataset.route;state.ui.sourceFocus=destination==='dados'&&routeButton.dataset.sourceFocus==='water'?'water':null;if(destination==='treinos')state.ui.trainingReturnRoute=routeButton.dataset.returnRoute==='analise'?'analise':null;if(routeButton.hasAttribute('data-consume-training-return'))state.ui.trainingReturnRoute=null;setRoute(destination,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
     const bodyDate=event.target.closest('[data-body-date]');if(bodyDate){state.ui.selectedBodyDate=bodyDate.dataset.bodyDate;scheduleRender();return;}
     const evolutionMetric=event.target.closest('[data-evolution-metric]');if(evolutionMetric){state.ui.evolutionMetric=evolutionMetric.dataset.evolutionMetric;scheduleRender();return;}
@@ -258,6 +332,7 @@ function bindStaticEvents(){
     const markerButton=event.target.closest('[data-marker]');if(markerButton){state.ui.selectedBiomarker=markerButton.dataset.marker;scheduleRender();return;}
   });
 
+  document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('[data-dashboard-chart]')){event.preventDefault();event.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
   document.addEventListener('input',event=>{
     if(event.target.matches('[data-report-search]')){state.ui.reportLabQuery=event.target.value;state.ui.reportLabPage=1;scheduleRender();}
     if(event.target.id==='trainingQuery'){state.ui.trainingQuery=event.target.value;scheduleRender();}
@@ -268,12 +343,27 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.hasAttribute('data-evolution-point-select')){state.ui.evolutionOverviewPoint=event.target.value;render();return;}
+    if(event.target.hasAttribute('data-calendar-control')){const patch=updateCalendarReportSelection(state.ui,event.target.dataset.calendarControl,event.target.value);if(patch){Object.assign(state.ui,patch);render();}return;}
+    if(event.target.hasAttribute('data-calendar-source')){state.ui.calendarReportSources={...(state.ui.calendarReportSources||{}),[event.target.dataset.calendarSource]:event.target.value};render();return;}
+    if(event.target.hasAttribute('data-nutrition-archive-field')){
+      const archive=nutritionArchiveModel(state.data,state.domainStatus,state.ui),selection=nutritionArchiveSelection(archive,event.target.dataset.nutritionArchiveField,event.target.value);
+      if(selection)Object.assign(state.ui,selection);
+      render();return;
+    }
+
+    if(event.target.hasAttribute('data-plan-food-source')){state.ui.nutritionPlanFoodSource=event.target.value;render();return;}
+    if(event.target.hasAttribute('data-dashboard-period')){state.ui.dashboardPeriod=event.target.value;state.ui.dashboardMode='period';if(['30','90','all'].includes(event.target.value))setGlobalPeriod(event.target.value);render();return;}
+    if(event.target.hasAttribute('data-dashboard-date')){const v=event.target.value;if(/^\d{4}-\d{2}-\d{2}$/.test(v)){state.ui.dashboardDate=v;state.ui.dashboardMode='day';render();}return;}
+    if(event.target.hasAttribute('data-dashboard-source')){state.ui.dashboardSources={...(state.ui.dashboardSources||{}),[event.target.dataset.dashboardSource]:event.target.value};render();return;}
+    if(event.target.hasAttribute('data-home-lab-select')){state.ui.homeLabKey=event.target.value;render();return;}
     if(event.target.hasAttribute('data-home-period-select')){setGlobalPeriod(event.target.value);render();return;}
     if(event.target.hasAttribute('data-overview-body-date')){state.ui.overviewBodyDate=event.target.value;render();return;}
     if(event.target.id==='nutritionDateProduct'){state.ui.nutritionDate=event.target.value;render();return;}
-    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;render();return;}
+    if(['reportBodySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reportLabMarker','homeTrainingContext'].includes(event.target.dataset?.homeField)){state.ui[event.target.dataset.homeField]=event.target.value;if(event.target.dataset.homeField==='reportNutritionSource')state.ui.homeNutritionSource=event.target.value;render();return;}
+    if(['bodyIntervalStart','bodyIntervalEnd'].includes(event.target.id)){state.ui[event.target.id]=event.target.value;render();return;}
     const reportFields=new Set(['reportBodySource','reportSegmentSource','reportRegion','reportSegmentMetric','reportLabMarker','reportLabPoint','reportRecoverySource','reportNutritionSource','reviewWaterSource','reviewSleepSource','reviewDate']);
-    if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
+    if(reportFields.has(event.target.dataset?.reportField)){state.ui[event.target.dataset.reportField]=event.target.value;if(event.target.dataset.reportField==='reportNutritionSource')state.ui.homeNutritionSource=event.target.value;if(event.target.dataset.reportField==='reportLabMarker')state.ui.reportLabPoint=null;if(event.target.dataset.reportField==='reviewDate')state.ui.healthContextDate=event.target.value;scheduleRender();return;}
     if(event.target.id==='healthContextDate'){state.ui.healthContextDate=event.target.value;state.ui.reviewDate=event.target.value;scheduleRender();}
     if(event.target.id==='homeLabMarker'){state.ui.homeLabMarker=event.target.value;scheduleRender();}
     if(event.target.id==='trainingPeriod'){setGlobalPeriod(event.target.value);scheduleRender();}
@@ -301,7 +391,7 @@ function bindStaticEvents(){
     if(event.target.id==='personalGoalsForm'){
       event.preventDefault();const form=event.target,button=form.querySelector('[type="submit"]'),msg=form.querySelector('#personalGoalsMessage');button.disabled=true;msg.textContent='Salvando metas…';
       try{await saveGoals(form);state.ui.personalGoalsMessage='Metas salvas. As comparações usam a versão vigente em cada data.';render();const details=document.querySelector('.ltsGoalSettings');if(details)details.open=true;}
-      catch(error){msg.textContent=error.message;button.disabled=false;}return;
+      catch(error){console.error(error);msg.textContent=userFacingError(error,'Não foi possível salvar suas metas agora. Tente novamente.');button.disabled=false;}return;
     }
     if(event.target.id!=='uploadForm')return;event.preventDefault();
     const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',msg=$('uploadMsg'),button=event.target.querySelector('button[type="submit"]');

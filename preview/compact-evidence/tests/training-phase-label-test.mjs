@@ -8,7 +8,7 @@ const sets=['warmup','other','working',null,'drop','rest_pause'].map((phase,i)=>
 const data={workouts:[workout],exercises:[exercise],sets},snapshot=JSON.stringify(data);
 state.data=data;state.domainStatus={workouts:'ready',exercises:'ready',sets:'ready'};state.ui={openWorkout:workout.source_record_id,productTrainingView:'exercises'};
 const html=renderProductTraining();
-assert.match(html,/<em>aquec\.<\/em>/);assert.match(html,/<em>outra fase informada<\/em>/);assert.match(html,/<em>série de trabalho<\/em>/);assert.match(html,/<em>fase desconhecida<\/em>/);
+assert.match(html,/<em>aquec\.<\/em>/);assert.match(html,/<em>outra fase informada<\/em>/);assert.match(html,/<em>série de trabalho<\/em>/);assert.match(html,/Tipo de série não informado em 1 série/);assert.doesNotMatch(html,/<em>fase desconhecida<\/em>/,'missing phase is explained once, never silently classified or repeated in every row');
 assert.match(html,/Série de ajuste, conforme relato\. &lt;original&gt;/);assert.match(html,/<summary>Observações registradas<\/summary>/);assert.match(html,/>Drop<\/span>/);assert.match(html,/>Rest-pause<\/span>/);
 assert.doesNotMatch(html,/<em>ajuste<\/em>/,'other does not imply adjustment');
 assert.equal(JSON.stringify(data),snapshot);

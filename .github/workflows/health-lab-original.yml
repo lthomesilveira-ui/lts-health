@@ -1,0 +1,44 @@
+name: LTS Health Laboratory Originals
+on:
+  pull_request:
+    paths: ['v2/**', 'preview/compact-evidence/**', '.github/workflows/health-lab-original.yml']
+  push:
+    branches: [main]
+    paths: ['v2/**', 'preview/compact-evidence/**', '.github/workflows/health-lab-original.yml']
+permissions:
+  contents: read
+concurrency:
+  group: health-lab-original-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-original:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify original identity and bounded source reads
+        run: |
+          node preview/compact-evidence/tests/lab-original-link-test.mjs
+          node --check v2/lab-original-browser.mjs
+          node --check v2/real-auth-lab-original-checks.mjs
+          node v2/production-integration-contract.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
+      - name: Install pinned browser API
+        run: npm install --no-save playwright@1.56.1
+      - name: Exercise original access with synthetic source rows
+        run: |
+          python3 -m http.server 4173 >/tmp/health-lab-original.log 2>&1 &
+          node v2/lab-original-browser.mjs
+      - name: Keep synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: laboratory-original-synthetic
+          path: lab-original-visual/
+          retention-days: 7

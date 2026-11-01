@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+globalThis.location={search:'?fixture=1'};
+const {evolutionBodyModel,renderEvolutionBodyChart}=await import('../src/evolution-body-chart.js');
+const today='2026-10-25',row=(id,date,value,source='Synthetic A')=>({source_record_id:id,measured_at:date,weight_kg:value,source,device_name:null});
+const rows=[row('old','2021-03-20',80),row('a','2026-02-01',90),row('b','2026-08-01',89),row('c','2026-08-01',88,'Synthetic B'),row('future','2027-01-01',87),row('bad','bad',10),row('missing','2026-10-01',null)];
+let m=evolutionBodyModel(rows,'weight_kg',{today});assert.equal(m.period,'12m');assert.equal(m.start,'2025-10-25');assert.equal(m.allCount,4);assert.equal(m.points.length,3);assert.equal(m.selected.value,88);assert.equal(m.origins.length,2);
+assert.equal(evolutionBodyModel(rows,'weight_kg',{today,period:'6m'}).points.length,2);assert.equal(evolutionBodyModel(rows,'weight_kg',{today,period:'all'}).points.length,4);assert.equal(evolutionBodyModel(rows,'weight_kg',{today,selected:m.points[0].id}).selected.value,90);
+const selected=m.points[0].id;assert.equal(evolutionBodyModel([...rows].reverse(),'weight_kg',{today,selected}).selected.value,90,'reordering does not change selected fact');
+let html=renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'});assert.match(html,/89,0 kg/);assert.match(html,/88,0 kg/);assert.match(html,/Synthetic B/);assert.match(html,/data-evolution-point-select/);assert.doesNotMatch(html,/<path|ltsContextLine|ltsDepthLine/);assert.match(html,/Medição|medição/);assert.equal((html.match(/class="ltsEvolutionMark/g)||[]).length,3);assert.equal((html.match(/<option/g)||[]).length,3);
+m=evolutionBodyModel([rows[0]],'weight_kg',{today});assert.equal(m.points.length,0);assert.equal(m.start,'2025-10-25');html=renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'});assert.match(html,/Sem medições nesta janela/);assert.match(html,/20\/03\/2021/);assert.match(html,/data-evolution-period="all"/);
+m=evolutionBodyModel([row('one','2026-09-01',80)],'weight_kg',{today});html=renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'});assert.doesNotMatch(html,/NaN|Infinity/);assert.equal(m.selected.value,80);
+m=evolutionBodyModel([row('same','2026-01-01',80),row('same','2026-02-01',81)],'weight_kg',{today});assert.ok(m.points.every(p=>!p.linkable));assert.match(renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'}),/disabled title="Identidade documental ambígua"/);
+m=evolutionBodyModel([row('x','2026-01-01',80,'<script>bad</script>')],'weight_kg',{today});html=renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'});assert.doesNotMatch(html,/<script>/);assert.match(html,/&lt;script&gt;/);
+assert.equal(evolutionBodyModel(rows,'fat_mass_kg',{today}).points.length,0);assert.equal(evolutionBodyModel(rows,'weight_kg',{today:'2024-08-31',period:'6m'}).start,'2024-02-29');
+console.log('Evolution body chart: honest recent windows, old+clustered records, isolated points, dated selection, origins, duplicates, empty/sparse/absent metrics and escaping passed.');
+m=evolutionBodyModel([row('today',today,80)],'weight_kg',{today,period:'all'});html=renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'});assert.equal((html.match(/>25\/10<\/text>/g)||[]).length,1,'single-day window has one distinct tick');
+m=evolutionBodyModel([row('a','2026-10-20',80),row('b','2026-10-20',81,'Other')],'weight_kg',{today});html=renderEvolutionBodyChart(m,{label:'Peso',unit:'kg'});assert.match(html,/2 registros nesta data · selecionado 2/);assert.doesNotMatch(html,/<path/);

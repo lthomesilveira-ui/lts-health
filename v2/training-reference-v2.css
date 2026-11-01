@@ -1,4 +1,16 @@
 /* Canonical Training surface. It intentionally does not invent HR zones or time-series evidence. */
+.ltsRefSessionComment{margin-top:16px;padding:12px 14px;border-radius:12px;background:#f1f5f9;color:#25354a;overflow-wrap:anywhere}
+.ltsRefSessionComment>b{font-size:12px}
+.ltsRefSessionComment>p{margin:6px 0 0;white-space:pre-wrap;font-size:14px;line-height:1.55;color:#25354a}
+.ltsRefSessionContext{margin-top:12px;border-top:1px solid #d9e1e9;min-width:0;color:#25354a}
+.ltsRefSessionContext>summary{display:flex;align-items:center;min-height:44px;padding:10px 0;cursor:pointer;font-size:13px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.ltsRefSessionContext>summary::before{content:'›';margin-right:8px;font-size:18px;flex:0 0 auto}
+.ltsRefSessionContext[open]>summary::before{transform:rotate(90deg)}
+.ltsRefSessionGroups{list-style:none;padding:0;margin:4px 0 12px;display:grid;gap:10px}
+.ltsRefSessionGroups>li{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.ltsRefSessionGroups>li>small{color:#516277;font-size:12px}
+.ltsRefSessionContextNote{font-size:12px!important;line-height:1.55!important;color:#516277!important;margin:10px 0!important;overflow-wrap:anywhere}
+.ltsRefSessionOriginal{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px!important;line-height:1.6!important;color:#25354a!important;margin:8px 0 12px!important}
 .ltsTrainingReference {
   display: grid;
   width: 100%;
@@ -525,10 +537,14 @@
   white-space: nowrap;
 }
 
-.ltsRefSetEmpty {
+.ltsRefSetTable > .ltsRefSetEmpty {
+  display: block;
   grid-column: 1 / -1;
   color: #65758a;
   font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .ltsRefExerciseHistory {
@@ -689,3 +705,285 @@
   }
 }
 
+
+/* Exercise history leads with the recorded session, not an empty chart. */
+.ltsTrainingV2[data-training-view="exercise"] .ltsRefTrainHeader h1 {
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.ltsExerciseHistory .ltsExerciseHistoryOverview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 4px 0 12px;
+}
+.ltsExerciseHistoryOverview h2 {
+  margin: 0;
+  font-size: 16px;
+  color: #223b50;
+}
+.ltsExerciseHistoryOverview > span,
+.ltsExerciseHistory .ltsExerciseSessionMeta {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #596d7c;
+}
+.ltsExerciseHistory .ltsExerciseSession {
+  min-width: 0;
+  padding: 14px 16px;
+  overflow-wrap: anywhere;
+}
+.ltsExerciseHistory .ltsExerciseSessionLatest {
+  border-color: #8ab8aa;
+  border-left: 3px solid #397e68;
+}
+.ltsExerciseHistory .ltsExerciseSession header {
+  align-items: center;
+  gap: 12px;
+}
+.ltsExerciseHistory .ltsExerciseSession header > div {
+  min-width: 0;
+}
+.ltsExerciseHistory .ltsExerciseSession time {
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.ltsExerciseHistory .ltsExerciseLatestLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #36745f;
+  letter-spacing: .025em;
+}
+.ltsExerciseHistory .ltsExerciseSessionMeta {
+  display: grid;
+  gap: 2px;
+  margin: 5px 0 10px;
+}
+.ltsExerciseHistory .ltsExerciseSetHeading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  border-top: 1px solid #e4ebe8;
+  padding: 10px 0 4px;
+  color: #344d45;
+  font-size: 12px;
+}
+.ltsExerciseHistory .ltsExerciseSetHeading > span {
+  color: #62766e;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets li {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #edf1ef;
+  line-height: 1.45;
+}
+.ltsExerciseHistory .ltsExerciseSetStep {
+  padding-top: 1px;
+  color: #5b7165;
+  font-size: 12px;
+  font-weight: 650;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets b,
+.ltsExerciseHistory .ltsExerciseSetReps {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: #213c32;
+}
+.ltsExerciseHistory .ltsExerciseRecordedSets small {
+  display: block;
+  margin-top: 2px;
+  color: #64766e;
+  font-size: 11px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 8px 14px;
+  margin-top: 12px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot {
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px 2px;
+  border-radius: 9px;
+  background: #f5f8f6;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot figcaption {
+  font-size: 11px;
+  color: #5b7165;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot figcaption span {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot svg {
+  display: block;
+  width: 100%;
+  max-height: 96px;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot circle {
+  fill: #397e68;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot text {
+  font-size: 11px;
+  fill: #2b5947;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.ltsExerciseHistory .ltsExerciseRecordedPlot .ltsExercisePointStep {
+  font-size: 10px;
+  fill: #62766e;
+}
+.ltsExerciseHistory .ltsExerciseOriginal,
+.ltsExerciseHistory .ltsExerciseComparison {
+  margin-top: 10px;
+  min-width: 0;
+}
+.ltsExerciseHistory .ltsExerciseOriginal summary,
+.ltsExerciseHistory .ltsExerciseComparison summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 12px 0;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.5;
+  color: #325d55;
+  cursor: pointer;
+}
+.ltsExerciseHistory .ltsExerciseOriginal p {
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+.ltsExerciseHistory .ltsExerciseComparison {
+  border-top: 1px solid #dce5e0;
+}
+.ltsExerciseHistory .ltsExerciseComparison > .ltsSourceSelect {
+  max-width: 280px;
+}
+.ltsExerciseHistory .ltsExerciseCaution {
+  margin: 8px 0;
+  color: #647266;
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 390px) {
+  .ltsExerciseHistory .ltsExerciseSession { padding: 12px; }
+  .ltsExerciseHistory .ltsExerciseRecordedSets li { grid-template-columns: 60px minmax(0, 1fr); }
+  .ltsExerciseHistory .ltsExerciseRecordedSets b,
+  .ltsExerciseHistory .ltsExerciseSetReps { font-size: 14px; }
+}
+
+.ltsExerciseHistory .ltsExerciseUnassigned {
+  margin-top: 12px;
+  border-top: 1px solid #e6ddd1;
+}
+.ltsExerciseHistory .ltsExerciseUnassigned h3 {
+  margin: 12px 0 4px;
+  font-size: 13px;
+  color: #735b3e;
+}
+
+/* Visual session report: original hierarchy, source-backed charts and aligned sets. */
+.ltsTrainingReference[data-training-design="visual-session"]{gap:14px;max-width:1080px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero{min-height:0!important;padding:14px 16px!important;align-items:center!important;justify-content:flex-start!important;border:1px solid #dce4eb;background:#fff!important;border-radius:16px!important;box-shadow:none!important;color:#17283b!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero *{color:#17283b!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero>div{min-width:0;flex:1}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero strong{margin:3px 0!important;font-size:18px!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero small{font-size:12px!important;color:#52657a!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingSessionIcon{display:grid;width:44px;height:44px;flex:0 0 44px;place-items:center;background:#e9344f;border-radius:12px;color:white!important;font-size:28px;font-weight:800}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero>button{min-height:44px;border:0;background:#fff;font-size:12px;font-weight:700;color:#27614f!important}
+.ltsTrainingReportGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.ltsTrainingReportGrid>.ltsRefTrainPanel{margin:0;min-width:0;height:100%;box-sizing:border-box}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPanel>header h2{font-size:18px!important;line-height:1.3!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPanel>header span{font-size:11px!important;line-height:1.5!important;letter-spacing:.04em}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPanel>header button{min-height:44px;font-size:12px;white-space:nowrap}
+.ltsTrainingScale{display:flex;justify-content:space-between;gap:8px;margin:15px 0 13px;color:#52657a;font-size:12px}
+.ltsTrainingGroupBars{display:grid;gap:10px}
+.ltsTrainingBarRow{display:grid;grid-template-columns:minmax(84px,1fr) minmax(80px,1.7fr) 22px;align-items:center;gap:10px;min-width:0;font-size:12px;line-height:1.35}
+.ltsTrainingBarRow>span{overflow-wrap:anywhere;color:#33485d}
+.ltsTrainingBarRow svg{width:100%;height:14px;min-width:0;display:block}
+.ltsTrainingBarTrack{fill:#eef3f2}.ltsTrainingBarMark{fill:#347d68}
+.ltsTrainingBarRow>b{text-align:right;color:#20384a;font-size:14px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingChartNote{font-size:11px!important;line-height:1.5!important;color:#52657a!important;margin:14px 0 0!important}
+.ltsTrainingChartEmpty{padding:25px 0;font-size:14px;color:#52657a;line-height:1.5}
+.ltsTrainingRecentBars{display:flex;align-items:stretch;gap:8px;margin:20px 0 0;min-height:175px}
+.ltsTrainingRecentBars>button{flex:1;min-width:0;min-height:44px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:flex-end;padding:6px 2px;border:1px solid transparent;border-radius:10px;background:#fff;color:#33485d;font:inherit}
+.ltsTrainingRecentBars>button.selected{background:#f0f7f4;border-color:#bedbcf}
+.ltsTrainingRecentBars>button>b{font-size:13px;font-weight:750;white-space:nowrap}
+.ltsTrainingRecentTrack{height:112px;width:100%;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid #cbd9d3}
+.ltsTrainingRecentTrack>i{width:65%;max-width:32px;display:block;background:#a8c5b9;border-radius:4px 4px 0 0;min-height:0}
+.selected .ltsTrainingRecentTrack>i{background:#347d68}
+.ltsTrainingRecentTrack>i.missing{height:100%;border:1px dashed #b3c0ba;background:transparent}
+.ltsTrainingRecentBars>button>small{font-size:11px;white-space:nowrap}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefOverviewGrid{display:flex!important;gap:18px!important;margin:0!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefOverviewGrid>div{display:flex!important;align-items:baseline!important;gap:5px!important;min-height:0!important;padding:0!important;background:#fff!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefOverviewGrid b{font-size:18px!important;color:#21384c!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefOverviewGrid span{font-size:12px!important;color:#52657a!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseList{display:grid;gap:12px}
+.ltsTrainingExerciseGroup{margin:9px 0 0;padding:9px 0;border-bottom:1px solid #dce5eb;font-size:15px;font-weight:750;color:#27614f}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard{border-radius:14px;padding:16px!important;box-shadow:none;background:#fff}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header{display:grid!important;grid-template-columns:30px minmax(0,1fr) auto!important;gap:10px!important;align-items:start!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header b{font-size:15px!important;line-height:1.4!important;white-space:normal!important;overflow:visible!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header small{font-size:11px!important;line-height:1.4!important;margin-top:3px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseNumber{width:28px;height:28px;background:#f0f5f3;color:#27614f;font-size:12px;border-radius:8px}
+.ltsTrainingSetColumns{display:grid;grid-template-columns:60px minmax(0,1fr) minmax(0,1.25fr);gap:8px;margin-top:16px;padding:8px 0;color:#52657a;font-size:11px;border-bottom:1px solid #dce5eb}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable>div{grid-template-columns:60px minmax(0,1fr) minmax(0,1.25fr)!important;gap:8px!important;padding:9px 0!important;align-items:baseline;min-width:0}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable b{font-size:14px!important;font-weight:750!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable i{font-size:13px!important;color:#33485d!important;white-space:normal!important;overflow-wrap:anywhere}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable em{grid-column:2/-1!important;margin:0!important;font-size:11px!important;line-height:1.5!important;color:#8d3450!important}
+.ltsTrainingPhaseNote{font-size:11px;line-height:1.5;color:#52657a;margin:12px 0 0}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseHistory{min-height:44px!important;font-size:12px!important;margin-top:6px}
+@media(max-width:760px){
+ .ltsTrainingReportGrid{grid-template-columns:minmax(0,1fr)}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainMetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainMetric{min-height:73px!important;padding:12px!important}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHeader h1{font-size:24px;white-space:normal;line-height:1.15}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHeader p{white-space:normal}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainHero>button{max-width:90px;white-space:normal}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPanel{padding:16px!important;border-radius:16px}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header{grid-template-columns:28px minmax(0,1fr)!important}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header>span{grid-column:2;justify-self:start;margin:0;font-size:11px!important}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainTabs button{font-size:11px!important;min-height:44px}
+ .ltsTrainingReference[data-training-design="visual-session"] .ltsRefOverviewGrid{flex-wrap:wrap;gap:12px!important}
+}
+@media(max-width:760px){
+ .ltsTrainingRecentBars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+ .ltsTrainingRecentBars>button{min-width:44px}
+ .ltsTrainingRecentTrack{height:70px}
+}
+
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefMeasurementNote{margin:0;padding:0 12px;border-radius:12px}
+.ltsRefMeasurementNote>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:12px;font-weight:700;line-height:1.4;color:#675a38}
+.ltsRefMeasurementNote>p{font-size:12px;line-height:1.55;margin:0 0 12px;color:#675a38}
+
+/* Keep the session navigation in one row and outside the chart scroll area. */
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPrimaryTabs{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;position:static!important;top:auto!important;z-index:auto!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefTrainPrimaryTabs button{padding:8px 4px!important;white-space:normal!important;line-height:1.25!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header{grid-template-columns:28px minmax(0,1fr) 44px!important;align-items:start!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header .ltsRefExerciseHistory{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0!important;border:0;background:#f0f5f3;color:#27614f;font-size:20px!important;border-radius:9px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable>div{padding:5px 0!important;row-gap:0!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable i>em{display:block;line-height:1.35!important;margin-top:3px!important;font-size:10px!important}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingSetColumns{margin-top:10px;padding:6px 0}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefSetTable i>em{white-space:normal!important;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box;padding:2px 3px;border-radius:5px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExerciseCard>header small{white-space:normal!important;overflow:visible!important;overflow-wrap:anywhere}
+
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExercisesPanel{padding:0!important;border:0!important;background:transparent!important;box-shadow:none}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsRefExercisesPanel>header{margin:2px 0 10px}
+.ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingExerciseGroup{margin:0;padding:9px 12px;border:0;border-radius:8px;background:#eaf1ee}
+.ltsTrainingPhaseDetails{margin-top:12px;border-top:1px solid #dce5eb;font-size:12px;color:#52657a}
+.ltsTrainingPhaseDetails>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:650}

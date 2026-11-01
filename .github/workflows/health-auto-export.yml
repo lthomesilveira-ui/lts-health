@@ -9,7 +9,7 @@ permissions:
   contents: read
 jobs:
   health-auto-export:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,6 +21,7 @@ jobs:
           node --check v2/src/health-auto-export-connection.js
           node --check supabase/functions/_shared/health-auto-export-handler.mjs
           node supabase/tests/receiver-observability-test.mjs
+          node supabase/tests/receiver-body-observability-test.mjs
           node supabase/tests/receiver-summary-test.mjs
           node v2/health-auto-export-test.mjs
           node v2/health-auto-export-ui-test.mjs

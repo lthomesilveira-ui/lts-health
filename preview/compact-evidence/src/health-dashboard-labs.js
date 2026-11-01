@@ -1,4 +1,6 @@
 // Read-only laboratory context. Each result keeps its own report and collection.
+import {reviewedHemogramFootnoteValue} from './health-lab-reviewed-numeric.js';
+import {hasDocumentaryNumericProof,reviewedDocumentaryNumericReading} from './health-lab-documentary-numeric.js';
 const text=value=>typeof value==='string'?value.trim().replace(/\s+/g,' '):'';
 const norm=value=>text(value).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const known=value=>Boolean(text(value)&&!['unknown','unknown method','not informed','not provided','not available','unreported','nao informado','nao informada','nao disponivel','nao consta','metodo nao informado','metodo desconhecido','desconhecido','desconhecida','n/a','na','null','none','—','-'].includes(norm(value)));
@@ -76,13 +78,19 @@ function distanceToRange(value,range){
   return 0;
 }
 const intervalKey=range=>range?JSON.stringify([range.lower,range.upper,range.lowerInclusive,range.upperInclusive,range.unit,norm(range.scope)]):null;
-function exactValue(row){
+function exactValue(row,documentaryReading){
   const value=number(row.result_numeric);if(value==null)return null;
   // A reported non-exact extraction must not become exact merely because the
   // raw qualifier is missing or the numeric projection resembles a plain value.
+  if([row.numeric_kind,row.source_payload?.numeric_kind].some(kind=>kind!=null&&kind!==''&&(typeof kind!=='string'||kind.trim().toLowerCase()!=='exact')))return null;
   const reviewedKind=norm(row.numeric_kind||row.source_payload?.numeric_kind);
-  if(reviewedKind&&reviewedKind!=='exact')return null;
+  // An explicit invalid additive proof cannot fall back to an older review or
+  // the generic numeric reader. Absence preserves the legacy Hb/Ht contract.
+  if(hasDocumentaryNumericProof(row))return documentaryReading?.value??null;
   const raw=text(row.result_raw);if(!raw)return value;
+  // Only an existing, row-bound documentary Hb/Ht review can interpret (1).
+  // The original raw result remains visible; no source value is rewritten.
+  if(raw.endsWith('(1)'))return reviewedHemogramFootnoteValue(row);
   // Grouped whole counts need an explicitly reviewed exact extraction, a
   // count unit and agreement with the structured number. Generic 1.234 remains
   // ambiguous; censored values, suffixes and conflicting numbers never qualify.
@@ -101,12 +109,14 @@ function reportedFlag(flag){
   return !['normal','n','within','within range','dentro da referencia','dentro da faixa','sem alteracao','sem alteracoes','sem flag','false','false flag','0','no','nao'].includes(norm(flag));
 }
 function laboratoryObservation(row,bounds){
-  const date=day(row.collection_date),unit=text(row.unit),value=number(row.result_numeric),exact=exactValue(row),reference=text(row.reference_range)||null;
+  const documentaryReading=reviewedDocumentaryNumericReading(row);
+  const date=day(row.collection_date),unit=text(row.unit),value=number(row.result_numeric),exact=exactValue(row,documentaryReading),reference=text(row.reference_range)||null;
   const interval=referenceInterval(reference,unit),position=referencePosition(exact,interval),flag=reportedFlag(row.flag);
   return {key:text(row.source_record_id)||fingerprint([date,row.biomarker,row.laboratory,unit,row.method,row.result_raw,row.result_numeric,reference]),
     sourceRecordId:text(row.source_record_id)||null,date,collection_date:date,biomarker:text(row.biomarker)||'Marcador não informado',markerKnown:known(row.biomarker),laboratory:text(row.laboratory)||null,
     value,rawValue:text(row.result_raw)||null,unit:unit||null,reference,method:text(row.method)||null,source:text(row.source)||null,
     sourceFile:text(row.source_file)||null,reportDate:day(row.report_date),numericKind:text(row.numeric_kind||row.source_payload?.numeric_kind)||null,
+    ...(documentaryReading?{documentaryNumericReading:documentaryReading}:{}),
     exactValue:exact,interval,referencePosition:position,referenceLabel:position==='within'?'dentro da referência':['below','above'].includes(position)?'fora da referência':null,
     referenceScope:interval?.scope||null,currentReferenceLabel:position==='unknown'?null:`${({within:'Dentro da faixa transcrita no laudo',below:'Abaixo da faixa transcrita no laudo',above:'Acima da faixa transcrita no laudo'})[position]}${interval?.scope?' · '+interval.scope:''}`,
     flag:typeof row.flag==='string'?text(row.flag):row.flag===true?true:null,reportedFlag:flag,attention:flag||['below','above'].includes(position),
@@ -143,6 +153,43 @@ function compareLabs(current,previous,ambiguous){
     delta:comparable?Number((current.exactValue-previous.exactValue).toPrecision(12)):null,
     comparisonLabel:comparable?'Mesmo laboratório, unidade, método e referência registrados':'Valores separados; comparação não estabelecida'};
 }
+
+// Shared read-only contract for consumers of raw laboratory rows. Keep these
+// wrappers on the dashboard's existing interpretation; they neither normalize
+// source values nor invent documentary evidence for an ambiguous result.
+export const knownLabMetadata=known;
+export function labResultReading(row={}){
+  return laboratoryObservation(row??{},{});
+}
+export function labHistoryConflicts(rows=[]){
+  const observed=rows.map(labResultReading);
+  const review=deduplicate(observed,row=>row.sourceRecordId||row.key,row=>row);
+  const conflicting=new Set(review.duplicates.filter(row=>row.conflicting).map(row=>row.key));
+  const unverified=new Set([...groups(observed.filter(row=>!row.sourceRecordId),row=>row.key)].filter(([,list])=>list.length>1).map(([key])=>key));
+  return new Set(rows.filter((row,index)=>row.identityConflict||conflicting.has(observed[index].sourceRecordId||observed[index].key)||unverified.has(observed[index].key)));
+}
+export function compareLabResults(currentRow,previousRow,{ambiguous=false}={}){
+  const current=labResultReading(currentRow),previous=previousRow==null?null:labResultReading(previousRow);
+  // The dashboard establishes identity, chronology and collection ambiguity
+  // while grouping whole histories. A pairwise consumer must establish them
+  // explicitly, and pass ambiguity found elsewhere in the collection.
+  const conflict=Boolean(currentRow?.identityConflict||previousRow?.identityConflict||currentRow?.ambiguous||previousRow?.ambiguous||
+    (previous&&current.sourceRecordId&&current.sourceRecordId===previous.sourceRecordId));
+  const reason=ambiguous||conflict?'ambiguous_collection':!previous?null:
+    !current.markerKnown||!previous.markerKnown?'unknown_biomarker':
+    norm(current.biomarker)!==norm(previous.biomarker)?'different_biomarker':
+    !known(current.laboratory)||!known(previous.laboratory)?'unknown_laboratory':
+    norm(current.laboratory)!==norm(previous.laboratory)?'different_laboratory':
+    !known(current.unit)||!known(previous.unit)?'unknown_unit':current.unit!==previous.unit?'different_unit':
+    !current.date||!previous.date?'invalid_collection_date':current.date<=previous.date?'non_chronological_collections':null;
+  const comparison=compareLabs(current,previous,Boolean(reason));
+  if(!reason)return comparison;
+  const labels={unknown_biomarker:'Marcador não informado em uma das coletas.',different_biomarker:'Os marcadores registrados são diferentes.',
+    different_laboratory:'Os laboratórios registrados são diferentes.',different_unit:'As unidades registradas são diferentes.',
+    invalid_collection_date:'Data de coleta ausente ou inválida em um dos resultados.',
+    non_chronological_collections:'A coleta anterior precisa ter uma data válida anterior à coleta atual.'};
+  return {...comparison,comparisonReason:reason,comparisonReasonLabel:labels[reason]||comparisonReasonLabel(reason,current,previous)};
+}
 export function dashboardLabs(data={},status={},bounds={}){
   const available=status.labs==='ready',observed=available?(data.labs||[]).filter(row=>day(row?.collection_date)&&day(row.collection_date)<=bounds.end).map(row=>laboratoryObservation(row,bounds)):[];
   const canonical=deduplicate(observed,row=>row.sourceRecordId||row.key,row=>row);
@@ -168,6 +215,9 @@ export function dashboardLabs(data={},status={},bounds={}){
       Object.assign(item,{value:null,rawValue:null,exactValue:null,reference:null,interval:null,referencePosition:'unknown',referenceLabel:null,currentReferenceLabel:null,referenceScope:null,method:null,
         attention:latest.some(row=>row.attention),attentionLabel:latest.some(row=>row.attention)?'atenção ao laudo':null,
         flag:null,reportedFlag:latest.some(row=>row.reportedFlag),comparisonLabel:'Múltiplos resultados na mesma data; consulte cada observação'});
+      // A collection summary must not expose one arbitrarily chosen derived
+      // value; each original observation retains its own documentary reading.
+      delete item.documentaryNumericReading;
     }
     items.push(item);
   }

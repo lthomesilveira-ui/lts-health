@@ -43,7 +43,8 @@ export function decorateWorkoutProvenance(workouts=[],evidence=[]){
     const fieldNames=evidenceEntry.fieldNames;
     const partialTelemetry=[...fieldNames].some(field=>field.startsWith('partial_'));
     const partialHeartRate=[...fieldNames].some(field=>field.startsWith('partial_heart_rate_'));
-    const estimatedEnergy=fieldNames.has('estimated_session_calories_kcal');
+    const estimatedEnergy=fieldNames.has('estimated_session_calories_kcal')||workout?.documented_energy_kind==='estimate';
+    const approximateDuration=workout?.documented_duration_kind==='approximate';
     const hasTelemetry=hasWorkoutTelemetry(workout),base=baseSourceLabel(workout);
     const source=sourceNames.length
       ? `${base} · telemetria: ${sourceNames.join(' + ')}`
@@ -58,7 +59,8 @@ export function decorateWorkoutProvenance(workouts=[],evidence=[]){
       telemetry_source_names:sourceNames,
       telemetry_is_partial:partialTelemetry,
       telemetry_heart_rate_is_partial:partialHeartRate,
-      telemetry_energy_is_estimated:estimatedEnergy
+      telemetry_energy_is_estimated:estimatedEnergy,
+      telemetry_duration_is_approximate:approximateDuration
     };
   });
 }

@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+// Pure in-memory transport: never connects to Supabase or an external service.
+globalThis.location={search:''};
+const calls=[];const rows=new Map();
+const client={from(table){return {async insert(record){calls.push({kind:'insert',table,record});rows.set(record.source_record_id,record);return {error:null};},async upsert(record,options){calls.push({kind:'upsert',table,record,options});rows.set(record.source_record_id,record);return {error:null};}};},async rpc(name,args){calls.push({kind:'rpc',name,args});return {data:{ok:true},error:null};}};
+globalThis.window={supabase:{createClient:()=>client}};
+const {state}=await import('./src/core.js');
+const {saveBodyRecord,saveWorkout,saveMyFitnessPalWater}=await import('./src/writes.js');
+const body={measured_at:'2024-03-05',weight_kg:'82,3'};
+const workout={workout_date:'2024-03-05',workout_type:'Synthetic session',exercises:[{name:'Synthetic exercise',sets:[{weight:10,weight_unit:'kg',reps:8}]}]};
+const water={metric_date:'2024-03-05',water_ml:1800,confirmed:true};
+for(const [fn,arg]of [[saveBodyRecord,body],[saveWorkout,workout],[saveMyFitnessPalWater,water]])await assert.rejects(()=>fn(arg),/authentication_required/);
+assert.equal(calls.length,0,'signed-out calls cannot reach transport');
+state.session={user:{id:'synthetic-owner'}};
+await assert.rejects(()=>saveBodyRecord({...body,weight_kg:-1}),/negative_number/);
+await assert.rejects(()=>saveMyFitnessPalWater({...water,confirmed:false}),/confirmation_required/);
+assert.equal(calls.length,0,'invalid/unconfirmed records never write');
+const id=await saveBodyRecord(body);assert.equal(rows.get(id).user_id,'synthetic-owner');assert.equal(rows.get(id).weight_kg,82.3);assert.equal(rows.get(id).body_fat_pct,null);
+await saveWorkout({...workout,user_id:'untrusted-other-owner'});
+const rpc=calls.at(-1);assert.equal(rpc.name,'health_log_structured_workout');assert.equal(Object.hasOwn(rpc.args.p_payload,'user_id'),false,'server binds workout owner');
+await saveMyFitnessPalWater(water);await saveMyFitnessPalWater({...water,water_ml:1900});
+assert.equal(rows.get('mfp-water:2024-03-05').value,1900);assert.equal(rows.get('mfp-water:2024-03-05').user_id,'synthetic-owner');
+assert.equal(calls.at(-1).options.onConflict,'user_id,source_record_id');
+state.session=null;await assert.rejects(()=>saveBodyRecord(body),/authentication_required/);
+console.log('Production write boundaries: signed-out rejection, input validation, authenticated owner binding, bounded structured RPC and idempotent confirmed water passed with fake transport only.');

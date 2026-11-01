@@ -58,7 +58,7 @@ else{
   }else assert.equal(state.current_package.status,'done','a package with no pending acceptance or executable work must be done');
 }
 const water=state.tasks.find(task=>task.id==='LTS-HYD-IMPORT-001');
-assert.equal(water?.status,'blocked_user');
+assert.equal(water?.status,'blocked_external');
 assert.equal(water?.priority,'P0');
 assert.match(water?.next_action||'',/notebook/i);
 assert.equal(state.reminder.task_id,water.id);
@@ -109,7 +109,8 @@ assert.match(architecture,/não substitui a abertura do produto publicado/);
 for(const phrase of ['falta desktop','Somente então promover','validar sessão autenticada com o treino mais recente'])assert.ok(!parity.includes(phrase),`stale parity phrase: ${phrase}`);
 assert.match(dataScreen,/data-water-import-pending/);
 assert.match(dataScreen,/data-entry="water-import"/);
-assert.match(dataScreen,/não é necessário digitar dia a dia/);
+assert.match(dataScreen,/acrescentar datas antigas/);
+assert.match(dataScreen,/não ativa a sincronização da conta/,'historical import must not promise account synchronization');
 assert.ok(!dataScreen.includes('informe no LTS o total diário'), 'stale manual-water instruction remains');
 assert.match(todayScreen,/data-entry="water-import"/);
 assert.match(todayScreen,/sem digitar dia a dia/);
@@ -129,7 +130,13 @@ for(const legacyWorkflow of [legacySmoke,timelineSmoke]){
   assert.match(legacyWorkflow,/node v2\/continuity-contract-smoke\.mjs/);
   assert.ok(!legacyWorkflow.includes("-name '*.json'"),'legacy workflow still rejects all JSON metadata');
 }
-assert.match(publicPayloadGuard,/allowedMetadataFiles=new Set\(\['v2\/EXECUTION_STATE\.json'\]\)/);
+assert.match(publicPayloadGuard,/allowedMetadataFiles=new Set\(\['v2\/EXECUTION_STATE\.json',\.\.\.dependencyMetadataHashes\.keys\(\)\]\)/);
+assert.deepEqual([...publicPayloadGuard.matchAll(/\['(supabase\/tests\/runtime\/[^']+)','([a-f0-9]{64})'\]/g)].map(m=>m.slice(1)),[
+  ['supabase/tests/runtime/package.json','d4b36c755044a44eb203023e810b4f797f0489ea6a568c6cb2d36a6010336270'],
+  ['supabase/tests/runtime/package-lock.json','4c5b15cd25bff4c0c73155fbe8a535c500c77ae3d464696c41026e193f863bc7']
+]);
+assert.match(publicPayloadGuard,/createHash\('sha256'\)\.update\(raw\)\.digest\('hex'\),expectedHash/);
+assert.match(publicPayloadGuard,/blockedExtensions=new Set\(\['\.zip','\.pdf','\.csv','\.json'\]\)/);
 assert.match(publicPayloadGuard,/public_project_metadata_only/);
 assert.match(publicPayloadGuard,/public_health_data_allowed/);
 assert.match(workflow,/bash v2\/run-browser-gate\.sh "\$test_file"/);

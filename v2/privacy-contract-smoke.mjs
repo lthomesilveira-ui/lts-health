@@ -8,7 +8,7 @@ const timeline=await readFile('v2/src/timeline-screen.js','utf8');
 const dataScreen=await readFile('v2/src/data-screen.js','utf8');
 
 const srcNames=await readdir('v2/src');
-const presentationNames=srcNames.filter(name=>name.endsWith('-screen.js')||['main.js','entry.js','source-status.js'].includes(name));
+const presentationNames=srcNames.filter(name=>name.endsWith('-screen.js')||['main.js','entry.js','source-status.js','health-dashboard.js','health-dashboard-guidance.js','calendar-report-view.js','dashboard-changes.js','evolution-overview.js','evolution-body-chart.js','source-window-view.js','composition-layout-v2.js','training-history.js','labs-layout-v2.js'].includes(name));
 const presentationFiles=await Promise.all(presentationNames.map(async name=>[name,await readFile(join('v2/src',name),'utf8')]));
 for(const[name,content]of presentationFiles){
   if(/\b(?:row|record|upload|item)\.source_payload\b/.test(content))throw new Error(`raw source_payload entered presentation data access: ${name}`);
@@ -32,14 +32,14 @@ const allowedTreatment=['source_record_id','event_date','medication','event_type
 if(JSON.stringify(treatmentFields)!==JSON.stringify(allowedTreatment))throw new Error(`treatment loader projection drifted: ${treatmentFields.join(',')}`);
 const regimenLoader=dataLayer.match(/regimens:\(\)=>fetchAll\('health_medication_regimens','([^']+)'/)?.[1]||'';
 const regimenFields=regimenLoader.split(',').map(x=>x.trim()).filter(Boolean);
-const allowedRegimen=['source_record_id','medication','source','source_file','confidence'];
+const allowedRegimen=['source_record_id','medication','source','source_file','confidence','document_date:source_payload->>documented_on','recorded_status:source_payload->>status','start_date:source_payload->>start_date','started_by_user_confirmation:source_payload->started_by_user_confirmation'];
 if(JSON.stringify(regimenFields)!==JSON.stringify(allowedRegimen))throw new Error(`regimen loader projection drifted: ${regimenFields.join(',')}`);
 const operational=/(dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)/i;
 if(treatmentFields.some(f=>operational.test(f))||regimenFields.some(f=>operational.test(f)))throw new Error('operational treatment field entered a normal protocol loader');
 if(treatmentFields.includes('source_payload')||treatmentFields.includes('notes'))throw new Error('raw medication payload or messages entered the UI');
 if(new RegExp(`\\br\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(treatment))throw new Error('protocol screen renders an operational field');
 if(new RegExp(`\\bt\\.(?:dose|dosage|frequency|frequencia|route|via|injection|injecao|application|aplicacao|volume|amount|quantity|cycle|ciclo)\\b`,'i').test(timeline))throw new Error('timeline renders an operational treatment field');
-for(const token of ['Cadastro de contexto não significa uso atual','missing_event_dose:\'Contexto histórico de tratamento\'','Registro histórico preservado sem detalhe operacional nesta tela.'])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
+for(const token of ['Cadastro de contexto não significa uso atual','missing_event_dose:\'Contexto histórico de tratamento\''])if(!(treatment+timeline+dataScreen).includes(token))throw new Error(`neutral treatment/privacy guardrail missing: ${token}`);
 for(const forbidden of ['Confirmação registrada',"sub:'Confirmação registrada'"])if((treatment+timeline).includes(forbidden))throw new Error(`operational treatment confirmation re-entered presentation code: ${forbidden}`);
 if(/\b(?:r|t)\.event_type\b/.test(treatment+timeline))throw new Error('treatment event_type re-entered the user-facing treatment context');
 
@@ -51,15 +51,23 @@ for(const forbidden of ['storage_path','user_id'])if(uploadProjection.split(',')
 
 const sourceMetricProjection=dataLayer.match(/sourceMetrics:\(\)=>fetchAll\('health_source_daily_metrics','([^']+)'/)?.[1]||'';
 if(!sourceMetricProjection)throw new Error('source metrics projection missing');
-if(sourceMetricProjection.includes('source_payload'))throw new Error('raw source_payload entered structured source metrics');
+const allowedSourceMetric=['source_record_id','metric_date','metric_type','value','unit','source_name','source_family','canonical_status','confidence','source_file','updated_at','nutrition_review:source_payload->nutrition_review'];
+if(JSON.stringify(sourceMetricProjection.split(','))!==JSON.stringify(allowedSourceMetric))throw new Error('source metric projection drifted beyond approved bounded fields');
 if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source metrics use wildcard projection');
 if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens','polarSessions']"))throw new Error('Data route no longer owns all structured provenance/context domains');
-if(!dataLayer.includes("analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals']"))throw new Error('Insights no longer loads preserved source and protocol context');
+if(!dataLayer.includes("analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans']"))throw new Error('Insights no longer loads preserved source and protocol context');
 const polarProjection=dataLayer.match(/polarSessions:\(\)=>fetchAll\('health_polar_sessions','([^']+)'/)?.[1]||'';
 if(!polarProjection||/source_payload|user_id|tokens_encrypted/.test(polarProjection))throw new Error('Polar session projection exposed private connection/raw data');
 if(/health_polar_(connections|oauth_states)/.test(dataLayer+core))throw new Error('service-only credentials entered client table access');
-if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','uploads','treatments','regimens','goals']"))throw new Error('Cockpit no longer loads protocol context on first open');
-if(!dataLayer.includes("tratamentos:['treatments','regimens','docs']"))throw new Error('Protocol route no longer loads event, context and consultation records together');
+if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions']"))throw new Error('Cockpit no longer loads protocol context on first open');
+if(!dataLayer.includes("tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses']"))throw new Error('Protocol route no longer loads events, source documents and the separate owner statement together');
+if(!dataLayer.includes("treinos:['trainingPlans']"))throw new Error('Training route no longer waits for its private documentary reference');
+const planReferences=await readFile(new URL('./src/documented-training-plan.js',import.meta.url),'utf8');
+for(const [domain,projection,type,alias] of [['trainingPlans','trainingPlanProjection','training_plan','training_plan_ui'],['treatmentStatuses','treatmentStatusProjection','patient_status','treatment_status_ui']]){
+ const fields=planReferences.match(new RegExp('export const '+projection+"='([^']+)'"))?.[1];
+ if(!fields||fields.split(',').some(field=>['*','source_payload','user_id','notes'].includes(field))||!fields.includes(':source_payload->'+alias))throw Error('Documentary projection exceeded its supported private subdocument');
+ if(!dataLayer.includes(`${domain}:()=>fetchAll('health_documents',${projection},'document_date',false,'source_record_id',sb,{document_type:'${type}'})`))throw Error('Documentary loader lost its type filter or explicit projection');
+}
 const documentLoader=dataLayer.match(/docs:\(\)=>fetchAll\('health_documents','([^']+)'/)?.[1]||'';
 if(documentLoader.split(',').includes('source_payload'))throw new Error('raw document payload entered the UI');
 if(!documentLoader.includes('care_context:source_payload->care_ui'))throw new Error('bounded consultation projection missing');
@@ -68,18 +76,18 @@ const backupBlock=dataLayer.match(/export async function buildStructuredBackup[\
 if(!backupBlock)throw new Error('structured backup function contract missing');
 for(const token of ['complete:true','structured_complete:true','includes_private_files:false','includes_credentials:false'])if(!backupBlock.includes(token))throw new Error(`structured backup privacy marker missing: ${token}`);
 if(!backupBlock.includes('Backup não criado'))throw new Error('incomplete structured backup is no longer fail-closed');
-if(sourceMetricProjection.includes('source_payload')||regimenLoader.includes('source_payload'))throw new Error('structured backup can include a raw payload field');
+if(sourceMetricProjection.split(',').includes('source_payload')||regimenLoader.split(',').includes('source_payload'))throw new Error('structured backup can include a raw payload field');
 
 const provenance=dataScreen.match(/function provenanceOverview\(metricRows,workoutEvidenceRows\)\{[\s\S]*?\n\}/)?.[0]||'';
 if(!provenance)throw new Error('safe provenance summary missing');
 if(/row\.value\b|source_payload|source_record_id|storage_path/.test(provenance))throw new Error('provenance summary renders raw metric or technical payload fields');
-for(const token of ['Não foi possível carregar as origens agora.','As origens das métricas não carregaram agora; evidências complementares de treino continuam exibidas.','aguardando conferência',"countLabel(group.preserved,'preservado','preservados')",'sem uso automático','Uma fonte não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
+for(const token of ['Não foi possível carregar as origens agora.','As origens das medidas não carregaram agora; os registros adicionais de treino continuam disponíveis.','registros adicionais',"countLabel(group.preserved,'guardado','guardados')",'fora dos resumos','Uma origem não é somada a outra automaticamente.'])if(!dataScreen.includes(token))throw new Error(`plain provenance/privacy guardrail missing: ${token}`);
 for(const legacy of ['Proveniência das métricas','contagem de candidatos','métricas canônicas','canônico(s)','candidato(s)'])if(dataScreen.includes(legacy))throw new Error(`legacy provenance terminology re-entered Data UI: ${legacy}`);
 
 const timelineSourceEvidence=timeline.match(/function sourceMetricEvents\(rows=\[\]\)\{[\s\S]*?\n\}\s*(?=function )/)?.[0]||'';
 if(!timelineSourceEvidence)throw new Error('safe Timeline source-metric evidence block missing');
 if(!timeline.includes("const preservedStatuses=new Set(['candidate','held']);"))throw new Error('Timeline source evidence no longer fails closed to explicit candidate/held states internally');
-for(const token of ['preservedStatuses.has(norm(row.canonical_status))','aguardando conferência; mantido separado dos dados confirmados','source_name','source_family'])if(!timelineSourceEvidence.includes(token))throw new Error(`Timeline source evidence privacy guardrail missing: ${token}`);
+for(const token of ['preservedStatuses.has(norm(row.canonical_status))','Permanecem separados das outras versões e não são somados nos cruzamentos entre áreas.','source_name','source_family'])if(!timelineSourceEvidence.includes(token))throw new Error(`Timeline source evidence privacy guardrail missing: ${token}`);
 if(/source_payload|source_record_id|storage_path|user_id/.test(timelineSourceEvidence))throw new Error('technical/private source metric fields entered Timeline evidence');
 if(/health_source_daily_metrics/.test(timeline))throw new Error('source-metric storage table name entered Timeline presentation code');
 for(const legacy of ['Em validação · Não consolidado','FC de repouso','MME'])if(timeline.includes(legacy))throw new Error(`technical Timeline copy re-entered presentation: ${legacy}`);

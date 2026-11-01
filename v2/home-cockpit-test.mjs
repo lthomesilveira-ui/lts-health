@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 globalThis.location={search:'?fixture=1'};
-const {homeCockpitModel,renderHomeCockpit}=await import('./src/home-cockpit.js');
+const {homeCockpitModel,renderHomeCockpit,nutritionPanel}=await import('./src/home-cockpit.js');
 const status=Object.fromEntries(['body','segmental','nutrition','sourceMetrics','workouts','exercises','sets','labs','treatments','polarSessions','goals','meals'].map(k=>[k,'ready']));
 const data={body:[{measured_at:'2025-04-01',weight_kg:80,source:'Synthetic scan',device_name:'A'},{measured_at:'2025-04-10',weight_kg:79,source:'Synthetic scan',device_name:'A'}],nutrition:[{nutrition_date:'2025-04-01',source:'Synthetic food A',calories_kcal:1000,protein_g:50},{nutrition_date:'2025-04-02',source:'Synthetic food A',calories_kcal:2000,protein_g:100},{nutrition_date:'2025-04-20',source:'Synthetic food A',calories_kcal:9000},{nutrition_date:'2025-04-03',source:'Synthetic food B',calories_kcal:8000}],workouts:[{workout_date:'2025-04-02',is_canonical:true,record_status:'validated'},{workout_date:'2025-04-02',is_canonical:false}],labs:[{biomarker:'Synthetic A',collection_date:'2025-04-10',result_numeric:10,unit:'u'},{biomarker:'Synthetic B',collection_date:'2025-04-10',result_numeric:20,unit:'u'}],sourceMetrics:[],goals:[]};
 const snapshot=structuredClone(data);
@@ -31,16 +31,26 @@ assert.equal(c.trainingPoints.length,0);assert.equal(c.body,null);assert.equal(c
 assert.match(c.detail,/não carregaram/);assert.match(renderHomeCockpit(c),/Indisponível/);
 assert.doesNotMatch(renderHomeCockpit(c),/0 coletas|0 registros de sono|Nenhum registro nesta janela/,'failed readers never appear as successful empty histories');
 const ambiguous=structuredClone(data);ambiguous.body.push({...ambiguous.body[1],source:'Other scan'});
-c=homeCockpitModel(ambiguous,status,'30',{},'2025-04-20');assert.equal(c.body,null);assert.match(c.detail,/mais de uma medição candidata/);
+c=homeCockpitModel(ambiguous,status,'30',{},'2025-04-20');assert.equal(c.body,null);assert.match(c.detail,/mais de uma medição para a mesma data/);assert.match(c.detail,/Nenhuma foi escolhida automaticamente/);
 const changed=structuredClone(data);changed.body[1].device_name='B';
 c=homeCockpitModel(changed,status,'30',{},'2025-04-20');assert.match(c.detail,/origem e o aparelho não estão confirmados/);assert.doesNotMatch(c.title,/Peso -1/);
 const single=structuredClone(data);single.body=single.body.slice(1);
 c=homeCockpitModel(single,status,'30',{},'2025-04-20');assert.match(c.detail,/outra medição compatível/);
 const empty=Object.fromEntries(Object.keys(data).map(k=>[k,[]]));c=homeCockpitModel(empty,status,'30',{},'2025-04-20');
-assert.match(c.detail,/Sem avaliação inequívoca/);assert.match(renderHomeCockpit(c),/Nenhum resultado inequívoco/);
+assert.match(c.detail,/Não há uma avaliação única disponível neste período/);assert.match(renderHomeCockpit(c),/Nenhum resultado pode ser comparado neste período/);
 assert.doesNotMatch(renderHomeCockpit(c),/Os exames não carregaram/);
 const tissues=structuredClone(data);tissues.body[0]={...tissues.body[0],fat_mass_kg:16,skeletal_muscle_mass_kg:30};tissues.body[1]={...tissues.body[1],fat_mass_kg:15,skeletal_muscle_mass_kg:31};
 c=homeCockpitModel(tissues,status,'30',{},'2025-04-20');assert.equal(c.title,'Gordura -1,0 kg; músculo +1,0 kg');
 const partial=homeCockpitModel(tissues,{...status,labs:'error'},'30',{},'2025-04-20');assert.equal(partial.title,c.title,'failure elsewhere does not erase valid evidence');
 assert.match(renderHomeCockpit(partial),/Exames: indisponível/);
 console.log('Home: actual outcomes, canonical sessions, source/device isolation, ambiguity, immutability, meaningful six-module hierarchy, no coverage headline and partial failure states passed.');
+
+const goalsWithoutPlan=structuredClone(data);
+goalsWithoutPlan.goals=[{effective_from:'2025-04-01',protein_g:150}];
+const goalsOnly=homeCockpitModel(goalsWithoutPlan,status,'30',{},'2025-04-20');
+assert.ok(goalsOnly.evo.currentGoal,'documentary plan is not needed for registered personal goals');
+assert.match(nutritionPanel(goalsOnly),/Metas registradas no detalhe\./);
+assert.doesNotMatch(nutritionPanel(goalsOnly),/Plano vigente no detalhe|Vigência do plano atual/,'personal goals cannot claim a documented plan is current');
+const noGoals=homeCockpitModel(data,status,'30',{},'2025-04-20');
+assert.match(nutritionPanel(noGoals),/Vigência das metas não confirmada\./);
+assert.deepEqual(goalsWithoutPlan.goals,[{effective_from:'2025-04-01',protein_g:150}],'presentation preserves goal values');

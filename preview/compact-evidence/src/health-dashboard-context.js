@@ -95,10 +95,10 @@ function trainingContext(data,status,bounds,today){
     daysSinceLast,gapLabel,asOf:bounds.end,duplicates:[...canonical.duplicates.map(item=>({...item,domain:'workouts'})),...exercises.duplicates.map(item=>({...item,domain:'exercises'}))],
     coverage:{recordedDays:available?recordedDays:null,calendarDays:difference(bounds.end,bounds.start)+1,firstDate:rows[0]?.date||null,lastDate:rows.at(-1)?.date||null,
       note:'Dias com registro não comprovam cobertura completa. Ausência não significa que não houve treino.'},
-    notices:[...(conflictingRecords?['Identidades conflitantes foram excluídas dos totais. Lacunas por grupo não são calculadas com esses registros incompletos.']:[]),
+    notices:[...(conflictingRecords?['Registros com informações diferentes para a mesma sessão ficaram fora dos totais. Lacunas por grupo não são calculadas com esses registros incompletos.']:[]),
       ...(lastRecordAmbiguous?['A data mais recente contém apenas sessões ambíguas; não é calculado um intervalo desde um treino anterior.']:[]),
       ...(available&&!detailsAvailable?['Exercícios indisponíveis; somente grupos declarados nas sessões estão disponíveis.']:[])],
-    note:'Somente sessões canônicas únicas. Minutos somam apenas durações informadas; grupos vêm de campos explícitos e podem compartilhar sessões. Falta de registro não confirma descanso.'};
+    note:'Somente sessões registradas sem conflito. Minutos somam apenas durações informadas; grupos vêm de campos explícitos e podem compartilhar sessões. Falta de registro não confirma descanso.'};
 }
 
 /**

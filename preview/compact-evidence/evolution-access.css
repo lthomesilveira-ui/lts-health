@@ -1,0 +1,31 @@
+/* Scoped historical navigation; the approved daily dashboard grid is unchanged. */
+body[data-product-route="evolucao"] #screenHost{background:#f3f6fa;color:#17283b}
+.ltsEvolutionOverview{padding:16px 12px 24px;max-width:1120px!important;color:#17283b}
+.ltsEvolutionOverview .ltsPageHeader p{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:13px!important;line-height:1.5!important;color:#48586b!important}
+.ltsEvolutionAccess{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.ltsEvolutionAccess button{display:flex;flex-direction:column;gap:7px;align-items:flex-start;text-align:left;min-height:72px;padding:15px;border:1px solid #c7d2de;background:#fff;border-radius:14px;color:#17283b;overflow-wrap:anywhere}
+.ltsEvolutionAccess b{font-size:15px}.ltsEvolutionAccess span{font-size:12px;color:#43566b}
+.ltsEvolutionOverview .ltsDepthNote,[data-composition-overview]{font-size:13px;line-height:1.5;color:#42546a}
+.ltsEvolutionOverview button,.ltsCompositionV2 [data-ux-scroll],.ltsLabsV2 [data-ux-scroll]{min-height:44px}
+.ltsEvolutionOverview button:focus-visible,.ltsCompositionV2 [data-ux-scroll]:focus-visible{outline:3px solid #175cc2;outline-offset:3px}
+.ltsRefTrainPrimaryTabs{display:flex!important;flex-wrap:wrap;gap:6px}.ltsRefTrainPrimaryTabs button{flex:1 1 90px;min-height:44px}
+.ltsEvolutionOverview .ltsWorkoutList button,.ltsExerciseDirectory .ltsWorkoutList button{min-height:64px;grid-template-columns:minmax(0,1fr) auto}.ltsExerciseDirectory .ltsWorkoutList small{display:block;white-space:normal}
+@media(max-width:600px){.ltsEvolutionAccess{grid-template-columns:1fr}.ltsEvolutionOverview .ltsPageHeader h1{font-size:26px!important}.ltsEvolutionOverview .ltsCompositionTabs{flex-wrap:wrap;overflow:visible}.ltsEvolutionOverview .ltsCompositionTabs button{font-size:12px}.ltsEvolutionOverview .ltsWorkoutList button{grid-template-columns:minmax(0,1fr) auto}.ltsEvolutionOverview .ltsDepthLink{white-space:normal;text-align:left}}
+
+.ltsEvolutionOverview .ltsWorkoutList em,.ltsExerciseDirectory .ltsWorkoutList em{font-size:12px;white-space:normal}.ltsEvolutionOverview .ltsWorkoutList small{white-space:normal}
+
+.ltsRefExerciseNav{display:flex;flex-wrap:wrap;gap:6px}.ltsRefExerciseNav button{min-height:44px;flex:1 1 90px}
+/* Evolution starts with the reading, not inventory totals. */
+.ltsEvolutionBody{margin-top:12px!important;background:#fff;border:1px solid #dce4ee;border-radius:18px;padding:20px}
+.ltsEvolutionChartHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.ltsEvolutionChartHeading h2{margin:0;font-size:20px}
+.ltsEvolutionPeriods{display:flex;gap:4px}.ltsEvolutionPeriods button{border:1px solid #cbd5e1;border-radius:9px;background:#fff;padding:8px 12px;color:#33465d}.ltsEvolutionPeriods [aria-pressed=true]{background:#193e66;color:#fff;border-color:#193e66}
+.ltsEvolutionReading{display:flex;justify-content:space-between;gap:16px;padding:18px 0 4px}.ltsEvolutionReading>div{display:flex;flex-direction:column;gap:4px}.ltsEvolutionReading>div:last-child{text-align:right;max-width:48%;justify-content:center}.ltsEvolutionReading span{font-size:12px;color:#53657b;line-height:1.4}.ltsEvolutionReading strong{font-size:32px;line-height:1.2;font-weight:750}.ltsEvolutionReading strong small{font-size:16px;font-weight:500}.ltsEvolutionReading b{font-size:14px}
+.ltsEvolutionChart svg{display:block;width:100%;height:auto;overflow:visible}.ltsEvolutionChart text{font-size:13px;fill:#53657b}.ltsEvolutionGrid{stroke:#e1e8ef;stroke-width:1}.ltsEvolutionHit{fill:transparent}.ltsEvolutionMark{stroke:#fff;stroke-width:1.5}.ltsEvolutionMark.selected{stroke:#17283b;stroke-width:2}.ltsEvolutionChart a:focus-visible circle{stroke:#17283b;stroke-width:3}
+.ltsEvolutionLegend{display:flex;flex-wrap:wrap;gap:7px 16px;margin:4px 0 12px;font-size:12px;color:#41536b}.ltsEvolutionLegend span{display:flex;align-items:center;gap:6px}.ltsEvolutionLegend i{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ltsEvolutionPointControl{display:flex;align-items:end;gap:10px}.ltsEvolutionPointControl label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0;font-size:12px;color:#52637a}.ltsEvolutionPointControl select{width:100%;min-width:0;min-height:44px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#17283b;padding:8px}.ltsEvolutionPointControl button{border:1px solid #cbd5e1;background:#f6f9fc;border-radius:8px;padding:8px 12px;color:#193e66}
+.ltsEvolutionChartNote,.ltsEvolutionLimits{font-size:12px;line-height:1.5;color:#52637a}.ltsEvolutionLimits summary{cursor:pointer;min-height:36px;display:list-item;padding:9px 0}.ltsEvolutionLimits p{margin:0 0 12px;max-width:75ch}.ltsEvolutionAccess{margin:20px 0;grid-template-columns:repeat(3,minmax(0,1fr))}.ltsEvolutionAccess button{min-height:60px;padding:12px}.ltsEvolutionAccess b{font-size:13px}
+@media(max-width:600px){.ltsEvolutionOverview{padding:12px 10px 20px}.ltsEvolutionOverview .ltsPageHeader{margin-bottom:10px}.ltsEvolutionOverview .ltsPageHeader p{font-size:12px!important}.ltsEvolutionBody{padding:12px}.ltsEvolutionChartHeading h2{font-size:17px}.ltsEvolutionChartHeading{gap:8px}.ltsEvolutionPeriods button{padding:6px 10px}.ltsEvolutionBody .ltsCompositionTabs{gap:4px;margin-top:10px}.ltsEvolutionBody .ltsCompositionTabs button{padding:7px 8px;flex:1 1 44%;font-size:12px}.ltsEvolutionReading{padding-top:12px;gap:8px}.ltsEvolutionReading strong{font-size:29px}.ltsEvolutionChart{margin:4px -5px}.ltsEvolutionChart svg{min-height:168px}.ltsEvolutionPointControl{flex-wrap:wrap}.ltsEvolutionPointControl button{width:100%}.ltsEvolutionAccess{grid-template-columns:1fr}.ltsEvolutionAccess button{flex-direction:row;align-items:center;justify-content:space-between;gap:8px;min-height:52px}.ltsEvolutionAccess span{text-align:right}.ltsEvolutionLegend{font-size:11px}}
+@media(max-width:600px){.ltsEvolutionChart text{font-size:20px}}
+
+/* Keep the observed-history metric controls readable and touchable. */
+.ltsEvolutionOverview .ltsCompositionTabs button{font-size:11px!important;min-height:44px!important;padding:8px 10px!important}

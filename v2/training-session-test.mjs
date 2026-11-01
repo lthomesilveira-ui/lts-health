@@ -26,7 +26,7 @@ assert.match(html,/3 prolongamentos por drop ou rest-pause/);
 assert.match(html,/possível mau posicionamento do sensor/);
 state.ui.productTrainingView='exercises';html=renderProductTraining();
 assert.match(html,/3 séries \+ 3 prolong\./);
-assert.match(html,/Rest-pause/);assert.match(html,/× 2.5 reps/);
+assert.match(html,/Rest-pause/);assert.match(html,/<i>2.5<\/i>/);assert.match(html,/>Repetições<\/span>/);
 assert.match(html,/Observações registradas/);assert.match(html,/&lt;b&gt;from source&lt;\/b&gt;/);
 assert.deepEqual(steps.map((_,i)=>setStepLabel(steps,i)),['S1','S2','Rest-pause','S3','Drop','Drop']);
 const home=homeCockpitModel(data,status,'30',{},'2025-04-30');

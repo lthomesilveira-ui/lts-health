@@ -1,0 +1,45 @@
+name: LTS Health Documented Plan Comparison
+on:
+  pull_request:
+    paths: ['v2/**', 'preview/compact-evidence/**', '.github/workflows/health-training-plan.yml']
+  push:
+    branches: [main]
+    paths: ['v2/**', 'preview/compact-evidence/**', '.github/workflows/health-training-plan.yml']
+permissions:
+  contents: read
+concurrency:
+  group: health-training-plan-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-backed-plan:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify documentary boundaries and source parity
+        run: |
+          node preview/compact-evidence/tests/training-plan-test.mjs
+          node preview/compact-evidence/tests/plan-original-link-test.mjs
+          node preview/compact-evidence/tests/nutrition-plan-view-test.mjs
+          node preview/compact-evidence/tests/nutrition-plan-comparison-test.mjs
+          node preview/compact-evidence/tests/preview-contract.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
+      - name: Install pinned browser API
+        run: npm install --no-save playwright@1.56.1
+      - name: Exercise real routes with synthetic source documents
+        run: |
+          python3 -m http.server 4173 >/tmp/health-plan.log 2>&1 &
+          node v2/training-plan-browser.mjs
+      - name: Keep synthetic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documented-plan-synthetic
+          path: training-plan-visual/
+          retention-days: 7

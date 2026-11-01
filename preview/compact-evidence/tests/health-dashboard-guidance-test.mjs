@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {dashboardGuidance} from '../src/health-dashboard-guidance.js';
+import {syntheticNutritionPlanRow} from './documented-nutrition-plan-fixture.mjs';
 
 const today='2025-03-20';
 const status=Object.fromEntries(['goals','waterReferences','treatments','regimens','docs','labs','nutrition','sourceMetrics','metrics','workouts','exercises','sets','body','polarSessions'].map(key=>[key,'ready']));
@@ -213,6 +214,27 @@ test('Awaited nutrition plan is explained from the latest dated follow-up, witho
   assert.doesNotMatch(insight(run({goals:[historical()],docs}),'protein').text,/plano alimentar como aguardado/);
   docs[0].care_context.followups[0].resolved=false;
   assert.doesNotMatch(insight(run({goals:[historical()],docs},dashboard(),{...status,docs:'error'}),'protein').text,/plano alimentar como aguardado/);
+});
+
+test('A verified newer received plan replaces only the present pending headline, preserving dated care and goals',()=>{
+  const docs=[{document_date:'2025-03-18',document_type:'care_followup',source:'Synthetic visit',care_context:{schema_version:1,followups:[{key:'nutrition_plan',label:'Receive nutrition plan',resolved:false}]}}];
+  const data={goals:[historical()],docs,nutritionPlans:[syntheticNutritionPlanRow('2025-03-19')]},snapshot=structuredClone(data);
+  const ready={...status,nutritionPlans:'ready'},view=dashboard({protein:[point(today,90)]});
+  const pending=run({...data,nutritionPlans:[]},view,ready),received=run(data,view,ready),item=insight(received,'protein');
+  assert.equal(item.title,'Proteína: plano alimentar recebido');assert.match(item.text,/recebido em 19\/03\/2025/);
+  assert.match(item.text,/início de uso não informado/);assert.match(item.text,/anterior de 18\/03\/2025 registrava o plano como aguardado/);
+  assert.match(item.evidence,/Plano aguardado conforme documento de 18\/03\/2025/);
+  assert.match(item.evidence,/Synthetic nutrition plan\.pdf/);assert.equal(item.action.route,'nutricao');
+  assert.deepEqual(received.goals,pending.goals);assert.deepEqual(received.protocols.care,pending.protocols.care);
+  assert.equal(received.protocols.care.pending[0].resolved,false);assert.deepEqual(data,snapshot);
+});
+
+test('Invalid, ambiguous, undated, unavailable or non-newer plans cannot suppress a pending headline',()=>{
+  const docs=[{document_date:'2025-03-18',document_type:'care_followup',source:'Synthetic visit',care_context:{schema_version:1,followups:[{key:'nutrition_plan',label:'Receive nutrition plan',resolved:false}]}}];
+  const old=syntheticNutritionPlanRow('2025-03-19'),latest=syntheticNutritionPlanRow('2025-03-20','synthetic-newer','b'.repeat(64));
+  const cases=[[{...old,checksum:'invalid'}],[old,{...latest,nutrition_plan:null}],[old,{...old,source_record_id:'synthetic-duplicate'}],[old,{...latest,document_date:null}],[syntheticNutritionPlanRow('2025-03-17')],[syntheticNutritionPlanRow('2025-03-18')]];
+  for(const nutritionPlans of cases)assert.equal(insight(run({goals:[historical()],docs,nutritionPlans},dashboard(),{...status,nutritionPlans:'ready'}),'protein').title,'Proteína: plano alimentar aguardado');
+  for(const nutritionPlans of ['error','loading',undefined])assert.equal(insight(run({goals:[historical()],docs,nutritionPlans:[old]},dashboard(),{...status,nutritionPlans}),'protein').title,'Proteína: plano alimentar aguardado');
 });
 
 test('New water document is identified while the historical reference cannot become a daily goal',()=>{

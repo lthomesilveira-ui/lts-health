@@ -12,13 +12,13 @@ export function dashboardBody(data={},status={},dashboard={},ui={}){
   const latestRows=(snapshot.body?.rows||[]).filter(row=>day(row.date||row.measured_at)===lastAmbiguousDate);
   const blocked=homeUsefulContent(data,status,{...snapshot,body:{...snapshot.body,rows:latestRows}},ui).body;
   return {...blocked,ambiguousDates:base.ambiguousDates,excludedDates:base.excludedDates,
-   text:`A última data recebida, ${lastAmbiguousDate.split('-').reverse().join('/')}, tem ${latestRows.length} avaliações; confira os registros originais.`,latestKnownDate:lastAmbiguousDate,latestKnownAmbiguous:true};
+   text:`A última data registrada, ${lastAmbiguousDate.split('-').reverse().join('/')}, tem ${latestRows.length} avaliações; confira os registros originais.`,latestKnownDate:lastAmbiguousDate,latestKnownAmbiguous:true};
  }
  if(base.latest||base.ambiguousDates.length)return base;
  const requested=ui.homeBodySource||ui.reportBodySource,rows=(data.body||[]).map(row=>({...row,date:day(row.measured_at)})).filter(row=>row.date&&row.date<=dashboard.bounds?.end&&(!requested||requested==='all'||origin(row)===requested));
  const latestDate=rows.map(row=>row.date).sort().at(-1);if(!latestDate)return base;
  const latestRows=rows.filter(row=>row.date===latestDate);
- if(latestRows.length!==1)return {...base,text:`A última data recebida, ${latestDate.split('-').reverse().join('/')}, tem ${latestRows.length} avaliações; confira os registros originais.`,latestKnownDate:latestDate,latestKnownAmbiguous:true};
+ if(latestRows.length!==1)return {...base,text:`A última data registrada, ${latestDate.split('-').reverse().join('/')}, tem ${latestRows.length} avaliações; confira os registros originais.`,latestKnownDate:latestDate,latestKnownAmbiguous:true};
  const result=homeUsefulContent(data,status,{...snapshot,bounds:{start:latestDate,end:latestDate},body:{...snapshot.body,available:true,rows:latestRows}},ui).body;
  return {...result,outsidePeriod:true,latestKnownDate:latestDate,periodLabel:'Última avaliação conhecida · fora do período selecionado.',context:`Última avaliação conhecida até ${dashboard.bounds.end.split('-').reverse().join('/')}; fora do período selecionado. ${result.context}`};
 }

@@ -1,0 +1,9 @@
+# Composition selected-source detail — .106 published and verified, 31/10/2026
+
+Actual desktop and 393px inspection with invented data used the production renderer and two documented devices. After choosing the alternate device, its chart and differences correctly showed 20/09→20/10, but the adjacent detail action opened 29/10 from the other device. The published action now follows the selected series and names the exact date before navigation. All-origins keeps the global latest behavior; history rows remain independent.
+
+Manual desktop and 393x650 verification confirms selected alternate device → dated differences → detail 20/10 with the same device/file → return preserving the selection. The detail is 393/393px without horizontal overflow. Original values, units, dates, source/device/file and comparison rules are unchanged. No production record, health write, source inference, clinical logic, authentication or database change.
+
+PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. Normal merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106; all 21/21 publication workflows completed/success, including deploy, public Pages, homologation and protected real authentication. Independent Cloud Browser confirms the exact build with intact signed-out login, hidden private app and no horizontal overflow.
+
+Fresh heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No external message or repeated phone action. Queue: 93 done, 14 blocked_external, 2 accepted_gap; no ready/in_progress. Remaining source/native/owner conditions require their exact genuine resumption signals. Next rotating UX area: reports. No global owner acceptance or integral closure is claimed.

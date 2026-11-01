@@ -1,0 +1,25 @@
+# Laboratory history readability — .104 published and verified, 31/10/2026
+
+Actual desktop/phone marker-history inspection found correct dated/source data but computed phone dates10px, source/method/reference10.5px and results12px. The published history-only style keeps contextual text and source flags at14px, original results at16px, a full single-line collection date and wrapping provenance in the existing rows. Colors, hierarchy, graph/comparison/model rules and original records are unchanged.
+
+Manual invented-data production-renderer review at desktop,320x650 and393x650 confirms readable dates/results/reference/method without horizontal overflow. A separate literal-limit/unit/long-laboratory-method-reference/original-flag variant also remains complete and readable at320px; the synthetic SDK was then restored byte for byte. Changed references still block numeric differences; no functional correction was needed for that data/navigation rule.
+
+PR452 exact candidate b131d00d900b59df2e5070c121a4634e99bdf88d: 15/16 workflows completed/success. Integrated41242610169 and Functional41242610356 pass, including actual history navigation, computed14px/16px reading, full-date and row bounds at320/393/1280px. Existing chart-entry, touch, prior history and no-write assertions remain. Syntax, exact hashes/parity, production graph, public-payload and continuity contracts pass locally. Unfinished broad repetitions remain listed as pending, not passed.
+
+Normal PR452 merge 95e127c2569c8111d76a4a799c4873e3bf0e1c99 publishes health-integrated-20261031.104. Deploy41243040182, public41243095698, homologation41243095573 and protected real-auth41243040235 pass. Publication snapshot17/20 success; unfinished candidate/publication repetitions [41242610405, 41243040227, 41243040212, 41243040257] stay pending, not passed.
+
+Independent Cloud Browser confirms exact public .104, intact login, hidden private app and no horizontal overflow. The manual session is signed out. Synthetic health-area inspection and protected actual authentication are separate evidence; no new private manual or physical-iPhone claim.
+
+Previous .103 delivery remains verified: runtime PR450 and the exact9-key protected-check follow-up PR451 preserve the original7/4 PDF failures and the first protected cardinality failure as history. The corrected PDF oracle retains all positioned words, counts, bounds/pages/images, with missing-number/unit negative controls. Later successful follow-up authentication is distinct from the failed original run. Prior pending repetitions are reconciled only where the fresh observed run actually completes/succeeds.
+
+Read-only genuine receipt/provider review leaves original water, source identity, full-day basal coverage, export diagnostics and the other independent history/native/form conditions blocked. No external message, repeated phone configuration/test, invented production form record, clinical/laboratory/medication change or source inference. Next rotating UX area: nutrition. Actual owner acceptance remains independent.
+
+Queue:91 done,14 blocked_external,2 accepted_gap; no ready/in_progress task after this package. Every remaining condition retains its individual genuine resumption signal. Continuous UX QA remains a release/inspection rule; it is not global owner acceptance or an invented endless implementation task. Next rotating area: nutrition. No global completion is claimed.
+
+# Laboratory history readability — candidate .104, 31/10/2026
+
+Direct desktop/phone UI inspection followed report → marker history and found correct dated/source data, but computed phone dates10px, provenance/reference10.5px and results12px. The bounded history style raises dates/context to14px and results to16px, fits the full collection date on one line and keeps long source/method/reference text wrapping. Source-validated original links remain reachable. The existing history structure, colors, data, clinical interpretation, collection/grouping/graph/comparison rules, authentication and writes are unchanged.
+
+Manual invented-data preview checks at desktop,320x650 and393x650 show full dates and references with no horizontal overflow. Changed references still block automatic numeric differences. A separate invented320px limit/result/long laboratory-method-reference/source-flag variant preserves the literal limit and unit, wraps all context and exposes the14px original flag without horizontal overflow. The original synthetic SDK was restored byte for byte afterward. The existing evolution/access acceptance adds computed-size, full-date, row-bound and actual history-navigation checks at all three widths, while retaining chart-entry, touch, prior journeys and no-write assertions.
+
+Candidate tests, normal publication, exact public inspection and protected actual-auth verification remain pending. This is a distinct follow-on package after .103 publication; no concurrent branch updates or clinical data changes are authorized by the style change. Independent14 external dependencies,2 accepted gaps and owner acceptance remain open. EXECUTION_STATE.json is authoritative.

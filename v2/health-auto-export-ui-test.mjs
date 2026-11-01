@@ -18,4 +18,16 @@ await checkAutoExportConnection();assert.equal(state.autoExportConnection.receiv
 await actOnAutoExport('hide');copied='';await copyAutoExport('key');assert.equal(copied,'','erased key cannot be copied');
 await actOnAutoExport('create');state.session={user:{id:'different-owner'}};assert.doesNotMatch(renderAutoExportConnection(),new RegExp(key));copied='';await copyAutoExport('key');assert.equal(copied,'','key cannot cross sessions');
 resetAutoExportConnection();assert.equal(state.autoExportConnection,null);
+state.session={user:{id:'synthetic-owner'}};
+state.autoExportConnection={status:'ready',configured:true,received:true,last_received_at:'2001-04-03T08:20:00Z',last_metric_date:'2001-04-02',last_water_date:'2001-03-01'};
+let rendered=renderAutoExportConnection();
+assert.match(rendered,/Água sem atualização/,'recent other data cannot imply current water');
+assert.match(rendered,/id="health-auto-export-title" tabindex="-1"/,'target has a focusable human heading');
+assert.ok(rendered.indexOf('data-hae-action="rotate"')>rendered.indexOf('data-disclosure="health-auto-export-setup"'),'rotation is in secondary setup');
+assert.ok(rendered.indexOf('data-hae-action="disconnect"')>rendered.indexOf('data-disclosure="health-auto-export-setup"'),'disconnect is in secondary setup');
+state.autoExportConnection.last_water_date='2001-04-02';
+assert.doesNotMatch(renderAutoExportConnection(),/Água sem atualização/,'matching available dates do not invent a gap');
+state.autoExportConnection={status:'error'};
+assert.doesNotMatch(renderAutoExportConnection(),/Água sem atualização/,'failed status does not invent source evidence');
+resetAutoExportConnection();
 console.log('Health Auto Export UI: one-time key, explicit reveal/copy, received distinction, erase and owner isolation passed.');

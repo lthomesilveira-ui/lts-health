@@ -34,7 +34,7 @@ function bodyContent(m,ui){
   else if(requestedSourceMissing)text='A origem corporal escolhida não tem avaliação nesta janela.';
   else if(comparableMetrics.length)text=comparableMetrics.map(metric=>`${metric.label}: ${format(metric.first)} → ${format(metric.latest)} ${metric.unit}`).join('; ')+'.';
   else if(latestMetrics.length)text=`Registro de ${dateLabel(latest.date)}: ${latestMetrics.map(metric=>`${metric.label.toLowerCase()} ${format(metric.latest)} ${metric.unit}`).join('; ')}.`;
-  else text=ambiguousDates.length?'As datas com avaliações duplicadas precisam ser conferidas.':'Sem avaliação corporal inequívoca nesta janela.';
+  else text=ambiguousDates.length?'As datas com avaliações duplicadas precisam ser conferidas.':'Sem avaliação corporal sem conflito nesta janela.';
   const origins=unique([first,latest].filter(Boolean).map(bodyOrigin));
   const context=[pair?`${dateLabel(first.date)} → ${dateLabel(latest.date)}.`:latest?`Avaliação de ${dateLabel(latest.date)}.`:'',origins.join(' / '),
     'Condições das avaliações não confirmadas; estimativas de composição não comprovam mudança de tecido.',
@@ -42,7 +42,7 @@ function bodyContent(m,ui){
   return {available,first,latest,pair,metrics,changes:Object.fromEntries(Object.entries(metrics).map(([key,metric])=>[key,metric.delta])),
     dates:unambiguous.map(row=>row.date),ambiguousDates,excludedDates:ambiguousDates,requestedSource,requestedSourceMissing,
     title:comparableMetrics.length?'Entre as avaliações do período':'Avaliações no período',text,context,evidence:context,
-    selectionRule:'Primeira e última avaliações em datas inequívocas dentro do filtro e da origem escolhida; cada variável exige valor nas duas.',
+    selectionRule:'Primeira e última avaliações em datas sem conflito dentro do filtro e da origem escolhida; cada variável exige valor nas duas.',
     sourceRecordIds:unique([sourceId(first),sourceId(latest)].filter(Boolean)),conditionsConfirmed:false};
 }
 
@@ -103,10 +103,10 @@ function trainingContent(m,ui){
   const requestedContext=ui.homeTrainingContext||null,selected=requestedContext?contexts.find(context=>context.key===requestedContext)||null:contexts[0]||null;
   const requestedContextMissing=Boolean(requestedContext&&!selected),summary=[];
   if(selected){summary.push(selected);const second=contexts.find(context=>context.exerciseKey!==selected.exerciseKey);if(second)summary.push(second);}
-  const selectionMessage=requestedContextMissing?'O contexto de exercício escolhido não tem duas datas inequívocas nesta janela. Amplie o período ou escolha outro contexto; nenhuma substituição foi feita.':null;
+  const selectionMessage=requestedContextMissing?'O contexto de exercício escolhido não tem duas datas sem conflito nesta janela. Amplie o período ou escolha outro contexto; nenhuma substituição foi feita.':null;
   const note='Aparelho e local informados não confirmam a estação física. Fase e esforço conforme o registro; confirmação documental e condições equivalentes não estabelecidas. Diferenças de carga não estimam força.';
   return {available,contexts,exercises,history,selected,summary,requestedContext,requestedContextMissing,selectedByUser:Boolean(requestedContext&&selected),selectionMessage,
-    text:selectionMessage||summary.map(context=>`${context.exercise}: ${context.text}`).join(' / ')||(!available?'Detalhes dos treinos não carregaram.':'Sem exercício com duas datas inequívocas sob o mesmo contexto registrado nesta janela.'),
+    text:selectionMessage||summary.map(context=>`${context.exercise}: ${context.text}`).join(' / ')||(!available?'Detalhes dos treinos não carregaram.':'Sem exercício com duas datas sem conflito sob o mesmo contexto registrado nesta janela.'),
     shortText:selectionMessage||summary.map(context=>`${context.exercise}: ${context.shortText}`).join(' / ')||null,
     context:note,notes:note,selectionRule:'Número de datas registradas, depois data mais recente e chave estável; no máximo dois exercícios distintos. A escolha não usa variação de carga.',
     detail:selected?exercises.find(exercise=>exercise.key===selected.exerciseKey)||null:null};

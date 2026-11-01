@@ -16,7 +16,7 @@ const duplicate=renderReferenceHome({...data,body:[{measured_at:'2025-03-15',fat
 assert.doesNotMatch(duplicate,/value="2025-03-15"|Gordura <b>12,0 kg|Músculo <b>40,0 kg/);
 assert.match(duplicate,/Selecione uma data sem conflito/);
 
-const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'error'},'90',{},'2025-03-20');assert.match(failedCounts,/— séries · — prolongamentos/);assert.match(failedCounts,/— registros de marcadores/);
+const failedCounts=renderReferenceHome(data,{...status,workouts:'error',labs:'error'},'90',{},'2025-03-20');assert.match(failedCounts,/— séries principais · — prolongamentos/);assert.match(failedCounts,/class="refPanel labs"[\s\S]*?Exames não carregaram/);assert.doesNotMatch(failedCounts.match(/class="refPanel labs"[\s\S]*?<\/article>/)?.[0]||'',/refLabValue|data-home-lab-select/,'failed labs expose no stale result or selector');
 
 const unknown=renderReferenceHome({...data,body:[{measured_at:'2025-01-01',source:'A',fat_mass_kg:20,skeletal_muscle_mass_kg:30},{measured_at:'2025-02-01',source:'A',fat_mass_kg:19,skeletal_muscle_mass_kg:31},{measured_at:'2025-03-01',source:'A',device_name:'Known',fat_mass_kg:18,skeletal_muscle_mass_kg:32}]},status,'90',{},'2025-03-20');
 assert.equal((unknown.match(/data-observed-link/g)||[]).length,2,'one observed unknown-device segment per metric; known device breaks continuity');
