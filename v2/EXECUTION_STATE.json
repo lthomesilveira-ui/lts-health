@@ -50,42 +50,51 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-ORIGINAL-SOURCE-RECOVERY-032",
-    "status": "in_progress",
-    "goal": "Complete original-source reconciliation, preserve literal workout reports and expose source-verified Einstein originals and release context.",
+    "id": "PKG-GENUINE-INBOX-FORM-033",
+    "status": "blocked_user",
+    "goal": "Verify genuine ordinary production form saving and full reopening using an already supplied source file.",
     "task_ids": [
-      "LTS-LABS-SOURCES-001",
-      "LTS-CHAT-RECONCILIATION-001"
+      "LTS-PRODUCTION-WRITE-REOPEN-001"
     ],
     "public_build": "health-integrated-20261101.115",
-    "runtime_changed": true,
+    "runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "documentary_source_metadata_changed": true,
+    "ordinary_form_submission_verified": false,
     "pending_gates": [
-      "exact source/privacy and continuity contracts",
-      "mobile/desktop original access and dates",
-      "protected application source reading",
-      "normal merge, publication and exact public inspection"
+      "secure interactive owner sign-in",
+      "genuine ordinary file submission and read-only source preview",
+      "full reload/reopening with source identity and canonical duplicate protection"
     ],
     "completed_evidence": [
-      "Private originals recovered and independently verified; bounded documentary repair passed rollback, exact reread, preserved clinical/structured projections and zero-change replay.",
-      "Owner original bootstrap requirements mapped to saved operational state; missing clinical correction manifest and global owner acceptance remain separate."
+      "The already supplied, privately validated original is prepared. No replacement file or invented clinical event is needed.",
+      "The ordinary authenticated inspector is deployed with JWT protection; the current manual browser is signed out."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.114",
-    "main_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
-    "runtime_promotion_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
+    "build_id": "health-integrated-20261101.115",
+    "main_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
+    "runtime_promotion_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
     "published_on": "2026-11-01",
-    "release_kind": "bounded_private_fleury_reading",
+    "release_kind": "original_source_access_and_literal_report_recovery",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "automated_runtime_and_responsive_status": "21/21 candidate and24/24 publication workflows completed/success, including protected actual authentication.",
+    "automated_runtime_and_responsive_status": "19/19 exact runtime-candidate workflows passed. Final original-source mobile/desktop scenarios passed. Corrected protected actual-auth41342289673 verified the published runtime. Remaining same-code publication repetitions are not counted as passed before completion.",
     "evidence": [
-      "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
-      "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
-      "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
+      "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
+      "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
+      "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
+      "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
+      "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
+      "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
+    ],
+    "recorded_failed_validation_runs": [
+      {
+        "run_id": 41341747378,
+        "scope": "outdated single-original protected assertion",
+        "fixed_by_candidate": "736f17b7ae412c01a195b702383b03ebf3b1554e",
+        "verified_by_run": 41342289673
+      }
     ]
   },
   "tasks": [
@@ -217,7 +226,7 @@
       "owner": "Codex",
       "blocker": null,
       "id": "LTS-CHAT-RECONCILIATION-001",
-      "status": "in_progress",
+      "status": "done",
       "summary": "Reconcile remaining prior chat requests and original workout details without asking for duplicate submissions or inferring absent values.",
       "acceptance": [
         "Original prior requests retrieved and reconciled to evidence and saved state."
@@ -231,9 +240,25 @@
         "Focused Library and context retrieval found secondary consolidated documentation and a partial original exercise fact, but not the full original source needed for complete reconciliation. Existing canonical records are preserved; no full original recovery is claimed.",
         "Previously supplied original project bootstrap, Einstein bundle and literal workout sources recovered privately; no duplicate submission requested.",
         "Two independent source extractions agree; bounded metadata/original-report repair, rollback, exact reread, clinical/structured preservation and idempotent replay passed.",
-        "v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md"
+        "v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md",
+        "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
+        "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
+        "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
+        "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
+        "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
+        "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
       ],
-      "next_action": "Complete the exact .115 protected reading, mobile/desktop source context and normal publication gates."
+      "next_action": "Preserve the recovered originals and verified source context. Unsupported production formats, the specific correction manifest, genuine ordinary form persistence and global owner acceptance remain independently tracked.",
+      "resolution": {
+        "kind": "source_backed_reconciliation",
+        "scope": "Recovered canonical original brief, supplied literal workout reports and representative original laboratory formats reconciled to saved operational state.",
+        "not_claimed": [
+          "complete historical conversation transcript",
+          "the missing exact fifteen-record correction manifest",
+          "general automatic PDF ingestion",
+          "global owner acceptance"
+        ]
+      }
     },
     {
       "id": "LTS-REPORT-LOWER-READING-001",
@@ -963,7 +988,7 @@
       "id": "LTS-LABS-SOURCES-001",
       "area": "labs",
       "priority": "P2",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Expand laboratory coverage and specialized parsing from original Fleury/Einstein files.",
       "acceptance": [
@@ -982,10 +1007,26 @@
         "2026-11-01: a bounded private Fleury text-report preview is being implemented under PKG-FLEURY-AUTHENTICATED-PREVIEW-031. Genuine authenticated original-file submission/reopening, unsupported Einstein formats and general import remain separate acceptance.",
         "Previously supplied original project bootstrap, Einstein bundle and literal workout sources recovered privately; no duplicate submission requested.",
         "Two independent source extractions agree; bounded metadata/original-report repair, rollback, exact reread, clinical/structured preservation and idempotent replay passed.",
-        "v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md"
+        "v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md",
+        "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
+        "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
+        "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
+        "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
+        "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
+        "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
       ],
-      "next_action": "Complete the exact .115 protected reading, mobile/desktop source context and normal publication gates.",
-      "blocker": null
+      "next_action": "Preserve the recovered originals and verified source context. Unsupported production formats, the specific correction manifest, genuine ordinary form persistence and global owner acceptance remain independently tracked.",
+      "blocker": null,
+      "resolution": {
+        "kind": "source_backed_reconciliation",
+        "scope": "Recovered canonical original brief, supplied literal workout reports and representative original laboratory formats reconciled to saved operational state.",
+        "not_claimed": [
+          "complete historical conversation transcript",
+          "the missing exact fifteen-record correction manifest",
+          "general automatic PDF ingestion",
+          "global owner acceptance"
+        ]
+      }
     },
     {
       "id": "LTS-DOCUMENTS-001",
@@ -1918,7 +1959,7 @@
       "id": "LTS-PRODUCTION-WRITE-REOPEN-001",
       "area": "production persistence coverage",
       "priority": "P1",
-      "status": "blocked_external",
+      "status": "blocked_user",
       "owner": "Codex",
       "summary": "Verify ordinary production form saving and reopening on the next genuine authorized update; distinguish it from the completed bounded metadata repair.",
       "acceptance": [
@@ -1930,10 +1971,12 @@
         "The isolated integrated-review browser verifies actual goal saving and page reload in disposable synthetic persistence.",
         "Current public changes are reading/navigation changes; no production medical record or prescription was written during this restart.",
         "A genuine authorized bounded metadata repair now has exact preimages, unchanged other fields and count, independent database reread and full public reload. The separate LTS-HISTORICAL-CONTEXT-001 is complete; ordinary app form submission remains unproved.",
-        "A second genuine bounded historical repair has exact preimages, independent postimages, unchanged other data and public reopening. This is still a different path from ordinary form submission."
+        "A second genuine bounded historical repair has exact preimages, independent postimages, unchanged other data and public reopening. This is still a different path from ordinary form submission.",
+        "The original Fleury PDF is recovered, privately source-validated and ready for the ordinary Inbox form. Fresh preflight confirms no Fleury file has already been submitted there.",
+        "Public .115 sign-in offers email/password; credential entry remains a secure owner interaction. Protected read-only CI sessions are not reused as manual form credentials."
       ],
-      "next_action": "Exercise ordinary production saving and full reopening with the next genuine non-duplicating form update. Do not create a fake health record merely for testing.",
-      "blocker": "No new genuine non-duplicating ordinary app form update is currently available; the completed metadata repair is a different write path."
+      "next_action": "Use secure browserAuth for the visible email/password login, submit the already supplied genuine original through the ordinary Inbox form, then fully reload and reopen its saved source, file and preview. Preserve canonical duplicate protection; do not request another file or create a fictitious health event.",
+      "blocker": "The interactive Cloud Browser session is signed out. A genuine supplied original is prepared and has no existing Inbox copy; secure owner sign-in is needed for the ordinary form."
     },
     {
       "id": "LTS-OWNER-DELIVERY-20261025",
@@ -4671,21 +4714,57 @@
         "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
         "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
       ]
+    },
+    {
+      "id": "PKG-ORIGINAL-SOURCE-RECOVERY-032",
+      "status": "done",
+      "goal": "Complete original-source reconciliation, preserve literal workout reports and expose source-verified Einstein originals and release context.",
+      "task_ids": [
+        "LTS-LABS-SOURCES-001",
+        "LTS-CHAT-RECONCILIATION-001"
+      ],
+      "public_build": "health-integrated-20261101.115",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "documentary_source_metadata_changed": true,
+      "pending_gates": [],
+      "completed_evidence": [
+        "Private originals recovered and independently verified; bounded documentary repair passed rollback, exact reread, preserved clinical/structured projections and zero-change replay.",
+        "Owner original bootstrap requirements mapped to saved operational state; missing clinical correction manifest and global owner acceptance remain separate.",
+        "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
+        "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
+        "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
+        "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
+        "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
+        "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
+      ]
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.114",
-    "main_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
-    "runtime_promotion_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
+    "build_id": "health-integrated-20261101.115",
+    "main_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
+    "runtime_promotion_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
     "published_on": "2026-11-01",
-    "release_kind": "bounded_private_fleury_reading",
+    "release_kind": "original_source_access_and_literal_report_recovery",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "automated_runtime_and_responsive_status": "21/21 candidate and24/24 publication workflows completed/success, including protected actual authentication.",
+    "automated_runtime_and_responsive_status": "19/19 exact runtime-candidate workflows passed. Final original-source mobile/desktop scenarios passed. Corrected protected actual-auth41342289673 verified the published runtime. Remaining same-code publication repetitions are not counted as passed before completion.",
     "evidence": [
-      "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
-      "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
-      "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
+      "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
+      "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
+      "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
+      "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
+      "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
+      "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
+    ],
+    "recorded_failed_validation_runs": [
+      {
+        "run_id": 41341747378,
+        "scope": "outdated single-original protected assertion",
+        "fixed_by_candidate": "736f17b7ae412c01a195b702383b03ebf3b1554e",
+        "verified_by_run": 41342289673
+      }
     ]
   },
   "release_history": [
@@ -9307,6 +9386,21 @@
         ],
         "test_only_publication": []
       }
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261101.114",
+      "main_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
+      "runtime_promotion_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
+      "published_on": "2026-11-01",
+      "release_kind": "bounded_private_fleury_reading",
+      "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
+      "automated_runtime_and_responsive_status": "21/21 candidate and24/24 publication workflows completed/success, including protected actual authentication.",
+      "evidence": [
+        "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
+        "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
+        "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
+      ]
     }
   ],
   "last_continuity_review": {
