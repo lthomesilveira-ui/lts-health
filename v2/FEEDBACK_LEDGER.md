@@ -4,7 +4,7 @@ The 393x844 weekly-report journey kept 19–25/10/2026 dates, coverage, units, m
 
 The bounded correction carries a one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Report content, records, units, source arithmetic, authentication and writes are unchanged.
 
-PR458 exact candidate `ba60a1aa4db29f8973900f0f5a1a6ee21aec011b`: 17/17 workflows succeeded. Normal merge `5ab534d7e614a1feb5f69555e161db59dee8dbbc` publishes `health-integrated-20261031.107`. Deploy, Pages, homologation, reports/PDF, isolated preview and protected real-auth retry succeeded. The first auth attempt's isolated CSS 503 is preserved as a failure; its official retry passed. Integrated Production run `41255413339` remains pending at pinned-browser installation and is not counted as success.
+PR458 exact candidate `ba60a1aa4db29f8973900f0f5a1a6ee21aec011b`: 17/17 workflows succeeded. Normal merge `5ab534d7e614a1feb5f69555e161db59dee8dbbc` publishes `health-integrated-20261031.107`. Deploy, Pages, homologation, reports/PDF, isolated preview and protected real-auth retry succeeded. The first auth attempt's isolated CSS 503 is preserved as a failure; its official retry passed. Integrated Production run `41255413339` attempt 1 was cancelled while browser installation was blocked; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the retry counts.
 
 Independent Cloud Browser confirms exact public .107, visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area review, public signed-out inspection and protected actual-auth CI remain separate evidence. No new private manual session or physical-iPhone retest is claimed.
 
