@@ -136,6 +136,7 @@ for(const width of [320,393,1440]){
  if(width===393)await page.setViewportSize({width,height:650});
  await page.locator('[data-dashboard-card="water"] [data-source-focus="water"]').click();
  await page.waitForFunction(()=>document.activeElement?.id==='health-auto-export-title');
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const receiver=page.locator('[data-health-auto-export]');
  assert.match(await receiver.locator('.pill').innerText(),/Água sem atualização/);
  assert.match(await receiver.locator('.healthSourceCaution').innerText(),/Chegaram outros dados/);
@@ -144,7 +145,7 @@ for(const width of [320,393,1440]){
  for(const action of ['rotate','disconnect'])assert.equal(await receiver.locator(`[data-hae-action="${action}"]`).isVisible(),false,'configuration is secondary');
  assert.equal(await receiver.locator('[data-hae-check]').isVisible(),true,'receipt check remains directly available');
  const box=await receiver.locator('h2').boundingBox();
- assert.ok(box.y>=0&&box.y+box.height<(width===393?650:900),'receiving heading is actually in view at '+width);
+ assert.ok(box.y>=0&&box.y+box.height<(width===393?650:900),'receiving heading is actually in view at '+width+': '+JSON.stringify(box));
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'targeted receiving status fits '+width);
  await page.screenshot({path:`artifacts/production-integration/water-receiving-focus-${width}.png`});
  await setup.locator('summary').click();

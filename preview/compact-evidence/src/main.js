@@ -37,6 +37,7 @@ let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
 let renderedRoute=null;
+let routeScrollRevision=0;
 const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','dados','analise']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
@@ -61,11 +62,13 @@ function resetRouteScroll(){
 }
 
 function settleRouteScroll(route){
-  const reset=()=>{if(state.route===route)resetRouteScroll();};
+  const revision=++routeScrollRevision;
+  const current=()=>state.route===route&&revision===routeScrollRevision;
+  const reset=()=>{if(current())resetRouteScroll();};
   reset();
   requestAnimationFrame(()=>{reset();requestAnimationFrame(reset);});
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    if(state.route!==route||route!=='dados'||state.ui.sourceFocus!=='water')return;
+    if(!current()||route!=='dados'||state.ui.sourceFocus!=='water')return;
     const heading=document.getElementById('health-auto-export-title');
     if(!heading)return;
     state.ui.sourceFocus=null;

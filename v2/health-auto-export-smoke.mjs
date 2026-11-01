@@ -70,7 +70,8 @@ try{
     assert.doesNotMatch(await card.innerText(),/Histórico disponível|Último recebimento:/,'configured is not proof of receipt');
     await page.evaluate(()=>{window.__qaHaeStatus={configured:true,received:true,last_received_at:'2026-10-04T19:00:00Z',last_metric_date:'2026-10-03',last_water_date:null};});
     await card.getByRole('button',{name:'Verificar recebimento'}).click();
-    await card.getByText('Histórico disponível',{exact:true}).waitFor();
+    await card.getByText('Água sem atualização',{exact:true}).waitFor();
+    assert.match(await card.locator('.healthSourceCaution').innerText(),/Chegaram outros dados/);
     assert.match(await card.innerText(),/Último recebimento: 04\/10\/2026, 16:00:00/);
     assert.match(await card.innerText(),/Última data com dados: 03\/10\/2026/);
     assert.match(await card.innerText(),/Ainda não há registros de volume de água por esta conexão/);
