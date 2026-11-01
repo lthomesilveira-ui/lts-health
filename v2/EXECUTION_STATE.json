@@ -9525,11 +9525,11 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T05:16:25.000Z",
-    "source_main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+    "reviewed_at_utc": "2026-11-01T05:54:32.000Z",
+    "source_main_commit": "68827cfd1c33cc413a9ae851d00674a8aa1728b6",
     "runtime_build": "health-integrated-20261101.111",
     "candidate_build": null,
-    "runtime_changed": true,
+    "runtime_changed": false,
     "clinical_runtime_changed": false,
     "status_counts": {
       "done": 99,
@@ -9539,26 +9539,59 @@
     },
     "executable_task_count": 0,
     "evidence": [
-      "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open PRs were reconciled before implementation. Only legacy PRs 367/354/348 remained open; none overlapped this Exams package.",
-      "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10, 130 active-energy days through 30/10 and no explicit total-energy source row. All 117 basal candidates still lack original source, bounds and verified coverage.",
+      "Fresh origin/main 68827cfd1c33cc413a9ae851d00674a8aa1728b6, private checkpoint version 57 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Reports review.",
+      "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10 and no explicit total-energy source row. Active energy remains 98 canonical days through 05/05 plus 32 recent candidate days through 30/10; the candidate rows were not promoted or conflated with canonical history. All 117 basal candidates still lack original source, bounds and verified coverage.",
       "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
-      "Independent public inspection first confirmed .110 and, after normal Pages propagation, exact health-integrated-20261101.111 at #hoje with the signed-out login boundary intact and 1363/1363px width. This is not claimed as an authenticated health-area session.",
-      "The exact .110 synthetic Exams artifact passed at 320, 390, 393, 1180 and 1440px for dates, raw results, units, source/method/reference separation, comparable series, chart selection, full paginated history, collection navigation, route return, immutable records, no overflow, zero writes and zero external requests.",
-      "A concrete mobile defect was observed: #productLabQuery and #productLabMarkerSelect were each only 38px high in the 390x844 journey, below the screen's established 44px touch-target contract.",
-      "Candidate .111 raises only Exams field controls to a 44px minimum and adds the focused browser assertion. No laboratory value, original, unit, date, reference, method, comparison rule, authentication boundary or write path changes.",
-      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows. Normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows, including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
-      "Queue after verified publication: 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks. The next rotating UX area is Reports."
+      "The exact .111 calendar-report artifact 13070884236 matched sha256:944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426. All 32 Chromium/WebKit scenarios passed, including 320/393/1440px, weekly/monthly periods, empty/error states, print failure/retry, local PDF and clipping detectors.",
+      "Actual 320x740 and 393x650 report captures plus the two-page weekly PDF were inspected. Period dates, closed-period status, metric-specific coverage, units, source labels, charts, training totals, missing-day semantics, independent indicators, local-file disclosure and mobile navigation remained legible without a concrete defect.",
+      "Independent Cloud Browser opened the stable public #hoje route, visibly retained the signed-out login and private boundary, and exposed no health data. This public inspection is distinct from the exact synthetic Reports journey and the already-passed protected real-auth gate.",
+      "No runtime or data change was justified. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Training."
     ],
     "ux_review": {
-      "area": "exams",
-      "next_area": "reports",
-      "mode": "exact_synthetic_110_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
-      "viewport": "320x740, 390x844, 393x844, 1180x757 and 1440x900 plus public desktop",
-      "result": "mobile_primary_touch_targets_published_and_verified",
-      "journey_without_additional_defect": "Exams preserved dates, raw results, units, comparable source/method/reference cohorts, chart interpretation, point selection, full history, collection navigation and mobile readability without overflow."
+      "area": "reports",
+      "next_area": "training",
+      "mode": "exact_synthetic_111_report_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
+      "viewport": "320x740, 393x650, 393x844 and 1440x900 plus paginated local PDF and public desktop",
+      "result": "no_runtime_defect_observed",
+      "journey_without_additional_defect": "Reports preserved period dates, closed-period meaning, metric-specific coverage, units, source labels, missing-day semantics, charts, training totals, local export disclosure, PDF pagination and mobile navigation without clipping or horizontal overflow."
     }
   },
   "continuity_review_history": [
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T05:16:25.000Z",
+      "source_main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+      "runtime_build": "health-integrated-20261101.111",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 99,
+        "in_progress": 0,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open PRs were reconciled before implementation. Only legacy PRs 367/354/348 remained open; none overlapped this Exams package.",
+        "Read-only database evidence remained at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10, 130 combined active-energy days through 30/10 and no explicit total-energy source row. All 117 basal candidates still lacked original source, bounds and verified coverage.",
+        "Existing support/export inboxes contained no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
+        "Independent public inspection confirmed exact health-integrated-20261101.111 at #hoje with the signed-out login boundary intact and 1363/1363px width. This was not claimed as an authenticated health-area session.",
+        "The exact .110 synthetic Exams artifact passed at 320, 390, 393, 1180 and 1440px for dates, raw results, units, source/method/reference separation, comparable series, chart selection, full paginated history, collection navigation, route return, immutable records, no overflow, zero writes and zero external requests.",
+        "A concrete mobile defect was observed: #productLabQuery and #productLabMarkerSelect were each only 38px high in the 390x844 journey, below the screen's established 44px touch-target contract.",
+        "Candidate .111 raised only Exams field controls to a 44px minimum and added the focused browser assertion. No laboratory value, original, unit, date, reference, method, comparison rule, authentication boundary or write path changed.",
+        "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows. Normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows, including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
+        "Queue after verified publication: 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks. The next rotating UX area was Reports."
+      ],
+      "ux_review": {
+        "area": "exams",
+        "next_area": "reports",
+        "mode": "exact_synthetic_110_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
+        "viewport": "320x740, 390x844, 393x844, 1180x757 and 1440x900 plus public desktop",
+        "result": "mobile_primary_touch_targets_published_and_verified",
+        "journey_without_additional_defect": "Exams preserved dates, raw results, units, comparable source/method/reference cohorts, chart interpretation, point selection, full history, collection navigation and mobile readability without overflow."
+      }
+    },
     {
       "reviewed_on": "2026-11-01",
       "reviewed_at_utc": "2026-11-01T04:48:32.000Z",
