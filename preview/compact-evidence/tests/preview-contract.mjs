@@ -20,7 +20,7 @@ const manifest={
     "dashboard-parity.css": "c370a25ea7e501fc4bff32e5d9463cbcbb489f7cb6e026fbccf260485ea20826",
     "dashboard-pixel-parity.css": "391ee883ea04982dd5f8c133fd3621a64972f3e1b8bee093a4e3cf8772cfe639",
     "dashboard-reference-contract.css": "f6af7d09fa862026cf9fb2da3ea39e8abe9999e786d5199d5544b2f075ac7d93",
-    "data.css": "b44142a0ab1d204d05acc50a085947bfe6e9ec58788eeb2081f2b414c1711136",
+    "data.css": "3053a922f9a948a44ae07ae4d5567a04de334979db8226e586c0f17a50cc1000",
     "details.css": "9dc9aba99add9f399f395bf9312c0db6b690a21739cba44e38036d24f1df8eb0",
     "domain-reference-parity-20260914.css": "1de1275a52a7af5d07bd6a0a74f8cb0badd7d57969f91c92ef3e8d1cdab7cde1",
     "entry.css": "4448b31b193f468eb741f1e1ea646b293936abb615093b6232d1a224071152d4",

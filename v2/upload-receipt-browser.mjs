@@ -148,7 +148,12 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
     assert.ok(geometry.top>=geometry.visibleTop-1&&geometry.bottom<=geometry.visibleBottom+1,'entire result is visible above the app navigation: '+JSON.stringify(geometry));
    }
    assert.ok(await page.locator('#uploadMsg').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))>=14);
-   for(const control of ['#uploadType','#uploadFile','#uploadForm button[type="submit"]'])assert.ok(await page.locator(control).evaluate(el=>el.getBoundingClientRect().height)>=44,'touch target: '+control);
+   for(const control of ['#uploadType','#uploadFile','#uploadForm button[type="submit"]','#backupExportBtn'])assert.ok(await page.locator(control).evaluate(el=>el.getBoundingClientRect().height)>=44,'touch target: '+control);
+   const inventory=await page.locator('.sourceCard>div').evaluateAll(nodes=>nodes.map(el=>{
+    const title=el.querySelector('b'),detail=el.querySelector('small');
+    return {titleBottom:title.getBoundingClientRect().bottom,detailTop:detail.getBoundingClientRect().top,font:parseFloat(getComputedStyle(title).fontSize)};
+   }));
+   assert.equal(inventory.length,9);assert.ok(inventory.every(x=>x.titleBottom<=x.detailTop+1&&x.font>=14),'data inventory keeps labels and explanations on separate readable lines');
    const color=await page.locator('#uploadMsg').evaluate(el=>getComputedStyle(el).color);
    const rgb=color.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
    const luminance=.2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];assert.ok(1.05/(luminance+.05)>=4.5,'normal text contrast against the light card');
@@ -158,6 +163,7 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
     const row=page.locator('.uploadAuditRow').filter({hasText:filename});assert.equal(await row.count(),1,'the received original is identifiable in file history');
     assert.ok(await row.locator('time').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))>=14);
     await row.screenshot({path:output+'/upload-history-'+name+'-'+width+'.png'});
+    await page.locator('.sourceCard').first().screenshot({path:output+'/upload-inventory-'+name+'-'+width+'.png'});
    }
    // The previous receipt is cleared as soon as a different file is chosen.
    await page.locator('#uploadFile').setInputFiles({name:'arquivo-sintetico-seguinte.pdf',mimeType:'application/pdf',buffer:Buffer.from('Invented next file')});
