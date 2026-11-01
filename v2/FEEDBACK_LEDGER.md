@@ -1,3 +1,11 @@
+# Composição — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+A jornada móvel e desktop de `health-integrated-20261101.111` percorreu entrada de Composição, períodos e métricas, ponto selecionado no gráfico, data/valor/origem correspondentes, histórico completo, detalhe da medição, análise segmentar e retorno. Os artefatos exatos `integrated-production-synthetic-visual` 13074090932 e `functional-depth-synthetic-visual` 13074300663 conferiram com os SHA-256 registrados no checkpoint; os workflows exatos 41282072271 e 41282072215 concluíram com sucesso.
+
+Em 320/393/1280 px, os controles móveis medem ao menos 44 px; datas, peso, gordura corporal e estimada, músculo estimado, água corporal, gordura visceral, arquivo e unidades permaneceram completos. O detalhe selecionado acompanhou a mesma observação/origem, o histórico preservou 41 medições e massa magra segmentar continuou distinta de músculo esquelético. Não houve overflow horizontal, sobreposição, atribuição de causalidade ou defeito concreto. Nenhum runtime, registro de saúde, autenticação ou escrita mudou.
+
+`main` em `504dadda0147362c1e17f019540986c0152799b0`, checkpoint privado versão 59 e PRs foram lidos antes da revisão; apenas 367/354/348 permanecem abertos e não se sobrepõem. Banco e suporte não trouxeram novo desbloqueio. Cloud Browser confirmou separadamente o login público desconectado da `.111`, sem expor área privada; o gate autenticado existente continua distinto. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: nutrição.
+
 # Treinos — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 A jornada móvel e desktop de `health-integrated-20261101.111` percorreu resumo da sessão registrada, distribuição das séries, gráfico de sessões, exercícios e séries, histórico, sessão anterior, comentário e relato original literais, além dos estados vazio, indisponível, erro e recuperação. O artefato exato `training-visual-report-synthetic` 13072880353 conferiu com SHA-256 `e4ff3ecb3e1728affe4b1d714cc6f5f8cf792f0b6d5bd42bb2b1988b455c1439`; 4/4 cenários passaram em 320/393/1180/1440 px.
