@@ -144,6 +144,8 @@ for(const width of [320,393,1440]){
  assert.equal(await setup.getAttribute('open'),null,'water diagnosis does not open configuration');
  for(const action of ['rotate','disconnect'])assert.equal(await receiver.locator(`[data-hae-action="${action}"]`).isVisible(),false,'configuration is secondary');
  assert.equal(await receiver.locator('[data-hae-check]').isVisible(),true,'receipt check remains directly available');
+ for(const selector of ['.healthSourceCaution','details>summary'])assert.ok(await receiver.locator(selector).evaluate(el=>Number.parseFloat(getComputedStyle(el).fontSize))>=14,'receiving text remains readable at '+width);
+ assert.ok(await receiver.locator('[data-hae-check]').evaluate(el=>el.getBoundingClientRect().height)>=44,'primary receiving action retains a touch target');
  const box=await receiver.locator('h2').boundingBox();
  assert.ok(box.y>=0&&box.y+box.height<(width===393?650:900),'receiving heading is actually in view at '+width+': '+JSON.stringify(box));
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'targeted receiving status fits '+width);
