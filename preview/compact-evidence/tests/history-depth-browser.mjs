@@ -123,6 +123,12 @@ try{
   assert.equal(await page.locator('.ltsCompositionChart circle.selected title').textContent(),'10/01/2024: 30,0 kg','selected point binds that date to the original observed value');
   assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] b').innerText(),'30,0 kg');
   assert.equal(await page.locator('.ltsCompositionChart .ltsPointReadout p[role="status"] span').innerText(),'Teste','selected point exposes its original source, not an invented device');
+  const pointDetail=page.locator('.ltsCompositionV2>[data-depth-composition-record]');
+  assert.match(await pointDetail.innerText(),/10\/01\/2024/,'the contextual detail action follows the explicitly selected point');
+  await pointDetail.click();await page.waitForSelector('[data-composition-view="detail"]');
+  assert.match(await page.locator('.ltsHistoryContext').innerText(),/10\/01\/2024 · Teste/,'detail keeps the selected point date and source');
+  await page.locator('[data-depth-composition-back]').last().click();
+  assert.equal(await page.locator('#productCompositionPoint').inputValue(),'9','return keeps the selected chart point');
   await page.locator('#productCompositionPoint').focus();await page.locator('#productCompositionPoint').press('ArrowDown');
   assert.equal(await page.locator('#productCompositionPoint').evaluate(el=>el===document.activeElement),true,'historical measurement selector retains keyboard focus');
   await page.locator('[data-composition-metric="weight_kg"]').click();assert.equal(await page.locator('[data-composition-metric="weight_kg"]').getAttribute('aria-pressed'),'true');
