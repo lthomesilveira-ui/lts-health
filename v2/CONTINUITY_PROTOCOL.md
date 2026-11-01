@@ -1,10 +1,10 @@
 # LTS Health — protocolo de continuidade
 
-## Checkpoint mais recente — Exames .111
+## Checkpoint mais recente — Relatórios .111
 
-A publicação vigente é `health-integrated-20261101.111`, promovida no commit `ff3e330c35592246002b36d82221d6857b621cda`. Em Exames, somente a busca principal e o seletor de marcador móvel passaram de 38 para no mínimo 44 px; resultados, originais, unidades, datas, referências, métodos, regras de comparação, autenticação e escritas permanecem inalterados. PR466 candidata exata `43eb6cc6c4ce2b7e523c8e78d4560700474aa059`: 16/16 workflows aprovados. Publicação: 20/20, incluindo deploy, Pages, relatório/PDF, prévia isolada, Produção Integrada e autenticação real protegida.
+A publicação vigente permanece `health-integrated-20261101.111`, promovida no commit `ff3e330c35592246002b36d82221d6857b621cda`; o commit de continuidade anterior é `68827cfd1c33cc413a9ae851d00674a8aa1728b6`. A rodada de Relatórios não alterou runtime nem dados. O artefato exato 13070884236 conferiu com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`; todos os 32 cenários Chromium/WebKit passaram em 320/393/1440 px. Captures móveis e o PDF semanal de duas páginas preservam datas, período encerrado, cobertura específica, unidades, fontes, gráficos, totais de treino, ausência sem zero, indicadores independentes, exportação local e paginação sem defeito concreto.
 
-Cloud Browser confirmou a `.111` pública em `#hoje`, com login desconectado e largura 1363/1363px após a propagação normal do Pages. A inspeção sintética exata de Exames, a leitura pública desconectada e o gate autenticado permanecem evidências distintas. As quinze correções laboratoriais continuam bloqueadas pelo manifesto original e autorização específica. Fila: 99 `done`, 14 `blocked_external`, 2 `accepted_gap` e zero executáveis; próxima inspeção: relatórios.
+Cloud Browser confirmou a entrada pública `.111` em `#hoje`, desconectada e com fronteira privada intacta. A inspeção sintética exata, a leitura pública desconectada e o gate autenticado já aprovado são evidências distintas. Supabase continua somente leitura: 65 recebimentos, 10 dias canônicos de água, zero série explícita de gasto total, 117 candidatos basais sem fonte/limites/cobertura e energia ativa recente mantida como candidata separada do histórico canônico. Não houve nova resposta de suporte, contato externo ou escrita. Fila: 99 `done`, 14 `blocked_external`, 2 `accepted_gap` e zero executáveis; próxima inspeção: treinos.
 
 Objetivo: qualquer nova sessão deve conseguir retomar o projeto com o estado real, sem depender da memória do chat e sem reabrir decisões já comprovadas.
 
