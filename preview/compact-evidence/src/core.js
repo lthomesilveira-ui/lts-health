@@ -137,7 +137,7 @@ export async function signIn(email,password){
 }
 export async function signOut(){if(fixtureMode){state.session=null;return;}await sb.auth.signOut();state.session=null;}
 export async function restoreSession(){if(fixtureMode){state.session={user:{id:'fixture-user',email:'fixture@example.com'}};return state.session;}const{data}=await sb.auth.getSession();state.session=data.session;return data.session;}
-export function subscribeAuth(callback){if(fixtureMode)return{unsubscribe(){}};const{data}=sb.auth.onAuthStateChange((_event,session)=>{state.session=session;callback(session);});return data.subscription;}
+export function subscribeAuth(callback){if(fixtureMode)return{unsubscribe(){}};const{data}=sb.auth.onAuthStateChange((_event,session)=>{if(state.session?.user?.id!==session?.user?.id)state.ui.uploadFeedback=null;state.session=session;callback(session);});return data.subscription;}
 
 export async function uploadFile(file,sourceType){
   if(fixtureMode)throw new Error('Upload indisponível no modo de teste.');
@@ -149,14 +149,17 @@ export async function uploadFile(file,sourceType){
   if(dbError){
     const preservedError=new Error('Arquivo recebido e preservado, mas não foi possível concluir o registro para processamento.');
     preservedError.cause=dbError;
+    preservedError.originalPreserved=true;
     preservedError.storagePath=path;
     throw preservedError;
   }
   const functionName=inspectFunctionForSource(sourceType);
-  const{error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});
+  const{data:inspection,error:fnError}=await sb.functions.invoke(functionName,{body:{upload_id:row.id}});
   if(fnError){
     const{error:statusError}=await sb.from('health_uploads').update({status:'review_required',notes:'Processamento automático não concluído; arquivo preservado para revisão.'}).eq('id',row.id);
     return{id:row.id,received:true,processing:statusError?'status_unknown':'review_required'};
   }
-  return{id:row.id,received:true,processing:'started'};
+  return{id:row.id,received:true,processing:'started',source_type:sourceType,
+    upload_status:inspection?.upload_status||null,
+    preview:inspection?.preview?{status:inspection.preview.status,detected_format:inspection.preview.detected_format}:null};
 }

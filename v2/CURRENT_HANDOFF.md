@@ -1,3 +1,9 @@
+# Em validação — recebimento de arquivos preservado na tela, .113
+
+`PKG-UPLOAD-RECEIPT-028` / `LTS-UPLOAD-RECEIPT-UX-001` corrige uma falha concreta: o envio mantinha referências à mensagem e ao botão que a própria atualização da tela removia. O resultado final podia desaparecer e o formulário novo perdia o bloqueio de envio em curso. A candidata conserva o recebimento e a ocupação em memória, preserva a escolha anterior ao envio em redesenhos da mesma rota e distingue arquivo incorporado, guardado para leitura e falhas parciais. Somente situação/formato retornados pelo processamento são retidos; não são projetadas amostras ou conteúdo bruto.
+
+A mensagem final tem pelo menos 14 px, recebe foco quando a pessoa continua na área e não retoma uma rota abandonada. Saída ou troca de conta limpa o recebimento e impede sua reaparição tardia. Origem, destino privado, autenticação, banco, regras clínicas e parser laboratorial continuam com suas fronteiras existentes. Testes locais de transporte e contratos passaram; navegador, imagens exatas e publicação permanecem pendentes. O pacote não está concluído e os 14 bloqueios externos e 2 lacunas independentes permanecem reais. Não pedir novamente os testes de iPhone já feitos nem criar dados para fechar pendências.
+
 # Concluído — situação da água acessível e legível, .112
 
 `PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` está concluído. Os atalhos de água abrem e focam o recebimento do iPhone depois do carregamento, sem salto posterior ao topo. A consulta comum de Dados e fontes mantém sua entrada; o contexto vale uma vez. O estado da água fica separado dos demais envios. A ação principal está legível, os avisos e a configuração têm ao menos 14 px, e os ajustes de conexão ficam em detalhes secundários com as confirmações existentes.

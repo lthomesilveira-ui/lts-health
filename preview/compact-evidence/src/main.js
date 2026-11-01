@@ -144,11 +144,29 @@ function restoreRenderContext(host,context){
   }catch{}
 }
 
+function applyUploadFeedback(){
+  const form=$('uploadForm');if(!form)return;
+  const feedback=state.ui.uploadFeedback;if(!feedback)return;const busy=feedback.busy===true;
+  form.setAttribute('aria-busy',String(busy));
+  for(const control of form.querySelectorAll('input,select,button'))control.disabled=busy;
+  const button=form.querySelector('button[type="submit"]');if(button)button.textContent=busy?'Enviando…':'Enviar arquivo';
+  const message=$('uploadMsg');if(message)message.textContent=feedback?.message||'';
+  let filename=form.querySelector('.uploadFeedbackFile');
+  if(feedback?.filename){if(!filename){filename=document.createElement('span');filename.className='uploadFeedbackFile';form.querySelector('.uploadFeedback')?.prepend(filename);}filename.textContent=feedback.filename;}
+  else filename?.remove();
+}
+
 function render(){
   renderQueued=false;if(!$('app')||$('app').classList.contains('hidden'))return;
   const host=$('screenHost');
   if(!state.loaded){host.innerHTML=loadingView();syncNav();return;}
-  if(!isRouteReady(state.route)){host.innerHTML=loadingView('Carregando esta área');syncNav();return;}
+  if(!isRouteReady(state.route)){
+    // Keep an already displayed Sources form during its refresh. Replacing it
+    // with a loader would discard a chosen File before submission.
+    if(state.route==='dados'&&renderedRoute==='dados'&&$('uploadForm'))applyUploadFeedback();
+    else host.innerHTML=loadingView('Carregando esta área');
+    syncNav();return;
+  }
   // Store the displayed default pair once, before either field is edited.
   // Refreshes must preserve that pair even when one date becomes ambiguous.
   if(state.route==='analise'&&state.ui.reviewView==='interval'&&!state.ui.bodyIntervalStart&&!state.ui.bodyIntervalEnd){
@@ -157,10 +175,18 @@ function render(){
   }
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
   const routeChanged=renderedRoute!==state.route;
+  const selectedFile=!routeChanged&&state.route==='dados'&&!state.ui.uploadFeedback?$('uploadFile'):null;
   const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
+  if(selectedFile?.files?.length)$('uploadFile')?.replaceWith(selectedFile);
   applyControlState();mountEvidencePanels();restoreRenderContext(host,context);
+  const feedback=state.ui.uploadFeedback;
+  if(feedback?.focusResult){
+    feedback.focusResult=false;
+    const message=state.route==='dados'?$('uploadMsg'):null;
+    if(message){message.focus({preventScroll:true});message.scrollIntoView({block:'nearest'});}
+  }
   if(routeChanged)settleRouteScroll(state.route);
   syncNav();renderedRoute=state.route;
 }
@@ -180,6 +206,8 @@ async function refresh(){
 async function updatePolarOnOpen(){const updated=await checkPolarConnection({syncOnOpen:true});if(updated)await refreshData(state.route,setSync);scheduleRender();}
 
 export function uploadOutcomeMessage(result){
+  const inspected=uploadStatusMessage(result?.upload_status,result?.source_type,result?.preview?.detected_format);
+  if(inspected)return inspected;
   if(result?.processing==='review_required')return'Arquivo recebido e preservado. A leitura automática não terminou; ficou aguardando leitura segura.';
   if(result?.processing==='status_unknown')return'Arquivo recebido e preservado. Não foi possível atualizar o resultado da leitura agora; confira em Arquivos & fontes antes de reenviar.';
   return'Arquivo recebido. A leitura foi iniciada.';
@@ -188,21 +216,26 @@ export function uploadOutcomeMessage(result){
 export function uploadOutcomeMessageFromState(result){
   const id=String(result?.id||'');
   if(!id)return uploadOutcomeMessage(result);
-  const upload=(state.data.uploads||[]).find(row=>String(row.id)===id);
-  const preview=(state.data.previews||[]).find(row=>String(row.upload_id)===id);
+  const upload=state.domainStatus.uploads==='error'?null:(state.data.uploads||[]).find(row=>String(row.id)===id);
+  const preview=state.domainStatus.previews==='error'?null:(state.data.previews||[]).find(row=>String(row.upload_id)===id);
   const status=String(upload?.status||'').toLowerCase(),source=String(upload?.source_type||'').toLowerCase();
+  const message=uploadStatusMessage(status,source,preview?.detected_format)||uploadOutcomeMessage(result);
+  return state.domainStatus.uploads==='error'||state.domainStatus.previews==='error'?`${message} O histórico de arquivos não pôde ser atualizado agora.`:message;
+}
+
+function uploadStatusMessage(status,source,detectedFormat){
   if(status==='imported'){
     if(source==='apple_health')return'Arquivo incorporado ao histórico. Dados com regra segura entraram; sono e outras métricas sem regra segura continuam separados aguardando conferência.';
     return'Arquivo incorporado ao histórico.';
   }
   if(status==='review_required'){
-    const format=preview?.detected_format?` (${String(preview.detected_format).toUpperCase()})`:'';
+    const format=detectedFormat?` (${String(detectedFormat).toUpperCase()})`:'';
     return`Arquivo recebido e guardado${format}. Ainda não entrou nas análises e você não precisa revisar linha por linha.`;
   }
   if(status==='processed')return'Arquivo processado e guardado. O histórico de arquivos já registra a conclusão.';
   if(status==='rejected'||status==='failed')return'O arquivo foi guardado, mas não foi possível concluir o processamento. Para tentar novamente, envie outra versão do arquivo.';
   if(status==='uploaded'||status==='processing')return'Arquivo recebido e guardado. A leitura ainda está em andamento.';
-  return uploadOutcomeMessage(result);
+  return null;
 }
 
 async function doLogin(){
@@ -311,7 +344,7 @@ function bindStaticEvents(){
       return;
     }
     const sourceButton=event.target.closest('[data-source-upload]');
-    if(sourceButton){const select=$('uploadType');if(select)select.value=sourceButton.dataset.sourceUpload;$('uploadFile')?.focus();return;}
+    if(sourceButton){if(state.ui.uploadFeedback?.busy)return;state.ui.uploadSource=sourceButton.dataset.sourceUpload;const select=$('uploadType');if(select)select.value=state.ui.uploadSource;$('uploadFile')?.focus();return;}
     const timelineMore=event.target.closest('[data-timeline-more]');if(timelineMore){state.ui.timelineLimit=Number(state.ui.timelineLimit||50)+50;scheduleRender();return;}
     const timelineJump=event.target.closest('[data-timeline-jump]');if(timelineJump){openTimelineTarget(timelineJump);return;}
     const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
@@ -343,6 +376,10 @@ function bindStaticEvents(){
   });
 
   document.addEventListener('change',event=>{
+    if(event.target.id==='uploadType'){if(!state.ui.uploadFeedback?.busy)state.ui.uploadSource=event.target.value;return;}
+    if(event.target.id==='uploadFile'){
+      if(!state.ui.uploadFeedback?.busy){state.ui.uploadFeedback=null;const message=$('uploadMsg');if(message)message.textContent='';document.querySelector('.uploadFeedbackFile')?.remove();}return;
+    }
     if(event.target.hasAttribute('data-evolution-point-select')){state.ui.evolutionOverviewPoint=event.target.value;render();return;}
     if(event.target.hasAttribute('data-calendar-control')){const patch=updateCalendarReportSelection(state.ui,event.target.dataset.calendarControl,event.target.value);if(patch){Object.assign(state.ui,patch);render();}return;}
     if(event.target.hasAttribute('data-calendar-source')){state.ui.calendarReportSources={...(state.ui.calendarReportSources||{}),[event.target.dataset.calendarSource]:event.target.value};render();return;}
@@ -394,28 +431,35 @@ function bindStaticEvents(){
       catch(error){console.error(error);msg.textContent=userFacingError(error,'Não foi possível salvar suas metas agora. Tente novamente.');button.disabled=false;}return;
     }
     if(event.target.id!=='uploadForm')return;event.preventDefault();
-    const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',msg=$('uploadMsg'),button=event.target.querySelector('button[type="submit"]');
-    if(msg)msg.textContent='Enviando…';if(button)button.disabled=true;
+    if(state.ui.uploadFeedback?.busy)return;
+    const file=$('uploadFile')?.files?.[0],type=$('uploadType')?.value||'other',userId=state.session?.user?.id;
+    const feedback={busy:true,message:'Enviando…',filename:file?.name||'',source:type,focusResult:false};
+    state.ui.uploadFeedback=feedback;scheduleRender();
+    const current=()=>state.ui.uploadFeedback===feedback&&state.session?.user?.id===userId;
     let result;
     try{
       result=await uploadFile(file,type);
-      if(msg)msg.textContent=uploadOutcomeMessage(result);
+      if(!current())return;
+      feedback.message=`${uploadOutcomeMessage(result)} Atualizando o histórico de arquivos…`;scheduleRender();
     }catch(error){
-      console.error(error);if(msg)msg.textContent='Não foi possível enviar este arquivo agora.';if(button)button.disabled=false;return;
+      console.error(error);if(!current())return;
+      feedback.busy=false;feedback.focusResult=state.route==='dados';
+      feedback.message=error?.originalPreserved===true?'Arquivo recebido e guardado. Não foi possível registrar sua leitura agora. O original foi preservado.':'Não foi possível enviar este arquivo agora. Selecione o arquivo para tentar novamente.';
+      scheduleRender();return;
     }
     try{
       await refresh();
-      if(msg)msg.textContent=uploadOutcomeMessageFromState(result);
+      if(current())feedback.message=uploadOutcomeMessageFromState(result);
     }catch(error){
       console.warn('upload_refresh_failed',error);
-      if(msg)msg.textContent=`${uploadOutcomeMessage(result)} A tela não pôde ser atualizada agora.`;
-    }finally{if(button)button.disabled=false;}
+      if(current())feedback.message=`${uploadOutcomeMessage(result)} A tela não pôde ser atualizada agora.`;
+    }finally{if(current()){feedback.busy=false;feedback.focusResult=state.route==='dados';scheduleRender();}}
   });
 
   $('loginBtn').addEventListener('click',doLogin);
   $('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   $('refreshBtn').addEventListener('click',refresh);
-  $('logoutBtn').addEventListener('click',async()=>{await signOut();resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
+  $('logoutBtn').addEventListener('click',async()=>{state.ui.uploadFeedback=null;await signOut();resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
   $('closeMore').addEventListener('click',()=>$('moreSheet').classList.add('hidden'));
   $('moreSheet').addEventListener('click',e=>{if(e.target===$('moreSheet'))$('moreSheet').classList.add('hidden');});
   window.addEventListener('popstate',()=>setRoute(routeFromLocation()));
@@ -432,7 +476,7 @@ async function boot(){
   if(!fixtureMode)setGlobalPeriod('90');
   try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}}
   catch(error){console.error(error);showLogin('Não foi possível restaurar sua sessão.');}
-  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
+  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){state.ui.uploadFeedback=null;resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
 }
 
 window.addEventListener('beforeunload',()=>authSubscription?.unsubscribe?.());
