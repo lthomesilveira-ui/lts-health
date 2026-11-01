@@ -1,3 +1,12 @@
+# Relatórios — jornada mensal exata .111 sem defeito de runtime, 01/11/2026
+
+- `main` `43c83ba8db8fa66c4a9d396832fa68a141c59956`, checkpoint privado 62 e PRs foram relidos; somente 367/354/348 permanecem abertos, sem pacote concorrente de Relatórios.
+- O artefato exato 13070884236 conferiu com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`; 32/32 cenários Chromium/WebKit passaram em 320/393/1440 px.
+- A jornada distinta de mês anterior em 393 px e o PDF mensal preservaram datas, período, cobertura específica, unidades, origens separadas, gráficos, comparação, treino, exames e limites. Estado vazio usa traços e declara que lacunas não são zero; nenhum defeito concreto foi observado.
+- Cloud Browser confirmou separadamente a entrada pública desconectada após uma única recarga. A prévia sintética e o gate autenticado protegido continuam evidências distintas; nenhum acesso foi contornado.
+- Uma remessa genuína nova elevou os recebimentos a 66 e trouxe 13 métricas mais 1 candidato basal, sem água, gasto total ou cobertura basal verificável. O banco foi somente lido; não houve resposta genuína nem contato externo.
+- Build permanece `.111`; fila 99 `done`, 14 `blocked_external`, 2 `accepted_gap`, zero executáveis. Próxima jornada: treinos.
+
 # Exames — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 A jornada móvel e desktop de `health-integrated-20261101.111` percorreu entrada de Exames, período próprio, busca e marcador, gráfico, ponto selecionado, método/referência, histórico paginado, coletas, resultados relacionados e laudo original quando disponível. Os artefatos exatos `integrated-production-synthetic-visual` 13078246637 e `laboratory-original-synthetic` 13078101718 conferiram com SHA-256 `4123343adbb3a9f4e627057032b402f5e03b5cdf7413339fdcda3dce301c3f68` e `3af3478419b6bb0d10483dff84bcdc99b65bcd809dd21a0f9a7b7bd3d9f16b51`.

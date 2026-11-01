@@ -9525,8 +9525,8 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T09:36:43.000Z",
-    "source_main_commit": "a3531ae537885e91d5d187716e3ae0eef4d354af",
+    "reviewed_at_utc": "2026-11-01T11:31:47.000Z",
+    "source_main_commit": "43c83ba8db8fa66c4a9d396832fa68a141c59956",
     "runtime_build": "health-integrated-20261101.111",
     "candidate_build": null,
     "runtime_changed": false,
@@ -9539,24 +9539,57 @@
     },
     "executable_task_count": 0,
     "evidence": [
-      "Fresh origin/main a3531ae537885e91d5d187716e3ae0eef4d354af, private checkpoint version 61 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Exams review.",
-      "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10 and no explicit total-energy source row. Active energy remains 98 canonical days through 05/05 plus 32 recent candidate days through 30/10; the candidate rows were not promoted or conflated with canonical history. All 117 basal candidates still lack original source, bounds and verified coverage.",
+      "Fresh origin/main 43c83ba8db8fa66c4a9d396832fa68a141c59956, private checkpoint version 62 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Reports review.",
+      "Read-only database evidence advanced to 66 genuine receipts. The latest accepted receipt at 01/11/2026 10:09:21 UTC contains 13 metrics and 1 basal candidate, but no water or explicit total-energy series. Water remains at 10 canonical days through 13/10. Active energy remains 98 canonical days through 05/05 plus 33 recent candidate days through 31/10; candidate rows were not promoted or conflated with canonical history. All 118 basal candidates still lack original source, bounds and verified coverage.",
       "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
-      "The exact .111 integrated-production-synthetic-visual artifact 13078246637 matched sha256:4123343adbb3a9f4e627057032b402f5e03b5cdf7413339fdcda3dce301c3f68, and laboratory-original-synthetic artifact 13078101718 matched sha256:3af3478419b6bb0d10483dff84bcdc99b65bcd809dd21a0f9a7b7bd3d9f16b51. Their exact workflows and the protected real-auth workflow completed successfully on the same main head.",
-      "Actual 320/390/393/1180/1440px captures were inspected through Exams entry, period, search, marker, chart, selected point, method/reference, paginated history, collections, related results and original-document access. Search and selector remained at least 44px; dates, raw results, units, laboratory, method and reference stayed legible. Missing or failed originals remained explicit rather than being inferred from inventory.",
-      "Independent Cloud Browser opened the stable public #hoje route, visibly retained the signed-out login and private boundary, and exposed no health data. This public inspection is distinct from the exact synthetic Exams journey and the already-passed protected real-auth gate.",
-      "No runtime or data change was justified. The fifteen laboratory corrections remain blocked on the original manifest and specific authorization. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Reports."
+      "The exact .111 calendar-report-synthetic-evidence artifact 13070884236 matched sha256:944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426. All 32 Chromium/WebKit scenarios passed at 320/393/1440px with production renderers, synthetic data, zero writes and zero external requests; runtime files are unchanged since the last runtime commit.",
+      "Actual 393px month-previous captures and the monthly PDF were inspected through summary, per-metric coverage, charts, training, exams, origins, comparisons and detailed pages. Dates, units, period closure and limits remained clear; origins were not summed, active energy was not called total expenditure, and the empty state used dashes plus the explicit statement that gaps are not zero.",
+      "Independent Cloud Browser opened the stable public #hoje route and, after one bounded reload, visibly retained the signed-out login and private boundary without exposing health data. This public inspection is distinct from the exact synthetic monthly journey and the already-passed protected real-auth gate.",
+      "No runtime or data change was justified. The fifteen laboratory corrections remain blocked on the original manifest and specific authorization. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Training."
     ],
     "ux_review": {
-      "area": "exams",
-      "next_area": "reports",
-      "mode": "exact_synthetic_111_integrated_and_laboratory_original_artifacts_plus_public_signed_out_plus_existing_protected_real_auth",
-      "viewport": "320, 390, 393, 1180 and 1440px widths plus public desktop",
+      "area": "reports",
+      "next_area": "training",
+      "mode": "exact_synthetic_111_monthly_report_artifact_plus_monthly_pdf_plus_public_signed_out_plus_existing_protected_real_auth",
+      "viewport": "393px monthly mobile plus monthly PDF and 320/393/1440px automated coverage plus public desktop",
       "result": "no_runtime_defect_observed",
-      "journey_without_additional_defect": "Exams preserved independent period controls, 44px mobile fields, search and marker selection, chart point identity, dates, raw results, units, laboratory, method, reference, paginated history, collections, related results and fail-closed original access without horizontal overflow, source mixing or treating inventory as an available original."
+      "journey_without_additional_defect": "Reports preserved closed calendar-month identity, metric-specific coverage, units, source separation, charts, training and exam context, month-length comparison limits, local PDF disclosure and explicit missing-not-zero semantics without horizontal overflow, silent source summation or active-energy conflation."
     }
   },
   "continuity_review_history": [
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T09:36:43.000Z",
+      "source_main_commit": "a3531ae537885e91d5d187716e3ae0eef4d354af",
+      "runtime_build": "health-integrated-20261101.111",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 99,
+        "in_progress": 0,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Fresh origin/main a3531ae537885e91d5d187716e3ae0eef4d354af, private checkpoint version 61 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Exams review.",
+        "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10 and no explicit total-energy source row. Active energy remains 98 canonical days through 05/05 plus 32 recent candidate days through 30/10; the candidate rows were not promoted or conflated with canonical history. All 117 basal candidates still lack original source, bounds and verified coverage.",
+        "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
+        "The exact .111 integrated-production-synthetic-visual artifact 13078246637 matched sha256:4123343adbb3a9f4e627057032b402f5e03b5cdf7413339fdcda3dce301c3f68, and laboratory-original-synthetic artifact 13078101718 matched sha256:3af3478419b6bb0d10483dff84bcdc99b65bcd809dd21a0f9a7b7bd3d9f16b51. Their exact workflows and the protected real-auth workflow completed successfully on the same main head.",
+        "Actual 320/390/393/1180/1440px captures were inspected through Exams entry, period, search, marker, chart, selected point, method/reference, paginated history, collections, related results and original-document access. Search and selector remained at least 44px; dates, raw results, units, laboratory, method and reference stayed legible. Missing or failed originals remained explicit rather than being inferred from inventory.",
+        "Independent Cloud Browser opened the stable public #hoje route, visibly retained the signed-out login and private boundary, and exposed no health data. This public inspection is distinct from the exact synthetic Exams journey and the already-passed protected real-auth gate.",
+        "No runtime or data change was justified. The fifteen laboratory corrections remain blocked on the original manifest and specific authorization. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Reports."
+      ],
+      "ux_review": {
+        "area": "exams",
+        "next_area": "reports",
+        "mode": "exact_synthetic_111_integrated_and_laboratory_original_artifacts_plus_public_signed_out_plus_existing_protected_real_auth",
+        "viewport": "320, 390, 393, 1180 and 1440px widths plus public desktop",
+        "result": "no_runtime_defect_observed",
+        "journey_without_additional_defect": "Exams preserved independent period controls, 44px mobile fields, search and marker selection, chart point identity, dates, raw results, units, laboratory, method, reference, paginated history, collections, related results and fail-closed original access without horizontal overflow, source mixing or treating inventory as an available original."
+      }
+    },
     {
       "reviewed_on": "2026-11-01",
       "reviewed_at_utc": "2026-11-01T09:19:27.000Z",
