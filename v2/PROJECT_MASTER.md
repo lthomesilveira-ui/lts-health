@@ -1,3 +1,9 @@
+# Relatórios — jornada mensal exata .111 sem defeito de runtime, 01/11/2026
+
+Revisão autônoma sem alteração de runtime ou dados. O artefato exato `calendar-report-synthetic-evidence` 13070884236 (SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`) passou 32/32 cenários Chromium/WebKit em 320/393/1440 px. A jornada distinta de mês anterior e PDF mensal preservou período, cobertura, unidades, origens separadas, comparações, treinos, exames, limites de interpretação e ausência sem zero; nenhum defeito concreto foi observado.
+
+Heads, checkpoint privado 62, PRs e recebimentos foram reconciliados. A nova remessa genuína aceitou 13 métricas e 1 candidato basal, mas não trouxe água, gasto total ou cobertura basal verificável. O banco foi somente lido, o suporte não respondeu e nenhuma mensagem foi enviada. Cloud Browser confirmou separadamente o login público desconectado da `.111` após uma recarga; o gate autenticado existente permanece distinto. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: treinos.
+
 # Exames — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 Revisão autônoma sem alteração de runtime ou dados. Os artefatos exatos de Produção Integrada 13078246637 e Originais Laboratoriais 13078101718 preservaram busca e seletor de 44 px, período próprio, gráfico, ponto selecionado, histórico paginado, coletas, datas, resultados brutos, unidades, laboratório, método, referência e vínculo ao original em 320/390/393/1180/1440 px. Ausência ou falha do original continuou explícita; não houve overflow, escrita, tráfego externo ou defeito concreto. A entrada pública `.111` continuou desconectada e privada no Cloud Browser; o gate autenticado existente permanece evidência distinta.
