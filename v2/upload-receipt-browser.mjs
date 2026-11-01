@@ -89,6 +89,7 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
   assert.equal(await page.locator('#uploadType').inputValue(),'fleury');
   await page.locator('#uploadForm button[type="submit"]').click();
   await page.waitForFunction(()=>window.__uploadQA.stage==='upload');
+  await page.waitForFunction(()=>document.querySelector('#uploadForm')?.getAttribute('aria-busy')==='true');
   assert.equal(await page.locator('#uploadForm').getAttribute('aria-busy'),'true');
   assert.equal(await page.locator('#uploadForm button').isDisabled(),true);
   // Force a second real redraw while storage is pending. Duplicate submit
@@ -138,6 +139,13 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
    assert.equal(await page.locator('#uploadForm button').isDisabled(),false);
    assert.equal(await page.locator('#uploadFile').evaluate(el=>el.files.length),0,'completed original is not silently ready to resend');
    if(mode!=='leave')assert.equal(await page.evaluate(()=>document.activeElement?.id),'uploadMsg');
+   if(mode!=='leave'){
+    const geometry=await page.locator('#uploadMsg').evaluate(el=>{
+     const box=el.getBoundingClientRect(),host=document.querySelector('#screenHost').getBoundingClientRect();
+     return {top:box.top,bottom:box.bottom,visibleTop:Math.max(0,host.top),visibleBottom:Math.min(innerHeight,host.bottom)};
+    });
+    assert.ok(geometry.top>=geometry.visibleTop-1&&geometry.bottom<=geometry.visibleBottom+1,'entire result is visible above the app navigation: '+JSON.stringify(geometry));
+   }
    assert.ok(await page.locator('#uploadMsg').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))>=14);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
    if(['review','refresh-failure','metadata-failure'].includes(mode))await page.screenshot({path:output+'/upload-'+name+'-'+mode+'-'+width+'.png'});
