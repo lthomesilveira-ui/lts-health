@@ -58,9 +58,7 @@
     "candidate_build": "health-integrated-20261031.107",
     "public_build": "health-integrated-20261031.107",
     "clinical_runtime_changed": false,
-    "pending_gates": [
-      41255413339
-    ],
+    "pending_gates": [],
     "started_at_utc": "2026-10-31T23:28:00.000Z",
     "completed_evidence": [
       "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
@@ -68,7 +66,7 @@
       "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
       "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
       "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
-      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 remains in progress at the pinned-browser installation step and is preserved as a pending repetition, not success.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
       "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
       "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
@@ -76,9 +74,7 @@
     "completed_at_utc": "2026-11-01T00:27:59.519Z",
     "candidate_commit": "ba60a1aa4db29f8973900f0f5a1a6ee21aec011b",
     "publication_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
-    "pending_validation_repetitions": [
-      41255413339
-    ]
+    "pending_validation_repetitions": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -90,14 +86,14 @@
     "release_kind": "reports_contextual_training_return",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
     "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.107, visible signed-out login, hidden private app and 1363/1363px width. The manual session is signed out; health-area review used invented data and protected actual-auth CI is separate.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate workflows succeeded; 19/20 publication workflows succeeded and pending repetitions remain explicit: [41255413339]. Protected real-auth attempt 2 succeeded after a recorded transient CSS 503 on attempt 1.",
+    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 20 publication workflows completed/success. Protected real-auth attempt 2 passed after a transient CSS 503 on attempt 1; Integrated Production attempt 2 passed after attempt 1 was cancelled while its browser installation was blocked.",
     "evidence": [
       "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
       "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
       "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
       "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
       "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
-      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 remains in progress at the pinned-browser installation step and is preserved as a pending repetition, not success.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
       "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
       "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
@@ -289,15 +285,6 @@
           "run_attempt": 1
         },
         {
-          "id": 41255413339,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
-          "status": "in_progress",
-          "conclusion": null,
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413339",
-          "run_attempt": 1
-        },
-        {
           "id": 41255413347,
           "name": "LTS Health v2 Nutrition History Smoke",
           "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
@@ -386,12 +373,19 @@
           "conclusion": "success",
           "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413361",
           "run_attempt": 1
+        },
+        {
+          "id": 41255413339,
+          "name": "LTS Health Integrated Production",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413339",
+          "run_attempt": 2
         }
       ]
     },
-    "pending_validation_repetitions": [
-      41255413339
-    ]
+    "pending_validation_repetitions": []
   },
   "tasks": [
     {
@@ -3202,7 +3196,7 @@
         "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
         "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
         "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
-        "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 remains in progress at the pinned-browser installation step and is preserved as a pending repetition, not success.",
+        "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
         "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
         "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
       ],
@@ -4456,9 +4450,7 @@
       "candidate_build": "health-integrated-20261031.107",
       "public_build": "health-integrated-20261031.107",
       "clinical_runtime_changed": false,
-      "pending_gates": [
-        41255413339
-      ],
+      "pending_gates": [],
       "started_at_utc": "2026-10-31T23:28:00.000Z",
       "completed_evidence": [
         "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
@@ -4466,7 +4458,7 @@
         "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
         "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
         "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
-        "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 remains in progress at the pinned-browser installation step and is preserved as a pending repetition, not success.",
+        "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
         "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
         "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
       ],
@@ -4474,9 +4466,7 @@
       "completed_at_utc": "2026-11-01T00:27:59.519Z",
       "candidate_commit": "ba60a1aa4db29f8973900f0f5a1a6ee21aec011b",
       "publication_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
-      "pending_validation_repetitions": [
-        41255413339
-      ]
+      "pending_validation_repetitions": []
     }
   ],
   "latest_published_release": {
@@ -4489,14 +4479,14 @@
     "release_kind": "reports_contextual_training_return",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
     "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.107, visible signed-out login, hidden private app and 1363/1363px width. The manual session is signed out; health-area review used invented data and protected actual-auth CI is separate.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate workflows succeeded; 19/20 publication workflows succeeded and pending repetitions remain explicit: [41255413339]. Protected real-auth attempt 2 succeeded after a recorded transient CSS 503 on attempt 1.",
+    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 20 publication workflows completed/success. Protected real-auth attempt 2 passed after a transient CSS 503 on attempt 1; Integrated Production attempt 2 passed after attempt 1 was cancelled while its browser installation was blocked.",
     "evidence": [
       "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
       "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
       "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
       "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
       "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
-      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 remains in progress at the pinned-browser installation step and is preserved as a pending repetition, not success.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
       "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
       "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
@@ -4688,15 +4678,6 @@
           "run_attempt": 1
         },
         {
-          "id": 41255413339,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
-          "status": "in_progress",
-          "conclusion": null,
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413339",
-          "run_attempt": 1
-        },
-        {
           "id": 41255413347,
           "name": "LTS Health v2 Nutrition History Smoke",
           "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
@@ -4785,12 +4766,19 @@
           "conclusion": "success",
           "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413361",
           "run_attempt": 1
+        },
+        {
+          "id": 41255413339,
+          "name": "LTS Health Integrated Production",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413339",
+          "run_attempt": 2
         }
       ]
     },
-    "pending_validation_repetitions": [
-      41255413339
-    ]
+    "pending_validation_repetitions": []
   },
   "release_history": [
     {
@@ -9044,7 +9032,7 @@
       "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
       "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
       "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
-      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 remains in progress at the pinned-browser installation step and is preserved as a pending repetition, not success.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
       "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
       "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
@@ -9053,7 +9041,7 @@
       "next_area": "training",
       "mode": "synthetic_production_renderers_plus_public_signed_out_plus_protected_real_auth",
       "viewport": "393x844 and public desktop",
-      "result": "contextual_training_return_published_and_verified_with_one_publication_repetition_pending",
+      "result": "contextual_training_return_published_and_verified",
       "journey_without_additional_defect": "report dates, coverage, units, metric tabs, sources, complete-detail disclosure and phone overflow remained correct"
     }
   },
