@@ -13,6 +13,26 @@ concurrency:
   group: fleury-preview-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.6
+      - name: Verify deterministic reading and private preview boundaries
+        run: |
+          node v2/fleury-preview-test.mjs
+          node v2/lab-parser-safety-smoke.mjs
+          node v2/privacy-contract-smoke.mjs
+          node v2/upload-transport-test.mjs
+          node v2/deployed-runtime-assets.mjs
+          node v2/public-payload-guard.mjs
+          deno check supabase/functions/health-inspect-upload/index.ts
   preview:
     runs-on: ubuntu-24.04
     container:
@@ -23,18 +43,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-      - name: Verify deterministic reading and private preview boundaries
-        run: |
-          node v2/fleury-preview-test.mjs
-          node v2/lab-parser-safety-smoke.mjs
-          node v2/privacy-contract-smoke.mjs
-          node v2/upload-transport-test.mjs
-          node v2/deployed-runtime-assets.mjs
-          node v2/public-payload-guard.mjs
-          deno check supabase/functions/health-inspect-upload/index.ts
       - name: Install pinned browser API
         run: npm install --no-save playwright@1.56.1
       - name: Inspect the real application renderers with invented reports
