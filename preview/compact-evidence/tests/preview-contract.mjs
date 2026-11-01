@@ -31,7 +31,7 @@ const manifest={
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
     "health-auto-export.css": "de23cf04121625dfa1ce4dd60039708903e0cc8348e27e11099e51441433cb6a",
     "health-cockpit.css": "b777ae081a5ad2a98ff66aed98ed3f938e829e2e4107d5a3476da7f5e199342e",
-    "health-dashboard.css": "5dd6e3c582eb513323f6cfcc9ed41be5b88af4bdd710a02f2e63350116bee90b",
+    "health-dashboard.css": "d0778e0d97c3639cd73a68ea31455e4ab29f22d4206466c70987d2b7be270257",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
     "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
@@ -95,9 +95,9 @@ const manifest={
     "src/health-dashboard-context.js": "af6986230dab59649a4fe68e226e5a7e4f543c2e1c155ee2d6efb25368cdb12c",
     "src/health-dashboard-guidance.js": "40383b198066d52e5e4f8d3b725747b49ae1024815dfd219dd2baaf5244a191a",
     "src/health-dashboard-labs.js": "ff872dce35a698e382bbe557bd33d169edb6d6825aa15cb22736eddd5fd86bdf",
-    "src/health-dashboard-model.js": "75dd27a71e9c68f6b64cfec41e15d193b1aacbeb9f5bfd9a959fb80334f675f2",
+    "src/health-dashboard-model.js": "87255970b064eac76193c2a88270deccb498a8c9af2bc37176192dd56beac8c5",
     "src/health-dashboard-training.js": "309e7137ba62c5e44797a31fa70968cf6fb30484bce436254e840c0178d8925d",
-    "src/health-dashboard.js": "ea188b8341fd748408ada808a1a664794ba7f8131e4a76c20dda1e7969e1e02d",
+    "src/health-dashboard.js": "73818d0e71986f436a75431e00e8672a382a819836e3ae5e194f6261d0268fc4",
     "src/health-data-quality-view.js": "aa48eb819ef7624801a65574f2b7d993f38f8b49fad4b616d0c138644b595a0d",
     "src/health-data-quality.js": "1fd3a3f8ba59475e52616414187a6cff5c11578ac506c50eefe3de9c6d10c41d",
     "src/health-lab-documentary-numeric.js": "d6ffaced7ecd6e09c78b37b79019fce42573155690c844ce3490ef37dca61b7e",
@@ -192,8 +192,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261101\.109/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261101.109'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261101\.110/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261101.110'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

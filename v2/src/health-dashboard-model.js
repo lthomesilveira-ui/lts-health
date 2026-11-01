@@ -8,6 +8,7 @@ const DAY=86400000;
 const norm=value=>String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 const scalar=value=>value==null||!['number','string'].includes(typeof value)||String(value).trim()===''||!Number.isFinite(Number(value))||Number(value)<0?null:Number(value);
 const mean=values=>values.length?values.reduce((sum,value)=>sum+value,0)/values.length:null;
+const sum=values=>values.reduce((total,value)=>total+value,0);
 const dayOf=value=>{
   const text=String(value??'');
   if(!/^\d{4}-\d{2}-\d{2}(?:$|T|\s)/.test(text))return null;
@@ -202,13 +203,17 @@ function makeMetric(definition,catalog,status,ui,calendar,bounds=calendar.bounds
   const {today}=calendar,{sources,invalidRows,unknownRows}=catalog,requested=requestedSource(definition,ui),source=selectSource(sources,requested,bounds,mode);
   const points=pointsFor(source,bounds,today),eligible=points.filter(point=>point.eligible),observed=points.filter(point=>point.value!=null);
   const dayPoint=mode==='day'?points[0]:null,value=mode==='day'?dayPoint?.value??null:mean(eligible.map(point=>point.value));
+  // A period total is useful for additive activity such as active energy, but
+  // it is never a substitute for explicit total energy expenditure. Sum only
+  // eligible observations from the one selected origin; gaps stay gaps.
+  const recordedTotal=mode==='day'?value:eligible.length?sum(eligible.map(point=>point.value)):null;
   // A nutrition envelope can arrive without this metric. Keep receipt dates
   // separate from actual values, and never present a historical value as today.
   const latestRecorded=source?.rows.filter(row=>row.value!=null&&row.date<=bounds.end).at(-1)||null;
   const lastMetricDate=source?.rows.filter(row=>row.date<=bounds.end&&row.observations.some(item=>item.receivedValue!=null||item.receivedRaw!=null)).at(-1)?.date||null;
   const count=mode==='day'?(value!=null?1:0):eligible.length,expectedDays=mode==='day'?1:bounds.closedDays;
   const todayPoint=source?.rows.find(row=>row.date===today)||null;
-  const metric={key:definition.key,label:definition.label,unit:definition.unit,value,count,expectedDays,
+  const metric={key:definition.key,label:definition.label,unit:definition.unit,value,recordedTotal,count,expectedDays,
     latestRecorded:latestRecorded?{date:latestRecorded.date,value:latestRecorded.value,receivedAt:latestRecorded.receivedAt,sourceLabel:source.label,partial:latestRecorded.partial}:null,lastMetricDate,
     stepEvidence:definition.key==='steps'?stepEvidence(sources,bounds,today):null,aggregation:mode==='day'?'recorded_day':'observed_mean',
     source:source?{key:source.key,label:source.label,domain:source.domain,status:source.status,unit:source.unit,displayUnit:source.displayUnit,sourceFamily:source.sourceFamily}:null,
