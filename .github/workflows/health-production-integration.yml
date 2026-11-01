@@ -24,6 +24,7 @@ jobs:
           node preview/compact-evidence/tests/preview-contract.mjs
           node v2/privacy-contract-smoke.mjs
           node v2/production-write-boundary-test.mjs
+          node v2/upload-transport-test.mjs
           node v2/production-connection-boundary-test.mjs
           node v2/polar-contract-test.mjs
           node v2/source-current-coverage-test.mjs
@@ -74,6 +75,9 @@ jobs:
         run: |
           node v2/write-integrity-smoke.mjs
           node v2/auth-flow-smoke.mjs
+      - name: Verify complete upload receipt after redraw and partial failure
+        if: ${{ !cancelled() && steps.app_server.outcome == 'success' }}
+        run: node v2/upload-receipt-browser.mjs
       - name: Retain synthetic screenshots only
         if: always()
         uses: actions/upload-artifact@v4
@@ -81,6 +85,7 @@ jobs:
           name: integrated-production-synthetic-visual
           path: |
             artifacts/production-integration/*.png
+            artifacts/production-integration/upload-receipt-evidence.json
             artifacts/deployed-public-login-*.png
             artifacts/public-entry-diagnostic-*.json
             dashboard-changes-visual/*.png

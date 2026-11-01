@@ -49,37 +49,30 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-WATER-SOURCE-NAV-027",
-    "status": "done",
-    "goal": "Open the water receiving status directly from missing-water actions and keep technical connection setup secondary.",
+    "id": "PKG-UPLOAD-RECEIPT-028",
+    "status": "in_progress",
+    "goal": "Preserve the actual file receipt through redraws, prevent duplicate submissions and distinguish safe storage from incorporation.",
     "task_ids": [
-      "LTS-WATER-SOURCE-NAV-001"
+      "LTS-UPLOAD-RECEIPT-UX-001"
     ],
-    "candidate_build": "health-integrated-20261101.112",
+    "candidate_build": "health-integrated-20261101.113",
     "public_build": "health-integrated-20261101.112",
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "started_at_utc": "2026-11-01T11:42:36.000Z",
-    "completed_evidence": [
-      "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
-      "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
-      "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass.",
-      "Initial candidate CI identified an out-of-date preview hash inventory and an exact scroll-reset contract. The inventory is regenerated for the changed generic files; the existing two-frame reset remains verbatim, followed by the bounded contextual focus. No failed gate is counted as passed.",
-      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
-      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
-      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
-      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
-      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
-      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
-      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
-      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
-      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
-      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
-      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+    "pending_gates": [
+      "complete upload browser regression at320/393/1440 on Chromium/WebKit",
+      "candidate CI",
+      "exact synthetic visual inspection",
+      "normal publication and public/protected checks"
     ],
-    "candidate_commit": "03ff7e7493eebd52eb007483124d1940c2b49670",
-    "publication_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
-    "completed_at_utc": "2026-11-01T12:17:29.703661+00:00"
+    "started_at_utc": "2026-11-01T13:28:10.651617+00:00",
+    "completed_evidence": [
+      "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
+      "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
+      "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
+      "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
+      "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3075,6 +3068,31 @@
         "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
       ],
       "next_action": "Preserve the verified receiving journey and continue independent source recovery only from genuine evidence."
+    },
+    {
+      "id": "LTS-UPLOAD-RECEIPT-UX-001",
+      "area": "UX / file receipt and ingestion status",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Preserve the actual file receipt through redraws, prevent duplicate submissions and distinguish safe storage from incorporation.",
+      "acceptance": [
+        "The actual file submission retains busy and final receipt through asynchronous refresh/redraw and prevents duplicate storage/metadata/inspection calls.",
+        "Chosen original and source survive an unrelated same-route redraw before submission; completed uploads are not silently prepared for resend.",
+        "Inspector-confirmed import, held original, parsing failure, storage failure, preserved-original metadata failure and unavailable list refresh remain distinct in plain language.",
+        "Final result is visible/focused and at least14px at320/393/1440 without overflow; unrelated navigation is not taken over.",
+        "Sign-out/account change clears the prior receipt; late completion cannot restore it. Existing auth, owner, private storage and clinical write boundaries remain.",
+        "Full-form synthetic Chromium/WebKit gates, candidate/publication workflows, exact visual and public-entry/protected checks pass; no invented production health record is created."
+      ],
+      "evidence": [
+        "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
+        "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
+        "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
+        "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
+        "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
+      ],
+      "next_action": "Complete browser regression and exact synthetic visual inspection, publish through normal PR, then verify the exact public build and close this bounded task."
     }
   ],
   "package_history": [
@@ -4418,6 +4436,39 @@
       "candidate_commit": "b44a2cd246a26bfa3bb367593a3485e907ae54e7",
       "publication_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
       "pending_validation_repetitions": []
+    },
+    {
+      "id": "PKG-WATER-SOURCE-NAV-027",
+      "status": "done",
+      "goal": "Open the water receiving status directly from missing-water actions and keep technical connection setup secondary.",
+      "task_ids": [
+        "LTS-WATER-SOURCE-NAV-001"
+      ],
+      "candidate_build": "health-integrated-20261101.112",
+      "public_build": "health-integrated-20261101.112",
+      "clinical_runtime_changed": false,
+      "pending_gates": [],
+      "started_at_utc": "2026-11-01T11:42:36.000Z",
+      "completed_evidence": [
+        "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
+        "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
+        "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass.",
+        "Initial candidate CI identified an out-of-date preview hash inventory and an exact scroll-reset contract. The inventory is regenerated for the changed generic files; the existing two-frame reset remains verbatim, followed by the bounded contextual focus. No failed gate is counted as passed.",
+        "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+        "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+        "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+        "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+        "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+        "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+        "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+        "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+        "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+        "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+        "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+      ],
+      "candidate_commit": "03ff7e7493eebd52eb007483124d1940c2b49670",
+      "publication_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+      "completed_at_utc": "2026-11-01T12:17:29.703661+00:00"
     }
   ],
   "latest_published_release": {
@@ -9012,37 +9063,31 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T12:17:29.703661+00:00",
-    "source_main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "reviewed_at_utc": "2026-11-01T13:28:10.651617+00:00",
+    "source_main_commit": "49f842d6bbf712183fecf9edb7e1d9a573e2daac",
     "runtime_build": "health-integrated-20261101.112",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261101.113",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
       "done": 100,
       "blocked_external": 14,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
-      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
-      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
-      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
-      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
-      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
-      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
-      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
-      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
-      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
-      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+      "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
+      "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
+      "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
+      "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
+      "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
     ],
     "ux_review": {
-      "area": "water_receiving_navigation",
-      "next_area": "composition",
-      "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
-      "viewport": "320/393/1440, including 393x650",
-      "result": "observed_defects_corrected_and_verified"
+      "area": "file_submission_receipt",
+      "next_area": "nutrition",
+      "mode": "source_diagnostic_and_full_form_synthetic_regression_pending",
+      "result": "concrete_defect_in_validation"
     }
   },
   "continuity_review_history": [
@@ -10054,6 +10099,41 @@
         "viewport": "393px monthly mobile plus monthly PDF and 320/393/1440px automated coverage plus public desktop",
         "result": "no_runtime_defect_observed",
         "journey_without_additional_defect": "Reports preserved closed calendar-month identity, metric-specific coverage, units, source separation, charts, training and exam context, month-length comparison limits, local PDF disclosure and explicit missing-not-zero semantics without horizontal overflow, silent source summation or active-energy conflation."
+      }
+    },
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T12:17:29.703661+00:00",
+      "source_main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+      "runtime_build": "health-integrated-20261101.112",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 100,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+        "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+        "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+        "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+        "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+        "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+        "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+        "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+        "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+        "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+        "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+      ],
+      "ux_review": {
+        "area": "water_receiving_navigation",
+        "next_area": "composition",
+        "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
+        "viewport": "320/393/1440, including 393x650",
+        "result": "observed_defects_corrected_and_verified"
       }
     }
   ],

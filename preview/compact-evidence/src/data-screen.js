@@ -202,6 +202,7 @@ function waterSourceBridge(){
 }
 
 export function renderDataHub(){
+  const feedback=state.ui.uploadFeedback,busy=feedback?.busy===true,disabled=busy?' disabled':'';
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados & fontes','Conecte seus aplicativos, envie arquivos e acompanhe as atualizações do seu histórico.','Seu histórico')}
     ${renderConnections()}
@@ -210,11 +211,11 @@ export function renderDataHub(){
     ${waterSourceBridge()}
 
     <section class="grid cols2 sectionGap dataActions">
-      <div class="card"><div class="cardHead"><div><b>Adicionar arquivo</b><small>O original fica em uma área privada. O que puder ser lido com segurança entra no histórico; o restante fica guardado sem inventar informação.</small></div></div><form id="uploadForm" class="uploadForm"><label>Origem<select id="uploadType"><option value="apple_health">Apple Saúde</option><option value="polar_flow">Polar Flow</option><option value="myfitnesspal">MyFitnessPal</option><option value="fleury">Fleury</option><option value="einstein">Einstein</option><option value="other">Outra origem</option></select></label><label>Arquivo<input id="uploadFile" type="file" required></label><button type="submit">Enviar arquivo</button><p id="uploadMsg" class="footerNote" aria-live="polite"></p></form></div>
+      <div class="card uploadCard"><div class="cardHead"><div><b>Adicionar arquivo</b><small>O original fica em uma área privada. O que puder ser lido com segurança entra no histórico; o restante fica guardado sem inventar informação.</small></div></div><form id="uploadForm" class="uploadForm" aria-busy="${busy}"><label>Origem<select id="uploadType"${disabled}>${Object.entries(sourceLabels).filter(([key])=>key!=='lab').map(([key,label])=>`<option value="${key}"${(state.ui.uploadSource||feedback?.source)===key?' selected':''}>${label}</option>`).join('')}</select></label><label>Arquivo<input id="uploadFile" type="file" required${disabled}></label><button type="submit"${disabled}>${busy?'Enviando…':'Enviar arquivo'}</button><div class="uploadFeedback">${feedback?.filename?`<span class="uploadFeedbackFile">${esc(feedback.filename)}</span>`:''}<p id="uploadMsg" class="footerNote" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">${esc(feedback?.message||'')}</p></div></form></div>
       <div class="card"><div class="cardHead"><div><b>Backup dos dados</b><small>Baixe uma cópia dos registros disponíveis na sua conta. O backup não inclui os arquivos originais nem as informações de acesso.</small></div></div><button type="button" id="backupExportBtn">Criar backup</button><p id="backupExportMsg" class="footerNote" aria-live="polite"></p><p class="footerNote">Se alguma área não carregar, o backup não será criado.</p></div>
     </section>
 
-    <section class="card sectionGap"><div class="cardHead"><div><b>O que já está no seu histórico</b><small>Veja quantos registros estão disponíveis em cada área.</small></div></div><div class="sourceGrid">${areaDefs.map(([label,key])=>areaCard(label,key)).join('')}</div></section>
+    <section class="card sectionGap" id="dataHistoryInventory"><div class="cardHead"><div><b>O que já está no seu histórico</b><small>Veja quantos registros estão disponíveis em cada área.</small></div></div><div class="sourceGrid">${areaDefs.map(([label,key])=>areaCard(label,key)).join('')}</div></section>
 
     <section class="sectionGap"><div class="sectionHeading"><div><h2>Fontes</h2><p>Veja quais aplicativos e laboratórios já têm registros e como adicionar novas informações.</p></div></div><div class="sourceStatusGrid">${sourceState().map(statusCard).join('')}</div></section>
 
