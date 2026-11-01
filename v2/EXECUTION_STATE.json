@@ -50,72 +50,43 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-FLEURY-AUTHENTICATED-PREVIEW-031",
+    "id": "PKG-ORIGINAL-SOURCE-RECOVERY-032",
     "status": "in_progress",
-    "goal": "Deliver a private read-only preview of the validated Fleury report layout without duplicating or changing existing laboratory data.",
+    "goal": "Complete original-source reconciliation, preserve literal workout reports and expose source-verified Einstein originals and release context.",
     "task_ids": [
-      "LTS-FLEURY-PREVIEW-READER-001"
+      "LTS-LABS-SOURCES-001",
+      "LTS-CHAT-RECONCILIATION-001"
     ],
-    "public_build": "health-integrated-20261101.114",
+    "public_build": "health-integrated-20261101.115",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
+    "documentary_source_metadata_changed": true,
     "pending_gates": [
-      "candidate source/safety and mobile/desktop acceptance",
-      "specialized Edge deployment and authentication rejection",
-      "normal promotion and exact published protected access"
+      "exact source/privacy and continuity contracts",
+      "mobile/desktop original access and dates",
+      "protected application source reading",
+      "normal merge, publication and exact public inspection"
     ],
     "completed_evidence": [
-      "The known original was privately recovered and its complete deterministic reading compared against the independent extraction. No health value is stored in public metadata.",
-      "Qualifiers, unknown formats, conflicting source copies, bounded parsing and private preview projection are covered by invented-data tests. No canonical laboratory writer is enabled."
+      "Private originals recovered and independently verified; bounded documentary repair passed rollback, exact reread, preserved clinical/structured projections and zero-change replay.",
+      "Owner original bootstrap requirements mapped to saved operational state; missing clinical correction manifest and global owner acceptance remain separate."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.113",
-    "main_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
-    "runtime_promotion_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+    "build_id": "health-integrated-20261101.114",
+    "main_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
+    "runtime_promotion_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T14:06:50.459871+00:00",
-    "release_kind": "file_receipt_and_sources_readability",
+    "release_kind": "bounded_private_fleury_reading",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
-    "automated_runtime_and_responsive_status": "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+    "automated_runtime_and_responsive_status": "21/21 candidate and24/24 publication workflows completed/success, including protected actual authentication.",
     "evidence": [
-      "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
-      "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
-      "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
-      "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
-      "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
-      "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
-      "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
-      "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
-      "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
-      "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
-    ],
-    "ci_summary": {
-      "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
-      "candidate_total": 17,
-      "candidate_success": 17,
-      "publication_head": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
-      "publication_total": 21,
-      "publication_success": 21
-    },
-    "pending_validation_repetitions": [],
-    "pending_ci_repetitions": {
-      "candidate": [],
-      "runtime_publication": [
-        {
-          "id": 41314008841,
-          "name": "LTS Health Isolated Preview"
-        },
-        {
-          "id": 41314008782,
-          "name": "LTS Health calendar reports and local PDF"
-        }
-      ],
-      "test_only_publication": []
-    }
+      "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
+      "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
+      "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
+    ]
   },
   "tasks": [
     {
@@ -244,9 +215,9 @@
       "area": "Product audit",
       "priority": "P0",
       "owner": "Codex",
-      "blocker": "Full original Health conversation and missing literal requests are not recovered. The context-search capability is available, but this run did not return the original evidence required for completeness.",
+      "blocker": null,
       "id": "LTS-CHAT-RECONCILIATION-001",
-      "status": "blocked_external",
+      "status": "in_progress",
       "summary": "Reconcile remaining prior chat requests and original workout details without asking for duplicate submissions or inferring absent values.",
       "acceptance": [
         "Original prior requests retrieved and reconciled to evidence and saved state."
@@ -257,9 +228,12 @@
         "Existing execution queue and fresh actual workout/session/report views were read.",
         "Continuity restart: original-chat context search was callable, but returned no literal missing Health request or full original conversation. Unrelated Wealth snippets and the known checkpoint do not establish complete reconciliation.",
         "Home Screen continuation: one fresh focused context search returns secondary project summaries and prior unsuccessful searches, without the literal fifteen-record original or exact authorization. This does not prove that the original was never supplied; the blocker remains open and no clinical changes are made.",
-        "Focused Library and context retrieval found secondary consolidated documentation and a partial original exercise fact, but not the full original source needed for complete reconciliation. Existing canonical records are preserved; no full original recovery is claimed."
+        "Focused Library and context retrieval found secondary consolidated documentation and a partial original exercise fact, but not the full original source needed for complete reconciliation. Existing canonical records are preserved; no full original recovery is claimed.",
+        "Previously supplied original project bootstrap, Einstein bundle and literal workout sources recovered privately; no duplicate submission requested.",
+        "Two independent source extractions agree; bounded metadata/original-report repair, rollback, exact reread, clinical/structured preservation and idempotent replay passed.",
+        "v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md"
       ],
-      "next_action": "Recover the original Health request or conversation from a durable source, then compare source requests; preserve existing records and keep global acceptance open. Do not infer absence from an unsuccessful search."
+      "next_action": "Complete the exact .115 protected reading, mobile/desktop source context and normal publication gates."
     },
     {
       "id": "LTS-REPORT-LOWER-READING-001",
@@ -989,8 +963,8 @@
       "id": "LTS-LABS-SOURCES-001",
       "area": "labs",
       "priority": "P2",
-      "status": "blocked_external",
-      "owner": "external",
+      "status": "in_progress",
+      "owner": "Codex",
       "summary": "Expand laboratory coverage and specialized parsing from original Fleury/Einstein files.",
       "acceptance": [
         "Original files are preserved privately.",
@@ -1005,10 +979,13 @@
         "Known Fleury layout validation and a bounded source-proven omission repair are tracked separately in LTS-FLEURY-SOURCE-VALIDATION-001. Production laboratory routing remains quarantined; existing records are preserved.",
         "LTS-FLEURY-SOURCE-VALIDATION-001 completed: known original layouts compared privately, source-proven omissions repaired, all prior result projections preserved, idempotency and post-write source checks passed. Offline tooling published through normal PR 333; general production PDF routing remains quarantined.",
         "Build .98 now opens only independently confirmed private originals from exact laboratory points/history, verified by protected41094336535. Unlinked inventory and broader parser acceptance remain unresolved.",
-        "2026-11-01: a bounded private Fleury text-report preview is being implemented under PKG-FLEURY-AUTHENTICATED-PREVIEW-031. Genuine authenticated original-file submission/reopening, unsupported Einstein formats and general import remain separate acceptance."
+        "2026-11-01: a bounded private Fleury text-report preview is being implemented under PKG-FLEURY-AUTHENTICATED-PREVIEW-031. Genuine authenticated original-file submission/reopening, unsupported Einstein formats and general import remain separate acceptance.",
+        "Previously supplied original project bootstrap, Einstein bundle and literal workout sources recovered privately; no duplicate submission requested.",
+        "Two independent source extractions agree; bounded metadata/original-report repair, rollback, exact reread, clinical/structured preservation and idempotent replay passed.",
+        "v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md"
       ],
-      "next_action": "Use the validated offline tool for the known originals. Production ingestion requires a separate authenticated file-to-preview/import validation package; Einstein or other formats still need representative originals and supported access. Do not request the same Fleury files again.",
-      "blocker": "Broader automatic PDF extraction remains quarantined pending specialized format validation and representative Einstein evidence/direct-access support. Fleury originals have been located privately; the latest existing results are already imported, not missing."
+      "next_action": "Complete the exact .115 protected reading, mobile/desktop source context and normal publication gates.",
+      "blocker": null
     },
     {
       "id": "LTS-DOCUMENTS-001",
@@ -3203,7 +3180,7 @@
       "id": "LTS-FLEURY-PREVIEW-READER-001",
       "area": "Laboratory source reading",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Make the independently validated Fleury text layout available as a private read-only file preview.",
       "acceptance": [
@@ -3217,9 +3194,12 @@
         "supabase/functions/_shared/fleury-upload-preview.ts",
         "v2/fleury-preview-test.mjs",
         "v2/fleury-preview-browser.mjs",
-        "v2/releases/FLEURY_PREVIEW_20261101.md"
+        "v2/releases/FLEURY_PREVIEW_20261101.md",
+        "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
+        "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
+        "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
       ],
-      "next_action": "Complete candidate gates, publish the bounded reader, inspect the exact mobile/desktop evidence and verify protected data access.",
+      "next_action": "Preserve bounded verified reading; the genuine ordinary-file flow and unsupported formats remain separately tracked.",
       "blocker": null
     }
   ],
@@ -4671,54 +4651,42 @@
       "candidate_commit": "3e4705c40d419a5e79b0323eb55359f84248870a",
       "publication_commit": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
       "completed_at_utc": "2026-11-01T16:09:54.711Z"
+    },
+    {
+      "id": "PKG-FLEURY-AUTHENTICATED-PREVIEW-031",
+      "status": "done",
+      "goal": "Deliver a private read-only preview of the validated Fleury report layout without duplicating or changing existing laboratory data.",
+      "task_ids": [
+        "LTS-FLEURY-PREVIEW-READER-001"
+      ],
+      "public_build": "health-integrated-20261101.114",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "pending_gates": [],
+      "completed_evidence": [
+        "The known original was privately recovered and its complete deterministic reading compared against the independent extraction. No health value is stored in public metadata.",
+        "Qualifiers, unknown formats, conflicting source copies, bounded parsing and private preview projection are covered by invented-data tests. No canonical laboratory writer is enabled.",
+        "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
+        "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
+        "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
+      ]
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.113",
-    "main_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
-    "runtime_promotion_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+    "build_id": "health-integrated-20261101.114",
+    "main_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
+    "runtime_promotion_commit": "23b5750505c269bd8490bb730f6685eae7a580d8",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T14:06:50.459887+00:00",
-    "release_kind": "file_receipt_and_sources_readability",
+    "release_kind": "bounded_private_fleury_reading",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
-    "automated_runtime_and_responsive_status": "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+    "automated_runtime_and_responsive_status": "21/21 candidate and24/24 publication workflows completed/success, including protected actual authentication.",
     "evidence": [
-      "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
-      "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
-      "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
-      "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
-      "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
-      "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
-      "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
-      "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
-      "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
-      "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
-    ],
-    "ci_summary": {
-      "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
-      "candidate_total": 17,
-      "candidate_success": 17,
-      "publication_head": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
-      "publication_total": 21,
-      "publication_success": 21
-    },
-    "pending_validation_repetitions": [],
-    "pending_ci_repetitions": {
-      "candidate": [],
-      "runtime_publication": [
-        {
-          "id": 41314008841,
-          "name": "LTS Health Isolated Preview"
-        },
-        {
-          "id": 41314008782,
-          "name": "LTS Health calendar reports and local PDF"
-        }
-      ],
-      "test_only_publication": []
-    }
+      "Normal PR481 merge23b5750505c269bd8490bb730f6685eae7a580d8 has exactly the fully tested f6f7bd1 tree;21 candidate and24 publication workflows passed.",
+      "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
+      "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
+    ]
   },
   "release_history": [
     {
@@ -9292,6 +9260,53 @@
         "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
         "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
       ]
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261101.113",
+      "main_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+      "runtime_promotion_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+      "published_on": "2026-11-01",
+      "verified_at_utc": "2026-11-01T14:06:50.459871+00:00",
+      "release_kind": "file_receipt_and_sources_readability",
+      "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
+      "manual_exact_public_evidence": "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+      "automated_runtime_and_responsive_status": "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+      "evidence": [
+        "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+        "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+        "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+        "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+        "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+        "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+        "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+        "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+        "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+        "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
+      ],
+      "ci_summary": {
+        "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
+        "candidate_total": 17,
+        "candidate_success": 17,
+        "publication_head": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+        "publication_total": 21,
+        "publication_success": 21
+      },
+      "pending_validation_repetitions": [],
+      "pending_ci_repetitions": {
+        "candidate": [],
+        "runtime_publication": [
+          {
+            "id": 41314008841,
+            "name": "LTS Health Isolated Preview"
+          },
+          {
+            "id": 41314008782,
+            "name": "LTS Health calendar reports and local PDF"
+          }
+        ],
+        "test_only_publication": []
+      }
     }
   ],
   "last_continuity_review": {

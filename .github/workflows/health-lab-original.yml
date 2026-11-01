@@ -24,6 +24,7 @@ jobs:
       - name: Verify original identity and bounded source reads
         run: |
           node preview/compact-evidence/tests/lab-original-link-test.mjs
+          python3 v2/einstein-source-audit-test.py
           node --check v2/lab-original-browser.mjs
           node --check v2/real-auth-lab-original-checks.mjs
           node v2/production-integration-contract.mjs

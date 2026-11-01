@@ -1,3 +1,7 @@
+# Publication completed — .114
+
+PR481 normal merge23b5750505c269bd8490bb730f6685eae7a580d8 is exactly the tested candidate tree.21/21 candidate and24/24 publication workflows completed/success. Protected actual-auth41338834801 passed; the final synthetic mobile/desktop artifact was downloaded, hash verified and inspected. Public Cloud Browser independently confirmed .114 signed out. Edge inspector12 was reread against the exact three candidate files and rejected an unauthenticated POST with401. The genuine ordinary-file flow and broader Einstein/source package remain separate.
+
 # Fleury report preview — bounded candidate, 01 November 2026
 
 The existing upload inspector previously preserved laboratory PDFs without a usable reading. This candidate adds a deterministic, read-only preview for the independently validated Fleury text layout. Each supported result retains the written value, unit, collection date and physical PDF page. Equivalent copies are collapsed; conflicting copies and unknown blocks remain explicitly held. Qualifiers and qualitative results do not become exact numeric values.
