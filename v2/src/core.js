@@ -137,7 +137,7 @@ export async function signIn(email,password){
 }
 export async function signOut(){if(fixtureMode){state.session=null;return;}await sb.auth.signOut();state.session=null;}
 export async function restoreSession(){if(fixtureMode){state.session={user:{id:'fixture-user',email:'fixture@example.com'}};return state.session;}const{data}=await sb.auth.getSession();state.session=data.session;return data.session;}
-export function subscribeAuth(callback){if(fixtureMode)return{unsubscribe(){}};const{data}=sb.auth.onAuthStateChange((_event,session)=>{if(state.session?.user?.id!==session?.user?.id)state.ui.uploadFeedback=null;state.session=session;callback(session);});return data.subscription;}
+export function subscribeAuth(callback){if(fixtureMode)return{unsubscribe(){}};const{data}=sb.auth.onAuthStateChange((_event,session)=>{if(state.session?.user?.id!==session?.user?.id){state.ui.uploadFeedback=null;state.ui.uploadFileOwner=null;}state.session=session;callback(session);});return data.subscription;}
 
 export async function uploadFile(file,sourceType){
   if(fixtureMode)throw new Error('Upload indisponível no modo de teste.');

@@ -39,8 +39,11 @@ for(const scenario of ['storage-failure','metadata-failure','inspect-failure','s
 }
 subscribeAuth(()=>{});
 state.ui.uploadFeedback={filename:file.name,message:'invented receipt'};
+state.ui.uploadFileOwner='synthetic-owner';
 authCallback('TOKEN_REFRESHED',session);assert.ok(state.ui.uploadFeedback,'same owner refresh retains receipt');
+assert.equal(state.ui.uploadFileOwner,'synthetic-owner');
 authCallback('SIGNED_IN',{user:{id:'other-synthetic-owner'}});assert.equal(state.ui.uploadFeedback,null,'owner switch clears previous receipt');
+assert.equal(state.ui.uploadFileOwner,null,'a prior owner draft cannot be restored');
 state.ui.uploadFeedback={filename:file.name};authCallback('SIGNED_OUT',null);assert.equal(state.ui.uploadFeedback,null);
 calls.length=0;session=null;state.session=null;
 await assert.rejects(()=>uploadFile(file,'fleury'),/Sessão expirada/);assert.equal(calls.length,0);

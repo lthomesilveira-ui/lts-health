@@ -175,7 +175,7 @@ function render(){
   }
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
   const routeChanged=renderedRoute!==state.route;
-  const selectedFile=!routeChanged&&state.route==='dados'&&!state.ui.uploadFeedback?$('uploadFile'):null;
+  const selectedFile=!routeChanged&&state.route==='dados'&&!state.ui.uploadFeedback&&state.ui.uploadFileOwner&&state.ui.uploadFileOwner===state.session?.user?.id?$('uploadFile'):null;
   const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
   try{host.innerHTML=renderer();}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
@@ -378,7 +378,7 @@ function bindStaticEvents(){
   document.addEventListener('change',event=>{
     if(event.target.id==='uploadType'){if(!state.ui.uploadFeedback?.busy)state.ui.uploadSource=event.target.value;return;}
     if(event.target.id==='uploadFile'){
-      if(!state.ui.uploadFeedback?.busy){state.ui.uploadFeedback=null;const message=$('uploadMsg');if(message)message.textContent='';document.querySelector('.uploadFeedbackFile')?.remove();}return;
+      if(!state.ui.uploadFeedback?.busy){state.ui.uploadFeedback=null;state.ui.uploadFileOwner=state.session?.user?.id||null;const message=$('uploadMsg');if(message)message.textContent='';document.querySelector('.uploadFeedbackFile')?.remove();}return;
     }
     if(event.target.hasAttribute('data-evolution-point-select')){state.ui.evolutionOverviewPoint=event.target.value;render();return;}
     if(event.target.hasAttribute('data-calendar-control')){const patch=updateCalendarReportSelection(state.ui,event.target.dataset.calendarControl,event.target.value);if(patch){Object.assign(state.ui,patch);render();}return;}
@@ -459,7 +459,7 @@ function bindStaticEvents(){
   $('loginBtn').addEventListener('click',doLogin);
   $('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   $('refreshBtn').addEventListener('click',refresh);
-  $('logoutBtn').addEventListener('click',async()=>{state.ui.uploadFeedback=null;await signOut();resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
+  $('logoutBtn').addEventListener('click',async()=>{state.ui.uploadFeedback=null;state.ui.uploadFileOwner=null;const original=$('uploadFile');if(original)original.value='';await signOut();resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
   $('closeMore').addEventListener('click',()=>$('moreSheet').classList.add('hidden'));
   $('moreSheet').addEventListener('click',e=>{if(e.target===$('moreSheet'))$('moreSheet').classList.add('hidden');});
   window.addEventListener('popstate',()=>setRoute(routeFromLocation()));
