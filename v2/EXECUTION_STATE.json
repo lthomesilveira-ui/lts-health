@@ -50,347 +50,68 @@
   },
   "current_package": {
     "id": "PKG-WATER-SOURCE-NAV-027",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Open the water receiving status directly from missing-water actions and keep technical connection setup secondary.",
     "task_ids": [
       "LTS-WATER-SOURCE-NAV-001"
     ],
     "candidate_build": "health-integrated-20261101.112",
-    "public_build": "health-integrated-20261101.111",
+    "public_build": "health-integrated-20261101.112",
     "clinical_runtime_changed": false,
-    "pending_gates": [
-      "exact_candidate_workflows",
-      "responsive_water_receiving_journey",
-      "normal_publication",
-      "public_entry",
-      "protected_actual_auth"
-    ],
+    "pending_gates": [],
     "started_at_utc": "2026-11-01T11:42:36.000Z",
     "completed_evidence": [
       "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
       "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
       "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass.",
-      "Initial candidate CI identified an out-of-date preview hash inventory and an exact scroll-reset contract. The inventory is regenerated for the changed generic files; the existing two-frame reset remains verbatim, followed by the bounded contextual focus. No failed gate is counted as passed."
-    ]
+      "Initial candidate CI identified an out-of-date preview hash inventory and an exact scroll-reset contract. The inventory is regenerated for the changed generic files; the existing two-frame reset remains verbatim, followed by the bounded contextual focus. No failed gate is counted as passed.",
+      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+    ],
+    "candidate_commit": "03ff7e7493eebd52eb007483124d1940c2b49670",
+    "publication_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "completed_at_utc": "2026-11-01T12:17:29.703661+00:00"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.111",
-    "main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
-    "runtime_promotion_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+    "build_id": "health-integrated-20261101.112",
+    "main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "runtime_promotion_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T05:16:25.000Z",
-    "release_kind": "exams_mobile_touch_targets",
+    "verified_at_utc": "2026-11-01T12:17:29.703661+00:00",
+    "release_kind": "water_receiving_navigation_and_legibility",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261101.111, signed-out login boundary, #hoje and 1363/1363px width. The manual session is signed out; exact synthetic Exams renderers and protected actual-auth CI remain separate evidence.",
-    "automated_runtime_and_responsive_status": "All 16 exact candidate and all 20 exact publication workflows completed successfully; no pending validation repetition.",
+    "manual_exact_public_evidence": "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+    "automated_runtime_and_responsive_status": "All 17 exact candidate and 21 exact runtime-publication workflows completed successfully.",
     "evidence": [
-      "Exact .110 Exams evidence found the primary search and marker selector at 38px high on the 390x844 journey while preserving dates, raw results, units, source/method/reference separation, full history, collections, route return, zero writes and zero external requests.",
-      "Candidate .111 scopes a 44px minimum only to Exams fields and adds a focused browser assertion; no laboratory result, original, unit, date, reference, method, comparison rule, authentication boundary or write path changed.",
-      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows; normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
-      "Independent Cloud Browser confirmed exact public .111 at #hoje with signed-out login visible and 1363/1363px width after normal Pages propagation. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence.",
-      "Read-only evidence confirms 10 canonical water rows through 13/10. The latest accepted 19-metric payload contained zero water blocks/metrics; the receiver did not drop water and the available genuine Apple export contains no DietaryWater for backfill.",
-      "Home .110 preserves absence, exposes Registrar água and Ver sincronização, and shows the last genuine selected-source water value when available. Calorias ativas adds its recorded-period total and contributing days while remaining explicitly distinct from unavailable total expenditure.",
-      "CI found and the branch fixed mobile height/order and narrow-card clipping before promotion. PR463 exact candidate b44a2cd246a26bfa3bb367593a3485e907ae54e7 passed 17/17 workflows; normal merge 4965a1d5b9cba86e5565f17e0f960782d34a8032 publishes .110 with 21/21 exact publication workflows successful.",
-      "Independent Cloud Browser confirms exact public .110, #hoje, signed-out login boundary and 1363/1363px width. No production health record, private manual session, database write, invented water value or basal summation is claimed.",
-      "Invented-data production-renderer inspection at 393x844 reviewed Training summary, session detail and documentary-plan comparison. Session measures, chart context, Polar provenance, exercise counts and documentary plan limits were clear and showed no additional defect.",
-      "A concrete interpretation defect was observed: the selected recorded session was 23/10/2026 and the independent current observed week correctly showed zero sessions, but its selector exposed only 26/10/2026. The Monday–Sunday boundary and 26/10–01/11/2026 range were not explicit.",
-      "The bounded correction labels the selector “Semana observada · segunda a domingo”, renders the full date range and scopes the fact as “Sessões na semana observada”. Calculation, records, units, sources, authentication and writes are unchanged.",
-      "The plan remains documentary reference only: no adoption, start, progression or adherence is inferred. Manual 393x844 synthetic revalidation confirmed the full range and 393/393px viewport with 352/352px Training content and no horizontal overflow.",
-      "PR460 exact candidate 1cab38fcc353b35f4eeaa8c9fe1dbd922b90ca4b completed 16/16 workflows successfully. Normal merge dab1b0343a63142540188bf46bc0c7521a178a45 publishes health-integrated-20261101.108.",
-      "All 20 publication workflows completed successfully on the exact merge, including deploy, Pages, homologation, protected real-auth, integrated production, isolated preview and affected Training contracts; no retry is counted.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261101.108 with visible signed-out login, hidden private app, #hoje and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
-      "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
+      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
     ],
     "ci_summary": {
-      "candidate_head": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
-      "candidate_total": 16,
-      "candidate_success": 16,
-      "publication_head": "ff3e330c35592246002b36d82221d6857b621cda",
-      "publication_total": 20,
-      "publication_success": 20
-    },
-    "previous_release_ci_completion": {
-      "candidate": [
-        {
-          "id": 41262544770,
-          "name": "LTS Health Training Session",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544813,
-          "name": "LTS Health Auto Export",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544659,
-          "name": "LTS Health Polar background",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544796,
-          "name": "LTS Health Visual Training Report",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544736,
-          "name": "LTS Health Laboratory Originals",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544731,
-          "name": "LTS Health iPhone Home Screen",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544664,
-          "name": "LTS Health Dashboard Reference Contract",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544671,
-          "name": "LTS Health Documented Plan Comparison",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544789,
-          "name": "cockpit-smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544666,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544757,
-          "name": "LTS Health Cockpit Experience",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544763,
-          "name": "LTS Health Recovery Depth Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544735,
-          "name": "LTS Health Integrated Production",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544729,
-          "name": "LTS Health Functional Depth",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544807,
-          "name": "LTS Health calendar reports and local PDF",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544658,
-          "name": "LTS Health Isolated Preview",
-          "status": "completed",
-          "conclusion": "success"
-        }
-      ],
-      "publication": [
-        {
-          "id": 41263364411,
-          "name": "LTS Health v2 Homologation Pages Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263364411",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263364288,
-          "name": "LTS Health v2 Pages Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263364288",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334774,
-          "name": "LTS Health Training Session",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334774",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334773,
-          "name": "LTS Health Real Auth E2E",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334773",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334615,
-          "name": "LTS Health Timeline Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334615",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334628,
-          "name": "LTS Health Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334628",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334647,
-          "name": "LTS Health Polar background",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334647",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334668,
-          "name": "Deploy LTS Health",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334668",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334632,
-          "name": "LTS Health Laboratory Originals",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334632",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334636,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334636",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334617,
-          "name": "LTS Health Recovery Depth Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334617",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334614,
-          "name": "LTS Health Auto Export",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334614",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334648,
-          "name": "LTS Health iPhone Home Screen",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334648",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334682,
-          "name": "LTS Health Cockpit Experience",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334682",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334675,
-          "name": "LTS Health Visual Training Report",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334675",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334633,
-          "name": "LTS Health Documented Plan Comparison",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334633",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334677,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334677",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334619,
-          "name": "LTS Health Functional Depth",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334619",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334630,
-          "name": "LTS Health calendar reports and local PDF",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334630",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334604,
-          "name": "LTS Health Isolated Preview",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334604",
-          "run_attempt": 1
-        }
-      ]
+      "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
+      "candidate_total": 17,
+      "candidate_success": 17,
+      "publication_head": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+      "publication_total": 21,
+      "publication_success": 21
     },
     "pending_validation_repetitions": []
   },
@@ -2222,7 +1943,8 @@
         "The bounded .95 Home Screen implementation, public entry and existing real-auth checks are verified. Physical owner installation, genuine-form updates and all original-source/provider acceptance conditions remain separate.",
         "Owner has not yet reviewed the prior publication and provides a new source plan/current-use correction. Bounded .96 comparison/status implementation is now technically verified; global acceptance is not inferred.",
         "Owner-reported Home Screen installation is confirmed on29/10. Icon feedback is actionable and tracked separately; overall acceptance is not granted.",
-        "The requested heart/pulse icon is published and independently visible in the stable public app after normal PR430 promotion. Candidate13/13 and post-merge17/17 workflows passed; physical refresh and overall acceptance are not inferred."
+        "The requested heart/pulse icon is published and independently visible in the stable public app after normal PR430 promotion. Candidate13/13 and post-merge17/17 workflows passed; physical refresh and overall acceptance are not inferred.",
+        "Owner feedback on 2026-11-01 reiterates autonomous closure and concrete UX progress. The .112 receiving journey is separately verified; overall acceptance and the original source/device dependencies remain open."
       ],
       "next_action": "Preserve the verified heart/pulse revision and stable entry. Continue the independent source/provider/original-record work when usable evidence exists; keep global acceptance separate from installation.",
       "blocker": "Home Screen installation is owner-confirmed and the revised health icon is published. Overall owner acceptance, actual water continuity, original source/history evidence and remaining physical/native verification stay open."
@@ -3325,7 +3047,7 @@
       "area": "UX / hydration and source navigation",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Open the water receiving status directly from missing-water actions and keep technical connection setup secondary.",
       "acceptance": [
@@ -3339,9 +3061,20 @@
         "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
         "Exact .111 source-page evidence and the actual route handler show missing-water actions enter at the top, before Polar and other accounts, while the water receiver is lower on the page.",
         "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
-        "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass."
+        "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass.",
+        "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+        "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+        "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+        "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+        "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+        "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+        "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+        "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+        "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+        "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+        "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
       ],
-      "next_action": "Complete the exact candidate browser and responsive gates, inspect synthetic images, publish by normal merge and verify the live version."
+      "next_action": "Preserve the verified receiving journey and continue independent source recovery only from genuine evidence."
     }
   ],
   "package_history": [
@@ -4689,322 +4422,35 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.111",
-    "main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
-    "runtime_promotion_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+    "build_id": "health-integrated-20261101.112",
+    "main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "runtime_promotion_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T05:16:25.000Z",
-    "release_kind": "exams_mobile_touch_targets",
+    "verified_at_utc": "2026-11-01T12:17:29.703661+00:00",
+    "release_kind": "water_receiving_navigation_and_legibility",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261101.111, signed-out login boundary, #hoje and 1363/1363px width. The manual session is signed out; exact synthetic Exams renderers and protected actual-auth CI remain separate evidence.",
-    "automated_runtime_and_responsive_status": "All 16 exact candidate and all 20 exact publication workflows completed successfully; no pending validation repetition.",
+    "manual_exact_public_evidence": "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+    "automated_runtime_and_responsive_status": "All 17 exact candidate and 21 exact runtime-publication workflows completed successfully.",
     "evidence": [
-      "Exact .110 Exams evidence found the primary search and marker selector at 38px high on the 390x844 journey while preserving dates, raw results, units, source/method/reference separation, full history, collections, route return, zero writes and zero external requests.",
-      "Candidate .111 scopes a 44px minimum only to Exams fields and adds a focused browser assertion; no laboratory result, original, unit, date, reference, method, comparison rule, authentication boundary or write path changed.",
-      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows; normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
-      "Independent Cloud Browser confirmed exact public .111 at #hoje with signed-out login visible and 1363/1363px width after normal Pages propagation. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence.",
-      "Read-only evidence confirms 10 canonical water rows through 13/10. The latest accepted 19-metric payload contained zero water blocks/metrics; the receiver did not drop water and the available genuine Apple export contains no DietaryWater for backfill.",
-      "Home .110 preserves absence, exposes Registrar água and Ver sincronização, and shows the last genuine selected-source water value when available. Calorias ativas adds its recorded-period total and contributing days while remaining explicitly distinct from unavailable total expenditure.",
-      "CI found and the branch fixed mobile height/order and narrow-card clipping before promotion. PR463 exact candidate b44a2cd246a26bfa3bb367593a3485e907ae54e7 passed 17/17 workflows; normal merge 4965a1d5b9cba86e5565f17e0f960782d34a8032 publishes .110 with 21/21 exact publication workflows successful.",
-      "Independent Cloud Browser confirms exact public .110, #hoje, signed-out login boundary and 1363/1363px width. No production health record, private manual session, database write, invented water value or basal summation is claimed.",
-      "Invented-data production-renderer inspection at 393x844 reviewed Training summary, session detail and documentary-plan comparison. Session measures, chart context, Polar provenance, exercise counts and documentary plan limits were clear and showed no additional defect.",
-      "A concrete interpretation defect was observed: the selected recorded session was 23/10/2026 and the independent current observed week correctly showed zero sessions, but its selector exposed only 26/10/2026. The Monday–Sunday boundary and 26/10–01/11/2026 range were not explicit.",
-      "The bounded correction labels the selector “Semana observada · segunda a domingo”, renders the full date range and scopes the fact as “Sessões na semana observada”. Calculation, records, units, sources, authentication and writes are unchanged.",
-      "The plan remains documentary reference only: no adoption, start, progression or adherence is inferred. Manual 393x844 synthetic revalidation confirmed the full range and 393/393px viewport with 352/352px Training content and no horizontal overflow.",
-      "PR460 exact candidate 1cab38fcc353b35f4eeaa8c9fe1dbd922b90ca4b completed 16/16 workflows successfully. Normal merge dab1b0343a63142540188bf46bc0c7521a178a45 publishes health-integrated-20261101.108.",
-      "All 20 publication workflows completed successfully on the exact merge, including deploy, Pages, homologation, protected real-auth, integrated production, isolated preview and affected Training contracts; no retry is counted.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261101.108 with visible signed-out login, hidden private app, #hoje and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
-      "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
+      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
     ],
     "ci_summary": {
-      "candidate_head": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
-      "candidate_total": 16,
-      "candidate_success": 16,
-      "publication_head": "ff3e330c35592246002b36d82221d6857b621cda",
-      "publication_total": 20,
-      "publication_success": 20
-    },
-    "previous_release_ci_completion": {
-      "candidate": [
-        {
-          "id": 41262544770,
-          "name": "LTS Health Training Session",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544813,
-          "name": "LTS Health Auto Export",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544659,
-          "name": "LTS Health Polar background",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544796,
-          "name": "LTS Health Visual Training Report",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544736,
-          "name": "LTS Health Laboratory Originals",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544731,
-          "name": "LTS Health iPhone Home Screen",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544664,
-          "name": "LTS Health Dashboard Reference Contract",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544671,
-          "name": "LTS Health Documented Plan Comparison",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544789,
-          "name": "cockpit-smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544666,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544757,
-          "name": "LTS Health Cockpit Experience",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544763,
-          "name": "LTS Health Recovery Depth Smoke",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544735,
-          "name": "LTS Health Integrated Production",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544729,
-          "name": "LTS Health Functional Depth",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544807,
-          "name": "LTS Health calendar reports and local PDF",
-          "status": "completed",
-          "conclusion": "success"
-        },
-        {
-          "id": 41262544658,
-          "name": "LTS Health Isolated Preview",
-          "status": "completed",
-          "conclusion": "success"
-        }
-      ],
-      "publication": [
-        {
-          "id": 41263364411,
-          "name": "LTS Health v2 Homologation Pages Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263364411",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263364288,
-          "name": "LTS Health v2 Pages Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263364288",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334774,
-          "name": "LTS Health Training Session",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334774",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334773,
-          "name": "LTS Health Real Auth E2E",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334773",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334615,
-          "name": "LTS Health Timeline Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334615",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334628,
-          "name": "LTS Health Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334628",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334647,
-          "name": "LTS Health Polar background",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334647",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334668,
-          "name": "Deploy LTS Health",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334668",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334632,
-          "name": "LTS Health Laboratory Originals",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334632",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334636,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334636",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334617,
-          "name": "LTS Health Recovery Depth Smoke",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334617",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334614,
-          "name": "LTS Health Auto Export",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334614",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334648,
-          "name": "LTS Health iPhone Home Screen",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334648",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334682,
-          "name": "LTS Health Cockpit Experience",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334682",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334675,
-          "name": "LTS Health Visual Training Report",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334675",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334633,
-          "name": "LTS Health Documented Plan Comparison",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334633",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334677,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334677",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334619,
-          "name": "LTS Health Functional Depth",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334619",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334630,
-          "name": "LTS Health calendar reports and local PDF",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334630",
-          "run_attempt": 1
-        },
-        {
-          "id": 41263334604,
-          "name": "LTS Health Isolated Preview",
-          "head_sha": "dab1b0343a63142540188bf46bc0c7521a178a45",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41263334604",
-          "run_attempt": 1
-        }
-      ]
+      "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
+      "candidate_total": 17,
+      "candidate_success": 17,
+      "publication_head": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+      "publication_total": 21,
+      "publication_success": 21
     },
     "pending_validation_repetitions": []
   },
@@ -9543,39 +8989,60 @@
         ]
       },
       "pending_validation_repetitions": []
+    },
+    {
+      "build_id": "health-integrated-20261101.112",
+      "runtime_promotion_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+      "published_on": "2026-11-01",
+      "release_kind": "water_receiving_navigation_and_legibility",
+      "evidence": [
+        "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+        "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+        "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+        "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+        "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+        "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+        "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+        "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+        "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+        "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+        "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+      ]
     }
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T11:31:47.000Z",
-    "source_main_commit": "43c83ba8db8fa66c4a9d396832fa68a141c59956",
-    "runtime_build": "health-integrated-20261101.111",
+    "reviewed_at_utc": "2026-11-01T12:17:29.703661+00:00",
+    "source_main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "runtime_build": "health-integrated-20261101.112",
     "candidate_build": null,
-    "runtime_changed": false,
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
-      "done": 99,
-      "in_progress": 0,
+      "done": 100,
       "blocked_external": 14,
       "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "Fresh origin/main 43c83ba8db8fa66c4a9d396832fa68a141c59956, private checkpoint version 62 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Reports review.",
-      "Read-only database evidence advanced to 66 genuine receipts. The latest accepted receipt at 01/11/2026 10:09:21 UTC contains 13 metrics and 1 basal candidate, but no water or explicit total-energy series. Water remains at 10 canonical days through 13/10. Active energy remains 98 canonical days through 05/05 plus 33 recent candidate days through 31/10; candidate rows were not promoted or conflated with canonical history. All 118 basal candidates still lack original source, bounds and verified coverage.",
-      "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
-      "The exact .111 calendar-report-synthetic-evidence artifact 13070884236 matched sha256:944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426. All 32 Chromium/WebKit scenarios passed at 320/393/1440px with production renderers, synthetic data, zero writes and zero external requests; runtime files are unchanged since the last runtime commit.",
-      "Actual 393px month-previous captures and the monthly PDF were inspected through summary, per-metric coverage, charts, training, exams, origins, comparisons and detailed pages. Dates, units, period closure and limits remained clear; origins were not summed, active energy was not called total expenditure, and the empty state used dashes plus the explicit statement that gaps are not zero.",
-      "Independent Cloud Browser opened the stable public #hoje route and, after one bounded reload, visibly retained the signed-out login and private boundary without exposing health data. This public inspection is distinct from the exact synthetic monthly journey and the already-passed protected real-auth gate.",
-      "No runtime or data change was justified. The fifteen laboratory corrections remain blocked on the original manifest and specific authorization. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Training."
+      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
+      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
+      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
+      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
+      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
+      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
+      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
+      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
+      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
+      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
+      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
     ],
     "ux_review": {
-      "area": "reports",
-      "next_area": "training",
-      "mode": "exact_synthetic_111_monthly_report_artifact_plus_monthly_pdf_plus_public_signed_out_plus_existing_protected_real_auth",
-      "viewport": "393px monthly mobile plus monthly PDF and 320/393/1440px automated coverage plus public desktop",
-      "result": "no_runtime_defect_observed",
-      "journey_without_additional_defect": "Reports preserved closed calendar-month identity, metric-specific coverage, units, source separation, charts, training and exam context, month-length comparison limits, local PDF disclosure and explicit missing-not-zero semantics without horizontal overflow, silent source summation or active-energy conflation."
+      "area": "water_receiving_navigation",
+      "next_area": "composition",
+      "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
+      "viewport": "320/393/1440, including 393x650",
+      "result": "observed_defects_corrected_and_verified"
     }
   },
   "continuity_review_history": [
@@ -10554,6 +10021,39 @@
         "viewport": "320x844, 393x844, 1180x900, 1440x900 and public desktop",
         "result": "no_runtime_defect_observed_continuity_checkpoint_corrected",
         "journey_without_additional_defect": "Nutrition preserved documentary-plan limits, plan/source dates, source isolation, coverage, units, missing-data semantics, independent water detail and mobile readability without overlap or horizontal overflow."
+      }
+    },
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T11:31:47.000Z",
+      "source_main_commit": "43c83ba8db8fa66c4a9d396832fa68a141c59956",
+      "runtime_build": "health-integrated-20261101.111",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 99,
+        "in_progress": 0,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Fresh origin/main 43c83ba8db8fa66c4a9d396832fa68a141c59956, private checkpoint version 62 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Reports review.",
+        "Read-only database evidence advanced to 66 genuine receipts. The latest accepted receipt at 01/11/2026 10:09:21 UTC contains 13 metrics and 1 basal candidate, but no water or explicit total-energy series. Water remains at 10 canonical days through 13/10. Active energy remains 98 canonical days through 05/05 plus 33 recent candidate days through 31/10; candidate rows were not promoted or conflated with canonical history. All 118 basal candidates still lack original source, bounds and verified coverage.",
+        "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
+        "The exact .111 calendar-report-synthetic-evidence artifact 13070884236 matched sha256:944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426. All 32 Chromium/WebKit scenarios passed at 320/393/1440px with production renderers, synthetic data, zero writes and zero external requests; runtime files are unchanged since the last runtime commit.",
+        "Actual 393px month-previous captures and the monthly PDF were inspected through summary, per-metric coverage, charts, training, exams, origins, comparisons and detailed pages. Dates, units, period closure and limits remained clear; origins were not summed, active energy was not called total expenditure, and the empty state used dashes plus the explicit statement that gaps are not zero.",
+        "Independent Cloud Browser opened the stable public #hoje route and, after one bounded reload, visibly retained the signed-out login and private boundary without exposing health data. This public inspection is distinct from the exact synthetic monthly journey and the already-passed protected real-auth gate.",
+        "No runtime or data change was justified. The fifteen laboratory corrections remain blocked on the original manifest and specific authorization. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Training."
+      ],
+      "ux_review": {
+        "area": "reports",
+        "next_area": "training",
+        "mode": "exact_synthetic_111_monthly_report_artifact_plus_monthly_pdf_plus_public_signed_out_plus_existing_protected_real_auth",
+        "viewport": "393px monthly mobile plus monthly PDF and 320/393/1440px automated coverage plus public desktop",
+        "result": "no_runtime_defect_observed",
+        "journey_without_additional_defect": "Reports preserved closed calendar-month identity, metric-specific coverage, units, source separation, charts, training and exam context, month-length comparison limits, local PDF disclosure and explicit missing-not-zero semantics without horizontal overflow, silent source summation or active-energy conflation."
       }
     }
   ],

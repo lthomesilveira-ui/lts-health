@@ -1,6 +1,6 @@
 ## FB-039 — Continuidade com entrega concreta e diagnóstico de água acessível (01/11/2026)
 
-Estado: em execução em `PKG-WATER-SOURCE-NAV-027`. A revisão recorrente sem alteração não encerra o feedback do proprietário. Os atalhos da água devem abrir seu próprio recebimento e manter configurações técnicas em segundo plano; entrada comum, origens, valores e confirmações existentes continuam preservados. Aceite: jornada responsiva executada, imagens sintéticas inspecionadas, candidata, publicação, autenticação protegida e entrada pública verificadas. A entrega de UX não equivale à recuperação da água nem ao aceite integral.
+Estado: concluído e publicado em `.112` por `PKG-WATER-SOURCE-NAV-027`. A candidata e a publicação passaram suas validações; imagens sintéticas e entrada pública foram inspecionadas.  A revisão recorrente sem alteração não encerra o feedback do proprietário. Os atalhos da água devem abrir seu próprio recebimento e manter configurações técnicas em segundo plano; entrada comum, origens, valores e confirmações existentes continuam preservados. Aceite: jornada responsiva executada, imagens sintéticas inspecionadas, candidata, publicação, autenticação protegida e entrada pública verificadas. A entrega de UX não equivale à recuperação da água nem ao aceite integral.
 
 # Relatórios — jornada mensal exata .111 sem defeito de runtime, 01/11/2026
 
