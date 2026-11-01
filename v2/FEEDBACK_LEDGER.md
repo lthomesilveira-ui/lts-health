@@ -1,12 +1,12 @@
-# Água visível e total de calorias ativas — candidata .110, 01/11/2026
+# Água visível e total de calorias ativas — .110 publicada e verificada, 01/11/2026
 
 O feedback do proprietário reabriu duas lacunas da Home: água continuava sem saída operacional no cartão e “Calorias ativas” mostrava apenas média, sem o total registrado do período. O pacote `PKG-HOME-WATER-ACTIVE-TOTALS-025` trata as duas sem fabricar gasto ou consumo.
 
-Evidência privada lida sem escrita confirma 10 registros canônicos de água entre 04–13/10/2026. A remessa genuína aceita mais recente trouxe 19 métricas, mas declarou zero blocos/métricas de água; o receptor não descartou nem rejeitou água. O export original de agosto também não contém `DietaryWater`, portanto não serve para backfill. A candidata .110 mantém a lacuna explícita, mostra o último valor genuíno da origem quando existir e oferece no próprio cartão `Registrar água` e `Ver sincronização`. Nenhum valor ausente vira zero e nenhum registro de produção foi criado.
+Evidência privada lida sem escrita confirma 10 registros canônicos de água entre 04–13/10/2026. A remessa genuína aceita mais recente trouxe 19 métricas, mas declarou zero blocos/métricas de água; o receptor não descartou nem rejeitou água. O export original de agosto também não contém `DietaryWater`, portanto não serve para backfill. A .110 mantém a lacuna explícita, mostra o último valor genuíno da origem quando existir e oferece no próprio cartão `Registrar água` e `Ver sincronização`. Nenhum valor ausente vira zero e nenhum registro de produção foi criado.
 
 `Calorias ativas` passa a mostrar a média diária e `Total registrado no período`, somando somente dias elegíveis de uma única origem selecionada e informando quantos dias contribuíram. O texto afirma que isso não é gasto total. `Calorias totais gastas` continua independente e indisponível sem série explícita; snapshots basais não são somados.
 
-Testes focados de modelo/renderização, vazio, qualidade, hashes/paridade, grafo de produção, auditoria pública, hidratação, continuidade e limites de escrita com transporte falso passam localmente. Gates de navegador, CI exato, publicação normal, inspeção pública e autenticação protegida permanecem pendentes. A .109 de Composição foi reconciliada: PR462/merge `2c6ed4203b4b88835ba79f2fc4d46c376c106716`, 20/20 workflows de publicação aprovados. Fila atual: 96 done, 2 in_progress, 14 blocked_external e 2 accepted_gap.
+CI encontrou altura/ordem excessivas e depois clipping no cartão móvel em cabeças intermediárias; os dois defeitos foram corrigidos antes da promoção. PR463 candidata exata `b44a2cd246a26bfa3bb367593a3485e907ae54e7`: 17/17 workflows aprovados. Merge normal `4965a1d5b9cba86e5565f17e0f960782d34a8032`: 21/21 workflows de publicação aprovados, incluindo deploy, Pages, relatório/PDF, prévia isolada e autenticação real protegida. Cloud Browser confirmou `.110`, `#hoje`, fronteira de login desconectado e largura 1363/1363px. Fila: 98 done, 0 in_progress, 14 blocked_external e 2 accepted_gap; próxima área UX é nutrição.
 
 # Training observed-week context — .108 published and verified, 01/11/2026
 
