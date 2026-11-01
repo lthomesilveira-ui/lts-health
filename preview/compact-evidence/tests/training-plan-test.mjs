@@ -6,7 +6,7 @@ const clone=structuredClone;
 const f=syntheticPlanData(),before=JSON.stringify(f),m=trainingPlanComparison(f.data,f.status,{},PLAN_TODAY);
 assert.equal(m.state,'ready');assert.equal(m.plan.clinical_start,null);assert.equal(m.weeklyCount,0);assert.equal(m.rows[0].working,2);assert.deepEqual(m.rows[0].reps,[10,6]);assert.equal(m.rows[0].outsideRange,1);assert.equal(m.rows[1].working,null);assert.equal(m.rows[1].unknownPhases,1);assert.equal(m.failure,1);assert.equal(m.extensions,1);assert.equal(JSON.stringify(f),before);
 assert.match(renderTrainingPlan(f.data,f.status,{},PLAN_TODAY),/início não confirmado/);
-const weeklyRange=renderTrainingPlan(f.data,f.status,{},PLAN_TODAY);assert.match(weeklyRange,/Semana observada · segunda a domingo/);assert.match(weeklyRange,/02\\/02\\/2026 a 08\\/02\\/2026/);assert.match(weeklyRange,/Sessões na semana observada/);assert.doesNotMatch(weeklyRange,/>02\\/02\\/2026<\\/option>/);
+const weeklyRange=renderTrainingPlan(f.data,f.status,{},PLAN_TODAY);assert.match(weeklyRange,/Semana observada · segunda a domingo/);assert.ok(weeklyRange.includes('02/02/2026 a 08/02/2026'));assert.match(weeklyRange,/Sessões na semana observada/);assert.ok(!weeklyRange.includes('>02/02/2026</option>'));
 for(const key of ['workouts','exercises','sets','trainingPlans']){
   const fail=trainingPlanComparison(f.data,{...f.status,[key]:'error'},{},PLAN_TODAY);
   if(key==='trainingPlans')assert.equal(fail.plan,null);
