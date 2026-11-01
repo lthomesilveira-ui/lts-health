@@ -1,0 +1,11 @@
+# Fleury report preview — bounded candidate, 01 November 2026
+
+The existing upload inspector previously preserved laboratory PDFs without a usable reading. This candidate adds a deterministic, read-only preview for the independently validated Fleury text layout. Each supported result retains the written value, unit, collection date and physical PDF page. Equivalent copies are collapsed; conflicting copies and unknown blocks remain explicitly held. Qualifiers and qualitative results do not become exact numeric values.
+
+The generic endpoint still verifies the authenticated owner, reads that owner's private Storage object and writes only its ingestion preview/status. The specialized module has no canonical laboratory writer or service-role client. A report already independently validated is compared with that owner's source-specific existing results; a successful comparison does not reimport, duplicate or overwrite them. Unknown sources, layout failures, excessive sizes/pages/text, ambiguous results and unavailable history remain held. The full original is preserved in every path.
+
+The interface offers the written results in an accessible disclosure, with dates, units and physical page context. It distinguishes a source already present in the history from an unpromoted reading. References, method, clinical interpretation and broader automatic import are not inferred. The loader requests only `lab_preview:sample->lab_preview`; it does not fetch generic ingestion samples or private file paths.
+
+Private verification compares the complete supplied original against the independent Poppler audit and exercises the new module in Node and Deno. Public tests use invented report text only and cover qualifiers, decimal conventions, dates, reference columns, repeated/conflicting copies, resource bounds, cleanup, escaped HTML and read-only projection. Mobile/desktop browser acceptance and exact protected/public publication remain pending until recorded.
+
+This package does not close the broader Fleury/Einstein task, the ordinary production form submission/reopening task, the missing original fifteen-record correction manifest or overall owner acceptance. No prescription, existing laboratory result, water source, basal coverage, phone configuration or authentication permission changes.

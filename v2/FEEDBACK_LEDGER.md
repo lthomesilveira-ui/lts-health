@@ -1,3 +1,11 @@
+# Em validação — prévia privada do laudo Fleury, .114
+
+`PKG-FLEURY-AUTHENTICATED-PREVIEW-031` implementa leitura determinística do formato Fleury já validado, com valor bruto, unidade, coleta e página física. O original real foi comparado privadamente com a extração independente. Qualificadores não viram números exatos; cópias divergentes e trechos desconhecidos ficam retidos. A prévia usa a Inbox autenticada existente, mantém os resultados clínicos intactos e não abre um importador geral.
+
+A interface mostra os resultados em detalhes acessíveis no celular e desktop. A projeção de dados solicita somente a prévia laboratorial específica; amostras genéricas, texto integral, caminhos privados e credenciais não entram no carregamento da tela. Formatos Einstein, importação geral, envio/reabertura do próximo arquivo genuíno pelo formulário e aceite do proprietário continuam independentes.
+
+Candidata em validação: não contar a publicação ou os gates antes da conclusão. As doze dependências amplas continuam abertas; este pacote executa a parte interna viável de exames. `EXECUTION_STATE.json` conserva seus critérios originais. Detalhes: `v2/releases/FLEURY_PREVIEW_20261101.md`.
+
 # Concluído — recuperação do histórico original Polar e alternativas substituídas
 
 `PKG-POLAR-ORIGINAL-RECOVERY-030` / `LTS-POLAR-ORIGINAL-RECOVERY-001` está concluído. Observações originais anteriores à janela da API foram recuperadas do arquivo já fornecido, com identidade de sincronização, intervalo e unidade verificados. Sobreposições e ambiguidades permaneceram retidas. A gravação delimitada, a releitura exata, a repetição idempotente e a preservação dos registros da API, treinos canônicos e evidências de vínculo passaram. Nenhuma frequência cardíaca, musculatura, ligação canônica ou gasto total foi inferido; valores, períodos e contagens pessoais permanecem somente na evidência privada.

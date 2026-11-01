@@ -1,0 +1,51 @@
+name: LTS Health Fleury preview
+on:
+  pull_request:
+    branches: [main]
+    paths: ['supabase/functions/_shared/fleury-*', 'supabase/functions/health-inspect-upload/**', 'v2/**', '.github/workflows/fleury-preview.yml']
+  push:
+    branches: [main, architecture-v2]
+    paths: ['supabase/functions/_shared/fleury-*', 'supabase/functions/health-inspect-upload/**', 'v2/**', '.github/workflows/fleury-preview.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fleury-preview-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Verify deterministic reading and private preview boundaries
+        run: |
+          node v2/fleury-preview-test.mjs
+          node v2/lab-parser-safety-smoke.mjs
+          node v2/privacy-contract-smoke.mjs
+          node v2/upload-transport-test.mjs
+          node v2/deployed-runtime-assets.mjs
+          node v2/public-payload-guard.mjs
+          deno check supabase/functions/health-inspect-upload/index.ts
+      - name: Install pinned browser API
+        run: npm install --no-save playwright@1.56.1
+      - name: Inspect the real application renderers with invented reports
+        run: |
+          python3 -m http.server 4173 >/tmp/fleury-preview-http.log 2>&1 &
+          node v2/fleury-preview-browser.mjs
+          LTS_HEALTH_BASE_URL='http://127.0.0.1:4173/v2/?fixture=1' node v2/upload-outcome-smoke.mjs
+      - name: Keep invented-data visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fleury-preview-synthetic
+          path: /tmp/lts-fleury-preview-visual/
+          retention-days: 7
