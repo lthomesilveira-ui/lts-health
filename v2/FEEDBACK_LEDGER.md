@@ -1,3 +1,7 @@
+## FB-039 — Continuidade com entrega concreta e diagnóstico de água acessível (01/11/2026)
+
+Estado: em execução em `PKG-WATER-SOURCE-NAV-027`. A revisão recorrente sem alteração não encerra o feedback do proprietário. Os atalhos da água devem abrir seu próprio recebimento e manter configurações técnicas em segundo plano; entrada comum, origens, valores e confirmações existentes continuam preservados. Aceite: jornada responsiva executada, imagens sintéticas inspecionadas, candidata, publicação, autenticação protegida e entrada pública verificadas. A entrega de UX não equivale à recuperação da água nem ao aceite integral.
+
 # Relatórios — jornada mensal exata .111 sem defeito de runtime, 01/11/2026
 
 - `main` `43c83ba8db8fa66c4a9d396832fa68a141c59956`, checkpoint privado 62 e PRs foram relidos; somente 367/354/348 permanecem abertos, sem pacote concorrente de Relatórios.
@@ -765,4 +769,5 @@ The final side-by-side reference comparison then identified a remaining density 
 The compact .48 was subsequently verified through all eight candidate and twelve post-merge workflows and exact authenticated inspection, with current-day records appearing without reinsertion. The final consultation read then exposed internal workout phase labels. The parallel PR 339 training update was preserved and reconciled into candidate .50, which translates recognized phase labels, leaves unknown phases unclassified, retains primary/extension counts and tests the exported text without modifying records. Compact Home and calculation rules are unchanged; final exact publication checks remain pending.
 
 Final technical delivery is complete in .50. All nine candidate workflows passed; exact-head authenticated E2E and Training Session passed after PR 341, and eleven applicable deployed/runtime checks passed after the concurrent documentation-only PR 342 with identical executable files. Actual authenticated Home, consultation, latest-session summary and full exercise detail were inspected. Charts retain readable labels and source dates; the consultation no longer displays internal phase keys. Current records appeared without reinsertion. The executed prompt and private validation preserve original evidence and distinguish verified delivery from clinical decisions, owner visual acceptance and remaining water/plan/device source limits.
+
 

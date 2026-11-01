@@ -44,12 +44,12 @@ function overview(d,c,b){
 function priorities(d,c,g){
  const water=d.metricsByKey.water,labs=c.labs,items=[];
  if(['error','unavailable'].includes(water.availability))items.push({key:'water',title:'Água não carregou',text:'Atualize os dados para consultar este período.',route:'dados',action:'Ver conexão'});
- else if(water.value==null||water.latestRecorded?.date<d.bounds.end){const last=water.latestRecorded;items.push({key:'water',title:'Água sem atualização',text:last?`Último registro: ${date(last.date)}.${water.value!=null?' A média usa apenas os dias com registro; faltam dados até o fim do período.':' O consumo na data selecionada ou neste período não está disponível.'}`:'O consumo de água não está disponível neste período.',route:'dados',action:'Ver situação'});}
+ else if(water.value==null||water.latestRecorded?.date<d.bounds.end){const last=water.latestRecorded;items.push({key:'water',title:'Água sem atualização',text:last?`Último registro: ${date(last.date)}.${water.value!=null?' A média usa apenas os dias com registro; faltam dados até o fim do período.':' O consumo na data selecionada ou neste período não está disponível.'}`:'O consumo de água não está disponível neste período.',route:'dados',action:'Ver sincronização da água'});}
  if(labs.available&&labs.latestCollectionSummary?.attention)items.push({key:'labs',title:'Exames para revisar',text:`${count(labs.latestCollectionSummary.attention,'resultado sinalizado','resultados sinalizados')} no laudo de ${date(labs.latestCollectionDate)}.`,route:'saude',action:'Ver resultados'});
  const care=g.protocols?.care;
  if(care?.available&&care.pendingCount)items.push({key:'care',title:'Acompanhamento da consulta',text:`${count(care.pendingCount,'pendência documentada','pendências documentadas')} em ${date(care.date)}; confira a situação atual.`,route:'tratamentos',action:'Rever acompanhamento'});
  if(!items.length)items.push({key:'body',title:'Explore sua evolução',text:'Compare avaliações, treino e rotina nos históricos.',route:'analise',action:'Abrir análise'});
- return `<section class="healthCockpitPriorities" aria-label="Pontos para acompanhar"><header><span>SEU FOCO</span><h2>O que merece atenção</h2></header><div style="--priority-count:${Math.min(3,items.length)}">${items.slice(0,3).map(item=>`<article>${icon(item.key)}<div><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p>${action(item.route,item.action)}</div></article>`).join('')}</div></section>`;
+ return `<section class="healthCockpitPriorities" aria-label="Pontos para acompanhar"><header><span>SEU FOCO</span><h2>O que merece atenção</h2></header><div style="--priority-count:${Math.min(3,items.length)}">${items.slice(0,3).map(item=>`<article>${icon(item.key)}<div><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p>${action(item.route,item.action,item.key==='water'?'data-source-focus="water"':'')}</div></article>`).join('')}</div></section>`;
 }
 
 function bodyPanel(b,changes,d){

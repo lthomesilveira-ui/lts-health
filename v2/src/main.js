@@ -37,6 +37,7 @@ let authSubscription=null;
 let renderQueued=false;
 let loginBusy=false;
 let renderedRoute=null;
+let routeScrollRevision=0;
 const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','dados','analise']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
@@ -61,14 +62,25 @@ function resetRouteScroll(){
 }
 
 function settleRouteScroll(route){
-  const reset=()=>{if(state.route===route)resetRouteScroll();};
+  const revision=++routeScrollRevision;
+  const current=()=>state.route===route&&revision===routeScrollRevision;
+  const reset=()=>{if(current())resetRouteScroll();};
   reset();
   requestAnimationFrame(()=>{reset();requestAnimationFrame(reset);});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(!current()||route!=='dados'||state.ui.sourceFocus!=='water')return;
+    const heading=document.getElementById('health-auto-export-title');
+    if(!heading)return;
+    state.ui.sourceFocus=null;
+    heading.closest('[data-health-auto-export]').scrollIntoView({block:'start',behavior:'auto'});
+    heading.focus({preventScroll:true});
+  }));
 }
 
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
+  if(route!=='dados')state.ui.sourceFocus=null;
   state.route=route;
   // pushState does not emit hashchange: apply route styling before rendering.
   if(!fixtureMode)document.body.dataset.productRoute=route;
@@ -308,7 +320,7 @@ function bindStaticEvents(){
     const periodButton=event.target.closest('button[data-period]');if(periodButton){event.preventDefault();setGlobalPeriod(periodButton.dataset.period);scheduleRender();return;}
     const homeMetric=event.target.closest('[data-home-metric]');if(homeMetric){event.preventDefault();state.ui.homeMetric=homeMetric.dataset.homeMetric;render();return;}
     const healthDate=event.target.closest('[data-health-date]');if(healthDate){event.preventDefault();state.ui.healthContextDate=healthDate.dataset.healthDate;scheduleRender();return;}
-    const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();const destination=routeButton.dataset.route;if(destination==='treinos')state.ui.trainingReturnRoute=routeButton.dataset.returnRoute==='analise'?'analise':null;if(routeButton.hasAttribute('data-consume-training-return'))state.ui.trainingReturnRoute=null;setRoute(destination,{replace:false});return;}
+    const routeButton=event.target.closest('[data-route]');if(routeButton){event.preventDefault();const destination=routeButton.dataset.route;state.ui.sourceFocus=destination==='dados'&&routeButton.dataset.sourceFocus==='water'?'water':null;if(destination==='treinos')state.ui.trainingReturnRoute=routeButton.dataset.returnRoute==='analise'?'analise':null;if(routeButton.hasAttribute('data-consume-training-return'))state.ui.trainingReturnRoute=null;setRoute(destination,{replace:false});return;}
     const metricButton=event.target.closest('[data-bio-metric]');if(metricButton){state.ui.bioMetric=metricButton.dataset.bioMetric;scheduleRender();return;}
     const bodyDate=event.target.closest('[data-body-date]');if(bodyDate){state.ui.selectedBodyDate=bodyDate.dataset.bodyDate;scheduleRender();return;}
     const evolutionMetric=event.target.closest('[data-evolution-metric]');if(evolutionMetric){state.ui.evolutionMetric=evolutionMetric.dataset.evolutionMetric;scheduleRender();return;}

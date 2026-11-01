@@ -1,5 +1,10 @@
 # LTS Health — protocolo de continuidade
 
+# Em execução — acesso direto à situação da água, candidata .112
+
+O feedback de continuidade de 01/11 reabre uma ação concreta de UX: os atalhos da água abriam Dados e fontes no topo, antes do diagnóstico correspondente. `PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` adiciona contexto de navegação de uso único, posiciona e foca o recebimento do iPhone após o carregamento e preserva a entrada comum de Dados e fontes. A falta de atualização de água ganha estado próprio; troca de chave e interrupção de envios permanecem na configuração secundária com as confirmações existentes. Nenhum dado, origem, chave, configuração física ou escrita é alterado. A correção está em validação, não publicada; os bloqueios independentes da integração e o aceite global continuam abertos.
+
+
 ## Checkpoint mais recente — Relatórios mensais .111
 
 A publicação vigente permanece `health-integrated-20261101.111`; o head reconciliado antes desta rodada é `43c83ba8db8fa66c4a9d396832fa68a141c59956` e o checkpoint privado é a versão 62. A jornada mensal distinta retomou o artefato exato `calendar-report-synthetic-evidence` 13070884236, SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`. Seus 32 cenários Chromium/WebKit passaram em 320/393/1440 px. Em 393 px, o mês anterior preservou período encerrado, cobertura por métrica, unidades, origens, gráficos, treino, exames, comparação e navegação; o PDF mensal manteve as mesmas ressalvas e separou origens sem somá-las. O estado vazio usou traços e declarou que lacunas não são zero. Nenhum defeito concreto foi observado, e o diff desde o último commit de runtime contém somente controles de continuidade.
@@ -92,3 +97,4 @@ O relatório final usa exatamente:
 - `Próximos passos`
 
 Ele informa o que foi comprovado, o que continua bloqueado e qual sinal encerra cada bloqueio. Nada importante pode existir apenas nesse relatório: o estado durável deve estar no repositório ou no ledger privado apropriado.
+

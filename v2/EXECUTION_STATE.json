@@ -49,30 +49,29 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-EXAMS-MOBILE-CONTROLS-026",
-    "status": "done",
-    "goal": "Make the primary Exams search and marker selector reliably touchable on mobile without changing laboratory data, interpretation or comparison rules.",
+    "id": "PKG-WATER-SOURCE-NAV-027",
+    "status": "in_progress",
+    "goal": "Open the water receiving status directly from missing-water actions and keep technical connection setup secondary.",
     "task_ids": [
-      "LTS-EXAMS-MOBILE-CONTROLS-001"
+      "LTS-WATER-SOURCE-NAV-001"
     ],
-    "candidate_build": "health-integrated-20261101.111",
+    "candidate_build": "health-integrated-20261101.112",
     "public_build": "health-integrated-20261101.111",
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "started_at_utc": "2026-11-01T04:48:32.000Z",
-    "completed_evidence": [
-      "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open-PR review found no overlapping implementation; only legacy PRs 367/354/348 remain open.",
-      "Read-only evidence remains at 65 genuine receipts, 10 water days through 13/10, 130 active-energy days through 30/10, no explicit total-energy row and no basal source/bounds/coverage verification. Existing support threads contain no new genuine response.",
-      "Exact .110 synthetic Exams inspection passed source/unit-separated graphs, dated values, full paginated history, collections, method disclosure, point selection, route return, immutable records, zero writes and zero external requests at mobile and desktop widths.",
-      "A concrete mobile usability defect remains: the primary marker search and selector render at 38px high on the 390px journey while the same screen already requires 44px touch targets for its navigation shortcuts.",
-      "Candidate .111 raises only Exams field controls to a 44px minimum and adds a focused browser assertion. Laboratory results, raw text, units, dates, references, methods, comparison boundaries, authentication and writes are unchanged.",
-      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows, including the pinned browser assertion for the 44px Exams controls.",
-      "Normal merge ff3e330c35592246002b36d82221d6857b621cda published .111 with 20/20 workflows successful, including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
-      "Independent Cloud Browser confirmed exact public .111 at #hoje, signed-out login display grid and 1363/1363px width after normal Pages propagation."
+    "pending_gates": [
+      "exact_candidate_workflows",
+      "responsive_water_receiving_journey",
+      "normal_publication",
+      "public_entry",
+      "protected_actual_auth"
     ],
-    "candidate_commit": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
-    "publication_commit": "ff3e330c35592246002b36d82221d6857b621cda",
-    "pending_validation_repetitions": []
+    "started_at_utc": "2026-11-01T11:42:36.000Z",
+    "completed_evidence": [
+      "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
+      "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
+      "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass.",
+      "Initial candidate CI identified an out-of-date preview hash inventory and an exact scroll-reset contract. The inventory is regenerated for the changed generic files; the existing two-frame reset remains verbatim, followed by the bounded contextual focus. No failed gate is counted as passed."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3320,6 +3319,29 @@
         "Independent Cloud Browser confirmed exact public .111 at #hoje with signed-out login visible and 1363/1363px width; protected real-auth remained a separate successful CI gate."
       ],
       "next_action": "Preserve the published 44px Exams controls and rotate the next concrete UX inspection to Reports."
+    },
+    {
+      "id": "LTS-WATER-SOURCE-NAV-001",
+      "area": "UX / hydration and source navigation",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Open the water receiving status directly from missing-water actions and keep technical connection setup secondary.",
+      "acceptance": [
+        "Water actions in the day/period cards and cockpit open the iPhone receiving status directly, with its heading visible and focused after asynchronous loading.",
+        "Other visits to Data and Sources retain their normal entry and no stale focus request.",
+        "A received-data gap explicitly distinguishes missing water from other received metrics; no source restoration or consumption is inferred.",
+        "Receipt verification remains immediately available; existing rotation/disconnection controls remain accessible inside secondary setup with their existing confirmations.",
+        "Responsive synthetic screenshots, candidate CI, publication, protected actual-auth and independent public-entry checks pass."
+      ],
+      "evidence": [
+        "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
+        "Exact .111 source-page evidence and the actual route handler show missing-water actions enter at the top, before Polar and other accounts, while the water receiver is lower on the page.",
+        "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
+        "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass."
+      ],
+      "next_action": "Complete the exact candidate browser and responsive gates, inspect synthetic images, publish by normal merge and verify the live version."
     }
   ],
   "package_history": [
