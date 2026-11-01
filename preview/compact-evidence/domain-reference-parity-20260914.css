@@ -38,6 +38,7 @@
   .ltsCompositionV2 .ltsSectionHead h2,.ltsLabsV2 .ltsSectionHead h2{font-size:16px!important;line-height:1.1!important;color:#111a29!important;margin-top:2px!important}
   .ltsCompositionV2 .ltsField,.ltsLabsV2 .ltsField{font-size:9px!important;color:#728096!important;margin-bottom:7px!important}
   .ltsCompositionV2 .ltsField select,.ltsLabsV2 .ltsField select,.ltsLabsV2 .ltsField input{min-height:38px!important;border-radius:11px!important;font-size:10.5px!important;background:#fff!important;color:#19263a!important;border-color:#dfe6ee!important}
+  .ltsLabsV2 .ltsField select,.ltsLabsV2 .ltsField input{min-height:44px!important}
 
   .ltsCompositionTabs{gap:5px!important;margin-right:-13px!important;padding-right:16px!important;padding-bottom:5px!important}
   .ltsCompositionTabs button{min-height:31px!important;padding:6px 9px!important;font-size:9px!important;border-radius:999px!important;box-shadow:none!important}
