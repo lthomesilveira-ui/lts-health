@@ -65,11 +65,12 @@
       "public_entry",
       "protected_actual_auth"
     ],
-    "started_at_utc": "2026-11-01T12:00:00.000Z",
+    "started_at_utc": "2026-11-01T11:42:36.000Z",
     "completed_evidence": [
       "Owner continuation feedback on 2026-11-01 explicitly rejects progress limited to repeat inspection and requests concrete autonomous UX remediation.",
       "The candidate uses a bounded single-use water context consumed only when its rendered receiving heading exists.",
-      "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass."
+      "Local syntax, promoted-source parity, Auto Export UI, connection/read-only boundaries, operational writes and privacy contracts pass.",
+      "Initial candidate CI identified an out-of-date preview hash inventory and an exact scroll-reset contract. The inventory is regenerated for the changed generic files; the existing two-frame reset remains verbatim, followed by the bounded contextual focus. No failed gate is counted as passed."
     ]
   },
   "last_verified_release": {

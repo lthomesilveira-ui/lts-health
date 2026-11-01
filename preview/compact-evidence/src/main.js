@@ -63,20 +63,21 @@ function resetRouteScroll(){
 function settleRouteScroll(route){
   const reset=()=>{if(state.route===route)resetRouteScroll();};
   reset();
-  requestAnimationFrame(()=>{reset();requestAnimationFrame(()=>{
-    reset();
+  requestAnimationFrame(()=>{reset();requestAnimationFrame(reset);});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
     if(state.route!==route||route!=='dados'||state.ui.sourceFocus!=='water')return;
     const heading=document.getElementById('health-auto-export-title');
     if(!heading)return;
     state.ui.sourceFocus=null;
     heading.closest('[data-health-auto-export]').scrollIntoView({block:'start',behavior:'auto'});
     heading.focus({preventScroll:true});
-  });});
+  }));
 }
 
 function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
+  if(route!=='dados')state.ui.sourceFocus=null;
   state.route=route;
   // pushState does not emit hashchange: apply route styling before rendering.
   if(!fixtureMode)document.body.dataset.productRoute=route;
