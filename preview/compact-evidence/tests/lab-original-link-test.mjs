@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {attachLabOriginals,labOriginalUrl,renderLabOriginalLink,labOriginalDocumentColumns} from '../src/lab-original-link.js';
-import {labOriginalFixture,LAB_ORIGINAL_ID} from './lab-original-fixture.mjs';
+import {labOriginalFixture,einsteinOriginalFixture,LAB_ORIGINAL_ID,EINSTEIN_ORIGINAL_ID} from './lab-original-fixture.mjs';
 globalThis.location={search:'?fixture=1'};
 const {fetchLaboratoryRows}=await import('../src/data-layer.js');
 const {state}=await import('../src/core.js');
@@ -27,6 +27,13 @@ assert.equal(labOriginalUrl(attachLabOriginals([valid],[document],false)[0]),nul
 assert.equal(attachLabOriginals([row],[],false)[0].original_pdf_status,'error');
 assert.equal(labOriginalUrl({...valid,original_pdf:{...valid.original_pdf,library_file_id:'bad'}}),null);
 assert.deepEqual({row,document},before,'source rows and document metadata never mutate');
+const e=einsteinOriginalFixture(),[einstein]=attachLabOriginals([e.row],[e.document]);
+assert.equal(labOriginalUrl(einstein),`https://chatgpt.com/library?file_id=${EINSTEIN_ORIGINAL_ID}&account_id=personal`);
+assert.match(renderLabOriginalLink(einstein),/Coleta: 02\/01\/2020 · Liberação no laudo: 12\/01\/2020/);
+for(const change of [f=>f.row.original_release_date='2020-02-30',f=>f.row.original_release_date='2019-01-01',f=>f.row.original_date_kind='report_release_date',f=>f.row.source_record_id='einstein-inventory',f=>f.document.document_date='2020-01-02',f=>f.document.original_collection_dates=['2021-01-02'],f=>f.document.original_collection_dates=['2020-01-02','2020-01-02'],f=>f.document.original_collection_dates='2020-01-02',f=>f.document.source='Fleury laboratory report',f=>f.document.original_import_version='unreviewed']){
+ const f=einsteinOriginalFixture();change(f);assert.equal(labOriginalUrl(attachLabOriginals([f.row],[f.document])[0]),null);
+}
+const released=einsteinOriginalFixture();released.row.report_date=released.row.original_release_date;released.row.original_date_kind='report_release_date';assert.ok(labOriginalUrl(attachLabOriginals([released.row],[released.document])[0]));
 
 function client({labsError=false,docsError=false}={}){
  const calls=[];return {calls,from(table){let columns,filters={},range;const q={select(v){columns=v;return q;},eq(k,v){filters[k]=v;return q;},range(a,b){range=[a,b];return q;},order(){return q;},then(resolve,reject){calls.push({table,columns,filters,range});const error=table==='health_lab_results'?labsError:docsError;const rows=table==='health_lab_results'?[row]:[document,{...document,document_type:'inventory'}];return Promise.resolve(error?{data:null,error:new Error('synthetic read unavailable')}:{data:rows.filter(r=>Object.entries(filters).every(([k,v])=>r[k]===v)),error:null}).then(resolve,reject);}};return q;}};

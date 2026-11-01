@@ -1,3 +1,11 @@
+# Em validação — originais Einstein e relatos completos, .115
+
+`PKG-ORIGINAL-SOURCE-RECOVERY-032` recuperou originais já fornecidos e reconciliou o briefing original com o estado operacional. O auditor Einstein concordou em duas extrações independentes; o reparo documental delimitado passou rollback, releitura exata, preservação das projeções clínicas/estruturadas e repetição sem alteração. Relatos completos substituem resumos nos campos documentais, preservando o resumo anterior. Coleta e liberação explícita do laudo ficam distintas junto ao original verificado; datas clínicas legadas não foram reescritas.
+
+A candidata .115 ainda depende de gates e publicação. As tarefas de fontes laboratoriais e reconciliação estão em execução, sem conclusão antecipada; as outras dez dependências permanecem explícitas. O manifesto original das quinze correções, o formulário comum genuíno e aceite global não foram substituídos por este reparo. Detalhes: `v2/releases/ORIGINAL_SOURCE_RECOVERY_20261101.md`.
+
+A .114 está concluída: PR481,21/21 workflows da candidata e24/24 de publicação aprovados, Edge12 relido exatamente, POST sem autenticação401 e real-auth41338834801 aprovado. Cloud Browser confirmou a entrada pública desconectada. Nenhum upload comum foi alegado.
+
 # Em validação — prévia privada do laudo Fleury, .114
 
 `PKG-FLEURY-AUTHENTICATED-PREVIEW-031` implementa leitura determinística do formato Fleury já validado, com valor bruto, unidade, coleta e página física. O original real foi comparado privadamente com a extração independente. Qualificadores não viram números exatos; cópias divergentes e trechos desconhecidos ficam retidos. A prévia usa a Inbox autenticada existente, mantém os resultados clínicos intactos e não abre um importador geral.

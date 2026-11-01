@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium,webkit} from 'playwright';
-import {labOriginalFixture,LAB_ORIGINAL_ID,LAB_ORIGINAL_TODAY} from '../preview/compact-evidence/tests/lab-original-fixture.mjs';
+import {labOriginalFixture,einsteinOriginalFixture,LAB_ORIGINAL_ID,EINSTEIN_ORIGINAL_ID,LAB_ORIGINAL_TODAY} from '../preview/compact-evidence/tests/lab-original-fixture.mjs';
 import {languageDatabase} from '../preview/compact-evidence/tests/consumer-language-fixture.mjs';
 import {sourceWindowService} from '../preview/compact-evidence/tests/source-window-service-fixture.mjs';
 const base='http://127.0.0.1:4173/v2/',origin=new URL(base),dir='lab-original-visual',results=[];
@@ -14,10 +14,11 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]]){
   const {row,document}=labOriginalFixture(),prior={...row,source_record_id:'synthetic-prior',collection_date:'2026-01-20',report_date:'2026-01-21',original_file_id:null,result_raw:'4,50',result_numeric:4.5};
   const textual={...row,source_record_id:'fleury:synthetic-text',biomarker:'Resultado textual',result_raw:'Ausente',result_numeric:null,unit:'',original_page:4};
   const unlinked={...row,source_record_id:'fleury:synthetic-mismatch',biomarker:'Sem original vinculado',original_sha256:'b'.repeat(64)};
-  const db=languageDatabase({labs:[prior,row,textual,unlinked],docs:[document]});
+  const einstein=einsteinOriginalFixture();
+  const db=languageDatabase({labs:[prior,row,textual,unlinked,einstein.row],docs:[document,einstein.document]});
   const sdk=sourceWindowService(db,{failTable});page.on('pageerror',e=>errors.push(e.message));
   await context.route('**/*',r=>{const q=r.request(),u=new URL(q.url());if(u.hostname==='cdn.jsdelivr.net'&&u.pathname==='/npm/@supabase/supabase-js@2'&&q.method()==='GET')return r.fulfill({contentType:'application/javascript',body:sdk});
-   if(u.origin==='https://chatgpt.com'&&u.pathname==='/library'&&u.searchParams.get('file_id')===LAB_ORIGINAL_ID&&u.searchParams.get('account_id')==='personal'){
+   if(u.origin==='https://chatgpt.com'&&u.pathname==='/library'&&[LAB_ORIGINAL_ID,EINSTEIN_ORIGINAL_ID].includes(u.searchParams.get('file_id'))&&u.searchParams.get('account_id')==='personal'){
     assert.equal(q.method(),'GET');assert.deepEqual([...u.searchParams.keys()].sort(),['account_id','file_id']);assert.equal(q.headers().referer,undefined);opened.push(true);return r.fulfill({contentType:'text/html',body:'<title>Synthetic laboratory original</title>'});}
    if(u.origin===origin.origin&&['GET','HEAD'].includes(q.method()))return r.continue();outside.push(q.method());return r.abort();
   });
@@ -42,6 +43,11 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]]){
     await page.locator('.ltsLabsHistory [data-lab-original]').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${engine}-${width}-history.png`,fullPage:true});
     await page.locator('#productLabMarkerSelect').selectOption('resultado textual');assert.equal(await page.locator('[data-lab-original]').count(),1);assert.match(await page.locator('.ltsLabsHistory').innerText(),/Ausente/);
     await page.locator('#productLabMarkerSelect').selectOption('sem original vinculado');assert.equal(await page.locator('[data-lab-original]').count(),0,'invalid metadata gives no original fallback');
+    await page.locator('#productLabMarkerSelect').selectOption('resultado einstein inventado');
+    assert.match(await page.locator('.ltsLabsHistory').innerText(),/Coleta: 02\/01\/2020 · Liberação no laudo: 12\/01\/2020/);
+    assert.equal(await page.locator('.ltsLabsHistory [data-lab-original]').getAttribute('href'),`https://chatgpt.com/library?file_id=${EINSTEIN_ORIGINAL_ID}&account_id=personal`);
+    await page.locator('.ltsLabsHistory [data-lab-original]').scrollIntoViewIfNeeded();await checkFit();
+    await page.screenshot({path:`${dir}/${engine}-${width}-einstein-history.png`,fullPage:true});
    }
   }
   await checkFit();assert.deepEqual(await page.evaluate(()=>window.__historyQA?.writes||[]),[]);assert.deepEqual(outside,[]);assert.deepEqual(errors,[]);

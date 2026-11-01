@@ -171,7 +171,7 @@ const manifest={
     "ux-coherence.css": "5f51f49e3d9312c54523257544daa86769ee093f31a35c349aefb73b0abbe6f7",
     "visual-convergence-20260914.css": "84580ab11e8775919f130a587625631ed1ef0ea212dceeb9cc49e336e5a4abd7",
     "water.css": "4b1245f9c6637f712d59847ac8e7da326f1451ba7bcda3f424a8aad3251038dd",
-    "src/lab-original-link.js": "f8bd7a17ef9be80508d431557c1262b780c728ec8c155b9456a513a6d9c6a966",
+    "src/lab-original-link.js": "9624bd8e469ca3be2aff6bb8cbfc1cc03b400d143d33d19080846cd35d0bd998",
     "src/fleury-preview.js": "a4908743ed5a42903bc820034aad396e8f22817cc19785be34cf69e6db085fb2"
   }
 };
@@ -193,8 +193,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261101\.114/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261101.114'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261101\.115/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261101.115'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';
