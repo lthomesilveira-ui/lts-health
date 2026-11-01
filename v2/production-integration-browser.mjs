@@ -129,6 +129,33 @@ for(const width of [320,393,1440]){
  await page.screenshot({path:`artifacts/production-integration/source-history-${width}.png`,fullPage:true});
  await page.screenshot({path:`artifacts/production-integration/source-viewport-${width}.png`});
  await mfpCard.screenshot({path:`artifacts/production-integration/source-card-${width}.png`});
+ // A missing-water action must reach its own receiving status, past Polar,
+ // without opening setup, changing keys, or leaving a sticky jump on other visits.
+ await page.evaluate(()=>{location.hash='hoje'});
+ await page.locator('[data-dashboard-card="water"] [data-source-focus="water"]').waitFor();
+ if(width===393)await page.setViewportSize({width,height:650});
+ await page.locator('[data-dashboard-card="water"] [data-source-focus="water"]').click();
+ await page.waitForFunction(()=>document.activeElement?.id==='health-auto-export-title');
+ const receiver=page.locator('[data-health-auto-export]');
+ assert.match(await receiver.locator('.pill').innerText(),/Água sem atualização/);
+ assert.match(await receiver.locator('.healthSourceCaution').innerText(),/Chegaram outros dados/);
+ const setup=receiver.locator('[data-disclosure="health-auto-export-setup"]');
+ assert.equal(await setup.getAttribute('open'),null,'water diagnosis does not open configuration');
+ for(const action of ['rotate','disconnect'])assert.equal(await receiver.locator(`[data-hae-action="${action}"]`).isVisible(),false,'configuration is secondary');
+ assert.equal(await receiver.locator('[data-hae-check]').isVisible(),true,'receipt check remains directly available');
+ const box=await receiver.locator('h2').boundingBox();
+ assert.ok(box.y>=0&&box.y+box.height<(width===393?650:900),'receiving heading is actually in view at '+width);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'targeted receiving status fits '+width);
+ await page.screenshot({path:`artifacts/production-integration/water-receiving-focus-${width}.png`});
+ await setup.locator('summary').click();
+ assert.equal(await receiver.locator('[data-hae-action="rotate"]').isVisible(),true,'existing configuration remains accessible');
+ await setup.locator('summary').click();
+ await page.evaluate(()=>{location.hash='hoje'});await page.locator('[data-health-dashboard]').waitFor();
+ await page.locator('.studyFooter [data-route="dados"]').click();
+ await page.getByRole('heading',{name:'Dados & fontes',exact:true}).waitFor();
+ await page.waitForFunction(()=>document.querySelector('#screenHost')?.scrollTop===0);
+ assert.equal(await page.evaluate(()=>document.activeElement?.id==='health-auto-export-title'),false,'ordinary source entry is not hijacked by prior context');
+ if(width===393)await page.setViewportSize({width,height:900});
  await page.evaluate(()=>{location.hash='tratamentos'});
  await page.getByRole('heading',{name:'Protocolos',exact:true}).waitFor();
  const legacy=await page.locator('.timelineItem.rich').filter({hasText:'Registro histórico de exemplo'}).innerText();

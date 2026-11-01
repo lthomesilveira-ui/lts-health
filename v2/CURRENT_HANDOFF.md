@@ -1,3 +1,7 @@
+# Em execução — acesso direto à situação da água, candidata .112
+
+O feedback de continuidade de 01/11 reabre uma ação concreta de UX: os atalhos da água abriam Dados e fontes no topo, antes do diagnóstico correspondente. `PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` adiciona contexto de navegação de uso único, posiciona e foca o recebimento do iPhone após o carregamento e preserva a entrada comum de Dados e fontes. A falta de atualização de água ganha estado próprio; troca de chave e interrupção de envios permanecem na configuração secundária com as confirmações existentes. Nenhum dado, origem, chave, configuração física ou escrita é alterado. A correção está em validação, não publicada; os bloqueios independentes da integração e o aceite global continuam abertos.
+
 # Relatórios — jornada mensal exata .111 sem defeito de runtime, 01/11/2026
 
 O head `43c83ba8db8fa66c4a9d396832fa68a141c59956`, o checkpoint privado versão 62 e os PRs abertos foram reconciliados antes da rodada; apenas 367/354/348 permanecem e não se sobrepõem. O artefato exato `calendar-report-synthetic-evidence` 13070884236 conferiu com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`. Seus 32 cenários Chromium/WebKit passaram em 320/393/1440 px, sem escrita ou tráfego externo.
@@ -892,4 +896,5 @@ The approved source remains in the owner's private Drive as `LTS Health - refere
 ## Next action
 
 Do not ask the owner to judge `.29`; it was explicitly rejected. Promote candidate `.30` only through a normal PR, then open the exact public build, authenticate, navigate affected areas, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
+
 
