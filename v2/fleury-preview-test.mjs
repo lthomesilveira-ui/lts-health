@@ -28,6 +28,12 @@ let calls=0;await assert.rejects(()=>readFleuryPdf(new Uint8Array(FLEURY_LIMITS.
 await assert.rejects(()=>readFleuryPdf(new TextEncoder().encode('wrong'),()=>{calls++}),/invalid_pdf_header/);assert.equal(calls,0);
 let destroyed=false;
 await assert.rejects(()=>readFleuryPdf(new TextEncoder().encode('%PDF-invented'),async()=>({numPages:65,destroy:async()=>{destroyed=true;}})),/pdf_page_limit/);assert.equal(destroyed,true);
+const preservedBytes=new TextEncoder().encode('%PDF-invented');
+await readFleuryPdf(preservedBytes,async data=>{
+  structuredClone(data,{transfer:[data.buffer]});
+  return{numPages:1,destroy:async()=>{},getPage:async()=>({getViewport:()=>({width:595,height:842}),getTextContent:async()=>({items:[{str:assay(),transform:[1,0,0,1,14,700],width:50,dir:'ltr'}]}),cleanup(){}})};
+});
+assert.equal(preservedBytes.byteLength,13,'PDF worker transfer must not detach caller original bytes');
 const lab={kind:'fleury_lab_preview_v1',read_only:true,results:copies.results,source_verified:false,history_available:false,unsupported_count:0,conflicts:[]};
 const preview={upload_id:'invented',lab_preview:lab};
 assert.equal(fleuryPreviewModel(preview).complete,false);
@@ -36,6 +42,12 @@ lab.source_verified=true;lab.history_available=true;lab.results[0].already_in_hi
 assert.equal(fleuryPreviewModel(preview).complete,true);
 assert.match(renderFleuryPreview(preview),/Nenhum exame foi duplicado ou alterado/);
 assert.match(renderFleuryPreview(preview),/tabindex="0"/);
+lab.source_sha256='1'.repeat(64);
+const original={original_pdf_status:'ready',original_pdf:{schema_version:1,status:'source_verified',library_file_id:'libfile_'+'1'.repeat(32),source_sha256:'1'.repeat(64),page:1,page_count:2}};
+assert.match(renderFleuryPreview(preview,undefined,[original]),/Abrir laudo original/);
+assert.match(renderFleuryPreview(preview,undefined,[original]),/referrerpolicy="no-referrer"/);
+assert.ok(!renderFleuryPreview(preview,undefined,[{...original,original_pdf:{...original.original_pdf,source_sha256:'2'.repeat(64)}}]).includes('Abrir laudo original'));
+assert.ok(!renderFleuryPreview(preview,undefined,[{...original,original_pdf_status:'error'}]).includes('Abrir laudo original'));
 lab.results[0].biomarker='<img src=x onerror=alert(1)>';
 assert.ok(!renderFleuryPreview(preview).includes('<img'));
 assert.match(renderFleuryPreview(preview),/&lt;img/);

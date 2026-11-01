@@ -211,7 +211,9 @@ export async function readFleuryPdf(bytes, getDocumentProxy) {
   if(new TextDecoder().decode(bytes.slice(0,5))!=='%PDF-')throw new Error('invalid_pdf_header');
   let pdf;
   try {
-    pdf=await getDocumentProxy(bytes,{isEvalSupported:false,disableFontFace:true,useSystemFonts:true,maxImageSize:16777216,verbosity:0});
+    // PDF.js may transfer and detach its input buffer. Keep the caller's
+    // original bytes available for independent hashing and preservation checks.
+    pdf=await getDocumentProxy(bytes.slice(),{isEvalSupported:false,disableFontFace:true,useSystemFonts:true,maxImageSize:16777216,verbosity:0});
     if(pdf.numPages<1||pdf.numPages>FLEURY_LIMITS.pages)throw new Error('pdf_page_limit');
     const pages=[],started=performance.now();let itemCount=0,textSize=0;
     for(let n=1;n<=pdf.numPages;n++){

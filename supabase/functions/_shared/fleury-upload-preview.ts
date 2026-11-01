@@ -18,8 +18,9 @@ export async function inspectFleuryPdf(sb: any, file: Blob) {
     const bytes=new Uint8Array(await file.arrayBuffer());
     const sha256=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
     const parsed=await readFleuryPdf(bytes,getDocumentProxy);
-    const {data:documents,error:documentError}=await sb.from('health_documents').select('checksum,extraction_status,confidence').eq('checksum',sha256);
-    const source_verified=!documentError && (documents||[]).some((d:any)=>d.extraction_status==='validated'&&d.confidence==='high');
+    const {data:documents,error:documentError}=await sb.from('health_documents').select('source_record_id,document_type,source,checksum,extraction_status,confidence,original_import_version:source_payload->>import_version,original_page_count:source_payload->page_count').eq('checksum',sha256);
+    const verifiedDocuments=(documents||[]).filter((d:any)=>d.source_record_id===`fleury:document:${sha256}`&&d.checksum===sha256&&d.document_type==='laboratory_report'&&d.source==='Fleury laboratory report'&&d.extraction_status==='validated'&&d.confidence==='high'&&['reviewed-20261003-v1','fleury-source-audit-v1'].includes(d.original_import_version)&&d.original_page_count===parsed.page_count);
+    const source_verified=!documentError&&verifiedDocuments.length===1;
     let history_available=false, history_matches=0;
     const results=parsed.results.map((row:any)=>({...row,already_in_history:false}));
     if(source_verified){
@@ -42,7 +43,7 @@ export async function inspectFleuryPdf(sb: any, file: Blob) {
     return {
       parserVersion:FLEURY_PREVIEW_VERSION,
       p:{detected_format:'pdf',detected_schema:'fleury_text_report',row_count:results.length,column_names:['biomarker','result_raw','unit','collection_date','pdf_page'],
-        sample:{source_sha256:sha256,lab_preview:{kind:parsed.kind,read_only:true,results,page_count:parsed.page_count,document_print_dates:parsed.document_print_dates,source_verified,history_available,history_matches,unsupported_count:parsed.unsupported_blocks.length,conflicts:parsed.conflicts}},
+        sample:{source_sha256:sha256,lab_preview:{kind:parsed.kind,read_only:true,results,page_count:parsed.page_count,document_print_dates:parsed.document_print_dates,source_sha256:sha256,source_verified,history_available,history_matches,unsupported_count:parsed.unsupported_blocks.length,conflicts:parsed.conflicts}},
         date_min:dates[0]||null,date_max:dates.at(-1)||null,status:verified?'inspected':'review_required',
         warnings:verified?['Leitura conferida com o original já validado e os resultados presentes no histórico. Nenhum exame foi duplicado ou alterado.']:['Prévia de leitura: nenhum resultado foi incluído ou alterado. Referências, método e interpretação continuam no laudo original.']},
       auto:{imported:0,lab_preview:true}

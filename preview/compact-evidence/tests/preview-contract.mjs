@@ -20,7 +20,7 @@ const manifest={
     "dashboard-parity.css": "c370a25ea7e501fc4bff32e5d9463cbcbb489f7cb6e026fbccf260485ea20826",
     "dashboard-pixel-parity.css": "391ee883ea04982dd5f8c133fd3621a64972f3e1b8bee093a4e3cf8772cfe639",
     "dashboard-reference-contract.css": "f6af7d09fa862026cf9fb2da3ea39e8abe9999e786d5199d5544b2f075ac7d93",
-    "data.css": "d172376f38de71c6a34840eca52f72ebbb75db6c8831322e796156ab954a3063",
+    "data.css": "e9a188d6ae64f55c1dceb5f4817e84d6a5bf990f4ef2e8dfb1c286e930b36aaa",
     "details.css": "9dc9aba99add9f399f395bf9312c0db6b690a21739cba44e38036d24f1df8eb0",
     "domain-reference-parity-20260914.css": "1de1275a52a7af5d07bd6a0a74f8cb0badd7d57969f91c92ef3e8d1cdab7cde1",
     "entry.css": "4448b31b193f468eb741f1e1ea646b293936abb615093b6232d1a224071152d4",
@@ -74,7 +74,7 @@ const manifest={
     "src/dashboard-changes.js": "2826da829e3fe46cd62c1939e53e9cb2faa3b097d3bea11757a188faa991fc7a",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
     "src/data-layer.js": "d331a681db823af638a67e0e2cef154fea9b3a8446b7973cabcb9523c20c85ee",
-    "src/data-screen.js": "f6232f5714733520dd943a89e31ba7d4895224f5721d613e7fa09192109292b1",
+    "src/data-screen.js": "11de9602c3d85376bc541223f6f7a1cd2932480996188cbd69b30afb2fa6f2a2",
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
     "src/documented-training-plan.js": "6d0d1415c129327585047b8e8c3477ddcec178fdb8c4c9ad43a25524a56d3bf5",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
@@ -172,7 +172,7 @@ const manifest={
     "visual-convergence-20260914.css": "84580ab11e8775919f130a587625631ed1ef0ea212dceeb9cc49e336e5a4abd7",
     "water.css": "4b1245f9c6637f712d59847ac8e7da326f1451ba7bcda3f424a8aad3251038dd",
     "src/lab-original-link.js": "f8bd7a17ef9be80508d431557c1262b780c728ec8c155b9456a513a6d9c6a966",
-    "src/fleury-preview.js": "91bd52372672564a4c1ab774c40cf88b192ab1ce58526b97e070e65dc5d7f5f6"
+    "src/fleury-preview.js": "a4908743ed5a42903bc820034aad396e8f22817cc19785be34cf69e6db085fb2"
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
