@@ -1,3 +1,11 @@
+# Published source recovery — .115 verified
+
+PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b is exactly the ecd9021 runtime candidate tree.19 candidate workflows passed. Final original-source artifact13096669846, sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911, passed mobile/desktop acceptance and was inspected. Deploy and both Pages checks passed; independent Cloud Browser confirmed .115 signed out.
+
+Protected run41341747378 failed an obsolete assumption that every collection of one marker used one PDF. A private independent projection reproduced that false assumption with distinct valid originals; source links themselves validated. The corrected check binds each displayed row to its own collection date, laboratory and verified source document, retains missing/ambiguous-source rejection, and checks the explicit qualitative release date. Protected actual-auth41342289673 passed against the published .115. The test fix changes no application runtime or data; the earlier failure is retained.
+
+The laboratory-source and original-request reconciliation criteria are complete in their stated scope. No complete historical transcript, missing clinical correction manifest, general PDF import, ordinary form persistence or global owner acceptance is claimed. The prepared genuine original-file form flow starts as package033 and currently needs secure interactive sign-in.
+
 # Original sources and complete workout reports — candidate .115
 
 The earlier source inventory lacked the original Einstein bundle and several complete workout reports. The previously supplied files have now been recovered privately. The bounded repair restores literal owner text in existing workouts and connects existing laboratory results to their independently verified original PDF pages. Structured exercises, sets, telemetry, collection dates, clinical results, references and prescriptions are preserved.
