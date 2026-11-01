@@ -1,3 +1,11 @@
+# Treinos — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+O artefato exato `training-visual-report-synthetic` 13072880353 de `health-integrated-20261101.111` conferiu com SHA-256 `e4ff3ecb3e1728affe4b1d714cc6f5f8cf792f0b6d5bd42bb2b1988b455c1439`; os quatro cenários de sessão passaram em 320/393/1180/1440 px. A inspeção visual percorreu resumo → distribuição e gráfico → exercícios/séries → histórico e registro anterior → comentário e relato original literais → retorno. Datas, duração, energia, frequência cardíaca, carga, repetições, equipamento, grupo, fases de trabalho/aquecimento/drop/falha, prolongamentos, extensões, ausência e estados de erro/recuperação permaneceram claros. Não houve overflow horizontal, sobreposição, perda de unidade ou defeito concreto; runtime, dados e build não mudaram.
+
+Antes da leitura, `main` em `bb62ffa05e83520caa8ac2707cc34ed6633ce960`, checkpoint privado versão 58 e PRs abertos foram reconciliados. Apenas os PRs legados 367/354/348 permanecem, sem sobreposição. Supabase permaneceu somente leitura: 65 recebimentos genuínos, 10 dias canônicos de água até 13/10, zero série explícita de gasto total, 117 candidatos basais sem fonte/limites/cobertura verificada e energia ativa recente ainda candidata, separada dos 98 dias canônicos. Não surgiu resposta genuína de suporte/exportação; não houve contato externo, escrita no banco, registro fictício, inferência de fonte, soma basal ou alegação de adoção do plano documental.
+
+Cloud Browser confirmou separadamente a entrada pública `.111` em `#hoje`, desconectada e com a fronteira privada de login intacta. Isso não substitui a jornada sintética da área de saúde nem o gate protegido de autenticação real já aprovado. Fila: 99 `done`, 0 `in_progress`, 14 `blocked_external`, 2 `accepted_gap` e zero executáveis. Próxima área rotativa: composição.
+
 # Relatórios — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 A evidência exata de `health-integrated-20261101.111` foi retomada pelo artefato `calendar-report-synthetic-evidence` 13070884236, com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`. Os 32 cenários Chromium/WebKit passaram em 320/393/1440 px, incluindo semana/mês, vazio/erro, falha e repetição de impressão, PDF local e detectores de clipping.
