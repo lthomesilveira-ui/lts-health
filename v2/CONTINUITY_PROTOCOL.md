@@ -2,7 +2,7 @@
 
 ## Checkpoint mais recente — Reports .107
 
-A publicação `health-integrated-20261031.107` corrige somente o retorno contextual Reports → Training → Voltar; entrada direta em Training continua voltando para Home. Candidata 17/17, deploy/Pages/homologação/relatórios/prévia isolada e autenticação real aprovados. A repetição Integrated Production `41255413339` permanece pendente e não conta como sucesso. Fila: 94 done, 14 blocked_external, 2 accepted_gap; próxima inspeção: training.
+A publicação `health-integrated-20261031.107` corrige somente o retorno contextual Reports → Training → Voltar; entrada direta em Training continua voltando para Home. Candidata 17/17, deploy/Pages/homologação/relatórios/prévia isolada e autenticação real aprovados. Integrated Production `41255413339` teve a tentativa 1 cancelada enquanto a instalação do navegador estava bloqueada; a tentativa oficial 2 concluiu com sucesso. O cancelamento permanece no histórico e somente a repetição aprovada conta. Fila: 94 done, 14 blocked_external, 2 accepted_gap; próxima inspeção: training.
 
 Objetivo: qualquer nova sessão deve conseguir retomar o projeto com o estado real, sem depender da memória do chat e sem reabrir decisões já comprovadas.
 
