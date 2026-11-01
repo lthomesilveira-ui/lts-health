@@ -22,7 +22,9 @@ export async function verifyLaboratoryOriginalFlow(page,navigate){
  const matches=await page.locator('[data-lab-original]').evaluateAll((links,expected)=>links.length>0&&links.every(a=>a.getAttribute('href')===expected&&a.target==='_blank'&&a.rel==='noopener noreferrer'&&a.referrerPolicy==='no-referrer'),choice.url);
  if(!matches)throw Error('Protected laboratory original access differs from the independent source/document identity');
  await page.locator('#productLabMarkerSelect').selectOption(choice.einstein.marker);
- await page.waitForSelector('.ltsPointReadout [data-lab-original]');
- const source=page.locator('.ltsPointReadout .ltsLabOriginal');
+ // The legacy-date examples are qualitative. They stay in the complete
+ // history; a numeric chart point must never be manufactured for this check.
+ await page.waitForSelector('.ltsLabsHistory [data-lab-original]');
+ const source=page.locator('.ltsLabsHistory .ltsLabOriginal');
  if(await source.locator('a').getAttribute('href')!==choice.einstein.url||!(await source.innerText()).includes('Liberação no laudo: '+choice.einstein.releaseLabel))throw Error('The exact Einstein original and explicit source release date did not reach the protected application');
 }
