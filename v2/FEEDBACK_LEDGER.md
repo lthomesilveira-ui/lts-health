@@ -1,3 +1,13 @@
+# Training observed-week context — .108 published and verified, 01/11/2026
+
+- A 393x844 invented-data preview using the production Training renderers reviewed the summary, recorded-session detail and documentary-plan comparison. Session measures, chart context, Polar provenance, exercise counts and the plan’s reference-only limits remained clear.
+- One concrete interpretation defect was found: with the 23/10/2026 recorded session selected, the independent current week correctly showed zero sessions but exposed only “26/10/2026”. The Monday–Sunday boundary and 26/10–01/11/2026 range were not visible.
+- The bounded fix now labels “Semana observada · segunda a domingo”, shows the full date range and names the fact “Sessões na semana observada”. It changes no calculation, health record, unit, source, authentication or write path, and it does not infer plan adoption, start, progression or adherence.
+- Mobile revalidation confirmed the complete range and no horizontal overflow (393/393px viewport; 352/352px Training content). PR460 exact candidate `1cab38fcc353b35f4eeaa8c9fe1dbd922b90ca4b` passed 16/16 workflows; normal merge `dab1b0343a63142540188bf46bc0c7521a178a45` published `health-integrated-20261101.108`; all 20 exact publication workflows passed without retry.
+- Independent Cloud Browser verified the exact public .108 at the stable URL: signed-out login visible, private app hidden, `#hoje` retained and 1363/1363px width. This signed-out inspection, the invented-data health journey and protected real-auth CI remain distinct evidence.
+- Fresh reconciliation found no overlapping active PR, no new support receipt and no external unlock. Supabase remains read-only evidence: 64 receipts, 1 owner, 1,588 accepted metrics, 1,590 source rows, 10 water dates (latest 13/10), zero explicit total-energy source/public values, 116 basal candidates and zero verified basal origin/coverage. No email, third-party message, database write, invented production record, source inference, basal summation, medication or laboratory correction was made.
+- Queue after the package: 95 done, 14 blocked_external, 2 accepted_gap, 0 ready/in_progress. Next concrete UX area: Composition.
+
 # Reports contextual Training return — .107 published and verified, 01/11/2026
 
 The 393x844 weekly-report journey kept 19–25/10/2026 dates, coverage, units, metric tabs, sources, complete details and phone width clear. One concrete defect was found: after Reports → Ver treinos, Training → Voltar lost the report and returned Home.
