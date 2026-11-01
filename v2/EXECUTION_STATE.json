@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-POLAR-ORIGINAL-RECOVERY-030",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Recover original non-overlapping Polar history and retire implementation alternatives already replaced by the approved bridge.",
     "task_ids": [
       "LTS-POLAR-ORIGINAL-RECOVERY-001",
@@ -62,12 +62,164 @@
     "runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": true,
-    "pending_gates": [
-      "candidate source/continuity/privacy checks",
-      "protected real-auth original source read and model check"
-    ],
+    "pending_gates": [],
     "completed_evidence": [
-      "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred."
+      "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
+      "All sixteen final candidate workflows completed successfully at 3e4705c40d419a5e79b0323eb55359f84248870a. Protected actual-auth source read/model verification41323470318 passed on the identical source implementation.",
+      "Normal PR478 promotion 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 has the exact verified candidate tree f68789db7efa9401c21aeb1d0fc34e14d5bb1aeb. Source observations were already saved, reread and replayed idempotently; no frontend asset changed."
+    ],
+    "completed_at_utc": "2026-11-01T16:08:46Z",
+    "publication": {
+      "candidate": "3e4705c40d419a5e79b0323eb55359f84248870a",
+      "merge": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
+      "tree": "f68789db7efa9401c21aeb1d0fc34e14d5bb1aeb",
+      "source_auth_run": 41323470318,
+      "candidate_run_ids": [
+        41323981443,
+        41323981386,
+        41323981379,
+        41323981445,
+        41323981351,
+        41323981382,
+        41323981481,
+        41323981353,
+        41323981593,
+        41323981420,
+        41323981410,
+        41323981402,
+        41323981348,
+        41323981412,
+        41323981446,
+        41323981385
+      ]
+    },
+    "post_publication_repetitions": [
+      {
+        "id": 41324827267,
+        "name": "LTS Health v2 Homologation Pages Smoke",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324827273,
+        "name": "LTS Health v2 Pages Smoke",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794726,
+        "name": "LTS Health Isolated Preview",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794661,
+        "name": "LTS Health Cockpit Experience",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794800,
+        "name": "LTS Health Visual Training Report",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794837,
+        "name": "LTS Health calendar reports and local PDF",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794756,
+        "name": "LTS Health iPhone Home Screen",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794652,
+        "name": "LTS Health Polar background",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794708,
+        "name": "LTS Health Timeline Smoke",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794797,
+        "name": "LTS Health Functional Depth",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794737,
+        "name": "LTS Health Documented Plan Comparison",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794651,
+        "name": "LTS Health Integrated Production",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794668,
+        "name": "LTS Health Laboratory Originals",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794707,
+        "name": "LTS Health Real Auth E2E",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 41324794823,
+        "name": "LTS Health v2 Nutrition History Smoke",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794799,
+        "name": "LTS Health Fleury source audit",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794938,
+        "name": "LTS Health Smoke",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794665,
+        "name": "LTS Health Polar original history review",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794709,
+        "name": "LTS Health Auto Export",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794805,
+        "name": "Deploy LTS Health",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 41324794654,
+        "name": "LTS Health Recovery Depth Smoke",
+        "status": "completed",
+        "conclusion": "success"
+      }
     ]
   },
   "last_verified_release": {
@@ -3178,7 +3330,7 @@
       "id": "LTS-POLAR-ORIGINAL-RECOVERY-001",
       "area": "Original source recovery",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Recover eligible original Polar observations from the already supplied Apple Health archive without duplicating provider history or changing canonical sessions.",
       "acceptance": [
@@ -3192,9 +3344,11 @@
         "v2/apple-polar-history-review-test.py",
         "v2/real-auth-polar-history-checks.mjs",
         "v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md",
-        "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred."
+        "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
+        "All sixteen final candidate workflows completed successfully at 3e4705c40d419a5e79b0323eb55359f84248870a. Protected actual-auth source read/model verification41323470318 passed on the identical source implementation.",
+        "Normal PR478 promotion 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 has the exact verified candidate tree f68789db7efa9401c21aeb1d0fc34e14d5bb1aeb. Source observations were already saved, reread and replayed idempotently; no frontend asset changed."
       ],
-      "next_action": "Finish candidate gates and protected authenticated read/model verification, then record the bounded recovery as complete.",
+      "next_action": "Preserve the recovered source history and private audit. Do not repeat the original import or infer the separate legacy-workout linkage.",
       "blocker": null
     }
   ],
@@ -9280,7 +9434,15 @@
       "viewport": "320/393/1440, including 650 px height",
       "result": "observed_submission_and_inventory_defects_corrected_and_verified"
     },
-    "open_dependency_policy": "Two replaced implementation alternatives are superseded, not verified as done. Original water, legacy linkage, laboratory proposal, basal coverage, ordinary-form persistence and actual owner acceptance remain independent."
+    "open_dependency_policy": "Two replaced implementation alternatives are superseded, not verified as done. Original water, legacy linkage, laboratory proposal, basal coverage, ordinary-form persistence and actual owner acceptance remain independent.",
+    "latest_source_recovery": {
+      "package_id": "PKG-POLAR-ORIGINAL-RECOVERY-030",
+      "status": "done",
+      "remaining_external_dependencies": 12,
+      "superseded_alternatives": 2,
+      "global_owner_acceptance": "open",
+      "source_data_write_is_not_ordinary_form_proof": true
+    }
   },
   "continuity_review_history": [
     {

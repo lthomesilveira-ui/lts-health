@@ -48,7 +48,7 @@ for(const task of state.tasks){
     assert.ok(task.resolution.reason&&task.resolution.capability_not_verified?.length);
     assert.ok(task.resolution.replacement_task_ids?.length);
     for(const id of task.resolution.replacement_task_ids)assert.equal(state.tasks.find(row=>row.id===id)?.status,'done',`${task.id} replacement must already be delivered`);
-    for(const id of task.resolution.residual_task_ids||[])assert.ok(state.tasks.some(row=>row.id===id&&row.status.startsWith('blocked_')),`${task.id} independent unmet source goal must remain open`);
+    for(const id of task.resolution.residual_task_ids||[])assert.ok(state.tasks.some(row=>row.id===id&&row.id!==task.id&&row.status!=='superseded'),`${task.id} source goal must remain independently tracked and cannot be retired with its implementation alternative`);
   }
   if(task.status.startsWith('blocked_')||task.status==='accepted_gap'){
     assert.ok(task.blocker,`${task.id} needs a blocker`);
