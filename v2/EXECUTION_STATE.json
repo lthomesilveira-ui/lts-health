@@ -9476,8 +9476,8 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T03:42:38.000Z",
-    "source_main_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
+    "reviewed_at_utc": "2026-11-01T03:55:22.000Z",
+    "source_main_commit": "e9184fe84e66c9cff7eb887182efb497c6d372bd",
     "runtime_build": "health-integrated-20261101.110",
     "candidate_build": null,
     "runtime_changed": false,
@@ -9490,23 +9490,21 @@
     },
     "executable_task_count": 0,
     "evidence": [
-      "Fresh main and open-PR review found no recent overlapping implementation; only legacy PRs 367/354/348 remain open. PR462 is merged and exact .109 publication commit 2c6ed4203b4b88835ba79f2fc4d46c376c106716 completed 20/20 workflows successfully.",
-      "Read-only project evidence confirms 10 canonical dietary_water_ml rows from 04–13/10/2026, all Health Auto Export authenticated receipts. The latest genuine accepted payload contained 19 supported metrics and explicitly zero water blocks/metrics; the receiver did not reject or drop water.",
-      "The genuine August Apple Health original was streamed read-only and contained no DietaryWater records, so it cannot backfill water. No missing value became zero, no synthetic production record was created and no provider security control was bypassed.",
-      "Observed Home UX left an empty water card without an immediate recovery action. Candidate .110 shows the last genuine selected-source value when available and always exposes Registrar água plus Ver sincronização for an empty current window.",
-      "Candidate .110 adds the active-energy recorded total for the selected period/source while retaining the daily mean and explicitly stating that it is not total expenditure. Explicit total-energy remains independent and unavailable when absent.",
-      "Focused model/render, empty-history, data-quality, source parity, preview hashes, production graph, public audit, active presentation, continuity, hydration and fake-transport write-boundary checks passed locally.",
-      "PR463 exact candidate b44a2cd246a26bfa3bb367593a3485e907ae54e7 completed 17/17 workflows successfully after CI exposed and the branch corrected mobile height/order and clipping defects.",
-      "Normal merge 4965a1d5b9cba86e5565f17e0f960782d34a8032 publishes .110; all 21 exact publication workflows completed successfully, including deploy, Pages, reports/PDF, isolated preview and protected real-auth.",
-      "Independent Cloud Browser confirmed exact public .110, #hoje, signed-out login boundary and 1363/1363px width. No private manual session or physical-iPhone repetition is claimed."
+      "Fresh origin/main e9184fe84e66c9cff7eb887182efb497c6d372bd, the private checkpoint version 55 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Nutrition/continuity review.",
+      "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10, 130 active-energy days through 30/10 and no explicit total-energy source row. Basal candidates still lack source/bounds/verification, so no blocker was reclassified and no value was invented or summed.",
+      "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
+      "Independent public inspection confirms exact health-integrated-20261101.110 at #hoje with the signed-out login boundary intact and 1363/1363px width. This is not claimed as an authenticated health-area session.",
+      "The exact .110 isolated-preview artifact inspected Nutrition with invented data at 320, 393, 1180 and 1440px. Plan date and retrospective status, explicit opt-in, selected origins, per-metric coverage, units, incomplete-day exclusion, independent water history and absent-day semantics remained clear.",
+      "The apparent edge in one mobile evidence tile was only viewport framing: the target was fully visible and the gate independently proves document, body, host and card widths, 44px controls, no text overlap, no writes and no external requests. No runtime defect was observed in this journey.",
+      "CONTINUITY_PROTOCOL.md still named Reports .107 and queue 94 despite current .110 evidence. This bounded documentation correction aligns the durable resumption checkpoint without changing runtime, authentication, data or release evidence."
     ],
     "ux_review": {
-      "area": "home / water and energy",
-      "next_area": "nutrition",
-      "mode": "synthetic production renderers plus genuine read-only database/receiver evidence plus public signed-out plus protected real-auth",
-      "viewport": "393x844 and public desktop",
-      "result": "published_water_recovery_and_active_total_verified",
-      "journey_without_additional_defect": "Composition .109 point-to-detail journey remains separately published and verified through its exact 20/20 publication workflows."
+      "area": "nutrition",
+      "next_area": "exams",
+      "mode": "exact_synthetic_110_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
+      "viewport": "320x844, 393x844, 1180x900, 1440x900 and public desktop",
+      "result": "no_runtime_defect_observed_continuity_checkpoint_corrected",
+      "journey_without_additional_defect": "Nutrition preserved documentary-plan limits, plan/source dates, source isolation, coverage, units, missing-data semantics, independent water detail and mobile readability without overlap or horizontal overflow."
     }
   },
   "continuity_review_history": [
@@ -10186,6 +10184,41 @@
         "viewport": "393x844 and public desktop",
         "result": "observed_week_range_published_and_verified",
         "journey_without_additional_defect": "Training summary, session measures, series-by-group caveat, recent-session chart, Polar provenance, exercise counts and documentary-plan limits remained clear"
+      }
+    },
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T03:42:38.000Z",
+      "source_main_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
+      "runtime_build": "health-integrated-20261101.110",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 98,
+        "in_progress": 0,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Fresh main and open-PR review found no recent overlapping implementation; only legacy PRs 367/354/348 remain open. PR462 is merged and exact .109 publication commit 2c6ed4203b4b88835ba79f2fc4d46c376c106716 completed 20/20 workflows successfully.",
+        "Read-only project evidence confirms 10 canonical dietary_water_ml rows from 04–13/10/2026, all Health Auto Export authenticated receipts. The latest genuine accepted payload contained 19 supported metrics and explicitly zero water blocks/metrics; the receiver did not reject or drop water.",
+        "The genuine August Apple Health original was streamed read-only and contained no DietaryWater records, so it cannot backfill water. No missing value became zero, no synthetic production record was created and no provider security control was bypassed.",
+        "Observed Home UX left an empty water card without an immediate recovery action. Candidate .110 shows the last genuine selected-source value when available and always exposes Registrar água plus Ver sincronização for an empty current window.",
+        "Candidate .110 adds the active-energy recorded total for the selected period/source while retaining the daily mean and explicitly stating that it is not total expenditure. Explicit total-energy remains independent and unavailable when absent.",
+        "Focused model/render, empty-history, data-quality, source parity, preview hashes, production graph, public audit, active presentation, continuity, hydration and fake-transport write-boundary checks passed locally.",
+        "PR463 exact candidate b44a2cd246a26bfa3bb367593a3485e907ae54e7 completed 17/17 workflows successfully after CI exposed and the branch corrected mobile height/order and clipping defects.",
+        "Normal merge 4965a1d5b9cba86e5565f17e0f960782d34a8032 publishes .110; all 21 exact publication workflows completed successfully, including deploy, Pages, reports/PDF, isolated preview and protected real-auth.",
+        "Independent Cloud Browser confirmed exact public .110, #hoje, signed-out login boundary and 1363/1363px width. No private manual session or physical-iPhone repetition is claimed."
+      ],
+      "ux_review": {
+        "area": "home / water and energy",
+        "next_area": "nutrition",
+        "mode": "synthetic production renderers plus genuine read-only database/receiver evidence plus public signed-out plus protected real-auth",
+        "viewport": "393x844 and public desktop",
+        "result": "published_water_recovery_and_active_total_verified",
+        "journey_without_additional_defect": "Composition .109 point-to-detail journey remains separately published and verified through its exact 20/20 publication workflows."
       }
     }
   ],
