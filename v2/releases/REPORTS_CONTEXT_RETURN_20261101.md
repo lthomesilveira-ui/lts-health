@@ -22,7 +22,7 @@ At 393x844, Reports → **Ver treinos** opened Training correctly, but **Voltar*
 - PR458 candidate `ba60a1aa4db29f8973900f0f5a1a6ee21aec011b`: 17/17 successful workflows;
 - publication `5ab534d7e614a1feb5f69555e161db59dee8dbbc`: deploy, Pages, homologation, reports/PDF, isolated preview and protected real-auth retry succeeded;
 - first real-auth attempt's transient CSS 503 remains recorded as failure; official retry succeeded;
-- Integrated Production publication run `41255413339` remains pending and is not counted as success;
+- Integrated Production publication run `41255413339` attempt 1 was cancelled while browser installation was blocked; official attempt 2 succeeded and the cancellation remains recorded;
 - independent public signed-out inspection confirms exact .107, login visible and private app hidden.
 
 No private data, screenshots, tokens or invented production records are included.
