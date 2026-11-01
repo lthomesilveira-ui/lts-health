@@ -1,3 +1,9 @@
+# Nutrição — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+A jornada móvel e desktop de `health-integrated-20261101.111` percorreu plano documental, data e limites, opt-in retrospectivo, origem/janela, referências, médias, diferenças, unidades, cobertura por métrica, água separada, histórico e diário selecionado. O artefato exato `documented-plan-synthetic` 13075129929 conferiu com SHA-256 `4f94ab943383c13db35b8407d7b7eb65b1fde96d5a83b24698d54218038c67cf`; 6/6 cenários Chromium/WebKit passaram em 320/393/1440 px.
+
+Dias ausentes não foram tratados como zero, registros conflitantes não foram escolhidos nem contaminam médias e o plano permaneceu referência documental sem inferência de adoção, início ou adesão. Não houve overflow, sobreposição ou defeito concreto. `main` em `7089364ad141175ce5dce4ad2e2b07aad97978e6`, checkpoint privado 60 e PRs foram relidos; apenas 367/354/348 permanecem, sem sobreposição. Cloud Browser confirmou separadamente o login público desconectado da `.111`; o gate autenticado existente continua distinto. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: exames.
+
 # Composição — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 A jornada móvel e desktop de `health-integrated-20261101.111` percorreu entrada de Composição, períodos e métricas, ponto selecionado no gráfico, data/valor/origem correspondentes, histórico completo, detalhe da medição, análise segmentar e retorno. Os artefatos exatos `integrated-production-synthetic-visual` 13074090932 e `functional-depth-synthetic-visual` 13074300663 conferiram com os SHA-256 registrados no checkpoint; os workflows exatos 41282072271 e 41282072215 concluíram com sucesso.
