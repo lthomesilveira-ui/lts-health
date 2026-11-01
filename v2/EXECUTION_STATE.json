@@ -50,42 +50,46 @@
   },
   "current_package": {
     "id": "PKG-EXAMS-MOBILE-CONTROLS-026",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Make the primary Exams search and marker selector reliably touchable on mobile without changing laboratory data, interpretation or comparison rules.",
     "task_ids": [
       "LTS-EXAMS-MOBILE-CONTROLS-001"
     ],
     "candidate_build": "health-integrated-20261101.111",
-    "public_build": null,
+    "public_build": "health-integrated-20261101.111",
     "clinical_runtime_changed": false,
-    "pending_gates": [
-      "exact candidate CI",
-      "normal merge/deploy",
-      "exact public build inspection",
-      "protected real-auth"
-    ],
+    "pending_gates": [],
     "started_at_utc": "2026-11-01T04:48:32.000Z",
     "completed_evidence": [
       "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open-PR review found no overlapping implementation; only legacy PRs 367/354/348 remain open.",
       "Read-only evidence remains at 65 genuine receipts, 10 water days through 13/10, 130 active-energy days through 30/10, no explicit total-energy row and no basal source/bounds/coverage verification. Existing support threads contain no new genuine response.",
       "Exact .110 synthetic Exams inspection passed source/unit-separated graphs, dated values, full paginated history, collections, method disclosure, point selection, route return, immutable records, zero writes and zero external requests at mobile and desktop widths.",
       "A concrete mobile usability defect remains: the primary marker search and selector render at 38px high on the 390px journey while the same screen already requires 44px touch targets for its navigation shortcuts.",
-      "Candidate .111 raises only Exams field controls to a 44px minimum and adds a focused browser assertion. Laboratory results, raw text, units, dates, references, methods, comparison boundaries, authentication and writes are unchanged."
+      "Candidate .111 raises only Exams field controls to a 44px minimum and adds a focused browser assertion. Laboratory results, raw text, units, dates, references, methods, comparison boundaries, authentication and writes are unchanged.",
+      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows, including the pinned browser assertion for the 44px Exams controls.",
+      "Normal merge ff3e330c35592246002b36d82221d6857b621cda published .111 with 20/20 workflows successful, including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
+      "Independent Cloud Browser confirmed exact public .111 at #hoje, signed-out login display grid and 1363/1363px width after normal Pages propagation."
     ],
+    "candidate_commit": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
+    "publication_commit": "ff3e330c35592246002b36d82221d6857b621cda",
     "pending_validation_repetitions": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.110",
-    "main_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
-    "runtime_promotion_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
+    "build_id": "health-integrated-20261101.111",
+    "main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+    "runtime_promotion_commit": "ff3e330c35592246002b36d82221d6857b621cda",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T03:42:38.000Z",
-    "release_kind": "home_water_recovery_and_active_energy_total",
+    "verified_at_utc": "2026-11-01T05:16:25.000Z",
+    "release_kind": "exams_mobile_touch_targets",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261101.110, signed-out login boundary, #hoje and 1363/1363px width. The manual session is signed out; invented-data production renderers and protected actual-auth CI remain separate evidence.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 21 exact publication workflows completed successfully; no pending validation repetition.",
+    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261101.111, signed-out login boundary, #hoje and 1363/1363px width. The manual session is signed out; exact synthetic Exams renderers and protected actual-auth CI remain separate evidence.",
+    "automated_runtime_and_responsive_status": "All 16 exact candidate and all 20 exact publication workflows completed successfully; no pending validation repetition.",
     "evidence": [
+      "Exact .110 Exams evidence found the primary search and marker selector at 38px high on the 390x844 journey while preserving dates, raw results, units, source/method/reference separation, full history, collections, route return, zero writes and zero external requests.",
+      "Candidate .111 scopes a 44px minimum only to Exams fields and adds a focused browser assertion; no laboratory result, original, unit, date, reference, method, comparison rule, authentication boundary or write path changed.",
+      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows; normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
+      "Independent Cloud Browser confirmed exact public .111 at #hoje with signed-out login visible and 1363/1363px width after normal Pages propagation. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence.",
       "Read-only evidence confirms 10 canonical water rows through 13/10. The latest accepted 19-metric payload contained zero water blocks/metrics; the receiver did not drop water and the available genuine Apple export contains no DietaryWater for backfill.",
       "Home .110 preserves absence, exposes Registrar água and Ver sincronização, and shows the last genuine selected-source water value when available. Calorias ativas adds its recorded-period total and contributing days while remaining explicitly distinct from unavailable total expenditure.",
       "CI found and the branch fixed mobile height/order and narrow-card clipping before promotion. PR463 exact candidate b44a2cd246a26bfa3bb367593a3485e907ae54e7 passed 17/17 workflows; normal merge 4965a1d5b9cba86e5565f17e0f960782d34a8032 publishes .110 with 21/21 exact publication workflows successful.",
@@ -100,12 +104,12 @@
       "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
     ],
     "ci_summary": {
-      "candidate_head": "b44a2cd246a26bfa3bb367593a3485e907ae54e7",
-      "candidate_total": 17,
-      "candidate_success": 17,
-      "publication_head": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
-      "publication_total": 21,
-      "publication_success": 21
+      "candidate_head": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
+      "candidate_total": 16,
+      "candidate_success": 16,
+      "publication_head": "ff3e330c35592246002b36d82221d6857b621cda",
+      "publication_total": 20,
+      "publication_success": 20
     },
     "previous_release_ci_completion": {
       "candidate": [
@@ -3299,7 +3303,7 @@
       "area": "UX / exams",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Raise the primary Exams search and marker selector from 38px to a reliable 44px mobile touch target.",
       "acceptance": [
@@ -3311,12 +3315,36 @@
       "evidence": [
         "Exact .110 evidence records both #productLabQuery and #productLabMarkerSelect at 38px high in the 390x844 journey.",
         "The same exact artifact passes graph, source/unit cohort, history, collection, method, route-return, immutable-record, no-overflow, zero-write and zero-external-request checks.",
-        "Candidate .111 scopes a 44px minimum to Exams fields and adds the missing focused touch-target assertion."
+        "Candidate .111 scopes a 44px minimum to Exams fields and adds the missing focused touch-target assertion.",
+        "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows; normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows.",
+        "Independent Cloud Browser confirmed exact public .111 at #hoje with signed-out login visible and 1363/1363px width; protected real-auth remained a separate successful CI gate."
       ],
-      "next_action": "Complete local and exact candidate gates, publish normally and verify the exact public .111 login boundary and affected synthetic Exams journey."
+      "next_action": "Preserve the published 44px Exams controls and rotate the next concrete UX inspection to Reports."
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-EXAMS-MOBILE-CONTROLS-026",
+      "status": "done",
+      "goal": "Make the primary Exams search and marker selector reliably touchable on mobile without changing laboratory data, interpretation or comparison rules.",
+      "task_ids": [
+        "LTS-EXAMS-MOBILE-CONTROLS-001"
+      ],
+      "candidate_build": "health-integrated-20261101.111",
+      "public_build": "health-integrated-20261101.111",
+      "clinical_runtime_changed": false,
+      "owner_acceptance": "not_requested",
+      "completed_evidence": [
+        "Exact .110 synthetic Exams evidence found 38px primary controls while preserving source/unit cohorts, raw values, dated context, history, collections, navigation, zero writes and zero external requests.",
+        "Candidate .111 raises only the Exams search and primary marker selector to a 44px minimum and adds a focused pinned-browser assertion.",
+        "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows.",
+        "Normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows; Cloud Browser confirmed exact public .111, #hoje, signed-out login and 1363/1363px width."
+      ],
+      "pending_gates": [],
+      "candidate_commit": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
+      "publication_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+      "pending_validation_repetitions": []
+    },
     {
       "id": "PKG-NUTRITION-COMPARISON-QA-010",
       "status": "done",
@@ -4639,16 +4667,20 @@
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.110",
-    "main_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
-    "runtime_promotion_commit": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
+    "build_id": "health-integrated-20261101.111",
+    "main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+    "runtime_promotion_commit": "ff3e330c35592246002b36d82221d6857b621cda",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T03:42:38.000Z",
-    "release_kind": "home_water_recovery_and_active_energy_total",
+    "verified_at_utc": "2026-11-01T05:16:25.000Z",
+    "release_kind": "exams_mobile_touch_targets",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261101.110, signed-out login boundary, #hoje and 1363/1363px width. The manual session is signed out; invented-data production renderers and protected actual-auth CI remain separate evidence.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 21 exact publication workflows completed successfully; no pending validation repetition.",
+    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261101.111, signed-out login boundary, #hoje and 1363/1363px width. The manual session is signed out; exact synthetic Exams renderers and protected actual-auth CI remain separate evidence.",
+    "automated_runtime_and_responsive_status": "All 16 exact candidate and all 20 exact publication workflows completed successfully; no pending validation repetition.",
     "evidence": [
+      "Exact .110 Exams evidence found the primary search and marker selector at 38px high on the 390x844 journey while preserving dates, raw results, units, source/method/reference separation, full history, collections, route return, zero writes and zero external requests.",
+      "Candidate .111 scopes a 44px minimum only to Exams fields and adds a focused browser assertion; no laboratory result, original, unit, date, reference, method, comparison rule, authentication boundary or write path changed.",
+      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows; normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
+      "Independent Cloud Browser confirmed exact public .111 at #hoje with signed-out login visible and 1363/1363px width after normal Pages propagation. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence.",
       "Read-only evidence confirms 10 canonical water rows through 13/10. The latest accepted 19-metric payload contained zero water blocks/metrics; the receiver did not drop water and the available genuine Apple export contains no DietaryWater for backfill.",
       "Home .110 preserves absence, exposes Registrar água and Ver sincronização, and shows the last genuine selected-source water value when available. Calorias ativas adds its recorded-period total and contributing days while remaining explicitly distinct from unavailable total expenditure.",
       "CI found and the branch fixed mobile height/order and narrow-card clipping before promotion. PR463 exact candidate b44a2cd246a26bfa3bb367593a3485e907ae54e7 passed 17/17 workflows; normal merge 4965a1d5b9cba86e5565f17e0f960782d34a8032 publishes .110 with 21/21 exact publication workflows successful.",
@@ -4663,12 +4695,12 @@
       "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
     ],
     "ci_summary": {
-      "candidate_head": "b44a2cd246a26bfa3bb367593a3485e907ae54e7",
-      "candidate_total": 17,
-      "candidate_success": 17,
-      "publication_head": "4965a1d5b9cba86e5565f17e0f960782d34a8032",
-      "publication_total": 21,
-      "publication_success": 21
+      "candidate_head": "43eb6cc6c4ce2b7e523c8e78d4560700474aa059",
+      "candidate_total": 16,
+      "candidate_success": 16,
+      "publication_head": "ff3e330c35592246002b36d82221d6857b621cda",
+      "publication_total": 20,
+      "publication_success": 20
     },
     "previous_release_ci_completion": {
       "candidate": [
@@ -9493,38 +9525,71 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T04:48:32.000Z",
-    "source_main_commit": "e5758ba919092b4a3df5dc56e73248d7c02f3e5d",
-    "runtime_build": "health-integrated-20261101.110",
-    "candidate_build": "health-integrated-20261101.111",
+    "reviewed_at_utc": "2026-11-01T05:16:25.000Z",
+    "source_main_commit": "ff3e330c35592246002b36d82221d6857b621cda",
+    "runtime_build": "health-integrated-20261101.111",
+    "candidate_build": null,
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
-      "done": 98,
-      "in_progress": 1,
+      "done": 99,
+      "in_progress": 0,
       "blocked_external": 14,
       "accepted_gap": 2
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
-      "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Exams package.",
+      "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open PRs were reconciled before implementation. Only legacy PRs 367/354/348 remained open; none overlapped this Exams package.",
       "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10, 130 active-energy days through 30/10 and no explicit total-energy source row. All 117 basal candidates still lack original source, bounds and verified coverage.",
       "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
-      "Independent public inspection confirms exact health-integrated-20261101.110 at #hoje with the signed-out login boundary intact and 1363/1363px width. This is not claimed as an authenticated health-area session.",
+      "Independent public inspection first confirmed .110 and, after normal Pages propagation, exact health-integrated-20261101.111 at #hoje with the signed-out login boundary intact and 1363/1363px width. This is not claimed as an authenticated health-area session.",
       "The exact .110 synthetic Exams artifact passed at 320, 390, 393, 1180 and 1440px for dates, raw results, units, source/method/reference separation, comparable series, chart selection, full paginated history, collection navigation, route return, immutable records, no overflow, zero writes and zero external requests.",
       "A concrete mobile defect was observed: #productLabQuery and #productLabMarkerSelect were each only 38px high in the 390x844 journey, below the screen's established 44px touch-target contract.",
-      "Candidate .111 raises only Exams field controls to a 44px minimum and adds the focused browser assertion. No laboratory value, original, unit, date, reference, method, comparison rule, authentication boundary or write path changes. Candidate/publication gates remain pending."
+      "Candidate .111 raises only Exams field controls to a 44px minimum and adds the focused browser assertion. No laboratory value, original, unit, date, reference, method, comparison rule, authentication boundary or write path changes.",
+      "PR466 exact candidate 43eb6cc6c4ce2b7e523c8e78d4560700474aa059 passed 16/16 workflows. Normal merge ff3e330c35592246002b36d82221d6857b621cda passed 20/20 publication workflows, including deploy, Pages, protected real-auth, integrated production, isolated preview and reports/PDF.",
+      "Queue after verified publication: 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks. The next rotating UX area is Reports."
     ],
     "ux_review": {
       "area": "exams",
       "next_area": "reports",
       "mode": "exact_synthetic_110_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
       "viewport": "320x740, 390x844, 393x844, 1180x757 and 1440x900 plus public desktop",
-      "result": "mobile_primary_touch_targets_corrected_pending_gates",
+      "result": "mobile_primary_touch_targets_published_and_verified",
       "journey_without_additional_defect": "Exams preserved dates, raw results, units, comparable source/method/reference cohorts, chart interpretation, point selection, full history, collection navigation and mobile readability without overflow."
     }
   },
   "continuity_review_history": [
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T04:48:32.000Z",
+      "source_main_commit": "e5758ba919092b4a3df5dc56e73248d7c02f3e5d",
+      "runtime_build": "health-integrated-20261101.110",
+      "candidate_build": "health-integrated-20261101.111",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 98,
+        "in_progress": 1,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 1,
+      "evidence": [
+        "Fresh origin/main e5758ba919092b4a3df5dc56e73248d7c02f3e5d, private checkpoint version 56 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remained open; none overlapped this Exams package.",
+        "Read-only database evidence remained at 65 genuine receipts, 10 canonical water days through 13/10, 130 active-energy days through 30/10, no explicit total-energy source row and 117 basal candidates without original source, bounds or verified coverage.",
+        "Existing support/export inboxes contained no genuine new answer. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
+        "Exact .110 synthetic Exams evidence passed dates, raw results, units, source/method/reference separation, comparable series, chart selection, full history, collections, route return, immutable records, no overflow, zero writes and zero external requests.",
+        "The primary search and marker selector measured 38px high on the 390x844 journey. Candidate .111 raised only Exams fields to a 44px minimum and added a focused browser assertion without changing laboratory semantics or data."
+      ],
+      "ux_review": {
+        "area": "exams",
+        "next_area": "reports",
+        "mode": "exact_synthetic_110_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
+        "viewport": "320x740, 390x844, 393x844, 1180x757 and 1440x900 plus public desktop",
+        "result": "mobile_primary_touch_targets_corrected_pending_gates",
+        "journey_without_additional_defect": "Exams preserved dates, raw results, units, comparable source/method/reference cohorts, chart interpretation, point selection, full history, collection navigation and mobile readability without overflow."
+      }
+    },
     {
       "reviewed_on": "2026-10-30",
       "reviewed_at_utc": "2026-10-30T14:39:53.780Z",
