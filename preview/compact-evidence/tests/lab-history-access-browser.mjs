@@ -84,6 +84,7 @@ try{
       });
       assert.ok(positions.search.top>=positions.hostTop&&positions.search.bottom<height,'search is discoverable in the initial viewport');
       assert.ok(positions.jump.bottom<height,'chart/history shortcuts are visible without scrolling');
+      assert.ok(await page.locator('#productLabQuery,#productLabMarkerSelect').evaluateAll(controls=>controls.every(el=>{const r=el.getBoundingClientRect();return r.width>=43.5&&r.height>=43.5;})),'primary laboratory search and selector have at least 44px touch targets');
       assert.ok(await page.locator('.ltsLabsJump button').evaluateAll(buttons=>buttons.every(el=>{const r=el.getBoundingClientRect();return r.width>=43.5&&r.height>=43.5;})),'new jump buttons have at least 44px touch targets');
       assert.ok(positions.search.top<positions.selector.top&&positions.selector.top<positions.chart.top&&positions.chart.top<positions.history.top&&positions.history.top<positions.collection.top);
       await capture(page,width,'top');
