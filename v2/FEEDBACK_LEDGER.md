@@ -1,3 +1,11 @@
+# Treinos — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+A jornada móvel e desktop de `health-integrated-20261101.111` percorreu resumo da sessão registrada, distribuição das séries, gráfico de sessões, exercícios e séries, histórico, sessão anterior, comentário e relato original literais, além dos estados vazio, indisponível, erro e recuperação. O artefato exato `training-visual-report-synthetic` 13072880353 conferiu com SHA-256 `e4ff3ecb3e1728affe4b1d714cc6f5f8cf792f0b6d5bd42bb2b1988b455c1439`; 4/4 cenários passaram em 320/393/1180/1440 px.
+
+Datas, duração, energia, frequência cardíaca, carga, repetições, equipamentos, grupos, fases de aquecimento/trabalho/drop/falha, prolongamentos, extensões e textos originais permaneceram completos. Não houve overflow horizontal, sobreposição, perda de unidade ou defeito concreto. O plano permaneceu referência documental, sem inferência de adoção, início, progressão ou adesão. Nenhum runtime, registro de saúde, autenticação ou escrita mudou.
+
+`main` em `bb62ffa05e83520caa8ac2707cc34ed6633ce960`, checkpoint privado versão 58 e PRs foram lidos antes da revisão; apenas 367/354/348 permanecem abertos e não se sobrepõem. Banco e suporte não trouxeram novo desbloqueio. Cloud Browser confirmou separadamente o login público desconectado da `.111`, sem expor área privada; o gate autenticado existente continua distinto. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: composição.
+
 # Relatórios — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 - O checkpoint privado versão 57, `main` `68827cfd1c33cc413a9ae851d00674a8aa1728b6` e PRs abertos foram conferidos antes da rodada. Apenas 367/354/348 permanecem, sem pacote concorrente de Relatórios.
