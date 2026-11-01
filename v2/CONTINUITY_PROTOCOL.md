@@ -1,6 +1,15 @@
 # LTS Health — protocolo de continuidade
 
-# Em execução — acesso direto à situação da água, candidata .112
+# Concluído — situação da água acessível e legível, .112
+
+`PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` está concluído. Os atalhos de água abrem e focam o recebimento do iPhone depois do carregamento, sem salto posterior ao topo. A consulta comum de Dados e fontes mantém sua entrada; o contexto vale uma vez. O estado da água fica separado dos demais envios. A ação principal está legível, os avisos e a configuração têm ao menos 14 px, e os ajustes de conexão ficam em detalhes secundários com as confirmações existentes.
+
+PR474: candidata exata `03ff7e7493eebd52eb007483124d1940c2b49670`, 17/17 workflows aprovados. Merge normal `4783dbab3c94391caa2d7d7291ad9924c17d2ca0`: 21/21 workflows de runtime publicados, incluindo acesso real protegido. Artefato sintético `13082995638`, `sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546`, inspecionado em 320/393/1440 px e 393x650. Cloud Browser confirmou `.112`, login desconectado e fronteira privada intacta; isso permanece distinto das imagens sintéticas e do teste autenticado. Nenhum teste físico de iPhone ou sessão privada manual foi presumido.
+
+A automação continua habilitada e evita PRs/publicações apenas para repetir auditoria sem mudança. A fila tem 100 concluídos, 14 bloqueios externos e 2 lacunas aceitas, sem executável interno neste pacote. A continuidade de água e as demais dependências originais permanecem abertas; não há aceite global nem alteração clínica, dado inventado, troca de origem, chave ou configuração do telefone. A jornada seguinte de Treinos também foi conferida com a .112 sem defeito novo; próxima área: Composição. Sem novidade material, registrar apenas checkpoint privado curto.
+
+
+# Histórico da candidata — acesso direto à situação da água, .112
 
 O feedback de continuidade de 01/11 reabre uma ação concreta de UX: os atalhos da água abriam Dados e fontes no topo, antes do diagnóstico correspondente. `PKG-WATER-SOURCE-NAV-027` / `LTS-WATER-SOURCE-NAV-001` adiciona contexto de navegação de uso único, posiciona e foca o recebimento do iPhone após o carregamento e preserva a entrada comum de Dados e fontes. A falta de atualização de água ganha estado próprio; troca de chave e interrupção de envios permanecem na configuração secundária com as confirmações existentes. Nenhum dado, origem, chave, configuração física ou escrita é alterado. A correção está em validação, não publicada; os bloqueios independentes da integração e o aceite global continuam abertos.
 

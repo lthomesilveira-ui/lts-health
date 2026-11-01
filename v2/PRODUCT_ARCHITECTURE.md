@@ -1,3 +1,5 @@
+Publicação .112 — situação de água com acesso contextual de uso único, foco após o último reposicionamento, avisos e configuração legíveis e ação principal de recebimento. Sem mudança de dados, origem ou confirmação de continuidade automática.
+
 Atualização de navegação de fontes — 01/11/2026: o atalho contextual da água abre e foca seu recebimento em Dados e fontes após o carregamento; o contexto vale uma vez. A consulta comum mantém o início da página. A situação da água fica separada do recebimento geral; ajustes técnicos permanecem em detalhes secundários com as confirmações existentes.
 
 Atualização de água/energia — 01/11/2026: uma janela sem água não termina em vazio sem saída. A Home mostra o último valor genuíno da origem quando existir e oferece registro manual confirmado e diagnóstico de sincronização no próprio cartão; ausência nunca vira zero. Energia ativa pode exibir soma dos dias registrados de uma única origem, sempre separada do gasto energético total e com cobertura explícita. Gasto total só aparece a partir de série total explícita; basal não é somado por inferência.
