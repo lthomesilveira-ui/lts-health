@@ -1,8 +1,10 @@
 # LTS Health — protocolo de continuidade
 
-## Checkpoint mais recente — Reports .107
+## Checkpoint mais recente — Home .110 e inspeção de Nutrição
 
-A publicação `health-integrated-20261031.107` corrige somente o retorno contextual Reports → Training → Voltar; entrada direta em Training continua voltando para Home. Candidata 17/17, deploy/Pages/homologação/relatórios/prévia isolada e autenticação real aprovados. Integrated Production `41255413339` teve a tentativa 1 cancelada enquanto a instalação do navegador estava bloqueada; a tentativa oficial 2 concluiu com sucesso. O cancelamento permanece no histórico e somente a repetição aprovada conta. Fila: 94 done, 14 blocked_external, 2 accepted_gap; próxima inspeção: training.
+A publicação vigente é `health-integrated-20261101.110`, promovida no commit `4965a1d5b9cba86e5565f17e0f960782d34a8032`. Ela preserva ausência de água, mostra o último registro genuíno da origem selecionada quando existe, oferece `Registrar água` e `Ver sincronização` no período vazio e separa a média e o total registrado de calorias ativas do gasto energético total indisponível. A candidata concluiu 17/17 workflows e a publicação 21/21; o fechamento persistente foi incorporado por merge normal em `e9184fe84e66c9cff7eb887182efb497c6d372bd`.
+
+Em 01/11/2026, a jornada de Nutrição foi reavaliada no artefato sintético exato da `.110` em 320, 393, 1180 e 1440 px, separada do login público desconectado e do gate autenticado existente. Plano retrospectivo, origem selecionada, datas, cobertura por métrica, unidades, água independente, ausência e detalhe histórico permaneceram claros; o gate confirmou ausência de overflow, sobreposição, escritas e tráfego externo. Nenhum defeito adicional de runtime foi observado. A fila permanece em 98 `done`, 14 `blocked_external`, 2 `accepted_gap` e zero executáveis; próxima inspeção: exames.
 
 Objetivo: qualquer nova sessão deve conseguir retomar o projeto com o estado real, sem depender da memória do chat e sem reabrir decisões já comprovadas.
 
