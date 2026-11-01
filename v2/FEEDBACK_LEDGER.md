@@ -1,3 +1,11 @@
+# Exames — controles móveis de 44 px, candidata .111, 01/11/2026
+
+A jornada exata da `.110` em Exames preservou datas, resultados brutos, unidades, origem/método/referência, séries comparáveis, seleção de pontos, histórico paginado, coletas, retorno de rota e ausência sem zero. Os gates sintéticos passaram em 320/390/393/1180/1440 px, sem overflow, escrita ou tráfego externo. A inspeção pública confirmou a `.110` desconectada, com login intacto; o gate autenticado existente permanece evidência separada.
+
+Foi observado um defeito móvel concreto: a busca principal e o seletor de marcador medem 38 px de altura em 390x844, abaixo do contrato de 44 px já aplicado aos atalhos da mesma tela. O pacote `PKG-EXAMS-MOBILE-CONTROLS-026` eleva somente os campos de Exames a 44 px e adiciona uma asserção específica. Nenhum resultado laboratorial, laudo, unidade, data, referência, método, regra de comparação, autenticação ou escrita muda. As quinze correções laboratoriais continuam bloqueadas pelo manifesto original e autorização específica.
+
+A evidência privada continua em 65 recebimentos, água até 13/10, energia ativa até 30/10, zero série explícita de gasto total e 117 candidatos basais sem origem/limites/cobertura verificada. Não houve nova resposta de suporte nem contato externo. Candidata `health-integrated-20261101.111`; gates e publicação ainda pendentes. Fila: 98 done, 1 in_progress, 14 blocked_external e 2 accepted_gap. Próxima área rotativa após a conclusão: relatórios.
+
 # Água visível e total de calorias ativas — .110 publicada e verificada, 01/11/2026
 
 O feedback do proprietário reabriu duas lacunas da Home: água continuava sem saída operacional no cartão e “Calorias ativas” mostrava apenas média, sem o total registrado do período. O pacote `PKG-HOME-WATER-ACTIVE-TOTALS-025` trata as duas sem fabricar gasto ou consumo.
