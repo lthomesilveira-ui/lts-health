@@ -215,7 +215,7 @@ export function renderDataHub(){
       <div class="card"><div class="cardHead"><div><b>Backup dos dados</b><small>Baixe uma cópia dos registros disponíveis na sua conta. O backup não inclui os arquivos originais nem as informações de acesso.</small></div></div><button type="button" id="backupExportBtn">Criar backup</button><p id="backupExportMsg" class="footerNote" aria-live="polite"></p><p class="footerNote">Se alguma área não carregar, o backup não será criado.</p></div>
     </section>
 
-    <section class="card sectionGap"><div class="cardHead"><div><b>O que já está no seu histórico</b><small>Veja quantos registros estão disponíveis em cada área.</small></div></div><div class="sourceGrid">${areaDefs.map(([label,key])=>areaCard(label,key)).join('')}</div></section>
+    <section class="card sectionGap" id="dataHistoryInventory"><div class="cardHead"><div><b>O que já está no seu histórico</b><small>Veja quantos registros estão disponíveis em cada área.</small></div></div><div class="sourceGrid">${areaDefs.map(([label,key])=>areaCard(label,key)).join('')}</div></section>
 
     <section class="sectionGap"><div class="sectionHeading"><div><h2>Fontes</h2><p>Veja quais aplicativos e laboratórios já têm registros e como adicionar novas informações.</p></div></div><div class="sourceStatusGrid">${sourceState().map(statusCard).join('')}</div></section>
 

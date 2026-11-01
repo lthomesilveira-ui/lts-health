@@ -149,7 +149,7 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
    }
    assert.ok(await page.locator('#uploadMsg').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))>=14);
    for(const control of ['#uploadType','#uploadFile','#uploadForm button[type="submit"]','#backupExportBtn'])assert.ok(await page.locator(control).evaluate(el=>el.getBoundingClientRect().height)>=44,'touch target: '+control);
-   const inventory=await page.locator('.sourceCard>div').evaluateAll(nodes=>nodes.map(el=>{
+   const inventory=await page.locator('#dataHistoryInventory .sourceCard>div').evaluateAll(nodes=>nodes.map(el=>{
     const title=el.querySelector('b'),detail=el.querySelector('small');
     return {titleBottom:title.getBoundingClientRect().bottom,detailTop:detail.getBoundingClientRect().top,font:parseFloat(getComputedStyle(title).fontSize)};
    }));
@@ -163,7 +163,7 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
     const row=page.locator('.uploadAuditRow').filter({hasText:filename});assert.equal(await row.count(),1,'the received original is identifiable in file history');
     assert.ok(await row.locator('time').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))>=14);
     await row.screenshot({path:output+'/upload-history-'+name+'-'+width+'.png'});
-    await page.locator('.sourceCard').first().screenshot({path:output+'/upload-inventory-'+name+'-'+width+'.png'});
+    await page.locator('#dataHistoryInventory .sourceCard').first().screenshot({path:output+'/upload-inventory-'+name+'-'+width+'.png'});
    }
    // The previous receipt is cleared as soon as a different file is chosen.
    await page.locator('#uploadFile').setInputFiles({name:'arquivo-sintetico-seguinte.pdf',mimeType:'application/pdf',buffer:Buffer.from('Invented next file')});

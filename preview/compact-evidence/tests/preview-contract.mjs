@@ -74,7 +74,7 @@ const manifest={
     "src/dashboard-changes.js": "2826da829e3fe46cd62c1939e53e9cb2faa3b097d3bea11757a188faa991fc7a",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
     "src/data-layer.js": "662a5e2e4227ff723f8a6215bdccaaf7060bbf95cff1e8e6d323dbd334b2b328",
-    "src/data-screen.js": "062da017a10f99afca99f1191565f5e1647750941760c89900427f94917cc4d5",
+    "src/data-screen.js": "55f781cfc93c617c6d69eec1c87438479dd0d18da8df771dd738507cf2550de7",
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
     "src/documented-training-plan.js": "6d0d1415c129327585047b8e8c3477ddcec178fdb8c4c9ad43a25524a56d3bf5",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
