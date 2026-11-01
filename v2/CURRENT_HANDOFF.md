@@ -1,3 +1,13 @@
+# Relatórios — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+A evidência exata de `health-integrated-20261101.111` foi retomada pelo artefato `calendar-report-synthetic-evidence` 13070884236, com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`. Os 32 cenários Chromium/WebKit passaram em 320/393/1440 px, incluindo semana/mês, vazio/erro, falha e repetição de impressão, PDF local e detectores de clipping.
+
+Na inspeção visual real dos captures 320x740 e 393x650 e do PDF semanal de duas páginas, datas e período encerrado, cobertura específica por métrica, unidades, origens, gráficos, totais de treino, ausência sem zero, indicadores independentes, declaração de arquivo local, paginação e navegação móvel permaneceram claros. Nenhum defeito concreto foi observado; não houve mudança de runtime, dados ou build. O Cloud Browser voltou a responder e confirmou separadamente a entrada pública `#hoje` desconectada, com login e fronteira privada intactos; isso não é uma sessão autenticada nas áreas de saúde.
+
+Antes da leitura, `main` em `68827cfd1c33cc413a9ae851d00674a8aa1728b6`, checkpoint privado versão 57 e PRs abertos foram reconciliados. Apenas os PRs legados 367/354/348 permanecem, sem sobreposição. O banco continua com 65 recebimentos genuínos, 10 dias canônicos de água até 13/10, zero série explícita de gasto total e 117 candidatos basais sem fonte/limites/cobertura verificada. Energia ativa mantém 98 dias canônicos até 05/05 e 32 dias candidatos recentes até 30/10, sem promovê-los ou misturá-los silenciosamente. Não surgiu resposta genuína de suporte/exportação e não houve contato externo ou escrita no banco.
+
+Fila: 99 `done`, 0 `in_progress`, 14 `blocked_external`, 2 `accepted_gap` e zero executáveis. Próxima área rotativa: treinos.
+
 # Exames — controles móveis de 44 px, .111 publicada e verificada, 01/11/2026
 
 A jornada exata da `.110` em Exames preservou datas, resultados brutos, unidades, origem/método/referência, séries comparáveis, seleção de pontos, histórico paginado, coletas, retorno de rota e ausência sem zero. Os gates sintéticos passaram em 320/390/393/1180/1440 px, sem overflow, escrita ou tráfego externo. A inspeção pública confirmou a `.110` desconectada, com login intacto; o gate autenticado existente permanece evidência separada.

@@ -1,3 +1,11 @@
+# Relatórios — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+A rodada reconciliou `main` `68827cfd1c33cc413a9ae851d00674a8aa1728b6`, checkpoint privado 57 e PRs abertos antes de escrever; só 367/354/348 permanecem, sem sobreposição. O artefato exato de relatórios 13070884236 conferiu com SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`, e seus 32 cenários Chromium/WebKit passaram em 320/393/1440 px.
+
+Captures móveis e o PDF semanal de duas páginas foram inspecionados: datas, período encerrado, cobertura por métrica, unidades, fontes, gráficos, totais de treino, ausência sem zero, indicadores independentes, exportação local e paginação ficaram legíveis, sem defeito concreto. O Cloud Browser confirmou separadamente a entrada pública desconectada e a fronteira privada; o gate autenticado já aprovado permanece evidência distinta. Nenhum runtime ou dado mudou, e o build continua `health-integrated-20261101.111`.
+
+Leituras privadas permanecem em 65 recebimentos, 10 dias canônicos de água, zero série explícita de gasto total e 117 candidatos basais sem origem/limites/cobertura. Energia ativa recente continua candidata e separada da história canônica. Sem nova resposta de suporte, contato externo ou escrita. Fila: 99 `done`, 14 `blocked_external`, 2 `accepted_gap`, zero executáveis; próxima inspeção: treinos.
+
 # Exames — controles móveis de 44 px, .111 publicada e verificada, 01/11/2026
 
 A jornada exata da `.110` em Exames preservou datas, resultados brutos, unidades, origem/método/referência, séries comparáveis, seleção de pontos, histórico paginado, coletas, retorno de rota e ausência sem zero. Os gates sintéticos passaram em 320/390/393/1180/1440 px, sem overflow, escrita ou tráfego externo. A inspeção pública confirmou a `.110` desconectada, com login intacto; o gate autenticado existente permanece evidência separada.
