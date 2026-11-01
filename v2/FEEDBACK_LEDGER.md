@@ -1,3 +1,12 @@
+# Relatórios — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+- O checkpoint privado versão 57, `main` `68827cfd1c33cc413a9ae851d00674a8aa1728b6` e PRs abertos foram conferidos antes da rodada. Apenas 367/354/348 permanecem, sem pacote concorrente de Relatórios.
+- O artefato exato 13070884236, SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`, passou 32 cenários Chromium/WebKit em 320/393/1440 px, cobrindo semana/mês, estados vazio/erro, impressão, repetição, PDF e clipping.
+- Captures 320x740 e 393x650 e o PDF semanal de duas páginas mantêm datas, cobertura específica, unidades, fontes, gráficos, totais, ausência sem zero, indicadores independentes, declaração local e paginação legíveis. Nenhum defeito concreto foi observado; não se criou polimento arbitrário.
+- O Cloud Browser recuperado confirmou somente a fronteira pública desconectada em `#hoje`; a prévia sintética e o gate autenticado protegido permanecem evidências distintas. Nenhum acesso foi contornado.
+- Supabase continua somente leitura: 65 recebimentos, 10 dias canônicos de água, zero gasto total explícito e 117 candidatos basais sem fonte/limites/cobertura. Os 32 dias recentes de energia ativa continuam candidatos separados dos 98 dias canônicos. Não houve contato externo nem escrita.
+- Build permanece `.111`; fila 99 `done`, 14 `blocked_external`, 2 `accepted_gap`, zero executáveis. Próxima jornada: treinos.
+
 # Exames — controles móveis de 44 px, .111 publicada e verificada, 01/11/2026
 
 A jornada exata da `.110` em Exames preservou datas, resultados brutos, unidades, origem/método/referência, séries comparáveis, seleção de pontos, histórico paginado, coletas, retorno de rota e ausência sem zero. Os gates sintéticos passaram em 320/390/393/1180/1440 px, sem overflow, escrita ou tráfego externo. A inspeção pública confirmou a `.110` desconectada, com login intacto; o gate autenticado existente permanece evidência separada.
