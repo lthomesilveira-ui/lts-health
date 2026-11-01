@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-POLAR-ORIGINAL-RECOVERY-030",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Recover original non-overlapping Polar history and retire implementation alternatives already replaced by the approved bridge.",
     "task_ids": [
       "LTS-POLAR-ORIGINAL-RECOVERY-001",
@@ -62,13 +62,18 @@
     "runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": true,
-    "pending_gates": [
-      "candidate source/continuity/privacy checks",
-      "protected real-auth original source read and model check"
-    ],
+    "pending_gates": [],
     "completed_evidence": [
-      "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred."
-    ]
+      "2026-11-01: independent full original extraction agreed with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
+      "PR478 final candidate 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 current-head workflows. The only follow-up commit waited for settled Home route readiness in a synthetic acceptance test; it changed no runtime asset, source observation, authentication rule or health rule.",
+      "Protected Real Auth run 41323470318 passed the owner-scoped original-source read and separate history-model checks on source candidate 0d965d83ffd6699884dbde4ca748f73364763db5. The later test-only commit did not touch the protected read, runtime or data code.",
+      "Normal PR478 merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 incorporated the verified recovery. The public runtime remains health-integrated-20261101.113; no deploy or phone reconfiguration was required.",
+      "The Reports consultation journey was inspected in the exact .113 production renderers at mobile and desktop widths. Dates, coverage, source labels, units, consultation summary, detail navigation and missing-data semantics remained readable; no concrete runtime defect was observed. Next UX area: Training.",
+      "Twelve external blockers, two accepted gaps and two superseded alternatives remain. Original water, recurrence, upstream response, source lineage, basal coverage, legacy workout linkage, the original fifteen-record laboratory manifest/authorization, ordinary-form persistence and overall owner acceptance remain independent."
+    ],
+    "candidate_commit": "3e4705c40d419a5e79b0323eb55359f84248870a",
+    "publication_commit": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
+    "completed_at_utc": "2026-11-01T16:09:54.711Z"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3178,7 +3183,7 @@
       "id": "LTS-POLAR-ORIGINAL-RECOVERY-001",
       "area": "Original source recovery",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Recover eligible original Polar observations from the already supplied Apple Health archive without duplicating provider history or changing canonical sessions.",
       "acceptance": [
@@ -3192,9 +3197,10 @@
         "v2/apple-polar-history-review-test.py",
         "v2/real-auth-polar-history-checks.mjs",
         "v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md",
-        "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred."
+        "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
+        "2026-11-01: PR478 final head 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 workflows; protected Real Auth run 41323470318 passed the owner-scoped read and separate history model; normal merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 completed."
       ],
-      "next_action": "Finish candidate gates and protected authenticated read/model verification, then record the bounded recovery as complete.",
+      "next_action": "Preserve the recovered observations as separate original device history. Reopen only for new original evidence; legacy linkage, water continuity and owner acceptance remain independent tasks.",
       "blocker": null
     }
   ],
@@ -4620,6 +4626,32 @@
         "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
         "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
       ]
+    },
+    {
+      "id": "PKG-POLAR-ORIGINAL-RECOVERY-030",
+      "status": "done",
+      "goal": "Recover original non-overlapping Polar history and retire implementation alternatives already replaced by the approved bridge.",
+      "task_ids": [
+        "LTS-POLAR-ORIGINAL-RECOVERY-001",
+        "LTS-MFP-OAUTH-001",
+        "LTS-IOS-HEALTH-001"
+      ],
+      "public_build": "health-integrated-20261101.113",
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": true,
+      "pending_gates": [],
+      "completed_evidence": [
+        "2026-11-01: independent full original extraction agreed with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
+        "PR478 final candidate 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 current-head workflows. The only follow-up commit waited for settled Home route readiness in a synthetic acceptance test; it changed no runtime asset, source observation, authentication rule or health rule.",
+        "Protected Real Auth run 41323470318 passed the owner-scoped original-source read and separate history-model checks on source candidate 0d965d83ffd6699884dbde4ca748f73364763db5. The later test-only commit did not touch the protected read, runtime or data code.",
+        "Normal PR478 merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 incorporated the verified recovery. The public runtime remains health-integrated-20261101.113; no deploy or phone reconfiguration was required.",
+        "The Reports consultation journey was inspected in the exact .113 production renderers at mobile and desktop widths. Dates, coverage, source labels, units, consultation summary, detail navigation and missing-data semantics remained readable; no concrete runtime defect was observed. Next UX area: Training.",
+        "Twelve external blockers, two accepted gaps and two superseded alternatives remain. Original water, recurrence, upstream response, source lineage, basal coverage, legacy workout linkage, the original fifteen-record laboratory manifest/authorization, ordinary-form persistence and overall owner acceptance remain independent."
+      ],
+      "candidate_commit": "3e4705c40d419a5e79b0323eb55359f84248870a",
+      "publication_commit": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
+      "completed_at_utc": "2026-11-01T16:09:54.711Z"
     }
   ],
   "latest_published_release": {
@@ -9245,42 +9277,36 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T14:05:21.402318+00:00",
-    "source_main_commit": "e381ba7eeb369e6bc66b39568b111276c056dc6c",
+    "reviewed_at_utc": "2026-11-01T16:09:54.711Z",
+    "source_main_commit": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
     "runtime_build": "health-integrated-20261101.113",
     "candidate_build": null,
-    "runtime_changed": true,
+    "runtime_changed": false,
     "clinical_runtime_changed": false,
+    "real_source_observations_changed": true,
     "status_counts": {
-      "done": 102,
-      "blocked_external": 14,
-      "accepted_gap": 2
+      "done": 103,
+      "blocked_external": 12,
+      "accepted_gap": 2,
+      "superseded": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
-      "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
-      "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
-      "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
-      "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
-      "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
-      "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
-      "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
-      "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
-      "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent.",
-      "Legacy PR348 (interval review) and PR354 (compact source-aware dashboard) were compared with the delivered implementation, closed as superseded and kept on their original branches. No obsolete prototype was merged.",
-      "PR367 adds only 25 synthetic SQL/workflow files. Independent source review checked 820 before/after images: invented labels/sources/notes, zero-prefix UUIDs, generated values and deterministic literal limits/footnotes. Shell syntax and local-only empty-schema/database-name guards passed.",
-      "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
-      "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
+      "2026-11-01: independent full original extraction agreed with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
+      "PR478 final candidate 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 current-head workflows. The only follow-up commit waited for settled Home route readiness in a synthetic acceptance test; it changed no runtime asset, source observation, authentication rule or health rule.",
+      "Protected Real Auth run 41323470318 passed the owner-scoped original-source read and separate history-model checks on source candidate 0d965d83ffd6699884dbde4ca748f73364763db5. The later test-only commit did not touch the protected read, runtime or data code.",
+      "Normal PR478 merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 incorporated the verified recovery. The public runtime remains health-integrated-20261101.113; no deploy or phone reconfiguration was required.",
+      "The Reports consultation journey was inspected in the exact .113 production renderers at mobile and desktop widths. Dates, coverage, source labels, units, consultation summary, detail navigation and missing-data semantics remained readable; no concrete runtime defect was observed. Next UX area: Training.",
+      "Twelve external blockers, two accepted gaps and two superseded alternatives remain. Original water, recurrence, upstream response, source lineage, basal coverage, legacy workout linkage, the original fifteen-record laboratory manifest/authorization, ordinary-form persistence and overall owner acceptance remain independent."
     ],
     "ux_review": {
-      "area": "sources_upload_receipt_and_inventory",
-      "next_area": "nutrition",
+      "area": "reports_consultation_summary_and_detail",
+      "next_area": "training",
       "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
-      "viewport": "320/393/1440, including 650 px height",
-      "result": "observed_submission_and_inventory_defects_corrected_and_verified"
+      "viewport": "mobile and desktop exact .113 evidence",
+      "result": "no_concrete_runtime_defect_observed"
     },
-    "open_dependency_policy": "Two replaced implementation alternatives are superseded, not verified as done. Original water, legacy linkage, laboratory proposal, basal coverage, ordinary-form persistence and actual owner acceptance remain independent."
+    "open_dependency_policy": "The two replaced implementation alternatives remain superseded, not verified as done. Original water, recurrence, upstream response, source lineage, basal coverage, legacy linkage, laboratory proposal, ordinary-form persistence and actual owner acceptance remain independent."
   },
   "continuity_review_history": [
     {
