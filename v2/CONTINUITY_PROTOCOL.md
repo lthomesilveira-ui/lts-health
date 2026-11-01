@@ -1,3 +1,13 @@
+# Em validação — recuperação do histórico original Polar e alternativas substituídas
+
+`PKG-POLAR-ORIGINAL-RECOVERY-030` executou a recuperação de observações originais anteriores à janela da API, a partir do ZIP já fornecido. Identidade de sincronização, intervalo e unidade foram conferidos; sobreposições permaneceram retidas. A gravação no banco dedicado, a comparação exata após salvar e a repetição sem nova inserção passaram. Registros existentes da API, treinos canônicos e evidências de vínculo permaneceram idênticos. Os valores, períodos e contagens pessoais ficam somente na evidência privada.
+
+A API direta do MyFitnessPal e o companion nativo próprio passaram a `superseded`: eram alternativas substituídas pela ponte paga já aprovada, implementada e ativada no telefone real. Esse estado preserva os critérios originais e declara que aprovação direta e gate nativo não foram comprovados. Não são contados como implementações concluídas. Água original, recorrência, fonte, cobertura basal e experiência física/aceite do produto mantêm suas condições independentes.
+
+Fila: 102 `done`, 1 `in_progress`, 12 `blocked_external`, 2 `accepted_gap` e 2 `superseded`. O vínculo dos treinos legados continua bloqueado, mesmo com o histórico de origem agora recuperado. A candidata precisa terminar os contratos e a leitura/modelo no gate autenticado protegido. O runtime permanece `.113`, sem alteração de assets, regras clínicas, autenticação ou configuração do telefone. Não há conclusão integral nem prova de gravação pelo formulário comum.
+
+Detalhes: `v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md`. A prioridade é resolver esses bloqueios com evidência original e pacotes executáveis; não abrir nova rodada só para repetir QA sem mudança.
+
 # Concluído — recebimento de arquivos e leitura de Dados e fontes, .113
 
 `PKG-UPLOAD-RECEIPT-028` / `LTS-UPLOAD-RECEIPT-UX-001` está concluído. O envio mantém o resultado visível após atualizar a tela, conserva a escolha anterior em redesenhos da mesma rota e bloqueia envios duplicados enquanto termina. Arquivo incorporado, original guardado e falhas parciais têm mensagens distintas; a situação/formato confirmados são preservados ao sair da área e voltar. Saída/troca de conta limpa recebimento e propriedade da escolha. Ações de envio/backup têm 48 px, confirmação/histórico são legíveis e os títulos/explicações do inventário ficam em linhas separadas, com contagens preservadas.

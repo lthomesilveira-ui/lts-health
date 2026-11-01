@@ -4,6 +4,7 @@ import {runDepthChecks} from './real-auth-depth-checks.mjs';
 import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-dashboard-checks.mjs';
 import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
 import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs';
+import {verifyOriginalPolarHistory} from './real-auth-polar-history-checks.mjs';
 import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
 import {observePublicFailures} from './public-entry-diagnostics.mjs';
 
@@ -234,6 +235,7 @@ try{
 
   await waitForRoute('hoje');
   await page.waitForSelector('.ltsHomeReference',{timeout:30000});
+  await verifyOriginalPolarHistory(page);
   if(!await page.locator('[data-health-dashboard]').count()&&(await page.locator('.refSignal').count()!==5||await page.locator('.refPanel:not(.mobileWorkout)').count()!==6))throw new Error('executive Home modules missing');
   if(await page.locator('#routeAction').isVisible())throw new Error('desktop Home duplicates the water import action in the top bar');
   await auditReferenceHome('desktop Home',expectedBuild);
