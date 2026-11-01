@@ -50,30 +50,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-POLAR-ORIGINAL-RECOVERY-030",
-    "status": "done",
-    "goal": "Recover original non-overlapping Polar history and retire implementation alternatives already replaced by the approved bridge.",
+    "id": "PKG-FLEURY-AUTHENTICATED-PREVIEW-031",
+    "status": "in_progress",
+    "goal": "Deliver a private read-only preview of the validated Fleury report layout without duplicating or changing existing laboratory data.",
     "task_ids": [
-      "LTS-POLAR-ORIGINAL-RECOVERY-001",
-      "LTS-MFP-OAUTH-001",
-      "LTS-IOS-HEALTH-001"
+      "LTS-FLEURY-PREVIEW-READER-001"
     ],
-    "public_build": "health-integrated-20261101.113",
-    "runtime_changed": false,
+    "public_build": "health-integrated-20261101.114",
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": true,
-    "pending_gates": [],
-    "completed_evidence": [
-      "2026-11-01: independent full original extraction agreed with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
-      "PR478 final candidate 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 current-head workflows. The only follow-up commit waited for settled Home route readiness in a synthetic acceptance test; it changed no runtime asset, source observation, authentication rule or health rule.",
-      "Protected Real Auth run 41323470318 passed the owner-scoped original-source read and separate history-model checks on source candidate 0d965d83ffd6699884dbde4ca748f73364763db5. The later test-only commit did not touch the protected read, runtime or data code.",
-      "Normal PR478 merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 incorporated the verified recovery. The public runtime remains health-integrated-20261101.113; no deploy or phone reconfiguration was required.",
-      "The Reports consultation journey was inspected in the exact .113 production renderers at mobile and desktop widths. Dates, coverage, source labels, units, consultation summary, detail navigation and missing-data semantics remained readable; no concrete runtime defect was observed. Next UX area: Training.",
-      "Twelve external blockers, two accepted gaps and two superseded alternatives remain. Original water, recurrence, upstream response, source lineage, basal coverage, legacy workout linkage, the original fifteen-record laboratory manifest/authorization, ordinary-form persistence and overall owner acceptance remain independent."
+    "real_source_observations_changed": false,
+    "pending_gates": [
+      "candidate source/safety and mobile/desktop acceptance",
+      "specialized Edge deployment and authentication rejection",
+      "normal promotion and exact published protected access"
     ],
-    "candidate_commit": "3e4705c40d419a5e79b0323eb55359f84248870a",
-    "publication_commit": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
-    "completed_at_utc": "2026-11-01T16:09:54.711Z"
+    "completed_evidence": [
+      "The known original was privately recovered and its complete deterministic reading compared against the independent extraction. No health value is stored in public metadata.",
+      "Qualifiers, unknown formats, conflicting source copies, bounded parsing and private preview projection are covered by invented-data tests. No canonical laboratory writer is enabled."
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -1009,7 +1004,8 @@
         "The current specialized-parser quarantine and strict numeric/source safety test passed. Existing source availability is distinct from releasing new-format automatic parsing.",
         "Known Fleury layout validation and a bounded source-proven omission repair are tracked separately in LTS-FLEURY-SOURCE-VALIDATION-001. Production laboratory routing remains quarantined; existing records are preserved.",
         "LTS-FLEURY-SOURCE-VALIDATION-001 completed: known original layouts compared privately, source-proven omissions repaired, all prior result projections preserved, idempotency and post-write source checks passed. Offline tooling published through normal PR 333; general production PDF routing remains quarantined.",
-        "Build .98 now opens only independently confirmed private originals from exact laboratory points/history, verified by protected41094336535. Unlinked inventory and broader parser acceptance remain unresolved."
+        "Build .98 now opens only independently confirmed private originals from exact laboratory points/history, verified by protected41094336535. Unlinked inventory and broader parser acceptance remain unresolved.",
+        "2026-11-01: a bounded private Fleury text-report preview is being implemented under PKG-FLEURY-AUTHENTICATED-PREVIEW-031. Genuine authenticated original-file submission/reopening, unsupported Einstein formats and general import remain separate acceptance."
       ],
       "next_action": "Use the validated offline tool for the known originals. Production ingestion requires a separate authenticated file-to-preview/import validation package; Einstein or other formats still need representative originals and supported access. Do not request the same Fleury files again.",
       "blocker": "Broader automatic PDF extraction remains quarantined pending specialized format validation and representative Einstein evidence/direct-access support. Fleury originals have been located privately; the latest existing results are already imported, not missing."
@@ -3201,6 +3197,29 @@
         "2026-11-01: PR478 final head 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 workflows; protected Real Auth run 41323470318 passed the owner-scoped read and separate history model; normal merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 completed."
       ],
       "next_action": "Preserve the recovered observations as separate original device history. Reopen only for new original evidence; legacy linkage, water continuity and owner acceptance remain independent tasks.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-FLEURY-PREVIEW-READER-001",
+      "area": "Laboratory source reading",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Make the independently validated Fleury text layout available as a private read-only file preview.",
+      "acceptance": [
+        "The positioned text reader agrees with the independent original-file extraction, preserving qualifiers, units, collection dates and physical PDF pages.",
+        "The generic authenticated upload inspector retains owner-scoped storage and preview access; the specialized reader performs no canonical laboratory writes.",
+        "Supported results are readable on phone and desktop, with source-copy conflicts and unsupported blocks held explicitly.",
+        "Publish the bounded reader and verify protected application access; keep genuine ordinary-file submission/reopening, Einstein formats and general import acceptance separate."
+      ],
+      "evidence": [
+        "supabase/functions/_shared/fleury-lab-preview.mjs",
+        "supabase/functions/_shared/fleury-upload-preview.ts",
+        "v2/fleury-preview-test.mjs",
+        "v2/fleury-preview-browser.mjs",
+        "v2/releases/FLEURY_PREVIEW_20261101.md"
+      ],
+      "next_action": "Complete candidate gates, publish the bounded reader, inspect the exact mobile/desktop evidence and verify protected data access.",
       "blocker": null
     }
   ],

@@ -3,6 +3,7 @@ import {sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucke
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
+import {renderFleuryPreview,fleuryPreviewModel} from './fleury-preview.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
@@ -72,6 +73,8 @@ function qualityDiagnostics(issue){
 function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguardando leitura segura',review_required:'aguardando leitura segura',failed:'falha no processamento'})[status]||'situação não detalhada';}
 function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
 function previewNotice(preview){
+  const lab=fleuryPreviewModel(preview);
+  if(lab)return lab.complete?'Leitura do laudo conferida com os exames já presentes no histórico.':lab.rows.length?'Prévia disponível abaixo. Os exames do histórico foram preservados.':'Original guardado; este formato ainda precisa de leitura especializada.';
   if(preview?.status==='failed')return'O processamento não foi concluído. O arquivo original continua guardado.';
   if(['review_required','needs_specialized_parser','ready_for_parser'].includes(preview?.status))return'O arquivo está guardado e ainda não entrou nas análises. Você não precisa revisar linha por linha.';
   if(Array.isArray(preview?.warnings)&&preview.warnings.length)return'O arquivo foi preservado com observações para uma leitura posterior.';
@@ -80,7 +83,7 @@ function previewNotice(preview){
 function previewDetail(preview){
   if(!preview)return'<span class="processingMuted">Sem detalhe adicional do processamento.</span>';
   const facts=[preview.detected_format?`Formato: ${String(preview.detected_format).toUpperCase()}`:null,preview.row_count!=null?countLabel(preview.row_count,'registro','registros'):null,preview.date_min||preview.date_max?`${fmtDate(preview.date_min)} → ${fmtDate(preview.date_max)}`:null].filter(Boolean),notice=previewNotice(preview);
-  return `<div class="processingDetail"><div>${pill(previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='inspected'?'ok':'')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${notice?`<small>${esc(notice)}</small>`:''}</div>`;
+  return `<div class="processingDetail"><div>${pill(fleuryPreviewModel(preview)?.rows.length?'prévia do laudo disponível':previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='inspected'?'ok':'')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${notice?`<small>${esc(notice)}</small>`:''}${renderFleuryPreview(preview,fmtDate,failed('labs')?[]:state.data.labs||[])}</div>`;
 }
 function displayFilename(value){try{return decodeURIComponent(String(value||'Arquivo'));}catch{return String(value||'Arquivo');}}
 function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(displayFilename(u.original_filename))}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}

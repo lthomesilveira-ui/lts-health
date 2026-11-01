@@ -232,6 +232,7 @@ function uploadStatusMessage(status,source,detectedFormat){
     const format=detectedFormat?` (${String(detectedFormat).toUpperCase()})`:'';
     return`Arquivo recebido e guardado${format}. Ainda não entrou nas análises e você não precisa revisar linha por linha.`;
   }
+  if(status==='processed'&&source==='fleury'&&detectedFormat==='pdf')return'Arquivo recebido e guardado. A prévia do laudo está disponível no histórico de arquivos. Nenhum exame foi duplicado ou alterado.';
   if(status==='processed')return'Arquivo processado e guardado. O histórico de arquivos já registra a conclusão.';
   if(status==='rejected'||status==='failed')return'O arquivo foi guardado, mas não foi possível concluir o processamento. Para tentar novamente, envie outra versão do arquivo.';
   if(status==='uploaded'||status==='processing')return'Arquivo recebido e guardado. A leitura ainda está em andamento.';
