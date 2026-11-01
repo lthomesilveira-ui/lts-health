@@ -49,54 +49,46 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-UPLOAD-RECEIPT-028",
-    "status": "in_progress",
-    "goal": "Preserve the actual file receipt through redraws, prevent duplicate submissions and distinguish safe storage from incorporation.",
+    "id": "PKG-LEGACY-PR-RECONCILIATION-029",
+    "status": "done",
+    "goal": "Resolve superseded UI drafts and validate/publish the remaining disposable SQL regression suites.",
     "task_ids": [
-      "LTS-UPLOAD-RECEIPT-UX-001"
+      "LTS-LEGACY-PR-RECONCILIATION-001"
     ],
-    "candidate_build": "health-integrated-20261101.113",
-    "public_build": "health-integrated-20261101.112",
-    "runtime_changed": true,
+    "public_build": "health-integrated-20261101.113",
+    "runtime_changed": false,
     "clinical_runtime_changed": false,
-    "pending_gates": [
-      "complete upload browser regression at320/393/1440 on Chromium/WebKit",
-      "candidate CI",
-      "exact synthetic visual inspection",
-      "normal publication and public/protected checks"
-    ],
-    "started_at_utc": "2026-11-01T13:28:10.651617+00:00",
+    "pending_gates": [],
+    "completed_at_utc": "2026-11-01T14:05:21.402318+00:00",
     "completed_evidence": [
-      "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
-      "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
-      "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
-      "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
-      "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
+      "Legacy PR348 (interval review) and PR354 (compact source-aware dashboard) were compared with the delivered implementation, closed as superseded and kept on their original branches. No obsolete prototype was merged.",
+      "PR367 adds only 25 synthetic SQL/workflow files. Independent source review checked 820 before/after images: invented labels/sources/notes, zero-prefix UUIDs, generated values and deterministic literal limits/footnotes. Shell syntax and local-only empty-schema/database-name guards passed.",
+      "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
+      "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.112",
-    "main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
-    "runtime_promotion_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "build_id": "health-integrated-20261101.113",
+    "main_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+    "runtime_promotion_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T12:17:29.703661+00:00",
-    "release_kind": "water_receiving_navigation_and_legibility",
+    "verified_at_utc": "2026-11-01T14:06:50.459871+00:00",
+    "release_kind": "file_receipt_and_sources_readability",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate and 21 exact runtime-publication workflows completed successfully.",
+    "manual_exact_public_evidence": "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+    "automated_runtime_and_responsive_status": "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
     "evidence": [
-      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
-      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
-      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
-      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
-      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
-      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
-      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
-      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
-      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
-      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
-      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+      "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+      "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+      "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+      "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+      "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+      "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+      "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+      "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+      "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+      "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
     ],
     "ci_summary": {
       "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
@@ -106,7 +98,21 @@
       "publication_total": 21,
       "publication_success": 21
     },
-    "pending_validation_repetitions": []
+    "pending_validation_repetitions": [],
+    "pending_ci_repetitions": {
+      "candidate": [],
+      "runtime_publication": [
+        {
+          "id": 41314008841,
+          "name": "LTS Health Isolated Preview"
+        },
+        {
+          "id": 41314008782,
+          "name": "LTS Health calendar reports and local PDF"
+        }
+      ],
+      "test_only_publication": []
+    }
   },
   "tasks": [
     {
@@ -2478,7 +2484,7 @@
         "New read-only projections and comparison/status views implemented; directly affected source and dietary unit contracts pass locally.",
         "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
         "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at 320/393/1440 px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
         "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
         "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
       ],
@@ -2503,7 +2509,7 @@
         "New read-only projections and comparison/status views implemented; directly affected source and dietary unit contracts pass locally.",
         "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
         "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at 320/393/1440 px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
         "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
         "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
       ],
@@ -2528,7 +2534,7 @@
         "New read-only projections and comparison/status views implemented; directly affected source and dietary unit contracts pass locally.",
         "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
         "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at 320/393/1440 px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
         "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
         "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
       ],
@@ -2553,7 +2559,7 @@
         "v2/real-auth-plan-checks.mjs",
         "v2/releases/PLAN_ORIGINAL_ACCESS_20261029.md",
         "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.",
-        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
+        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable 320 px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
         "Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence.",
         "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
         "Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass.",
@@ -2656,7 +2662,7 @@
         "Publish normally and validate actual authenticated result/document agreement and public entry."
       ],
       "evidence": [
-        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
+        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at 320/393/1440 px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
         "Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime.",
         "Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed.",
         "PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage.",
@@ -3074,7 +3080,7 @@
       "area": "UX / file receipt and ingestion status",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Preserve the actual file receipt through redraws, prevent duplicate submissions and distinguish safe storage from incorporation.",
       "acceptance": [
@@ -3083,16 +3089,48 @@
         "Inspector-confirmed import, held original, parsing failure, storage failure, preserved-original metadata failure and unavailable list refresh remain distinct in plain language.",
         "Final result is visible/focused and at least14px at320/393/1440 without overflow; unrelated navigation is not taken over.",
         "Sign-out/account change clears the prior receipt; late completion cannot restore it. Existing auth, owner, private storage and clinical write boundaries remain.",
-        "Full-form synthetic Chromium/WebKit gates, candidate/publication workflows, exact visual and public-entry/protected checks pass; no invented production health record is created."
+        "Full-form synthetic Chromium/WebKit gates, candidate/publication workflows, exact visual and public-entry/protected checks pass; no invented production health record is created.",
+        "The nine-area inventory keeps labels and explanations on distinct readable lines, and the secondary backup action retains a touch target of at least44px."
       ],
       "evidence": [
         "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
         "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
         "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
         "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
-        "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
+        "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed.",
+        "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+        "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+        "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+        "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+        "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+        "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+        "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+        "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+        "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+        "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
       ],
-      "next_action": "Complete browser regression and exact synthetic visual inspection, publish through normal PR, then verify the exact public build and close this bounded task."
+      "next_action": "Preserve the verified file/source journey and resume source recovery only from genuine new evidence."
+    },
+    {
+      "id": "LTS-LEGACY-PR-RECONCILIATION-001",
+      "area": "Delivery continuity / legacy pull requests",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "done",
+      "blocker": null,
+      "summary": "Resolve the three legacy pull requests without reintroducing superseded UI or applying clinical proposals.",
+      "acceptance": [
+        "Compare the two old UI drafts against the delivered active modules/tests, close superseded drafts and retain branches/history.",
+        "Review the remaining test-only PR for synthetic data, local-only database execution and bounded scope; validate a current head and merge normally.",
+        "Verify that the released v2 runtime/control subtree is unchanged by the test-only merge and preserve all independent source/data blockers."
+      ],
+      "evidence": [
+        "Legacy PR348 (interval review) and PR354 (compact source-aware dashboard) were compared with the delivered implementation, closed as superseded and kept on their original branches. No obsolete prototype was merged.",
+        "PR367 adds only 25 synthetic SQL/workflow files. Independent source review checked 820 before/after images: invented labels/sources/notes, zero-prefix UUIDs, generated values and deterministic literal limits/footnotes. Shell syntax and local-only empty-schema/database-name guards passed.",
+        "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
+        "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
+      ],
+      "next_action": "Continue from the current published app and execution ledger; do not reopen superseded drafts as new runtime work."
     }
   ],
   "package_history": [
@@ -3159,7 +3197,7 @@
         "Exact private insertion/readback and unchanged prior histories verified; no schema, authorization or auth/write implementation changed.",
         "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
         "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at 320/393/1440 px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
         "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
         "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment."
       ],
@@ -3980,7 +4018,7 @@
       "owner_acceptance": "not_granted",
       "completed_evidence": [
         "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.",
-        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
+        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable 320 px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
         "Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence.",
         "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
         "Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass.",
@@ -4040,7 +4078,7 @@
       "public_build": "health-integrated-20261030.98",
       "owner_acceptance": "not_granted",
       "completed_evidence": [
-        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
+        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at 320/393/1440 px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
         "Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime.",
         "Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed.",
         "PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage.",
@@ -4469,31 +4507,59 @@
       "candidate_commit": "03ff7e7493eebd52eb007483124d1940c2b49670",
       "publication_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
       "completed_at_utc": "2026-11-01T12:17:29.703661+00:00"
+    },
+    {
+      "id": "PKG-UPLOAD-RECEIPT-028",
+      "status": "done",
+      "goal": "Preserve the actual file receipt through redraws, prevent duplicate submissions and distinguish safe storage from incorporation.",
+      "task_ids": [
+        "LTS-UPLOAD-RECEIPT-UX-001"
+      ],
+      "candidate_build": "health-integrated-20261101.113",
+      "public_build": "health-integrated-20261101.113",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "pending_gates": [],
+      "started_at_utc": "2026-11-01T13:28:10.651617+00:00",
+      "completed_evidence": [
+        "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+        "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+        "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+        "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+        "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+        "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+        "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+        "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+        "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+        "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
+      ],
+      "candidate_commit": "491322b1197f2c375f97165f3a93b99cc77f8cbf",
+      "publication_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+      "completed_at_utc": "2026-11-01T14:05:21.402318+00:00"
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.112",
-    "main_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
-    "runtime_promotion_commit": "4783dbab3c94391caa2d7d7291ad9924c17d2ca0",
+    "build_id": "health-integrated-20261101.113",
+    "main_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+    "runtime_promotion_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
     "published_on": "2026-11-01",
-    "verified_at_utc": "2026-11-01T12:17:29.703661+00:00",
-    "release_kind": "water_receiving_navigation_and_legibility",
+    "verified_at_utc": "2026-11-01T14:06:50.459887+00:00",
+    "release_kind": "file_receipt_and_sources_readability",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate and 21 exact runtime-publication workflows completed successfully.",
+    "manual_exact_public_evidence": "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+    "automated_runtime_and_responsive_status": "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
     "evidence": [
-      "The observed missing-water links previously entered Data and Sources above the relevant receiving section. A single-use water context now waits for the rendered heading, scrolls to it and focuses it.",
-      "The final route-reset revision prevents an earlier queued reset from undoing the receiving focus. Ordinary entry and unrelated navigation retain their original behavior; browser checks verify the position after subsequent animation frames.",
-      "Receiving status distinguishes water not updated from other available metrics. Receipt verification remains primary; credential rotation and disconnection remain in secondary configuration with their existing confirmations.",
-      "Visual inspection found small receiving text and a browser-default primary button. The final receiving copy is concise, notices and configuration labels are at least 14px, and the primary action is styled consistently with a 48px minimum.",
-      "PR474 final candidate 03ff7e7493eebd52eb007483124d1940c2b49670 passed 17/17 workflows. Earlier candidate failures remain in history and are not counted as passed.",
-      "Exact synthetic artifact 13082995638 matched sha256:f408e01163450a9ba86d3bc1cf702358e07e5c8404218c12371a8a1314d58546. The actual production renderer at 320, 393 and 1440px, including 393x650, preserved visible receiving focus, readable text, secondary setup, ordinary return, zero unexpected writes and no horizontal overflow.",
-      "Normal merge 4783dbab3c94391caa2d7d7291ad9924c17d2ca0 published .112 with 21/21 completed successful workflows, including deploy, Pages, integrated production and protected actual-auth checks.",
-      "Independent Cloud Browser confirmed exact public .112 at #hoje, visible signed-out login and hidden private app. Public signed-out inspection, synthetic health-area images and protected actual-auth checks remain separate evidence; no physical-iPhone or private manual-session review is claimed.",
-      "The existing continuation automation remains enabled and now avoids document-only PRs and deployments merely to repeat an unchanged audit. Real active packages and genuinely new evidence remain priorities.",
-      "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
-      "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
+      "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+      "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+      "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+      "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+      "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+      "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+      "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+      "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+      "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+      "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
     ],
     "ci_summary": {
       "candidate_head": "03ff7e7493eebd52eb007483124d1940c2b49670",
@@ -4503,7 +4569,21 @@
       "publication_total": 21,
       "publication_success": 21
     },
-    "pending_validation_repetitions": []
+    "pending_validation_repetitions": [],
+    "pending_ci_repetitions": {
+      "candidate": [],
+      "runtime_publication": [
+        {
+          "id": 41314008841,
+          "name": "LTS Health Isolated Preview"
+        },
+        {
+          "id": 41314008782,
+          "name": "LTS Health calendar reports and local PDF"
+        }
+      ],
+      "test_only_publication": []
+    }
   },
   "release_history": [
     {
@@ -4514,7 +4594,7 @@
       "published_on": "2026-10-29",
       "verified_on": "2026-10-30",
       "verified_at_utc": "2026-10-30T14:39:53.780Z",
-      "automated_runtime_and_responsive_status": "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain. Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position. Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence. Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass. Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions.",
+      "automated_runtime_and_responsive_status": "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain. Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable 320 px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position. Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence. Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass. Final continuation: all16 exact-runtime candidate,20 runtime-publication and16 metadata-closeout workflows have completed successfully. The earlier explicitly pending preview/calendar/functional repetitions are now resolved without retries, assertion changes or runtime changes. New genuine bridge receipts continue for nutrition/activity; water and the independent source conditions remain unmet. Existing provider threads have no later response than their already-recorded technical questions.",
       "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
       "manual_exact_public_verified_on": "2026-10-30",
       "manual_exact_public_evidence": "Fresh actual-auth41071473862 passed against the unchanged .97 application. After successful publication the stable public entry was independently reloaded in Cloud Browser: exact .97, visible login, hidden private shell and no overflow. The manual session is signed out; no new manual authenticated or physical-iPhone claim.",
@@ -4912,7 +4992,7 @@
       "published_on": "2026-10-29",
       "verified_on": "2026-10-29",
       "verified_at_utc": "2026-10-29T20:33:47Z",
-      "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy 40949743688, public smokes 40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim. Verification-only follow-up closes the former preview repetitions: repaired exact candidate40956685751 and normal post-merge40957168100 pass with all 14 candidate and all 18 post-merge workflows. Published runtime and build remain identical.",
+      "automated_runtime_and_responsive_status": "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful. Documented Plan gate40949297911: six Chromium/WebKit routes at 320/393/1440 px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected. Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy 40949743688, public smokes 40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim. Verification-only follow-up closes the former preview repetitions: repaired exact candidate40956685751 and normal post-merge40957168100 pass with all 14 candidate and all 18 post-merge workflows. Published runtime and build remain identical.",
       "manual_exact_public_status": "exact_public_96_stable_entry_verified_signed_out",
       "manual_exact_public_verified_on": "2026-10-29",
       "manual_exact_public_evidence": "Cloud Browser stable entry confirms .96, login protection, manifest and no page overflow. Session signed out. Real private view checks are executed by the existing protected actual-auth workflow; no physical iPhone claim.",
@@ -5260,7 +5340,7 @@
       "verified_at_utc": "2026-10-30T17:04:01.959Z",
       "release_kind": "source_confirmed_private_laboratory_original_access",
       "icon_revision": "heart-pulse-20261029",
-      "automated_runtime_and_responsive_status": "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass. Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime. Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed. PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage. Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed. PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
+      "automated_runtime_and_responsive_status": "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at 320/393/1440 px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass. Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime. Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed. PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage. Fresh protected actual-auth41094336535 passes all steps against .98, explicitly including independent real laboratory result/document-to-href agreement, full histories, source boundaries and authenticated Labs visual capture. No patient PDF was opened or private source identity logged. Artifact12994194775 sha256:4ee7d60c92cdeb5cbb6f434b588ce19732a76bf9157c10dcc5c4ef25195f5e33 is encrypted workflow evidence; no private-image manual inspection is claimed. PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
       "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
       "manual_exact_public_verified_on": "2026-10-30",
       "manual_exact_public_evidence": "PR439 deploy41094336650, public41094414298/41094414101 and laboratory-original41094336779 pass. Public Cloud Browser independently confirms exact .98, visually intact login, hidden private shell and no overflow. The manual browser is signed out; no new manual authenticated or physical-iPhone claim.",
@@ -5702,7 +5782,7 @@
         }
       },
       "evidence": [
-        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at320/393/1440px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
+        "Exact runtime candidate b9a59c96f325fba0af31b33a2de0da5856fa028b: source-link41092770427 passes eight Chromium/WebKit cases at 320/393/1440 px, including393x650, failed laboratory/document readers, point/history identity, native-window isolation,44px targets, containment and zero writes. Local26-case source rejection/projection and existing laboratory regressions pass.",
         "Initial artifact12993593948 sha256:2ba89c908ee1735ff45ae22cf74670619af856f02d954cc29b6cc0adf9df5639 was byte-verified before all eight reports and readable Chromium320 entry/history, WebKit393 history and1440 entry captures were inspected. Exact candidate artifact12993359653 sha256:42718a6c5b1deb4277bf318d8efeab980be51a38ffb6e90eee640becd49022c7 records the final head. Comparison verifies that only two existing regression source-locator tests changed after the inspected runtime.",
         "Normal PR438 promotion3c747f6a9494b2f060115a295d8df2e874a5d64b published .98. Deploy41093311389, public41093384905/41093384835 and laboratory-original41093311150 pass. Actual-auth41093311367 reached full-depth completion but failed its final gate; its cause remains unestablished. Artifact12994648681 sha256:c728795134b6c526bf0fe04d395fd75d224e263ef170b9c2a33a8e83a7e2b3ce was byte-verified as36 encrypted PNG envelopes; no plaintext was exposed.",
         "PR439 follow-up changes only protected-check diagnostics and operational metadata, not application assets. Normal merge d15d24ee6050a2c3e8b168ca887d12b577cdc9dd preserves every assertion and reuses reviewed public-resource query/private-path redaction, bounded status/transport events, error-kind counts and a separate sign-out stage.",
@@ -9059,35 +9139,62 @@
         "This is a bounded UX completion. Water-source continuity, original records, source lineage, coverage, ordinary genuine form persistence and overall owner acceptance remain independent; no health datum, credential or phone setup was changed.",
         "After the bounded water package, a second exact .112 Training summary/exercise journey was inspected from publication artifact 13083026146, sha256:ea12e53be7e3b718a30f53eaea738288beddb8dde8f662bf7c4e365d9df9ff60. Dated estimates, absent values, literal original exercise text and source units remained distinct, with no new concrete runtime defect. No additional runtime or document-only release was invented for that review."
       ]
+    },
+    {
+      "build_id": "health-integrated-20261101.113",
+      "runtime_promotion_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
+      "published_on": "2026-11-01",
+      "release_kind": "file_receipt_and_sources_readability",
+      "evidence": [
+        "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+        "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+        "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+        "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+        "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+        "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+        "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+        "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+        "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+        "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent."
+      ]
     }
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T13:28:10.651617+00:00",
-    "source_main_commit": "49f842d6bbf712183fecf9edb7e1d9a573e2daac",
-    "runtime_build": "health-integrated-20261101.112",
-    "candidate_build": "health-integrated-20261101.113",
+    "reviewed_at_utc": "2026-11-01T14:05:21.402318+00:00",
+    "source_main_commit": "e381ba7eeb369e6bc66b39568b111276c056dc6c",
+    "runtime_build": "health-integrated-20261101.113",
+    "candidate_build": null,
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
-      "done": 100,
+      "done": 102,
       "blocked_external": 14,
-      "accepted_gap": 2,
-      "in_progress": 1
+      "accepted_gap": 2
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
-      "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
-      "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
-      "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
-      "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
-      "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
+      "Actual upload submission retained references to nodes replaced by refresh. The corrected flow retains receipt/busy state, preserves the chosen file across same-route redraws, prevents duplicate storage calls and clears receipt/draft ownership on sign-out or account change.",
+      "Confirmed inspector status/format remain available when the file list fails or another route is refreshed. Import, held original, storage failure, parsing failure and preserved-original metadata failure stay distinct in plain language. No raw preview sample is retained.",
+      "Final current-head full-form regression passes 54/54 cases on Chromium/WebKit at 320/393/1440 px with invented files/in-memory storage: delayed redraws, duplicate events, partial failures, leaving/returning, sign-out, one storage call and zero external requests.",
+      "Upload/backup controls are 48 px, final outcome and file history are readable, normal text meets 4.5:1 against the light card and the full focused result remains above navigation. Inventory labels/descriptions use separate lines; all nine original areas retain their counts and bindings.",
+      "Exact candidate 491322b1197f2c375f97165f3a93b99cc77f8cbf; integrated artifact 13085553906, sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142, downloaded and hash-verified. Readable 320 px receipt,1440 px partial-failure/backup/inventory and WebKit 393 px inventory/history were inspected; no horizontal overflow or text collision remains in the affected journey.",
+      "Normal PR476 merge a54771300abf7e571847f0ae1b177670cc7638a6 has exactly the tested candidate tree. Public Cloud Browser at 2026-11-01T14:02:05.603Z confirms .113, signed-out login, hidden private app and 1363/1363 px width. Protected actual-auth and public/homologation/deploy checks pass. Public signed-out review, synthetic health-area review and protected actual authentication are separate; no private manual-session or physical-iPhone claim.",
+      "Observed candidate snapshot 18/18 success; runtime-publication snapshot 20/22 success. Unfinished same-code repetitions are explicitly tracked, not counted as passed.",
+      "Earlier candidates remain historical: the first test read busy state before its animation frame; the next navigation case exposed a real lost-format fallback and was corrected; inventory assertions now scope the nine history areas independently of four diagnostic cards. No failed run was relabelled successful.",
+      "Fresh bounded context recovery again returned secondary references without the literal fifteen-record manifest or specific authorization. Connector discovery did not locate an available water-diary reader; current installed nutrition tools do not provide diary extraction. No provider-security bypass, repeated completed phone setup or clinical/source write.",
+      "Fourteen independent external blockers and two accepted gaps remain. Overall owner acceptance, original water/export history, source identity, basal coverage, native-device proof and genuine ordinary form persistence remain independent.",
+      "Legacy PR348 (interval review) and PR354 (compact source-aware dashboard) were compared with the delivered implementation, closed as superseded and kept on their original branches. No obsolete prototype was merged.",
+      "PR367 adds only 25 synthetic SQL/workflow files. Independent source review checked 820 before/after images: invented labels/sources/notes, zero-prefix UUIDs, generated values and deterministic literal limits/footnotes. Shell syntax and local-only empty-schema/database-name guards passed.",
+      "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
+      "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
     ],
     "ux_review": {
-      "area": "file_submission_receipt",
+      "area": "sources_upload_receipt_and_inventory",
       "next_area": "nutrition",
-      "mode": "source_diagnostic_and_full_form_synthetic_regression_pending",
-      "result": "concrete_defect_in_validation"
+      "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
+      "viewport": "320/393/1440, including 650 px height",
+      "result": "observed_submission_and_inventory_defects_corrected_and_verified"
     }
   },
   "continuity_review_history": [
@@ -9363,7 +9470,7 @@
       "evidence": [
         "Private received source and latest owner statement inserted with owner/identity guards, exact readback and unchanged prior document/regimen/application fingerprints. Contents remain private; no application, dose or past start is created.",
         "Exact candidate 323b28b5fc39b7067e6b8e46a7d1b4a2f1bc1275, tree 04e482f5a11c8ca9a84fe9a8dfb9cbb79cf83f05: 15 of 17 workflows completed successfully. LTS Health Visual Training Report 40949297975, LTS Health Documented Plan Comparison 40949297911, LTS Health Integrated Production 40949298027, LTS Health Auto Export 40949297738, LTS Health Recovery Depth Smoke 40949297800, LTS Health workout source evidence smoke 40949297816, LTS Health Dashboard Reference Contract 40949297741, LTS Health iPhone Home Screen 40949297851, LTS Health Cockpit Experience 40949297798, LTS Health Training Session 40949297752, LTS Health Fleury source audit 40949297717, LTS Health Polar background 40949297818, cockpit-smoke 40949297745, LTS Health v2 Nutrition History Smoke 40949297799, LTS Health Functional Depth 40949297797. Remaining broad repetitions are explicitly recorded as pending, not successful.",
-        "Documented Plan gate40949297911: six Chromium/WebKit routes at320/393/1440px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
+        "Documented Plan gate40949297911: six Chromium/WebKit routes at 320/393/1440 px, exact/manual exercise links, unknown phases, failed sets, current-use statement, visible food comparison, historical opt-in and zero writes. Artifact12931560016 sha256:eb824fd818c70dae0d5f9eb0eef7909b49270fbccd80543552e21ecf82d536b9 verified; readable narrow entry, populated review, failure state, food and status captures inspected.",
         "Normal PR426 promotion 3a2845b1398d5a6404f780ef8d2d132837412540, deploy40949743688, public smokes40949902855/40949902767 and actual-auth40949743629 passed. The protected actual-auth helper verifies all three real private areas without clinical writes. Stable public .96 entry independently opened and build/login/manifest/no-overflow confirmed in Cloud Browser. Manual browser signed out; no physical-device or new manual authenticated claim.",
         "The initial stale privacy-route expectation was updated to require the separate current-use domain, with additional exact bounded-projection/type-filter checks. All prior source/auth/write assertions are preserved. Alternative exercise names never automatically inherit the primary rep range; different manual links withhold that range judgment.",
         "Two existing support threads rechecked: no new substantive reply. Fresh aggregate source review still does not establish water restoration or verified total expenditure. No vendor message or completed phone action is repeated.",
@@ -9552,7 +9659,7 @@
       "open_external_issue_count": 0,
       "evidence": [
         "Exact candidate 2a21c1275414d1a2769a787f64c5f80ebaf85dc2, tree a067c373bfdde06a501b392d59dc1bad6ce4c220: focused plan browser 40969987864 passes six Chromium/WebKit320/393/1440 cases. It opens both synthetic original destinations, confirms native-account URL, no opener/referrer,44px controls, containment and zero writes; all prior mapping/phase/failure/retrospective assertions remain.",
-        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable320px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
+        "Artifact 12940271174 sha256:3f18807ea745778bbd6fc19f57f88056efe73f3e906b64cb3aafe8938ac6e3db was verified before reading all six results. Readable 320 px training and dietary entries,393px WebKit dietary entry and1440px training were actually inspected; the dietary entry capture starts at the natural top rather than a preserved scroll position.",
         "Normal PR432 merge a9709712ecc3dd259ed83eb4dda61fd00e8d3524 has the exact reviewed tree. Deploy40970443593, public smokes40970548869/40970545098, post-merge plan browser40970443511 and protected actual-auth40970443464 pass. The protected test checks each real source-validated selected plan against its href without logging private identities or navigating patient PDFs into public evidence.",
         "Stable public entry was freshly reloaded in Cloud Browser and confirms health-integrated-20261029.97 with private content hidden and the login visually intact. This manual inspection is signed out; private source agreement is the protected automated check, not a new manual authenticated or physical-iPhone claim.",
         "Workflow snapshot: 14/16 candidate and 17/20 post-merge success. Remaining broader repetitions: 40969987795, 40969987963, 40970443522, 40970443461, 40970443533. Pending runs are explicitly not counted as passed; all package-required source/UI/auth/public gates pass.",
@@ -10134,6 +10241,35 @@
         "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
         "viewport": "320/393/1440, including 393x650",
         "result": "observed_defects_corrected_and_verified"
+      }
+    },
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T13:28:10.651617+00:00",
+      "source_main_commit": "49f842d6bbf712183fecf9edb7e1d9a573e2daac",
+      "runtime_build": "health-integrated-20261101.112",
+      "candidate_build": "health-integrated-20261101.113",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 100,
+        "blocked_external": 14,
+        "accepted_gap": 2,
+        "in_progress": 1
+      },
+      "executable_task_count": 1,
+      "evidence": [
+        "Fresh main49f842d6bbf712183fecf9edb7e1d9a573e2daac, reference heads/master, private checkpoint68 and open PRs were reconciled; no overlapping implementation is open.",
+        "The actual submission handler kept uploadMsg and button references across refresh(), while render() replaces screenHost.innerHTML. Completion wrote to a detached node and the new form lost its busy state. Existing message-only tests did not exercise submission.",
+        "The bounded candidate retains receipt and busy state in memory, renders the current form from that state, retains a chosen File input across same-route redraws before submission, and uses only the inspector status/format projection when a list refresh fails.",
+        "Original-preserved metadata failure is distinct from storage failure. Completion focuses a legible result while the owner remains in Sources; unrelated navigation is retained. Sign-out and account changes clear the prior receipt and suppress late UI updates.",
+        "Local syntax, exact source parity/hash inventory, production graph, privacy, upload transport, operational writes and connection boundaries pass. The transport uses invented files and in-memory clients only. Browser and publication gates remain pending; no runtime completion is claimed."
+      ],
+      "ux_review": {
+        "area": "file_submission_receipt",
+        "next_area": "nutrition",
+        "mode": "source_diagnostic_and_full_form_synthetic_regression_pending",
+        "result": "concrete_defect_in_validation"
       }
     }
   ],

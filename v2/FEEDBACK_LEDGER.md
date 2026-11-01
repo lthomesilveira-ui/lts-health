@@ -1,3 +1,15 @@
+# Concluído — recebimento de arquivos e leitura de Dados e fontes, .113
+
+`PKG-UPLOAD-RECEIPT-028` / `LTS-UPLOAD-RECEIPT-UX-001` está concluído. O envio mantém o resultado visível após atualizar a tela, conserva a escolha anterior em redesenhos da mesma rota e bloqueia envios duplicados enquanto termina. Arquivo incorporado, original guardado e falhas parciais têm mensagens distintas; a situação/formato confirmados são preservados ao sair da área e voltar. Saída/troca de conta limpa recebimento e propriedade da escolha. Ações de envio/backup têm 48 px, confirmação/histórico são legíveis e os títulos/explicações do inventário ficam em linhas separadas, com contagens preservadas.
+
+PR476: candidata `491322b1197f2c375f97165f3a93b99cc77f8cbf`, 54/54 cenários completos Chromium/WebKit em 320/393/1440 px. Artefato sintético `13085553906`, `sha256:15eb760350cfa2ccf6955af146c6a904c325a4cad836b2bf99651ee99ea93142`, conferido por hash e imagens legíveis. Merge normal `a54771300abf7e571847f0ae1b177670cc7638a6` tem a árvore exata testada. Cloud Browser confirmou `.113`, login desconectado, área privada oculta e 1363/1363 px; autenticação real protegida, deploy e smokes públicos passaram como evidências separadas. Sem nova validação física de iPhone ou sessão privada manual presumida. Snapshot observado: candidata 18/18 e publicação de runtime 20/22; repetições ainda em andamento são listadas no estado e não contam como sucesso.
+
+A rodada seguinte também terminou: `PKG-LEGACY-PR-RECONCILIATION-029` / `LTS-LEGACY-PR-RECONCILIATION-001`. PR348/354 foram encerrados por supersessão, com branches/histórico preservados. PR367 teve 25 arquivos e 820 imagens de linhas inventadas revisados; 6/6 verificações frescas passaram antes do merge normal `e381ba7eeb369e6bc66b39568b111276c056dc6c`. A subárvore v2 ficou byte a byte idêntica à .113; não houve aplicação de proposta clínica ou alteração do banco real.
+
+Fila: 102 concluídos, 14 bloqueios externos e 2 lacunas aceitas, zero ready/in_progress. O manifesto original das quinze correções não foi recuperado pela busca delimitada e as demais dependências genuínas permanecem abertas. A automação segue habilitada, sem PR/deploy para QA sem mudança. Próxima área de UX: Nutrição; aceite global continua independente.
+
+# Histórico da preparação e das evidências anteriores
+
 # Em validação — recebimento de arquivos preservado na tela, .113
 
 `PKG-UPLOAD-RECEIPT-028` / `LTS-UPLOAD-RECEIPT-UX-001` corrige uma falha concreta: o envio mantinha referências à mensagem e ao botão que a própria atualização da tela removia. O resultado final podia desaparecer e o formulário novo perdia o bloqueio de envio em curso. A candidata conserva o recebimento e a ocupação em memória, preserva a escolha anterior ao envio em redesenhos da mesma rota e distingue arquivo incorporado, guardado para leitura e falhas parciais. Somente situação/formato retornados pelo processamento são retidos; não são projetadas amostras ou conteúdo bruto.
