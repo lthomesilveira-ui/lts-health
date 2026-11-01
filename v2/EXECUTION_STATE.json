@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-10-31",
+  "updated_on": "2026-11-01",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -49,359 +49,339 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-COMPOSITION-CONTEXT-022",
+    "id": "PKG-REPORTS-NAVIGATION-023",
     "status": "done",
-    "goal": "Keep composition source selection, differences and measurement detail in one coherent dated context.",
+    "goal": "Keep Reports context when opening Training without changing direct Training navigation.",
     "task_ids": [
-      "LTS-COMPOSITION-CONTEXT-001"
+      "LTS-REPORTS-NAVIGATION-001"
     ],
-    "candidate_build": "health-integrated-20261031.106",
-    "public_build": "health-integrated-20261031.106",
+    "candidate_build": "health-integrated-20261031.107",
+    "public_build": "health-integrated-20261031.107",
     "clinical_runtime_changed": false,
     "pending_gates": [],
-    "started_at_utc": "2026-10-31T22:59:16.560Z",
+    "started_at_utc": "2026-10-31T23:28:00.000Z",
     "completed_evidence": [
-      "Actual invented-data production-renderer inspection at desktop and 393x650 found one concrete context defect: after selecting an alternate documented composition device, the chart and differences used that device but the adjacent detail action opened the global latest measurement from another device.",
-      "The bounded correction makes the contextual action target and name the selected series latest dated measurement. All-origins still opens the global latest unambiguous measurement; independent history-row targets, values, units, source/device/file and comparison rules are unchanged.",
-      "Manual desktop and 393x650 verification confirms alternate-device selection → dated differences → exact 20/10/2026 detail with the same device/file → return preserving the source. The phone detail is 393/393px without horizontal overflow. The remainder of the journey—chart dates, source separation, safe same-device differences and history rows—showed no additional defect.",
-      "PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. The affected isolated-preview regression verifies the selected-source action target/date, matching detail and preserved selection on return; local source, production, preview, continuity and public-audit contracts also pass.",
-      "Normal PR456 merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106. All 21/21 publication workflows completed/success, including deploy 41251715760, public Pages 41251746985, homologation 41251747071, protected real auth 41251715912, production 41251715723, functional depth 41251715798 and isolated preview 41251715797.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact signed-out login, hidden private app and 1363/1363px page width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or new physical-iPhone acceptance is claimed.",
-      "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
+      "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
+      "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
+      "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
+      "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
+      "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
+      "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
+      "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
-    "completed_on": "2026-10-31",
-    "completed_at_utc": "2026-10-31T23:27:44.610Z",
-    "candidate_commit": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-    "publication_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+    "completed_on": "2026-11-01",
+    "completed_at_utc": "2026-11-01T00:27:59.519Z",
+    "candidate_commit": "ba60a1aa4db29f8973900f0f5a1a6ee21aec011b",
+    "publication_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
     "pending_validation_repetitions": []
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261031.106",
-    "main_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-    "runtime_promotion_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-    "published_on": "2026-10-31",
-    "verified_at_utc": "2026-10-31T23:27:44.610Z",
-    "release_kind": "selected_source_composition_detail_context",
+    "build_id": "health-integrated-20261031.107",
+    "main_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+    "runtime_promotion_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+    "published_on": "2026-11-01",
+    "verified_at_utc": "2026-11-01T00:27:59.519Z",
+    "release_kind": "reports_contextual_training_return",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact login, hidden private app and no horizontal overflow. The manual session is signed out; health-area review used invented data and the protected actual-auth gate is separate.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 21 publication workflows completed/success; no pending validation repetition.",
+    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.107, visible signed-out login, hidden private app and 1363/1363px width. The manual session is signed out; health-area review used invented data and protected actual-auth CI is separate.",
+    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 20 publication workflows completed/success. Protected real-auth attempt 2 passed after a transient CSS 503 on attempt 1; Integrated Production attempt 2 passed after attempt 1 was cancelled while its browser installation was blocked.",
     "evidence": [
-      "Actual invented-data production-renderer inspection at desktop and 393x650 found one concrete context defect: after selecting an alternate documented composition device, the chart and differences used that device but the adjacent detail action opened the global latest measurement from another device.",
-      "The bounded correction makes the contextual action target and name the selected series latest dated measurement. All-origins still opens the global latest unambiguous measurement; independent history-row targets, values, units, source/device/file and comparison rules are unchanged.",
-      "Manual desktop and 393x650 verification confirms alternate-device selection → dated differences → exact 20/10/2026 detail with the same device/file → return preserving the source. The phone detail is 393/393px without horizontal overflow. The remainder of the journey—chart dates, source separation, safe same-device differences and history rows—showed no additional defect.",
-      "PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. The affected isolated-preview regression verifies the selected-source action target/date, matching detail and preserved selection on return; local source, production, preview, continuity and public-audit contracts also pass.",
-      "Normal PR456 merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106. All 21/21 publication workflows completed/success, including deploy 41251715760, public Pages 41251746985, homologation 41251747071, protected real auth 41251715912, production 41251715723, functional depth 41251715798 and isolated preview 41251715797.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact signed-out login, hidden private app and 1363/1363px page width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or new physical-iPhone acceptance is claimed.",
-      "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
+      "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
+      "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
+      "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
+      "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
+      "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
+      "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
+      "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
     "ci_completion": {
       "candidate": [
         {
-          "id": 41250632355,
-          "name": "cockpit-smoke",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632355"
-        },
-        {
-          "id": 41250632576,
-          "name": "LTS Health Laboratory Originals",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632576"
-        },
-        {
-          "id": 41250632449,
-          "name": "LTS Health Cockpit Experience",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632449"
-        },
-        {
-          "id": 41250632498,
-          "name": "LTS Health Isolated Preview",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632498"
-        },
-        {
-          "id": 41250632519,
-          "name": "LTS Health calendar reports and local PDF",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632519"
-        },
-        {
-          "id": 41250632518,
-          "name": "LTS Health iPhone Home Screen",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632518"
-        },
-        {
-          "id": 41250632408,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632408"
-        },
-        {
-          "id": 41250632587,
-          "name": "LTS Health Functional Depth",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632587"
-        },
-        {
-          "id": 41250632434,
-          "name": "LTS Health Documented Plan Comparison",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632434"
-        },
-        {
-          "id": 41250632439,
-          "name": "LTS Health Auto Export",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632439"
-        },
-        {
-          "id": 41250632629,
-          "name": "LTS Health Recovery Depth Smoke",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632629"
-        },
-        {
-          "id": 41250632544,
-          "name": "LTS Health Fleury source audit",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632544"
-        },
-        {
-          "id": 41250632520,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632520"
-        },
-        {
-          "id": 41250632296,
-          "name": "LTS Health Dashboard Reference Contract",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632296"
-        },
-        {
-          "id": 41250632546,
-          "name": "LTS Health Training Session",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632546"
-        },
-        {
-          "id": 41250632639,
-          "name": "LTS Health Visual Training Report",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632639"
-        },
-        {
-          "id": 41250632397,
+          "id": 41254676259,
           "name": "LTS Health Polar background",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
           "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632397"
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676277,
+          "name": "LTS Health Training Session",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676343,
+          "name": "LTS Health Recovery Depth Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676304,
+          "name": "LTS Health workout source evidence smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676291,
+          "name": "LTS Health Auto Export",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676289,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676398,
+          "name": "cockpit-smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676379,
+          "name": "LTS Health Dashboard Reference Contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676325,
+          "name": "LTS Health iPhone Home Screen",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676305,
+          "name": "LTS Health Cockpit Experience",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676262,
+          "name": "LTS Health Documented Plan Comparison",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676322,
+          "name": "LTS Health Laboratory Originals",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676390,
+          "name": "LTS Health Visual Training Report",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676263,
+          "name": "LTS Health Functional Depth",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676273,
+          "name": "LTS Health Integrated Production",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676368,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676351,
+          "name": "LTS Health Isolated Preview",
+          "status": "completed",
+          "conclusion": "success"
         }
       ],
       "publication": [
         {
-          "id": 41251747071,
+          "id": 41255440045,
           "name": "LTS Health v2 Homologation Pages Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251747071"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255440045",
+          "run_attempt": 1
         },
         {
-          "id": 41251746985,
+          "id": 41255440036,
           "name": "LTS Health v2 Pages Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251746985"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255440036",
+          "run_attempt": 1
         },
         {
-          "id": 41251716016,
-          "name": "LTS Health Recovery Depth Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251716016"
-        },
-        {
-          "id": 41251715954,
+          "id": 41255413359,
           "name": "LTS Health Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715954"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413359",
+          "run_attempt": 1
         },
         {
-          "id": 41251715916,
-          "name": "LTS Health iPhone Home Screen",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715916"
-        },
-        {
-          "id": 41251715915,
+          "id": 41255413313,
           "name": "LTS Health Timeline Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715915"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413313",
+          "run_attempt": 1
         },
         {
-          "id": 41251715912,
-          "name": "LTS Health Real Auth E2E",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715912"
-        },
-        {
-          "id": 41251715875,
-          "name": "LTS Health Fleury source audit",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715875"
-        },
-        {
-          "id": 41251715832,
-          "name": "LTS Health Visual Training Report",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715832"
-        },
-        {
-          "id": 41251715808,
-          "name": "LTS Health calendar reports and local PDF",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715808"
-        },
-        {
-          "id": 41251715797,
-          "name": "LTS Health Isolated Preview",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715797"
-        },
-        {
-          "id": 41251715798,
-          "name": "LTS Health Functional Depth",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715798"
-        },
-        {
-          "id": 41251715805,
-          "name": "LTS Health Laboratory Originals",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715805"
-        },
-        {
-          "id": 41251715774,
+          "id": 41255413360,
           "name": "LTS Health Auto Export",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715774"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413360",
+          "run_attempt": 1
         },
         {
-          "id": 41251715772,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "id": 41255413306,
+          "name": "LTS Health Recovery Depth Smoke",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715772"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413306",
+          "run_attempt": 1
         },
         {
-          "id": 41251715768,
-          "name": "LTS Health Training Session",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715768"
-        },
-        {
-          "id": 41251715760,
+          "id": 41255413317,
           "name": "Deploy LTS Health",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715760"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413317",
+          "run_attempt": 1
         },
         {
-          "id": 41251715757,
-          "name": "LTS Health Cockpit Experience",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "id": 41255413358,
+          "name": "LTS Health Training Session",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715757"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413358",
+          "run_attempt": 1
         },
         {
-          "id": 41251715754,
+          "id": 41255413397,
           "name": "LTS Health Polar background",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715754"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413397",
+          "run_attempt": 1
         },
         {
-          "id": 41251715745,
+          "id": 41255413347,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413347",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413314,
+          "name": "LTS Health Laboratory Originals",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413314",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413342,
+          "name": "LTS Health iPhone Home Screen",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413342",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413287,
+          "name": "LTS Health Cockpit Experience",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413287",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413325,
           "name": "LTS Health Documented Plan Comparison",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715745"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413325",
+          "run_attempt": 1
         },
         {
-          "id": 41251715723,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "id": 41255413293,
+          "name": "LTS Health Visual Training Report",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715723"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413293",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413344,
+          "name": "LTS Health calendar reports and local PDF",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413344",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413300,
+          "name": "LTS Health Isolated Preview",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413300",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413388,
+          "name": "LTS Health Real Auth E2E",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413388",
+          "run_attempt": 2
+        },
+        {
+          "id": 41255413361,
+          "name": "LTS Health Functional Depth",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413361",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413339,
+          "name": "LTS Health Integrated Production",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413339",
+          "run_attempt": 2
         }
       ]
     },
@@ -3195,6 +3175,32 @@
         "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
       ],
       "next_action": "Rotate to a concrete reports journey; resume external dependencies only on genuine new evidence."
+    },
+    {
+      "id": "LTS-REPORTS-NAVIGATION-001",
+      "area": "UX / reports",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "done",
+      "blocker": null,
+      "summary": "Preserve the originating weekly report when the user opens Training and returns.",
+      "acceptance": [
+        "Reports → Training → Voltar returns to the originating Reports view.",
+        "Direct Training entry keeps Home as its fallback back destination.",
+        "Report dates, coverage, units, charts, sources and complete-detail disclosure remain unchanged and mobile-readable.",
+        "Affected candidate gates, normal deployment, public signed-out inspection and protected real-auth verification complete; any unrelated repetition remains explicitly pending."
+      ],
+      "evidence": [
+        "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
+        "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
+        "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
+        "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
+        "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
+        "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
+        "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
+        "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
+      ],
+      "next_action": "Keep contextual report return one-use and preserve direct Training fallback; rotate to a concrete Training journey and reconcile pending publication repetition when it completes."
     }
   ],
   "package_history": [
@@ -4433,335 +4439,342 @@
       "candidate_commit": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
       "publication_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
       "pending_validation_repetitions": []
+    },
+    {
+      "id": "PKG-REPORTS-NAVIGATION-023",
+      "status": "done",
+      "goal": "Keep Reports context when opening Training without changing direct Training navigation.",
+      "task_ids": [
+        "LTS-REPORTS-NAVIGATION-001"
+      ],
+      "candidate_build": "health-integrated-20261031.107",
+      "public_build": "health-integrated-20261031.107",
+      "clinical_runtime_changed": false,
+      "pending_gates": [],
+      "started_at_utc": "2026-10-31T23:28:00.000Z",
+      "completed_evidence": [
+        "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
+        "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
+        "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
+        "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
+        "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
+        "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
+        "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
+        "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
+      ],
+      "completed_on": "2026-11-01",
+      "completed_at_utc": "2026-11-01T00:27:59.519Z",
+      "candidate_commit": "ba60a1aa4db29f8973900f0f5a1a6ee21aec011b",
+      "publication_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+      "pending_validation_repetitions": []
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261031.106",
-    "main_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-    "runtime_promotion_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-    "published_on": "2026-10-31",
-    "verified_at_utc": "2026-10-31T23:27:44.610Z",
-    "release_kind": "selected_source_composition_detail_context",
+    "build_id": "health-integrated-20261031.107",
+    "main_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+    "runtime_promotion_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+    "published_on": "2026-11-01",
+    "verified_at_utc": "2026-11-01T00:27:59.519Z",
+    "release_kind": "reports_contextual_training_return",
     "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact login, hidden private app and no horizontal overflow. The manual session is signed out; health-area review used invented data and the protected actual-auth gate is separate.",
-    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 21 publication workflows completed/success; no pending validation repetition.",
+    "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.107, visible signed-out login, hidden private app and 1363/1363px width. The manual session is signed out; health-area review used invented data and protected actual-auth CI is separate.",
+    "automated_runtime_and_responsive_status": "All 17 exact candidate and all 20 publication workflows completed/success. Protected real-auth attempt 2 passed after a transient CSS 503 on attempt 1; Integrated Production attempt 2 passed after attempt 1 was cancelled while its browser installation was blocked.",
     "evidence": [
-      "Actual invented-data production-renderer inspection at desktop and 393x650 found one concrete context defect: after selecting an alternate documented composition device, the chart and differences used that device but the adjacent detail action opened the global latest measurement from another device.",
-      "The bounded correction makes the contextual action target and name the selected series latest dated measurement. All-origins still opens the global latest unambiguous measurement; independent history-row targets, values, units, source/device/file and comparison rules are unchanged.",
-      "Manual desktop and 393x650 verification confirms alternate-device selection → dated differences → exact 20/10/2026 detail with the same device/file → return preserving the source. The phone detail is 393/393px without horizontal overflow. The remainder of the journey—chart dates, source separation, safe same-device differences and history rows—showed no additional defect.",
-      "PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. The affected isolated-preview regression verifies the selected-source action target/date, matching detail and preserved selection on return; local source, production, preview, continuity and public-audit contracts also pass.",
-      "Normal PR456 merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106. All 21/21 publication workflows completed/success, including deploy 41251715760, public Pages 41251746985, homologation 41251747071, protected real auth 41251715912, production 41251715723, functional depth 41251715798 and isolated preview 41251715797.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact signed-out login, hidden private app and 1363/1363px page width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or new physical-iPhone acceptance is claimed.",
-      "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
+      "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
+      "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
+      "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
+      "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
+      "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
+      "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
+      "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
     "ci_completion": {
       "candidate": [
         {
-          "id": 41250632355,
-          "name": "cockpit-smoke",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632355"
-        },
-        {
-          "id": 41250632576,
-          "name": "LTS Health Laboratory Originals",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632576"
-        },
-        {
-          "id": 41250632449,
-          "name": "LTS Health Cockpit Experience",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632449"
-        },
-        {
-          "id": 41250632498,
-          "name": "LTS Health Isolated Preview",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632498"
-        },
-        {
-          "id": 41250632519,
-          "name": "LTS Health calendar reports and local PDF",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632519"
-        },
-        {
-          "id": 41250632518,
-          "name": "LTS Health iPhone Home Screen",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632518"
-        },
-        {
-          "id": 41250632408,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632408"
-        },
-        {
-          "id": 41250632587,
-          "name": "LTS Health Functional Depth",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632587"
-        },
-        {
-          "id": 41250632434,
-          "name": "LTS Health Documented Plan Comparison",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632434"
-        },
-        {
-          "id": 41250632439,
-          "name": "LTS Health Auto Export",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632439"
-        },
-        {
-          "id": 41250632629,
-          "name": "LTS Health Recovery Depth Smoke",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632629"
-        },
-        {
-          "id": 41250632544,
-          "name": "LTS Health Fleury source audit",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632544"
-        },
-        {
-          "id": 41250632520,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632520"
-        },
-        {
-          "id": 41250632296,
-          "name": "LTS Health Dashboard Reference Contract",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632296"
-        },
-        {
-          "id": 41250632546,
-          "name": "LTS Health Training Session",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632546"
-        },
-        {
-          "id": 41250632639,
-          "name": "LTS Health Visual Training Report",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632639"
-        },
-        {
-          "id": 41250632397,
+          "id": 41254676259,
           "name": "LTS Health Polar background",
-          "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
           "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632397"
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676277,
+          "name": "LTS Health Training Session",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676343,
+          "name": "LTS Health Recovery Depth Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676304,
+          "name": "LTS Health workout source evidence smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676291,
+          "name": "LTS Health Auto Export",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676289,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676398,
+          "name": "cockpit-smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676379,
+          "name": "LTS Health Dashboard Reference Contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676325,
+          "name": "LTS Health iPhone Home Screen",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676305,
+          "name": "LTS Health Cockpit Experience",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676262,
+          "name": "LTS Health Documented Plan Comparison",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676322,
+          "name": "LTS Health Laboratory Originals",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676390,
+          "name": "LTS Health Visual Training Report",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676263,
+          "name": "LTS Health Functional Depth",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676273,
+          "name": "LTS Health Integrated Production",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676368,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 41254676351,
+          "name": "LTS Health Isolated Preview",
+          "status": "completed",
+          "conclusion": "success"
         }
       ],
       "publication": [
         {
-          "id": 41251747071,
+          "id": 41255440045,
           "name": "LTS Health v2 Homologation Pages Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251747071"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255440045",
+          "run_attempt": 1
         },
         {
-          "id": 41251746985,
+          "id": 41255440036,
           "name": "LTS Health v2 Pages Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251746985"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255440036",
+          "run_attempt": 1
         },
         {
-          "id": 41251716016,
-          "name": "LTS Health Recovery Depth Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251716016"
-        },
-        {
-          "id": 41251715954,
+          "id": 41255413359,
           "name": "LTS Health Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715954"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413359",
+          "run_attempt": 1
         },
         {
-          "id": 41251715916,
-          "name": "LTS Health iPhone Home Screen",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715916"
-        },
-        {
-          "id": 41251715915,
+          "id": 41255413313,
           "name": "LTS Health Timeline Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715915"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413313",
+          "run_attempt": 1
         },
         {
-          "id": 41251715912,
-          "name": "LTS Health Real Auth E2E",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715912"
-        },
-        {
-          "id": 41251715875,
-          "name": "LTS Health Fleury source audit",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715875"
-        },
-        {
-          "id": 41251715832,
-          "name": "LTS Health Visual Training Report",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715832"
-        },
-        {
-          "id": 41251715808,
-          "name": "LTS Health calendar reports and local PDF",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715808"
-        },
-        {
-          "id": 41251715797,
-          "name": "LTS Health Isolated Preview",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715797"
-        },
-        {
-          "id": 41251715798,
-          "name": "LTS Health Functional Depth",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715798"
-        },
-        {
-          "id": 41251715805,
-          "name": "LTS Health Laboratory Originals",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715805"
-        },
-        {
-          "id": 41251715774,
+          "id": 41255413360,
           "name": "LTS Health Auto Export",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715774"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413360",
+          "run_attempt": 1
         },
         {
-          "id": 41251715772,
-          "name": "LTS Health v2 Nutrition History Smoke",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "id": 41255413306,
+          "name": "LTS Health Recovery Depth Smoke",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715772"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413306",
+          "run_attempt": 1
         },
         {
-          "id": 41251715768,
-          "name": "LTS Health Training Session",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-          "status": "completed",
-          "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715768"
-        },
-        {
-          "id": 41251715760,
+          "id": 41255413317,
           "name": "Deploy LTS Health",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715760"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413317",
+          "run_attempt": 1
         },
         {
-          "id": 41251715757,
-          "name": "LTS Health Cockpit Experience",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "id": 41255413358,
+          "name": "LTS Health Training Session",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715757"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413358",
+          "run_attempt": 1
         },
         {
-          "id": 41251715754,
+          "id": 41255413397,
           "name": "LTS Health Polar background",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715754"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413397",
+          "run_attempt": 1
         },
         {
-          "id": 41251715745,
+          "id": 41255413347,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413347",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413314,
+          "name": "LTS Health Laboratory Originals",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413314",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413342,
+          "name": "LTS Health iPhone Home Screen",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413342",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413287,
+          "name": "LTS Health Cockpit Experience",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413287",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413325,
           "name": "LTS Health Documented Plan Comparison",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715745"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413325",
+          "run_attempt": 1
         },
         {
-          "id": 41251715723,
-          "name": "LTS Health Integrated Production",
-          "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+          "id": 41255413293,
+          "name": "LTS Health Visual Training Report",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
           "status": "completed",
           "conclusion": "success",
-          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715723"
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413293",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413344,
+          "name": "LTS Health calendar reports and local PDF",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413344",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413300,
+          "name": "LTS Health Isolated Preview",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413300",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413388,
+          "name": "LTS Health Real Auth E2E",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413388",
+          "run_attempt": 2
+        },
+        {
+          "id": 41255413361,
+          "name": "LTS Health Functional Depth",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413361",
+          "run_attempt": 1
+        },
+        {
+          "id": 41255413339,
+          "name": "LTS Health Integrated Production",
+          "head_sha": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41255413339",
+          "run_attempt": 2
         }
       ]
     },
@@ -8665,38 +8678,371 @@
         ]
       },
       "pending_validation_repetitions": []
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261031.106",
+      "main_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+      "runtime_promotion_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+      "published_on": "2026-10-31",
+      "verified_at_utc": "2026-10-31T23:27:44.610Z",
+      "release_kind": "selected_source_composition_detail_context",
+      "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
+      "manual_exact_public_evidence": "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact login, hidden private app and no horizontal overflow. The manual session is signed out; health-area review used invented data and the protected actual-auth gate is separate.",
+      "automated_runtime_and_responsive_status": "All 17 exact candidate and all 21 publication workflows completed/success; no pending validation repetition.",
+      "evidence": [
+        "Actual invented-data production-renderer inspection at desktop and 393x650 found one concrete context defect: after selecting an alternate documented composition device, the chart and differences used that device but the adjacent detail action opened the global latest measurement from another device.",
+        "The bounded correction makes the contextual action target and name the selected series latest dated measurement. All-origins still opens the global latest unambiguous measurement; independent history-row targets, values, units, source/device/file and comparison rules are unchanged.",
+        "Manual desktop and 393x650 verification confirms alternate-device selection → dated differences → exact 20/10/2026 detail with the same device/file → return preserving the source. The phone detail is 393/393px without horizontal overflow. The remainder of the journey—chart dates, source separation, safe same-device differences and history rows—showed no additional defect.",
+        "PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. The affected isolated-preview regression verifies the selected-source action target/date, matching detail and preserved selection on return; local source, production, preview, continuity and public-audit contracts also pass.",
+        "Normal PR456 merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106. All 21/21 publication workflows completed/success, including deploy 41251715760, public Pages 41251746985, homologation 41251747071, protected real auth 41251715912, production 41251715723, functional depth 41251715798 and isolated preview 41251715797.",
+        "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact signed-out login, hidden private app and 1363/1363px page width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or new physical-iPhone acceptance is claimed.",
+        "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
+      ],
+      "ci_completion": {
+        "candidate": [
+          {
+            "id": 41250632355,
+            "name": "cockpit-smoke",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632355"
+          },
+          {
+            "id": 41250632576,
+            "name": "LTS Health Laboratory Originals",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632576"
+          },
+          {
+            "id": 41250632449,
+            "name": "LTS Health Cockpit Experience",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632449"
+          },
+          {
+            "id": 41250632498,
+            "name": "LTS Health Isolated Preview",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632498"
+          },
+          {
+            "id": 41250632519,
+            "name": "LTS Health calendar reports and local PDF",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632519"
+          },
+          {
+            "id": 41250632518,
+            "name": "LTS Health iPhone Home Screen",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632518"
+          },
+          {
+            "id": 41250632408,
+            "name": "LTS Health v2 Nutrition History Smoke",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632408"
+          },
+          {
+            "id": 41250632587,
+            "name": "LTS Health Functional Depth",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632587"
+          },
+          {
+            "id": 41250632434,
+            "name": "LTS Health Documented Plan Comparison",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632434"
+          },
+          {
+            "id": 41250632439,
+            "name": "LTS Health Auto Export",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632439"
+          },
+          {
+            "id": 41250632629,
+            "name": "LTS Health Recovery Depth Smoke",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632629"
+          },
+          {
+            "id": 41250632544,
+            "name": "LTS Health Fleury source audit",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632544"
+          },
+          {
+            "id": 41250632520,
+            "name": "LTS Health Integrated Production",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632520"
+          },
+          {
+            "id": 41250632296,
+            "name": "LTS Health Dashboard Reference Contract",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632296"
+          },
+          {
+            "id": 41250632546,
+            "name": "LTS Health Training Session",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632546"
+          },
+          {
+            "id": 41250632639,
+            "name": "LTS Health Visual Training Report",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632639"
+          },
+          {
+            "id": 41250632397,
+            "name": "LTS Health Polar background",
+            "head_sha": "266fe9b984b73d021ee18b5b8b8c8cec092681c1",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41250632397"
+          }
+        ],
+        "publication": [
+          {
+            "id": 41251747071,
+            "name": "LTS Health v2 Homologation Pages Smoke",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251747071"
+          },
+          {
+            "id": 41251746985,
+            "name": "LTS Health v2 Pages Smoke",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251746985"
+          },
+          {
+            "id": 41251716016,
+            "name": "LTS Health Recovery Depth Smoke",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251716016"
+          },
+          {
+            "id": 41251715954,
+            "name": "LTS Health Smoke",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715954"
+          },
+          {
+            "id": 41251715916,
+            "name": "LTS Health iPhone Home Screen",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715916"
+          },
+          {
+            "id": 41251715915,
+            "name": "LTS Health Timeline Smoke",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715915"
+          },
+          {
+            "id": 41251715912,
+            "name": "LTS Health Real Auth E2E",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715912"
+          },
+          {
+            "id": 41251715875,
+            "name": "LTS Health Fleury source audit",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715875"
+          },
+          {
+            "id": 41251715832,
+            "name": "LTS Health Visual Training Report",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715832"
+          },
+          {
+            "id": 41251715808,
+            "name": "LTS Health calendar reports and local PDF",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715808"
+          },
+          {
+            "id": 41251715797,
+            "name": "LTS Health Isolated Preview",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715797"
+          },
+          {
+            "id": 41251715798,
+            "name": "LTS Health Functional Depth",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715798"
+          },
+          {
+            "id": 41251715805,
+            "name": "LTS Health Laboratory Originals",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715805"
+          },
+          {
+            "id": 41251715774,
+            "name": "LTS Health Auto Export",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715774"
+          },
+          {
+            "id": 41251715772,
+            "name": "LTS Health v2 Nutrition History Smoke",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715772"
+          },
+          {
+            "id": 41251715768,
+            "name": "LTS Health Training Session",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715768"
+          },
+          {
+            "id": 41251715760,
+            "name": "Deploy LTS Health",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715760"
+          },
+          {
+            "id": 41251715757,
+            "name": "LTS Health Cockpit Experience",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715757"
+          },
+          {
+            "id": 41251715754,
+            "name": "LTS Health Polar background",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715754"
+          },
+          {
+            "id": 41251715745,
+            "name": "LTS Health Documented Plan Comparison",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715745"
+          },
+          {
+            "id": 41251715723,
+            "name": "LTS Health Integrated Production",
+            "head_sha": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/lthomesilveira-ui/lts-health/actions/runs/41251715723"
+          }
+        ]
+      },
+      "pending_validation_repetitions": []
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-10-31",
-    "reviewed_at_utc": "2026-10-31T23:27:44.610Z",
-    "source_main_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
-    "runtime_build": "health-integrated-20261031.106",
+    "reviewed_on": "2026-11-01",
+    "reviewed_at_utc": "2026-11-01T00:27:59.519Z",
+    "source_main_commit": "5ab534d7e614a1feb5f69555e161db59dee8dbbc",
+    "runtime_build": "health-integrated-20261031.107",
     "candidate_build": null,
     "runtime_changed": false,
     "clinical_runtime_changed": false,
     "status_counts": {
-      "done": 93,
+      "done": 94,
       "blocked_external": 14,
       "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "Actual invented-data production-renderer inspection at desktop and 393x650 found one concrete context defect: after selecting an alternate documented composition device, the chart and differences used that device but the adjacent detail action opened the global latest measurement from another device.",
-      "The bounded correction makes the contextual action target and name the selected series latest dated measurement. All-origins still opens the global latest unambiguous measurement; independent history-row targets, values, units, source/device/file and comparison rules are unchanged.",
-      "Manual desktop and 393x650 verification confirms alternate-device selection → dated differences → exact 20/10/2026 detail with the same device/file → return preserving the source. The phone detail is 393/393px without horizontal overflow. The remainder of the journey—chart dates, source separation, safe same-device differences and history rows—showed no additional defect.",
-      "PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. The affected isolated-preview regression verifies the selected-source action target/date, matching detail and preserved selection on return; local source, production, preview, continuity and public-audit contracts also pass.",
-      "Normal PR456 merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106. All 21/21 publication workflows completed/success, including deploy 41251715760, public Pages 41251746985, homologation 41251747071, protected real auth 41251715912, production 41251715723, functional depth 41251715798 and isolated preview 41251715797.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact signed-out login, hidden private app and 1363/1363px page width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or new physical-iPhone acceptance is claimed.",
-      "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
+      "Invented-data production-renderer inspection at 393x844 reviewed a weekly report end to end: 19–25/10/2026 dates, coverage, units, metric tabs, source disclosure, complete details and no horizontal overflow were clear. This portion of the journey showed no defect.",
+      "A concrete navigation defect was observed: Reports → Ver treinos opened the correct Training view, but Training → Voltar lost the originating report and returned Home.",
+      "The bounded correction passes an explicit one-use Reports return context. Reports → Training → Voltar now returns to Reports; direct Training → Voltar still returns Home. Dates, units, source/model arithmetic, records, authentication and writes are unchanged.",
+      "Manual 393x844 candidate revalidation confirmed both contextual and direct-entry paths. Local reports, production, public-audit and continuity contracts pass.",
+      "PR458 exact candidate ba60a1aa4db29f8973900f0f5a1a6ee21aec011b completed 17/17 workflows successfully. Normal merge 5ab534d7e614a1feb5f69555e161db59dee8dbbc publishes health-integrated-20261031.107.",
+      "Publication deploy, Pages, homologation, report/PDF, isolated preview and protected real-auth attempt 2 completed successfully. The first real-auth attempt recorded a transient health-auto-export.css 503 and was not counted; its official retry passed. Integrated Production run 41255413339 attempt 1 was cancelled while blocked at pinned-browser installation; official attempt 2 completed successfully. The cancelled attempt remains preserved and only the successful retry counts.",
+      "Independent Cloud Browser confirms exact public health-integrated-20261031.107 with visible signed-out login, hidden private app and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
+      "Fresh main/reference heads, private checkpoint, open PRs, genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: training."
     ],
     "ux_review": {
-      "area": "composition",
-      "next_area": "reports",
+      "area": "reports",
+      "next_area": "training",
       "mode": "synthetic_production_renderers_plus_public_signed_out_plus_protected_real_auth",
-      "viewport": "desktop and 393x650",
-      "result": "selected_source_detail_context_published_and_verified",
-      "journey_without_additional_defect": "chart dates, device separation, safe same-device differences, original units and historical rows remained correct"
+      "viewport": "393x844 and public desktop",
+      "result": "contextual_training_return_published_and_verified",
+      "journey_without_additional_defect": "report dates, coverage, units, metric tabs, sources, complete-detail disclosure and phone overflow remained correct"
     }
   },
   "continuity_review_history": [
@@ -9310,6 +9656,38 @@
         "mode": "synthetic_production_renderers",
         "viewport": "desktop and393x650",
         "result": "selected_source_detail_context_corrected_pending_gates",
+        "journey_without_additional_defect": "chart dates, device separation, safe same-device differences, original units and historical rows remained correct"
+      }
+    },
+    {
+      "reviewed_on": "2026-10-31",
+      "reviewed_at_utc": "2026-10-31T23:27:44.610Z",
+      "source_main_commit": "1df7ece9409efdd445a74cbd87969bc75d19ec4b",
+      "runtime_build": "health-integrated-20261031.106",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 93,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Actual invented-data production-renderer inspection at desktop and 393x650 found one concrete context defect: after selecting an alternate documented composition device, the chart and differences used that device but the adjacent detail action opened the global latest measurement from another device.",
+        "The bounded correction makes the contextual action target and name the selected series latest dated measurement. All-origins still opens the global latest unambiguous measurement; independent history-row targets, values, units, source/device/file and comparison rules are unchanged.",
+        "Manual desktop and 393x650 verification confirms alternate-device selection → dated differences → exact 20/10/2026 detail with the same device/file → return preserving the source. The phone detail is 393/393px without horizontal overflow. The remainder of the journey—chart dates, source separation, safe same-device differences and history rows—showed no additional defect.",
+        "PR456 exact candidate 266fe9b984b73d021ee18b5b8b8c8cec092681c1: 17/17 workflows completed/success. The affected isolated-preview regression verifies the selected-source action target/date, matching detail and preserved selection on return; local source, production, preview, continuity and public-audit contracts also pass.",
+        "Normal PR456 merge 1df7ece9409efdd445a74cbd87969bc75d19ec4b publishes health-integrated-20261031.106. All 21/21 publication workflows completed/success, including deploy 41251715760, public Pages 41251746985, homologation 41251747071, protected real auth 41251715912, production 41251715723, functional depth 41251715798 and isolated preview 41251715797.",
+        "Independent Cloud Browser confirms exact public health-integrated-20261031.106, intact signed-out login, hidden private app and 1363/1363px page width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or new physical-iPhone acceptance is claimed.",
+        "Fresh heads, private checkpoint, open PRs, owner-scoped receipts and existing water/export support threads were checked. No external message, phone reset/retest, invented production record, source inference, basal summation, clinical/laboratory/medication change or database write. Fourteen external blockers and two accepted gaps retain their exact genuine resumption signals. Next rotating UX area: reports; global owner acceptance remains independent."
+      ],
+      "ux_review": {
+        "area": "composition",
+        "next_area": "reports",
+        "mode": "synthetic_production_renderers_plus_public_signed_out_plus_protected_real_auth",
+        "viewport": "desktop and 393x650",
+        "result": "selected_source_detail_context_published_and_verified",
         "journey_without_additional_defect": "chart dates, device separation, safe same-device differences, original units and historical rows remained correct"
       }
     }
