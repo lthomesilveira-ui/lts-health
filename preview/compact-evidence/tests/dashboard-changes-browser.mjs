@@ -15,6 +15,20 @@ const sdk=`window.__changesQA={writes:[],calls:[]};window.supabase={createClient
  functions:{invoke(name,options){window.__changesQA.calls.push([name,options?.body?.action]);if(options?.body?.action==='status')return Promise.resolve({data:{configured:false,connected:false},error:null});window.__changesQA.writes.push(name);throw Error('No integration mutation')}},
  rpc(){window.__changesQA.writes.push('rpc');throw Error('No writes')}})};`;
 const directory='dashboard-changes-visual';mkdirSync(directory,{recursive:true});
+async function openComparisons(page){
+  // A route marker can exist before the final queued render. Opening a native
+  // disclosure on that intermediate node races with its replacement.
+  await page.waitForFunction(async()=>{
+    const {state}=await import('./src/core.js');
+    const {isRouteReady}=await import('./src/data-layer.js');
+    return state.loaded&&!state.loading&&state.route==='hoje'&&isRouteReady('hoje')&&
+      document.body.dataset.productRoute==='hoje'&&!document.querySelector('.loadingState');
+  });
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  const details=page.locator('[data-disclosure="cockpit-details"]');
+  if(!await details.evaluate(element=>element.open))await details.locator('summary').first().click();
+  await page.locator('[data-dashboard-change-domain="labs"] [data-dashboard-change]').waitFor({state:'visible'});
+}
 const browser=await chromium.launch({headless:true});
 try{
  for(const width of [390,1280]){
@@ -28,7 +42,7 @@ try{
   });
   await page.clock.install({time:new Date(TODAY+'T15:00:00Z')});
   await page.goto(base+'#hoje');
-  await page.locator('[data-disclosure="cockpit-details"]>summary').click();
+  await openComparisons(page);
   const training=page.locator('[data-dashboard-change-domain="training"]');
   await page.waitForFunction(()=>document.querySelector('[data-dashboard-change-domain="training"]')?.textContent.includes('aumentou 5 kg'));
   assert.equal(await page.locator('[data-dashboard-card]').count(),7);assert.equal(await page.locator('[data-dashboard-change-domain]').count(),3);
@@ -43,12 +57,12 @@ try{
   assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'bio','body drilldown owns its route styling');
   assert.match(await page.locator('.ltsHistoryContext').first().innerText(),/11\/10\/2026/);
   assert.match(await page.locator('.ltsRecordDetails').first().innerText(),/80,0 kg/);
-  await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-health-cockpit]');if(!await page.locator('[data-disclosure="cockpit-details"]').evaluate(el=>el.open))await page.locator('[data-disclosure="cockpit-details"]>summary').click();
+  await page.evaluate(()=>location.hash='#hoje');await openComparisons(page);
   await page.locator('[data-dashboard-change="training:workout-1:exercise-1"]').click();
   await page.waitForSelector('[data-workout-id="workout-1"]');
   assert.equal(await page.evaluate(()=>document.body.dataset.productRoute),'treinos','training drilldown owns its route styling');
   assert.match(await page.locator('[data-workout-id="workout-1"]').innerText(),/25/);
-  await page.evaluate(()=>location.hash='#hoje');await page.waitForSelector('[data-health-cockpit]');if(!await page.locator('[data-disclosure="cockpit-details"]').evaluate(el=>el.open))await page.locator('[data-disclosure="cockpit-details"]>summary').click();
+  await page.evaluate(()=>location.hash='#hoje');await openComparisons(page);
   await page.locator('[data-dashboard-change-domain="labs"] [data-dashboard-change]').click();
   await page.waitForSelector('[data-lab-asof]');
   assert.match(await page.locator('.ltsLabsHero').innerText(),/15\/10\/2026/);assert.match(await page.locator('.ltsLabsHero').innerText(),/13 u/);
