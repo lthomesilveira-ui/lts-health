@@ -1,3 +1,9 @@
+# Nutrição — jornada exata .111 sem defeito de runtime, 01/11/2026
+
+Revisão autônoma sem alteração de runtime ou dados. O artefato exato `documented-plan-synthetic` 13075129929 (SHA-256 `4f94ab943383c13db35b8407d7b7eb65b1fde96d5a83b24698d54218038c67cf`) passou 6/6 cenários em 320/393/1440 px. Plano documental, ausência explícita de data de início, opt-in retrospectivo, seleção de origem, referências, médias, diferenças, unidades, cobertura específica, água independente, histórico e diário preservaram ausência sem zero e ambiguidade sem escolha silenciosa. Nenhum defeito concreto foi observado.
+
+Heads, checkpoint privado versão 60, PRs, recebimentos e respostas existentes foram reconciliados. Somente PRs legados 367/354/348 permanecem; não surgiu resposta genuína nem desbloqueio externo. Supabase foi apenas lido e manteve água canônica até 13/10, ausência de gasto total explícito e candidatos basais sem origem/cobertura. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: exames.
+
 # Composição — jornada exata .111 sem defeito de runtime, 01/11/2026
 
 Revisão autônoma sem alteração de runtime ou dados. Os artefatos exatos de Produção Integrada 13074090932 e Profundidade Funcional 13074300663 preservaram entrada, filtros, gráfico, ponto selecionado, data/origem, 41 medições no histórico, detalhe e análise segmentar em 320/393/1280 px. Controles móveis têm ao menos 44 px; unidades, arquivo, ausência e distinção entre massa magra segmentar e músculo esquelético ficaram claras, sem overflow ou defeito concreto. A entrada pública `.111` continuou desconectada e privada no Cloud Browser; o gate autenticado existente permanece evidência distinta.
