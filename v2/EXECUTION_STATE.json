@@ -9525,8 +9525,8 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T05:54:32.000Z",
-    "source_main_commit": "68827cfd1c33cc413a9ae851d00674a8aa1728b6",
+    "reviewed_at_utc": "2026-11-01T06:38:29.000Z",
+    "source_main_commit": "bb62ffa05e83520caa8ac2707cc34ed6633ce960",
     "runtime_build": "health-integrated-20261101.111",
     "candidate_build": null,
     "runtime_changed": false,
@@ -9539,24 +9539,57 @@
     },
     "executable_task_count": 0,
     "evidence": [
-      "Fresh origin/main 68827cfd1c33cc413a9ae851d00674a8aa1728b6, private checkpoint version 57 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Reports review.",
+      "Fresh origin/main bb62ffa05e83520caa8ac2707cc34ed6633ce960, private checkpoint version 58 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Training review.",
       "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10 and no explicit total-energy source row. Active energy remains 98 canonical days through 05/05 plus 32 recent candidate days through 30/10; the candidate rows were not promoted or conflated with canonical history. All 117 basal candidates still lack original source, bounds and verified coverage.",
       "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
-      "The exact .111 calendar-report artifact 13070884236 matched sha256:944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426. All 32 Chromium/WebKit scenarios passed, including 320/393/1440px, weekly/monthly periods, empty/error states, print failure/retry, local PDF and clipping detectors.",
-      "Actual 320x740 and 393x650 report captures plus the two-page weekly PDF were inspected. Period dates, closed-period status, metric-specific coverage, units, source labels, charts, training totals, missing-day semantics, independent indicators, local-file disclosure and mobile navigation remained legible without a concrete defect.",
-      "Independent Cloud Browser opened the stable public #hoje route, visibly retained the signed-out login and private boundary, and exposed no health data. This public inspection is distinct from the exact synthetic Reports journey and the already-passed protected real-auth gate.",
-      "No runtime or data change was justified. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Training."
+      "The exact .111 training-visual-report-synthetic artifact 13072880353 matched sha256:e4ff3ecb3e1728affe4b1d714cc6f5f8cf792f0b6d5bd42bb2b1988b455c1439. All four recorded-session scenarios passed at 320/393/1180/1440px, including summary, distribution, charts, exercises, history, literal text, empty/error/recovery states and route return.",
+      "Actual 320x740 and 393x844 captures were inspected through the complete Training journey. Dates, duration, energy, heart rate, load, repetitions, equipment, groups, working/warm-up/drop/failure phases, extensions and missing semantics remained legible without horizontal overflow, overlap or a concrete defect.",
+      "Independent Cloud Browser opened the stable public #hoje route, visibly retained the signed-out login and private boundary, and exposed no health data. This public inspection is distinct from the exact synthetic Training journey and the already-passed protected real-auth gate.",
+      "No runtime or data change was justified. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Composition."
     ],
     "ux_review": {
-      "area": "reports",
-      "next_area": "training",
-      "mode": "exact_synthetic_111_report_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
-      "viewport": "320x740, 393x650, 393x844 and 1440x900 plus paginated local PDF and public desktop",
+      "area": "training",
+      "next_area": "composition",
+      "mode": "exact_synthetic_111_training_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
+      "viewport": "320x740, 393x844, 1180x757 and 1440x900 plus public desktop",
       "result": "no_runtime_defect_observed",
-      "journey_without_additional_defect": "Reports preserved period dates, closed-period meaning, metric-specific coverage, units, source labels, missing-day semantics, charts, training totals, local export disclosure, PDF pagination and mobile navigation without clipping or horizontal overflow."
+      "journey_without_additional_defect": "Training preserved recorded-session dates, summary metrics, group distribution, recent-session chart, exercises, sets, load/repetition units, equipment, phases, extensions, original literal text, history and missing/error/recovery semantics without horizontal overflow or overlap."
     }
   },
   "continuity_review_history": [
+    {
+      "reviewed_on": "2026-11-01",
+      "reviewed_at_utc": "2026-11-01T05:54:32.000Z",
+      "source_main_commit": "68827cfd1c33cc413a9ae851d00674a8aa1728b6",
+      "runtime_build": "health-integrated-20261101.111",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "status_counts": {
+        "done": 99,
+        "in_progress": 0,
+        "blocked_external": 14,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Fresh origin/main 68827cfd1c33cc413a9ae851d00674a8aa1728b6, private checkpoint version 57 and open PRs were reconciled before writing. Only legacy PRs 367/354/348 remain open; none overlaps this Reports review.",
+        "Read-only database evidence remains at 65 genuine receipts, latest receipt 01/11/2026 02:08:18 UTC, 10 canonical water days through 13/10 and no explicit total-energy source row. Active energy remains 98 canonical days through 05/05 plus 32 recent candidate days through 30/10; the candidate rows were not promoted or conflated with canonical history. All 117 basal candidates still lack original source, bounds and verified coverage.",
+        "Existing support/export inboxes contain no genuine new answer for water, metric origin, basal coverage or export. No email, message, phone repetition, provider-security bypass, production health record or database write was made.",
+        "The exact .111 calendar-report artifact 13070884236 matched sha256:944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426. All 32 Chromium/WebKit scenarios passed, including 320/393/1440px, weekly/monthly periods, empty/error states, print failure/retry, local PDF and clipping detectors.",
+        "Actual 320x740 and 393x650 report captures plus the two-page weekly PDF were inspected. Period dates, closed-period status, metric-specific coverage, units, source labels, charts, training totals, missing-day semantics, independent indicators, local-file disclosure and mobile navigation remained legible without a concrete defect.",
+        "Independent Cloud Browser opened the stable public #hoje route, visibly retained the signed-out login and private boundary, and exposed no health data. This public inspection is distinct from the exact synthetic Reports journey and the already-passed protected real-auth gate.",
+        "No runtime or data change was justified. Queue remains 99 done, 0 in_progress, 14 blocked_external, 2 accepted_gap and zero executable tasks; next rotating UX area is Training."
+      ],
+      "ux_review": {
+        "area": "reports",
+        "next_area": "training",
+        "mode": "exact_synthetic_111_report_artifact_plus_public_signed_out_plus_existing_protected_real_auth",
+        "viewport": "320x740, 393x650, 393x844 and 1440x900 plus paginated local PDF and public desktop",
+        "result": "no_runtime_defect_observed",
+        "journey_without_additional_defect": "Reports preserved period dates, closed-period meaning, metric-specific coverage, units, source labels, missing-day semantics, charts, training totals, local export disclosure, PDF pagination and mobile navigation without clipping or horizontal overflow."
+      }
+    },
     {
       "reviewed_on": "2026-11-01",
       "reviewed_at_utc": "2026-11-01T05:16:25.000Z",
