@@ -218,8 +218,8 @@ export function uploadOutcomeMessageFromState(result){
   if(!id)return uploadOutcomeMessage(result);
   const upload=state.domainStatus.uploads==='error'?null:(state.data.uploads||[]).find(row=>String(row.id)===id);
   const preview=state.domainStatus.previews==='error'?null:(state.data.previews||[]).find(row=>String(row.upload_id)===id);
-  const status=String(upload?.status||'').toLowerCase(),source=String(upload?.source_type||'').toLowerCase();
-  const message=uploadStatusMessage(status,source,preview?.detected_format)||uploadOutcomeMessage(result);
+  const status=String(upload?.status||'').toLowerCase(),source=String(upload?.source_type||result?.source_type||'').toLowerCase();
+  const message=uploadStatusMessage(status,source,preview?.detected_format||result?.preview?.detected_format)||uploadOutcomeMessage(result);
   return state.domainStatus.uploads==='error'||state.domainStatus.previews==='error'?`${message} O histórico de arquivos não pôde ser atualizado agora.`:message;
 }
 

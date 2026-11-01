@@ -64,6 +64,7 @@ const evidence=[];
 for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
  const browser=await engine.launch({headless:true});
  for(const width of [320,393,1440])for(const mode of ['review','imported','rejected','inspect-failure','refresh-failure','metadata-failure','storage-failure','leave','signout']){
+  console.log('Upload case:',name,width,mode);
   const page=await browser.newPage({viewport:{width,height:650}}),external=[],errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',route=>{
@@ -157,7 +158,8 @@ for(const [engine,name] of [[chromium,'chromium'],[webkit,'webkit']]){
   assert.equal(calls.filter(c=>c.kind==='storage').length,1,'one original per submission');
   assert.ok(calls.every(c=>['health-inbox','health_uploads','health-inspect-upload'].includes(c.target)),'no clinical, source or other mutations');
   assert.deepEqual(external,[]);assert.deepEqual(errors,[]);
-  evidence.push({engine:name,width,mode,status:'passed',storageCalls:1,externalRequests:0});await page.close();
+  evidence.push({engine:name,width,mode,status:'passed',storageCalls:1,externalRequests:0});
+  writeFileSync(output+'/upload-receipt-evidence.json',JSON.stringify(evidence,null,2)+'\n');await page.close();
  }
  await browser.close();
 }

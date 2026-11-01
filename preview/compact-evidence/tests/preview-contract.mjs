@@ -120,7 +120,7 @@ const manifest={
     "src/labs-layout-v2.js": "018dc56d56f0894b6ee0b2baec3327e0dfa5550511def1e2dd213e757642a542",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
     "src/longitudinal-story.js": "d2b764d06c1073f0ae57e49290c8e39609ea2095ce6533cc9e8f99ade0c35c12",
-    "src/main.js": "0980a053cb09b7f9a93fedacfb3248b40b5e9d0619593a1fc332be43c8c3d7f4",
+    "src/main.js": "1c83c7560b63bcfdcaedeb07fc5c0b411a543b95e9da990b18791c2deb166276",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
     "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
     "src/mobile-study.js": "110f7b52b14bf6c2a893fd953bdb84f3f59bb1f7af3eaac6008efd1065c1529b",
