@@ -49,31 +49,31 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-TRAINING-WEEK-CONTEXT-024",
-    "status": "done",
-    "goal": "Clarify the independent Monday–Sunday observation window in Training plan comparison.",
+    "id": "PKG-HOME-WATER-ACTIVE-TOTALS-025",
+    "status": "in_progress",
+    "goal": "Make genuine water evidence and recovery actions visible from Home, and expose the additive active-energy total without inventing total expenditure.",
     "task_ids": [
-      "LTS-TRAINING-WEEK-CONTEXT-001"
+      "LTS-WATER-HOME-RECOVERY-001",
+      "LTS-ACTIVE-ENERGY-TOTAL-001"
     ],
-    "candidate_build": "health-integrated-20261101.108",
-    "public_build": "health-integrated-20261101.108",
+    "candidate_build": "health-integrated-20261101.110",
+    "public_build": null,
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "started_at_utc": "2026-11-01T01:28:00.000Z",
-    "completed_evidence": [
-      "Invented-data production-renderer inspection at 393x844 reviewed Training summary, session detail and documentary-plan comparison. Session measures, chart context, Polar provenance, exercise counts and documentary plan limits were clear and showed no additional defect.",
-      "A concrete interpretation defect was observed: the selected recorded session was 23/10/2026 and the independent current observed week correctly showed zero sessions, but its selector exposed only 26/10/2026. The Monday–Sunday boundary and 26/10–01/11/2026 range were not explicit.",
-      "The bounded correction labels the selector “Semana observada · segunda a domingo”, renders the full date range and scopes the fact as “Sessões na semana observada”. Calculation, records, units, sources, authentication and writes are unchanged.",
-      "The plan remains documentary reference only: no adoption, start, progression or adherence is inferred. Manual 393x844 synthetic revalidation confirmed the full range and 393/393px viewport with 352/352px Training content and no horizontal overflow.",
-      "PR460 exact candidate 1cab38fcc353b35f4eeaa8c9fe1dbd922b90ca4b completed 16/16 workflows successfully. Normal merge dab1b0343a63142540188bf46bc0c7521a178a45 publishes health-integrated-20261101.108.",
-      "All 20 publication workflows completed successfully on the exact merge, including deploy, Pages, homologation, protected real-auth, integrated production, isolated preview and affected Training contracts; no retry is counted.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261101.108 with visible signed-out login, hidden private app, #hoje and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
-      "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
+    "pending_gates": [
+      "exact candidate CI",
+      "normal merge/deploy",
+      "exact public build inspection",
+      "protected real-auth"
     ],
-    "completed_on": "2026-11-01",
-    "completed_at_utc": "2026-11-01T02:12:59.591Z",
-    "candidate_commit": "1cab38fcc353b35f4eeaa8c9fe1dbd922b90ca4b",
-    "publication_commit": "dab1b0343a63142540188bf46bc0c7521a178a45",
+    "started_at_utc": "2026-11-01T02:30:00.000Z",
+    "completed_evidence": [
+      "Fresh main and open-PR review found no recent overlapping implementation; only legacy PRs 367/354/348 remain open. PR462 is merged and exact .109 publication commit 2c6ed4203b4b88835ba79f2fc4d46c376c106716 completed 20/20 workflows successfully.",
+      "Read-only project evidence confirms 10 canonical dietary_water_ml rows from 04–13/10/2026, all Health Auto Export authenticated receipts. The latest genuine accepted payload contained 19 supported metrics and explicitly zero water blocks/metrics; the receiver did not reject or drop water.",
+      "The genuine August Apple Health original was streamed read-only and contained no DietaryWater records, so it cannot backfill water. No missing value became zero, no synthetic production record was created and no provider security control was bypassed.",
+      "Observed Home UX left an empty water card without an immediate recovery action. Candidate .110 shows the last genuine selected-source value when available and always exposes Registrar água plus Ver sincronização for an empty current window.",
+      "Candidate .110 adds the active-energy recorded total for the selected period/source while retaining the daily mean and explicitly stating that it is not total expenditure. Explicit total-energy remains independent and unavailable when absent.",
+      "Focused model/render, empty-history, data-quality, source parity, preview hashes, production graph, public audit, active presentation, continuity, hydration and fake-transport write-boundary checks pass locally. Browser-dependent gates remain pending CI/publication."
+    ],
     "pending_validation_repetitions": []
   },
   "last_verified_release": {
@@ -3221,6 +3221,66 @@
         "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
       ],
       "next_action": "Preserve the explicit independent week boundary; rotate to a concrete Composition journey while the 14 external blockers await genuine new evidence."
+    },
+    {
+      "id": "LTS-COMPOSITION-POINT-DETAIL-001",
+      "area": "UX / composition",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "done",
+      "blocker": null,
+      "summary": "Keep the contextual detail action aligned with the exact Composition chart point selected by the user.",
+      "acceptance": [
+        "Selected chart point opens the same dated/source measurement detail.",
+        "Return preserves the selected point; values, units, device/source and ambiguity guards remain unchanged.",
+        "Exact candidate and normal publication gates pass."
+      ],
+      "evidence": [
+        "PR462 merged normally as 2c6ed4203b4b88835ba79f2fc4d46c376c106716 and publishes .109.",
+        "All 20 publication workflows completed/success, including protected real-auth and deploy."
+      ],
+      "next_action": "Preserve point-to-detail identity during later Composition changes."
+    },
+    {
+      "id": "LTS-WATER-HOME-RECOVERY-001",
+      "area": "UX / hydration",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Expose genuine water history and immediate recovery actions from an empty Home period without inventing consumption.",
+      "acceptance": [
+        "An empty current period shows the selected source last genuine water value when one exists.",
+        "Registrar água and Ver sincronização are reachable directly from the water card even when no historical water exists.",
+        "Absence remains missing, never zero; original dates, units, source identity and manual confirmation stay intact.",
+        "Candidate/browser/public/protected-auth gates pass."
+      ],
+      "evidence": [
+        "10 genuine canonical Health Auto Export water rows exist from 04–13/10; latest accepted payload explicitly contained no water metric.",
+        "Focused renderer covers both older-water and no-water states; manual-entry and diagnostics actions are present in both.",
+        "No production health record or database write was created."
+      ],
+      "next_action": "Complete exact candidate CI, publish normally and inspect the exact public .110 water journey."
+    },
+    {
+      "id": "LTS-ACTIVE-ENERGY-TOTAL-001",
+      "area": "UX / activity",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Show the recorded active-energy total for the selected period/source while keeping total expenditure independent.",
+      "acceptance": [
+        "Calorias ativas shows its daily mean and the sum of eligible recorded days from one selected source.",
+        "The UI states the number of contributing days and that the sum is not total expenditure.",
+        "Calorias totais gastas stays unavailable unless an explicit total-energy series exists; basal snapshots are never added.",
+        "Candidate/browser/public/protected-auth gates pass."
+      ],
+      "evidence": [
+        "Fresh active-energy rows exist through 30/10; no explicit total-energy source exists.",
+        "Focused model/render tests prove a 2,800 kcal seven-day active total and keep explicit total energy independent; missing total remains null."
+      ],
+      "next_action": "Complete exact candidate CI, publish normally and inspect the exact public .110 active-energy card."
     }
   ],
   "package_history": [
@@ -9361,35 +9421,34 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T02:12:59.591Z",
-    "source_main_commit": "dab1b0343a63142540188bf46bc0c7521a178a45",
-    "runtime_build": "health-integrated-20261101.108",
-    "candidate_build": null,
-    "runtime_changed": false,
+    "reviewed_at_utc": "2026-11-01T02:55:45.779Z",
+    "source_main_commit": "2c6ed4203b4b88835ba79f2fc4d46c376c106716",
+    "runtime_build": "health-integrated-20261101.109",
+    "candidate_build": "health-integrated-20261101.110",
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
     "status_counts": {
-      "done": 95,
+      "done": 96,
+      "in_progress": 2,
       "blocked_external": 14,
       "accepted_gap": 2
     },
-    "executable_task_count": 0,
+    "executable_task_count": 2,
     "evidence": [
-      "Invented-data production-renderer inspection at 393x844 reviewed Training summary, session detail and documentary-plan comparison. Session measures, chart context, Polar provenance, exercise counts and documentary plan limits were clear and showed no additional defect.",
-      "A concrete interpretation defect was observed: the selected recorded session was 23/10/2026 and the independent current observed week correctly showed zero sessions, but its selector exposed only 26/10/2026. The Monday–Sunday boundary and 26/10–01/11/2026 range were not explicit.",
-      "The bounded correction labels the selector “Semana observada · segunda a domingo”, renders the full date range and scopes the fact as “Sessões na semana observada”. Calculation, records, units, sources, authentication and writes are unchanged.",
-      "The plan remains documentary reference only: no adoption, start, progression or adherence is inferred. Manual 393x844 synthetic revalidation confirmed the full range and 393/393px viewport with 352/352px Training content and no horizontal overflow.",
-      "PR460 exact candidate 1cab38fcc353b35f4eeaa8c9fe1dbd922b90ca4b completed 16/16 workflows successfully. Normal merge dab1b0343a63142540188bf46bc0c7521a178a45 publishes health-integrated-20261101.108.",
-      "All 20 publication workflows completed successfully on the exact merge, including deploy, Pages, homologation, protected real-auth, integrated production, isolated preview and affected Training contracts; no retry is counted.",
-      "Independent Cloud Browser confirms exact public health-integrated-20261101.108 with visible signed-out login, hidden private app, #hoje and 1363/1363px width. Synthetic health-area inspection, public signed-out inspection and protected actual-auth CI remain distinct evidence; no private manual session or physical-iPhone retest is claimed.",
-      "Fresh main/reference heads, private checkpoint, open PRs, 64 genuine owner-scoped receipts and existing water/export support threads were checked. No new unlocking evidence, external message, invented production record, source inference, basal summation, clinical/laboratory/medication mutation or database write. Next rotating UX area: composition."
+      "Fresh main and open-PR review found no recent overlapping implementation; only legacy PRs 367/354/348 remain open. PR462 is merged and exact .109 publication commit 2c6ed4203b4b88835ba79f2fc4d46c376c106716 completed 20/20 workflows successfully.",
+      "Read-only project evidence confirms 10 canonical dietary_water_ml rows from 04–13/10/2026, all Health Auto Export authenticated receipts. The latest genuine accepted payload contained 19 supported metrics and explicitly zero water blocks/metrics; the receiver did not reject or drop water.",
+      "The genuine August Apple Health original was streamed read-only and contained no DietaryWater records, so it cannot backfill water. No missing value became zero, no synthetic production record was created and no provider security control was bypassed.",
+      "Observed Home UX left an empty water card without an immediate recovery action. Candidate .110 shows the last genuine selected-source value when available and always exposes Registrar água plus Ver sincronização for an empty current window.",
+      "Candidate .110 adds the active-energy recorded total for the selected period/source while retaining the daily mean and explicitly stating that it is not total expenditure. Explicit total-energy remains independent and unavailable when absent.",
+      "Focused model/render, empty-history, data-quality, source parity, preview hashes, production graph, public audit, active presentation, continuity, hydration and fake-transport write-boundary checks pass locally. Browser-dependent gates remain pending CI/publication."
     ],
     "ux_review": {
-      "area": "training",
-      "next_area": "composition",
-      "mode": "synthetic_production_renderers_plus_public_signed_out_plus_protected_real_auth",
+      "area": "home / water and energy",
+      "next_area": "nutrition",
+      "mode": "synthetic production renderers plus genuine read-only database/receiver evidence plus public signed-out plus protected real-auth",
       "viewport": "393x844 and public desktop",
-      "result": "observed_week_range_published_and_verified",
-      "journey_without_additional_defect": "Training summary, session measures, series-by-group caveat, recent-session chart, Polar provenance, exercise counts and documentary-plan limits remained clear"
+      "result": "candidate_water_recovery_and_active_total_ready_for_gates",
+      "journey_without_additional_defect": "Composition .109 point-to-detail journey remains separately published and verified through its exact 20/20 publication workflows."
     }
   },
   "continuity_review_history": [

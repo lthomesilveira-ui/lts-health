@@ -87,6 +87,10 @@ export async function runRenderTests(){
       assert.match(card(html,'sleep'),/Variação menor que 0,1 h/, 'small nonzero changes are not displayed as a directional zero');
       assert.doesNotMatch(card(html,'sleep'),/[↑↓] 0,0 h/);
     }
+    const active=model.metricsByKey.activeEnergy;
+    assert.match(primary(card(html,'activeEnergy')),new RegExp(`Total registrado no período: ${escapeRegex(numberLabel(active.recordedTotal,'activeEnergy'))} kcal`));
+    assert.match(primary(card(html,'activeEnergy')),/Não é gasto total/);
+    assert.doesNotMatch(primary(card(html,'totalEnergy')),/Total registrado no período/,'active and total expenditure stay distinct');
     assert.deepEqual(f.data,before,'pure renderer leaves supplied records unchanged');
     assert.doesNotMatch(html,/\b(?:NaN|undefined|Infinity)\b/);
     const current=renderHealthDashboard(f.data,f.status,{dashboardMode:'day'},f.today);
@@ -125,7 +129,18 @@ export async function runRenderTests(){
     const older=card(renderHealthDashboard(f.data,f.status,{dashboardSources:{water:old}},f.today),'water');
     assert.match(older,/<strong>—<\/strong>/);
     assert.match(primary(older),new RegExp(`Último valor desta origem: <b>5\\.555 mL</b> · ${escapeRegex(dateLabel(f.date(40)))}`),'global latest source date stays visible in an empty selected period');
+    assert.match(primary(older),/data-entry="water"[^>]*>Registrar água/,'an empty current window exposes genuine manual water entry');
+    assert.match(primary(older),/Ver sincronização/,'an empty current window exposes the existing water diagnostic path');
     assert.equal((older.match(/Último valor desta origem/g)||[]).length,1,'latest-date provenance is not repeated inside the disclosure');
+    const noWaterFixture=makeDashboardFixture(f.today,{sparse});
+    noWaterFixture.data.nutrition=noWaterFixture.data.nutrition.map(row=>({...row,water_ml:null}));
+    noWaterFixture.data.sourceMetrics=noWaterFixture.data.sourceMetrics.filter(row=>row.metric_type!=='dietary_water_ml');
+    const noWater=primary(card(renderHealthDashboard(noWaterFixture.data,noWaterFixture.status,{},noWaterFixture.today),'water'));
+    assert.match(noWater,/data-entry="water"[^>]*>Registrar água/,'manual entry stays reachable when no historical water exists');
+    assert.match(noWater,/data-route="dados"[^>]*>Ver sincronização/,'source diagnostics stay reachable when no historical water exists');
+    const noWaterDay=primary(card(renderHealthDashboard(noWaterFixture.data,noWaterFixture.status,{dashboardMode:'day',dashboardDate:noWaterFixture.date(1)},noWaterFixture.today),'water'));
+    assert.match(noWaterDay,/data-entry="water"[^>]*>Registrar água/,'manual entry stays reachable from an empty day');
+    assert.match(noWaterDay,/data-route="dados"[^>]*>Ver sincronização/,'sync diagnostics stay reachable from an empty day');
     const context=dashboardContext(f.data,f.status,{bounds:model.bounds,today:f.today,mode:model.mode});
     assert.equal(context.training.sessions,sparse?0:3);assert.equal(context.training.recordedDays,sparse?0:2);
     if(!sparse){

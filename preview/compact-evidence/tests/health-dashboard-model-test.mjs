@@ -48,6 +48,8 @@ for(const item of model.metrics){
 assert.equal(byKey(model,'water').value,1000);assert.equal(byKey(model,'water').todayValue,9999);
 assert.equal(byKey(model,'protein').value,100);assert.equal(byKey(model,'energy').value,2000);
 assert.equal(byKey(model,'activeEnergy').value,400);assert.equal(byKey(model,'totalEnergy').value,2400);
+assert.equal(byKey(model,'activeEnergy').recordedTotal,2800,'active total sums only the seven eligible days from the selected origin');
+assert.equal(byKey(model,'totalEnergy').recordedTotal,16800,'an explicit total-energy series remains independent from active energy');
 assert.equal(model.todayMetrics.find(item=>item.key==='water').partial,true);
 assert.deepEqual(data,before,'pure model does not mutate inputs');
 
@@ -66,7 +68,7 @@ assert.equal(byKey(sp,'water').points.find(p=>p.date===date(4)).eligible,false);
 assert.equal(byKey(sp,'water').points.find(p=>p.date===date(5)).value,null);
 assert.equal(byKey(sp,'water').availability,'partial');
 assert.equal(healthDashboardModel(sparse,status,{dashboardMode:'day',dashboardDate:date(4)},today).day.partial,true);
-assert.equal(byKey(sp,'totalEnergy').value,null);assert.equal(byKey(sp,'totalEnergy').count,0);
+assert.equal(byKey(sp,'totalEnergy').value,null);assert.equal(byKey(sp,'totalEnergy').recordedTotal,null);assert.equal(byKey(sp,'totalEnergy').count,0);
 
 // Ambiguous repeats, even identical values, do not become a second daily sum.
 const duplicates=structuredClone(data);

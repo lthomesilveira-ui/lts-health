@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('./',import.meta.url)),preview=path.resolve(root,'../preview/compact-evidence');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 assert.match(html,/<title>LTS Health<\/title>/);
-assert.match(html,/health-integrated-20261101\.109/);
+assert.match(html,/health-integrated-20261101\.110/);
 assert.doesNotMatch(html,/preview-readonly|lts-preview|Prévia/);
 assert.match(fs.readFileSync(path.resolve(root,'../index.html'),'utf8'),/\.\/v2\//);
 for(const [,link] of html.matchAll(/(?:href|src)="(\.[^"]+)"/g)){
