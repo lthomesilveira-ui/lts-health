@@ -22,7 +22,8 @@
     "ready": "Executável autonomamente com as evidências atuais.",
     "blocked_user": "Exige uma ação explícita do usuário que o sistema não pode executar.",
     "blocked_external": "Exige aprovação, dispositivo, arquivo original ou capacidade de terceiro ainda indisponível.",
-    "accepted_gap": "Limitação conhecida e contida, sem ação segura disponível agora."
+    "accepted_gap": "Limitação conhecida e contida, sem ação segura disponível agora.",
+    "superseded": "Alternativa técnica retirada da entrega porque foi substituída por caminho já aprovado e entregue; não comprova sua capacidade original nem encerra dependências residuais."
   },
   "execution_policy": {
     "development_branch": "architecture-v2",
@@ -49,22 +50,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-LEGACY-PR-RECONCILIATION-029",
-    "status": "done",
-    "goal": "Resolve superseded UI drafts and validate/publish the remaining disposable SQL regression suites.",
+    "id": "PKG-POLAR-ORIGINAL-RECOVERY-030",
+    "status": "in_progress",
+    "goal": "Recover original non-overlapping Polar history and retire implementation alternatives already replaced by the approved bridge.",
     "task_ids": [
-      "LTS-LEGACY-PR-RECONCILIATION-001"
+      "LTS-POLAR-ORIGINAL-RECOVERY-001",
+      "LTS-MFP-OAUTH-001",
+      "LTS-IOS-HEALTH-001"
     ],
     "public_build": "health-integrated-20261101.113",
     "runtime_changed": false,
     "clinical_runtime_changed": false,
-    "pending_gates": [],
-    "completed_at_utc": "2026-11-01T14:05:21.402318+00:00",
+    "real_source_observations_changed": true,
+    "pending_gates": [
+      "candidate source/continuity/privacy checks",
+      "protected real-auth original source read and model check"
+    ],
     "completed_evidence": [
-      "Legacy PR348 (interval review) and PR354 (compact source-aware dashboard) were compared with the delivered implementation, closed as superseded and kept on their original branches. No obsolete prototype was merged.",
-      "PR367 adds only 25 synthetic SQL/workflow files. Independent source review checked 820 before/after images: invented labels/sources/notes, zero-prefix UUIDs, generated values and deterministic literal limits/footnotes. Shell syntax and local-only empty-schema/database-name guards passed.",
-      "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
-      "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
+      "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred."
     ]
   },
   "last_verified_release": {
@@ -884,8 +887,8 @@
       "id": "LTS-MFP-OAUTH-001",
       "area": "integrations",
       "priority": "P1",
-      "status": "blocked_external",
-      "owner": "external",
+      "status": "superseded",
+      "owner": "Codex",
       "summary": "Direct MyFitnessPal API access remains unavailable; the owner approved a separate Apple Health bridge.",
       "acceptance": [
         "Official authorization is approved for the application.",
@@ -899,17 +902,35 @@
         "v2/releases/USEFUL_REPORTS_20261004.md",
         "v2/releases/MFP_REPORT_COVERAGE_20261004.md",
         "2026-10-04: owner approved and purchased the annual Health Auto Export bridge; tracked separately from direct API access.",
-        "2026-10-29: one fresh direct provider-home access in the existing browser again displays a site-served security block before authentication. It was reported as access_denied and the attempt ended; no alternate-route probing, reset or bypass was performed."
+        "2026-10-29: one fresh direct provider-home access in the existing browser again displays a site-served security block before authentication. It was reported as access_denied and the attempt ended; no alternate-route probing, reset or bypass was performed.",
+        "2026-11-01: alternative explicitly retired from the delivery queue after reconciling the already owner-approved paid bridge and its completed real-phone activation. Original acceptance criteria remain preserved above; no API approval or native-device success is claimed."
       ],
-      "next_action": "The paid bridge receives available nutrition and later hydration observations. Preserve it. Direct MFP approval, original authenticated MFP water history and independently attributable automatic recurrence stay separate.",
-      "blocker": "Approved API access is not available to this project; the 2026-10-04 direct account attempt also encountered a persistent provider-served browser security block before login."
+      "next_action": "Use the delivered owner-approved bridge. Reopen this alternative only for a new explicit implementation requirement; continue the independent original-water, recurrence and lineage tasks.",
+      "blocker": null,
+      "resolution": {
+        "kind": "superseded_alternative",
+        "reason": "The owner approved and purchased Health Auto Export as the iPhone bridge; its implementation and real physical-phone activation are already delivered. A second native application or direct provider API approval is not required to operate this chosen route. This retires an implementation alternative, not a missing source-data requirement.",
+        "replacement_task_ids": [
+          "LTS-HEALTH-AUTO-EXPORT-001",
+          "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001"
+        ],
+        "residual_task_ids": [
+          "LTS-HYD-IMPORT-001",
+          "LTS-WATER-RECURRENCE-001",
+          "LTS-WATER-UPSTREAM-STATUS-001",
+          "LTS-SOURCE-LINEAGE-001"
+        ],
+        "capability_not_verified": [
+          "Official direct MyFitnessPal API approval and direct OAuth operation were not obtained."
+        ]
+      }
     },
     {
       "id": "LTS-IOS-HEALTH-001",
       "area": "integrations",
       "priority": "P1",
-      "status": "blocked_external",
-      "owner": "external",
+      "status": "superseded",
+      "owner": "Codex",
       "summary": "Validate the iOS HealthKit companion and water-source identity on a physical device.",
       "acceptance": [
         "Signed build runs on a physical iPhone.",
@@ -919,10 +940,28 @@
       "evidence": [
         "ios/LTSHealthCompanion",
         "v2/apple-bridge-contract-smoke.mjs",
-        "Home Screen web installation is tracked separately in LTS-IPHONE-HOME-SCREEN-001. It does not close the native HealthKit/signing/physical-device gate."
+        "Home Screen web installation is tracked separately in LTS-IPHONE-HOME-SCREEN-001. It does not close the native HealthKit/signing/physical-device gate.",
+        "2026-11-01: alternative explicitly retired from the delivery queue after reconciling the already owner-approved paid bridge and its completed real-phone activation. Original acceptance criteria remain preserved above; no API approval or native-device success is claimed."
       ],
-      "next_action": "Run the physical-device gate after Apple signing and device setup exist.",
-      "blocker": "Apple signing, TestFlight/device setup, and real source evidence are external to the current environment."
+      "next_action": "Use the delivered owner-approved bridge. Reopen this alternative only for a new explicit implementation requirement; continue the independent original-water, recurrence and lineage tasks.",
+      "blocker": null,
+      "resolution": {
+        "kind": "superseded_alternative",
+        "reason": "The owner approved and purchased Health Auto Export as the iPhone bridge; its implementation and real physical-phone activation are already delivered. A second native application or direct provider API approval is not required to operate this chosen route. This retires an implementation alternative, not a missing source-data requirement.",
+        "replacement_task_ids": [
+          "LTS-HEALTH-AUTO-EXPORT-001",
+          "LTS-HEALTH-AUTO-EXPORT-ACTIVATION-001"
+        ],
+        "residual_task_ids": [
+          "LTS-HYD-IMPORT-001",
+          "LTS-WATER-RECURRENCE-001",
+          "LTS-WATER-UPSTREAM-STATUS-001",
+          "LTS-SOURCE-LINEAGE-001"
+        ],
+        "capability_not_verified": [
+          "A separately signed native companion and its physical-device HealthKit gate were not verified."
+        ]
+      }
     },
     {
       "id": "LTS-POLAR-HISTORY-001",
@@ -938,10 +977,13 @@
       ],
       "evidence": [
         "v2/DATA_AUDIT.md",
-        "v2/src/workout-evidence.js"
+        "v2/src/workout-evidence.js",
+        "v2/apple-polar-history-review.py",
+        "v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md",
+        "2026-11-01: original application synchronization identities and timestamped source observations were recovered from the supplied localized Apple Health XML. Earlier non-overlapping source history was inserted privately and verified against the original; idempotent replay inserted nothing. Existing provider rows, canonical workouts and workout evidence were compared before/after and preserved. Overlapping observations remain held; no legacy event was linked by matching date or value."
       ],
-      "next_action": "Use the inspected original as a discovery source; do not request the same ZIP again. Establish event identifiers or independent linkage before canonical reconciliation.",
-      "blocker": "The supplied Apple Health original includes Polar events, but legacy summaries lack precise timing and cannot establish safe identity. Immutable Polar IDs or stronger event-link evidence remain needed."
+      "next_action": "Use the recovered source history already visible through the existing source-history projection. Establish independent linkage for legacy sessions and held overlaps before attaching canonical telemetry; do not reimport the original or infer identity from matching values.",
+      "blocker": "Original source history is now recovered separately. The remaining legacy-to-event linkage is unverified: legacy summaries lack precise start times or source-event identifiers, and overlapping provider/export observations have no independent cross-provider identity mapping."
     },
     {
       "id": "LTS-LABS-SOURCES-001",
@@ -3131,6 +3173,29 @@
         "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
       ],
       "next_action": "Continue from the current published app and execution ledger; do not reopen superseded drafts as new runtime work."
+    },
+    {
+      "id": "LTS-POLAR-ORIGINAL-RECOVERY-001",
+      "area": "Original source recovery",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Recover eligible original Polar observations from the already supplied Apple Health archive without duplicating provider history or changing canonical sessions.",
+      "acceptance": [
+        "Read the original localized XML and validate source synchronization identity, timestamps, duration unit and interval.",
+        "Insert only observations strictly earlier than the existing provider calendar window; ambiguous or overlapping observations remain held.",
+        "Verify exact saved projections, idempotent replay and preservation of all existing provider observations, canonical workouts and workout evidence.",
+        "Verify protected application reads and its separate source-history presentation model; keep legacy linkage and owner acceptance independent."
+      ],
+      "evidence": [
+        "v2/apple-polar-history-review.py",
+        "v2/apple-polar-history-review-test.py",
+        "v2/real-auth-polar-history-checks.mjs",
+        "v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md",
+        "2026-11-01: independent full original extraction agrees with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred."
+      ],
+      "next_action": "Finish candidate gates and protected authenticated read/model verification, then record the bounded recovery as complete.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -4536,6 +4601,25 @@
       "candidate_commit": "491322b1197f2c375f97165f3a93b99cc77f8cbf",
       "publication_commit": "a54771300abf7e571847f0ae1b177670cc7638a6",
       "completed_at_utc": "2026-11-01T14:05:21.402318+00:00"
+    },
+    {
+      "id": "PKG-LEGACY-PR-RECONCILIATION-029",
+      "status": "done",
+      "goal": "Resolve superseded UI drafts and validate/publish the remaining disposable SQL regression suites.",
+      "task_ids": [
+        "LTS-LEGACY-PR-RECONCILIATION-001"
+      ],
+      "public_build": "health-integrated-20261101.113",
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "pending_gates": [],
+      "completed_at_utc": "2026-11-01T14:05:21.402318+00:00",
+      "completed_evidence": [
+        "Legacy PR348 (interval review) and PR354 (compact source-aware dashboard) were compared with the delivered implementation, closed as superseded and kept on their original branches. No obsolete prototype was merged.",
+        "PR367 adds only 25 synthetic SQL/workflow files. Independent source review checked 820 before/after images: invented labels/sources/notes, zero-prefix UUIDs, generated values and deterministic literal limits/footnotes. Shell syntax and local-only empty-schema/database-name guards passed.",
+        "PR367 updated head bb27c78501ced5d0bc5a1ed66c1aef8b251ba303 passed 6/6 fresh workflows, then normal merge e381ba7eeb369e6bc66b39568b111276c056dc6c completed. The entire v2 subtree remains exactly 626b22648e90023288aaa965fe56feb8e3f75329, byte-identical to the .113 runtime/control subtree before this test-only merge.",
+        "The SQL suites run against disposable PostgreSQL only; they do not apply a real clinical proposal, create production records, connect to a remote health database or grant data-change authority. The separate original fifteen-record proposal remains blocked."
+      ]
     }
   ],
   "latest_published_release": {
@@ -9195,7 +9279,8 @@
       "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
       "viewport": "320/393/1440, including 650 px height",
       "result": "observed_submission_and_inventory_defects_corrected_and_verified"
-    }
+    },
+    "open_dependency_policy": "Two replaced implementation alternatives are superseded, not verified as done. Original water, legacy linkage, laboratory proposal, basal coverage, ordinary-form persistence and actual owner acceptance remain independent."
   },
   "continuity_review_history": [
     {

@@ -5,6 +5,7 @@ on:
     paths:
       - 'v2/src/**'
       - 'v2/fleury-source-audit*.py'
+      - 'v2/apple-polar-history-review*.py'
       - 'v2/*auth*.mjs'
       - 'v2/*visual*.mjs'
       - 'v2/qa-visual-public.pem'
@@ -36,6 +37,7 @@ jobs:
           node --check v2/real-auth-e2e.mjs
           node --check v2/real-auth-depth-checks.mjs
           node --check v2/real-auth-dashboard-checks.mjs
+          node --check v2/real-auth-polar-history-checks.mjs
           node --check v2/real-auth-labs-visual.mjs
           node --check v2/seal-visual-evidence.mjs
           node --check v2/mfp-water-audit-auth.mjs

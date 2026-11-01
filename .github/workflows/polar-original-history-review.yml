@@ -1,0 +1,39 @@
+name: LTS Health Polar original history review
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'v2/apple-polar-history-review*.py'
+      - 'v2/real-auth-polar-history-checks.mjs'
+      - 'v2/EXECUTION_STATE.json'
+      - 'v2/continuity-contract-smoke.mjs'
+      - '.github/workflows/polar-original-history-review.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'v2/apple-polar-history-review*.py'
+      - 'v2/real-auth-polar-history-checks.mjs'
+      - 'v2/EXECUTION_STATE.json'
+      - 'v2/continuity-contract-smoke.mjs'
+      - '.github/workflows/polar-original-history-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-history:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source identity, overlap and continuity boundaries
+        run: |
+          python -m py_compile v2/apple-polar-history-review.py v2/apple-polar-history-review-test.py
+          python v2/apple-polar-history-review-test.py
+          node --check v2/real-auth-polar-history-checks.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs

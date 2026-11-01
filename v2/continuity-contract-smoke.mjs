@@ -22,7 +22,8 @@ const [rawState,brief,architecture,feedback,protocol,master,parity,dataScreen,to
   read('.github/workflows/timeline-smoke.yml')
 ]);
 
-const state=JSON.parse(rawState),allowed=new Set(['done','in_progress','ready','blocked_user','blocked_external','accepted_gap']);
+const state=JSON.parse(rawState),allowed=new Set(['done','in_progress','ready','blocked_user','blocked_external','accepted_gap','superseded']);
+const terminal=new Set(['done','superseded']);
 assert.equal(state.format,'lts-health-execution-state');
 assert.equal(state.schema_version,1);
 assert.equal(state.scope,'public_project_metadata_only');
@@ -41,6 +42,14 @@ for(const task of state.tasks){
     for(const reference of task.external_references)assert.match(reference,/^https:\/\/github\.com\/lthomesilveira-ui\/lts-health\/issues\/\d+$/);
   }
   if(task.status==='done')assert.equal(task.blocker,null,`${task.id} done but blocked`);
+  if(task.status==='superseded'){
+    assert.equal(task.blocker,null,`${task.id} retired alternative must not claim an active blocker`);
+    assert.equal(task.resolution?.kind,'superseded_alternative');
+    assert.ok(task.resolution.reason&&task.resolution.capability_not_verified?.length);
+    assert.ok(task.resolution.replacement_task_ids?.length);
+    for(const id of task.resolution.replacement_task_ids)assert.equal(state.tasks.find(row=>row.id===id)?.status,'done',`${task.id} replacement must already be delivered`);
+    for(const id of task.resolution.residual_task_ids||[])assert.ok(state.tasks.some(row=>row.id===id&&row.status.startsWith('blocked_')),`${task.id} independent unmet source goal must remain open`);
+  }
   if(task.status.startsWith('blocked_')||task.status==='accepted_gap'){
     assert.ok(task.blocker,`${task.id} needs a blocker`);
     assert.ok(task.next_action,`${task.id} needs a next action`);
@@ -51,7 +60,7 @@ const executable=state.tasks.filter(task=>['ready','in_progress'].includes(task.
 for(const task of executable)assert.ok(state.current_package.task_ids.includes(task.id),`${task.id} is executable but not owned by the current package`);
 if(executable.length)assert.equal(state.current_package.status,'in_progress','executable work requires an in-progress package');
 else{
-  const pending=state.tasks.filter(task=>state.current_package.task_ids.includes(task.id)&&task.status!=='done');
+  const pending=state.tasks.filter(task=>state.current_package.task_ids.includes(task.id)&&!terminal.has(task.status));
   if(pending.length&&pending.every(task=>task.status.startsWith('blocked_'))){
     const expected=pending.some(task=>task.status==='blocked_user')?'blocked_user':'blocked_external';
     assert.equal(state.current_package.status,expected,'unmet blocked acceptance must not be labelled done');

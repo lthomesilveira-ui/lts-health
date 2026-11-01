@@ -1,8 +1,12 @@
-# Relatórios — jornada mensal exata .111 sem defeito de runtime, 01/11/2026
+# Em validação — recuperação do histórico original Polar e alternativas substituídas
 
-Revisão autônoma sem alteração de runtime ou dados. O artefato exato `calendar-report-synthetic-evidence` 13070884236 (SHA-256 `944e2eb05415ae386e642502bfd16feb10fbb673ef7f6decef4831a28e1be426`) passou 32/32 cenários Chromium/WebKit em 320/393/1440 px. A jornada distinta de mês anterior e PDF mensal preservou período, cobertura, unidades, origens separadas, comparações, treinos, exames, limites de interpretação e ausência sem zero; nenhum defeito concreto foi observado.
+`PKG-POLAR-ORIGINAL-RECOVERY-030` executou a recuperação de observações originais anteriores à janela da API, a partir do ZIP já fornecido. Identidade de sincronização, intervalo e unidade foram conferidos; sobreposições permaneceram retidas. A gravação no banco dedicado, a comparação exata após salvar e a repetição sem nova inserção passaram. Registros existentes da API, treinos canônicos e evidências de vínculo permaneceram idênticos. Os valores, períodos e contagens pessoais ficam somente na evidência privada.
 
-Heads, checkpoint privado 62, PRs e recebimentos foram reconciliados. A nova remessa genuína aceitou 13 métricas e 1 candidato basal, mas não trouxe água, gasto total ou cobertura basal verificável. O banco foi somente lido, o suporte não respondeu e nenhuma mensagem foi enviada. Cloud Browser confirmou separadamente o login público desconectado da `.111` após uma recarga; o gate autenticado existente permanece distinto. Fila: 99 done, 14 blocked_external, 2 accepted_gap e zero executáveis. Próxima área: treinos.
+A API direta do MyFitnessPal e o companion nativo próprio passaram a `superseded`: eram alternativas substituídas pela ponte paga já aprovada, implementada e ativada no telefone real. Esse estado preserva os critérios originais e declara que aprovação direta e gate nativo não foram comprovados. Não são contados como implementações concluídas. Água original, recorrência, fonte, cobertura basal e experiência física/aceite do produto mantêm suas condições independentes.
+
+Fila: 102 `done`, 1 `in_progress`, 12 `blocked_external`, 2 `accepted_gap` e 2 `superseded`. O vínculo dos treinos legados continua bloqueado, mesmo com o histórico de origem agora recuperado. A candidata precisa terminar os contratos e a leitura/modelo no gate autenticado protegido. O runtime permanece `.113`, sem alteração de assets, regras clínicas, autenticação ou configuração do telefone. Não há conclusão integral nem prova de gravação pelo formulário comum.
+
+Detalhes: `v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md`. A prioridade é resolver esses bloqueios com evidência original e pacotes executáveis; não abrir nova rodada só para repetir QA sem mudança.
 
 # Exames — jornada exata .111 sem defeito de runtime, 01/11/2026
 
