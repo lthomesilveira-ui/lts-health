@@ -873,3 +873,7 @@ The compact .48 was subsequently verified through all eight candidate and twelve
 Final technical delivery is complete in .50. All nine candidate workflows passed; exact-head authenticated E2E and Training Session passed after PR 341, and eleven applicable deployed/runtime checks passed after the concurrent documentation-only PR 342 with identical executable files. Actual authenticated Home, consultation, latest-session summary and full exercise detail were inspected. Charts retain readable labels and source dates; the consultation no longer displays internal phase keys. Current records appeared without reinsertion. The executed prompt and private validation preserve original evidence and distinguish verified delivery from clinical decisions, owner visual acceptance and remaining water/plan/device source limits.
 
 
+## Em validação — contagens singulares em Composição, .121
+
+A jornada genuína autenticada da `.120` selecionou `InBody270` e reproduziu “1 pontos” no rótulo do gráfico e “1 valores registrados” na nota da série. `PKG-COMPOSITION-COUNT-COPY-037` reutiliza `countLabel` somente nesses dois textos; medições, datas, unidades, origem, aparelho, histórico e elegibilidade de comparação não mudam. Contratos locais de singular/plural, não mutação, runtime/prévia, privacidade e payload passaram. Gates responsivos remotos, publicação normal e inspeção exata ainda estão pendentes. Os nove bloqueios externos permanecem independentes.
+

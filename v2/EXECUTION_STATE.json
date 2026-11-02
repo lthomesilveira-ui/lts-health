@@ -50,25 +50,26 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-EXAMS-SERIES-COUNT-036",
-    "status": "done",
-    "goal": "Correct singular point/result counts in the Exams series coverage note without changing source results or chart eligibility.",
+    "id": "PKG-COMPOSITION-COUNT-COPY-037",
+    "status": "in_progress",
+    "goal": "Correct singular point/value labels in Composition without changing measurements, source boundaries or comparison eligibility.",
     "task_ids": [
-      "LTS-EXAMS-SERIES-COUNT-001"
+      "LTS-COMPOSITION-COUNT-COPY-001"
     ],
-    "candidate_build": "health-integrated-20261102.120",
-    "public_build": "health-integrated-20261102.120",
+    "candidate_build": "health-integrated-20261102.121",
+    "public_build": null,
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-02",
-    "pending_gates": [],
-    "completed_on": "2026-11-02",
+    "pending_gates": [
+      "Candidate workflows and responsive browser evidence.",
+      "Normal merge, publication gates and exact authenticated public inspection."
+    ],
     "completed_evidence": [
-      "PR490 candidate fcda715d0dfc92b7fcfae8f114d7dc6b4abcb76b, tree 305335d29af22e1e27cbf6fcaef3a9908a694878, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files.",
-      "Exact functional-depth artifact 13125640096 sha256:69dcf36803517031c3b9bd32ca1382121825dc8d4bd032320b28a3764906983e was byte-verified and its mobile/desktop textual-series captures were inspected. The coverage note has correct singular result grammar, no numeric curve for text and preserved history access.",
-      "Normal merge 2f5523f6960b082b4d0f6e51e8a0a59ffee59995 preserved the exact tested tree and published health-integrated-20261102.120. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session opened the exact .120 and verified the corrected textual-series note, preserved original-result links/history and cleared search. No login, upload, clinical record or phone step was repeated."
+      "The genuine authenticated .120 Composition journey reproduced ‘1 pontos’ in the chart accessibility label and ‘1 valores registrados’ after selecting InBody270.",
+      "The bounded correction reuses countLabel in the shared chart label and Composition note. Local functional-depth, source-link, runtime-parity, preview-hash, privacy and public-payload contracts pass; no health value, date, unit, source, device, comparison rule, authentication or write path changes.",
+      "The local browser dependency is unavailable and is not counted as success; pinned candidate browser workflows remain required."
     ]
   },
   "last_verified_release": {
@@ -3382,6 +3383,26 @@
       ],
       "next_action": null,
       "blocker": null
+    },
+    {
+      "id": "LTS-COMPOSITION-COUNT-COPY-001",
+      "area": "composition UX",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Correct singular point/value labels after selecting a Composition source with one eligible measurement.",
+      "acceptance": [
+        "A one-point chart announces ‘1 ponto’ and the selected-source note says ‘1 valor registrado’.",
+        "Plural counts keep their existing wording and every measurement, date, unit, source, device, missing-data boundary and comparison rule remains unchanged.",
+        "Candidate browser gates, normal publication and exact authenticated public inspection pass before completion."
+      ],
+      "evidence": [
+        "The genuine authenticated .120 app reproduced both incorrect plurals after selecting InBody270; the same view preserved the expected 24/09/2026 measurement, 11.9%, origin and no-comparison state.",
+        "The correction uses the shared countLabel helper in pointChart and the Composition note. Deterministic singular/plural and nonmutation contracts pass locally, together with runtime/preview parity, privacy and payload guards.",
+        "Local Playwright execution is unavailable because the dependency is not installed; no browser result is claimed from that attempt."
+      ],
+      "next_action": "Run the pinned candidate workflows and responsive evidence, then publish normally and inspect the exact authenticated build.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -4975,6 +4996,28 @@
         "Exact functional-depth artifact 13125640096 sha256:69dcf36803517031c3b9bd32ca1382121825dc8d4bd032320b28a3764906983e was byte-verified and its mobile/desktop textual-series captures were inspected. The coverage note has correct singular result grammar, no numeric curve for text and preserved history access.",
         "Normal merge 2f5523f6960b082b4d0f6e51e8a0a59ffee59995 preserved the exact tested tree and published health-integrated-20261102.120. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
         "The genuine authenticated public session opened the exact .120 and verified the corrected textual-series note, preserved original-result links/history and cleared search. No login, upload, clinical record or phone step was repeated."
+      ]
+    },
+    {
+      "id": "PKG-COMPOSITION-COUNT-COPY-037",
+      "status": "in_progress",
+      "goal": "Correct singular point/value labels in Composition without changing measurements, source boundaries or comparison eligibility.",
+      "task_ids": [
+        "LTS-COMPOSITION-COUNT-COPY-001"
+      ],
+      "candidate_build": "health-integrated-20261102.121",
+      "public_build": null,
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-02",
+      "pending_gates": [
+        "Candidate workflows and responsive browser evidence.",
+        "Normal merge, publication gates and exact authenticated public inspection."
+      ],
+      "completed_evidence": [
+        "Genuine authenticated .120 inspection reproduced both singular-count copy defects with InBody270 selected.",
+        "Bounded local contracts and production/preview parity pass without data or comparison changes; remote browser evidence remains pending."
       ]
     }
   ],

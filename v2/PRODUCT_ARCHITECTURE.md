@@ -189,3 +189,7 @@ A imagem aprovada em 04/09/2026 foi recuperada e está preservada fora do reposi
 - código, testes, migrations, issues e pull requests existentes;
 - `PROJECT_BRIEF.md`, `PRODUCT_VISION_COCKPIT.md`, `REFERENCE_VISUAL_CONTRACT.md` e `DATA_AUDIT.md`.
 
+## Em validação — contagens singulares em Composição, .121
+
+A jornada genuína autenticada da `.120` selecionou `InBody270` e reproduziu “1 pontos” no rótulo do gráfico e “1 valores registrados” na nota da série. `PKG-COMPOSITION-COUNT-COPY-037` reutiliza `countLabel` somente nesses dois textos; medições, datas, unidades, origem, aparelho, histórico e elegibilidade de comparação não mudam. Contratos locais de singular/plural, não mutação, runtime/prévia, privacidade e payload passaram. Gates responsivos remotos, publicação normal e inspeção exata ainda estão pendentes. Os nove bloqueios externos permanecem independentes.
+
