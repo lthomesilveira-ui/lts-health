@@ -50,27 +50,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-COMPOSITION-COUNT-COPY-037",
-    "status": "done",
-    "goal": "Correct singular point/value labels in Composition without changing measurements, source boundaries or comparison eligibility.",
+    "id": "PKG-CALENDAR-COUNT-COPY-038",
+    "status": "in_progress",
+    "goal": "Keep singular and plural recorded-training counts correct across the calendar report, source details and both local PDF exports.",
     "task_ids": [
-      "LTS-COMPOSITION-COUNT-COPY-001"
+      "LTS-CALENDAR-COUNT-COPY-001"
     ],
-    "candidate_build": "health-integrated-20261102.121",
+    "candidate_build": "health-integrated-20261102.122",
     "public_build": "health-integrated-20261102.121",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-02",
-    "pending_gates": [],
-    "completed_on": "2026-11-02",
-    "completed_evidence": [
-      "The genuine authenticated .120 Composition journey reproduced ‘1 pontos’ in the chart accessibility label and ‘1 valores registrados’ after selecting InBody270.",
-      "The bounded correction reuses countLabel in the shared chart label and Composition note. Local functional-depth, source-link, runtime-parity, preview-hash, privacy and public-payload contracts pass; no health value, date, unit, source, device, comparison rule, authentication or write path changes.",
-      "The local browser dependency is unavailable and is not counted as success; pinned remote gates supplied the required browser evidence instead.",
-      "PR492 head 2930afca3898b830162f7510c6bc48d85e083c13, exact tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 candidate workflows. Functional-depth artifact 13136589213 (sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584) was byte-checked and its Composition desktop/mobile evidence inspected.",
-      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session reloaded exact .121, selected InBody270 and verified ‘1 ponto’, ‘1 valor registrado’, 11.9%, 24/09/2026, the no-comparison state and 41 preserved measurements; it then restored all sources."
+    "pending_gates": [
+      "candidate workflows",
+      "exact mobile and desktop evidence",
+      "actual concise and full PDF evidence",
+      "normal publication",
+      "genuine authenticated public inspection"
     ]
   },
   "last_verified_release": {
@@ -3405,6 +3402,26 @@
         "The genuine authenticated exact .121 verified ‘1 ponto’ and ‘1 valor registrado’ for InBody270, preserved 24/09/2026, 11.9%, 41 measurements and the one-point no-comparison state, then restored all sources."
       ],
       "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-CALENDAR-COUNT-COPY-001",
+      "area": "calendar report UX",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Correct singular recorded-session, day, exercise, set, extension and Polar-record labels in the calendar report and its PDF presentations.",
+      "acceptance": [
+        "Zero, one and multiple recorded sessions keep correct count labels in the overview, details, source-separated groups and exports.",
+        "Reported totals, source separation, partial/unavailable states, eligibility, clinical records and source data remain unchanged.",
+        "Existing desktop/mobile engine gates, actual summary/full PDF checks and exact authenticated publication inspection pass."
+      ],
+      "evidence": [
+        "The genuine authenticated .121 weekly report visibly rendered an incorrect plural for one recorded session in the summary and training block.",
+        "The bounded change corrects only training count presentation using the existing shared helper and singular label selection; recorded units and all calculations remain unchanged.",
+        "Local existing calendar view and 42 calendar model contracts pass, including zero/single/multiple records, both print presentations, explicit zero, missing data, source separation and input immutability."
+      ],
+      "next_action": "Verify exact candidate UI/PDF evidence, promote normally and inspect the exact public build.",
       "blocker": null
     }
   ],

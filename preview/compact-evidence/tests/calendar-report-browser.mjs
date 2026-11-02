@@ -554,6 +554,13 @@ for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
         if(engine==='chromium'&&width===1440)await printContract(page,`${name}-current-month-export`,{pdf:true,engine});
         if(engine==='webkit')await printContract(page,`${name}-current-month-print`,{engine});
         await choose(page,{mode:'month',selection:'date',date:'2024-02-10'});await assertWindow(page,fixture,CALENDAR_WINDOWS.leapMonth);
+        assert.equal((await report(page)).training.sessions,1,'The historical one-session fixture remains one record');
+        assert.match(await page.locator('[data-report-kpi="training"]').innerText(),/1\s+sessão\b/);
+        assert.match(await page.locator('.ltsReportTraining').innerText(),/1\/1 sessão com duração/);
+        assert.doesNotMatch(await page.locator('.ltsCalendarTraining').innerText(),/1 sessões|1 exercícios|1 prolongamentos/);
+        await page.locator('.ltsReportTraining').scrollIntoViewIfNeeded();await page.screenshot({path:`${dir}/${name}-single-training-count.png`,scale:'css'});
+        if(engine==='chromium'&&width===393){await printContract(page,`${name}-single-summary-export`,{pdf:true,engine,summary:true});await printContract(page,`${name}-single-full-export`,{pdf:true,engine});}
+
         await page.locator('#calendar-next').click();await stable(page);assert.equal((await report(page)).calendar.bounds.start,'2024-03-01');assert.equal((await report(page)).calendar.bounds.end,'2024-03-31');
         await page.locator('#calendar-prev').click();await stable(page);await assertWindow(page,fixture,CALENDAR_WINDOWS.leapMonth);
         await choose(page,{mode:'week',selection:'date',date:'2026-01-01'});await assertWindow(page,fixture,CALENDAR_WINDOWS.yearWeek);
