@@ -1008,3 +1008,7 @@ The approved source remains in the owner's private Drive as `LTS Health - refere
 Do not ask the owner to judge `.29`; it was explicitly rejected. Promote candidate `.30` only through a normal PR, then open the exact public build, authenticate, navigate affected areas, inspect desktop plus reduced/full mobile evidence, correct obvious defects and only then request homologation. When physical-iPhone feedback conflicts with CI or remote screenshots, the physical device wins.
 
 
+## Em validação — contagens singulares em Composição, .121
+
+A jornada genuína autenticada da `.120` selecionou `InBody270` e reproduziu “1 pontos” no rótulo do gráfico e “1 valores registrados” na nota da série. `PKG-COMPOSITION-COUNT-COPY-037` reutiliza `countLabel` somente nesses dois textos; medições, datas, unidades, origem, aparelho, histórico e elegibilidade de comparação não mudam. Contratos locais de singular/plural, não mutação, runtime/prévia, privacidade e payload passaram. Gates responsivos remotos, publicação normal e inspeção exata ainda estão pendentes. Os nove bloqueios externos permanecem independentes.
+

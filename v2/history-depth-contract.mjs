@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 globalThis.location={search:'?fixture=1'};
 const {state,setGlobalPeriod}=await import('./src/core.js');
-const {validDay,pageOf,seriesWindow}=await import('./src/history-tools.js');
+const {validDay,pageOf,seriesWindow,pointChart}=await import('./src/history-tools.js');
 const {labGroups,labCohorts,labResultText,renderProductLabs}=await import('./src/labs-layout-v2.js');
 const {compositionModel,linkedSegmental,renderProductComposition}=await import('./src/composition-layout-v2.js');
 const {trainingHistoryModel,exerciseHistoryModel}=await import('./src/training-history.js');
 
 assert.equal(validDay('2026-02-30'),'');assert.equal(validDay('2024-02-29'),'2024-02-29');assert.equal(validDay('2026-02-03T10:00:00Z'),'2026-02-03');
+assert.ok(pointChart([{date:'2026-01-01',value:1}],{unit:'%',label:'Gordura corporal'}).includes('Gordura corporal; 1 ponto; %'),'single-point chart label uses singular grammar');
 const arr=Array.from({length:41},(_,i)=>i);assert.deepEqual(pageOf(arr,4,12).rows,[36,37,38,39,40]);assert.equal(pageOf(arr,-1).page,1);assert.equal(pageOf(arr,Infinity).page,1);
 const numeric=(date,value,extra={})=>({collection_date:date,biomarker:'Marcador sintético',laboratory:'Origem A',unit:'u',result_numeric:value,...extra});
 const labs=[numeric('2026-01-01',0),numeric('2026-01-10',2),numeric('2026-01-20',3),numeric('2026-01-20',4),numeric('2026-02-30',8),numeric('2026-03-01',5,{result_raw:'< 5'}),numeric('2026-01-01',80,{unit:'outra unidade'}),numeric('2026-01-02',90,{unit:'outra unidade'}),numeric('2026-01-01',7,{laboratory:'Origem B'}),numeric('2026-01-02',8,{laboratory:'Origem B'}),numeric('2026-01-01',17,{method:'Método B'}),numeric('2026-01-02',18,{method:'Método B'}),numeric('2026-01-01',101,{laboratory:'',source:'',source_file:''}),numeric('2026-01-02',102,{laboratory:'',source:'',source_file:''}),numeric('2026-01-01',103,{unit:''}),numeric('2026-01-02',104,{unit:''})];
@@ -26,6 +27,9 @@ for(const [rows,expected] of [
 state.errors.labs='test';html=renderProductLabs();assert.ok(html.includes('ltsDepthError'));assert.ok(!html.includes('ltsLabsHero'));state.errors={};
 
 const body=Array.from({length:30},(_,i)=>({source_record_id:`body-${i}`,measured_at:`2025-${String(Math.floor(i/28)+1).padStart(2,'0')}-${String(i%28+1).padStart(2,'0')}`,source:'Origem',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30}));
+state.data={body,segmental:[]};state.ui={};state.domainStatus={body:'ready',segmental:'ready'};
+const oneBody={source_record_id:'body-one',measured_at:'2026-01-01',source:'Origem única',device_name:'Modelo único',weight_kg:70,body_fat_pct:20,skeletal_muscle_mass_kg:30};
+state.data={body:[oneBody],segmental:[]};state.ui={productCompositionPeriod:'all'};html=renderProductComposition();assert.ok(html.includes('1 valor registrado · Todas as origens'),'single composition value uses singular grammar');assert.ok(!html.includes('1 valores registrados'));
 state.data={body,segmental:[]};state.ui={};state.domainStatus={body:'ready',segmental:'ready'};
 let m=compositionModel();assert.equal(m.period,'365');assert.equal(m.recent.length,0,'the recent-year default does not substitute older measurements');assert.equal(m.all.length,30);assert.equal(m.history.total,30,'the complete archive remains available despite the recent default');
 for(const period of ['30','90']){state.ui.productCompositionPeriod=period;m=compositionModel();assert.equal(m.recent.length,0,'old measurements stay outside an explicitly chosen recent window');assert.equal(m.history.total,30);}
