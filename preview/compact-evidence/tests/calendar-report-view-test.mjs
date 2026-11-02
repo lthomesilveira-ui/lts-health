@@ -23,6 +23,26 @@ for(const key of ['energy','protein','carbs','fat','fiber']){
   assert.deepEqual(plotted,expected.dates,`${key}: overview charts preserve the independent eligibility/gap/source oracle`);
   assert.match(overview,new RegExp(`data-calendar-chart="${key}" aria-pressed="true"`));
 }
+// A single logged session stays one session in the screen and both print modes.
+const one=makeCalendarReportFixture(),oneDate='2024-02-29';
+one.data.workouts=one.data.workouts.filter(row=>row.workout_date===oneDate);
+one.data.exercises=one.data.exercises.filter(row=>row.workout_date===oneDate).slice(0,1);
+const oneExercise=one.data.exercises[0].source_record_id;
+one.data.sets=one.data.sets.filter(row=>row.exercise_source_record_id===oneExercise&&[1,3].includes(row.set_index));
+const oneBefore=capture(one.data),oneUi={calendarReportMode:'month',calendarReportSelection:'date',calendarReportDate:'2024-02-10'},oneModel=calendarReport(one.data,one.status,oneUi,one.today);
+assert.equal(oneModel.training.sessions,1);assert.equal(oneModel.training.recordedDays,1);assert.equal(oneModel.training.recordedGroups[0].primary,1);assert.equal(oneModel.training.recordedGroups[0].extensions,1);
+const oneScreen=renderCalendarReport(one.data,one.status,oneUi,one.today),oneSummary=renderCalendarSummaryPrint(oneModel),oneFull=renderCalendarReportPrint(oneModel);
+for(const document of [oneScreen,oneSummary,oneFull]){
+  assert.doesNotMatch(document,/1 sessões|1 exercícios|1 séries|1 prolongamentos|1 registros/,'Single records keep singular labels in every delivery');
+  assert.match(document,/1\/1 sessão com duração/);
+}
+assert.match(oneScreen,/<b>1<\/b><small>sessão<\/small>/);assert.match(oneSummary,/<b>1<\/b><small>sessão<\/small>/);
+assert.match(oneFull,/1 exercício · 1 série \+ 1 prolongamento/);assert.match(oneFull,/1 sessão · 1 exercício · 1 série \+ 1 prolongamento/);
+assert.match(oneFull,/<b>1<\/b><span>dia com treino<\/span>/);assert.deepEqual(one.data,oneBefore,'Count labels never mutate the documented source');
+const zero=makeCalendarReportFixture('empty'),zeroModel=calendarReport(zero.data,zero.status,{},zero.today);
+for(const document of [renderCalendarSummaryPrint(zeroModel),renderCalendarReportPrint(zeroModel)])assert.match(document,/>sessões(?: registradas)?</,'A genuine empty diary remains plural zero, not a single session');
+assert.match(renderCalendarReportPrint(model),/<b>3<\/b><span>sessões registradas<\/span>/,'Multiple sessions remain plural');
+
 const summary=renderCalendarSummaryPrint(model);
 assert.equal((summary.match(/<tr>/g)||[]).length,CALENDAR_KEYS.length+1,'Concise export contains every source-specific indicator row');
 assert.doesNotMatch(summary,/<details|<button|<select|data-calendar-day=|ltsCalendarAllEvidence/,'Summary and full-evidence export are explicit separate choices');
