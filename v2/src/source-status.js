@@ -1,4 +1,5 @@
 import {state,norm} from './core.js';
+import {isConfirmedFleuryUpload} from './fleury-preview.js';
 
 export const stableAppleMetricTypes=new Set(['active_energy_kcal','exercise_minutes','stand_hours']);
 const appleNativeFamilies=new Set(['apple_activity_summary','apple_watch','iphone','healthkit_candidate','health_auto_export']);
@@ -63,8 +64,9 @@ export function sourceTransportCoverageFor(source){
   return{};
 }
 
-export function uploadBucket(upload){
+export function uploadBucket(upload,preview=null){
   const status=String(upload?.status||'').toLowerCase();
+  if(isConfirmedFleuryUpload(upload,preview))return'done';
   if(status==='uploaded'||status==='processing')return'in_progress';
   if(status==='processed'||status==='imported')return'done';
   if(status==='review_required'||status==='rejected'||status==='failed')return'attention';
@@ -143,7 +145,8 @@ export function latestSourceEvidenceDateFor(source){
 }
 
 export function sourceStatusFor(source){
-  const upload=latestUploadFor(source),bucket=uploadBucket(upload),{dataFound,candidateFound,domainKeys}=sourceEvidence(source);
+  const upload=latestUploadFor(source),previews=failed('previews')?[]:(state.data.previews||[]).filter(p=>upload?.id&&String(p.upload_id)===String(upload.id));
+  const bucket=uploadBucket(upload,previews.length===1?previews[0]:null),{dataFound,candidateFound,domainKeys}=sourceEvidence(source);
   if(bucket==='attention')return'attention';
   if(bucket==='in_progress')return'processing';
   if(dataFound)return'ready';

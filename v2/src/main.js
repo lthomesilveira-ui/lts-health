@@ -29,6 +29,7 @@ import {checkPolarConnection,actOnPolar,resetPolarConnection} from './polar-conn
 import {checkAutoExportConnection,actOnAutoExport,copyAutoExport,resetAutoExportConnection} from './health-auto-export-connection.js';
 import {downloadIntegratedSummary} from './integrated-review-view.js';
 import {saveGoals} from './personal-goals.js';
+import {isConfirmedFleuryUpload} from './fleury-preview.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
 const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,evolucao:renderEvolutionOverview,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
@@ -217,9 +218,9 @@ export function uploadOutcomeMessageFromState(result){
   const id=String(result?.id||'');
   if(!id)return uploadOutcomeMessage(result);
   const upload=state.domainStatus.uploads==='error'?null:(state.data.uploads||[]).find(row=>String(row.id)===id);
-  const preview=state.domainStatus.previews==='error'?null:(state.data.previews||[]).find(row=>String(row.upload_id)===id);
+  const previews=state.domainStatus.previews==='error'?[]:(state.data.previews||[]).filter(row=>String(row.upload_id)===id),preview=previews.length===1?previews[0]:null;
   const status=String(upload?.status||'').toLowerCase(),source=String(upload?.source_type||result?.source_type||'').toLowerCase();
-  const message=uploadStatusMessage(status,source,preview?.detected_format||result?.preview?.detected_format)||uploadOutcomeMessage(result);
+  const message=isConfirmedFleuryUpload(upload,preview)?'Laudo recebido e conferido. Os resultados já estão no histórico; nenhum exame foi duplicado ou alterado.':uploadStatusMessage(status,source,preview?.detected_format||result?.preview?.detected_format)||uploadOutcomeMessage(result);
   return state.domainStatus.uploads==='error'||state.domainStatus.previews==='error'?`${message} O histórico de arquivos não pôde ser atualizado agora.`:message;
 }
 

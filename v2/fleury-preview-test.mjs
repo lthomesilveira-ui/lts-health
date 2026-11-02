@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {laboratoryNumber,parseFleuryLayout,positionedPageLayout,readFleuryPdf,FLEURY_LIMITS} from '../supabase/functions/_shared/fleury-lab-preview.mjs';
-import {fleuryPreviewModel,renderFleuryPreview} from './src/fleury-preview.js';
+import {fleuryPreviewModel,renderFleuryPreview,isConfirmedFleuryUpload} from './src/fleury-preview.js';
 
 // Invented report text only. The independent full original-file audit stays private.
 const assay=(raw='83',date='03/02/2001',unit='mg/dL',heading='GLICOSE, soro')=>`${heading}\nMétodo: exemplo inventado\nRESULTADO                        VALORES DE REFERÊNCIA\n${raw} ${unit}                    70 a 99\nNOTA(1): Não é dado real.\nRECEBIDO/COLETADO EM: ${date} - LIBERADO EM: ${date}\nAssinatura digital avançada: invented\nImpresso em: 04/02/2001`;
@@ -43,6 +43,22 @@ assert.equal(fleuryPreviewModel(preview).complete,true);
 assert.match(renderFleuryPreview(preview),/Nenhum exame foi duplicado ou alterado/);
 assert.match(renderFleuryPreview(preview),/tabindex="0"/);
 lab.source_sha256='1'.repeat(64);
+const confirmedUpload={id:'invented',source_type:'fleury',status:'review_required'};
+const confirmedPreview={...structuredClone(preview),source_type:'fleury',status:'inspected',row_count:lab.results.length};
+assert.equal(isConfirmedFleuryUpload(confirmedUpload,confirmedPreview),true);
+const beforeConfirmation=JSON.stringify([confirmedUpload,confirmedPreview]);
+for(const change of [
+  p=>{p.upload_id='another-upload';},p=>{p.source_type='einstein';},p=>{p.status='failed';},
+  p=>{p.row_count++;},p=>{p.lab_preview.read_only=false;},p=>{p.lab_preview.source_verified=false;},
+  p=>{p.lab_preview.history_available=false;},p=>{p.lab_preview.source_sha256='not-a-hash';},
+  p=>{p.lab_preview.results[0].already_in_history=false;},p=>{p.lab_preview.results=[];p.row_count=0;},
+  p=>{p.lab_preview.conflicts=[{reason:'source_conflict'}];},p=>{p.lab_preview.unsupported_count=1;},
+  p=>{delete p.lab_preview.unsupported_count;},p=>{delete p.lab_preview.conflicts;}
+]){const altered=structuredClone(confirmedPreview);change(altered);assert.equal(isConfirmedFleuryUpload(confirmedUpload,altered),false);}
+for(const status of ['uploaded','processing','rejected','failed'])assert.equal(isConfirmedFleuryUpload({...confirmedUpload,status},confirmedPreview),false);
+assert.equal(isConfirmedFleuryUpload({...confirmedUpload,source_type:'einstein'},confirmedPreview),false);
+assert.equal(isConfirmedFleuryUpload(confirmedUpload,null),false);
+assert.equal(JSON.stringify([confirmedUpload,confirmedPreview]),beforeConfirmation,'confirmation changes no upload, preview or clinical value');
 const original={original_pdf_status:'ready',original_pdf:{schema_version:1,status:'source_verified',library_file_id:'libfile_'+'1'.repeat(32),source_sha256:'1'.repeat(64),page:1,page_count:2}};
 assert.match(renderFleuryPreview(preview,undefined,[original]),/Abrir laudo original/);
 assert.match(renderFleuryPreview(preview,undefined,[original]),/referrerpolicy="no-referrer"/);

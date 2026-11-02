@@ -52,24 +52,28 @@
   "current_package": {
     "id": "PKG-TRAINING-LOAD-QUALIFIERS-034",
     "status": "in_progress",
-    "goal": "Preserve recorded load qualifiers and keep native Training history filters readable within the mobile viewport.",
+    "goal": "Keep recorded training qualifiers, mobile history filters and verified original-file receipt/source states truthful and readable.",
     "task_ids": [
       "LTS-TRAINING-LOAD-QUALIFIERS-001",
-      "LTS-TRAINING-HISTORY-FILTERS-001"
+      "LTS-TRAINING-HISTORY-FILTERS-001",
+      "LTS-FLEURY-CONFIRMED-RECEIPT-001"
     ],
-    "public_build": "health-integrated-20261102.117",
+    "public_build": "health-integrated-20261102.118",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "pending_gates": [
-      "exact .117 source/privacy and continuity",
-      "all eight Chromium/WebKit scenarios including native filters and their real handlers",
-      "normal publication, protected read-only projection and broader history verification"
+      "exact .118 source/privacy and continuity contracts",
+      "Chromium/WebKit verified-receipt, source-status, filtering and incomplete-source regressions",
+      "normal publication, exact public inspection and protected owner-scoped source check"
     ],
     "completed_evidence": [
       "A concrete source-fidelity defect was observed: the source qualifier was retained only inside secondary notes while the table displayed an unqualified value.",
       "A pure source qualifier, bounded Boolean projection and explicit row/plot labels are implemented. Stored values, graph arithmetic, phases and original text remain unchanged.",
-      "Published .116 passed protected owner-source qualifier agreement and public/deploy gates. The broader bare-host WebKit393px history capture exposed a pre-existing native-filter width defect; it is included in the current correction, not hidden by removing an assertion."
+      "Published .116 passed protected owner-source qualifier agreement and public/deploy gates. The broader bare-host WebKit393px history capture exposed a pre-existing native-filter width defect; it is included in the current correction, not hidden by removing an assertion.",
+      "PR485 was normally merged at953e88c1cff1c3b2d0e0e670d054ac281535f8f7 with the exact tested tree; all18 candidate workflows and eight synthetic browser scenarios passed. Publication checks still in progress are not counted as passed.",
+      "An owner-authorized genuine original was submitted once through the ordinary production form, reloaded fully and reopened. Its read-only preview agreed with already-present history; independent before/after checks preserved the clinical/documentary/prescription records.",
+      "That genuine journey exposed a source card and receipt message that still described a fully matched verified original as awaiting reading. Candidate .118 repairs only presentation and filter categorization; stored upload state and clinical records remain unchanged."
     ]
   },
   "last_verified_release": {
@@ -1969,7 +1973,7 @@
       "id": "LTS-PRODUCTION-WRITE-REOPEN-001",
       "area": "production persistence coverage",
       "priority": "P1",
-      "status": "blocked_external",
+      "status": "done",
       "owner": "Codex",
       "summary": "Verify ordinary production form saving and reopening on the next genuine authorized update; distinguish it from the completed bounded metadata repair.",
       "acceptance": [
@@ -1984,10 +1988,11 @@
         "A second genuine bounded historical repair has exact preimages, independent postimages, unchanged other data and public reopening. This is still a different path from ordinary form submission.",
         "The original Fleury PDF is recovered, privately source-validated and ready for the ordinary Inbox form. Fresh preflight confirms no Fleury file has already been submitted there.",
         "Public .115 sign-in offers email/password; credential entry remains a secure owner interaction. Protected read-only CI sessions are not reused as manual form credentials.",
-        "2026-11-02: owner explicitly requested secure login again. The first browser action timed out before page inspection, so no new credential prompt could be issued. No password, file or fictitious event was submitted."
+        "2026-11-02: owner explicitly requested secure login again. The first browser action timed out before page inspection, so no new credential prompt could be issued. No password, file or fictitious event was submitted.",
+        "2026-11-02: the interactive owner session was observed authenticated without borrowing CI credentials. A preflight excluded an existing copy; one genuine original was submitted through the ordinary file chooser and form. Its persisted source identity/hash and read-only preview were independently reread, then reopened after a full browser reload. Already-present source results were recognized, and exact before/after fingerprints and prescription counts remained unchanged. Private evidence is retained in the owner checkpoint; no personal values or upload identities are published here."
       ],
-      "next_action": "When browser control returns, inspect the current session. If signed out, send the secure login requested by the owner; then use the prepared genuine original through the ordinary Inbox form and verify full reload/reopening. Do not request a replacement file or use a CI session.",
-      "blocker": "The interactive browser control is unavailable: a fresh rebind timed out before a visible sign-in form was obtained. Session state is unknown. The genuine original remains prepared and unsubmitted."
+      "next_action": "Preserve the completed genuine form, full-reload and reopening evidence. Reuse its existing upload rather than submitting the original again; original-source/provider and overall owner acceptance remain independent.",
+      "blocker": null
     },
     {
       "id": "LTS-OWNER-DELIVERY-20261025",
@@ -3296,6 +3301,27 @@
         "Candidate .117 gives the year selector enough width and stacks the two filters on smaller screens. The existing browser suite now checks the selected native label and the real search/year/clear path."
       ],
       "next_action": "Complete exact source, mobile/desktop, protected and publication verification.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-FLEURY-CONFIRMED-RECEIPT-001",
+      "area": "Verified original receipt and source status",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "A fully verified original already matching recorded examinations must not turn its source into awaiting reading or imply the existing results are absent.",
+      "acceptance": [
+        "Use only the matching inspected Fleury preview with explicit verified source/history, valid hash, complete result coverage and no conflict or unsupported fragment.",
+        "Keep existing source coverage visible; label the original as checked in file history and outcome, and include it in completed-file filtering without changing stored upload state or creating an import.",
+        "Preserve incomplete, ambiguous, wrong-owner-chain/source, failed-read and unsupported-file behavior; do not count a merely available preview as a completed check.",
+        "Verify production renderers in Chromium/WebKit at phone and desktop widths, actual filter controls and no writes; publish and inspect the exact version."
+      ],
+      "evidence": [
+        "The defect was observed during the genuine authorized production form/reopen journey, after a source-verified read-only preview matched existing history.",
+        "A bounded pure helper requires the exact upload/source chain, inspected preview, complete matching model, valid source hash, explicit empty conflicts/unsupported scope and matching row count.",
+        "Local deterministic source/partial/failure/nonmutation checks, syntax, transport preservation, privacy, payload and runtime-parity contracts passed. Local browser execution was unavailable because the installed API has no browser executable; remote candidate browser checks remain required."
+      ],
+      "next_action": "Finish exact candidate mobile/desktop and source-state regressions, normal publication and final authenticated inspection.",
       "blocker": null
     }
   ],
@@ -4814,6 +4840,19 @@
         "The already supplied, privately validated original is prepared. No replacement file or invented clinical event is needed.",
         "The ordinary authenticated inspector is deployed with JWT protection; the current manual browser is signed out.",
         "A fresh owner-requested browser rebind timed out before the visible login form could be inspected. No credential request or ordinary file submission was completed. The control service is unavailable and the final session state is unknown."
+      ]
+    },
+    {
+      "id": "PKG-GENUINE-INBOX-FORM-033",
+      "status": "done",
+      "completed_on": "2026-11-02",
+      "task_ids": [
+        "LTS-PRODUCTION-WRITE-REOPEN-001"
+      ],
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "evidence": [
+        "Owner-authorized genuine production form submission, persisted private source/preview reread and full browser reload/reopen verified. Source identity and existing examinations/documents/prescriptions were preserved; this is not a general import or global product acceptance."
       ]
     }
   ],

@@ -1,3 +1,13 @@
+## 2026-11-02 — original conferido e recebimento coerente, candidata .118
+
+O formulário comum já foi validado com um original genuíno autorizado: envio único, prévia privada conferida, recarga integral e reabertura. A identidade da origem e os registros clínicos, documentais e de tratamento foram preservados em conferência independente. `LTS-PRODUCTION-WRITE-REOPEN-001` está concluída; não repetir login ou envio para esse aceite.
+
+A jornada revelou uma contradição de apresentação: o original conferido fazia a fonte antes disponível parecer aguardando leitura, embora a prévia reconhecesse seus resultados no histórico. `LTS-FLEURY-CONFIRMED-RECEIPT-001` corrige a mensagem, a fonte e o filtro de arquivos concluídos apenas quando a prévia específica está integralmente verificada e coincidente. O estado gravado do upload continua preservado; nenhum novo exame é importado. Prévia incompleta, fonte incerta, conflito, falha de consulta ou ausência de histórico não recebem essa confirmação.
+
+PR485 foi incorporado normalmente em953e88c1cff1c3b2d0e0e670d054ac281535f8f7: 18/18 workflows candidatos e oito cenários Chromium/WebKit passaram; imagens de filtros em393px e desktop foram conferidas. A publicação .117 passou os gates de entrada/autenticação protegida observados. Uma etapa suplementar de fixture pública encontrou timeout de navegação; a falha foi preservada e somente o job falho foi repetido. Os demais gates ainda em execução não são contados como sucesso.
+
+A candidata .118 mantém as cargas aproximadas e os filtros de Treinos; a nova leitura de recebimento ainda exige os gates remotos, publicação e inspeção exata. Nove dependências originais de fonte/provedor/aceite continuam independentes, incluindo água, recorrência, origem/cobertura e o manifesto original das correções laboratoriais. Nenhum novo passo do telefone ou mensagem de suporte foi repetido. Detalhes: `v2/releases/CONFIRMED_LAB_RECEIPT_20261102.md`.
+
 ## 2026-11-02 — .117 em validação: filtros nativos do histórico de treinos
 
 A verificação mais ampla da .116 expôs em WebKit393px um seletor de ano com “Todo o histórico” cortado e largura interna além da tela. A correção amplia o espaço do seletor e coloca busca/ano em linhas próprias em telas menores. O teste conserva todos os casos anteriores e passa a conferir se o valor selecionado cabe e se busca, seleção de ano e limpeza continuam funcionando pelos controles reais.
