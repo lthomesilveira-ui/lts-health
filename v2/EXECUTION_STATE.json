@@ -51,46 +51,47 @@
   },
   "current_package": {
     "id": "PKG-CALENDAR-COUNT-COPY-038",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Keep singular and plural recorded-training counts correct across the calendar report, source details and both local PDF exports.",
     "task_ids": [
       "LTS-CALENDAR-COUNT-COPY-001"
     ],
     "candidate_build": "health-integrated-20261102.122",
-    "public_build": "health-integrated-20261102.121",
+    "public_build": "health-integrated-20261102.122",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-02",
-    "pending_gates": [
-      "candidate workflows",
-      "exact mobile and desktop evidence",
-      "actual concise and full PDF evidence",
-      "normal publication",
-      "genuine authenticated public inspection"
+    "pending_gates": [],
+    "completed_on": "2026-11-02",
+    "completed_evidence": [
+      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261102.121",
-    "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
-    "runtime_promotion_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+    "build_id": "health-integrated-20261102.122",
+    "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
+    "runtime_promotion_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
     "published_on": "2026-11-02",
-    "release_kind": "composition_singular_count_copy",
-    "manual_exact_public_status": "exact_authenticated_public_composition_singular_counts_verified",
-    "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact responsive artifact and genuine authenticated public inspection verified.",
+    "release_kind": "calendar_training_count_copy",
+    "manual_exact_public_status": "exact_authenticated_public_calendar_report_verified",
+    "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact desktop/mobile evidence, actual concise/full PDFs and genuine authenticated public inspection verified.",
     "evidence": [
-      "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files after the truncated transport attempt was replaced by a complete fast-forward commit.",
-      "Exact functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was byte-verified; its mobile/desktop Composition captures preserve units, source, values and the lean-mass versus skeletal-muscle boundary.",
-      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the exact tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session reloaded exact .121 and verified ‘1 ponto’ and ‘1 valor registrado’ with InBody270, while preserving 24/09/2026, 11.9%, the no-comparison rule and all 41 measurements. The source selector was restored to all sources."
+      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
     ],
     "ci_summary": {
-      "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+      "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
       "total": 23,
       "success": 23,
       "status": "complete",
-      "protected_actual_auth_run": 41439476591,
+      "protected_actual_auth_run": 41462308456,
       "pending_workflows": []
     },
     "recorded_failed_validation_runs": [
@@ -3408,7 +3409,7 @@
       "id": "LTS-CALENDAR-COUNT-COPY-001",
       "area": "calendar report UX",
       "priority": "P2",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Correct singular recorded-session, day, exercise, set, extension and Polar-record labels in the calendar report and its PDF presentations.",
       "acceptance": [
@@ -3419,9 +3420,13 @@
       "evidence": [
         "The genuine authenticated .121 weekly report visibly rendered an incorrect plural for one recorded session in the summary and training block.",
         "The bounded change corrects only training count presentation using the existing shared helper and singular label selection; recorded units and all calculations remain unchanged.",
-        "Local existing calendar view and 42 calendar model contracts pass, including zero/single/multiple records, both print presentations, explicit zero, missing data, source separation and input immutability."
+        "Local existing calendar view and 42 calendar model contracts pass, including zero/single/multiple records, both print presentations, explicit zero, missing data, source separation and input immutability.",
+        "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+        "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+        "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+        "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
       ],
-      "next_action": "Verify exact candidate UI/PDF evidence, promote normally and inspect the exact public build.",
+      "next_action": null,
       "blocker": null
     }
   ],
@@ -5040,29 +5045,51 @@
         "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 published .121 with 23/23 workflows approved, including deploy, both Pages smokes and actual-auth.",
         "Exact authenticated public inspection verified both corrected singular forms and preserved measurement/source/comparison boundaries."
       ]
+    },
+    {
+      "id": "PKG-CALENDAR-COUNT-COPY-038",
+      "status": "done",
+      "goal": "Keep singular and plural recorded-training counts correct across the calendar report, source details and both local PDF exports.",
+      "task_ids": [
+        "LTS-CALENDAR-COUNT-COPY-001"
+      ],
+      "candidate_build": "health-integrated-20261102.122",
+      "public_build": "health-integrated-20261102.122",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-02",
+      "pending_gates": [],
+      "completed_on": "2026-11-02",
+      "completed_evidence": [
+        "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+        "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+        "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+        "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
+      ]
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261102.121",
-    "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
-    "runtime_promotion_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+    "build_id": "health-integrated-20261102.122",
+    "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
+    "runtime_promotion_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
     "published_on": "2026-11-02",
-    "release_kind": "composition_singular_count_copy",
-    "manual_exact_public_status": "exact_authenticated_public_composition_singular_counts_verified",
-    "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact responsive artifact and genuine authenticated public inspection verified.",
+    "release_kind": "calendar_training_count_copy",
+    "manual_exact_public_status": "exact_authenticated_public_calendar_report_verified",
+    "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact desktop/mobile evidence, actual concise/full PDFs and genuine authenticated public inspection verified.",
     "evidence": [
-      "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files after a complete fast-forward repair of the initial truncated transport.",
-      "Exact functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was byte-verified; mobile/desktop Composition evidence preserved units, source, values and segmental terminology.",
-      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the exact tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session reloaded exact .121 and verified the corrected singular chart/note text with InBody270 while preserving 24/09/2026, 11.9%, the no-comparison rule and all 41 measurements; all sources were restored afterward."
+      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
     ],
     "ci_summary": {
-      "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+      "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
       "total": 23,
       "success": 23,
       "status": "complete",
-      "protected_actual_auth_run": 41439476591,
+      "protected_actual_auth_run": 41462308456,
       "pending_workflows": []
     },
     "recorded_failed_validation_runs": [
@@ -9798,38 +9825,78 @@
           "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
         }
       ]
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261102.121",
+      "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+      "runtime_promotion_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+      "published_on": "2026-11-02",
+      "release_kind": "composition_singular_count_copy",
+      "manual_exact_public_status": "exact_authenticated_public_composition_singular_counts_verified",
+      "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact responsive artifact and genuine authenticated public inspection verified.",
+      "evidence": [
+        "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files after a complete fast-forward repair of the initial truncated transport.",
+        "Exact functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was byte-verified; mobile/desktop Composition evidence preserved units, source, values and segmental terminology.",
+        "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the exact tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
+        "The genuine authenticated public session reloaded exact .121 and verified the corrected singular chart/note text with InBody270 while preserving 24/09/2026, 11.9%, the no-comparison rule and all 41 measurements; all sources were restored afterward."
+      ],
+      "ci_summary": {
+        "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+        "total": 23,
+        "success": 23,
+        "status": "complete",
+        "protected_actual_auth_run": 41439476591,
+        "pending_workflows": []
+      },
+      "recorded_failed_validation_runs": [
+        {
+          "run_id": 41372128661,
+          "attempt": 1,
+          "scope": "supplemental public fixture navigation before DOM",
+          "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+        },
+        {
+          "run_id": 41373999373,
+          "attempt": 1,
+          "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
+          "artifact_id": 13110745602,
+          "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
+          "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+        }
+      ]
     }
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-02",
-    "reviewed_at_utc": "2026-11-02T12:00:00.000000+00:00",
-    "source_main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
-    "runtime_build": "health-integrated-20261102.121",
+    "reviewed_at_utc": "2026-11-02T14:42:41.934002+00:00",
+    "source_main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
+    "runtime_build": "health-integrated-20261102.122",
     "candidate_build": null,
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 113,
+      "done": 114,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, exact tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows; all complete remote blobs matched the locally validated files.",
-      "Functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was verified by bytes and its desktop/mobile Composition evidence inspected.",
-      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the tested tree and published exact .121 with 23/23 workflows approved, including deploy, both Pages smokes and protected actual-auth.",
-      "The genuine authenticated public app reloaded exact .121 and verified ‘1 ponto’ and ‘1 valor registrado’ with InBody270, preserving 24/09/2026, 11.9%, the no-comparison state and 41 measurements; the all-sources view was restored.",
-      "Fresh database and provider-mail checks supplied no new attributable evidence for the nine external dependencies. Water still ends on 2026-10-13; no support message, phone step, upload or clinical reconstruction was repeated."
+      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated.",
+      "Current original-source and provider evidence does not close any of the nine independent dependencies. Official integration/export documentation is not substituted for this account’s attributable water or source records."
     ],
     "ux_review": {
-      "area": "composition",
-      "next_area": "nutrition",
-      "mode": "exact_synthetic_production_renderer_and_genuine_authenticated_public_app",
-      "result": "concrete_copy_defect_corrected_and_verified"
+      "area": "calendar_report_training_counts",
+      "next_area": "training",
+      "mode": "exact_synthetic_renderers_actual_PDFs_and_genuine_authenticated_public_app",
+      "result": "concrete_copy_defects_corrected_and_verified"
     },
-    "open_dependency_policy": "Nine original source/provider/global acceptance conditions remain independent. Resume only from attributable evidence; basal candidates stay non-additive, the exact fifteen-correction manifest stays unreconstructed, and physical/global acceptance remains separate."
+    "open_dependency_policy": "Nine source/provider/original-record/global acceptance conditions remain open independently. Do not repeat completed native setup, genuine file upload, support messages or reconstruct the historical clinical proposal."
   },
   "continuity_review_history": [
     {
@@ -11025,6 +11092,37 @@
         "result": "concrete_copy_defect_corrected_and_verified"
       },
       "open_dependency_policy": "Nine original source/provider/global acceptance conditions remain independent. Resume only from attributable evidence; basal candidates stay non-additive, the exact fifteen-correction manifest stays unreconstructed, and physical/global acceptance remains separate."
+    },
+    {
+      "reviewed_on": "2026-11-02",
+      "reviewed_at_utc": "2026-11-02T14:42:41.934002+00:00",
+      "source_main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
+      "runtime_build": "health-integrated-20261102.122",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 114,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
+        "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
+        "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
+        "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated.",
+        "Current original-source and provider evidence does not close any of the nine independent dependencies. Official integration/export documentation is not substituted for this account’s attributable water or source records."
+      ],
+      "ux_review": {
+        "area": "calendar_report_training_counts",
+        "next_area": "training",
+        "mode": "exact_synthetic_renderers_actual_PDFs_and_genuine_authenticated_public_app",
+        "result": "concrete_copy_defects_corrected_and_verified"
+      },
+      "open_dependency_policy": "Nine source/provider/original-record/global acceptance conditions remain open independently. Do not repeat completed native setup, genuine file upload, support messages or reconstruct the historical clinical proposal."
     }
   ],
   "continuation_automation": {
