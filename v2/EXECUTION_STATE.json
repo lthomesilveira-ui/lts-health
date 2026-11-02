@@ -1874,7 +1874,7 @@
       "priority": "P0",
       "status": "blocked_external",
       "owner": "Codex",
-      "summary": "Phone status, permissions and the normal-entry comparison are already available; investigate the observed source-to-Apple gap through the opened technical case.",
+      "summary": "Investigate the owner's missing-link hypothesis on the phone using the already supplied status, write permissions and source-to-Apple comparison.",
       "acceptance": [
         "Inspect the existing Health Sync main/status screen after the reported purchase, including Water and last synchronization or error.",
         "Preserve source, paid configuration and keys; do not require recurring manual exports or duplicate daily entry.",
@@ -1892,10 +1892,14 @@
         "2026-10-26 later checkpoint: owner completed same-account reset and post-reset native report; the specifically consented source screenshot was sent and acknowledged. The provider proposes Deauthorize without yet explaining its distinction from the completed icon reset; clarification has already been sent in the existing case.",
         "Continuity restart: both support conversations re-read, with no reply after the previously recorded operational questions. Fresh owner-scoped receipt audit and authenticated Data/Sources still do not establish water restoration. Existing completed phone actions and unanswered questions remain preserved.",
         "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested.",
-        "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested."
+        "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested.",
+        "2026-11-02: the owner explicitly reopens investigation of a missing or inactive phone connection; waiting only for the supplier is no longer the next action. Completed same-account reset, write permission, native reports and source capture remain completed.",
+        "Current official Google Health documentation (https://support.google.com/googlehealth/answer/17037331) states that Apple Health permissions can remain granted after disconnection inside Google Health. The same page documents review of the app-level connection and newly available data types. Historical permission toggles therefore do not establish current app-level linkage.",
+        "Official connection guidance (https://support.google.com/googlehealth/answer/14236613) announces partner reconnection before October 30, 2026. This supports checking the current connection, but the water interruption predates that deadline and is not diagnosed by it.",
+        "Original correspondence was re-read: the icon reset and same-account reauthorization were completed; the distinct Deauthorize flow was proposed later without confirmed execution or established technical difference. No new revocation, duplicate entry or support message was performed."
       ],
-      "next_action": "Await the already-requested technical distinction between Deauthorize and the completed reset, confirmation of post-reset API findings and supported escalation. Preserve all completed steps; do not duplicate replies or ask for new ingestion/screenshots/reports.",
-      "blocker": "Empty API response remains unexplained; no restoration or new indispensable native step is established.",
+      "next_action": "Obtain only the current Google Health → Connections/Apps and services → Apple Health card state (Connected, Add connection or New data types available), which is not exposed remotely. Inspect that state before changing anything. An old permission screenshot or documented direct route is not proof of a current working connection. Preserve the existing Health Sync route and completed checks; diagnose missing app linkage or source-read consent without blind resets, duplicate water entry or repeated reports. The unanswered supplier questions remain parallel evidence requests, not the sole path.",
+      "blocker": "The current phone-only app-connection state and effective source-read consent are unobserved. Cause and restoration remain unproved; the agent cannot inspect the native device remotely.",
       "phone_status_capture_received": true
     },
     {
