@@ -40,6 +40,10 @@ for(const [engine,name]of [[chromium,'chromium'],[webkit,'webkit']]){
     await page.waitForFunction(()=>document.querySelectorAll('.uploadAuditRow').length===0);
     await page.locator('#dataUploadStatus').selectOption('all');
     await page.waitForFunction(()=>document.querySelectorAll('.uploadAuditRow').length===1);
+    await source.scrollIntoViewIfNeeded();
+    await page.screenshot({path:join(output,`${name}-${width}-source.png`)});
+    await page.locator('.uploadAuditRow').scrollIntoViewIfNeeded();
+    await page.screenshot({path:join(output,`${name}-${width}-receipt.png`)});
     const summary=page.locator('.fleuryPreview>summary');
     await summary.click();
     await assert.doesNotReject(()=>page.getByText('Nenhum exame foi duplicado ou alterado.',{exact:false}).waitFor({state:'visible'}));
