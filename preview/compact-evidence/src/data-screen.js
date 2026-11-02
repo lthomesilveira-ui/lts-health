@@ -3,7 +3,7 @@ import {sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucke
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
-import {renderFleuryPreview,fleuryPreviewModel} from './fleury-preview.js';
+import {renderFleuryPreview,fleuryPreviewModel,isConfirmedFleuryUpload} from './fleury-preview.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const pill=(text,kind='')=>`<span class="pill ${kind}">${esc(text)}</span>`;
@@ -59,7 +59,7 @@ const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|sourc
 const technicalQualityPattern=/\b(can[oô]nic[ao]s?|candidat[ao]s?|retid[ao]s?|payloads?|source_record_id|canonical_status|RPC|SQLSTATE|PostgREST|canonical|candidate|held|quarantined|parser|backlog|backend)\b|dados (?:n[aã]o conferidos|recebidos)|column .*does not exist|relation .*does not exist|\b[a-z]+(?:_[a-z]+){1,}\b/i;
 function sourceLabel(value){return sourceLabels[value]||'Outra origem';}
 function sourceFamilyLabel(value){return sourceFamilyLabels[value]||'Outra origem';}
-function uploadStatus(value){return uploadStatusLabels[value]||'situação não informada';}
+function uploadStatus(upload,preview){return isConfirmedFleuryUpload(upload,preview)?'laudo conferido':uploadStatusLabels[upload?.status]||'situação não informada';}
 function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name].some(value=>sensitiveQualityPattern.test(norm(value).replaceAll(' ','_')));}
 function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||'Revisão de qualidade';}
 function safeIssueText(value,fallback){const text=String(value||'').trim();return text&&!internalTextPattern.test(text)?text:fallback;}
@@ -71,7 +71,7 @@ function qualityDiagnostics(issue){
 }
 
 function previewStatus(status){return({inspected:'processado',ready_for_parser:'arquivo reconhecido',needs_specialized_parser:'aguardando leitura segura',review_required:'aguardando leitura segura',failed:'falha no processamento'})[status]||'situação não detalhada';}
-function previewFor(upload,previews){return previews.find(p=>String(p.upload_id)===String(upload.id))||null;}
+function previewFor(upload,previews){const matches=previews.filter(p=>String(p.upload_id)===String(upload.id));return matches.length===1?matches[0]:null;}
 function previewNotice(preview){
   const lab=fleuryPreviewModel(preview);
   if(lab)return lab.complete?'Leitura do laudo conferida com os exames já presentes no histórico.':lab.rows.length?'Prévia disponível abaixo. Os exames do histórico foram preservados.':'Original guardado; este formato ainda precisa de leitura especializada.';
@@ -86,16 +86,17 @@ function previewDetail(preview){
   return `<div class="processingDetail"><div>${pill(fleuryPreviewModel(preview)?.rows.length?'prévia do laudo disponível':previewStatus(preview.status),preview.status==='failed'?'warn':preview.status==='inspected'?'ok':'')} ${facts.length?`<span>${esc(facts.join(' · '))}</span>`:''}</div>${notice?`<small>${esc(notice)}</small>`:''}${renderFleuryPreview(preview,fmtDate,failed('labs')?[]:state.data.labs||[])}</div>`;
 }
 function displayFilename(value){try{return decodeURIComponent(String(value||'Arquivo'));}catch{return String(value||'Arquivo');}}
-function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>`<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(displayFilename(u.original_filename))}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u.status))}</small>${previewDetail(previewFor(u,previews))}</div></div>`).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
+function uploadRows(uploads,previews){return uploads.slice(0,40).map(u=>{const preview=failed('previews')?null:previewFor(u,previews);return `<div class="uploadAuditRow"><time>${fmtDate(u.created_at)}</time><div><b>${esc(displayFilename(u.original_filename))}</b><small>${esc(sourceLabel(u.source_type))} · ${esc(uploadStatus(u,preview))}</small>${previewDetail(preview)}</div></div>`;}).join('')||empty('Nenhum arquivo corresponde aos filtros.');}
 
-function filteredUploads(uploads){const status=state.ui.dataUploadStatus||'all',source=state.ui.dataUploadSource||'all';return uploads.filter(upload=>(status==='all'||uploadBucket(upload)===status)&&(source==='all'||String(upload.source_type||'other')===source));}
+function filteredUploads(uploads){const status=state.ui.dataUploadStatus||'all',source=state.ui.dataUploadSource||'all';return uploads.filter(upload=>(status==='all'||uploadBucket(upload,failed('previews')?null:previewFor(upload,state.data.previews||[]))===status)&&(source==='all'||String(upload.source_type||'other')===source));}
 function uploadFilters(uploads){const sources=[...new Set(uploads.map(u=>String(u.source_type||'other')).filter(Boolean))].sort((a,b)=>sourceLabel(a).localeCompare(sourceLabel(b),'pt-BR'));return `<div class="controls"><label>Situação<select id="dataUploadStatus"><option value="all">Todos</option><option value="attention">Precisa de atenção</option><option value="in_progress">Em andamento</option><option value="done">Concluídos</option></select></label><label>Origem<select id="dataUploadSource"><option value="all">Todas</option>${sources.map(source=>`<option value="${esc(source)}">${esc(sourceLabel(source))}</option>`).join('')}</select></label></div>`;}
 
-function processingCounts(uploads){
+function processingCounts(uploads,previews){
   const counts={waiting:0,done:0,safeReview:0,failed:0};
   for(const upload of uploads){
     const status=String(upload.status||'').toLowerCase();
-    if(status==='uploaded'||status==='processing')counts.waiting++;
+    if(!failed('previews')&&isConfirmedFleuryUpload(upload,previewFor(upload,previews)))counts.done++;
+    else if(status==='uploaded'||status==='processing')counts.waiting++;
     else if(status==='processed'||status==='imported')counts.done++;
     else if(status==='review_required')counts.safeReview++;
     else if(status==='rejected'||status==='failed')counts.failed++;
@@ -141,7 +142,7 @@ function complementaryCoverage(rows){
 }
 
 function reviewInbox(uploads,previews,issues,sourceMetrics){
-  const uploadCounts=processingCounts(uploads),internalActions=failed('quality')?[]:actionableIssues(issues),uploadActions=failed('uploads')?[]:actionableUploads(uploads),manualCount=uploadActions.length,internalCount=internalActions.length,userActionKnown=!failed('uploads');
+  const uploadCounts=processingCounts(uploads,previews),internalActions=failed('quality')?[]:actionableIssues(issues),uploadActions=failed('uploads')?[]:actionableUploads(uploads),manualCount=uploadActions.length,internalCount=internalActions.length,userActionKnown=!failed('uploads');
   const heldRows=failed('sourceMetrics')?null:reviewRows(sourceMetrics),safeCount=(heldRows?.length||0)+uploadCounts.safeReview;
   const headline=!userActionKnown?'Não foi possível verificar seus arquivos agora':manualCount?`${manualCount} ${manualCount===1?'arquivo precisa':'arquivos precisam'} de atenção`:'Nenhuma ação sua é necessária';
   const explanation=!userActionKnown?'Os arquivos continuam guardados. Atualize para verificar se algum envio precisa de atenção.':manualCount?'Os arquivos abaixo não puderam ser lidos. Você pode enviá-los novamente para tentar outra leitura.':internalCount?`Há ${internalCount} ${internalCount===1?'observação':'observações'} em análise. Os registros com limitações ficam guardados separadamente, sem alterar seus resumos.`:safeCount?`Há ${safeCount} ${safeCount===1?'registro adicional':'registros adicionais'} fora dos resumos. Eles não entram em médias nem são somados entre fontes.`:'Seus arquivos e registros disponíveis aparecem abaixo.';

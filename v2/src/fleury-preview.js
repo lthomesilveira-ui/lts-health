@@ -14,6 +14,14 @@ export function fleuryPreviewModel(preview) {
   return {rows,matched,conflicts,unsupported,sourceHash,complete:rows.length>0&&confirmed&&matched===rows.length&&conflicts===0&&unsupported===0};
 }
 
+export function isConfirmedFleuryUpload(upload,preview) {
+  if(upload?.source_type!=='fleury'||upload.status!=='review_required'||!upload.id)return false;
+  if(preview?.source_type!=='fleury'||preview.status!=='inspected'||String(preview.upload_id)!==String(upload.id))return false;
+  if(preview.lab_preview?.unsupported_count!==0||!Array.isArray(preview.lab_preview?.conflicts))return false;
+  const model=fleuryPreviewModel(preview);
+  return !!(model?.complete&&model.sourceHash&&preview.row_count===model.rows.length);
+}
+
 export function renderFleuryPreview(preview, formatDate=value=>value, originalResults=[]) {
   const model=fleuryPreviewModel(preview);
   if(!model)return '';
