@@ -51,48 +51,49 @@
   },
   "current_package": {
     "id": "PKG-COMPOSITION-COUNT-COPY-037",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Correct singular point/value labels in Composition without changing measurements, source boundaries or comparison eligibility.",
     "task_ids": [
       "LTS-COMPOSITION-COUNT-COPY-001"
     ],
     "candidate_build": "health-integrated-20261102.121",
-    "public_build": null,
+    "public_build": "health-integrated-20261102.121",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-02",
-    "pending_gates": [
-      "Candidate workflows and responsive browser evidence.",
-      "Normal merge, publication gates and exact authenticated public inspection."
-    ],
+    "pending_gates": [],
+    "completed_on": "2026-11-02",
     "completed_evidence": [
       "The genuine authenticated .120 Composition journey reproduced ‘1 pontos’ in the chart accessibility label and ‘1 valores registrados’ after selecting InBody270.",
       "The bounded correction reuses countLabel in the shared chart label and Composition note. Local functional-depth, source-link, runtime-parity, preview-hash, privacy and public-payload contracts pass; no health value, date, unit, source, device, comparison rule, authentication or write path changes.",
-      "The local browser dependency is unavailable and is not counted as success; pinned candidate browser workflows remain required."
+      "The local browser dependency is unavailable and is not counted as success; pinned remote gates supplied the required browser evidence instead.",
+      "PR492 head 2930afca3898b830162f7510c6bc48d85e083c13, exact tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 candidate workflows. Functional-depth artifact 13136589213 (sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584) was byte-checked and its Composition desktop/mobile evidence inspected.",
+      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
+      "The genuine authenticated public session reloaded exact .121, selected InBody270 and verified ‘1 ponto’, ‘1 valor registrado’, 11.9%, 24/09/2026, the no-comparison state and 41 preserved measurements; it then restored all sources."
     ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261102.120",
-    "main_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
-    "runtime_promotion_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
+    "build_id": "health-integrated-20261102.121",
+    "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+    "runtime_promotion_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
     "published_on": "2026-11-02",
-    "release_kind": "exams_series_count_copy",
-    "manual_exact_public_status": "exact_authenticated_public_textual_series_verified",
+    "release_kind": "composition_singular_count_copy",
+    "manual_exact_public_status": "exact_authenticated_public_composition_singular_counts_verified",
     "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact responsive artifact and genuine authenticated public inspection verified.",
     "evidence": [
-      "PR490 candidate fcda715d0dfc92b7fcfae8f114d7dc6b4abcb76b, tree 305335d29af22e1e27cbf6fcaef3a9908a694878, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files.",
-      "Exact functional-depth artifact 13125640096 sha256:69dcf36803517031c3b9bd32ca1382121825dc8d4bd032320b28a3764906983e was byte-verified and its mobile/desktop textual-series captures were inspected. The coverage note has correct singular result grammar, no numeric curve for text and preserved history access.",
-      "Normal merge 2f5523f6960b082b4d0f6e51e8a0a59ffee59995 preserved the exact tested tree and published health-integrated-20261102.120. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session opened the exact .120 and verified the corrected textual-series note, preserved original-result links/history and cleared search. No login, upload, clinical record or phone step was repeated."
+      "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files after the truncated transport attempt was replaced by a complete fast-forward commit.",
+      "Exact functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was byte-verified; its mobile/desktop Composition captures preserve units, source, values and the lean-mass versus skeletal-muscle boundary.",
+      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the exact tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
+      "The genuine authenticated public session reloaded exact .121 and verified ‘1 ponto’ and ‘1 valor registrado’ with InBody270, while preserving 24/09/2026, 11.9%, the no-comparison rule and all 41 measurements. The source selector was restored to all sources."
     ],
     "ci_summary": {
-      "main_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
+      "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
       "total": 23,
       "success": 23,
       "status": "complete",
-      "protected_actual_auth_run": 41411037409,
+      "protected_actual_auth_run": 41439476591,
       "pending_workflows": []
     },
     "recorded_failed_validation_runs": [
@@ -3388,7 +3389,7 @@
       "id": "LTS-COMPOSITION-COUNT-COPY-001",
       "area": "composition UX",
       "priority": "P2",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Correct singular point/value labels after selecting a Composition source with one eligible measurement.",
       "acceptance": [
@@ -3399,9 +3400,11 @@
       "evidence": [
         "The genuine authenticated .120 app reproduced both incorrect plurals after selecting InBody270; the same view preserved the expected 24/09/2026 measurement, 11.9%, origin and no-comparison state.",
         "The correction uses the shared countLabel helper in pointChart and the Composition note. Deterministic singular/plural and nonmutation contracts pass locally, together with runtime/preview parity, privacy and payload guards.",
-        "Local Playwright execution is unavailable because the dependency is not installed; no browser result is claimed from that attempt."
+        "Local Playwright execution is unavailable because the dependency is not installed; no browser result is claimed from that attempt.",
+        "PR492 exact candidate passed 19/19 workflows and normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 published .121 with 23/23 workflows approved.",
+        "The genuine authenticated exact .121 verified ‘1 ponto’ and ‘1 valor registrado’ for InBody270, preserved 24/09/2026, 11.9%, 41 measurements and the one-point no-comparison state, then restored all sources."
       ],
-      "next_action": "Run the pinned candidate workflows and responsive evidence, then publish normally and inspect the exact authenticated build.",
+      "next_action": null,
       "blocker": null
     }
   ],
@@ -5000,48 +5003,49 @@
     },
     {
       "id": "PKG-COMPOSITION-COUNT-COPY-037",
-      "status": "in_progress",
+      "status": "done",
       "goal": "Correct singular point/value labels in Composition without changing measurements, source boundaries or comparison eligibility.",
       "task_ids": [
         "LTS-COMPOSITION-COUNT-COPY-001"
       ],
       "candidate_build": "health-integrated-20261102.121",
-      "public_build": null,
+      "public_build": "health-integrated-20261102.121",
       "runtime_changed": true,
       "clinical_runtime_changed": false,
       "real_source_observations_changed": false,
       "started_on": "2026-11-02",
-      "pending_gates": [
-        "Candidate workflows and responsive browser evidence.",
-        "Normal merge, publication gates and exact authenticated public inspection."
-      ],
+      "pending_gates": [],
+      "completed_on": "2026-11-02",
       "completed_evidence": [
         "Genuine authenticated .120 inspection reproduced both singular-count copy defects with InBody270 selected.",
-        "Bounded local contracts and production/preview parity pass without data or comparison changes; remote browser evidence remains pending."
+        "Bounded local contracts and production/preview parity pass without data or comparison changes; the unavailable local browser attempt is not counted as success.",
+        "PR492 head 2930afca3898b830162f7510c6bc48d85e083c13 and exact tree 5908818b65f70563897d4a599062b7ba65214333 passed 19/19 candidate workflows. Artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was byte-verified and inspected.",
+        "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 published .121 with 23/23 workflows approved, including deploy, both Pages smokes and actual-auth.",
+        "Exact authenticated public inspection verified both corrected singular forms and preserved measurement/source/comparison boundaries."
       ]
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261102.120",
-    "main_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
-    "runtime_promotion_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
+    "build_id": "health-integrated-20261102.121",
+    "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+    "runtime_promotion_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
     "published_on": "2026-11-02",
-    "release_kind": "exams_series_count_copy",
-    "manual_exact_public_status": "exact_authenticated_public_textual_series_verified",
+    "release_kind": "composition_singular_count_copy",
+    "manual_exact_public_status": "exact_authenticated_public_composition_singular_counts_verified",
     "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact responsive artifact and genuine authenticated public inspection verified.",
     "evidence": [
-      "PR490 candidate fcda715d0dfc92b7fcfae8f114d7dc6b4abcb76b, tree 305335d29af22e1e27cbf6fcaef3a9908a694878, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files.",
-      "Exact functional-depth artifact 13125640096 sha256:69dcf36803517031c3b9bd32ca1382121825dc8d4bd032320b28a3764906983e was byte-verified and its mobile/desktop textual-series captures were inspected. The coverage note has correct singular result grammar, no numeric curve for text and preserved history access.",
-      "Normal merge 2f5523f6960b082b4d0f6e51e8a0a59ffee59995 preserved the exact tested tree and published health-integrated-20261102.120. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session opened the exact .120 and verified the corrected textual-series note, preserved original-result links/history and cleared search. No login, upload, clinical record or phone step was repeated."
+      "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files after a complete fast-forward repair of the initial truncated transport.",
+      "Exact functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was byte-verified; mobile/desktop Composition evidence preserved units, source, values and segmental terminology.",
+      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the exact tested tree and published health-integrated-20261102.121. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
+      "The genuine authenticated public session reloaded exact .121 and verified the corrected singular chart/note text with InBody270 while preserving 24/09/2026, 11.9%, the no-comparison rule and all 41 measurements; all sources were restored afterward."
     ],
     "ci_summary": {
-      "main_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
+      "main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
       "total": 23,
       "success": 23,
       "status": "complete",
-      "protected_actual_auth_run": 41411037409,
+      "protected_actual_auth_run": 41439476591,
       "pending_workflows": []
     },
     "recorded_failed_validation_runs": [
@@ -5062,6 +5066,18 @@
     ]
   },
   "release_history": [
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261102.120",
+      "main_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
+      "runtime_promotion_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
+      "published_on": "2026-11-02",
+      "verified_on": "2026-11-02",
+      "release_kind": "exams_series_count_copy",
+      "manual_exact_public_status": "exact_authenticated_public_textual_series_verified",
+      "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact responsive artifact and genuine authenticated public inspection verified.",
+      "archived_from": "last_verified_release"
+    },
     {
       "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
       "build_id": "health-integrated-20261102.119",
@@ -9769,34 +9785,34 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-02",
-    "reviewed_at_utc": "2026-11-02T08:22:40.653897+00:00",
-    "source_main_commit": "2f5523f6960b082b4d0f6e51e8a0a59ffee59995",
-    "runtime_build": "health-integrated-20261102.120",
+    "reviewed_at_utc": "2026-11-02T12:00:00.000000+00:00",
+    "source_main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+    "runtime_build": "health-integrated-20261102.121",
     "candidate_build": null,
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 112,
+      "done": 113,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "PR490 candidate fcda715d0dfc92b7fcfae8f114d7dc6b4abcb76b, tree 305335d29af22e1e27cbf6fcaef3a9908a694878, passed 19/19 workflows. All 15 changed remote blobs matched the locally validated files.",
-      "Exact functional-depth artifact 13125640096 sha256:69dcf36803517031c3b9bd32ca1382121825dc8d4bd032320b28a3764906983e was byte-verified and its mobile/desktop textual-series captures were inspected. The coverage note has correct singular result grammar, no numeric curve for text and preserved history access.",
-      "Normal merge 2f5523f6960b082b4d0f6e51e8a0a59ffee59995 preserved the exact tested tree and published health-integrated-20261102.120. All 23 publication workflows passed, including deploy, both Pages entries and protected actual-auth.",
-      "The genuine authenticated public session opened the exact .120 and verified the corrected textual-series note, preserved original-result links/history and cleared search. No login, upload, clinical record or phone step was repeated.",
-      "Fresh owner-scoped source and provider-mail checks do not supply new attributable evidence for the nine external dependencies. No original proposal was reconstructed, no basal total inferred and no support message repeated."
+      "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, exact tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows; all complete remote blobs matched the locally validated files.",
+      "Functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was verified by bytes and its desktop/mobile Composition evidence inspected.",
+      "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the tested tree and published exact .121 with 23/23 workflows approved, including deploy, both Pages smokes and protected actual-auth.",
+      "The genuine authenticated public app reloaded exact .121 and verified ‘1 ponto’ and ‘1 valor registrado’ with InBody270, preserving 24/09/2026, 11.9%, the no-comparison state and 41 measurements; the all-sources view was restored.",
+      "Fresh database and provider-mail checks supplied no new attributable evidence for the nine external dependencies. Water still ends on 2026-10-13; no support message, phone step, upload or clinical reconstruction was repeated."
     ],
     "ux_review": {
-      "area": "exams_textual_series",
-      "next_area": "reports",
+      "area": "composition",
+      "next_area": "nutrition",
       "mode": "exact_synthetic_production_renderer_and_genuine_authenticated_public_app",
       "result": "concrete_copy_defect_corrected_and_verified"
     },
-    "open_dependency_policy": "Nine original source/provider/global acceptance conditions remain independent. Resume each only from its own attributable evidence; no repeated phone setup, form upload or clinical reconstruction."
+    "open_dependency_policy": "Nine original source/provider/global acceptance conditions remain independent. Resume only from attributable evidence; basal candidates stay non-additive, the exact fifteen-correction manifest stays unreconstructed, and physical/global acceptance remains separate."
   },
   "continuity_review_history": [
     {
@@ -10961,6 +10977,37 @@
         "result": "concrete_copy_defect_corrected_and_verified"
       },
       "open_dependency_policy": "Nine original source/provider/global acceptance conditions remain independent. Resume each only from its own attributable evidence; no repeated phone setup, form upload or clinical reconstruction."
+    },
+    {
+      "reviewed_on": "2026-11-02",
+      "reviewed_at_utc": "2026-11-02T12:00:00.000000+00:00",
+      "source_main_commit": "9d2975dd3b00d5428fe423e976e3b62e2faa18a0",
+      "runtime_build": "health-integrated-20261102.121",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 113,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "PR492 candidate 2930afca3898b830162f7510c6bc48d85e083c13, exact tree 5908818b65f70563897d4a599062b7ba65214333, passed 19/19 workflows; all complete remote blobs matched the locally validated files.",
+        "Functional-depth artifact 13136589213 sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584 was verified by bytes and its desktop/mobile Composition evidence inspected.",
+        "Normal merge 9d2975dd3b00d5428fe423e976e3b62e2faa18a0 preserved the tested tree and published exact .121 with 23/23 workflows approved, including deploy, both Pages smokes and protected actual-auth.",
+        "The genuine authenticated public app reloaded exact .121 and verified ‘1 ponto’ and ‘1 valor registrado’ with InBody270, preserving 24/09/2026, 11.9%, the no-comparison state and 41 measurements; the all-sources view was restored.",
+        "Fresh database and provider-mail checks supplied no new attributable evidence for the nine external dependencies. Water still ends on 2026-10-13; no support message, phone step, upload or clinical reconstruction was repeated."
+      ],
+      "ux_review": {
+        "area": "composition",
+        "next_area": "nutrition",
+        "mode": "exact_synthetic_production_renderer_and_genuine_authenticated_public_app",
+        "result": "concrete_copy_defect_corrected_and_verified"
+      },
+      "open_dependency_policy": "Nine original source/provider/global acceptance conditions remain independent. Resume only from attributable evidence; basal candidates stay non-additive, the exact fifteen-correction manifest stays unreconstructed, and physical/global acceptance remains separate."
     }
   ],
   "continuation_automation": {
