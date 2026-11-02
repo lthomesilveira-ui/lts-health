@@ -569,6 +569,17 @@
   padding-bottom: 18px;
 }
 
+/* Keep the selected period readable in native mobile select controls. */
+.ltsTrainingReference[data-training-view="history"] .ltsTrainingHistory .ltsFilters {
+  grid-template-columns: minmax(0, 1fr) minmax(190px, .42fr);
+}
+
+@media (max-width: 600px) {
+  .ltsTrainingReference[data-training-view="history"] .ltsTrainingHistory .ltsFilters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .ltsTrainingReference[data-training-view="exercise"] .ltsRefTrainPrimaryTabs {
   display: none;
 }

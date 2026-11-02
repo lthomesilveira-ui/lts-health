@@ -52,22 +52,24 @@
   "current_package": {
     "id": "PKG-TRAINING-LOAD-QUALIFIERS-034",
     "status": "in_progress",
-    "goal": "Keep recorded approximate training loads visibly qualified beside the value and in source history.",
+    "goal": "Preserve recorded load qualifiers and keep native Training history filters readable within the mobile viewport.",
     "task_ids": [
-      "LTS-TRAINING-LOAD-QUALIFIERS-001"
+      "LTS-TRAINING-LOAD-QUALIFIERS-001",
+      "LTS-TRAINING-HISTORY-FILTERS-001"
     ],
-    "public_build": "health-integrated-20261102.116",
+    "public_build": "health-integrated-20261102.117",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "pending_gates": [
-      "exact source/privacy and continuity contracts",
-      "mobile and desktop session/history reading",
-      "normal publication and protected owner-scoped projection check"
+      "exact .117 source/privacy and continuity",
+      "all eight Chromium/WebKit scenarios including native filters and their real handlers",
+      "normal publication, protected read-only projection and broader history verification"
     ],
     "completed_evidence": [
       "A concrete source-fidelity defect was observed: the source qualifier was retained only inside secondary notes while the table displayed an unqualified value.",
-      "A pure source qualifier, bounded Boolean projection and explicit row/plot labels are implemented. Stored values, graph arithmetic, phases and original text remain unchanged."
+      "A pure source qualifier, bounded Boolean projection and explicit row/plot labels are implemented. Stored values, graph arithmetic, phases and original text remain unchanged.",
+      "Published .116 passed protected owner-source qualifier agreement and public/deploy gates. The broader bare-host WebKit393px history capture exposed a pre-existing native-filter width defect; it is included in the current correction, not hidden by removing an assertion."
     ]
   },
   "last_verified_release": {
@@ -3275,6 +3277,25 @@
         "Local source qualifier, session/history rendering, precision, nonmutation, comparability and phase tests passed."
       ],
       "next_action": "Complete exact source/privacy, mobile/desktop and protected publication checks.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-TRAINING-HISTORY-FILTERS-001",
+      "area": "Training history reading",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Keep the whole-history year selection and search readable inside the mobile Training history.",
+      "acceptance": [
+        "The native selected year or whole-history label fits, with no internal horizontal overflow, in Chromium and WebKit at phone and desktop widths.",
+        "Search, year selection and clearing filters preserve their real handlers, complete session counts and navigation; both inputs remain at least44px tall.",
+        "Change only the Training history layout; preserve all source values, qualifier behavior, dates and clinical records."
+      ],
+      "evidence": [
+        "A verified isolated-preview synthetic artifact exposed native WebKit393px control overflow and a clipped whole-history selection. Dedicated container scenarios had passed; the broader failure is retained.",
+        "Candidate .117 gives the year selector enough width and stacks the two filters on smaller screens. The existing browser suite now checks the selected native label and the real search/year/clear path."
+      ],
+      "next_action": "Complete exact source, mobile/desktop, protected and publication verification.",
       "blocker": null
     }
   ],

@@ -1,3 +1,9 @@
+## 2026-11-02 — .117 em validação: filtros nativos do histórico de treinos
+
+A verificação mais ampla da .116 expôs em WebKit393px um seletor de ano com “Todo o histórico” cortado e largura interna além da tela. A correção amplia o espaço do seletor e coloca busca/ano em linhas próprias em telas menores. O teste conserva todos os casos anteriores e passa a conferir se o valor selecionado cabe e se busca, seleção de ano e limpeza continuam funcionando pelos controles reais.
+
+O mesmo pacote034 conserva a identificação de cargas aproximadas já entregue na .116. A .116 passou no actual-auth41367215600, no deploy e nos smokes públicos; a falha isolada de layout é mantida e exige a correção .117. As dez pendências originais permanecem abertas. Controle interativo ainda indisponível antes de novo login; nenhum envio pelo formulário comum ou aceite global é presumido.
+
 # Em validação — prévia privada do laudo Fleury, .114
 
 `PKG-FLEURY-AUTHENTICATED-PREVIEW-031` implementa leitura determinística do formato Fleury já validado, com valor bruto, unidade, coleta e página física. O original real foi comparado privadamente com a extração independente. Qualificadores não viram números exatos; cópias divergentes e trechos desconhecidos ficam retidos. A prévia usa a Inbox autenticada existente, mantém os resultados clínicos intactos e não abre um importador geral.
