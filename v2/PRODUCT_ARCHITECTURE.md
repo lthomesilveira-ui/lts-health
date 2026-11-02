@@ -1,3 +1,9 @@
+## Em validação — contagens singulares em Exames, candidata .119
+
+A jornada móvel exata da .118 em Exames encontrou um defeito concreto de linguagem: quando havia apenas um marcador, o resumo mostrava “1 marcadores” e o seletor mostrava “1 encontrados”. `PKG-EXAMS-COUNT-COPY-035` / `LTS-EXAMS-COUNT-COPY-001` aplica a pluralização compartilhada somente a essas duas contagens e adiciona contrato para um marcador com dois resultados.
+
+A correção não altera resultados, datas, unidades, laboratório, método, referência, comparação, original, paginação, banco ou autenticação. Os nove bloqueios externos, as duas lacunas aceitas e as duas alternativas substituídas permanecem independentes. Candidata `health-integrated-20261102.119`; publicação, artefatos responsivos e inspeção exata ainda não contam como aprovados.
+
 # Concluído — recebimento de arquivos e leitura de Dados e fontes, .113
 
 `PKG-UPLOAD-RECEIPT-028` / `LTS-UPLOAD-RECEIPT-UX-001` está concluído. O envio mantém o resultado visível após atualizar a tela, conserva a escolha anterior em redesenhos da mesma rota e bloqueia envios duplicados enquanto termina. Arquivo incorporado, original guardado e falhas parciais têm mensagens distintas; a situação/formato confirmados são preservados ao sair da área e voltar. Saída/troca de conta limpa recebimento e propriedade da escolha. Ações de envio/backup têm 48 px, confirmação/histórico são legíveis e os títulos/explicações do inventário ficam em linhas separadas, com contagens preservadas.

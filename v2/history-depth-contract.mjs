@@ -17,6 +17,7 @@ assert.equal(labResultText(numeric('2026-01-01',0,{result_raw:'0'})),'0 u');asse
 state.data={labs:[...labs,...Array.from({length:30},(_,i)=>({source_record_id:`text-${i}`,collection_date:'2026-01-01',biomarker:`Texto ${i}`,result_raw:'Resultado textual',unit:'',source:'Origem'}))]};state.errors={};state.domainStatus={labs:'ready'};
 setGlobalPeriod('all');let html=renderProductLabs();assert.ok(html.includes('Texto 29'),'all markers must be selectable');assert.ok(html.includes('productLabMarkerSelect'));
 state.ui.productLabMarker='texto 29';html=renderProductLabs();assert.ok(html.includes('Resultado textual'));assert.ok(!html.includes('ltsDepthLine'),'textual result must not create curve');
+state.data={labs:[numeric('2026-01-01',1),numeric('2026-01-02',2)]};state.ui={productLabPeriod:'all'};html=renderProductLabs();assert.ok(html.includes('1 marcador · 2 resultados'));assert.ok(html.includes('Marcador · 1 encontrado'));assert.ok(!html.includes('1 marcadores'));assert.ok(!html.includes('1 encontrados'));
 state.errors.labs='test';html=renderProductLabs();assert.ok(html.includes('ltsDepthError'));assert.ok(!html.includes('ltsLabsHero'));state.errors={};
 
 const body=Array.from({length:30},(_,i)=>({source_record_id:`body-${i}`,measured_at:`2025-${String(Math.floor(i/28)+1).padStart(2,'0')}-${String(i%28+1).padStart(2,'0')}`,source:'Origem',weight_kg:70+i%3,body_fat_pct:20,skeletal_muscle_mass_kg:30}));
