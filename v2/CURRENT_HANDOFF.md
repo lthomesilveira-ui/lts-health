@@ -1,3 +1,11 @@
+## Concluído — contagens singulares em Composição, .121
+
+A jornada genuína autenticada da .120 selecionou InBody270 e encontrou “1 pontos” no rótulo acessível do gráfico e “1 valores registrados” na nota da série. `PKG-COMPOSITION-COUNT-COPY-037` / `LTS-COMPOSITION-COUNT-COPY-001` reutiliza o helper compartilhado somente nesses textos. Medição, data, unidade, origem, aparelho, histórico, lacunas e regra de comparação permanecem inalterados.
+
+PR492, candidata `2930afca3898b830162f7510c6bc48d85e083c13`, árvore exata `5908818b65f70563897d4a599062b7ba65214333`, passou19/19 workflows. Artefato `13136589213` (`sha256:579e04e0fb04581f5eb5eb1632381b3189ba978c39768875cf4d8188ee1bd584`) conferido por bytes e imagens. Merge normal `9d2975dd3b00d5428fe423e976e3b62e2faa18a0` preserva a árvore testada e publicou `health-integrated-20261102.121` com23/23 verificações aprovadas, incluindo deploy, duas entradas Pages e acesso real protegido.
+
+A sessão genuína autenticada recarregou a versão exata e confirmou “1 ponto”, “1 valor registrado”, 24/09/2026, 11,9%, ausência de comparação automática e 41 medições preservadas; a seleção voltou a todas as origens. Fila:113done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. Os nove bloqueios mantêm sinais próprios. Próxima área de UX: Nutrição; não repetir login, upload, telefone ou suporte.
+
 ## Concluído — contagem da cobertura da série em Exames, .120
 
 A série textual com um único resultado mostrava “0 pontos exibidos de 1 resultados”. `PKG-EXAMS-SERIES-COUNT-036` / `LTS-EXAMS-SERIES-COUNT-001` corrige somente a concordância de pontos/resultados no rodapé usando o helper compartilhado. O resultado textual continua no histórico e não gera curva numérica. Os casos de zero numérico, um e vários pontos estão cobertos, sem mutação.
