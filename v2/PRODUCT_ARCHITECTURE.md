@@ -1,8 +1,8 @@
-## Em validação — contagens singulares em Exames, candidata .119
+## Concluído — contagens singulares em Exames, .119
 
 A jornada móvel exata da .118 em Exames encontrou um defeito concreto de linguagem: quando havia apenas um marcador, o resumo mostrava “1 marcadores” e o seletor mostrava “1 encontrados”. `PKG-EXAMS-COUNT-COPY-035` / `LTS-EXAMS-COUNT-COPY-001` aplica a pluralização compartilhada somente a essas duas contagens e adiciona contrato para um marcador com dois resultados.
 
-A correção não altera resultados, datas, unidades, laboratório, método, referência, comparação, original, paginação, banco ou autenticação. Os nove bloqueios externos, as duas lacunas aceitas e as duas alternativas substituídas permanecem independentes. Candidata `health-integrated-20261102.119`; publicação, artefatos responsivos e inspeção exata ainda não contam como aprovados.
+A correção não altera resultados, datas, unidades, laboratório, método, referência, comparação, original, paginação, banco ou autenticação. PR488 teve19/19 workflows candidatos aprovados; o artefato exato13116078628 (`sha256:4114fa7974444bb90f5865023a074389d6b1f6e1c8f2a3ee41637fee27f764cd`) confirmou as duas formas corretas em393px. Merge normal538a18bb7248b022477c8762f9969308c3353b71 publicou `health-integrated-20261102.119` com23/23 verificações aprovadas. A sessão genuína autenticada abriu a versão exata e preservou158 marcadores,809 resultados, datas, unidades, método, referências, originais e paginação. Os nove bloqueios externos, as duas lacunas aceitas e as duas alternativas substituídas permanecem independentes.
 
 # Concluído — recebimento de arquivos e leitura de Dados e fontes, .113
 
