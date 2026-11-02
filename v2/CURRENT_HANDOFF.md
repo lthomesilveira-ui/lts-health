@@ -1,3 +1,11 @@
+# Em validação — ressalvas das cargas de treino, .116
+
+`PKG-TRAINING-LOAD-QUALIFIERS-034` corrige um defeito concreto: a carga aproximada era exibida como número sem ressalva na tabela, embora a origem a preservasse nas observações. A candidata mostra `≈` e “carga aproximada” junto da série, no histórico e no contexto dos pontos; mantém a precisão decimal e os valores registrados. Nenhum registro, unidade, fase, contagem ou cálculo foi alterado.
+
+A projeção solicita somente o flag Booleano necessário. Testes locais de fontes explícitas/negadas/ausentes, renderização, precisão, escape, comparabilidade e imutabilidade passaram. A candidata ainda precisa dos gates móveis/desktop e da publicação protegida. Detalhes: `v2/releases/TRAINING_LOAD_QUALIFIERS_20261102.md`.
+
+As dez dependências originais permanecem abertas. A nova tentativa de retomar o navegador falhou antes de observar o login: nenhum novo pedido de credenciais ou envio de arquivo foi executado, e a sessão final é desconhecida. O original Fleury segue preparado; quando o controle interativo voltar, conferir a sessão e reenviar o acesso seguro solicitado se necessário. Não pedir senha no chat, reenvio do arquivo ou testes repetidos no telefone. O arquivo nativo original também foi auditado; não fornece água nem cobertura integral elegível para os candidatos prospectivos. Nenhuma origem foi inferida ou energia somada.
+
 # Concluído — originais e relatos completos; próxima rodada: formulário genuíno
 
 `PKG-ORIGINAL-SOURCE-RECOVERY-032` está concluído. O briefing original recuperado e os relatos fornecidos foram reconciliados com o estado operacional. As fontes laboratoriais originais concordaram em duas extrações independentes; o reparo documental passou rollback real, releitura exata, preservação clínica/estruturada e repetição sem alterações. A interface .115 apresenta o original Einstein verificado e distingue coleta de liberação sem reescrever datas legadas. Formatos gerais não validados continuam retidos; o manifesto original das quinze correções permanece uma dependência própria.

@@ -356,8 +356,17 @@ try{
       await chooseTab(page,'exercises');
       assert.equal(await page.locator('.ltsRefExerciseCard').count(),4);
       assert.equal(await page.locator('.ltsRefTrainHero').count(),0,'exercise detail does not repeat the summary identity card');
+      const loadRows=page.locator('.ltsRefExerciseCard').first().locator('.ltsRefSetTable > div');
+      assert.equal((await loadRows.nth(0).locator('b').innerText()).trim(),'12 kg','a load without an approximation source remains exact as recorded');
+      assert.equal((await loadRows.nth(1).locator('b').innerText()).trim(),'≈ 12 kg');
+      assert.match(await loadRows.nth(1).innerText(),/carga aproximada/,'the source qualifier is visible beside its own series');
       const firstSeries=await page.locator('.ltsRefSetTable > div').first().boundingBox();assert.ok(firstSeries&&firstSeries.y<650,'first recorded series is reached in the reduced phone viewport');
       await capture(page,`${label}-exercises`);
+      await page.locator('.ltsRefExerciseCard').first().locator('.ltsRefExerciseHistory').click();await stableTraining(page,'exercise');
+      assert.match(await page.locator('.ltsExerciseSessions').innerText(),/≈ 12 kg/);
+      assert.match(await page.locator('.ltsExerciseRecordedPlot').first().innerText(),/≈ carga aproximada/);
+      await capture(page,`${label}-approximate-load-history`);
+      await page.locator('.ltsRefExerciseNav [data-depth-training-view="exercises"]').click();await stableTraining(page,'exercises');
       await chooseTab(page,'summary');await checkCurrent(page);
       await chooseTab(page,'history');await capture(page,`${label}-history`);
       await page.locator(`.ltsWorkoutList [data-depth-workout="${SUMMARY_IDS.old}"]`).click();
