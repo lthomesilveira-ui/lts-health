@@ -179,5 +179,5 @@ export function renderExerciseHistory(){
   const model=exerciseHistoryModel(state.ui.productExerciseId,state.ui.productExerciseUnit);
   if(!model)return emptyCard('Escolha um exercício dentro de uma sessão para consultar seu histórico.');
   const page=pageOf(model.occurrences,state.ui.productExercisePage,8);
-  return `<section class="ltsExerciseHistory"><div class="ltsExerciseHistoryOverview"><h2>Registros por sessão</h2><span>${model.occurrences.length} ocorrências no histórico</span></div><div class="ltsExerciseSessions">${page.rows.map((item,index)=>renderOccurrence(item,index,page)).join('')}</div>${pager(page,'productExercisePage')}${renderWorkingComparison(model)}</section>`;
+  return `<section class="ltsExerciseHistory"><div class="ltsExerciseHistoryOverview"><h2>Registros por sessão</h2><span>${model.occurrences.length} ${model.occurrences.length===1?'ocorrência':'ocorrências'} no histórico</span></div><div class="ltsExerciseSessions">${page.rows.map((item,index)=>renderOccurrence(item,index,page)).join('')}</div>${pager(page,'productExercisePage')}${renderWorkingComparison(model)}</section>`;
 }
