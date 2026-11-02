@@ -22,6 +22,7 @@ jobs:
         run: |
           node preview/compact-evidence/tests/training-session-summary-test.mjs
           node preview/compact-evidence/tests/training-session-summary-view-test.mjs
+          node preview/compact-evidence/tests/training-load-qualifier-test.mjs
           node preview/compact-evidence/tests/training-phase-label-test.mjs
           node preview/compact-evidence/tests/preview-contract.mjs
       - name: Install pinned browser API

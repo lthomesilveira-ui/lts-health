@@ -4,6 +4,7 @@ import {runDepthChecks} from './real-auth-depth-checks.mjs';
 import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-dashboard-checks.mjs';
 import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
 import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs';
+import {verifyRecordedLoadSourceProjection} from './real-auth-training-load-checks.mjs';
 import {verifyOriginalPolarHistory} from './real-auth-polar-history-checks.mjs';
 import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
 import {observePublicFailures} from './public-entry-diagnostics.mjs';
@@ -244,6 +245,7 @@ try{
 
   await waitForRoute('treinos');
   await page.waitForSelector('.ltsTrainingV2[data-training-view="summary"]',{timeout:30000});
+  await verifyRecordedLoadSourceProjection(page);
   const trainingSummary=await page.evaluate(()=>({
     text:document.querySelector('.ltsTrainingV2')?.innerText||'',
     summaryExercises:document.querySelector('.ltsRefOverviewGrid div:first-child b')?.textContent?.trim()||'',

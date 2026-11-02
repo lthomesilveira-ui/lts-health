@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
-import {chromium} from 'playwright';
+import {chromium,webkit} from 'playwright';
 import {consumerLanguageService,LANGUAGE_ERROR} from './consumer-language-fixture.mjs';
 import {consumerRouteSettled,consumerDomainSettled} from './consumer-language-readiness.mjs';
 import {visibleTextGeometry} from './consumer-language-geometry.mjs';
@@ -31,7 +31,7 @@ function save(){
   writeFileSync(`${dir}/results.json`,JSON.stringify({
     syntheticOnly:true,authenticatedReal:false,authenticatedWithRealAccount:false,
     fixedDate:SUMMARY_TODAY,deviceScaleFactor:1,originalResolutionScreenshots:true,
-    viewportWidths:[320,393,1180,1440],results,captures,refreshProof,literalTextEvidence,failures
+    browsers:['chromium','webkit'],viewportWidths:[320,393,1180,1440],results,captures,refreshProof,literalTextEvidence,failures
   },null,2));
 }
 
@@ -326,10 +326,11 @@ async function contextFor(browser,fixture,width,height){
   return {context,page,traffic};
 }
 
-const browser=await chromium.launch({headless:true});
+for(const [browserName,browserType] of [['chromium',chromium],['webkit',webkit]]){
+const browser=await browserType.launch({headless:true});
 try{
   for(const [width,height] of [[320,740],[393,844],[1180,757],[1440,900]]){
-    const label=`${width}-session-summary`,fixture=makeTrainingSessionSummaryFixture();
+    const label=`${browserName==='chromium'?'':browserName+'-'}${width}-session-summary`,fixture=makeTrainingSessionSummaryFixture();
     const {context,page,traffic}=await contextFor(browser,fixture,width,height);
     const failureStart=failures.length;
     try{
@@ -356,8 +357,17 @@ try{
       await chooseTab(page,'exercises');
       assert.equal(await page.locator('.ltsRefExerciseCard').count(),4);
       assert.equal(await page.locator('.ltsRefTrainHero').count(),0,'exercise detail does not repeat the summary identity card');
+      const loadRows=page.locator('.ltsRefExerciseCard').first().locator('.ltsRefSetTable > div');
+      assert.equal((await loadRows.nth(0).locator('b').innerText()).trim(),'12 kg','a load without an approximation source remains exact as recorded');
+      assert.equal((await loadRows.nth(1).locator('b').innerText()).trim(),'≈ 12 kg');
+      assert.match(await loadRows.nth(1).innerText(),/carga aproximada/,'the source qualifier is visible beside its own series');
       const firstSeries=await page.locator('.ltsRefSetTable > div').first().boundingBox();assert.ok(firstSeries&&firstSeries.y<650,'first recorded series is reached in the reduced phone viewport');
       await capture(page,`${label}-exercises`);
+      await page.locator('.ltsRefExerciseCard').first().locator('.ltsRefExerciseHistory').click();await stableTraining(page,'exercise');
+      assert.match(await page.locator('.ltsExerciseSessions').innerText(),/≈ 12 kg/);
+      assert.match(await page.locator('.ltsExerciseRecordedPlot').first().innerText(),/≈ carga aproximada/);
+      await capture(page,`${label}-approximate-load-history`);
+      await page.locator('.ltsRefExerciseNav [data-depth-training-view="exercises"]').click();await stableTraining(page,'exercises');
       await chooseTab(page,'summary');await checkCurrent(page);
       await chooseTab(page,'history');await capture(page,`${label}-history`);
       await page.locator(`.ltsWorkoutList [data-depth-workout="${SUMMARY_IDS.old}"]`).click();
@@ -386,15 +396,16 @@ try{
       await navigate(page,'treinos',width);await stableTraining(page);await checkCurrent(page);
       for(const domain of ['exercises','sets'])await failureAndRecovery(page,width,domain,label);
       const proof=await security(page,traffic);
-      results.push({name:label,width,height,status:failures.length===failureStart?'passed':'failed',...proof});save();
+      results.push({name:label,browser:browserName,width,height,status:failures.length===failureStart?'passed':'failed',...proof});save();
     }catch(error){
       const diagnostic=await page.evaluate(()=>({route:window.__languageApp?.state.route,domainStatus:window.__languageApp?.state.domainStatus,reads:window.__historyQA?.reads,view:document.querySelector('.ltsTrainingReference')?.dataset,visibleText:document.querySelector('#screenHost')?.innerText})).catch(()=>null);
       writeFileSync(`${dir}/${label}-failure-diagnostic.json`,JSON.stringify({syntheticOnly:true,authenticatedReal:false,diagnostic,traffic},null,2));
       await page.screenshot({path:`${dir}/${label}-failure.png`,animations:'disabled',scale:'css'}).catch(()=>{});
       failures.push({name:label,message:String(error.message)});
-      results.push({name:label,width,height,status:'failed',syntheticOnly:true,authenticatedReal:false});save();
+      results.push({name:label,browser:browserName,width,height,status:'failed',syntheticOnly:true,authenticatedReal:false});save();
     }finally{await context.close();}
   }
 }finally{save();await browser.close();}
+}
 assert.equal(failures.length,0,`Session summary QA found ${failures.length} failures; inspect ${dir}/results.json and original-resolution screenshots.`);
-console.log('Session summary: four widths, literal comments/reports, separate groups/phases/extensions, history and Home navigation, visible refresh failure/recovery, >=44px new disclosures and no overflow. Legacy smaller controls are inventoried separately. Synthetic only; no real authenticated QA.');
+console.log('Session summary: Chromium and WebKit at four widths, literal comments/reports, separate groups/phases/extensions, history and Home navigation, visible refresh failure/recovery, >=44px new disclosures and no overflow. Legacy smaller controls are inventoried separately. Synthetic only; no real authenticated QA.');

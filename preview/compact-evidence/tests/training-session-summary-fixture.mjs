@@ -68,11 +68,11 @@ export function makeTrainingSessionSummaryFixture(){
       failure:false,near_failure:false,source:'Diário sintético de QA',...extra};
   };
   data.sets=[
-    set(0,1,'warmup'),set(0,2,'working'),set(0,3,'working',{failure:true}),
+    set(0,1,'warmup'),set(0,2,'working',{source_payload:{weight_approximate:true},weight_is_approximate:true}),set(0,3,'working',{failure:true}),
     set(0,4,'drop',{failure:true}),
     set(1,1,'working'),set(1,2,'rest_pause'),
     set(2,1,'working',{near_failure:true}),set(2,2,'other'),set(2,3,null),
-    set(3,1,'unknown'),set(4,1,'working')
+    set(3,1,'unknown'),set(4,1,'working',{notes:'Peso informado como aproximado; exemplo inventado.'})
   ];
   // A small independent nutrition row keeps the real, visible mobile refresh
   // route usable without inheriting any other suite's health-record fixture.

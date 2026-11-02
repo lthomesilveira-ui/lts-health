@@ -1,6 +1,7 @@
 import {state,esc,fmtDate,fmtNum,num,norm,workoutRows,exercisesFor,setsFor} from './core.js';
 import {pageOf,pager,searchField,yearFilter,years,validDay,pointChart,emptyCard,errorCard,failed} from './history-tools.js';
 import {trainingSetCounts,setStepLabel} from './training-session.js';
+import {isApproximateTrainingLoad} from './training-load-qualifier.js';
 
 export function trainingHistoryModel(){
   const all=workoutRows(),q=norm(state.ui.productTrainingQuery),year=state.ui.productTrainingYear||'all';
@@ -111,11 +112,11 @@ export function exerciseHistoryModel(exerciseId,requestedUnit){
 function loadText(set){
   const value=recordedNumber(set.weight);
   // Preserve all recorded decimal places instead of rounding original loads.
-  return value==null?recordedText(set.weight)||'Carga não informada':`${value.toLocaleString('pt-BR',{maximumFractionDigits:20})} ${unitLabel(loadUnit(set.weight_unit))}`;
+  return value==null?recordedText(set.weight)||'Carga não informada':`${isApproximateTrainingLoad(set)?'≈ ':''}${value.toLocaleString('pt-BR',{maximumFractionDigits:20})} ${unitLabel(loadUnit(set.weight_unit))}`;
 }
 function setFlags(set){
   const phase={warmup:'aquecimento',working:'trabalho',other:'outra fase informada',drop:'prolongamento',rest_pause:'prolongamento'}[set.phase]||'fase não informada';
-  return [...new Set([phase,set.failure===true?'falha relatada':'',set.near_failure===true?'quase falha relatada':'',recordedText(set.technique)||''].filter(Boolean))];
+  return [...new Set([phase,set.failure===true?'falha relatada':'',set.near_failure===true?'quase falha relatada':'',recordedNumber(set.weight)!=null&&isApproximateTrainingLoad(set)?'carga aproximada':'',recordedText(set.technique)||''].filter(Boolean))];
 }
 function renderSessionSeries(item){
   const series=item.series.filter(group=>group.points.length>=2);
@@ -125,8 +126,9 @@ function renderSessionSeries(item){
   return `<div class="ltsExerciseRecordedPlots">${series.map(group=>{
     const values=group.points.map(p=>p.value),low=Math.min(...values),high=Math.max(...values),span=high-low||1;
     const chunks=[];for(let i=0;i<group.points.length;i+=6)chunks.push(group.points.slice(i,i+6));
-    return `<figure class="ltsExerciseRecordedPlot"><figcaption>Cargas desta sessão · ${esc(unitLabel(group.unit))}<span>Escala própria · pontos sem ligação</span></figcaption>${chunks.map(points=>`<svg viewBox="0 0 300 76" role="img" aria-label="${esc(`Cargas registradas nesta sessão em ${unitLabel(group.unit)}; pontos isolados, sem comparação entre sessões`)}">${points.map((point,index)=>{
-      const x=points.length===1?150:26+index*248/(points.length-1),y=24+(high-point.value)/span*20,label=point.value.toLocaleString('pt-BR',{maximumFractionDigits:20}),step=point.step==='Rest-pause'?'RP':point.step;
+    const approximate=group.points.some(point=>isApproximateTrainingLoad(point.set));
+    return `<figure class="ltsExerciseRecordedPlot"><figcaption>Cargas desta sessão · ${esc(unitLabel(group.unit))}<span>Escala própria · pontos sem ligação${approximate?' · ≈ carga aproximada':''}</span></figcaption>${chunks.map(points=>`<svg viewBox="0 0 300 76" role="img" aria-label="${esc(`Cargas registradas nesta sessão em ${unitLabel(group.unit)}; pontos isolados, sem comparação entre sessões`)}">${points.map((point,index)=>{
+      const x=points.length===1?150:26+index*248/(points.length-1),y=24+(high-point.value)/span*20,label=(isApproximateTrainingLoad(point.set)?'≈ ':'')+point.value.toLocaleString('pt-BR',{maximumFractionDigits:20}),step=point.step==='Rest-pause'?'RP':point.step;
       return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"><title>${esc(`${point.step}: ${loadText(point.set)} × ${point.set.reps_raw??point.set.reps_numeric??'repetições não informadas'}`)}</title></circle><text x="${x.toFixed(1)}" y="${(y-9).toFixed(1)}" text-anchor="middle">${label.length<=7?esc(label):''}</text><text class="ltsExercisePointStep" x="${x.toFixed(1)}" y="69" text-anchor="middle">${esc(step)}</text></g>`;
     }).join('')}</svg>`).join('')}</figure>`;
   }).join('')}</div>`;
@@ -168,12 +170,14 @@ function renderOccurrence(item,index,page){
 function renderWorkingComparison(model){
   if(!model.key)return '<p class="ltsExerciseCaution">Equipamento ou local não identificado: cargas preservadas por sessão, sem comparação entre sessões.</p>';
   if(!model.points.length)return `<p class="ltsExerciseCaution">${model.ambiguous?'Há sessões na mesma data. As cargas estão nos registros, sem escolher uma delas para representar o dia.':'Cargas preservadas como registradas. As fases ou unidades informadas não permitem uma curva de séries de trabalho.'}</p>`;
-  return `<details class="ltsExerciseComparison" data-disclosure="exercise-working-history"><summary>Cargas de trabalho · mesmo equipamento e local</summary><p class="ltsDepthNote">Maior carga registrada como trabalho em cada sessão. Repetições e esforço podem variar; não é uma comparação de força. ${esc(model.chosen.machine)} · ${esc(model.parent.location)}.</p>${model.units.length>1?`<label class="ltsField ltsSourceSelect">Unidade da carga<select id="productExerciseUnit" data-depth-field="productExerciseUnit">${model.units.map(u=>`<option value="${esc(u)}" ${model.selectedUnit===u?'selected':''}>${esc(unitLabel(u))}</option>`).join('')}</select></label>`:''}${pointChart(model.points,{unit:unitLabel(model.selectedUnit),label:'Cargas registradas no mesmo equipamento e local',scope:'productExercise',selected:state.ui.productExercisePoint})}${model.ambiguous?'<p class="ltsDepthNote">Sessões na mesma data permanecem no histórico, sem escolha automática para a curva.</p>':''}</details>`;
+  const approximateDates=new Set(model.points.filter(point=>model.same.some(item=>item.workout.workout_date===point.date&&item.sets.some(set=>set.phase==='working'&&loadUnit(set.weight_unit)===model.selectedUnit&&recordedNumber(set.weight)===point.value&&isApproximateTrainingLoad(set)))).map(point=>point.date));
+  const points=model.points.map(point=>approximateDates.has(point.date)?{...point,context:`${fmtDate(point.date)} · Inclui carga informada como aproximada.`}:point);
+  return `<details class="ltsExerciseComparison" data-disclosure="exercise-working-history"><summary>Cargas de trabalho · mesmo equipamento e local</summary><p class="ltsDepthNote">Maior carga registrada como trabalho em cada sessão. Repetições e esforço podem variar; não é uma comparação de força. ${esc(model.chosen.machine)} · ${esc(model.parent.location)}.</p>${approximateDates.size?'<p class="ltsDepthNote">Há cargas aproximadas entre os máximos registrados. A ressalva aparece no ponto selecionado e nas séries de cada sessão.</p>':''}${model.units.length>1?`<label class="ltsField ltsSourceSelect">Unidade da carga<select id="productExerciseUnit" data-depth-field="productExerciseUnit">${model.units.map(u=>`<option value="${esc(u)}" ${model.selectedUnit===u?'selected':''}>${esc(unitLabel(u))}</option>`).join('')}</select></label>`:''}${pointChart(points,{unit:unitLabel(model.selectedUnit),label:'Cargas registradas no mesmo equipamento e local',scope:'productExercise',selected:state.ui.productExercisePoint})}${model.ambiguous?'<p class="ltsDepthNote">Sessões na mesma data permanecem no histórico, sem escolha automática para a curva.</p>':''}</details>`;
 }
 export function renderExerciseHistory(){
   if(failed(state,'workouts')||failed(state,'exercises')||failed(state,'sets'))return errorCard('O histórico de exercícios ou séries não carregou por completo.');
   const model=exerciseHistoryModel(state.ui.productExerciseId,state.ui.productExerciseUnit);
   if(!model)return emptyCard('Escolha um exercício dentro de uma sessão para consultar seu histórico.');
   const page=pageOf(model.occurrences,state.ui.productExercisePage,8);
-  return `<section class="ltsExerciseHistory"><div class="ltsExerciseHistoryOverview"><h2>Registros por sessão</h2><span>${model.occurrences.length} ocorrências no histórico</span></div><div class="ltsExerciseSessions">${page.rows.map((item,index)=>renderOccurrence(item,index,page)).join('')}</div>${pager(page,'productExercisePage')}${renderWorkingComparison(model)}</section>`;
+  return `<section class="ltsExerciseHistory"><div class="ltsExerciseHistoryOverview"><h2>Registros por sessão</h2><span>${model.occurrences.length} ${model.occurrences.length===1?'ocorrência':'ocorrências'} no histórico</span></div><div class="ltsExerciseSessions">${page.rows.map((item,index)=>renderOccurrence(item,index,page)).join('')}</div>${pager(page,'productExercisePage')}${renderWorkingComparison(model)}</section>`;
 }

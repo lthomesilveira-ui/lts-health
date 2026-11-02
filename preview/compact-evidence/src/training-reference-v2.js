@@ -5,6 +5,7 @@ import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './trai
 import {trainingSessionSummary} from './training-session-summary.js';
 import {sessionGroupChart,sessionHistoryChart} from './training-session-visuals.js';
 import {renderTrainingPlan} from './training-plan-view.js';
+import {isApproximateTrainingLoad} from './training-load-qualifier.js';
 
 const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
 
@@ -20,10 +21,11 @@ function normalizedFlag(value){
 
 function setText(set){
   const weight=num(set.weight),repsValue=set.reps_raw??set.reps_numeric??null;
-  const load=weight!=null?`${fmtNum(weight,Number.isInteger(weight)?0:1)} ${esc(({plate_index:'placa',unitless:'sem unidade'})[set.weight_unit]||set.weight_unit||'unidade não informada')}`:'—';
+  const approximate=weight!=null&&isApproximateTrainingLoad(set);
+  const load=weight!=null?`${approximate?'≈ ':''}${weight.toLocaleString('pt-BR',{maximumFractionDigits:20})} ${esc(({plate_index:'placa',unitless:'sem unidade'})[set.weight_unit]||set.weight_unit||'unidade não informada')}`:'—';
   const reps=repsValue==null||repsValue===''?'—':String(repsValue);
   const flags=[...new Set([
-    set.phase==='warmup'?'aquec.':set.phase==='working'?'série de trabalho':set.phase==='other'?'outra fase informada':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',set.technique||''
+    set.phase==='warmup'?'aquec.':set.phase==='working'?'série de trabalho':set.phase==='other'?'outra fase informada':'',set.phase==='drop'?'drop':'',set.failure?'falha':'',set.near_failure?'quase falha':'',approximate?'carga aproximada':'',set.technique||''
   ].map(normalizedFlag).filter(Boolean))];
   return{load,reps,flags,missing:load==='—'&&reps==='—'};
 }

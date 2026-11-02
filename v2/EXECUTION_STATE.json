@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-01",
+  "updated_on": "2026-11-02",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,25 +50,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GENUINE-INBOX-FORM-033",
-    "status": "blocked_user",
-    "goal": "Verify genuine ordinary production form saving and full reopening using an already supplied source file.",
+    "id": "PKG-TRAINING-LOAD-QUALIFIERS-034",
+    "status": "in_progress",
+    "goal": "Keep recorded approximate training loads visibly qualified beside the value and in source history.",
     "task_ids": [
-      "LTS-PRODUCTION-WRITE-REOPEN-001"
+      "LTS-TRAINING-LOAD-QUALIFIERS-001"
     ],
-    "public_build": "health-integrated-20261101.115",
-    "runtime_changed": false,
+    "public_build": "health-integrated-20261102.116",
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "ordinary_form_submission_verified": false,
     "pending_gates": [
-      "secure interactive owner sign-in",
-      "genuine ordinary file submission and read-only source preview",
-      "full reload/reopening with source identity and canonical duplicate protection"
+      "exact source/privacy and continuity contracts",
+      "mobile and desktop session/history reading",
+      "normal publication and protected owner-scoped projection check"
     ],
     "completed_evidence": [
-      "The already supplied, privately validated original is prepared. No replacement file or invented clinical event is needed.",
-      "The ordinary authenticated inspector is deployed with JWT protection; the current manual browser is signed out."
+      "A concrete source-fidelity defect was observed: the source qualifier was retained only inside secondary notes while the table displayed an unqualified value.",
+      "A pure source qualifier, bounded Boolean projection and explicit row/plot labels are implemented. Stored values, graph arithmetic, phases and original text remain unchanged."
     ]
   },
   "last_verified_release": {
@@ -86,7 +85,8 @@
       "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
       "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
       "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
-      "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
+      "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates.",
+      "PR483 main4d7489faccea034a1d56ef20fe78750291908891 completed20/20 publication workflows, including actual-auth41350540159, without another runtime change."
     ],
     "recorded_failed_validation_runs": [
       {
@@ -95,7 +95,14 @@
         "fixed_by_candidate": "736f17b7ae412c01a195b702383b03ebf3b1554e",
         "verified_by_run": 41342289673
       }
-    ]
+    ],
+    "ci_summary": {
+      "main_commit": "4d7489faccea034a1d56ef20fe78750291908891",
+      "total": 20,
+      "success": 20,
+      "status": "completed",
+      "protected_actual_auth_run": 41350540159
+    }
   },
   "tasks": [
     {
@@ -1927,7 +1934,8 @@
         "Existing dashboard total-energy contract accepts only explicitly supplied totals and does not add basal candidates.",
         "Current private candidate recheck still has no independently identified original source, interval boundaries or verified coverage; candidates remain excluded from totals.",
         "2026-10-29: private aggregate review still finds no source-identified, interval-bounded, verified full-day basal coverage. Candidates remain private and non-additive; no energy total is inferred.",
-        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten."
+        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten.",
+        "The supplied original native archive was audited without imports or energy summation. Its available historical intervals do not establish eligible whole-day coverage for the prospective candidates. Unknown source/coverage remains held."
       ],
       "next_action": "Inspect a genuine origin-bearing full-day export when available; preserve the current non-additive boundary.",
       "blocker": "Available prospective candidates do not establish source identity or full-day coverage."
@@ -1959,7 +1967,7 @@
       "id": "LTS-PRODUCTION-WRITE-REOPEN-001",
       "area": "production persistence coverage",
       "priority": "P1",
-      "status": "blocked_user",
+      "status": "blocked_external",
       "owner": "Codex",
       "summary": "Verify ordinary production form saving and reopening on the next genuine authorized update; distinguish it from the completed bounded metadata repair.",
       "acceptance": [
@@ -1973,10 +1981,11 @@
         "A genuine authorized bounded metadata repair now has exact preimages, unchanged other fields and count, independent database reread and full public reload. The separate LTS-HISTORICAL-CONTEXT-001 is complete; ordinary app form submission remains unproved.",
         "A second genuine bounded historical repair has exact preimages, independent postimages, unchanged other data and public reopening. This is still a different path from ordinary form submission.",
         "The original Fleury PDF is recovered, privately source-validated and ready for the ordinary Inbox form. Fresh preflight confirms no Fleury file has already been submitted there.",
-        "Public .115 sign-in offers email/password; credential entry remains a secure owner interaction. Protected read-only CI sessions are not reused as manual form credentials."
+        "Public .115 sign-in offers email/password; credential entry remains a secure owner interaction. Protected read-only CI sessions are not reused as manual form credentials.",
+        "2026-11-02: owner explicitly requested secure login again. The first browser action timed out before page inspection, so no new credential prompt could be issued. No password, file or fictitious event was submitted."
       ],
-      "next_action": "Use secure browserAuth for the visible email/password login, submit the already supplied genuine original through the ordinary Inbox form, then fully reload and reopen its saved source, file and preview. Preserve canonical duplicate protection; do not request another file or create a fictitious health event.",
-      "blocker": "The interactive Cloud Browser session is signed out. A genuine supplied original is prepared and has no existing Inbox copy; secure owner sign-in is needed for the ordinary form."
+      "next_action": "When browser control returns, inspect the current session. If signed out, send the secure login requested by the owner; then use the prepared genuine original through the ordinary Inbox form and verify full reload/reopening. Do not request a replacement file or use a CI session.",
+      "blocker": "The interactive browser control is unavailable: a fresh rebind timed out before a visible sign-in form was obtained. Session state is unknown. The genuine original remains prepared and unsubmitted."
     },
     {
       "id": "LTS-OWNER-DELIVERY-20261025",
@@ -2453,7 +2462,8 @@
         "Authenticated daily exports contain an explicitly absent original source, without a recoverable hidden source identifier in the available payload metadata.",
         "Official exporter health-metric documentation permits source omission for cumulative and heart-rate data on iOS 27 and later. This is a plausible mechanism, not a proven diagnosis of this connection.",
         "Synthetic receipt coverage is repaired independently of source lineage and must not pool means or rename historical records.",
-        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten."
+        "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten.",
+        "The supplied original native archive was independently inspected. Historical origin fields do not establish a stable mapping to later received candidates; no source was reassigned by matching values or dates."
       ],
       "next_action": "Use an original source-bearing export or a supported provider mapping when it becomes available; retain separate source segments in the meantime.",
       "blocker": "No attributable original source identity or stable mapping exists in the currently received metadata."
@@ -3243,6 +3253,28 @@
         "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
       ],
       "next_action": "Preserve bounded verified reading; the genuine ordinary-file flow and unsupported formats remain separately tracked.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-TRAINING-LOAD-QUALIFIERS-001",
+      "area": "Training source fidelity",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show explicit approximate-load qualifiers beside their own recorded set and in exercise history.",
+      "acceptance": [
+        "Use only a typed positive source flag or the preserved affirmative source note; do not infer approximation or exactness from missing data.",
+        "Retain recorded decimal precision, units, phases, counts, original notes, source identities and all graph arithmetic.",
+        "Keep qualifiers legible in session and exercise-history rows and plot context on phone and desktop.",
+        "Use a bounded flag projection and verify the actual owner-scoped source projection; keep genuine form persistence and global owner acceptance separate."
+      ],
+      "evidence": [
+        "v2/src/training-load-qualifier.js",
+        "preview/compact-evidence/tests/training-load-qualifier-test.mjs",
+        "Source read confirms explicit approximation notes and a structured flag; no contradictory source was found. Private record counts and values remain outside the public repository.",
+        "Local source qualifier, session/history rendering, precision, nonmutation, comparability and phase tests passed."
+      ],
+      "next_action": "Complete exact source/privacy, mobile/desktop and protected publication checks.",
       "blocker": null
     }
   ],
@@ -4738,6 +4770,29 @@
         "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
         "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
         "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
+      ]
+    },
+    {
+      "id": "PKG-GENUINE-INBOX-FORM-033",
+      "status": "blocked_external",
+      "goal": "Verify genuine ordinary production form saving and full reopening using an already supplied source file.",
+      "task_ids": [
+        "LTS-PRODUCTION-WRITE-REOPEN-001"
+      ],
+      "public_build": "health-integrated-20261101.115",
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "ordinary_form_submission_verified": false,
+      "pending_gates": [
+        "secure interactive owner sign-in",
+        "genuine ordinary file submission and read-only source preview",
+        "full reload/reopening with source identity and canonical duplicate protection"
+      ],
+      "completed_evidence": [
+        "The already supplied, privately validated original is prepared. No replacement file or invented clinical event is needed.",
+        "The ordinary authenticated inspector is deployed with JWT protection; the current manual browser is signed out.",
+        "A fresh owner-requested browser rebind timed out before the visible login form could be inspected. No credential request or ordinary file submission was completed. The control service is unavailable and the final session state is unknown."
       ]
     }
   ],
