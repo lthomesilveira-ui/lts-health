@@ -122,6 +122,8 @@ try{
   assert.equal(await page.locator('#productLabMarkerSelect option').count(),24,'all 23 markers plus placeholder');
   await page.locator('#productLabMarkerSelect').selectOption('marcador textual unico');
   assert.ok((await page.locator('.ltsLabsHero').innerText()).includes('Resultado textual sintético'));assert.equal(await page.locator('.ltsDepthLine').count(),0);
+  assert.match(await page.locator('#productLabsTrend').innerText(),/0 pontos exibidos de 1 resultado desta série\./);
+  await overflow(page);if(label!=='small')await page.locator('#productLabsTrend').screenshot({path:`${dir}/synthetic-${label}-labs-textual-count.png`});
   await page.locator('#productLabMarkerSelect').selectOption('marcador 01');
   const sourceA=await page.locator('#productLabCohort option').evaluateAll(es=>es.find(e=>e.textContent.includes('Laboratório A')).value);
   await page.locator('#productLabCohort').selectOption(sourceA);await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();

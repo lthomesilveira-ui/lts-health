@@ -1,3 +1,7 @@
+## Em validação — contagem de pontos e resultados da série, .120
+
+A inspeção genuína da .119 encontrou concordância incorreta no rodapé de uma série textual com um único resultado. O pacote `PKG-EXAMS-SERIES-COUNT-036` usa o helper compartilhado nessa contagem: zero pontos numéricos continua distinto de um resultado textual preservado no histórico. Não altera resultados, referências, curvas, seleção, origem ou persistência. Contratos cobrem zero, um e vários pontos; gates e publicação ainda pendentes. Os nove bloqueios externos permanecem independentes.
+
 ## Concluído — contagens singulares em Exames, .119
 
 A jornada móvel exata da .118 em Exames encontrou um defeito concreto de linguagem: quando havia apenas um marcador, o resumo mostrava “1 marcadores” e o seletor mostrava “1 encontrados”. `PKG-EXAMS-COUNT-COPY-035` / `LTS-EXAMS-COUNT-COPY-001` aplica a pluralização compartilhada somente a essas duas contagens e adiciona contrato para um marcador com dois resultados.

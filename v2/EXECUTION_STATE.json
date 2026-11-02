@@ -50,27 +50,24 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-EXAMS-COUNT-COPY-035",
-    "status": "done",
-    "goal": "Keep singular and plural marker/result counts grammatically correct in the mobile Exams journey without changing laboratory data or interpretation.",
+    "id": "PKG-EXAMS-SERIES-COUNT-036",
+    "status": "in_progress",
+    "goal": "Correct singular point/result counts in the Exams series coverage note without changing source results or chart eligibility.",
     "task_ids": [
-      "LTS-EXAMS-COUNT-COPY-001"
+      "LTS-EXAMS-SERIES-COUNT-001"
     ],
-    "candidate_build": "health-integrated-20261102.119",
+    "candidate_build": "health-integrated-20261102.120",
     "public_build": "health-integrated-20261102.119",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "pending_gates": [],
-    "completed_evidence": [
-      "The exact .118 mobile Exams artifact visibly rendered ‘1 marcadores · 2 resultados’ and ‘Marcador · 1 encontrados’ for a one-marker synthetic journey.",
-      "The bounded change reuses the shared countLabel helper for only the marker/result summary and marker match label. No laboratory row, comparison, chart, original-file state or persistence path changes.",
-      "The functional depth contract now exercises one marker with two results and rejects both incorrect plural forms; it passed locally together with git diff validation.",
-      "PR488 candidate c68845065b8949bb377acdd12c0e119cd6950643, tree ee8fd358be2de5b49a1646393a876bd5e8167122, passed 19/19 workflows. Exact artifact 13116078628 sha256:4114fa7974444bb90f5865023a074389d6b1f6e1c8f2a3ee41637fee27f764cd showed both corrected singular forms at 393px.",
-      "Normal merge 538a18bb7248b022477c8762f9969308c3353b71 published .119 and completed 23/23 post-merge workflows. The genuine authenticated public session opened the exact build and preserved 158 markers, 809 results, dates, units, methods, references, originals and pagination."
-    ],
     "started_on": "2026-11-02",
-    "completed_on": "2026-11-02"
+    "pending_gates": [
+      "candidate workflows",
+      "exact responsive evidence",
+      "normal publication",
+      "genuine authenticated public inspection"
+    ]
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3361,6 +3358,25 @@
       ],
       "next_action": "Preserve the verified presentation. Reopen only for a concrete regression; continue the next rotating UX area in Reports and keep the nine original external dependencies separate.",
       "blocker": null
+    },
+    {
+      "id": "LTS-EXAMS-SERIES-COUNT-001",
+      "area": "laboratory UX",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Correct singular point/result labels in the series coverage note, including textual results that produce no numeric point.",
+      "acceptance": [
+        "Zero, one and multiple numeric points/results have correct count labels.",
+        "Textual results stay available in history without a numeric curve; laboratory records and eligibility remain unchanged.",
+        "Candidate gates, exact visual evidence and published authenticated inspection pass."
+      ],
+      "evidence": [
+        "The genuine .119 Exams journey showed an incorrect plural in the one-result textual series coverage note.",
+        "The correction reuses the existing shared countLabel helper in that note only; contracts cover textual, exact-zero and multiple results."
+      ],
+      "next_action": "Verify the bounded .120 candidate and publish through normal PR promotion.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -4933,6 +4949,29 @@
         "mode": "exact_synthetic_production_renderer_plus_genuine_authenticated_public_app",
         "result": "concrete_copy_defect_corrected_and_verified"
       }
+    },
+    {
+      "id": "PKG-EXAMS-COUNT-COPY-035",
+      "status": "done",
+      "goal": "Keep singular and plural marker/result counts grammatically correct in the mobile Exams journey without changing laboratory data or interpretation.",
+      "task_ids": [
+        "LTS-EXAMS-COUNT-COPY-001"
+      ],
+      "candidate_build": "health-integrated-20261102.119",
+      "public_build": "health-integrated-20261102.119",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "pending_gates": [],
+      "completed_evidence": [
+        "The exact .118 mobile Exams artifact visibly rendered ‘1 marcadores · 2 resultados’ and ‘Marcador · 1 encontrados’ for a one-marker synthetic journey.",
+        "The bounded change reuses the shared countLabel helper for only the marker/result summary and marker match label. No laboratory row, comparison, chart, original-file state or persistence path changes.",
+        "The functional depth contract now exercises one marker with two results and rejects both incorrect plural forms; it passed locally together with git diff validation.",
+        "PR488 candidate c68845065b8949bb377acdd12c0e119cd6950643, tree ee8fd358be2de5b49a1646393a876bd5e8167122, passed 19/19 workflows. Exact artifact 13116078628 sha256:4114fa7974444bb90f5865023a074389d6b1f6e1c8f2a3ee41637fee27f764cd showed both corrected singular forms at 393px.",
+        "Normal merge 538a18bb7248b022477c8762f9969308c3353b71 published .119 and completed 23/23 post-merge workflows. The genuine authenticated public session opened the exact build and preserved 158 markers, 809 results, dates, units, methods, references, originals and pagination."
+      ],
+      "started_on": "2026-11-02",
+      "completed_on": "2026-11-02"
     }
   ],
   "latest_published_release": {
