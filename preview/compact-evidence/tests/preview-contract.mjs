@@ -152,7 +152,7 @@ const manifest={
     "src/timeline-screen.js": "31425e4c1d8629a9bd5e60ca5c2a2172ca95cf12b5133d3cd0a02479593ce9bb",
     "src/today-screen.js": "0686db7acb46bd8147e9c5bf8aa6e30d2bd5f670fdfa0e1a1c5eab397bf4313c",
     "src/training-comparability.js": "29cbde79fed598028c4fffcf6789d8793909b7df64c9f7bec31c2a3a8919cc99",
-    "src/training-history.js": "6a41b6e628518e3440a7babc4bca178f84312381488ea1a69d49d5acf62ed4b0",
+    "src/training-history.js": "b1e565b2d74d07a3be82958ac08cff3f4161909735cabd12d7dee32e09552e55",
     "src/training-load-qualifier.js": "f3024be1f935a1b2b18d3f02d160a210ceefe2466af8b7ac2a97dd08cf23a9a8",
     "src/training-plan-view.js": "2b859001112a578207586c83d64594431f29b4c8981d0df49bf3ae2954fa6b63",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
