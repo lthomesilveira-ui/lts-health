@@ -69,7 +69,7 @@ try{
   await page.locator('[data-depth-exercise="exercise-1"]').click();await page.waitForSelector('.ltsExerciseHistory');assert.match(await page.locator('.ltsExerciseHistory').innerText(),/2 ocorrências/);assert.match(await page.locator('.ltsExerciseHistory').innerText(),/4 \+ 1,5 parcial/);assert.equal(await page.locator('.ltsExerciseHistory .ltsDepthLine').count(),0);
   async function assertDenseExercise(name,occurrences,label){
    assert.equal(await page.locator('#productTrainingTitle').innerText(),name);
-   assert.match(await page.locator('.ltsExerciseHistoryOverview').innerText(),new RegExp(`${occurrences} ocorrências`));
+   assert.match(await page.locator('.ltsExerciseHistoryOverview').innerText(),new RegExp(`${occurrences} ${occurrences===1?'ocorrência':'ocorrências'}`));
    const latest=page.locator('.ltsExerciseSessionLatest');
    assert.equal(await latest.locator('.ltsExerciseRecordedSets li').count(),4);
    assert.match(await latest.innerText(),/3 séries registradas \+ 1 prolong\./);
