@@ -1,3 +1,13 @@
+## Prioridade atual — vínculo de água no iPhone, 02/11/2026
+
+O proprietário pediu investigar um vínculo faltante no celular. A pendência `LTS-WATER-UPSTREAM-STATUS-001` deixa de ter apenas espera do fornecedor como próxima ação. O estado atual da conexão nativa não está exposto ao agente; os passos já feitos, incluindo reset na mesma conta, permissão de escrita, relatórios e captura da origem, continuam concluídos.
+
+A documentação oficial do Google distingue conexão dentro do app e permissões no Apple Saúde: as permissões podem permanecer concedidas mesmo após a desconexão. Orienta conferir o cartão Apple Saúde em Google Health → Conexões/Associações → Apps e serviços, inclusive avisos de novos tipos de dados. Referência: https://support.google.com/googlehealth/answer/17037331. O aviso de reconexão de parceiros antes de30/10 (https://support.google.com/googlehealth/answer/14236613) é contexto atual; não explica sozinho uma interrupção anterior.
+
+Próxima evidência mínima: estado atual desse único cartão — Conectado, Adicionar conexão ou Novos tipos de dados disponíveis — antes de alterar qualquer ajuste. Isso verifica o vínculo atual, sem repetir a tela antiga de permissões, reinstalar apps, revogar acessos às cegas ou inserir água duplicada. A rota direta já foi investigada historicamente; sua documentação não comprova que funciona neste aparelho. O reset pelo ícone não foi equiparado ao Deauthorize distinto proposto depois. Causa no fornecedor, conta ou aparelho continua não comprovada.
+
+Esta é uma atualização de investigação e continuidade, sem novo runtime, mudança clínica ou fechamento de água. `.122`,114done,9blocked_external,2accepted_gap,2superseded preservados. As demais condições de origem/histórico/recorrência, cobertura, vínculo legado,413original, proposta original e aceite global seguem independentes.
+
 ## Concluído — contagens de treinos em Relatórios e PDFs, .122
 
 A .121 mostrava “1 sessões” no resumo semanal e no bloco de treino. `PKG-CALENDAR-COUNT-COPY-038` / `LTS-CALENDAR-COUNT-COPY-001` corrige a concordância das contagens de sessão, dia com treino, exercício, série, prolongamento e registro Polar no relatório, detalhes e PDFs resumido/completo. Totais, datas, unidades, médias, fontes, elegibilidade e registros clínicos permanecem preservados.
