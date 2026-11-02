@@ -1,3 +1,9 @@
+## Em validação — contagens singulares em Exames, candidata .119
+
+A jornada móvel exata da .118 em Exames encontrou um defeito concreto de linguagem: quando havia apenas um marcador, o resumo mostrava “1 marcadores” e o seletor mostrava “1 encontrados”. `PKG-EXAMS-COUNT-COPY-035` / `LTS-EXAMS-COUNT-COPY-001` aplica a pluralização compartilhada somente a essas duas contagens e adiciona contrato para um marcador com dois resultados.
+
+A correção não altera resultados, datas, unidades, laboratório, método, referência, comparação, original, paginação, banco ou autenticação. Os nove bloqueios externos, as duas lacunas aceitas e as duas alternativas substituídas permanecem independentes. Candidata `health-integrated-20261102.119`; publicação, artefatos responsivos e inspeção exata ainda não contam como aprovados.
+
 ## Concluído — cargas, filtros e original conferido, .118
 
 O pacote034 está concluído: cargas aproximadas mantêm sua ressalva junto ao valor; os filtros de Treinos permanecem legíveis no celular; o original laboratorial integralmente conferido preserva sua fonte disponível e aparece como laudo conferido no histórico e nos arquivos concluídos. Arquivos incompletos ou divergentes continuam separados. Nenhum status persistido, exame, dose, origem canônica ou valor foi alterado por essa correção.

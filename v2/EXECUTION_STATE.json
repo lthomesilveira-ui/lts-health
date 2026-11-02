@@ -50,32 +50,28 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-TRAINING-LOAD-QUALIFIERS-034",
-    "status": "done",
-    "goal": "Keep recorded training qualifiers, mobile history filters and verified original-file receipt/source states truthful and readable.",
+    "id": "PKG-EXAMS-COUNT-COPY-035",
+    "status": "in_progress",
+    "goal": "Keep singular and plural marker/result counts grammatically correct in the mobile Exams journey without changing laboratory data or interpretation.",
     "task_ids": [
-      "LTS-TRAINING-LOAD-QUALIFIERS-001",
-      "LTS-TRAINING-HISTORY-FILTERS-001",
-      "LTS-FLEURY-CONFIRMED-RECEIPT-001"
+      "LTS-EXAMS-COUNT-COPY-001"
     ],
-    "public_build": "health-integrated-20261102.118",
+    "candidate_build": "health-integrated-20261102.119",
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "pending_gates": [],
-    "completed_evidence": [
-      "A concrete source-fidelity defect was observed: the source qualifier was retained only inside secondary notes while the table displayed an unqualified value.",
-      "A pure source qualifier, bounded Boolean projection and explicit row/plot labels are implemented. Stored values, graph arithmetic, phases and original text remain unchanged.",
-      "Published .116 passed protected owner-source qualifier agreement and public/deploy gates. The broader bare-host WebKit393px history capture exposed a pre-existing native-filter width defect; it is included in the current correction, not hidden by removing an assertion.",
-      "PR485 was normally merged at953e88c1cff1c3b2d0e0e670d054ac281535f8f7 with the exact tested tree; all18 candidate workflows and eight synthetic browser scenarios passed. Publication checks still in progress are not counted as passed.",
-      "An owner-authorized genuine original was submitted once through the ordinary production form, reloaded fully and reopened. Its read-only preview agreed with already-present history; independent before/after checks preserved the clinical/documentary/prescription records.",
-      "That genuine journey exposed a source card and receipt message that still described a fully matched verified original as awaiting reading. Candidate .118 repairs only presentation and filter categorization; stored upload state and clinical records remain unchanged.",
-      "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
-      "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
-      "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
-      "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
+    "pending_gates": [
+      "candidate workflows",
+      "affected responsive browser evidence",
+      "normal merge and public deployment",
+      "exact public build inspection"
     ],
-    "completed_on": "2026-11-02"
+    "completed_evidence": [
+      "The exact .118 mobile Exams artifact visibly rendered ‘1 marcadores · 2 resultados’ and ‘Marcador · 1 encontrados’ for a one-marker synthetic journey.",
+      "The bounded change reuses the shared countLabel helper for only the marker/result summary and marker match label. No laboratory row, comparison, chart, original-file state or persistence path changes.",
+      "The functional depth contract now exercises one marker with two results and rejects both incorrect plural forms; it passed locally together with git diff validation."
+    ],
+    "started_on": "2026-11-02"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3357,6 +3353,27 @@
         "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
       ],
       "next_action": "Preserve the verified presentation and original records. Reopen only for a concrete regression or new source evidence; global owner acceptance remains separate.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-EXAMS-COUNT-COPY-001",
+      "area": "Exams mobile reading",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Use grammatically correct singular and plural labels for the marker/result counts in the Exams explorer.",
+      "acceptance": [
+        "One marker with two results renders ‘1 marcador · 2 resultados’ and ‘Marcador · 1 encontrado’.",
+        "Plural counts keep their existing wording and selection behavior.",
+        "No laboratory value, date, unit, source, method, reference, comparison, original-file state, authentication or persistence behavior changes.",
+        "The exact candidate passes proportional contracts and responsive browser validation before normal publication."
+      ],
+      "evidence": [
+        "Exact .118 artifact isolated-preview-synthetic-visual 13111230232, sha256:d0b9d0b9cc1500ec5177b2e16dc5b888c9e73d2568061a2492a3ba6aaa05fbb4, inspected at 393px.",
+        "v2/src/labs-layout-v2.js uses the existing shared countLabel helper for the two affected labels.",
+        "node v2/history-depth-contract.mjs and git diff --check passed locally."
+      ],
+      "next_action": "Run candidate workflows and responsive evidence, then merge and inspect the exact public build.",
       "blocker": null
     }
   ],

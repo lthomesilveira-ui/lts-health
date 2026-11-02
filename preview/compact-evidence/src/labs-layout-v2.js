@@ -1,7 +1,7 @@
 import {labResultReading,compareLabResults,knownLabMetadata,labHistoryConflicts} from './health-dashboard-labs.js';
 import {selectedCalendar} from './home-period-model.js';
 import {renderLabOriginalLink} from './lab-original-link.js';
-import {state,esc,fmtDate,fmtNum,num,norm} from './core.js';
+import {state,esc,fmtDate,fmtNum,num,norm,countLabel} from './core.js';
 import {validDay,pageOf,pager,searchField,periodControl,emptyCard,errorCard,failed} from './history-tools.js';
 
 const origin=row=>String(row?.laboratory||row?.source||row?.source_file||'').trim();
@@ -224,9 +224,9 @@ export function renderProductLabs(){
   const latestValue=m.latest?labResultText(m.latest):m.latestRows.length===1?'Resultado com registros divergentes':`${m.latestRows.length} resultados na mesma data`;
   return `<section class="ltsLabsV2">
     ${header()}<nav class="ltsLabsJump" aria-label="Navegar pelos exames"><button type="button" data-ux-scroll="productLabsTrend">Gráfico e evolução</button><button type="button" data-ux-scroll="productLabsHistory">Histórico do marcador</button><button type="button" data-ux-scroll="productLabsCollection">Coletas completas</button></nav>${windowControl}
-    <section class="ltsSection ltsLabsMarkers"><div class="ltsSectionHead"><div><span>Explorar</span><h2>Todos os marcadores</h2></div><small>${m.groups.length} marcadores · ${m.rows.length} resultados</small></div>
+    <section class="ltsSection ltsLabsMarkers"><div class="ltsSectionHead"><div><span>Explorar</span><h2>Todos os marcadores</h2></div><small>${countLabel(m.groups.length,'marcador','marcadores')} · ${countLabel(m.rows.length,'resultado','resultados')}</small></div>
       ${searchField('productLabQuery',state.ui.productLabQuery,'Nome do marcador','Buscar em todos os marcadores')}
-      <label class="ltsField ltsSourceSelect">Marcador · ${m.matches.length} encontrados<select id="productLabMarkerSelect" data-depth-field="productLabMarkerSelect"><option value="">Selecione um marcador</option>${m.matches.map(g=>`<option value="${esc(g.key)}" ${g.key===group.key?'selected':''}>${esc(g.label)} (${g.rows.length})</option>`).join('')}</select></label>
+      <label class="ltsField ltsSourceSelect">Marcador · ${countLabel(m.matches.length,'encontrado','encontrados')}<select id="productLabMarkerSelect" data-depth-field="productLabMarkerSelect"><option value="">Selecione um marcador</option>${m.matches.map(g=>`<option value="${esc(g.key)}" ${g.key===group.key?'selected':''}>${esc(g.label)} (${g.rows.length})</option>`).join('')}</select></label>
       <div class="ltsLabsMarkerRail">${shortcuts.map(g=>`<button type="button" data-lab-marker="${esc(g.key)}" class="${g.key===group.key?'active':''}" aria-pressed="${g.key===group.key}"><b>${esc(g.label)}</b><small>${g.rows.length} ${g.rows.length===1?'resultado':'resultados'}</small></button>`).join('')||(!m.matches.length?emptyCard('Nenhum marcador corresponde à busca. Apague a busca para ver todos.'):'')}</div>
       <p class="ltsDepthNote">O seletor inclui os marcadores desta janela, inclusive resultados textuais e marcadores com uma única coleta. Selecione Histórico para acessar outras datas.</p>
     </section>
