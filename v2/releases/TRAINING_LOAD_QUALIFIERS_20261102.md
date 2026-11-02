@@ -1,4 +1,4 @@
-# Training load source qualifiers — candidate .116
+# Training load source qualifiers — candidate .117
 
 Recorded approximate loads previously appeared as unqualified numbers in the set table; their source caveat was available only inside secondary notes. The candidate shows `≈` and “carga aproximada” beside the corresponding set, preserves the qualifier in exercise-history rows and isolated plot labels, and identifies approximate recorded peaks in the working-load point context.
 
@@ -11,3 +11,5 @@ The existing genuine Inbox form flow is still open. A fresh owner-requested brow
 The original native export was independently audited without imports or energy summation. It does not provide the missing water history or eligible whole-day coverage for the prospective source candidates. Those source/provider conditions, the exact clinical correction manifest, genuine form persistence and overall owner acceptance remain independent. This bounded UX task is additional to the original ten dependencies and is not counted as their closure.
 
 Candidate source/privacy, mobile/desktop and protected/publication checks must finish before this delivery is marked complete. Manual public inspection and physical owner acceptance remain distinct; no interactive inspection is claimed while browser control is unavailable.
+
+The published .116 passed protected owner-source agreement, deploy and both public smokes. A broader bare-host WebKit393px history capture then exposed clipped native year selection and internal horizontal overflow. Candidate .117 keeps the year label readable, stacks narrower history filters, and verifies actual search/year/clear behavior without removing any existing assertion. Original ten dependencies remain open.

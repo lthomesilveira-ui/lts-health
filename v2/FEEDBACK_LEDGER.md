@@ -1,3 +1,9 @@
+## 2026-11-02 — .117 em validação: filtros nativos do histórico de treinos
+
+A verificação mais ampla da .116 expôs em WebKit393px um seletor de ano com “Todo o histórico” cortado e largura interna além da tela. A correção amplia o espaço do seletor e coloca busca/ano em linhas próprias em telas menores. O teste conserva todos os casos anteriores e passa a conferir se o valor selecionado cabe e se busca, seleção de ano e limpeza continuam funcionando pelos controles reais.
+
+O mesmo pacote034 conserva a identificação de cargas aproximadas já entregue na .116. A .116 passou no actual-auth41367215600, no deploy e nos smokes públicos; a falha isolada de layout é mantida e exige a correção .117. As dez pendências originais permanecem abertas. Controle interativo ainda indisponível antes de novo login; nenhum envio pelo formulário comum ou aceite global é presumido.
+
 # Em validação — ressalvas das cargas de treino, .116
 
 `PKG-TRAINING-LOAD-QUALIFIERS-034` corrige um defeito concreto: a carga aproximada era exibida como número sem ressalva na tabela, embora a origem a preservasse nas observações. A candidata mostra `≈` e “carga aproximada” junto da série, no histórico e no contexto dos pontos; mantém a precisão decimal e os valores registrados. Nenhum registro, unidade, fase, contagem ou cálculo foi alterado.

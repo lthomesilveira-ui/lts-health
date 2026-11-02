@@ -38,3 +38,27 @@ jobs:
           name: training-visual-report-synthetic
           path: training-session-summary-visual/
           retention-days: 7
+  visual-training-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install the browser engines used by the broader isolated gate
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium webkit
+      - name: Verify source qualifiers, native filters and full session flow on the host
+        run: |
+          python3 -m http.server 4173 >/tmp/health-training-host.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/preview/compact-evidence/ >/dev/null && break; sleep 1; done
+          node preview/compact-evidence/tests/training-session-summary-browser.mjs
+      - name: Keep focused host diagnostics before the broader suite finishes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-visual-host-synthetic
+          path: training-session-summary-visual/
+          retention-days: 7
