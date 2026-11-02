@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-TRAINING-LOAD-QUALIFIERS-034",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Keep recorded training qualifiers, mobile history filters and verified original-file receipt/source states truthful and readable.",
     "task_ids": [
       "LTS-TRAINING-LOAD-QUALIFIERS-001",
@@ -62,53 +62,76 @@
     "runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "pending_gates": [
-      "exact .118 source/privacy and continuity contracts",
-      "Chromium/WebKit verified-receipt, source-status, filtering and incomplete-source regressions",
-      "normal publication, exact public inspection and protected owner-scoped source check"
-    ],
+    "pending_gates": [],
     "completed_evidence": [
       "A concrete source-fidelity defect was observed: the source qualifier was retained only inside secondary notes while the table displayed an unqualified value.",
       "A pure source qualifier, bounded Boolean projection and explicit row/plot labels are implemented. Stored values, graph arithmetic, phases and original text remain unchanged.",
       "Published .116 passed protected owner-source qualifier agreement and public/deploy gates. The broader bare-host WebKit393px history capture exposed a pre-existing native-filter width defect; it is included in the current correction, not hidden by removing an assertion.",
       "PR485 was normally merged at953e88c1cff1c3b2d0e0e670d054ac281535f8f7 with the exact tested tree; all18 candidate workflows and eight synthetic browser scenarios passed. Publication checks still in progress are not counted as passed.",
       "An owner-authorized genuine original was submitted once through the ordinary production form, reloaded fully and reopened. Its read-only preview agreed with already-present history; independent before/after checks preserved the clinical/documentary/prescription records.",
-      "That genuine journey exposed a source card and receipt message that still described a fully matched verified original as awaiting reading. Candidate .118 repairs only presentation and filter categorization; stored upload state and clinical records remain unchanged."
-    ]
+      "That genuine journey exposed a source card and receipt message that still described a fully matched verified original as awaiting reading. Candidate .118 repairs only presentation and filter categorization; stored upload state and clinical records remain unchanged.",
+      "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+      "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+      "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+      "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
+    ],
+    "completed_on": "2026-11-02"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.115",
-    "main_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
-    "runtime_promotion_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
-    "published_on": "2026-11-01",
-    "release_kind": "original_source_access_and_literal_report_recovery",
-    "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "automated_runtime_and_responsive_status": "19/19 exact runtime-candidate workflows passed. Final original-source mobile/desktop scenarios passed. Corrected protected actual-auth41342289673 verified the published runtime. Remaining same-code publication repetitions are not counted as passed before completion.",
+    "build_id": "health-integrated-20261102.118",
+    "main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+    "runtime_promotion_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+    "published_on": "2026-11-02",
+    "release_kind": "truthful_training_qualifiers_and_verified_original_receipt",
+    "manual_exact_public_status": "exact_authenticated_public_training_and_original_receipt_verified",
+    "automated_runtime_and_responsive_status": "Candidate20/20 passed, exact affected-source browser scenarios and required protected/public publication gates passed. Broader publication repetitions are recorded by current status, without anticipating their results.",
     "evidence": [
-      "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
-      "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
-      "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
-      "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
-      "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
-      "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates.",
-      "PR483 main4d7489faccea034a1d56ef20fe78750291908891 completed20/20 publication workflows, including actual-auth41350540159, without another runtime change."
-    ],
-    "recorded_failed_validation_runs": [
-      {
-        "run_id": 41341747378,
-        "scope": "outdated single-original protected assertion",
-        "fixed_by_candidate": "736f17b7ae412c01a195b702383b03ebf3b1554e",
-        "verified_by_run": 41342289673
-      }
+      "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+      "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+      "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+      "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
     ],
     "ci_summary": {
-      "main_commit": "4d7489faccea034a1d56ef20fe78750291908891",
-      "total": 20,
+      "main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+      "total": 23,
       "success": 20,
-      "status": "completed",
-      "protected_actual_auth_run": 41350540159
-    }
+      "status": "required_gates_completed_broader_repetitions_pending",
+      "protected_actual_auth_run": 41373962349,
+      "pending_workflows": [
+        {
+          "run_id": 41373962382,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "in_progress"
+        },
+        {
+          "run_id": 41373962335,
+          "name": "LTS Health Integrated Production",
+          "status": "in_progress"
+        },
+        {
+          "run_id": 41373962348,
+          "name": "LTS Health Isolated Preview",
+          "status": "in_progress"
+        }
+      ]
+    },
+    "recorded_failed_validation_runs": [
+      {
+        "run_id": 41372128661,
+        "attempt": 1,
+        "scope": "supplemental public fixture navigation before DOM",
+        "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+      },
+      {
+        "run_id": 41373999373,
+        "attempt": 1,
+        "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
+        "artifact_id": 13110745602,
+        "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
+        "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+      }
+    ]
   },
   "tasks": [
     {
@@ -3266,7 +3289,7 @@
       "id": "LTS-TRAINING-LOAD-QUALIFIERS-001",
       "area": "Training source fidelity",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Show explicit approximate-load qualifiers beside their own recorded set and in exercise history.",
       "acceptance": [
@@ -3279,16 +3302,20 @@
         "v2/src/training-load-qualifier.js",
         "preview/compact-evidence/tests/training-load-qualifier-test.mjs",
         "Source read confirms explicit approximation notes and a structured flag; no contradictory source was found. Private record counts and values remain outside the public repository.",
-        "Local source qualifier, session/history rendering, precision, nonmutation, comparability and phase tests passed."
+        "Local source qualifier, session/history rendering, precision, nonmutation, comparability and phase tests passed.",
+        "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+        "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+        "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+        "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
       ],
-      "next_action": "Complete exact source/privacy, mobile/desktop and protected publication checks.",
+      "next_action": "Preserve the verified presentation and original records. Reopen only for a concrete regression or new source evidence; global owner acceptance remains separate.",
       "blocker": null
     },
     {
       "id": "LTS-TRAINING-HISTORY-FILTERS-001",
       "area": "Training history reading",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Keep the whole-history year selection and search readable inside the mobile Training history.",
       "acceptance": [
@@ -3298,16 +3325,20 @@
       ],
       "evidence": [
         "A verified isolated-preview synthetic artifact exposed native WebKit393px control overflow and a clipped whole-history selection. Dedicated container scenarios had passed; the broader failure is retained.",
-        "Candidate .117 gives the year selector enough width and stacks the two filters on smaller screens. The existing browser suite now checks the selected native label and the real search/year/clear path."
+        "Candidate .117 gives the year selector enough width and stacks the two filters on smaller screens. The existing browser suite now checks the selected native label and the real search/year/clear path.",
+        "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+        "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+        "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+        "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
       ],
-      "next_action": "Complete exact source, mobile/desktop, protected and publication verification.",
+      "next_action": "Preserve the verified presentation and original records. Reopen only for a concrete regression or new source evidence; global owner acceptance remains separate.",
       "blocker": null
     },
     {
       "id": "LTS-FLEURY-CONFIRMED-RECEIPT-001",
       "area": "Verified original receipt and source status",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "A fully verified original already matching recorded examinations must not turn its source into awaiting reading or imply the existing results are absent.",
       "acceptance": [
@@ -3319,9 +3350,13 @@
       "evidence": [
         "The defect was observed during the genuine authorized production form/reopen journey, after a source-verified read-only preview matched existing history.",
         "A bounded pure helper requires the exact upload/source chain, inspected preview, complete matching model, valid source hash, explicit empty conflicts/unsupported scope and matching row count.",
-        "Local deterministic source/partial/failure/nonmutation checks, syntax, transport preservation, privacy, payload and runtime-parity contracts passed. Local browser execution was unavailable because the installed API has no browser executable; remote candidate browser checks remain required."
+        "Local deterministic source/partial/failure/nonmutation checks, syntax, transport preservation, privacy, payload and runtime-parity contracts passed. Local browser execution was unavailable because the installed API has no browser executable; remote candidate browser checks remain required.",
+        "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+        "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+        "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+        "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
       ],
-      "next_action": "Finish exact candidate mobile/desktop and source-state regressions, normal publication and final authenticated inspection.",
+      "next_action": "Preserve the verified presentation and original records. Reopen only for a concrete regression or new source evidence; global owner acceptance remains separate.",
       "blocker": null
     }
   ],
@@ -4854,31 +4889,80 @@
       "evidence": [
         "Owner-authorized genuine production form submission, persisted private source/preview reread and full browser reload/reopen verified. Source identity and existing examinations/documents/prescriptions were preserved; this is not a general import or global product acceptance."
       ]
+    },
+    {
+      "id": "PKG-TRAINING-LOAD-QUALIFIERS-034",
+      "status": "done",
+      "completed_on": "2026-11-02",
+      "task_ids": [
+        "LTS-TRAINING-LOAD-QUALIFIERS-001",
+        "LTS-TRAINING-HISTORY-FILTERS-001",
+        "LTS-FLEURY-CONFIRMED-RECEIPT-001"
+      ],
+      "public_build": "health-integrated-20261102.118",
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "evidence": [
+        "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+        "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+        "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+        "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
+      ]
     }
   ],
   "latest_published_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261101.115",
-    "main_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
-    "runtime_promotion_commit": "95d89149f00d3e3ca27a749f5694b7133edb7a5b",
-    "published_on": "2026-11-01",
-    "release_kind": "original_source_access_and_literal_report_recovery",
-    "manual_exact_public_status": "exact_public_build_and_login_verified_signed_out",
-    "automated_runtime_and_responsive_status": "19/19 exact runtime-candidate workflows passed. Final original-source mobile/desktop scenarios passed. Corrected protected actual-auth41342289673 verified the published runtime. Remaining same-code publication repetitions are not counted as passed before completion.",
+    "build_id": "health-integrated-20261102.118",
+    "main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+    "runtime_promotion_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+    "published_on": "2026-11-02",
+    "release_kind": "truthful_training_qualifiers_and_verified_original_receipt",
+    "manual_exact_public_status": "exact_authenticated_public_training_and_original_receipt_verified",
+    "automated_runtime_and_responsive_status": "Candidate20/20 passed, exact affected-source browser scenarios and required protected/public publication gates passed. Broader publication repetitions are recorded by current status, without anticipating their results.",
     "evidence": [
-      "Original supplied files privately preserved; two independent source extractions agree on all expected values, units, collection/release dates and physical pages.",
-      "Bounded documentary repair passed real rollback, exact reread, unchanged clinical/structured/prescription projections and replay with zero changes. Full owner workout text is restored while the previous summaries remain audited.",
-      "PR482 normal merge95d89149f00d3e3ca27a749f5694b7133edb7a5b has exactly the tested ecd9021 tree.19 candidate workflows passed; final original-source artifact13096669846 sha256:b6e28f54e855efc43dd276dc939b8f212d3cfa3b7060b746360c1b5bf93ee911 was verified and mobile/desktop inspected.",
-      "Public Cloud Browser independently confirmed .115 signed out, with visible email/password entry and1363/1363px width. Deploy41341747405 and both public Pages smokes passed.",
-      "The first post-publication protected run41341747378 exposed an invalid single-PDF assertion for a multi-original marker. Its failure remains recorded. A fresh private projection reproduced that false assumption while source links themselves validated.",
-      "Corrected per-collection date/laboratory/original checks preserve ambiguity and missing-source rejection. Protected actual-auth41342289673 passed against the published .115, including reviewed Einstein metadata and explicit qualitative source release dates."
+      "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+      "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+      "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+      "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
     ],
+    "ci_summary": {
+      "main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+      "total": 23,
+      "success": 20,
+      "status": "required_gates_completed_broader_repetitions_pending",
+      "protected_actual_auth_run": 41373962349,
+      "pending_workflows": [
+        {
+          "run_id": 41373962382,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "in_progress"
+        },
+        {
+          "run_id": 41373962335,
+          "name": "LTS Health Integrated Production",
+          "status": "in_progress"
+        },
+        {
+          "run_id": 41373962348,
+          "name": "LTS Health Isolated Preview",
+          "status": "in_progress"
+        }
+      ]
+    },
     "recorded_failed_validation_runs": [
       {
-        "run_id": 41341747378,
-        "scope": "outdated single-original protected assertion",
-        "fixed_by_candidate": "736f17b7ae412c01a195b702383b03ebf3b1554e",
-        "verified_by_run": 41342289673
+        "run_id": 41372128661,
+        "attempt": 1,
+        "scope": "supplemental public fixture navigation before DOM",
+        "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+      },
+      {
+        "run_id": 41373999373,
+        "attempt": 1,
+        "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
+        "artifact_id": 13110745602,
+        "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
+        "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
       }
     ]
   },
@@ -9516,40 +9600,93 @@
         "Edge inspector12 active, exact three-file source reread and unauthenticated401 verified; source private proof and final mobile/desktop captures reviewed.",
         "Protected actual-auth41338834801 passed; public Cloud Browser independently confirmed .114 signed out. Ordinary-file submission remains separate."
       ]
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261102.118",
+      "main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+      "runtime_promotion_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+      "published_on": "2026-11-02",
+      "release_kind": "truthful_training_qualifiers_and_verified_original_receipt",
+      "manual_exact_public_status": "exact_authenticated_public_training_and_original_receipt_verified",
+      "automated_runtime_and_responsive_status": "Candidate20/20 passed, exact affected-source browser scenarios and required protected/public publication gates passed. Broader publication repetitions are recorded by current status, without anticipating their results.",
+      "evidence": [
+        "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+        "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+        "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+        "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
+      ],
+      "ci_summary": {
+        "main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+        "total": 23,
+        "success": 20,
+        "status": "required_gates_completed_broader_repetitions_pending",
+        "protected_actual_auth_run": 41373962349,
+        "pending_workflows": [
+          {
+            "run_id": 41373962382,
+            "name": "LTS Health calendar reports and local PDF",
+            "status": "in_progress"
+          },
+          {
+            "run_id": 41373962335,
+            "name": "LTS Health Integrated Production",
+            "status": "in_progress"
+          },
+          {
+            "run_id": 41373962348,
+            "name": "LTS Health Isolated Preview",
+            "status": "in_progress"
+          }
+        ]
+      },
+      "recorded_failed_validation_runs": [
+        {
+          "run_id": 41372128661,
+          "attempt": 1,
+          "scope": "supplemental public fixture navigation before DOM",
+          "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+        },
+        {
+          "run_id": 41373999373,
+          "attempt": 1,
+          "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
+          "artifact_id": 13110745602,
+          "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
+          "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+        }
+      ]
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-01",
-    "reviewed_at_utc": "2026-11-01T16:09:54.711Z",
-    "source_main_commit": "0c02697289dc8da2e4600cd818b0b5e9cc7687d7",
-    "runtime_build": "health-integrated-20261101.113",
+    "reviewed_on": "2026-11-02",
+    "reviewed_at_utc": "2026-11-02T01:45:54.381054Z",
+    "source_main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+    "runtime_build": "health-integrated-20261102.118",
     "candidate_build": null,
-    "runtime_changed": false,
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": true,
+    "real_source_observations_changed": false,
     "status_counts": {
-      "done": 103,
-      "blocked_external": 12,
-      "accepted_gap": 2,
-      "superseded": 2
+      "done": 110,
+      "blocked_external": 9,
+      "superseded": 2,
+      "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "2026-11-01: independent full original extraction agreed with the private review. Guarded rollback probe, actual insert, exact reread, preservation checks and replay passed in the dedicated database. No heart-rate values, muscle groups or canonical linkage were inferred.",
-      "PR478 final candidate 3e4705c40d419a5e79b0323eb55359f84248870a passed 16/16 current-head workflows. The only follow-up commit waited for settled Home route readiness in a synthetic acceptance test; it changed no runtime asset, source observation, authentication rule or health rule.",
-      "Protected Real Auth run 41323470318 passed the owner-scoped original-source read and separate history-model checks on source candidate 0d965d83ffd6699884dbde4ca748f73364763db5. The later test-only commit did not touch the protected read, runtime or data code.",
-      "Normal PR478 merge 0c02697289dc8da2e4600cd818b0b5e9cc7687d7 incorporated the verified recovery. The public runtime remains health-integrated-20261101.113; no deploy or phone reconfiguration was required.",
-      "The Reports consultation journey was inspected in the exact .113 production renderers at mobile and desktop widths. Dates, coverage, source labels, units, consultation summary, detail navigation and missing-data semantics remained readable; no concrete runtime defect was observed. Next UX area: Training.",
-      "Twelve external blockers, two accepted gaps and two superseded alternatives remain. Original water, recurrence, upstream response, source lineage, basal coverage, legacy workout linkage, the original fifteen-record laboratory manifest/authorization, ordinary-form persistence and overall owner acceptance remain independent."
+      "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+      "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+      "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+      "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
     ],
     "ux_review": {
-      "area": "reports_consultation_summary_and_detail",
-      "next_area": "training",
-      "mode": "exact_synthetic_production_renderer_plus_public_signed_out_plus_protected_actual_auth",
-      "viewport": "mobile and desktop exact .113 evidence",
-      "result": "no_concrete_runtime_defect_observed"
+      "area": "training_history_and_genuine_original_receipt",
+      "next_area": "composition",
+      "mode": "exact_synthetic_production_renderers_and_genuine_authenticated_public_app",
+      "result": "concrete_defects_fixed_and_verified"
     },
-    "open_dependency_policy": "The two replaced implementation alternatives remain superseded, not verified as done. Original water, recurrence, upstream response, source lineage, basal coverage, legacy linkage, laboratory proposal, ordinary-form persistence and actual owner acceptance remain independent."
+    "open_dependency_policy": "Nine original source/provider/global-acceptance conditions remain. Water restoration, recurrence, source lineage and basal coverage require genuine attributable evidence. The exact historical clinical correction proposal is still not reconstructed. No repeated phone setup or form submission is requested."
   },
   "continuity_review_history": [
     {
@@ -10625,6 +10762,36 @@
         "mode": "source_diagnostic_and_full_form_synthetic_regression_pending",
         "result": "concrete_defect_in_validation"
       }
+    },
+    {
+      "reviewed_on": "2026-11-02",
+      "reviewed_at_utc": "2026-11-02T01:45:54.381054Z",
+      "source_main_commit": "2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a",
+      "runtime_build": "health-integrated-20261102.118",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 110,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "PR486 final candidate4f0c71588215e833a3e59cca96e5f6e66f323e26 passed20/20 workflows; its normal merge2462805d3ae8d9a0ad5d1cd1664a0b1a899cf71a has exactly the tested725147a1b6bd9f49f3340706b1cad585ad23162f tree. All changed remote blobs, including complete continuity documents, were checked against the local files.",
+        "Exact-head Fleury artifact13110176146 sha256:7b15880fef7310840603546499c7a4e23528df344ea28e60de289fb3f712cc28 was verified before reading its six Chromium/WebKit320/393/1440px results. Source, receipt and original/preview captures were actually inspected. All scenarios keep zero writes, usable filters and the original failure/partial-source assertions.",
+        "The exact published .118 was reloaded in the genuine authenticated owner browser. Confirmed source coverage, completed-file filtering, checked-original wording and reopening of the unchanged read-only preview were verified without submitting another file. Independent clinical/document/prescription checks remained unchanged.",
+        "Required deploy, both public-entry smokes and protected owner-data checks passed. Any broader same-code publication repetitions still running are recorded separately and are not counted as passed. Owner physical/global acceptance and all original source/provider conditions remain independent."
+      ],
+      "ux_review": {
+        "area": "training_history_and_genuine_original_receipt",
+        "next_area": "composition",
+        "mode": "exact_synthetic_production_renderers_and_genuine_authenticated_public_app",
+        "result": "concrete_defects_fixed_and_verified"
+      },
+      "open_dependency_policy": "Nine original source/provider/global-acceptance conditions remain. Water restoration, recurrence, source lineage and basal coverage require genuine attributable evidence. The exact historical clinical correction proposal is still not reconstructed. No repeated phone setup or form submission is requested."
     }
   ],
   "continuation_automation": {
