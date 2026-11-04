@@ -56,6 +56,7 @@ test('credential, state and source-read tables have RLS and no frontend or PUBLI
     for(const role of ['anon','authenticated'])assert.equal(scalar(`select has_function_privilege('${role}','public.${signature}','EXECUTE');`),'f');
   }
   for(const p of ['UPDATE','DELETE','TRUNCATE'])assert.equal(scalar(`select has_table_privilege('service_role','public.health_google_hydration_reads','${p}');`),'f');
+  for(const table of ['health_google_connections','health_google_oauth_states'])for(const p of ['DELETE','TRUNCATE'])assert.equal(scalar(`select has_table_privilege('service_role','public.${table}','${p}');`),'f');
   const denied=run('SET ROLE authenticated; SELECT * FROM public.health_google_connections;',false);assert.match(denied.stderr,/permission denied/);
 });
 test('only one consume succeeds and the original user/generation stays bound',()=>{
@@ -72,6 +73,19 @@ test('expired state is not consumed and cannot supply callback identity',()=>{
   prepare();begin();run(service(`update public.health_google_connections set pending_state_hash=null where user_id='${owner}';`));
   assert.deepEqual(consume('a'.repeat(64)),[]);
   begin('b'.repeat(64));run(`update public.health_google_oauth_states set expires_at=clock_timestamp()-interval '1 second';`);assert.deepEqual(consume('b'.repeat(64)),[]);
+});
+test('authorization replaces one bounded slot and disconnect erases the pending encrypted verifier',()=>{
+  prepare();begin();const first=begin('b'.repeat(64));
+  assert.deepEqual(consume('a'.repeat(64)),[]);
+  assert.equal(scalar(service('select count(*) from public.health_google_oauth_states;')),'1');
+  assert.equal(consume('b'.repeat(64))[0].generation,first);
+  assert.notEqual(scalar(service('select consumed_at is null from public.health_google_oauth_states;')),'t');
+  begin('c'.repeat(64));assert.equal(consume('c'.repeat(64)).length,1);
+  run(service(`select public.health_google_disconnect('${owner}');`));
+  const pending=object(service('select to_jsonb(s) from public.health_google_oauth_states s;'));
+  assert.equal(pending.payload_encrypted,'');assert.ok(pending.consumed_at);
+  assert.equal(scalar(service('select count(*) from public.health_google_oauth_states;')),'1');
+  assert.equal(scalar('select marker from public.health_metrics;'),'existing-synthetic-health-record');
 });
 test('complete private reads are atomic and unchanged pagination/order does not append another snapshot',()=>{
   prepare();const r=link();assert.equal(claim(r),owner);assert.equal(scalar(finish(r)),'stored');assert.equal(count(),1);

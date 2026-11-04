@@ -19,20 +19,21 @@ create table if not exists public.health_google_connections (
 );
 alter table public.health_google_connections enable row level security;
 revoke all on public.health_google_connections from public,anon,authenticated,service_role;
-grant select,insert,update,delete on public.health_google_connections to service_role;
+grant select,insert,update on public.health_google_connections to service_role;
 
 create table if not exists public.health_google_oauth_states (
   state_hash text primary key check(state_hash ~ '^[a-f0-9]{64}$'),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid not null unique references auth.users(id) on delete cascade,
   generation uuid not null,
   payload_encrypted text not null check(length(payload_encrypted) <= 131072),
   expires_at timestamptz not null,
+  consumed_at timestamptz,
   created_at timestamptz not null default now()
 );
 create index if not exists health_google_oauth_states_user_expiry on public.health_google_oauth_states(user_id,expires_at);
 alter table public.health_google_oauth_states enable row level security;
 revoke all on public.health_google_oauth_states from public,anon,authenticated,service_role;
-grant select,insert,delete on public.health_google_oauth_states to service_role;
+grant select,insert,update on public.health_google_oauth_states to service_role;
 
 -- Immutable, private reads remain separate from canonical water and original MFP exports.
 create table if not exists public.health_google_hydration_reads (
@@ -66,9 +67,11 @@ begin
   next_generation:=gen_random_uuid();
   update public.health_google_connections set generation=next_generation,pending_state_hash=p_state_hash,
     lease_token=null,lease_until='1970-01-01T00:00:00Z' where user_id=p_user_id;
-  delete from public.health_google_oauth_states where user_id=p_user_id;
   insert into public.health_google_oauth_states(state_hash,user_id,generation,payload_encrypted,expires_at)
-    values(p_state_hash,p_user_id,next_generation,p_payload_encrypted,p_expires_at);
+    values(p_state_hash,p_user_id,next_generation,p_payload_encrypted,p_expires_at)
+    on conflict(user_id) do update set state_hash=excluded.state_hash,generation=excluded.generation,
+      payload_encrypted=excluded.payload_encrypted,expires_at=excluded.expires_at,
+      consumed_at=null,created_at=clock_timestamp();
   return next_generation;
 end $$;
 
@@ -76,8 +79,8 @@ create or replace function public.health_google_consume_state(p_state_hash text)
 returns table(user_id uuid,generation uuid,payload_encrypted text,health_user_id text)
 language sql security invoker set search_path='' as $$
   with consumed as (
-    delete from public.health_google_oauth_states s
-      where s.state_hash=p_state_hash and s.expires_at>clock_timestamp()
+    update public.health_google_oauth_states s set consumed_at=clock_timestamp()
+      where s.state_hash=p_state_hash and s.expires_at>clock_timestamp() and s.consumed_at is null
       returning s.user_id,s.generation,s.payload_encrypted
   ) select s.user_id,s.generation,s.payload_encrypted,c.health_user_id
       from consumed s join public.health_google_connections c on c.user_id=s.user_id
@@ -106,7 +109,8 @@ begin
     scopes='{}',connected_at=null,generation=gen_random_uuid(),pending_state_hash=null,
     lease_token=null,lease_until='1970-01-01T00:00:00Z',last_read_at=null,last_attempt_at=null,last_error=null
     where user_id=p_user_id;
-  delete from public.health_google_oauth_states where user_id=p_user_id;
+  update public.health_google_oauth_states set consumed_at=clock_timestamp(),
+    payload_encrypted='',expires_at=clock_timestamp() where user_id=p_user_id;
   -- Retain private immutable read history. No source or canonical health row is removed.
 end $$;
 
