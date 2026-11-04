@@ -188,3 +188,17 @@ test('real HTTP redirects cannot send the authorization token to another destina
     assert.equal(destinationCalls,0);
   }finally{await redirect.close();await target.close();}
 });
+test('provider display units are preserved while the API numeric volume stays in milliliters',async()=>{
+  const p=point();p.hydrationLog.amountConsumed.userProvidedUnit='LITER';
+  const t=transport([{dataPoints:[p]}]),out=await read({...options,fetcher:t.fetcher});
+  assert.equal(out.records[0].milliliters,321);assert.equal(out.records[0].user_provided_unit,'LITER');
+});
+test('excessive object depth and non-string expected identities fail without a misleading result',async()=>{
+  const p=point();let cursor=p;for(let i=0;i<30;i++)cursor=cursor.extra={};
+  const t=transport([{dataPoints:[p]}]);await errorCode('invalid_response',()=>read({...options,fetcher:t.fetcher}));
+  await errorCode('invalid_expected_identity',()=>read({...options,expectedHealthUserId:123,fetcher:async()=>assert.fail('network forbidden')}));
+});
+test('an untrusted body-cancellation error cannot escape the fixed provider error boundary',async()=>{
+  const body=new ReadableStream({cancel(){throw Error('sensitive synthetic cancellation');}});
+  const t=transport([new Response(body,{status:403})]);await errorCode('permission_denied',()=>read({...options,fetcher:t.fetcher}));
+});
