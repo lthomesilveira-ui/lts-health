@@ -1,3 +1,9 @@
+## FB-040 — Consolidação automática preserva a rotina de origem, 04/11/2026
+
+O proprietário rejeitou a sugestão de registrar novamente a água no Saúde após comprar os aplicativos de ponte. O LTS Health deve consolidar o que já existe no MyFitnessPal e Google Health. Lançamento duplicado, nova ingestão de teste, exportação manual recorrente ou outra compra não constitui solução nem lacuna aceita.
+
+As verificações nativas já fornecidas encerram o ramo de checagem básica: conexão ativa, consentimento de leitura de Nutrição, direção, seleção, permissões de água, licença e configuração de histórico. A tela filtrada por MyFitnessPal confirma água na origem; a ressincronização relatada não a recuperou no destino. A pendência completa continua aberta até uma transferência genuína e atribuível. O próximo trabalho depende de diagnóstico efetivo da consulta/gravação ou de uma conexão própria oficialmente configurada e autorizada. Evidência pessoal fica privada; nenhuma causa foi atribuída ao aparelho ou ao fornecedor.
+
 ## Concluído — contagens de treinos em Relatórios e PDFs, .122
 
 A .121 mostrava “1 sessões” no resumo semanal e no bloco de treino. `PKG-CALENDAR-COUNT-COPY-038` / `LTS-CALENDAR-COUNT-COPY-001` corrige a concordância das contagens de sessão, dia com treino, exercício, série, prolongamento e registro Polar no relatório, detalhes e PDFs resumido/completo. Totais, datas, unidades, médias, fontes, elegibilidade e registros clínicos permanecem preservados.
