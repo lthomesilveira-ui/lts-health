@@ -26,6 +26,16 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   check(unauthenticated.status()===401,'Polar connection accepts unauthenticated access');
   const invalidCallback=await page.request.get(`${supabaseUrl}/functions/v1/health-polar-callback?state=invalid`);
   check(invalidCallback.status()===400,'invalid OAuth callback state was accepted');
+  // Read the deployed Google status with the existing genuine audit session.
+  // This does not authorize a Google account, start a read or return source data.
+  const google=await page.evaluate(async()=>{const {sb}=await import('./src/core.js');const {data,error}=await sb.functions.invoke('health-google-connection',{body:{action:'status'}});return {ok:!error,keys:Object.keys(data||{}),status:data};});
+  check(google.ok&&typeof google.status?.configured==='boolean'&&typeof google.status?.connected==='boolean','authenticated Google status failed');
+  check(google.status.canonical_updated===false&&!google.keys.some(k=>/token|secret|user_id|records|raw/.test(k)),'Google status exposed private authorization or source data');
+  if(!google.status.configured)check(google.status.connected===false,'unconfigured Google connection claimed success');
+  const googleUnauthenticated=await page.request.post(`${supabaseUrl}/functions/v1/health-google-connection`,{headers:{apikey:supabaseKey},data:{action:'status'}});
+  check(googleUnauthenticated.status()===401,'Google connection accepts unauthenticated access');
+  const googleInvalidCallback=await page.request.get(`${supabaseUrl}/functions/v1/health-google-callback?state=invalid`);
+  check(googleInvalidCallback.status()===(google.status.configured?400:409),'Google callback accepted an invalid or unconfigured authorization');
   await page.setViewportSize({width:390,height:844});
   await goto('treinos','.ltsTrainingV2');await page.locator('[data-depth-training-view="history"]').first().click();
   const workoutIds=[];

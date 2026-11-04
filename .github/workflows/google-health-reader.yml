@@ -1,0 +1,56 @@
+name: LTS Health Google hydration reader
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  google-health-reader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify read-only hydration, account, pagination and source boundaries
+        run: |
+          node --check supabase/functions/_shared/google-health-reader.mjs
+          node --check supabase/functions/_shared/google-health-connection.mjs
+          node --check supabase/functions/_shared/google-health-runtime.mjs
+          node --test v2/google-health-reader-test.mjs v2/google-health-connection-test.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
+  google-health-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:17.11
+        env:
+          POSTGRES_DB: google_health_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: synthetic-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d google_health_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      GOOGLE_HEALTH_SYNTHETIC_TEST: '1'
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGDATABASE: google_health_test
+      PGUSER: postgres
+      PGPASSWORD: synthetic-ci-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify private storage, RLS, callback replay and real transaction concurrency
+        run: node --test supabase/tests/google-health-postgres-test.mjs

@@ -1,3 +1,13 @@
+## Em validação — leitura oficial privada de hidratação, 04/11/2026
+
+`PKG-GOOGLE-HYDRATION-READ-039` implementa leitor oficial, OAuth protegido e armazenamento privado. O escopo é somente `googlehealth.nutrition.readonly`; o perfil é verificado, todas as origens são consultadas com datas civis explícitas e o resultado completo é guardado sem promover água ou inferir MyFitnessPal. Passaram53 testes de autorização/leitura e11 testes PostgreSQL17.11. Uma tentativa intermediária repetia a identidade de estado entre duas contas sintéticas; a fixture foi corrigida, com a colisão agora verificada como rejeição atômica.
+
+A migration nativa `20261104233826` criou somente três tabelas privadas e cinco operações de servidor. RLS, ausência de privilégios do navegador, privilégio mínimo e zero registros foram conferidos. As rotas `health-google-connection` e `health-google-callback`, versão1, estão publicadas, com seus cinco arquivos comparados exatamente à fonte testada. A conexão sem autenticação responde401; o retorno OAuth desativado responde409/configuration_required. Não existe projeto, cliente, segredo ou consentimento Google configurado. A integração permanece desativada. A validação autenticada, os gates finais e o merge normal ainda precisam terminar.
+
+As confirmações iniciais de migration expiraram. A variante com slot único, uso atômico e sem exclusões foi aplicada pela operação nativa. O dry-run SQL anterior ficou sem resposta e foi interrompido; não foi contado como sucesso. A publicação não usou SQL direto para substituir confirmação nem credencial de CI no navegador.
+
+A interface `.122`, o histórico deste documento, os dados existentes e os nove bloqueios originais permanecem preservados. O caminho oficial Google está preparado até o login seguro da conta do proprietário. Não repetir ajustes, capturas, novas entradas, reset ou relatório de iPhone. Este pacote prepara o servidor: autorização real, recuperação de registros, reconciliação da origem e recorrência exigem provas próprias. Detalhes: `releases/GOOGLE_HEALTH_HYDRATION_20261104.md`.
+
 ## Água — verificações concluídas e consolidação automática pendente, 04/11/2026
 
 As capturas nativas fornecidas em02/11 já atendem ao pedido anterior: Apple Health, Health Sync e MyFitnessPal estão conectados; Apple Health aparece ativo; o consentimento do Health Sync inclui leitura de Nutrição. A rota, a seleção, as permissões atuais de água nos dois sentidos, a licença e a configuração de histórico foram conferidas. A ressincronização específica informada pelo proprietário teve resultado negativo. Não pedir novamente cartão, permissão, reset, relatório, seleção, versão, compra ou esse teste.
