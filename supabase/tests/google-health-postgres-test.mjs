@@ -110,3 +110,12 @@ test('two real concurrent state consumers and read claims yield one winner',asyn
   const results=await Promise.all([asyncSql(claimSql(lease)),asyncSql(claimSql('55555555-5555-4555-8555-555555555555'))]);
   assert.equal(results.filter(x=>x===owner).length,1);assert.equal(results.filter(x=>x==='').length,1);
 });
+test('reapplying the same schema preserves encrypted connections and immutable read history',()=>{
+  prepare();const r=link();claim(r);assert.equal(scalar(finish(r)),'stored');
+  const before=row(),readBefore=object(service('select result from public.health_google_hydration_reads;'));
+  run(migration);
+  assert.deepEqual(row(),before);assert.equal(count(),1);
+  assert.deepEqual(object(service('select result from public.health_google_hydration_reads;')),readBefore);
+  assert.equal(scalar("select has_table_privilege('authenticated','public.health_google_hydration_reads','SELECT');"),'f');
+  assert.equal(scalar("select has_table_privilege('service_role','public.health_google_hydration_reads','UPDATE');"),'f');
+});
