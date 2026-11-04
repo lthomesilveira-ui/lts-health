@@ -37,7 +37,7 @@ const begin=(hash='a'.repeat(64),user=owner)=>scalar(service(`select public.heal
 const consume=hash=>object(service(`select coalesce(jsonb_agg(x),'[]') from public.health_google_consume_state(${lit(hash)}) x;`));
 const row=(user=owner)=>object(service(`select to_jsonb(c) from public.health_google_connections c where user_id='${user}';`));
 const save=(generation,hash='a'.repeat(64),user=owner)=>scalar(service(`select public.health_google_save_authorization('${user}','${generation}',${lit(hash)},'synthetic-health-user','v1.synthetic-tokens');`));
-function link(user=owner){const g=begin('a'.repeat(64),user);consume('a'.repeat(64));assert.equal(save(g,'a'.repeat(64),user),'t');return row(user);}
+function link(user=owner){const hash=(user===owner?'a':'f').repeat(64),g=begin(hash,user);consume(hash);assert.equal(save(g,hash,user),'t');return row(user);}
 const lease='33333333-3333-4333-8333-333333333333';
 const claim=(r,token=lease)=>scalar(service(`update public.health_google_connections set lease_token='${token}',lease_until=clock_timestamp()+interval '2 minutes' where user_id='${r.user_id}' and generation='${r.generation}' and status='connected' and lease_until<=clock_timestamp() returning user_id;`));
 const payload=(extra={})=>({format:'lts-google-health-hydration-read',complete:true,mode:'read_only',canonical_eligible:false,health_user_id:'synthetic-health-user',source_family:'users/me/dataSourceFamilies/all-sources',from:'2030-02-11',to_exclusive:'2030-02-12',pages:1,received_count:1,unique_count:1,status:'observations_unverified',records:[{resource_name:'users/synthetic-health-user/dataTypes/hydration-log/dataPoints/water-0001',health_user_id:'synthetic-health-user',canonical_eligible:false,milliliters:321,raw:{synthetic:true}}],...extra});
@@ -78,6 +78,10 @@ test('authorization replaces one bounded slot and disconnect erases the pending 
   prepare();begin();const first=begin('b'.repeat(64));
   assert.deepEqual(consume('a'.repeat(64)),[]);
   assert.equal(scalar(service('select count(*) from public.health_google_oauth_states;')),'1');
+  const before=row();
+  const collision=run(service(`select public.health_google_begin_authorization('${other}','${'b'.repeat(64)}','v1.other-state',clock_timestamp()+interval '10 minutes');`),false);
+  assert.match(collision.stderr,/unique constraint/);assert.deepEqual(row(),before);
+  assert.equal(scalar(service(`select count(*) from public.health_google_connections where user_id='${other}';`)),'0');
   assert.equal(consume('b'.repeat(64))[0].generation,first);
   assert.notEqual(scalar(service('select consumed_at is null from public.health_google_oauth_states;')),'t');
   begin('c'.repeat(64));assert.equal(consume('c'.repeat(64)).length,1);
