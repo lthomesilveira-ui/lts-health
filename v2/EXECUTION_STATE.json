@@ -50,25 +50,23 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CALENDAR-COUNT-COPY-038",
-    "status": "done",
-    "goal": "Keep singular and plural recorded-training counts correct across the calendar report, source details and both local PDF exports.",
+    "id": "PKG-GOOGLE-HYDRATION-READ-039",
+    "status": "in_progress",
+    "goal": "Prepare a private server-only OAuth connection and bounded official hydration reader without changing the verified mobile bridge or promoting unverified sources.",
     "task_ids": [
-      "LTS-CALENDAR-COUNT-COPY-001"
+      "LTS-GOOGLE-HYDRATION-READ-001"
     ],
-    "candidate_build": "health-integrated-20261102.122",
+    "candidate_build": null,
     "public_build": "health-integrated-20261102.122",
-    "runtime_changed": true,
+    "runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-02",
-    "pending_gates": [],
-    "completed_on": "2026-11-02",
-    "completed_evidence": [
-      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
-      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
-      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
-      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
+    "started_on": "2026-11-04",
+    "pending_gates": [
+      "server_authorization_and_replay_boundaries",
+      "private_storage_roles_and_atomicity",
+      "candidate_CI_and_exact_tree",
+      "unconfigured_deployment_boundary"
     ]
   },
   "last_verified_release": {
@@ -3439,6 +3437,29 @@
         "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
       ],
       "next_action": null,
+      "blocker": null
+    },
+    {
+      "id": "LTS-GOOGLE-HYDRATION-READ-001",
+      "area": "integrations / Google Health preparation",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Prepare an isolated official hydration read path with server-held authorization, complete bounded reads and private source-preserving results.",
+      "acceptance": [
+        "Request only the official Google Health nutrition read scope and verify the Health identity before connection success.",
+        "Protect authorization state, callback replay, account identity and encrypted server-held credentials; require a verified non-anonymous LTS user for private operations.",
+        "Read all available source families with explicit civil dates and complete bounded pagination; never deduplicate by matching day or volume, infer MyFitnessPal identity or promote mirrors.",
+        "Keep returned raw/source records private and separate from canonical water, with atomic idempotent storage and stale-session protection.",
+        "Verify the unconfigured boundary, synthetic authorization/HTTP/database gates and exact published source; actual Google project/consent and real water remain independently unverified."
+      ],
+      "evidence": [
+        "Owner explicitly requests continued autonomous execution and automatic consolidation of already recorded data, without manual water re-entry.",
+        "Current primary setup, identity, hydration schema and dataPoints.list references were reread. The correct scope namespace is googlehealth.nutrition.readonly; prior private planning shorthand is superseded.",
+        "An isolated server-only reader and invented-fixture HTTP tests are implemented. Initial 35 cases pass locally, covering source/account/date, pagination, empty/malformed response, privacy and redirect boundaries.",
+        "The Cloud console remains unavailable after one low-risk recovery. No authorization, Google credential, health write or live water result is claimed."
+      ],
+      "next_action": "Complete the protected authorization and storage implementation, validate the database and HTTP boundaries, publish the exact tested source and verify safe disabled behavior. Retain all nine original dependencies and the existing .122 UI.",
       "blocker": null
     }
   ],

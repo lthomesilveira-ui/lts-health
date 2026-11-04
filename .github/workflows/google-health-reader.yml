@@ -1,0 +1,23 @@
+name: LTS Health Google hydration reader
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  google-health-reader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify read-only hydration, account, pagination and source boundaries
+        run: |
+          node --check supabase/functions/_shared/google-health-reader.mjs
+          node --test v2/google-health-reader-test.mjs
+          node v2/continuity-contract-smoke.mjs
+          node v2/public-payload-guard.mjs
