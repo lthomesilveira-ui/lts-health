@@ -4,13 +4,14 @@ import {addDays} from './integrated-analysis.js';
 
 const callback = `${CONFIG.url}/functions/v1/health-google-callback`;
 const readScope = 'https://www.googleapis.com/auth/googlehealth.nutrition.readonly';
+const returnKey = 'lts-google-health-return';
 let connection = null;
 
 function activeConnection() {
   const owner = state.session?.user?.id;
   if (fixtureMode || window.LTSPreviewReadOnly || !owner) return null;
   if (connection?.owner !== owner) {
-    connection = {owner, status: null, pending: null, message: '', initialReadAttempted: false};
+    connection = {owner, status: null, pending: null, message: ''};
   }
   return connection;
 }
@@ -88,8 +89,23 @@ function googleAuthorizationUrl(value) {
   return url.href;
 }
 
+function rememberReturn(entry) {
+  try { sessionStorage.setItem(returnKey, JSON.stringify([entry.owner, Date.now() + 600000])); } catch {}
+}
+
+function consumeReturn(entry) {
+  try {
+    const value = sessionStorage.getItem(returnKey);
+    if (!value) return false;
+    sessionStorage.removeItem(returnKey);
+    const [owner, expires] = JSON.parse(value);
+    return owner === entry.owner && Number.isFinite(expires) && expires > Date.now();
+  } catch { return false; }
+}
+
 export function resetGoogleHealthConnection() {
   connection = null;
+  try { sessionStorage.removeItem(returnKey); } catch {}
 }
 
 export function checkGoogleHealthConnection({initialRead = false} = {}) {
@@ -99,8 +115,7 @@ export function checkGoogleHealthConnection({initialRead = false} = {}) {
     entry.status = null;
     await updateStatus(entry);
     if (isCurrent(entry) && initialRead && entry.status.configured && entry.status.connected &&
-        !entry.initialReadAttempted && !entry.status.last_attempt_at && !entry.status.last_read_at) {
-      entry.initialReadAttempted = true;
+        consumeReturn(entry) && !entry.status.last_attempt_at && !entry.status.last_read_at) {
       await readHydration(entry);
     }
   }, 'Não foi possível concluir a verificação agora. Tente novamente em Dados & fontes.');
@@ -113,7 +128,10 @@ export function actOnGoogleHealth(action) {
   if (action === 'authorize') {
     return run(entry, async () => {
       const {authorization_url} = await invoke({action});
-      if (isCurrent(entry)) location.assign(googleAuthorizationUrl(authorization_url));
+      if (!isCurrent(entry)) return;
+      const target = googleAuthorizationUrl(authorization_url);
+      rememberReturn(entry);
+      location.assign(target);
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
@@ -126,7 +144,6 @@ export function actOnGoogleHealth(action) {
       if (!isCurrent(entry)) return;
       if (result.connected !== false) throw Error('Google Health still connected');
       entry.status = result;
-      entry.initialReadAttempted = false;
       entry.message = 'Conta Google Health desconectada do LTS Health.';
     }, 'Não foi possível desconectar a conta agora.');
   }

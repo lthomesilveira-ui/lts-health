@@ -20,6 +20,12 @@ console.log('Production integration status reads, absent-owner and disconnected 
 const googleCalls=[];
 const redirects=[];
 globalThis.location.assign=url=>redirects.push(url);
+const sessionValues=new Map();
+Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{
+  setItem:(key,value)=>sessionValues.set(key,value),
+  getItem:key=>sessionValues.get(key)??null,
+  removeItem:key=>sessionValues.delete(key)
+}});
 let status={configured:false,connected:false};
 let authorizationUrl;
 let afterStatus=null;
@@ -48,6 +54,11 @@ status={configured:true,connected:false};
 await checkGoogleHealthConnection({initialRead:true});
 assert.match(renderGoogleHealthConnection(),/Conectar Google Health/);
 assert.deepEqual(googleCalls.map(c=>c.action),['status','status']);
+status={configured:true,connected:true};
+await checkGoogleHealthConnection({initialRead:true});
+assert.deepEqual(googleCalls.map(c=>c.action),['status','status','status'],'a connected account cannot read on ordinary navigation');
+status={configured:true,connected:false};
+await checkGoogleHealthConnection();
 const legitimateUrl=new URL('https://accounts.google.com/o/oauth2/v2/auth');
 legitimateUrl.search=new URLSearchParams({
   redirect_uri:'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-google-callback',
@@ -70,6 +81,7 @@ assert.deepEqual(googleCalls.map(c=>c.action),['status','read','status']);
 assert.match(renderGoogleHealthConnection(),/1 registro de água para conferência de origem/);
 await checkGoogleHealthConnection({initialRead:true});
 assert.deepEqual(googleCalls.map(c=>c.action),['status','read','status','status']);
+assert.equal(sessionValues.size,0,'only the tab that initiated authorization can make a first read on return');
 
 status={configured:true,connected:true};
 let resolveStatus;

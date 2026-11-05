@@ -36,6 +36,12 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   check(googleUnauthenticated.status()===401,'Google connection accepts unauthenticated access');
   const googleInvalidCallback=await page.request.get(`${supabaseUrl}/functions/v1/health-google-callback?state=invalid`);
   check(googleInvalidCallback.status()===(google.status.configured?400:409),'Google callback accepted an invalid or unconfigured authorization');
+  await goto('dados','[data-google-health][aria-busy="false"]');
+  const googleCard=page.locator('[data-google-health]');
+  if(!google.status.configured){
+    check(await googleCard.getByText('Em preparação',{exact:true}).count()===1,'unconfigured Google entry is not clearly labelled');
+    check(await googleCard.locator('[data-google-health-action="authorize"],[data-google-health-action="read"]').count()===0,'unconfigured Google entry offers authorization or a read');
+  }
   await page.setViewportSize({width:390,height:844});
   await goto('treinos','.ltsTrainingV2');await page.locator('[data-depth-training-view="history"]').first().click();
   const workoutIds=[];

@@ -88,7 +88,7 @@ const manifest={
     "src/evolution-screen.js": "4b0e1328954de031c8c8a7ade77bb839c3b11f4cf2b9b0564c53b7005d74d57e",
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/fleury-preview.js": "7759d42b3b62800f405ba9cb216cd6ea51b61051f7421bef293bcddcb40f3855",
-    "src/google-health-connection.js": "6f83882dfab0c9036172fd91b95522b97a1f2b8e4d7d7dfb49d5246598889af0",
+    "src/google-health-connection.js": "d53fedf95d1a37fa166a9398589261f1c5520ed9769812295d81baf04804220e",
     "src/health-auto-export-connection.js": "e4b1f1f17c44ff9a1e3f48aced3a59b3f5215f86380ddea73b1cf7191beb6f37",
     "src/health-auto-export-data.js": "241dd41d8a5372f25dbd7c395028c51ebb43b25490f135a22b5fcffde5b415f2",
     "src/health-cockpit.js": "bdf5401f4a3f3b22a2bb9a651ff85e22b8494d6a7f8c6c4d773f5c481343c201",
