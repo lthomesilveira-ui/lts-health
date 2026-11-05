@@ -10,6 +10,8 @@ permissions:
 jobs:
   integrated-production:
     runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +43,6 @@ jobs:
       - name: Install pinned browser runtime
         run: |
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium webkit
       - name: Serve integrated production and legacy-fixture test entry
         id: app_server
         run: |
