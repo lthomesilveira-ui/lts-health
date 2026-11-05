@@ -27,6 +27,7 @@ import {mountEvidencePanels} from './evidence-priority.js';
 import {openEntry,setupEntryController} from './entry.js';
 import {checkPolarConnection,actOnPolar,resetPolarConnection} from './polar-connection.js';
 import {checkAutoExportConnection,actOnAutoExport,copyAutoExport,resetAutoExportConnection} from './health-auto-export-connection.js';
+import {checkGoogleHealthConnection,actOnGoogleHealth,resetGoogleHealthConnection} from './google-health-connection.js';
 import {downloadIntegratedSummary} from './integrated-review-view.js';
 import {saveGoals} from './personal-goals.js';
 import {isConfirmedFleuryUpload} from './fleury-preview.js';
@@ -92,6 +93,7 @@ function setRoute(route,{replace=true}={}){
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
   if(route==='dados'&&state.session)checkPolarConnection().then(scheduleRender);
   if(route==='dados'&&state.session)checkAutoExportConnection().then(scheduleRender);
+  if(route==='dados')checkGoogleHealthConnection({initialRead:true})?.then(scheduleRender);
   settleRouteScroll(route);
 }
 
@@ -201,7 +203,7 @@ function applyControlState(){
 async function refresh(){
   if(state.loading)return;
   setSync('Atualizando…');scheduleRender();
-  await Promise.all([refreshData(state.route,setSync),...(state.session?[checkPolarConnection(),checkAutoExportConnection()]:[])]);
+  await Promise.all([refreshData(state.route,setSync),...(state.session?[checkPolarConnection(),checkAutoExportConnection()]:[]),...(state.route==='dados'?[checkGoogleHealthConnection()]:[])]);
   scheduleRender();
 }
 async function updatePolarOnOpen(){const updated=await checkPolarConnection({syncOnOpen:true});if(updated)await refreshData(state.route,setSync);scheduleRender();}
@@ -308,6 +310,11 @@ function bindStaticEvents(){
     if(haeAction){haeAction.disabled=true;await actOnAutoExport(haeAction.dataset.haeAction);scheduleRender();return;}
     const haeCopy=event.target.closest('[data-hae-copy]');
     if(haeCopy){await copyAutoExport(haeCopy.dataset.haeCopy);scheduleRender();return;}
+    const googleHealthAction=event.target.closest('[data-google-health-action]');
+    if(googleHealthAction){
+      const action=actOnGoogleHealth(googleHealthAction.dataset.googleHealthAction);
+      scheduleRender();await action;scheduleRender();return;
+    }
     const polarCheck=event.target.closest('[data-polar-check]');
     if(polarCheck){polarCheck.disabled=true;await checkPolarConnection();scheduleRender();return;}
     const polarAction=event.target.closest('[data-polar-action]');
@@ -461,7 +468,7 @@ function bindStaticEvents(){
   $('loginBtn').addEventListener('click',doLogin);
   $('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
   $('refreshBtn').addEventListener('click',refresh);
-  $('logoutBtn').addEventListener('click',async()=>{state.ui.uploadFeedback=null;state.ui.uploadFileOwner=null;const original=$('uploadFile');if(original)original.value='';await signOut();resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
+  $('logoutBtn').addEventListener('click',async()=>{state.ui.uploadFeedback=null;state.ui.uploadFileOwner=null;const original=$('uploadFile');if(original)original.value='';await signOut();resetPolarConnection();resetAutoExportConnection();resetGoogleHealthConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();});
   $('closeMore').addEventListener('click',()=>$('moreSheet').classList.add('hidden'));
   $('moreSheet').addEventListener('click',e=>{if(e.target===$('moreSheet'))$('moreSheet').classList.add('hidden');});
   window.addEventListener('popstate',()=>setRoute(routeFromLocation()));
@@ -478,7 +485,7 @@ async function boot(){
   if(!fixtureMode)setGlobalPeriod('90');
   try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}}
   catch(error){console.error(error);showLogin('Não foi possível restaurar sua sessão.');}
-  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){state.ui.uploadFeedback=null;resetPolarConnection();resetAutoExportConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
+  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){state.ui.uploadFeedback=null;resetPolarConnection();resetAutoExportConnection();resetGoogleHealthConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
 }
 
 window.addEventListener('beforeunload',()=>authSubscription?.unsubscribe?.());

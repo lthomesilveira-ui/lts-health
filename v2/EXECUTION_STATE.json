@@ -50,47 +50,31 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-HYDRATION-READ-039",
-    "status": "done",
-    "goal": "Prepare a private server-only OAuth connection and bounded official hydration reader without changing the verified mobile bridge or promoting unverified sources.",
+    "id": "PKG-GOOGLE-HYDRATION-ONBOARDING-040",
+    "status": "in_progress",
+    "goal": "Provide the authenticated Google Health authorization entry and the first bounded water check after connection.",
     "task_ids": [
-      "LTS-GOOGLE-HYDRATION-READ-001"
+      "LTS-GOOGLE-HYDRATION-ONBOARDING-001"
     ],
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261105.123",
     "public_build": "health-integrated-20261102.122",
-    "runtime_changed": false,
+    "runtime_changed": true,
+    "frontend_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-04",
-    "pending_gates": [],
-    "completed_evidence": [
-      "Official nutrition-read-only scope, verified Health profile and bounded all-sources civil-date hydration reads implemented.",
-      "Server-held encrypted OAuth/PKCE, account binding, single-use atomic authorization slot and immutable private snapshots validated by 53 Node and 11 PostgreSQL17.11 tests.",
-      "Native migration 20261104233826 applied; three empty service-only RLS tables and five SECURITY INVOKER operations verified. No source or canonical row was changed.",
-      "Connection and callback version1 deployed; all five files per function match the tested source. Live unauthenticated connection returns401 and disabled callback returns409/configuration_required.",
-      "Verified .122 frontend and all 127 pre-existing task objects preserved. Real Google client/consent, water retrieval and recurrence remain independent.",
-      "Candidate22/22, exact normal source merge, protected genuine authenticated deployment checks and the seven-check CI dependency recovery passed. Failed installation attempts remain recorded as cancellations."
+    "started_on": "2026-11-05",
+    "pending_gates": [
+      "candidate_desktop_mobile",
+      "candidate_workflows",
+      "normal_merge_and_pages",
+      "published_protected_status"
     ],
-    "completed_on": "2026-11-05",
-    "frontend_runtime_changed": false,
-    "server_runtime_changed": true,
-    "release_state": "server_preparation_delivered_external_google_activation_unverified",
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_HYDRATION_20261104.md",
-    "recorded_interrupted_validation_runs": [
-      {
-        "run_id": 41936831438,
-        "job_id": 126947292252,
-        "scope": "Ubuntu browser dependency installation",
-        "result": "cancelled_before_browser_tests"
-      },
-      {
-        "run_id": 41936831438,
-        "job_id": 126978551993,
-        "scope": "same dependency installation retry",
-        "result": "cancelled_before_browser_tests",
-        "recovery_pr": 499
-      }
-    ]
+    "completed_evidence": [
+      "Google Health API activation was confirmed by the owner. Project evidence remains private.",
+      "Local contract tests verify private status, exact read-only redirect, one initial 30-day read and stale-session isolation."
+    ],
+    "evidence_document": "v2/CURRENT_HANDOFF.md"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3490,6 +3474,24 @@
         "The .122 frontend is unchanged and still returnedHTTP200. The private server preparation is delivered; all original source, water, coverage and owner-acceptance criteria remain separate."
       ],
       "next_action": "Do not repeat the delivered server preparation. Resume the original water/source conditions after official Google project configuration, owner consent, a verified real source read and an independent later automatic update; none is claimed by this task.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-GOOGLE-HYDRATION-ONBOARDING-001",
+      "area": "integrations / Google Health onboarding",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Let the authenticated owner connect Google Health in Data & Sources and see the outcome of the first water read.",
+      "acceptance": [
+        "Display private connection status and start only the official Google authorization with the deployed callback and read-only nutrition scope.",
+        "After a successful connection, make one bounded 30-day check and distinguish an empty period, received observations awaiting source review and failures.",
+        "Preserve canonical water, credentials and existing integrations. Verify the published authenticated entry and responsive controls."
+      ],
+      "evidence": [
+        "Owner verified API activation. Local tests cover absent owner, strict redirect and scope, first read, repeated navigation and logout during a pending check."
+      ],
+      "next_action": "Run candidate browser/workflow gates and publish through a normal merge. Real OAuth configuration, consent and data reconciliation remain separate.",
       "blocker": null
     }
   ],

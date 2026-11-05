@@ -6,6 +6,7 @@ globalThis.window={supabase:{createClient:()=>client}};
 const {state}=await import('./src/core.js');
 const {checkPolarConnection,resetPolarConnection}=await import('./src/polar-connection.js');
 const {checkAutoExportConnection,resetAutoExportConnection}=await import('./src/health-auto-export-connection.js');
+const {actOnGoogleHealth,checkGoogleHealthConnection,renderGoogleHealthConnection,resetGoogleHealthConnection}=await import('./src/google-health-connection.js');
 await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0,'absent owner does not call integrations');
 state.session={user:{id:'synthetic-owner'}};
 await checkPolarConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'manual check is read-only');
@@ -15,3 +16,70 @@ calls=[];response={configured:true,connected:true,last_attempt_at:'2000-01-01T00
 calls=[];response={configured:false,received:false};await checkAutoExportConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'receiver check never creates or rotates a credential');
 resetPolarConnection();resetAutoExportConnection();state.session=null;calls=[];await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0);
 console.log('Production integration status reads, absent-owner and disconnected boundaries, existing bounded Polar refresh and no implicit credential creation passed.');
+
+const googleCalls=[];
+const redirects=[];
+globalThis.location.assign=url=>redirects.push(url);
+let status={configured:false,connected:false};
+let authorizationUrl;
+let afterStatus=null;
+client.functions.invoke=async(name,{body})=>{
+  assert.equal(name,'health-google-connection');
+  googleCalls.push(body);
+  if(body.action==='status'){
+    if(afterStatus)await afterStatus;
+    return {data:{...status},error:null};
+  }
+  if(body.action==='authorize')return {data:{authorization_url:authorizationUrl},error:null};
+  if(body.action==='read'){
+    assert.equal((Date.parse(body.to)-Date.parse(body.from))/86400000,29);
+    status={...status,last_attempt_at:'2001-05-04T19:00:00Z',last_read_at:'2001-05-04T19:00:01Z'};
+    return {data:{read:true,observations:1,empty:false,canonical_updated:false},error:null};
+  }
+  throw Error('Unexpected Google action');
+};
+await checkGoogleHealthConnection({initialRead:true});
+assert.deepEqual(googleCalls,[]);
+assert.equal(renderGoogleHealthConnection(),'');
+state.session={user:{id:'synthetic-owner'}};
+await checkGoogleHealthConnection({initialRead:true});
+assert.doesNotMatch(renderGoogleHealthConnection(),/Conectar Google Health/);
+status={configured:true,connected:false};
+await checkGoogleHealthConnection({initialRead:true});
+assert.match(renderGoogleHealthConnection(),/Conectar Google Health/);
+assert.deepEqual(googleCalls.map(c=>c.action),['status','status']);
+const legitimateUrl=new URL('https://accounts.google.com/o/oauth2/v2/auth');
+legitimateUrl.search=new URLSearchParams({
+  redirect_uri:'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-google-callback',
+  scope:'https://www.googleapis.com/auth/googlehealth.nutrition.readonly',
+  code_challenge_method:'S256',response_type:'code'
+});
+authorizationUrl=legitimateUrl.href.replace('accounts.google.com','accounts.example.invalid');
+await actOnGoogleHealth('authorize');
+assert.deepEqual(redirects,[]);
+authorizationUrl=legitimateUrl.href+'&scope=additional-access';
+await actOnGoogleHealth('authorize');
+assert.deepEqual(redirects,[]);
+authorizationUrl=legitimateUrl.href;
+await actOnGoogleHealth('authorize');
+assert.deepEqual(redirects,[legitimateUrl.href]);
+status={configured:true,connected:true};
+googleCalls.length=0;
+await Promise.all([checkGoogleHealthConnection({initialRead:true}),checkGoogleHealthConnection({initialRead:true})]);
+assert.deepEqual(googleCalls.map(c=>c.action),['status','read','status']);
+assert.match(renderGoogleHealthConnection(),/1 registro de água para conferência de origem/);
+await checkGoogleHealthConnection({initialRead:true});
+assert.deepEqual(googleCalls.map(c=>c.action),['status','read','status','status']);
+
+status={configured:true,connected:true};
+let resolveStatus;
+afterStatus=new Promise(resolve=>{resolveStatus=resolve;});
+const staleCheck=checkGoogleHealthConnection({initialRead:true});
+await Promise.resolve();
+resetGoogleHealthConnection();
+state.session=null;
+resolveStatus();
+await staleCheck;
+assert.equal(renderGoogleHealthConnection(),'');
+assert.deepEqual(googleCalls.map(c=>c.action),['status','read','status','status','status']);
+console.log('Google onboarding: private status, official read-only redirect, one bounded initial water check, and stale session isolation passed.');

@@ -1,3 +1,9 @@
+## Em validação — conexão de hidratação Google Health no app
+
+A API Google Health foi ativada pelo proprietário. A candidata .123 acrescenta, em Dados & fontes, a autorização oficial e uma primeira conferência dos últimos 30 dias após conectar. Uma leitura bem-sucedida distingue período vazio de registros recebidos para conciliação de origem. Os registros de origem ficam no servidor privado até validação e o painel não soma dados automaticamente nesta etapa.
+
+Passaram os contratos locais de sessão, redirecionamento e escopo, primeira leitura, reentrada e ausência de efeito canônico. O navegador local abortou antes de executar a jornada por restrição de socket. Os gates de interface e publicação continuam pendentes. A configuração de credenciais do cliente web e o consentimento Google são etapas externas separadas. A ativação da API não deve ser repetida e não fecha os nove bloqueios de fontes e aceite.
+
 ## Concluído — preparação privada da leitura Google Health, 05/11/2026
 
 `PKG-GOOGLE-HYDRATION-READ-039` / `LTS-GOOGLE-HYDRATION-READ-001` está concluído como preparação de servidor. O leitor oficial preserva perfil, datas civis, todas as origens e paginação completa; a autorização usa PKCE, estado atômico de uso único e tokens criptografados por conta/finalidade; os resultados completos ficam em snapshots privados e idempotentes, separados da água canônica. O escopo correto é somente `googlehealth.nutrition.readonly`.
