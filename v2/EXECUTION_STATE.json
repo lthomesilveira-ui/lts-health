@@ -107,6 +107,22 @@
         "conclusion": "cancelled",
         "preserved_result": "The main visual-training job 127555966768 passed. This auxiliary cancellation is not success and did not trigger a rerun."
       }
+    ],
+    "recorded_failed_validation_runs": [
+      {
+        "run_id": 41372128661,
+        "attempt": 1,
+        "scope": "supplemental public fixture navigation before DOM",
+        "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+      },
+      {
+        "run_id": 41373999373,
+        "attempt": 1,
+        "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
+        "artifact_id": 13110745602,
+        "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
+        "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+      }
     ]
   },
   "tasks": [
