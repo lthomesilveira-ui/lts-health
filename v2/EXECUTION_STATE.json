@@ -51,68 +51,61 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-HYDRATION-ONBOARDING-040",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Provide the authenticated Google Health authorization entry and the first bounded water check after connection.",
     "task_ids": [
       "LTS-GOOGLE-HYDRATION-ONBOARDING-001"
     ],
     "candidate_build": "health-integrated-20261105.123",
-    "public_build": "health-integrated-20261102.122",
+    "public_build": "health-integrated-20261105.123",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-05",
-    "pending_gates": [
-      "candidate_desktop_mobile",
-      "candidate_workflows",
-      "normal_merge_and_pages",
-      "published_protected_status"
-    ],
+    "completed_on": "2026-11-05",
+    "pending_gates": [],
     "completed_evidence": [
       "Google Health API activation was confirmed by the owner. Project evidence remains private.",
-      "Local contract tests verify private status, exact read-only redirect, one initial 30-day read and stale-session isolation."
+      "Exact candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks.",
+      "Normal PR501 merge 9b472aa3749ec1b4014157ce35998b016572f166 published health-integrated-20261105.123; deploy, both Pages entries and protected actual authentication passed.",
+      "Calendar/PDF 42116082111, integrated-production 42116081828, functional-depth 42116081791 and preview-contract 42116081781 completed successfully. Visual main job 127555966768 passed; auxiliary visual host job 127555966897 was cancelled during browser installation and was not promoted to success.",
+      "The authenticated public entry shows private Google connection status and keeps the connection control hidden while signed out. No Google account, consent or real hydration read was claimed."
     ],
     "evidence_document": "v2/CURRENT_HANDOFF.md"
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261102.122",
-    "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
-    "runtime_promotion_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
-    "published_on": "2026-11-02",
-    "release_kind": "calendar_training_count_copy",
-    "manual_exact_public_status": "exact_authenticated_public_calendar_report_verified",
-    "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact desktop/mobile evidence, actual concise/full PDFs and genuine authenticated public inspection verified.",
+    "build_id": "health-integrated-20261105.123",
+    "main_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
+    "runtime_promotion_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
+    "published_on": "2026-11-05",
+    "release_kind": "google_health_onboarding",
+    "manual_exact_public_status": "exact_authenticated_public_google_connection_entry_verified",
+    "automated_runtime_and_responsive_status": "Candidate 22/22 passed. Publication deploy, both Pages entries, protected actual authentication and four broad runs passed; the visual main job passed while its auxiliary host job was cancelled during browser installation and remains recorded as non-success.",
     "evidence": [
-      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
-      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
-      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
-      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
+      "PR501 final candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks.",
+      "Normal merge 9b472aa3749ec1b4014157ce35998b016572f166 preserved the tested tree and published health-integrated-20261105.123. Deploy 42116082225, public entry 42116082218, Pages 42116179176/42116179750 and protected Real Auth 42116081743 passed.",
+      "Calendar/PDF 42116082111, integrated-production 42116081828, functional-depth 42116081791 and preview-contract 42116081781 completed successfully. Visual run 42116081955 retained main job 127555966768 success and auxiliary host job 127555966897 cancelled; the cancellation was not retried or counted as success.",
+      "The exact public .123 was inspected authenticated: Google connection status is private, the control remains hidden while signed out, and no canonical hydration, source label or clinical record changes before reconciliation."
     ],
     "ci_summary": {
-      "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
-      "total": 23,
-      "success": 23,
-      "status": "complete",
-      "protected_actual_auth_run": 41462308456,
+      "main_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
+      "total": 25,
+      "success": 24,
+      "cancelled": 1,
+      "status": "complete_with_preserved_auxiliary_cancel",
+      "protected_actual_auth_run": 42116081743,
       "pending_workflows": []
     },
-    "recorded_failed_validation_runs": [
+    "recorded_non_success_validation_runs": [
       {
-        "run_id": 41372128661,
-        "attempt": 1,
-        "scope": "supplemental public fixture navigation before DOM",
-        "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
-      },
-      {
-        "run_id": 41373999373,
-        "attempt": 1,
-        "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
-        "artifact_id": 13110745602,
-        "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
-        "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+        "run_id": 42116081955,
+        "job_id": 127555966897,
+        "scope": "auxiliary visual-training-host browser installation",
+        "conclusion": "cancelled",
+        "preserved_result": "The main visual-training job 127555966768 passed. This auxiliary cancellation is not success and did not trigger a rerun."
       }
     ]
   },
@@ -3480,7 +3473,7 @@
       "id": "LTS-GOOGLE-HYDRATION-ONBOARDING-001",
       "area": "integrations / Google Health onboarding",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Let the authenticated owner connect Google Health in Data & Sources and see the outcome of the first water read.",
       "acceptance": [
@@ -3489,9 +3482,12 @@
         "Preserve canonical water, credentials and existing integrations. Verify the published authenticated entry and responsive controls."
       ],
       "evidence": [
-        "Owner verified API activation. Local tests cover absent owner, strict redirect and scope, first read, repeated navigation and logout during a pending check."
+        "Owner verified Google Health API activation. Contracts cover absent owner, strict redirect and read-only scope, first bounded read, repeated navigation and logout during a pending check.",
+        "Exact candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks. Normal PR501 merge 9b472aa3749ec1b4014157ce35998b016572f166 published health-integrated-20261105.123.",
+        "Deploy, both Pages entries, protected actual authentication, Calendar/PDF, integrated-production, functional-depth and preview-contract passed. The visual main job passed; the auxiliary host job cancellation remains explicitly non-success.",
+        "Authenticated public inspection verified the private connection status and signed-out boundary. Real OAuth client configuration, consent, Google account connection and hydration observations remain external evidence required by the existing source/recurrence tasks."
       ],
-      "next_action": "Run candidate browser/workflow gates and publish through a normal merge. Real OAuth configuration, consent and data reconciliation remain separate.",
+      "next_action": "Preserve the published entry. Resume only when an OAuth web client can be configured securely and the owner can grant googlehealth.nutrition.readonly; reconcile any returned hydration by identity and origin before promotion.",
       "blocker": null
     }
   ],
