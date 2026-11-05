@@ -14,6 +14,8 @@ permissions:
 jobs:
   synthetic-calendar-report-export:
     runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     timeout-minutes: 15
     env:
       LTS_HEALTH_BASE_URL: http://127.0.0.1:4173/preview/compact-evidence/
@@ -29,9 +31,8 @@ jobs:
       - name: Install pinned browser engines and PDF inspection tools
         run: |
           npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium webkit
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
+          apt-get update
+          apt-get install -y --no-install-recommends poppler-utils
       - name: Serve generic application for synthetic-only tests
         run: |
           python3 -m http.server 4173 >/tmp/health-calendar-server.log 2>&1 &

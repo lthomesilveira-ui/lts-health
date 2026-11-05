@@ -3,6 +3,7 @@ import {sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucke
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
+import {renderGoogleHealthConnection} from './google-health-connection.js';
 import {renderFleuryPreview,fleuryPreviewModel,isConfirmedFleuryUpload} from './fleury-preview.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
@@ -210,6 +211,7 @@ export function renderDataHub(){
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados & fontes','Conecte seus aplicativos, envie arquivos e acompanhe as atualizações do seu histórico.','Seu histórico')}
     ${renderConnections()}
+    ${renderGoogleHealthConnection()}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
     ${waterSourceBridge()}

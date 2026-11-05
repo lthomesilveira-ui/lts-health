@@ -106,7 +106,8 @@ for(const width of [320,393,1440]){
  await page.evaluate(()=>{
   window.__statusOverrides={
    'health-polar-connection':{configured:true,connected:true,update_mode:'scheduled_hourly',last_sync_at:'2001-04-03T07:15:00Z',last_scheduled_sync_at:'2001-04-03T07:15:00Z'},
-   'health-auto-export-connection':{configured:true,received:true,last_received_at:'2001-04-03T08:20:00Z',last_metric_date:'2001-04-02'}
+   'health-auto-export-connection':{configured:true,received:true,last_received_at:'2001-04-03T08:20:00Z',last_metric_date:'2001-04-02'},
+   'health-google-connection':{configured:true,connected:false}
   };
   window.__reviewDb.health_daily_nutrition=[{source_record_id:'invented-file',nutrition_date:'2001-03-01',source:'MyFitnessPal',calories_kcal:1234}];
   window.__reviewDb.health_nutrition_meals=[];
@@ -120,6 +121,11 @@ for(const width of [320,393,1440]){
  await page.locator('#refreshBtn').click();
  await page.waitForFunction(()=>document.querySelector('[data-connections]')?.textContent.includes('03/04/2001, 04:15:00'));
  assert.ok((await page.locator('[data-health-auto-export]').innerText()).includes('03/04/2001, 05:20:00'));
+ const googleCard=page.locator('[data-google-health]');
+ const googleConnect=googleCard.getByRole('button',{name:'Conectar Google Health',exact:true});
+ await googleConnect.waitFor();
+ assert.ok((await googleConnect.boundingBox()).height>=44,'Google connect button has a mobile touch target');
+ assert.equal(await googleCard.getByRole('button',{name:'Conferir água dos últimos 30 dias'}).count(),0,'a disconnected account cannot read water');
  const mfpCard=page.locator('.sourceStatus.ready').filter({hasText:'Totais identificados como MyFitnessPal'});
  const mfpText=await mfpCard.innerText();
  assert.ok(mfpText.includes('Histórico por arquivo até: 01/03/2001'));

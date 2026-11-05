@@ -68,7 +68,7 @@ function installService(db,tables){
  window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:window.__qaSession},error:null}),onAuthStateChange:callback=>{window.__qaAuthCallback=callback;return{data:{subscription:{unsubscribe(){}}}};},signOut:async()=>{window.__qaSession=null;window.__qaAuthCallback?.('SIGNED_OUT',null);return{error:null};}},from:query,
   functions:{invoke:async(name,args)=>{
    const action=args?.body?.action;window.__qaCalls.push({name,action});
-   if(action!=='status'||!['health-polar-connection','health-auto-export-connection'].includes(name))return deny('invoke '+name+' '+action);
+   if(action!=='status'||!['health-polar-connection','health-auto-export-connection','health-google-connection'].includes(name))return deny('invoke '+name+' '+action);
    if(!window.__qaSession||window.__qaHaeError&&name==='health-auto-export-connection')return failure('Synthetic connection unavailable');
    return {data:name==='health-auto-export-connection'?structuredClone(window.__qaHaeStatus):{configured:false,connected:false},error:null};
   }},rpc:name=>deny('rpc '+name),storage:{from:name=>({upload:()=>deny('upload '+name),remove:()=>deny('remove '+name)})}})};
