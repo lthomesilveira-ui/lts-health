@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-04",
+  "updated_on": "2026-11-05",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-HYDRATION-READ-039",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Prepare a private server-only OAuth connection and bounded official hydration reader without changing the verified mobile bridge or promoting unverified sources.",
     "task_ids": [
       "LTS-GOOGLE-HYDRATION-READ-001"
@@ -62,16 +62,34 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-04",
-    "pending_gates": [
-      "final_candidate_CI_and_normal_merge",
-      "authenticated_deployed_status_and_postmerge_checks"
-    ],
+    "pending_gates": [],
     "completed_evidence": [
       "Official nutrition-read-only scope, verified Health profile and bounded all-sources civil-date hydration reads implemented.",
       "Server-held encrypted OAuth/PKCE, account binding, single-use atomic authorization slot and immutable private snapshots validated by 53 Node and 11 PostgreSQL17.11 tests.",
       "Native migration 20261104233826 applied; three empty service-only RLS tables and five SECURITY INVOKER operations verified. No source or canonical row was changed.",
       "Connection and callback version1 deployed; all five files per function match the tested source. Live unauthenticated connection returns401 and disabled callback returns409/configuration_required.",
-      "Verified .122 frontend and all 127 pre-existing task objects preserved. Real Google client/consent, water retrieval and recurrence remain independent."
+      "Verified .122 frontend and all 127 pre-existing task objects preserved. Real Google client/consent, water retrieval and recurrence remain independent.",
+      "Candidate22/22, exact normal source merge, protected genuine authenticated deployment checks and the seven-check CI dependency recovery passed. Failed installation attempts remain recorded as cancellations."
+    ],
+    "completed_on": "2026-11-05",
+    "frontend_runtime_changed": false,
+    "server_runtime_changed": true,
+    "release_state": "server_preparation_delivered_external_google_activation_unverified",
+    "evidence_document": "v2/releases/GOOGLE_HEALTH_HYDRATION_20261104.md",
+    "recorded_interrupted_validation_runs": [
+      {
+        "run_id": 41936831438,
+        "job_id": 126947292252,
+        "scope": "Ubuntu browser dependency installation",
+        "result": "cancelled_before_browser_tests"
+      },
+      {
+        "run_id": 41936831438,
+        "job_id": 126978551993,
+        "scope": "same dependency installation retry",
+        "result": "cancelled_before_browser_tests",
+        "recovery_pr": 499
+      }
     ]
   },
   "last_verified_release": {
@@ -3448,7 +3466,7 @@
       "id": "LTS-GOOGLE-HYDRATION-READ-001",
       "area": "integrations / Google Health preparation",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Prepare an isolated official hydration read path with server-held authorization, complete bounded reads and private source-preserving results.",
       "acceptance": [
@@ -3465,9 +3483,13 @@
         "11 PostgreSQL17.11 tests pass for minimum privileges, RLS, atomic state use, concurrent claims, account isolation, rollback, immutable snapshots and safe schema reapplication. An intermediate synthetic hash collision was preserved as a failed run and corrected without weakening identity constraints.",
         "Native migration 20261104233826 applied. Readback confirmed three empty RLS tables, no frontend grants and no public function execution. The bounded slot variant uses no DELETE statements.",
         "Both Edge functions version1 are active and byte-identical to the tested five-file bundles. Connection requires a verified JWT; callback authenticates its single-use state. Live negative checks returned401 and409/configuration_required.",
-        "No Google project/client/secret/consent exists; no real Google hydration read, canonical water change or recurring operation is claimed. The official setup route has reached secure Google sign-in."
+        "No Google project/client/secret/consent exists; no real Google hydration read, canonical water change or recurring operation is claimed. The official setup route has reached secure Google sign-in.",
+        "PR498 candidate d8579bb87f80996e844d83ffcd002cb83d879e48 passed22/22; normal merge eee4d2eff43bd5328d812e1399f47be1642e3bbd preserved exact tree2c0729710e77140ddfc1afc1f24cf26c5369cec0.",
+        "Protected genuine Real Auth41936831636/job126947292540 passed the deployed authenticated Google status, credential privacy and rejection checks; no Google authorization or hydration data was created.",
+        "The original postmerge snapshot retained26 successes and a functional-depth job cancelled twice while installing Ubuntu browser dependencies. PR499 uses the existing pinned official image without changing tests or package version. Its exact candidate5830f8303e999a3d9e74b8e2b5206da2af3a2113 passed7/7 and all browser steps; normal merge86143c6e3ebec637f8adaff3c459f7ecf1229c52 preserves treea870ffcac4409285b4bfab0164ee639bf8bc2b84.",
+        "The .122 frontend is unchanged and still returnedHTTP200. The private server preparation is delivered; all original source, water, coverage and owner-acceptance criteria remain separate."
       ],
-      "next_action": "Complete final candidate gates, normal publication and the existing protected real-auth status check. Then record the internal preparation as delivered while retaining all original source, water, coverage and owner-acceptance conditions.",
+      "next_action": "Do not repeat the delivered server preparation. Resume the original water/source conditions after official Google project configuration, owner consent, a verified real source read and an independent later automatic update; none is claimed by this task.",
       "blocker": null
     }
   ],
@@ -5107,6 +5129,49 @@
         "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
         "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
         "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
+      ]
+    },
+    {
+      "id": "PKG-GOOGLE-HYDRATION-READ-039",
+      "status": "done",
+      "goal": "Prepare a private server-only OAuth connection and bounded official hydration reader without changing the verified mobile bridge or promoting unverified sources.",
+      "task_ids": [
+        "LTS-GOOGLE-HYDRATION-READ-001"
+      ],
+      "candidate_build": null,
+      "public_build": "health-integrated-20261102.122",
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-04",
+      "pending_gates": [],
+      "completed_evidence": [
+        "Official nutrition-read-only scope, verified Health profile and bounded all-sources civil-date hydration reads implemented.",
+        "Server-held encrypted OAuth/PKCE, account binding, single-use atomic authorization slot and immutable private snapshots validated by 53 Node and 11 PostgreSQL17.11 tests.",
+        "Native migration 20261104233826 applied; three empty service-only RLS tables and five SECURITY INVOKER operations verified. No source or canonical row was changed.",
+        "Connection and callback version1 deployed; all five files per function match the tested source. Live unauthenticated connection returns401 and disabled callback returns409/configuration_required.",
+        "Verified .122 frontend and all 127 pre-existing task objects preserved. Real Google client/consent, water retrieval and recurrence remain independent.",
+        "Candidate22/22, exact normal source merge, protected genuine authenticated deployment checks and the seven-check CI dependency recovery passed. Failed installation attempts remain recorded as cancellations."
+      ],
+      "completed_on": "2026-11-05",
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "release_state": "server_preparation_delivered_external_google_activation_unverified",
+      "evidence_document": "v2/releases/GOOGLE_HEALTH_HYDRATION_20261104.md",
+      "recorded_interrupted_validation_runs": [
+        {
+          "run_id": 41936831438,
+          "job_id": 126947292252,
+          "scope": "Ubuntu browser dependency installation",
+          "result": "cancelled_before_browser_tests"
+        },
+        {
+          "run_id": 41936831438,
+          "job_id": 126978551993,
+          "scope": "same dependency installation retry",
+          "result": "cancelled_before_browser_tests",
+          "recovery_pr": 499
+        }
       ]
     }
   ],
@@ -9909,37 +9974,37 @@
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-04",
-    "reviewed_at_utc": "2026-11-04T10:08:35+00:00",
-    "source_main_commit": "536b15bd31f98820070ef5e636237347603e9757",
+    "reviewed_on": "2026-11-05",
+    "reviewed_at_utc": "2026-11-05T02:18:08.623Z",
+    "source_main_commit": "86143c6e3ebec637f8adaff3c459f7ecf1229c52",
     "runtime_build": "health-integrated-20261102.122",
     "candidate_build": null,
     "runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 114,
+      "done": 115,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "The current queue was recalculated from main; no pull request or executable package was open at this review.",
-      "Fresh owner-scoped aggregate receiving/source checks still do not establish restored water or attributable automatic recurrence. Other metrics were received later; private dates and counts remain in the owner checkpoint.",
-      "The already supplied native connection, source consent, source-attributed hydration, permissions, settings and negative resynchronization evidence supersedes the old request for another phone card check.",
-      "Existing support conversations were read without sending a message. The latest water reply provides no effective-query or write result; the export conversation has no new provider response.",
-      "The owner's requirement is automatic consolidation of existing records. Manual re-entry, repeat setup and recurring manual exports are not accepted substitutes.",
-      "Current primary Google Health documentation permits a separate OAuth-backed read-only path, but no LTS client/consent or live API result exists. The Google Cloud console was unavailable in this browser and no suitable connected configuration tool was found.",
-      "This reconciliation changes project controls only. The verified .122 runtime, original observations, independent unmet criteria and prior release evidence are preserved."
+      "Official server-only Google hydration preparation is deployed and validated; the correct scope, Health identity, bounded complete source reads and atomic private snapshots are implemented.",
+      "PR498 exact candidate22/22, protected genuine deployment status and source-preserving .122 public response passed; migration and function bundles were verified.",
+      "Two postmerge dependency-installation cancellations are preserved. PR499 fixes only the runner environment with the already used pinned official image; its exact candidate7/7 and browser tests passed before a normal merge.",
+      "All127 pre-existing task objects and their independent criteria are preserved. The new internal preparation task is done; nine genuine external/source/access/owner conditions remain open.",
+      "No Google project/client/secret/consent, real hydration read, canonical promotion or later recurring update is claimed. Browser authentication and fresh verification did not return a result in this session; do not repeat credential requests or infer login success.",
+      "No phone setup, manual water entry, duplicate upload, clinical write or support message was repeated."
     ],
     "ux_review": {
-      "area": "source_continuity",
-      "next_area": "exams",
-      "mode": "native_evidence_and_read_only_source_review",
-      "result": "completed_native_checks_reconciled_without_runtime_or_data_change"
+      "area": "google_health_preparation",
+      "next_area": "reports",
+      "mode": "server_publication_and_protected_status_with_ci_recovery",
+      "result": "internal_preparation_delivered_external_activation_unverified"
     },
-    "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal."
+    "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal.",
+    "server_runtime_changed": true
   },
   "continuity_review_history": [
     {
@@ -11166,6 +11231,39 @@
         "result": "concrete_copy_defects_corrected_and_verified"
       },
       "open_dependency_policy": "Nine source/provider/original-record/global acceptance conditions remain open independently. Do not repeat completed native setup, genuine file upload, support messages or reconstruct the historical clinical proposal."
+    },
+    {
+      "reviewed_on": "2026-11-04",
+      "reviewed_at_utc": "2026-11-04T10:08:35+00:00",
+      "source_main_commit": "536b15bd31f98820070ef5e636237347603e9757",
+      "runtime_build": "health-integrated-20261102.122",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 114,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "The current queue was recalculated from main; no pull request or executable package was open at this review.",
+        "Fresh owner-scoped aggregate receiving/source checks still do not establish restored water or attributable automatic recurrence. Other metrics were received later; private dates and counts remain in the owner checkpoint.",
+        "The already supplied native connection, source consent, source-attributed hydration, permissions, settings and negative resynchronization evidence supersedes the old request for another phone card check.",
+        "Existing support conversations were read without sending a message. The latest water reply provides no effective-query or write result; the export conversation has no new provider response.",
+        "The owner's requirement is automatic consolidation of existing records. Manual re-entry, repeat setup and recurring manual exports are not accepted substitutes.",
+        "Current primary Google Health documentation permits a separate OAuth-backed read-only path, but no LTS client/consent or live API result exists. The Google Cloud console was unavailable in this browser and no suitable connected configuration tool was found.",
+        "This reconciliation changes project controls only. The verified .122 runtime, original observations, independent unmet criteria and prior release evidence are preserved."
+      ],
+      "ux_review": {
+        "area": "source_continuity",
+        "next_area": "exams",
+        "mode": "native_evidence_and_read_only_source_review",
+        "result": "completed_native_checks_reconciled_without_runtime_or_data_change"
+      },
+      "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal."
     }
   ],
   "continuation_automation": {
@@ -11175,5 +11273,22 @@
     "notification_policy": "material_progress_or_indispensable_owner_action",
     "private_identity_location": "owner_checkpoint",
     "authorization": "explicit_owner_successive_round_request_20261030"
+  },
+  "last_verified_server_preparation": {
+    "package_id": "PKG-GOOGLE-HYDRATION-READ-039",
+    "implementation_pr": 498,
+    "implementation_merge": "eee4d2eff43bd5328d812e1399f47be1642e3bbd",
+    "candidate": "d8579bb87f80996e844d83ffcd002cb83d879e48",
+    "native_migration": "20261104233826",
+    "connection_version": 1,
+    "callback_version": 1,
+    "reader_authorization_tests": 53,
+    "postgres_tests": 11,
+    "authenticated_gate_run": 41936831636,
+    "ci_recovery_pr": 499,
+    "ci_recovery_merge": "86143c6e3ebec637f8adaff3c459f7ecf1229c52",
+    "frontend_build": "health-integrated-20261102.122",
+    "google_configured": false,
+    "real_hydration_verified": false
   }
 }

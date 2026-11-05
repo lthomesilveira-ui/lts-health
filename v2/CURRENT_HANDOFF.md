@@ -1,3 +1,17 @@
+## Concluído — preparação privada da leitura Google Health, 05/11/2026
+
+`PKG-GOOGLE-HYDRATION-READ-039` / `LTS-GOOGLE-HYDRATION-READ-001` está concluído como preparação de servidor. O leitor oficial preserva perfil, datas civis, todas as origens e paginação completa; a autorização usa PKCE, estado atômico de uso único e tokens criptografados por conta/finalidade; os resultados completos ficam em snapshots privados e idempotentes, separados da água canônica. O escopo correto é somente `googlehealth.nutrition.readonly`.
+
+A migration nativa20261104233826 e as duas rotas versão1 foram publicadas e conferidas por conteúdo, privilégios e respostas de proteção.53testes Node,11testes PostgreSQL17.11 e o gate genuíno Real Auth41936831636 passaram. PR498 candidata d8579bb87f80996e844d83ffcd002cb83d879e48 teve22/22 e merge normal eee4d2eff43bd5328d812e1399f47be1642e3bbd, com a árvore exata2c0729710e77140ddfc1afc1f24cf26c5369cec0.
+
+O pós-merge original teve26sucessos e um gate cancelado duas vezes pelo limite de downloads Ubuntu, antes dos testes de navegador. Essas interrupções não foram reclassificadas como sucesso. PR499 mudou somente o ambiente de execução para a imagem oficial Playwright1.56.1-noble já usada no projeto, mantendo pacote, testes, asserções, limite e artefatos. Sua candidata5830f8303e999a3d9e74b8e2b5206da2af3a2113 passou7/7 e todos os passos de navegador; merge normal86143c6e3ebec637f8adaff3c459f7ecf1229c52 preserva a árvorea870ffcac4409285b4bfab0164ee639bf8bc2b84. Não repetir a preparação ou downloads anteriores.
+
+Fila:115done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. As127tarefas anteriores, seus critérios e estados permanecem preservados. O frontend continua `health-integrated-20261102.122`; a entrada pública HTTP200 foi conferida. Nenhum registro clínico/original ou rotina do telefone foi alterado.
+
+A ativação Google e a água real continuam sem comprovação. Não existe cliente/projeto/segredo/consentimento configurado. O pedido seguro de login, a leitura da aba e a verificação em página nova não retornaram resultado nesta sessão: autenticação desconhecida, sem evidência de CAPTCHA/bot ou recusa do proprietário. Não repetir pedidos de credencial, usar caminhos indiretos ou declarar sucesso. Retomar o acesso oficial quando responder; consentimento, leitura de registros existentes, reconciliação de origem/espelhos e atualização automática posterior têm seus próprios aceites. Nenhum lançamento manual, reset, captura ou novo teste de água é substituto.
+
+Detalhes: `releases/GOOGLE_HEALTH_HYDRATION_20261104.md`. Próxima área de UX: Relatórios, somente por jornada nova ou defeito material. Engenharia entregue não substitui fonte original, diagnóstico de fornecedor ou aceite físico/global.
+
 ## Em validação — leitura oficial privada de hidratação, 04/11/2026
 
 `PKG-GOOGLE-HYDRATION-READ-039` implementa leitor oficial, OAuth protegido e armazenamento privado. O escopo é somente `googlehealth.nutrition.readonly`; o perfil é verificado, todas as origens são consultadas com datas civis explícitas e o resultado completo é guardado sem promover água ou inferir MyFitnessPal. Passaram53 testes de autorização/leitura e11 testes PostgreSQL17.11. Uma tentativa intermediária repetia a identidade de estado entre duas contas sintéticas; a fixture foi corrigida, com a colisão agora verificada como rejeição atômica.
