@@ -1,11 +1,12 @@
-import {saveBodyRecord,saveWorkout,saveMyFitnessPalWater,importMyFitnessPalWaterExport} from './writes.js';
+import {saveBodyRecord,saveWorkout,saveWorkoutPlan,workoutPlanSource,saveMyFitnessPalWater,importMyFitnessPalWaterExport} from './writes.js';
 import {parseMyFitnessPalWaterExport} from './mfp-water-transfer.js';
-import {countLabel} from './core.js';
+import {countLabel,esc,state} from './core.js';
 
 const $=id=>document.getElementById(id);
 let refreshCallback=async()=>{};
 let exerciseCounter=0;
 let pendingWaterImport=null;
+let pendingWorkoutPlanId=null;
 
 export function localDateValue(value=new Date()){
   const d=value instanceof Date?value:new Date(value);
@@ -54,6 +55,10 @@ function exerciseCard(){
     </div>
     <div class="setEntryHead"><span>Séries registradas</span><button type="button" class="ghostSmall" data-add-set>+ Série</button></div>
     <div class="setEntryList">${setRow(id,1)}</div>
+    <div class="entryGrid cols2">
+      <label>Esforço percebido (0 a 10)<input name="effort" type="number" min="0" max="10" step="1" placeholder="Opcional"></label>
+      <label>Observação do exercício<input name="exercise_notes" maxlength="1000" placeholder="Opcional"></label>
+    </div>
   </section>`;
 }
 
@@ -71,6 +76,19 @@ function workoutForm(){
     <div id="exerciseEntries">${exerciseCard()}</div>
     <label>Observação<textarea name="notes" rows="2" placeholder="Opcional"></textarea></label>
     <div class="entryFooter"><span id="entryMsg" class="msg"></span><button class="primary" type="submit">Salvar treino</button></div>
+  </form>`;
+}
+
+function workoutPlanForm(plan){
+  return `<form id="workoutPlanEntryForm" class="entryForm">
+    <div class="entryGrid cols2">
+      <label>Data planejada<input name="plan_date" type="date" value="${esc(plan?.plan_date||today())}" required></label>
+      <label>Nome do treino<input name="title" value="${esc(plan?.title)}" maxlength="120" placeholder="Ex.: Costas e braços" required></label>
+      <label>Local<input name="location" value="${esc(plan?.location)}" maxlength="120" placeholder="Opcional"></label>
+    </div>
+    <label>Exercícios, séries e repetições planejadas<textarea name="planned_content" rows="4" maxlength="4000" placeholder="Ex.: Remada · 3 séries de 10 repetições" required>${esc(plan?.planned_content)}</textarea></label>
+    <label>Observação do plano<textarea name="notes" rows="2" maxlength="1000" placeholder="Opcional">${esc(plan?.notes)}</textarea></label>
+    <div class="entryFooter"><span id="entryMsg" class="msg" role="status"></span><button class="primary" type="submit">Salvar planejamento</button></div>
   </form>`;
 }
 
@@ -114,20 +132,24 @@ export function shouldWarnEntryUnload(){
   return !!modal&&!modal.classList.contains('hidden')&&(modal.dataset.dirty==='true'||modal.dataset.saving==='true');
 }
 
-export function openEntry(type){
+export function openEntry(type,workoutPlanId=null){
   const modal=entryModal();
+  const isPlan=type==='workout-plan';
+  const plan=isPlan&&workoutPlanId?(state.data.workoutPlans||[]).find(row=>row.source_record_id===workoutPlanId&&row.source===workoutPlanSource&&row.status==='planned'):null;
+  if(isPlan&&workoutPlanId&&!plan)return;
+  pendingWorkoutPlanId=isPlan?(plan?.source_record_id||`manual-workout-plan:${crypto.randomUUID()}`):null;
   pendingWaterImport=null;
   modal.dataset.saving='false';modal.dataset.dirty='false';
   modal.classList.remove('hidden');
-  $('entryTitle').textContent=type==='workout'?'Registrar treino':type==='water-import'?'Importar água do MyFitnessPal':type==='water'?'Registrar água manualmente':'Registrar bio';
-  $('entryHost').innerHTML=type==='workout'?workoutForm():type==='water-import'?waterImportForm():type==='water'?waterForm():bodyForm();
+  $('entryTitle').textContent=isPlan?(plan?'Editar planejamento':'Planejar treino'):type==='workout'?'Registrar treino':type==='water-import'?'Importar água do MyFitnessPal':type==='water'?'Registrar água manualmente':'Registrar bio';
+  $('entryHost').innerHTML=isPlan?workoutPlanForm(plan):type==='workout'?workoutForm():type==='water-import'?waterImportForm():type==='water'?waterForm():bodyForm();
 }
 
 function closeEntry(){
   const modal=entryModal();
   if(modal?.dataset.saving==='true')return false;
   if(modal?.dataset.dirty==='true'&&!window.confirm('Descartar alterações não salvas?'))return false;
-  pendingWaterImport=null;modal.dataset.dirty='false';modal.classList.add('hidden');
+  pendingWaterImport=null;pendingWorkoutPlanId=null;modal.dataset.dirty='false';modal.classList.add('hidden');
   $('entryHost').innerHTML='';
   document.dispatchEvent(new Event('lts-health-entry-closed'));
   return true;
@@ -141,6 +163,8 @@ function collectWorkout(form){
     name:ex.querySelector('[name="exercise_name"]')?.value||'',
     muscle_group:ex.querySelector('[name="muscle_group"]')?.value||'',
     machine:ex.querySelector('[name="machine"]')?.value||'',
+    effort:ex.querySelector('[name="effort"]')?.value||'',
+    notes:ex.querySelector('[name="exercise_notes"]')?.value||'',
     sets:[...ex.querySelectorAll('.setEntry')].map(set=>({
       phase:set.querySelector('[name="phase"]')?.value||'working',
       weight:set.querySelector('[name="weight"]')?.value||'',
@@ -157,6 +181,10 @@ const validationMessages={
   date_required:'Informe a data da medição.',
   metric_required:'Informe pelo menos uma medida corporal.',
   workout_fields_required:'Informe data, tipo de treino e pelo menos um exercício com série.',
+  workout_effort_out_of_range:'Informe um número inteiro de 0 a 10 para o esforço percebido.',
+  workout_plan_fields_required:'Informe a data, o nome e os exercícios do treino planejado.',
+  workout_plan_too_long:'Encurte o nome ou os detalhes do planejamento.',
+  workout_plan_invalid:'Abra o planejamento novamente antes de salvar.',
   water_required:'Informe o total de água mostrado no MyFitnessPal.',
   water_must_be_positive:'O total de água precisa ser maior que zero.',
   water_value_too_large:'O valor parece estar em outra unidade. Informe o total em mililitros.',
@@ -228,15 +256,17 @@ export function setupEntryController({onSaved}={}){
   });
 
   document.addEventListener('submit',async e=>{
-    if(e.target.id!=='bodyEntryForm'&&e.target.id!=='workoutEntryForm'&&e.target.id!=='waterEntryForm'&&e.target.id!=='mfpWaterImportForm') return;
+    if(!['bodyEntryForm','workoutEntryForm','workoutPlanEntryForm','waterEntryForm','mfpWaterImportForm'].includes(e.target.id))return;
     e.preventDefault();
     const form=e.target,msg=$('entryMsg'),button=form.querySelector('button[type="submit"]'),modal=entryModal();
+    if(modal.dataset.saving==='true')return;
     modal.dataset.saving='true';
     msg.textContent='Salvando…';button.disabled=true;
 
     let importResult=null;
     try{
       if(form.id==='bodyEntryForm')await saveBodyRecord(formObject(form));
+      else if(form.id==='workoutPlanEntryForm')await saveWorkoutPlan(formObject(form),pendingWorkoutPlanId);
       else if(form.id==='waterEntryForm')await saveMyFitnessPalWater(formObject(form));
       else if(form.id==='mfpWaterImportForm'){
         if(!pendingWaterImport)throw new Error('mfp_export_invalid_document');

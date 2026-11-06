@@ -356,7 +356,7 @@ function bindStaticEvents(){
     if(sourceButton){if(state.ui.uploadFeedback?.busy)return;state.ui.uploadSource=sourceButton.dataset.sourceUpload;const select=$('uploadType');if(select)select.value=state.ui.uploadSource;$('uploadFile')?.focus();return;}
     const timelineMore=event.target.closest('[data-timeline-more]');if(timelineMore){state.ui.timelineLimit=Number(state.ui.timelineLimit||50)+50;scheduleRender();return;}
     const timelineJump=event.target.closest('[data-timeline-jump]');if(timelineJump){openTimelineTarget(timelineJump);return;}
-    const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry);return;}
+    const entryButton=event.target.closest('[data-entry]');if(entryButton?.dataset.entry){openEntry(entryButton.dataset.entry,entryButton.dataset.workoutPlanId);return;}
     const evidenceButton=event.target.closest('[data-evidence-route]');if(evidenceButton){event.preventDefault();setRoute(evidenceButton.dataset.evidenceRoute,{replace:false});return;}
     const homePeriod=event.target.closest('button[data-home-period]');if(homePeriod){event.preventDefault();setGlobalPeriod(homePeriod.dataset.homePeriod);render();return;}
     const periodButton=event.target.closest('button[data-period]');if(periodButton){event.preventDefault();setGlobalPeriod(periodButton.dataset.period);scheduleRender();return;}

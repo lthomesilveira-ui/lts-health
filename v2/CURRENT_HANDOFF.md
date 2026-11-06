@@ -1,3 +1,9 @@
+## Em validação — planejamento de treinos e esforço percebido
+
+O pedido de 04/11 inclui planejar sessões e registrar exercícios, séries, repetições, esforço e observações. A candidata .124 acrescenta criação e edição de planejamentos em Treinos, na aba Plano. O formulário de execução grava o esforço informado junto às observações do exercício. O planejamento tem registro próprio e a comparação documental mantém seus critérios.
+
+O pacote041 ainda depende dos testes da candidata, da publicação e da conferência autenticada. A água e as demais dependências de fontes permanecem abertas.
+
 ## Concluído — autorização Google Health no app, .123
 
 `PKG-GOOGLE-HYDRATION-ONBOARDING-040` / `LTS-GOOGLE-HYDRATION-ONBOARDING-001` entrega em Dados & fontes o estado privado da conexão, o início da autorização oficial com `googlehealth.nutrition.readonly` e a primeira conferência delimitada de30dias somente após o retorno na mesma aba. Período vazio, registros recebidos para conciliação e falha permanecem distintos. Tokens e snapshots ficam no servidor privado; nenhuma água é promovida antes de reconciliar identidade e origem.

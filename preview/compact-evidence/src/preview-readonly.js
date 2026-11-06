@@ -23,9 +23,9 @@
     }});
     proxies.set(value,proxy);proxies.set(proxy,proxy);return proxy;
   }
-  const forms=['bodyEntryForm','workoutEntryForm','waterEntryForm','mfpWaterImportForm','personalGoalsForm','uploadForm'];
+  const forms=['bodyEntryForm','workoutEntryForm','workoutPlanEntryForm','waterEntryForm','mfpWaterImportForm','personalGoalsForm','uploadForm'];
   const formSelector=forms.map(id=>'form#'+id).join(',');
-  const actionSelector='button[data-polar-action],button[data-hae-action]';
+  const actionSelector='button[data-polar-action],button[data-hae-action],button[data-entry="workout-plan"]';
   function protectForms(){
     if(!global.document)return;
     for(const form of document.querySelectorAll(formSelector)){

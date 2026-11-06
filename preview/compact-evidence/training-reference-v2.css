@@ -998,3 +998,7 @@
 .ltsTrainingReference[data-training-design="visual-session"] .ltsTrainingExerciseGroup{margin:0;padding:9px 12px;border:0;border-radius:8px;background:#eaf1ee}
 .ltsTrainingPhaseDetails{margin-top:12px;border-top:1px solid #dce5eb;font-size:12px;color:#52657a}
 .ltsTrainingPhaseDetails>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:650}
+.personalWorkoutPlan{margin-top:14px;padding-top:12px;border-top:1px solid #dce5eb;overflow-wrap:anywhere}
+.personalWorkoutPlan h3{margin:0 0 4px}
+.personalWorkoutPlanText,.ltsRefExerciseNotes p{white-space:pre-wrap;overflow-wrap:anywhere}
+#personalWorkoutPlans button{min-height:44px;max-width:100%}

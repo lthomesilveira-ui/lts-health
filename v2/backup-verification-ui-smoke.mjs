@@ -33,12 +33,12 @@ async function run(viewport,label){
     const {buildTraceableBackup}=await import('./src/backup-traceability.js');
     return buildTraceableBackup();
   });
-  if(!backup?.record_total||backup?.domain_count!==19)throw new Error(`${label}: fixture backup was not built for UI verification`);
+  if(!backup?.record_total||!backup.domains?.includes('workoutPlans')||backup.domain_count!==backup.domains.length)throw new Error(`${label}: fixture backup is missing the planning domain or has an invalid domain count`);
 
   await setBackupFile(page,'lts-health-backup-valid.json',backup);
   await page.waitForFunction(()=>document.querySelector('#backupVerifyMsg')?.textContent?.includes('Backup íntegro:'));
   let message=(await page.locator('#backupVerifyMsg').textContent())||'';
-  if(!message.includes(`${backup.record_total} registros estruturados`)||!message.includes('19 áreas'))throw new Error(`${label}: valid backup summary is incomplete: ${message}`);
+  if(!message.includes(`${backup.record_total} registros estruturados`)||!message.includes(`${backup.domain_count} áreas`))throw new Error(`${label}: valid backup summary is incomplete: ${message}`);
 
   const dataTampered=structuredClone(backup);
   dataTampered.data.body[0].weight_kg=Number(dataTampered.data.body[0].weight_kg||0)+1;

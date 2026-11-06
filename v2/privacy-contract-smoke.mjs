@@ -61,7 +61,7 @@ if(!polarProjection||/source_payload|user_id|tokens_encrypted/.test(polarProject
 if(/health_polar_(connections|oauth_states)/.test(dataLayer+core))throw new Error('service-only credentials entered client table access');
 if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions']"))throw new Error('Cockpit no longer loads protocol context on first open');
 if(!dataLayer.includes("tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses']"))throw new Error('Protocol route no longer loads events, source documents and the separate owner statement together');
-if(!dataLayer.includes("treinos:['trainingPlans']"))throw new Error('Training route no longer waits for its private documentary reference');
+if(!/treinos:\[[^\]]*'trainingPlans'/.test(dataLayer))throw new Error('Training route no longer waits for its private documentary reference');
 const planReferences=await readFile(new URL('./src/documented-training-plan.js',import.meta.url),'utf8');
 for(const [domain,projection,type,alias] of [['trainingPlans','trainingPlanProjection','training_plan','training_plan_ui'],['treatmentStatuses','treatmentStatusProjection','patient_status','treatment_status_ui']]){
  const fields=planReferences.match(new RegExp('export const '+projection+"='([^']+)'"))?.[1];
