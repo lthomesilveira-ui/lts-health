@@ -8,7 +8,7 @@ import {labOriginalColumns,labOriginalDocumentColumns,attachLabOriginals} from '
 const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
   bio:[],
-  treinos:['trainingPlans'],
+  treinos:['trainingPlans','workoutPlans'],
   evolucao:['labs'],
   analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans'],
   tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses'],
@@ -50,6 +50,7 @@ export async function fetchLaboratoryRows(client=sb){
 
 const loaders={
   trainingPlans:()=>fetchAll('health_documents',trainingPlanProjection,'document_date',false,'source_record_id',sb,{document_type:'training_plan'}),
+  workoutPlans:()=>fetchAll('health_workout_plans','source_record_id,plan_date,title,location,planned_content,source,status,notes','plan_date',true),
   treatmentStatuses:()=>fetchAll('health_documents',treatmentStatusProjection,'document_date',false,'source_record_id',sb,{document_type:'patient_status'}),
   nutritionPlans:()=>fetchNutritionPlans(),
   waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,water_reference:source_payload->water_reference_ui,clinical_baseline:source_payload->clinical_baseline','document_date',false),
@@ -134,7 +135,7 @@ function enforceStructuredWorkoutBoundary(){
 }
 
 function setFixture(){
-  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,nutritionPlans:[]};state.errors={};state.domainStatus={};
+  state.data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,nutritionPlans:[],workoutPlans:state.data.workoutPlans||[]};state.errors={};state.domainStatus={};
   Object.keys(loaders).forEach(k=>state.domainStatus[k]='ready');
   if(fixtureError&&Object.hasOwn(loaders,fixtureError)){
     state.data[fixtureError]=[];
@@ -208,7 +209,7 @@ export function localBackupDate(value=new Date()){
 export async function buildStructuredBackup(onProgress=()=>{}){
   onProgress('Preparando backup…');
   let data;
-  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[],nutritionPlans:[]};
+  if(fixtureMode)data={...fixtureData(),sourceMetrics:fixtureSourceMetrics,workoutEvidence:fixtureWorkoutEvidence,regimens:fixtureRegimens,polarSessions:[],nutritionPlans:[],workoutPlans:state.data.workoutPlans||[]};
   else{
     const entries=Object.entries(backupLoaders),results=await Promise.allSettled(entries.map(([,loader])=>loader()));
     const failures=results.map((result,index)=>result.status==='rejected'?{domain:entries[index][0],message:result.reason?.message||String(result.reason)}:null).filter(Boolean);

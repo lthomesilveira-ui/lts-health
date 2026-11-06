@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('./',import.meta.url)),preview=path.resolve(root,'../preview/compact-evidence');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 assert.match(html,/<title>LTS Health<\/title>/);
-assert.match(html,/health-integrated-20261105\.123/);
+assert.match(html,/health-integrated-20261106\.124/);
 assert.doesNotMatch(html,/preview-readonly|lts-preview|Prévia/);
 assert.match(fs.readFileSync(path.resolve(root,'../index.html'),'utf8'),/\.\/v2\//);
 for(const [,link] of html.matchAll(/(?:href|src)="(\.[^"]+)"/g)){
@@ -33,6 +33,6 @@ assert.match(main,/if\(!session\)\{showLogin\(\);\}/);
 assert.match(main,/subscribeAuth\(session=>\{state.session=session;if\(!session\)/);
 for(const form of ['personalGoalsForm','uploadForm'])assert.ok(main.includes(form));
 const entry=fs.readFileSync(path.join(root,'src/entry.js'),'utf8');
-for(const form of ['bodyEntryForm','workoutEntryForm','waterEntryForm','mfpWaterImportForm'])assert.ok(entry.includes(form));
+for(const form of ['bodyEntryForm','workoutEntryForm','workoutPlanEntryForm','waterEntryForm','mfpWaterImportForm'])assert.ok(entry.includes(form));
 assert.ok(fs.readFileSync(path.join(preview,'index.html'),'utf8').includes('preview-readonly.js'),'preview remains isolated');
 console.log('Integrated production graph, preserved auth, operational forms, source parity, isolated preview: passed.');

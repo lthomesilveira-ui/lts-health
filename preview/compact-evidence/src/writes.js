@@ -2,6 +2,8 @@ import {sb,state,fixtureMode} from './core.js';
 import {normalizeWaterMl,validLocalDate} from './hydration.js';
 import {myFitnessPalWaterRecords,parseMyFitnessPalWaterExport} from './mfp-water-transfer.js';
 
+export const workoutPlanSource='LTS Health personal workout plan';
+
 function requiredSession(){
   if(fixtureMode) return {user:{id:'fixture-user'}};
   if(!state.session?.user) throw new Error('authentication_required');
@@ -19,6 +21,14 @@ function optionalNonNegativeNumber(value){
   const n=optionalNumber(value);
   if(n!=null&&n<0) throw new Error('negative_number_not_allowed');
   return n;
+}
+
+function workoutExerciseNotes(exercise){
+  const notes=String(exercise.notes||'').trim();
+  const effort=optionalNumber(exercise.effort);
+  if(effort==null)return notes||null;
+  if(!Number.isInteger(effort)||effort<0||effort>10)throw new Error('workout_effort_out_of_range');
+  return [`Esforço percebido ${effort}/10`,notes].filter(Boolean).join('\n');
 }
 
 export async function saveBodyRecord(payload){
@@ -57,7 +67,7 @@ export async function saveWorkout(payload){
     name:String(ex.name||'').trim(),
     muscle_group:String(ex.muscle_group||'').trim()||null,
     machine:String(ex.machine||'').trim()||null,
-    notes:String(ex.notes||'').trim()||null,
+    notes:workoutExerciseNotes(ex),
     sets:(ex.sets||[]).map(s=>({
       phase:['warmup','working','other'].includes(s.phase)?s.phase:'working',
       weight:optionalNonNegativeNumber(s.weight),
@@ -80,6 +90,37 @@ export async function saveWorkout(payload){
   const {data,error}=await sb.rpc('health_log_structured_workout',{p_payload:body});
   if(error) throw error;
   return data;
+}
+
+export async function saveWorkoutPlan(payload,sourceRecordId){
+  const session=requiredSession();
+  const planDate=String(payload.plan_date||'').trim();
+  const title=String(payload.title||'').trim();
+  const location=String(payload.location||'').trim();
+  const content=String(payload.planned_content||'').trim();
+  const notes=String(payload.notes||'').trim();
+  if(!validLocalDate(planDate)||!title||!content)throw new Error('workout_plan_fields_required');
+  if(title.length>120||location.length>120||content.length>4000||notes.length>1000)throw new Error('workout_plan_too_long');
+  if(!/^manual-workout-plan:[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(sourceRecordId))throw new Error('workout_plan_invalid');
+  const record={
+    user_id:session.user.id,
+    source_record_id:sourceRecordId,
+    plan_date:planDate,
+    title,
+    location:location||null,
+    planned_content:content,
+    source:workoutPlanSource,
+    confidence:'user_reported',
+    status:'planned',
+    notes:notes||null
+  };
+  if(fixtureMode){
+    state.data.workoutPlans=(state.data.workoutPlans||[]).filter(row=>row.source_record_id!==sourceRecordId).concat(record);
+    return sourceRecordId;
+  }
+  const {error}=await sb.from('health_workout_plans').upsert(record,{onConflict:'user_id,source_record_id'});
+  if(error)throw error;
+  return sourceRecordId;
 }
 
 export async function saveMyFitnessPalWater(payload){

@@ -5,6 +5,7 @@ import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './trai
 import {trainingSessionSummary} from './training-session-summary.js';
 import {sessionGroupChart,sessionHistoryChart} from './training-session-visuals.js';
 import {renderTrainingPlan} from './training-plan-view.js';
+import {workoutPlanSource} from './writes.js';
 import {isApproximateTrainingLoad} from './training-load-qualifier.js';
 
 const safe=(value,fallback='—')=>value==null||value===''?fallback:value;
@@ -146,18 +147,35 @@ function tabs(view){
 
 function exerciseNav(){return `<div class="ltsRefTrainTabs ltsRefExerciseNav" role="navigation" aria-label="Retorno do histórico do exercício"><button type="button" data-depth-training-view="exercises">Exercícios</button><button type="button" data-depth-training-view="progress">Todos os exercícios</button><button type="button" data-depth-training-view="history">Sessões</button></div>`;}
 
+function renderPersonalWorkoutPlans(data,status){
+  const plans=(data.workoutPlans||[]).filter(row=>row.status==='planned');
+  const cards=plans.map(plan=>`<article class="personalWorkoutPlan">
+    <h3>${esc(plan.title)}</h3><p><time datetime="${esc(plan.plan_date)}">${fmtDate(plan.plan_date)}</time>${plan.location?` · ${esc(plan.location)}`:''}</p>
+    <p class="personalWorkoutPlanText">${esc(plan.planned_content)}</p>
+    ${plan.notes?`<p class="personalWorkoutPlanText">${esc(plan.notes)}</p>`:''}
+    ${plan.source===workoutPlanSource?`<button type="button" class="ghostSmall" data-entry="workout-plan" data-workout-plan-id="${esc(plan.source_record_id)}">Editar planejamento</button>`:''}
+  </article>`).join('');
+  const message=status.workoutPlans==='error'?'Não foi possível atualizar os planejamentos.':status.workoutPlans!=='ready'?'Carregando seus planejamentos.':plans.length?'':'Você ainda não salvou um planejamento.';
+  return `<section class="planReview" id="personalWorkoutPlans">
+    <h2>Meus treinos planejados</h2>
+    <p>Organize suas próximas sessões aqui. Use <b>Registrar treino</b> para salvar o que você executou.</p>
+    <button type="button" class="primary" data-entry="workout-plan">Planejar treino</button>
+    ${message?`<p role="status">${esc(message)}</p>`:''}${cards}
+  </section>`;
+}
+
 export function renderProductTraining(){
   const rows=workoutRows();
   const selected=rows.find(w=>w.source_record_id===state.ui.openWorkout)||rows[0]||null;
   const requested=state.ui.productTrainingView;
   const view=['summary','exercises','history','exercise','progress','plan'].includes(requested)?requested:(requested==='session'?'summary':'summary');
   const heading=view==='plan'?'Plano x realizado':view==='progress'?'Histórico por exercício':view==='history'?'Treinos':view==='exercise'?exerciseHistoryTitle():selected?safe(selected.workout_type,'Sessão'):'Treinos';
-  const subtitle=view==='plan'?'Referência recebida e seus registros, lado a lado.':view==='progress'?'Escolha um exercício para ver datas, cargas e repetições registradas.':view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Datas, cargas e repetições registradas por sessão.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
+  const subtitle=view==='plan'?'Planeje suas sessões e consulte a comparação com o plano recebido.':view==='progress'?'Escolha um exercício para ver datas, cargas e repetições registradas.':view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Datas, cargas e repetições registradas por sessão.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
   const returnRoute=state.ui.trainingReturnRoute==='analise'?'analise':'hoje';
   return `<section class="ltsTrainingV2 ltsTrainingReference" data-training-design="visual-session" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
     <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':`data-route="${returnRoute}"${returnRoute==='analise'?' data-consume-training-return':''}`} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino">+</button></header>
     ${view==='exercise'?exerciseNav():tabs(view)}
-    ${view==='plan'?renderTrainingPlan(state.data,state.domainStatus,state.ui):failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='progress'?renderExerciseDirectory():view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Ainda não há treinos registrados.</div>'}
+    ${view==='plan'?renderPersonalWorkoutPlans(state.data,state.domainStatus)+renderTrainingPlan(state.data,state.domainStatus,state.ui):failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='progress'?renderExerciseDirectory():view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Ainda não há treinos registrados.</div>'}
   </section>`;
 }
 

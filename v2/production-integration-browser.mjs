@@ -6,7 +6,7 @@ import {FIXED_TODAY,makeDashboardFixture} from '../preview/compact-evidence/test
 const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4175/v2/';
 const parsed=new URL(base);assert.ok(['127.0.0.1','localhost'].includes(parsed.hostname));assert.equal(parsed.pathname,'/v2/');
 function service(db){return `
-window.__healthQA={reads:[],writes:[]};
+window.__healthQA={reads:[],writes:[],planWrites:[]};
 window.__reviewDb=${JSON.stringify(db)};
 const mutation=(kind,target)=>{window.__healthQA.writes.push({kind,target});throw new Error('Synthetic QA forbids writes: '+kind+' '+target);};
 window.supabase={createClient:()=>({
@@ -25,6 +25,13 @@ window.supabase={createClient:()=>({
    then(resolve,reject){window.__healthQA.reads.push({table,from,to});return Promise.resolve({data:rows().slice(from,to+1),error:null}).then(resolve,reject);}
   };
   for(const name of ['insert','update','upsert','delete'])q[name]=()=>mutation(name,table);
+  if(table==='health_workout_plans')q.upsert=async(record,options)=>{
+   if(record.user_id!=='synthetic-health-dashboard-user'||record.status!=='planned'||options.onConflict!=='user_id,source_record_id')return mutation('upsert',table);
+   const plans=window.__reviewDb[table]||[];
+   window.__reviewDb[table]=plans.filter(row=>row.source_record_id!==record.source_record_id).concat(record);
+   window.__healthQA.planWrites.push(record.source_record_id);
+   return {data:null,error:null};
+  };
   return q;
  }
 })};
@@ -73,12 +80,40 @@ for(const width of [320,393,1440]){
    await page.screenshot({path:`artifacts/production-integration/training-text-sets-${width}.png`});
    await page.getByRole('tab',{name:'Resumo',exact:true}).click();
    await page.screenshot({path:`artifacts/production-integration/training-qualifiers-${width}.png`});
+   const workoutCount=await page.evaluate(()=>window.__reviewDb.health_workouts.length);
+   await page.getByRole('tab',{name:'Plano',exact:true}).click();
+   const plans=page.locator('#personalWorkoutPlans');
+   await plans.getByRole('button',{name:'Planejar treino',exact:true}).click();
+   const planForm=page.locator('#workoutPlanEntryForm');
+   await planForm.locator('[name="title"]').fill('Planejamento sintético');
+   await planForm.locator('[name="planned_content"]').fill('Remada · 3 séries de 10\nSupino · 3 séries de 8');
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'planning form fits '+width);
+   await planForm.getByRole('button',{name:'Salvar planejamento'}).click();
+   await page.locator('#entryModal').waitFor({state:'hidden'});
+   await plans.getByText('Planejamento sintético',{exact:true}).waitFor();
+   await plans.getByRole('button',{name:'Editar planejamento'}).click();
+   assert.equal(await planForm.locator('[name="planned_content"]').inputValue(),'Remada · 3 séries de 10\nSupino · 3 séries de 8');
+   await planForm.locator('[name="title"]').fill('Planejamento revisado');
+   await planForm.getByRole('button',{name:'Salvar planejamento'}).click();
+   await page.locator('#entryModal').waitFor({state:'hidden'});
+   await plans.getByText('Planejamento revisado',{exact:true}).waitFor();
+   assert.equal(await plans.locator('.personalWorkoutPlan').count(),1);
+   const planProof=await page.evaluate(()=>({ids:window.__healthQA.planWrites,workouts:window.__reviewDb.health_workouts.length}));
+   assert.equal(planProof.ids.length,2);
+   assert.equal(planProof.ids[0],planProof.ids[1]);
+   assert.equal(planProof.workouts,workoutCount,'planning does not count as a completed session');
+   await page.getByRole('tab',{name:'Resumo',exact:true}).click();
   }
   await page.screenshot({path:`artifacts/production-integration/${route}-${width}.png`,fullPage:true});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,route+' fits '+width);
   if(['bio','treinos'].includes(route)){
    await page.locator(`#screenHost [data-entry="${route==='bio'?'body':'workout'}"]`).click();await page.locator('#entryModal:not(.hidden)').waitFor();
    assert.equal(await page.locator('#entryModal input:not([disabled])').count()>0,true,'operational fields available');
+   if(route==='treinos'){
+    const effort=page.getByLabel('Esforço percebido (0 a 10)',{exact:true});
+    assert.equal(await effort.inputValue(),'');
+    assert.equal(await effort.getAttribute('max'),'10');
+   }
    await page.locator('#closeEntry').click();await page.locator('#entryModal').waitFor({state:'hidden'});
    assert.equal(await page.locator('#entryModal').evaluate(e=>e.classList.contains('hidden')),true);
    await page.locator(`#screenHost [data-entry="${route==='bio'?'body':'workout'}"]`).click();await page.locator('#entryModal:not(.hidden)').waitFor();

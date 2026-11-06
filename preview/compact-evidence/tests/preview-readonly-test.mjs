@@ -45,7 +45,7 @@ const fixture=vm.createContext({location:{search:'?fixture=1'},URLSearchParams})
 
 // Small DOM double verifies narrow form scope and capture ordering without a browser.
 const listeners=new Map(),filters={disabled:false},login={disabled:false},logout={disabled:false};
-const formIds=['bodyEntryForm','workoutEntryForm','waterEntryForm','mfpWaterImportForm','personalGoalsForm','uploadForm'];
+const formIds=['bodyEntryForm','workoutEntryForm','workoutPlanEntryForm','waterEntryForm','mfpWaterImportForm','personalGoalsForm','uploadForm'];
 const forms=formIds.map(id=>({id,controls:[{disabled:false,title:''},{disabled:false,title:''}],note:null,matches(selector){return selector.includes('form#'+id);},querySelector(){return this.note;},querySelectorAll(){return this.controls;},prepend(note){this.note=note;}}));
 const actions=[{disabled:false,title:''}];
 const document={readyState:'complete',documentElement:{},querySelectorAll(selector){if(selector.startsWith('form#'))return forms;if(selector.startsWith('button[data-polar'))return actions;if(selector==='.refHeading h1')return [];throw new Error('Unexpected broad DOM selection '+selector);},createElement(){return {dataset:{}};},addEventListener(type,handler,options){listeners.set(type,{handler,options});}};
@@ -56,7 +56,7 @@ for(const form of forms){assert.ok(form.controls.every(control=>control.disabled
 assert.equal(actions[0].disabled,true);assert.equal(filters.disabled,false);assert.equal(login.disabled,false);assert.equal(logout.disabled,false);
 let stopped=0;const submit=listeners.get('submit');assert.equal(submit.options,true,'capture precedes application save handlers');
 for(const form of forms)submit.handler({target:form,preventDefault(){stopped++;},stopImmediatePropagation(){stopped++;}});
-assert.equal(stopped,12);submit.handler({target:{matches:()=>false},preventDefault(){throw new Error('Login or filters must not be blocked');}});
+assert.equal(stopped,forms.length*2);submit.handler({target:{matches:()=>false},preventDefault(){throw new Error('Login or filters must not be blocked');}});
 forms[0].controls[0].disabled=false;observer();assert.equal(forms[0].controls[0].disabled,true,'re-render cannot re-enable a mutation control');
 assert.deepEqual([writes,invocations],[0,0]);
-console.log('Preview read-only guard: login/logout/session and chained reads preserved; writes, RPC, storage changes and Polar/functions blocked before backend; six mutation forms disabled with capture protection; filters unaffected.');
+console.log('Preview read-only guard: login/logout/session and chained reads preserved; writes, RPC, storage changes and Polar/functions blocked before backend; mutation forms including workout planning disabled with capture protection; filters unaffected.');

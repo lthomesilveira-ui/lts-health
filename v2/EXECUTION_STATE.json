@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-05",
+  "updated_on": "2026-11-06",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,28 +50,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-HYDRATION-ONBOARDING-040",
-    "status": "done",
-    "goal": "Provide the authenticated Google Health authorization entry and the first bounded water check after connection.",
+    "id": "PKG-TRAINING-PLANNING-041",
+    "status": "in_progress",
+    "goal": "Deliver personal workout planning and explicitly reported exercise effort through the authenticated Training screen.",
     "task_ids": [
-      "LTS-GOOGLE-HYDRATION-ONBOARDING-001"
+      "LTS-TRAINING-PLANNING-001",
+      "LTS-TRAINING-EFFORT-001"
     ],
-    "candidate_build": "health-integrated-20261105.123",
+    "candidate_build": "health-integrated-20261106.124",
     "public_build": "health-integrated-20261105.123",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-05",
-    "completed_on": "2026-11-05",
-    "pending_gates": [],
-    "completed_evidence": [
-      "Google Health API activation was confirmed by the owner. Project evidence remains private.",
-      "Exact candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks.",
-      "Normal PR501 merge 9b472aa3749ec1b4014157ce35998b016572f166 published health-integrated-20261105.123; deploy, both Pages entries and protected actual authentication passed.",
-      "Calendar/PDF 42116082111, integrated-production 42116081828, functional-depth 42116081791 and preview-contract 42116081781 completed successfully. Visual main job 127555966768 passed; auxiliary visual host job 127555966897 was cancelled during browser installation and was not promoted to success.",
-      "The authenticated public entry shows private Google connection status and keeps the connection control hidden while signed out. No Google account, consent or real hydration read was claimed."
+    "started_on": "2026-11-06",
+    "pending_gates": [
+      "candidate CI",
+      "public deployment and protected authentication",
+      "public browser inspection"
     ],
     "evidence_document": "v2/CURRENT_HANDOFF.md"
   },
@@ -3505,6 +3502,45 @@
       ],
       "next_action": "Preserve the published entry. Resume only when an OAuth web client can be configured securely and the owner can grant googlehealth.nutrition.readonly; reconcile any returned hydration by identity and origin before promotion.",
       "blocker": null
+    },
+    {
+      "id": "LTS-TRAINING-PLANNING-001",
+      "area": "training",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Create and edit private workout plans with date, exercises, sets and repetitions.",
+      "acceptance": [
+        "Authenticated Training opens and saves planning on desktop and mobile.",
+        "Editing the same owned plan reuses its identity, and planned rows are not completed sessions.",
+        "Existing documentary comparison and private backup remain usable."
+      ],
+      "evidence": [
+        "v2/src/entry.js",
+        "v2/src/writes.js",
+        "v2/production-integration-browser.mjs"
+      ],
+      "next_action": "Verify the exact candidate and published runtime.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-TRAINING-EFFORT-001",
+      "area": "training",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Capture optional self-reported effort and exercise notes in structured workout entry.",
+      "acceptance": [
+        "A supplied whole-number effort from zero to ten is preserved with the exercise observations.",
+        "Omission preserves prior behavior and invalid effort never reaches the structured workout writer."
+      ],
+      "evidence": [
+        "v2/src/entry.js",
+        "v2/src/writes.js",
+        "v2/production-write-boundary-test.mjs"
+      ],
+      "next_action": "Verify the exact candidate and published runtime.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -5187,6 +5223,32 @@
           "recovery_pr": 499
         }
       ]
+    },
+    {
+      "id": "PKG-GOOGLE-HYDRATION-ONBOARDING-040",
+      "status": "done",
+      "goal": "Provide the authenticated Google Health authorization entry and the first bounded water check after connection.",
+      "task_ids": [
+        "LTS-GOOGLE-HYDRATION-ONBOARDING-001"
+      ],
+      "candidate_build": "health-integrated-20261105.123",
+      "public_build": "health-integrated-20261105.123",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-05",
+      "completed_on": "2026-11-05",
+      "pending_gates": [],
+      "completed_evidence": [
+        "Google Health API activation was confirmed by the owner. Project evidence remains private.",
+        "Exact candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks.",
+        "Normal PR501 merge 9b472aa3749ec1b4014157ce35998b016572f166 published health-integrated-20261105.123; deploy, both Pages entries and protected actual authentication passed.",
+        "Calendar/PDF 42116082111, integrated-production 42116081828, functional-depth 42116081791 and preview-contract 42116081781 completed successfully. Visual main job 127555966768 passed; auxiliary visual host job 127555966897 was cancelled during browser installation and was not promoted to success.",
+        "The authenticated public entry shows private Google connection status and keeps the connection control hidden while signed out. No Google account, consent or real hydration read was claimed."
+      ],
+      "evidence_document": "v2/CURRENT_HANDOFF.md"
     }
   ],
   "latest_published_release": {
