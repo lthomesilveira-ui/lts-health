@@ -3,9 +3,25 @@
 export async function verifyDocumentedPlanFlows(page,navigate){
  const originalMatches=async kind=>page.evaluate(async kind=>{const {state}=await import('./src/core.js'),{planOriginalUrl}=await import('./src/plan-original-link.js');let plan;if(kind==='training-plan'){const {selectPlanRecord,documentedTrainingPlan}=await import('./src/documented-training-plan.js');plan=selectPlanRecord(state.data.trainingPlans,state.domainStatus.trainingPlans,new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),'training_plan',documentedTrainingPlan).value;}else{const {nutritionPlanComparison}=await import('./src/nutrition-plan-comparison.js');plan=nutritionPlanComparison(state.data,state.domainStatus,state.ui).plan;}const expected=planOriginalUrl(plan),a=document.querySelector(`[data-plan-original="${kind}"]`);return Boolean(expected&&a?.getAttribute('href')===expected&&a.target==='_blank'&&a.rel==='noopener noreferrer'&&a.referrerPolicy==='no-referrer'&&!a.href.includes('token'));},kind);
  await navigate('treinos');await page.locator('[data-depth-training-view="plan"]').click();await page.waitForSelector('[data-training-plan-state="ready"]');
- const training=await page.evaluate(async()=>{const {state}=await import('./src/core.js'),{documentedTrainingPlan}=await import('./src/documented-training-plan.js');const rows=state.data.trainingPlans||[],latest=rows.slice().sort((a,b)=>b.document_date.localeCompare(a.document_date))[0],p=documentedTrainingPlan(latest);return Boolean(p&&p.clinical_start===null&&document.querySelector('.planReview')?.textContent.includes(p.author)&&document.querySelectorAll('.planReviewExercise').length===p.sessions[0].exercises.length&&state.domainStatus.trainingPlans==='ready');});
+ const training=await page.evaluate(async()=>{
+  const {state}=await import('./src/core.js'),{documentedTrainingPlan}=await import('./src/documented-training-plan.js');
+  const rows=state.data.trainingPlans||[],latest=rows.slice().sort((a,b)=>b.document_date.localeCompare(a.document_date))[0];
+  const plan=documentedTrainingPlan(latest),documentaryPanel=document.querySelector('[data-training-plan-state="ready"]');
+  return Boolean(plan&&plan.clinical_start===null&&documentaryPanel?.textContent.includes(plan.author)&&documentaryPanel.querySelectorAll('.planReviewExercise').length===plan.sessions[0].exercises.length&&state.domainStatus.trainingPlans==='ready');
+ });
  if(!await originalMatches('training-plan'))throw Error('Real training original link is absent or differs from the validated source');
  if(!training)throw Error('Real received training plan did not match the protected source projection');
+ const personalPlans=page.locator('#personalWorkoutPlans');
+ await page.waitForFunction(async()=>{
+  const {state}=await import('./src/core.js');
+  return state.domainStatus.workoutPlans==='ready';
+ });
+ await personalPlans.getByRole('button',{name:'Planejar treino',exact:true}).click();
+ const personalPlanForm=page.locator('#workoutPlanEntryForm');
+ await personalPlanForm.locator('[name="planned_content"]').waitFor();
+ if(!await personalPlanForm.locator('[name="title"]').isEditable())throw Error('Private workout planner is not available');
+ await page.locator('#closeEntry').click();
+ await personalPlanForm.waitFor({state:'hidden'});
  await navigate('nutricao');await page.waitForSelector('.nutritionPlanExpanded');
  if(!await page.locator('[data-plan-metric="protein_g"]').isVisible()||await page.locator('[data-plan-metric]').count()!==6)throw Error('Real dietary comparison is not visible');
  if(!await originalMatches('nutrition-plan'))throw Error('Real dietary original link is absent or differs from the validated source');

@@ -1,3 +1,11 @@
+## 2026-11-06 — Treinos publicado e fotos opcionais em validação
+
+A .124 do PR503 passou 21/21 verificações de candidata. O merge normal `16e60f3811f4709b2d38f33107810877fb2e61fb` preservou a árvore testada. Deploy 42313070528 e entradas Pages 42313135292/42313135394 passaram, e a entrada pública exata foi conferida com a área privada oculta. O teste protegido 42313070577 alcançou Treinos e confirmou a leitura independente das cargas. O teste seguinte consultava o primeiro painel com uma classe de estilo compartilhada e passou a encontrar o painel pessoal. A .125 restringe a consulta ao painel documental e verifica a abertura do formulário pessoal com autenticação e sem gravar dados.
+
+Em Composição, a .125 acrescenta uma opção de fotos por data no armazenamento privado já protegido por proprietário. JPEG, PNG e HEIC são aceitos até o limite do armazenamento. Uma tentativa incerta pode ser repetida para o mesmo arquivo e data com a mesma identidade. A imagem só é baixada depois de escolhida, com acesso da sessão atual. A prévia continua somente para leitura. As fotos são independentes das medições, do backup estruturado e de importação automática de terceiros.
+
+O teste local validou formatos e os contratos da aplicação e da prévia. A publicação .125 e seus testes de navegador permanecem em validação. A .124 não encerra os itens de Treinos até a verificação protegida corrigida. Os nove bloqueios independentes continuam abertos. Nenhuma gravação de saúde foi feita para teste.
+
 ## Em validação — planejamento de treinos e esforço percebido
 
 O pedido de 04/11 inclui planejar sessões e registrar exercícios, séries, repetições, esforço e observações. A candidata .124 acrescenta criação e edição de planejamentos em Treinos, na aba Plano. O formulário de execução grava o esforço informado junto às observações do exercício. O planejamento tem registro próprio e a comparação documental mantém seus critérios.

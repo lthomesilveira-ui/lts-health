@@ -6,13 +6,32 @@ import {FIXED_TODAY,makeDashboardFixture} from '../preview/compact-evidence/test
 const base=process.env.LTS_HEALTH_BASE_URL||'http://127.0.0.1:4175/v2/';
 const parsed=new URL(base);assert.ok(['127.0.0.1','localhost'].includes(parsed.hostname));assert.equal(parsed.pathname,'/v2/');
 function service(db){return `
-window.__healthQA={reads:[],writes:[],planWrites:[]};
+window.__healthQA={reads:[],writes:[],planWrites:[],photoAttempts:[],photoReads:[]};
 window.__reviewDb=${JSON.stringify(db)};
 const mutation=(kind,target)=>{window.__healthQA.writes.push({kind,target});throw new Error('Synthetic QA forbids writes: '+kind+' '+target);};
+const photoFolder='synthetic-health-dashboard-user/progress-photos',photos=new Map();
 window.supabase={createClient:()=>({
  auth:{getSession:async()=>({data:{session:{user:{id:'synthetic-health-dashboard-user'}}},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),signOut:async()=>({error:null})},
  functions:{invoke:async(name,args)=>{if(args?.body?.action!=='status')return mutation('invoke',name);window.__healthQA.reads.push({function:name,action:'status'});return {data:window.__statusOverrides?.[name]||{configured:false,connected:false,received:false},error:null}}},rpc:(name)=>mutation('rpc',name),
- storage:{from:(name)=>({upload:()=>mutation('upload',name),remove:()=>mutation('remove',name)})},
+ storage:{from:(name)=>({
+  list:async(folder,{offset,limit})=>{
+   assertPhotoScope(folder===photoFolder,name);
+   window.__healthQA.photoReads.push(folder);
+   return {data:[...photos.keys()].sort().reverse().slice(offset,offset+limit).map(key=>({name:key.split('/').at(-1)})),error:null};
+  },
+  upload:async(path,file,options)=>{
+   assertPhotoScope(path.startsWith(photoFolder+'/')&&options.contentType==='image/png'&&options.upsert,name);
+   photos.set(path,file);
+   window.__healthQA.photoAttempts.push(path);
+   return {error:window.__healthQA.photoAttempts.length===1?new Error('Synthetic transport interruption'):null};
+  },
+  download:async(path)=>{
+   assertPhotoScope(path.startsWith(photoFolder+'/')&&photos.has(path),name);
+   window.__healthQA.photoReads.push(path);
+   return {data:photos.get(path),error:null};
+  },
+  remove:()=>mutation('remove',name)
+ })},
  from(table){
   let from=0,to=999;const filters=[],orders=[];
   const rows=()=>{
@@ -35,6 +54,9 @@ window.supabase={createClient:()=>({
   return q;
  }
 })};
+function assertPhotoScope(allowed,bucket){
+ if(!allowed||bucket!=='health-inbox')mutation('photo scope',bucket);
+}
 `;}
 
 const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
@@ -120,6 +142,43 @@ for(const width of [320,393,1440]){
    await page.locator('#closeEntry').click();await page.locator('#entryModal').waitFor({state:'hidden'});
    assert.equal(await page.locator('#entryModal').evaluate(e=>e.classList.contains('hidden')),true);
    assert.equal(await page.evaluate(()=>location.hash),'#'+route,'cancel retains route');
+  }
+  if(route==='bio'){
+   assert.deepEqual(await page.evaluate(()=>window.__healthQA.photoReads),[],'composition does not preload private photos');
+   const control=page.getByRole('button',{name:'Fotos de acompanhamento'});
+   await control.click();
+   const photos=page.getByRole('dialog',{name:'Fotos de acompanhamento'});
+   await photos.getByText('Nenhuma foto salva.').waitFor();
+   const file=photos.getByLabel('Foto',{exact:true});
+   const save=photos.getByRole('button',{name:'Salvar foto'});
+   await photos.getByLabel('Data da foto').fill('2026-02-03');
+   await file.setInputFiles({name:'invalido.png',mimeType:'image/png',buffer:Buffer.from('not an image')});
+   await save.click();
+   await photos.getByText(/Escolha uma data válida/).waitFor();
+   assert.deepEqual(await page.evaluate(()=>window.__healthQA.photoAttempts),[]);
+   const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGO0yJ7IwMDAxMDAwMDAAAAOQQE4cX1qbgAAAABJRU5ErkJggg==','base64');
+   await file.setInputFiles({name:'privado.png',mimeType:'image/png',buffer:png});
+   await save.click();
+   await photos.getByText(/Não foi possível confirmar o envio/).waitFor();
+   await save.click();
+   await photos.getByText('Foto salva.',{exact:true}).waitFor();
+   const attempts=await page.evaluate(()=>window.__healthQA.photoAttempts);
+   assert.equal(attempts.length,2);
+   assert.equal(attempts[0],attempts[1],'retry preserves the same file identity');
+   await photos.getByRole('button',{name:'Fechar'}).click();
+   await photos.waitFor({state:'hidden'});
+   await control.click();
+   const saved=photos.getByRole('button',{name:'Ver foto de 03/02/2026'});
+   await saved.waitFor();
+   assert.equal(await saved.count(),1);
+   await saved.click();
+   const image=photos.getByRole('img',{name:'Foto de acompanhamento de 03/02/2026'});
+   await image.waitFor();
+   assert.ok(await image.evaluate(node=>node.getAttribute('src').startsWith('blob:')));
+   const bounds=await photos.boundingBox();
+   assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width+1,'private dialog fits '+width);
+   await photos.getByRole('button',{name:'Fechar'}).click();
+   await photos.waitFor({state:'hidden'});
   }
  }
  const forms=await page.evaluate(async()=>{

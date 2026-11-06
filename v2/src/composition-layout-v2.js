@@ -2,6 +2,7 @@ import {selectedCalendar} from './home-period-model.js';
 import {state,esc,fmtDate,fmtNum,num,norm,countLabel} from './core.js';
 import {validDay,rowKey,pageOf,pager,years,yearFilter,seriesWindow,periodControl,pointChart,emptyCard,errorCard,failed,valueText,differenceText} from './history-tools.js';
 import {bodySourceLabel,bodyMetricSeries,bodyEvidenceCohort,contextChart} from './health-context.js';
+import {progressPhotosControl} from './progress-photos.js';
 
 export const compositionMetrics={
   body_fat_pct:{label:'Gordura corporal',short:'Gordura',unit:'%',deltaUnit:'p.p.'},
@@ -69,10 +70,11 @@ function comparison(model){
 }
 
 export function renderProductComposition(){
-  if(failed(state,'body'))return `<section class="ltsCompositionV2">${header()}${errorCard('As medições corporais não carregaram agora.')}</section>`;
+  const photos=progressPhotosControl();
+  if(failed(state,'body'))return `<section class="ltsCompositionV2">${header()}${photos}${errorCard('As medições corporais não carregaram agora.')}</section>`;
   const m=compositionModel();
   if(m.record)return renderRecordDetail(m);
-  if(!m.all.length)return `<section class="ltsCompositionV2">${header()}${emptyCard('Nenhuma medição foi encontrada no histórico carregado.')}</section>`;
+  if(!m.all.length)return `<section class="ltsCompositionV2">${header()}${photos}${emptyCard('Nenhuma medição foi encontrada no histórico carregado.')}</section>`;
   const last=m.latest,metric=compositionMetrics[state.ui.productCompositionMetric]?state.ui.productCompositionMetric:'body_fat_pct',meta=compositionMetrics[metric];
   const observed=m.windowRows.filter(r=>m.source==='all'||identity(r)===m.source);
   const first=m.recent[0],end=m.recent.at(-1),originName=m.source==='all'?'Todas as origens, sem comparação entre elas':m.origins.find(([key])=>key===m.source)?.[1]||'Origem não informada';
@@ -88,6 +90,6 @@ export function renderProductComposition(){
     <section class="ltsSection ltsCompositionChange"><div class="ltsSectionHead"><div><span>Período selecionado</span><h2>Diferenças na origem selecionada</h2></div></div><div class="ltsCompositionChangeCard">${m.source!=='all'&&m.recent.length>1&&documentedSeries(m.recent)?`<p>${esc(fmtDate(first.measured_at))} → ${esc(fmtDate(end.measured_at))} · ${esc(originName)}</p><div class="ltsCompositionChangeGrid">${['body_fat_pct','skeletal_muscle_mass_kg','weight_kg'].map(key=>`<div><span>${esc(compositionMetrics[key].label)}</span><b>${esc(differenceText(end[key],first[key],compositionMetrics[key].deltaUnit||compositionMetrics[key].unit))}</b></div>`).join('')}</div>`:'<p>Os valores permanecem disponíveis acima. Para comparar, são necessárias duas medições sem conflito, da mesma origem e com o modelo do aparelho informado. Os demais registros continuam no histórico.</p>'}</div>${comparison(m)}</section>
 
     <section class="ltsSection ltsCompositionHistory" id="productCompositionHistory"><div class="ltsSectionHead"><div><span>Consultar</span><h2 tabindex="-1">Histórico completo</h2></div><small>${m.all.length} medições preservadas</small></div>${yearFilter('productCompositionYear',m.year,years(m.all,'measured_at'))}<div class="ltsCompositionHistoryList" data-composition-history-total="${m.history.total}">${m.history.rows.map(r=>`<button type="button" class="ltsCompositionHistoryRow" data-depth-composition-record="${esc(r.__key)}" ${r.__linkable?'':'disabled title="Identidade documental ambígua"'}><time>${esc(fmtDate(r.measured_at))}</time><div><b>${num(r.weight_kg)==null?'Medição corporal':`${fmtNum(r.weight_kg,1)} kg`}</b><small>${num(r.body_fat_pct)!=null?`${fmtNum(r.body_fat_pct,1)}% gordura`:'Gordura não informada'}${m.counts.get(validDay(r.measured_at))>1?' · data com múltiplos registros':''}</small></div><span>${esc(sourceDisplay(r))} ›</span></button>`).join('')||emptyCard('Nenhuma medição corresponde ao ano escolhido.')}</div>${pager(m.history,'productCompositionPage')}</section>
-    <section class="ltsCompositionTrust"><span>i</span><details><summary>Sobre estes dados</summary><p>Os detalhes incluem todas as medições, mesmo quando não podem formar uma curva. Comparações usam somente datas sem conflito da mesma origem. Registros segmentares precisam de vínculo seguro; nenhuma medida é estimada ou classificada esteticamente.</p></details></section>
+    ${photos}<section class="ltsCompositionTrust"><span>i</span><details><summary>Sobre estes dados</summary><p>Os detalhes incluem todas as medições, mesmo quando não podem formar uma curva. Comparações usam somente datas sem conflito da mesma origem. Registros segmentares precisam de vínculo seguro; nenhuma medida é estimada ou classificada esteticamente.</p></details></section>
   </section>`;
 }

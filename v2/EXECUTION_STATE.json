@@ -52,13 +52,14 @@
   "current_package": {
     "id": "PKG-TRAINING-PLANNING-041",
     "status": "in_progress",
-    "goal": "Deliver personal workout planning and explicitly reported exercise effort through the authenticated Training screen.",
+    "goal": "Deliver private workout planning, recorded effort and optional progress photos, with protected verification of both planning panels.",
     "task_ids": [
       "LTS-TRAINING-PLANNING-001",
-      "LTS-TRAINING-EFFORT-001"
+      "LTS-TRAINING-EFFORT-001",
+      "LTS-PROGRESS-PHOTOS-001"
     ],
-    "candidate_build": "health-integrated-20261106.124",
-    "public_build": "health-integrated-20261105.123",
+    "candidate_build": "health-integrated-20261106.125",
+    "public_build": "health-integrated-20261106.124",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
@@ -66,11 +67,28 @@
     "real_source_observations_changed": false,
     "started_on": "2026-11-06",
     "pending_gates": [
-      "candidate CI",
+      "candidate CI and synthetic private photo round trip",
       "public deployment and protected authentication",
       "public browser inspection"
     ],
-    "evidence_document": "v2/CURRENT_HANDOFF.md"
+    "evidence_document": "v2/CURRENT_HANDOFF.md",
+    "prior_promotion": {
+      "pr": 503,
+      "build_id": "health-integrated-20261106.124",
+      "candidate_commit": "c5bcdf6f1137ef49fc6dc013c4988125e7a90f82",
+      "tree": "1e155682099eccbd6e559208de986864fc872410",
+      "candidate_checks_passed": 21,
+      "main_commit": "16e60f3811f4709b2d38f33107810877fb2e61fb",
+      "deploy_workflow": 42313070528,
+      "public_entry_checks": [
+        42313135292,
+        42313135394
+      ],
+      "protected_auth_workflow": 42313070577,
+      "protected_auth_conclusion": "failure",
+      "protected_failure_evidence": "The Training documentary comparison assertion selected the first shared card class, which now belongs to the separate personal plans panel. The authenticated workflow had verified independent set projection and reported no runtime or public transport errors.",
+      "signed_out_public_build_checked": true
+    }
   },
   "last_verified_release": {
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
@@ -3541,6 +3559,26 @@
       ],
       "next_action": "Verify the exact candidate and published runtime.",
       "blocker": null
+    },
+    {
+      "id": "LTS-PROGRESS-PHOTOS-001",
+      "area": "composition",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Offer an optional private progress-photo workspace under Composition.",
+      "acceptance": [
+        "Authenticated users can save a dated supported photo and reopen it through authenticated owner-scoped storage on mobile and desktop.",
+        "An uncertain upload retry of the same file and date retains one object. The signed-out entry and read-only preview expose no photo access.",
+        "No health metrics are derived from photos and no external photo import is required."
+      ],
+      "evidence": [
+        "v2/src/progress-photos.js",
+        "v2/src/composition-layout-v2.js",
+        "v2/production-integration-browser.mjs"
+      ],
+      "blocker": null,
+      "next_action": "Verify candidate tests, public deployment and protected read-only authentication."
     }
   ],
   "package_history": [
