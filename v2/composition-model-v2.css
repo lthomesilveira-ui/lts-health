@@ -83,3 +83,26 @@
 
 .ltsCompositionV2.ltsCompositionV2 .ltsCompositionHeroCompact{padding:8px 12px!important}
 .ltsCompositionV2.ltsCompositionV2 .ltsCompositionTrend{margin-top:8px!important}
+
+.ltsProgressPhotosControl{min-height:44px}
+.ltsProgressPhotos.entryPanel{
+  width:min(100% - 24px,560px);
+  max-height:calc(100dvh - 32px);
+  margin:auto;
+  box-sizing:border-box;
+  border-radius:20px;
+  background:#0b151e;
+  color:#f0f6fc;
+  color-scheme:dark;
+}
+.ltsProgressPhotos::backdrop{background:rgba(0,0,0,.68)}
+.ltsProgressPhotosHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ltsProgressPhotosHeader h2{margin:0;font-size:1.2rem}
+.ltsProgressPhotos p{margin:8px 0;font-size:.875rem}
+.ltsProgressPhotos fieldset{display:grid;gap:12px;min-inline-size:0;padding:0;border:0}
+.ltsProgressPhotos .entryForm label{font-size:.875rem;color:inherit}
+.ltsProgressPhotos input{color:#f0f6fc;min-height:44px;min-width:0}
+.ltsProgressPhotos button{min-height:44px;font-size:.875rem}
+.ltsProgressPhotos [data-photos-list]{display:grid;gap:6px;list-style:none;margin:0;padding:0}
+.ltsProgressPhotos [data-photos-list] button{width:100%;text-align:left}
+.ltsProgressPhotos img{display:block;max-width:100%;max-height:52dvh;object-fit:contain;margin:8px auto 0;border-radius:12px}

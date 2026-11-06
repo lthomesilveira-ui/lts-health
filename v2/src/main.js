@@ -25,6 +25,7 @@ import {renderProductLabs} from './labs-layout-v2.js';
 import {renderRecoveryDepth} from './recovery-layout-v2.js';
 import {mountEvidencePanels} from './evidence-priority.js';
 import {openEntry,setupEntryController} from './entry.js';
+import {closeProgressPhotos,setupProgressPhotos,syncProgressPhotosSession} from './progress-photos.js';
 import {checkPolarConnection,actOnPolar,resetPolarConnection} from './polar-connection.js';
 import {checkAutoExportConnection,actOnAutoExport,copyAutoExport,resetAutoExportConnection} from './health-auto-export-connection.js';
 import {checkGoogleHealthConnection,actOnGoogleHealth,resetGoogleHealthConnection} from './google-health-connection.js';
@@ -43,7 +44,7 @@ let routeScrollRevision=0;
 const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','dados','analise']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
-function showLogin(message=''){$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
+function showLogin(message=''){closeProgressPhotos();$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
 function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden');}
 
 function syncNav(){
@@ -83,6 +84,7 @@ function setRoute(route,{replace=true}={}){
   if(route==='mais'){$('moreSheet').classList.remove('hidden');return;}
   if(!routes.has(route))route='hoje';
   if(route!=='dados')state.ui.sourceFocus=null;
+  if(route!=='bio')closeProgressPhotos();
   state.route=route;
   // pushState does not emit hashchange: apply route styling before rendering.
   if(!fixtureMode)document.body.dataset.productRoute=route;
@@ -481,11 +483,11 @@ function bindStaticEvents(){
 }
 
 async function boot(){
-  bindStaticEvents();setupEntryController({onSaved:refresh});state.route=routeFromLocation();
+  bindStaticEvents();setupEntryController({onSaved:refresh});setupProgressPhotos();state.route=routeFromLocation();
   if(!fixtureMode)setGlobalPeriod('90');
   try{const session=await restoreSession();if(!session){showLogin();}else{showApp();setRoute(state.route);await loadInitialData(setSync);await ensureRouteData(state.route,setSync);scheduleRender();void updatePolarOnOpen();}}
   catch(error){console.error(error);showLogin('Não foi possível restaurar sua sessão.');}
-  authSubscription=subscribeAuth(session=>{state.session=session;if(!session){state.ui.uploadFeedback=null;resetPolarConnection();resetAutoExportConnection();resetGoogleHealthConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
+  authSubscription=subscribeAuth(session=>{state.session=session;syncProgressPhotosSession();if(!session){state.ui.uploadFeedback=null;resetPolarConnection();resetAutoExportConnection();resetGoogleHealthConnection();state.loaded=false;state.data={};state.domainStatus={};showLogin();}});
 }
 
 window.addEventListener('beforeunload',()=>authSubscription?.unsubscribe?.());
