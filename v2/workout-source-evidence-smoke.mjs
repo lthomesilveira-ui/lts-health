@@ -43,7 +43,7 @@ const db={
  health_source_daily_metrics:[{source_record_id:'source-metric-candidate-1',metric_date:'2026-02-02',metric_type:'steps',value:7100,unit:'count',source_name:'Dispositivo de teste',source_family:'test_device',canonical_status:'candidate',confidence:'high',source_file:'synthetic-source'}]
 };
 // Authenticated synthetic transport. All unrecognized reads and every write fail closed.
-const tables=['health_personal_goals','health_polar_sessions','health_body_composition','health_segmental_composition','health_workouts','health_workout_source_evidence','health_workout_exercises','health_workout_sets','health_lab_results','health_documents','health_medication_events','health_medication_regimens','health_uploads','health_ingestion_previews','health_data_quality_issues','health_daily_nutrition','health_nutrition_meals','health_activity_records','health_metrics','health_source_daily_metrics'];
+const tables=['health_personal_goals','health_polar_sessions','health_body_composition','health_segmental_composition','health_workouts','health_workout_plans','health_workout_source_evidence','health_workout_exercises','health_workout_sets','health_lab_results','health_documents','health_medication_events','health_medication_regimens','health_uploads','health_ingestion_previews','health_data_quality_issues','health_daily_nutrition','health_nutrition_meals','health_activity_records','health_metrics','health_source_daily_metrics'];
 function installService(db,tables){
  window.__qaDb=db;window.__qaDenied=[];window.__qaCalls=[];window.__qaSession={user:{id:'synthetic-evidence-owner'}};
  window.__qaHaeStatus={configured:false,received:false};
