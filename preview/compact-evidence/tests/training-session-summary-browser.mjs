@@ -337,8 +337,8 @@ try{
       await page.goto(`${base}#hoje`);await stable(page,'hoje');
       assert.equal(await page.locator('[data-dashboard-card]').count(),7,'The approved Home cards stay unchanged');
       await navigate(page,'treinos',width);await stableTraining(page);await checkCurrent(page);
-      await page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="summary"]').focus();for(let i=0;i<3;i++)await page.keyboard.press('Tab');
-      const progressTab=page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="progress"]');assert.equal(await progressTab.evaluate(el=>el===document.activeElement),true,'The exercise index is keyboard-reachable as the fourth destination');
+      await page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="summary"]').focus();for(let i=0;i<3;i++)await page.keyboard.press('ArrowRight');
+      const progressTab=page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="progress"]');assert.equal(await progressTab.evaluate(el=>el===document.activeElement),true,'The exercise index is keyboard-reachable as the fourth destination with tablist arrows');
       await page.keyboard.press('Enter');await stableTraining(page,'progress');assert.ok(await page.locator('.ltsExerciseDirectory').isVisible(),'The real fourth tab opens observed exercise history');await chooseTab(page,'summary');await checkCurrent(page);
       for(const kind of ['distribution','original'])assert.equal(await page.locator(disclosureSelector(kind)).evaluate(el=>el.open),false,'New session details begin collapsed');
       await capture(page,`${label}-summary`);

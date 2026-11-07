@@ -119,24 +119,6 @@
   }
 }
 </script>
-  <script>
-    (() => {
-      const startup=document.getElementById('appStartup');
-      let ready=false;
-      const timer=setTimeout(() => {
-        if(ready)return;
-        document.getElementById('appStartupMessage').textContent='O Health está demorando para abrir.';
-        document.getElementById('appStartupHelp').textContent='Verifique sua conexão e tente novamente. Seus dados continuam guardados.';
-        document.getElementById('appStartupRetry').hidden=false;
-      },8000);
-      document.getElementById('appStartupRetry').addEventListener('click',()=>location.reload());
-      window.addEventListener('lts-health-ready',()=>{ready=true;clearTimeout(timer);startup.hidden=true;},{once:true});
-    })();
-    if (!new URLSearchParams(location.search).has('fixture')) {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
-    }
-  </script>
-  <script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>
   <link rel="stylesheet" href="./preview-readonly.css?v=health-dashboard-20261019.74">
   <link rel="stylesheet" href="./home-reference-experience.css?v=health-dashboard-20261019.74">
   <link rel="stylesheet" href="./home-overview.css?v=health-dashboard-20261019.74">
@@ -233,6 +215,24 @@
       }
     } catch {}
   </script>
+  <script>
+    (() => {
+      const startup=document.getElementById('appStartup');
+      let ready=false;
+      const timer=setTimeout(() => {
+        if(ready)return;
+        document.getElementById('appStartupMessage').textContent='O Health está demorando para abrir.';
+        document.getElementById('appStartupHelp').textContent='Verifique sua conexão e tente novamente. Seus dados continuam guardados.';
+        document.getElementById('appStartupRetry').hidden=false;
+      },8000);
+      document.getElementById('appStartupRetry').addEventListener('click',()=>location.reload());
+      window.addEventListener('lts-health-ready',()=>{ready=true;clearTimeout(timer);startup.hidden=true;},{once:true});
+    })();
+    if (!new URLSearchParams(location.search).has('fixture')) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+    }
+  </script>
+  <script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>
   <script type="module" src="./src/shell-accessibility.js?v=health-dashboard-20261019.74"></script>
   <script type="module" src="./src/backup-traceability.js?v=health-dashboard-20261019.74"></script>
   <script type="module" src="./src/main.js?v=health-dashboard-20261019.74"></script>
