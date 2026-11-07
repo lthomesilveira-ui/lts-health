@@ -94,6 +94,11 @@ for(const width of [320,393,1440]){
  await page.waitForURL('**/#treinos');
  assert.equal(await page.getByRole('searchbox',{name:'Buscar',exact:true}).inputValue(),'preserved search','route Back preserves session filters');
  await page.getByRole('button',{name:'Limpar filtros',exact:true}).click();
+ for(const destination of ['saude','evolucao']){
+  await navigate(destination);await page.getByRole('button',{name:'Voltar',exact:true}).click();
+  await page.waitForURL('**/#treinos');
+  assert.equal(await page.getByRole('searchbox',{name:'Buscar',exact:true}).inputValue(),'');
+ }
  await page.locator('#training-tab-history').press('ArrowRight');
  assert.equal(await page.locator('#training-tab-progress').getAttribute('aria-selected'),'true');
  assert.equal(await page.evaluate(()=>document.activeElement.id),'training-tab-progress','arrow navigation retains focus on the selected tab');
