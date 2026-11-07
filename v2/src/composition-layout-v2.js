@@ -36,7 +36,7 @@ export function compositionModel(){
   return{all,windowRows,bounds,counts,unique,latest,origins,source,series,period,recent,year,history,record};
 }
 const metricTile=(label,value,unit)=>`<div class="ltsCompositionMetric"><span>${esc(label)}</span><b>${num(value)==null?'—':fmtNum(value,1)}${num(value)==null?'':` <small>${esc(unit)}</small>`}</b></div>`;
-function header(detail=false){return `<header class="ltsPageHeader"><button class="ltsBack" ${detail?'data-depth-composition-back':'data-route="hoje"'} aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1 tabindex="-1" id="productCompositionTitle">${detail?'Detalhes da medição':'Composição corporal'}</h1><p>${detail?'Valores registrados e análise segmentar.':'Suas medições e mudanças ao longo do tempo.'}</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header>`;}
+function header(detail=false){return `<header class="ltsPageHeader"><button class="ltsBack" ${detail?'data-depth-composition-back':'data-route="hoje" data-route-back'} aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1 tabindex="-1" id="productCompositionTitle">${detail?'Detalhes da medição':'Composição corporal'}</h1><p>${detail?'Valores registrados e análise segmentar.':'Suas medições e mudanças ao longo do tempo.'}</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header>`;}
 function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${esc(valueText(value,unit))}</b></div>`;}
 export function linkedSegmental(record,bodyRows,segmentalRows){
   const date=validDay(record?.measured_at),source=identity(record);
