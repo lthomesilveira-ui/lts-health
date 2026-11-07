@@ -184,8 +184,10 @@ function render(){
   const renderer=screenRenderers[state.route]||screenRenderers.hoje;
   const routeChanged=renderedRoute!==state.route;
   const selectedFile=!routeChanged&&state.route==='dados'&&!state.ui.uploadFeedback&&state.ui.uploadFileOwner&&state.ui.uploadFileOwner===state.session?.user?.id?$('uploadFile'):null;
-  const context=routeChanged?{openDisclosures:[],focus:null}:captureRenderContext(host);
-  try{host.innerHTML=renderer();}
+  // Depth controls can render the destination before a pending route render.
+  // Preserve that live workspace, including a keyboard-selected tab's focus.
+  const context=routeChanged&&host.dataset.productLayoutRoute!==state.route?{openDisclosures:[],focus:null}:captureRenderContext(host);
+  try{host.innerHTML=renderer();host.dataset.productLayoutRoute=state.route;}
   catch(error){console.error(error);host.innerHTML='<div class="errorState"><b>Não foi possível abrir esta área.</b><span>Os outros dados continuam disponíveis. Tente atualizar ou abra outra aba.</span></div>';}
   if(selectedFile?.files?.length)$('uploadFile')?.replaceWith(selectedFile);
   applyControlState();mountEvidencePanels();restoreRenderContext(host,context);

@@ -85,6 +85,8 @@ for(const width of [320,393,1440]){
   else if(['hoje','treinos','evolucao'].includes(destination))await page.locator(`#mobileNav [data-route="${destination}"]`).click();
   else{await page.locator('#mobileNav [data-route="mais"]').click();await page.locator(`#moreSheet [data-route="${destination}"]`).click();}
   await page.waitForFunction(r=>document.querySelector(`#primaryNav [data-route="${r}"]`)?.getAttribute('aria-current')==='page',destination);
+  const marker={treinos:'.ltsTrainingReference',bio:'.ltsCompositionV2',saude:'.ltsLabsV2',evolucao:'.ltsEvolutionOverview',hoje:'[data-health-dashboard]'}[destination];
+  if(marker)await page.locator('#screenHost '+marker).waitFor({state:'visible'});
  };
  await navigate('treinos');await page.locator('#training-tab-history').click();
  await page.getByRole('searchbox',{name:'Buscar',exact:true}).fill('preserved search');
@@ -101,6 +103,7 @@ for(const width of [320,393,1440]){
  }
  await page.locator('#training-tab-history').press('ArrowRight');
  assert.equal(await page.locator('#training-tab-progress').getAttribute('aria-selected'),'true');
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  assert.equal(await page.evaluate(()=>document.activeElement.id),'training-tab-progress','arrow navigation retains focus on the selected tab');
  await page.locator('#training-tab-progress').press('End');
  assert.equal(await page.locator('#training-tab-plan').getAttribute('aria-selected'),'true');

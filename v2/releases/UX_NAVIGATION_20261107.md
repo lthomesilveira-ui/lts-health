@@ -37,3 +37,5 @@ The nine original source/provider/owner conditions remain independent. In partic
 ## Candidate correction history
 
 The first candidate revealed that its preview startup guard was still located in the head, before its new status markup. It was moved with the account SDK and existing read-only guard before application modules. Initial preview/training/calendar failures are preserved. The previous training test expected Tab to visit each tab; it now uses the tablist arrow convention while retaining the same fourth-destination and content checks.
+
+The new cross-area journey exposed a real late-render focus race: a pending canonical render replaced a Training tab already selected by the depth controller. The canonical renderer now recognizes the current rendered route and preserves its live focus/disclosure context. The regression also checks focus after two animation frames.
