@@ -6,7 +6,7 @@ The protected Google connection could read after an app action, but had no serve
 
 ## Boundaries
 
-- A private database job creates a cryptographically random single-use ticket, stores only its hash, and expires it after five minutes. Browser roles lose extension transport queue/response access as well as scheduler RPC access.
+- A private database job creates a cryptographically random single-use ticket, expires it after five minutes, and retains its raw value temporarily only in a private column denied even to the service role. Separate cron transactions issue the ticket at minute35 and dispatch it at36. Private synchronous HTTP keeps it out of the shared pg_net queue; only its hash and aggregate dispatch outcome remain after sending.
 - The endpoint rejects browser origins and accepts only a bounded JSON tick. It cannot accept an owner ID, date range or source mapping.
 - The service selects at most two connected, due, lease-free owners. Successful manual reads and failed scheduled attempts both enforce a50-minute backoff.
 - The fixed window contains today in São Paulo plus the previous29civil days. Original source offsets remain unchanged.
@@ -19,3 +19,5 @@ The protected Google connection could read after an app action, but had no serve
 71 local invented-data Node tests passed. The added disposable PostgreSQL tests use a real PostgreSQL17 database and pgcrypto, with explicit synthetic cron/HTTP transport stand-ins. Native migration, exact function readback, live ACL checks and dispatch are still pending. No provider token, raw ticket, personal health observation or owner identifier is included here.
 
 The first PostgreSQL run42417604410 passed20/22 tests. Two fixture assertions failed: separate clock reads exceeded the strict five-minute synthetic expired-ticket interval by microseconds; a one-column SQL function alias aggregated its UUID as a scalar. The fixture now uses one captured clock and an explicit named JSON object. Production timing constraints and the HTTP candidate contract remain unchanged. The failed first run is retained rather than counted as passed.
+
+Native preflight found that pg_net0.20.4 transport objects belong to the managed administrator, grant PUBLIC access, and cannot safely be tightened by the project role. No ineffective revocation was applied. The revised path uses the supported http1.6 extension inside a private schema, with explicit120s/5s request/connect timeouts and two independently committed cron phases. It changes no existing Polar/pg_net ACL or job. The transport stands in the PostgreSQL fixture now model this private synchronous boundary and ticket consumption. The prior22/22 database result belongs to the earlier transport candidate; revised gates are pending.
