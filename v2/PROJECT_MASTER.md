@@ -1,3 +1,11 @@
+## 2026-11-07 — Abertura e navegação entregues, .126
+
+PR506 publicou a .126 após22/22 verificações da candidata exata. Abertura protegida com recuperação, retorno ao histórico do próprio app, filtros preservados, área ativa acessível, abas de Treinos por teclado e foco estável foram conferidos. Exames identificam método/datas nas opções de série; a Timeline distingue origens de linhas parecidas e nomeia seus filtros. A verificação autenticada percorreu as dez áreas, formulários sem envio e relatórios semanais/mensais.
+
+Merge `8fda51864f2466f1996ce853de2724760889d5a4` preservou a árvore testada. Deploy42383584016, Pages42383625929/42383625953, entrada42383583906 e acesso real protegido42383583877 passaram. A sessão real reabriu a versão exata e verificou busca/retorno/foco, opções de exames e origens da Timeline. Quatro tarefas encerradas:123done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. As repetições gerais de publicação ainda não terminadas ficam enumeradas no estado, sem serem contadas como sucesso.
+
+As nove condições originais de fonte/provedor/aceite continuam independentes. A checagem privada atual não trouxe prova nova para encerrá-las. Nenhum registro clínico foi gravado nesta auditoria. A atualização final dos controles é somente documental; os arquivos executáveis permanecem iguais aos da publicação verificada. Detalhes: `v2/releases/UX_NAVIGATION_20261107.md`.
+
 ## Concluído — autorização Google Health no app, .123
 
 `PKG-GOOGLE-HYDRATION-ONBOARDING-040` / `LTS-GOOGLE-HYDRATION-ONBOARDING-001` entrega em Dados & fontes o estado privado da conexão, o início da autorização oficial com `googlehealth.nutrition.readonly` e a primeira conferência delimitada de30dias somente após o retorno na mesma aba. Período vazio, registros recebidos para conciliação e falha permanecem distintos. Tokens e snapshots ficam no servidor privado; nenhuma água é promovida antes de reconciliar identidade e origem.

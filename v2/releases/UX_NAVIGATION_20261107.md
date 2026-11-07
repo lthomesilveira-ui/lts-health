@@ -1,6 +1,6 @@
 # UX navigation and startup — 2026-11-07
 
-Status: candidate .126, not yet published.
+Status: .126 published and verified with genuine owner authentication.
 
 ## Observed defects
 
@@ -26,7 +26,7 @@ Add recorded laboratory method and date extent to series options. Raw results, g
 
 ## Verification
 
-Local source parity, dependency inventory, preview isolation, navigation state, privacy and existing auth/write boundaries pass. Candidate workflows, responsive Chromium/WebKit journeys, publication and exact authenticated verification are pending.
+Local source parity, dependency inventory, preview isolation, navigation state, privacy and existing auth/write boundaries pass. All22 exact candidate workflows, responsive Chromium/WebKit journeys, publication and exact authenticated verification passed.
 
 Synthetic tests exercise delayed SDK/failed main module, late recovery, protected account boundary, 320/393/1440 widths, actual menu controls, route return with filters, repeated route taps and tab focus. Public repository evidence contains generic behavior only.
 
@@ -39,3 +39,16 @@ The nine original source/provider/owner conditions remain independent. In partic
 The first candidate revealed that its preview startup guard was still located in the head, before its new status markup. It was moved with the account SDK and existing read-only guard before application modules. Initial preview/training/calendar failures are preserved. The previous training test expected Tab to visit each tab; it now uses the tablist arrow convention while retaining the same fourth-destination and content checks.
 
 The new cross-area journey exposed a real late-render focus race: a pending canonical render replaced a Training tab already selected by the depth controller. The canonical renderer now recognizes the current rendered route and preserves its live focus/disclosure context. The regression also checks focus after two animation frames.
+
+## Publication evidence
+
+## 2026-11-07 — Abertura e navegação entregues, .126
+
+PR506 publicou a .126 após22/22 verificações da candidata exata. Abertura protegida com recuperação, retorno ao histórico do próprio app, filtros preservados, área ativa acessível, abas de Treinos por teclado e foco estável foram conferidos. Exames identificam método/datas nas opções de série; a Timeline distingue origens de linhas parecidas e nomeia seus filtros. A verificação autenticada percorreu as dez áreas, formulários sem envio e relatórios semanais/mensais.
+
+Merge `8fda51864f2466f1996ce853de2724760889d5a4` preservou a árvore testada. Deploy42383584016, Pages42383625929/42383625953, entrada42383583906 e acesso real protegido42383583877 passaram. A sessão real reabriu a versão exata e verificou busca/retorno/foco, opções de exames e origens da Timeline. Quatro tarefas encerradas:123done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. As repetições gerais de publicação ainda não terminadas ficam enumeradas no estado, sem serem contadas como sucesso.
+
+As nove condições originais de fonte/provedor/aceite continuam independentes. A checagem privada atual não trouxe prova nova para encerrá-las. Nenhum registro clínico foi gravado nesta auditoria. A atualização final dos controles é somente documental; os arquivos executáveis permanecem iguais aos da publicação verificada. Detalhes: `v2/releases/UX_NAVIGATION_20261107.md`.
+
+
+The first laboratory-original run returned a transient null rectangle in its last WebKit1440 case. Only the failed job was retried on unchanged source; attempt2 passed. Original failed runs and repaired code candidates remain recorded in EXECUTION_STATE.json.
