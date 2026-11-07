@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-TRAINING-PLANNING-041",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Deliver private workout planning, recorded effort and optional progress photos, with protected verification of both planning panels.",
     "task_ids": [
       "LTS-TRAINING-PLANNING-001",
@@ -59,18 +59,14 @@
       "LTS-PROGRESS-PHOTOS-001"
     ],
     "candidate_build": "health-integrated-20261106.125",
-    "public_build": "health-integrated-20261106.124",
+    "public_build": "health-integrated-20261106.125",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-06",
-    "pending_gates": [
-      "candidate CI and synthetic private photo round trip",
-      "public deployment and protected authentication",
-      "public browser inspection"
-    ],
+    "pending_gates": [],
     "evidence_document": "v2/CURRENT_HANDOFF.md",
     "prior_promotion": {
       "pr": 503,
@@ -88,56 +84,52 @@
       "protected_auth_conclusion": "failure",
       "protected_failure_evidence": "The Training documentary comparison assertion selected the first shared card class, which now belongs to the separate personal plans panel. The authenticated workflow had verified independent set projection and reported no runtime or public transport errors.",
       "signed_out_public_build_checked": true
-    }
+    },
+    "completed_on": "2026-11-06",
+    "candidate_commit": "d23257178f81cffa1a49646058abe08321f7a988",
+    "candidate_tree": "b734d71adc493fe8e5b5a6417dc3a8edf62c7969",
+    "candidate_checks_passed": 20,
+    "runtime_promotion_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+    "protected_auth_run": 42315062923
   },
   "last_verified_release": {
+    "build_id": "health-integrated-20261106.125",
+    "published_on": "2026-11-06",
+    "release_kind": "private_training_plans_effort_and_photos",
+    "main_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+    "runtime_promotion_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261105.123",
-    "main_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
-    "runtime_promotion_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
-    "published_on": "2026-11-05",
-    "release_kind": "google_health_onboarding",
-    "manual_exact_public_status": "exact_authenticated_public_google_connection_entry_verified",
-    "automated_runtime_and_responsive_status": "Candidate 22/22 passed. Publication deploy, both Pages entries, protected actual authentication and four broad runs passed; the visual main job passed while its auxiliary host job was cancelled during browser installation and remains recorded as non-success.",
-    "evidence": [
-      "PR501 final candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks.",
-      "Normal merge 9b472aa3749ec1b4014157ce35998b016572f166 preserved the tested tree and published health-integrated-20261105.123. Deploy 42116082225, public entry 42116082218, Pages 42116179176/42116179750 and protected Real Auth 42116081743 passed.",
-      "Calendar/PDF 42116082111, integrated-production 42116081828, functional-depth 42116081791 and preview-contract 42116081781 completed successfully. Visual run 42116081955 retained main job 127555966768 success and auxiliary host job 127555966897 cancelled; the cancellation was not retried or counted as success.",
-      "The exact public .123 was inspected authenticated: Google connection status is private, the control remains hidden while signed out, and no canonical hydration, source label or clinical record changes before reconciliation."
-    ],
+    "manual_exact_public_status": "exact_signed_out_entry_and_protected_live_auth_verified",
+    "automated_runtime_and_responsive_status": "All 20 candidate workflows and the release gates passed. Additional publication suites are separately recorded.",
     "ci_summary": {
-      "main_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
-      "total": 25,
-      "success": 24,
-      "cancelled": 1,
-      "status": "complete_with_preserved_auxiliary_cancel",
-      "protected_actual_auth_run": 42116081743,
-      "pending_workflows": []
+      "status": "release_gates_complete",
+      "main_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+      "protected_actual_auth_run": 42315062923,
+      "total": 24,
+      "success": 22,
+      "pending_workflows": [
+        42315062902,
+        42315063145
+      ]
     },
-    "recorded_non_success_validation_runs": [
-      {
-        "run_id": 42116081955,
-        "job_id": 127555966897,
-        "scope": "auxiliary visual-training-host browser installation",
-        "conclusion": "cancelled",
-        "preserved_result": "The main visual-training job 127555966768 passed. This auxiliary cancellation is not success and did not trigger a rerun."
-      }
-    ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 41372128661,
-        "attempt": 1,
-        "scope": "supplemental public fixture navigation before DOM",
-        "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+        "run_id": 42311134500,
+        "stage": "candidate_workout_source_evidence",
+        "resolution": "Permit the legitimate workout-plan read in the synthetic transport."
       },
       {
-        "run_id": 41373999373,
-        "attempt": 1,
-        "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
-        "artifact_id": 13110745602,
-        "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
-        "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+        "run_id": 42313070577,
+        "stage": "previous_build_protected_auth_documentary_plan",
+        "resolution": "Use the dedicated documentary panel selector. Protected .125 reran successfully."
       }
+    ],
+    "evidence": [
+      "PR504 candidate d23257178f81cffa1a49646058abe08321f7a988 and exact tree b734d71adc493fe8e5b5a6417dc3a8edf62c7969 passed 20/20 candidate workflows.",
+      "Integrated Production 42313917849 used only synthetic photos at 320, 393 and 1440 px. It verified a private upload retry with one retained object, authenticated reopening and absence of automatic preloading.",
+      "Normal merge 256fdda751dd18ecfb096722b8fb14a061ef210a kept the tested tree. Deploy 42315062955, Pages 42315191131 and 42315191226, and protected Real Auth 42315062923 passed.",
+      "The protected workflow confirmed the received documentary plan and the separate personal planning form on the live version without writing a health record.",
+      "Exact signed-out public browser showed health-integrated-20261106.125 and no visible private or photo area. The previously failed documentary selector check is retained in release history."
     ]
   },
   "tasks": [
@@ -3525,7 +3517,7 @@
       "id": "LTS-TRAINING-PLANNING-001",
       "area": "training",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Create and edit private workout plans with date, exercises, sets and repetitions.",
       "acceptance": [
@@ -3536,16 +3528,18 @@
       "evidence": [
         "v2/src/entry.js",
         "v2/src/writes.js",
-        "v2/production-integration-browser.mjs"
+        "v2/production-integration-browser.mjs",
+        "PR504, candidate d23257178f81cffa1a49646058abe08321f7a988 and public merge 256fdda751dd18ecfb096722b8fb14a061ef210a.",
+        "Protected Real Auth 42315062923 and Integrated Production 42313917849 passed."
       ],
-      "next_action": "Verify the exact candidate and published runtime.",
+      "next_action": "No executable follow-up for the delivered feature.",
       "blocker": null
     },
     {
       "id": "LTS-TRAINING-EFFORT-001",
       "area": "training",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Capture optional self-reported effort and exercise notes in structured workout entry.",
       "acceptance": [
@@ -3555,9 +3549,11 @@
       "evidence": [
         "v2/src/entry.js",
         "v2/src/writes.js",
-        "v2/production-write-boundary-test.mjs"
+        "v2/production-write-boundary-test.mjs",
+        "PR504, candidate d23257178f81cffa1a49646058abe08321f7a988 and public merge 256fdda751dd18ecfb096722b8fb14a061ef210a.",
+        "Protected Real Auth 42315062923 and Integrated Production 42313917849 passed."
       ],
-      "next_action": "Verify the exact candidate and published runtime.",
+      "next_action": "No executable follow-up for the delivered feature.",
       "blocker": null
     },
     {
@@ -3565,7 +3561,7 @@
       "area": "composition",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "summary": "Offer an optional private progress-photo workspace under Composition.",
       "acceptance": [
         "Authenticated users can save a dated supported photo and reopen it through authenticated owner-scoped storage on mobile and desktop.",
@@ -3575,10 +3571,12 @@
       "evidence": [
         "v2/src/progress-photos.js",
         "v2/src/composition-layout-v2.js",
-        "v2/production-integration-browser.mjs"
+        "v2/production-integration-browser.mjs",
+        "PR504, candidate d23257178f81cffa1a49646058abe08321f7a988 and public merge 256fdda751dd18ecfb096722b8fb14a061ef210a.",
+        "Protected Real Auth 42315062923 and Integrated Production 42313917849 passed."
       ],
       "blocker": null,
-      "next_action": "Verify candidate tests, public deployment and protected read-only authentication."
+      "next_action": "No executable follow-up for the delivered feature."
     }
   ],
   "package_history": [
@@ -5290,43 +5288,43 @@
     }
   ],
   "latest_published_release": {
+    "build_id": "health-integrated-20261106.125",
+    "published_on": "2026-11-06",
+    "release_kind": "private_training_plans_effort_and_photos",
+    "main_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+    "runtime_promotion_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
-    "build_id": "health-integrated-20261102.122",
-    "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
-    "runtime_promotion_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
-    "published_on": "2026-11-02",
-    "release_kind": "calendar_training_count_copy",
-    "manual_exact_public_status": "exact_authenticated_public_calendar_report_verified",
-    "automated_runtime_and_responsive_status": "Candidate19/19 and publication23/23 passed; exact desktop/mobile evidence, actual concise/full PDFs and genuine authenticated public inspection verified.",
-    "evidence": [
-      "PR494 candidate 830c814eae15f99615027d7d36b8caab20566da7, tree aac6cba39ee8f0bc7dbcd6c625adb94ce9f8a10c, passed 19/19 workflows. All 16 changed remote blobs matched the locally validated files.",
-      "Exact calendar/PDF artifact 13148847479 sha256:9f27955c303b9cf4c39e36865a45b0de3e3ed3b6789310b341d23a2558fe376c was byte-verified. Single-session mobile/desktop captures and actual concise/full PDFs were inspected; source records and zero-write/external-request boundaries remain intact.",
-      "Normal merge 144dfc46c7ac47c767768dbb1456f26a2dbed7db preserved the exact tested tree and published health-integrated-20261102.122. All 23/23 publication workflows passed, including deploy, both public entries and protected real authentication.",
-      "The genuine authenticated public .122 displayed the corrected single-session labels in the summary, training block and full details; recorded totals, calendar, units, origins and evidence were preserved. No original upload, login, clinical write, support message or phone step was repeated."
-    ],
+    "manual_exact_public_status": "exact_signed_out_entry_and_protected_live_auth_verified",
+    "automated_runtime_and_responsive_status": "All 20 candidate workflows and the release gates passed. Additional publication suites are separately recorded.",
     "ci_summary": {
-      "main_commit": "144dfc46c7ac47c767768dbb1456f26a2dbed7db",
-      "total": 23,
-      "success": 23,
-      "status": "complete",
-      "protected_actual_auth_run": 41462308456,
-      "pending_workflows": []
+      "status": "release_gates_complete",
+      "main_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+      "protected_actual_auth_run": 42315062923,
+      "total": 24,
+      "success": 22,
+      "pending_workflows": [
+        42315062902,
+        42315063145
+      ]
     },
     "recorded_failed_validation_runs": [
       {
-        "run_id": 41372128661,
-        "attempt": 1,
-        "scope": "supplemental public fixture navigation before DOM",
-        "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+        "run_id": 42311134500,
+        "stage": "candidate_workout_source_evidence",
+        "resolution": "Permit the legitimate workout-plan read in the synthetic transport."
       },
       {
-        "run_id": 41373999373,
-        "attempt": 1,
-        "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
-        "artifact_id": 13110745602,
-        "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
-        "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+        "run_id": 42313070577,
+        "stage": "previous_build_protected_auth_documentary_plan",
+        "resolution": "Use the dedicated documentary panel selector. Protected .125 reran successfully."
       }
+    ],
+    "evidence": [
+      "PR504 candidate d23257178f81cffa1a49646058abe08321f7a988 and exact tree b734d71adc493fe8e5b5a6417dc3a8edf62c7969 passed 20/20 candidate workflows.",
+      "Integrated Production 42313917849 used only synthetic photos at 320, 393 and 1440 px. It verified a private upload retry with one retained object, authenticated reopening and absence of automatic preloading.",
+      "Normal merge 256fdda751dd18ecfb096722b8fb14a061ef210a kept the tested tree. Deploy 42315062955, Pages 42315191131 and 42315191226, and protected Real Auth 42315062923 passed.",
+      "The protected workflow confirmed the received documentary plan and the separate personal planning form on the live version without writing a health record.",
+      "Exact signed-out public browser showed health-integrated-20261106.125 and no visible private or photo area. The previously failed documentary selector check is retained in release history."
     ]
   },
   "release_history": [
@@ -10085,40 +10083,87 @@
           "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
         }
       ]
+    },
+    {
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "build_id": "health-integrated-20261105.123",
+      "main_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
+      "runtime_promotion_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
+      "published_on": "2026-11-05",
+      "release_kind": "google_health_onboarding",
+      "manual_exact_public_status": "exact_authenticated_public_google_connection_entry_verified",
+      "automated_runtime_and_responsive_status": "Candidate 22/22 passed. Publication deploy, both Pages entries, protected actual authentication and four broad runs passed; the visual main job passed while its auxiliary host job was cancelled during browser installation and remains recorded as non-success.",
+      "evidence": [
+        "PR501 final candidate afc5244c8f5b62199ab906a56dd0bbc96e1671e8, tree 960cc1b678b43a504b872fc5d10dd68de6c45a41, passed 22/22 checks.",
+        "Normal merge 9b472aa3749ec1b4014157ce35998b016572f166 preserved the tested tree and published health-integrated-20261105.123. Deploy 42116082225, public entry 42116082218, Pages 42116179176/42116179750 and protected Real Auth 42116081743 passed.",
+        "Calendar/PDF 42116082111, integrated-production 42116081828, functional-depth 42116081791 and preview-contract 42116081781 completed successfully. Visual run 42116081955 retained main job 127555966768 success and auxiliary host job 127555966897 cancelled; the cancellation was not retried or counted as success.",
+        "The exact public .123 was inspected authenticated: Google connection status is private, the control remains hidden while signed out, and no canonical hydration, source label or clinical record changes before reconciliation."
+      ],
+      "ci_summary": {
+        "main_commit": "9b472aa3749ec1b4014157ce35998b016572f166",
+        "total": 25,
+        "success": 24,
+        "cancelled": 1,
+        "status": "complete_with_preserved_auxiliary_cancel",
+        "protected_actual_auth_run": 42116081743,
+        "pending_workflows": []
+      },
+      "recorded_non_success_validation_runs": [
+        {
+          "run_id": 42116081955,
+          "job_id": 127555966897,
+          "scope": "auxiliary visual-training-host browser installation",
+          "conclusion": "cancelled",
+          "preserved_result": "The main visual-training job 127555966768 passed. This auxiliary cancellation is not success and did not trigger a rerun."
+        }
+      ],
+      "recorded_failed_validation_runs": [
+        {
+          "run_id": 41372128661,
+          "attempt": 1,
+          "scope": "supplemental public fixture navigation before DOM",
+          "recovery": "Only the failed job was retried once on unchanged source; attempt2 passed. The original timeout remains recorded."
+        },
+        {
+          "run_id": 41373999373,
+          "attempt": 1,
+          "scope": "public signed-out entry received HTTP503 for unchanged v2/reports.css",
+          "artifact_id": 13110745602,
+          "artifact_sha256": "74c12d55eebdbac4f5ae785981b0de4e17ded5641b3e3166085027856ca8ce47",
+          "recovery": "Only the failed job was retried once on unchanged source and passed. This records that recovery, not a permanent network fix."
+        }
+      ]
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-05",
-    "reviewed_at_utc": "2026-11-05T02:18:08.623Z",
-    "source_main_commit": "86143c6e3ebec637f8adaff3c459f7ecf1229c52",
-    "runtime_build": "health-integrated-20261102.122",
-    "candidate_build": null,
-    "runtime_changed": false,
+    "reviewed_on": "2026-11-06",
+    "reviewed_at_utc": "2026-11-07T00:03:20.105837+00:00",
+    "source_main_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+    "runtime_build": "health-integrated-20261106.125",
+    "runtime_changed": true,
     "clinical_runtime_changed": false,
+    "server_runtime_changed": false,
     "real_source_observations_changed": false,
+    "executable_task_count": 0,
     "status_counts": {
-      "done": 115,
+      "done": 119,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2
     },
-    "executable_task_count": 0,
     "evidence": [
-      "Official server-only Google hydration preparation is deployed and validated; the correct scope, Health identity, bounded complete source reads and atomic private snapshots are implemented.",
-      "PR498 exact candidate22/22, protected genuine deployment status and source-preserving .122 public response passed; migration and function bundles were verified.",
-      "Two postmerge dependency-installation cancellations are preserved. PR499 fixes only the runner environment with the already used pinned official image; its exact candidate7/7 and browser tests passed before a normal merge.",
-      "All127 pre-existing task objects and their independent criteria are preserved. The new internal preparation task is done; nine genuine external/source/access/owner conditions remain open.",
-      "No Google project/client/secret/consent, real hydration read, canonical promotion or later recurring update is claimed. Browser authentication and fresh verification did not return a result in this session; do not repeat credential requests or infer login success.",
-      "No phone setup, manual water entry, duplicate upload, clinical write or support message was repeated."
+      "PR504 candidate d23257178f81cffa1a49646058abe08321f7a988 and exact tree b734d71adc493fe8e5b5a6417dc3a8edf62c7969 passed 20/20 candidate workflows.",
+      "Integrated Production 42313917849 used only synthetic photos at 320, 393 and 1440 px. It verified a private upload retry with one retained object, authenticated reopening and absence of automatic preloading.",
+      "Normal merge 256fdda751dd18ecfb096722b8fb14a061ef210a kept the tested tree. Deploy 42315062955, Pages 42315191131 and 42315191226, and protected Real Auth 42315062923 passed.",
+      "The protected workflow confirmed the received documentary plan and the separate personal planning form on the live version without writing a health record.",
+      "Exact signed-out public browser showed health-integrated-20261106.125 and no visible private or photo area. The previously failed documentary selector check is retained in release history."
     ],
+    "open_dependency_policy": "Nine independent source, coverage, provider-access and owner-acceptance conditions remain open. Resume on genuine new evidence and keep their individual acceptance criteria.",
     "ux_review": {
-      "area": "google_health_preparation",
-      "next_area": "reports",
-      "mode": "server_publication_and_protected_status_with_ci_recovery",
-      "result": "internal_preparation_delivered_external_activation_unverified"
-    },
-    "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal.",
-    "server_runtime_changed": true
+      "area": "training_and_composition",
+      "mode": "exact_candidate_and_protected_live_release",
+      "result": "planning_effort_photos_verified"
+    }
   },
   "continuity_review_history": [
     {
@@ -11378,6 +11423,39 @@
         "result": "completed_native_checks_reconciled_without_runtime_or_data_change"
       },
       "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal."
+    },
+    {
+      "reviewed_on": "2026-11-05",
+      "reviewed_at_utc": "2026-11-05T02:18:08.623Z",
+      "source_main_commit": "86143c6e3ebec637f8adaff3c459f7ecf1229c52",
+      "runtime_build": "health-integrated-20261102.122",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 115,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Official server-only Google hydration preparation is deployed and validated; the correct scope, Health identity, bounded complete source reads and atomic private snapshots are implemented.",
+        "PR498 exact candidate22/22, protected genuine deployment status and source-preserving .122 public response passed; migration and function bundles were verified.",
+        "Two postmerge dependency-installation cancellations are preserved. PR499 fixes only the runner environment with the already used pinned official image; its exact candidate7/7 and browser tests passed before a normal merge.",
+        "All127 pre-existing task objects and their independent criteria are preserved. The new internal preparation task is done; nine genuine external/source/access/owner conditions remain open.",
+        "No Google project/client/secret/consent, real hydration read, canonical promotion or later recurring update is claimed. Browser authentication and fresh verification did not return a result in this session; do not repeat credential requests or infer login success.",
+        "No phone setup, manual water entry, duplicate upload, clinical write or support message was repeated."
+      ],
+      "ux_review": {
+        "area": "google_health_preparation",
+        "next_area": "reports",
+        "mode": "server_publication_and_protected_status_with_ci_recovery",
+        "result": "internal_preparation_delivered_external_activation_unverified"
+      },
+      "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal.",
+      "server_runtime_changed": true
     }
   ],
   "continuation_automation": {

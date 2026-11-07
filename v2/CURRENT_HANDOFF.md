@@ -1,3 +1,11 @@
+## 2026-11-06 — Treinos e fotos privadas concluídos, .125
+
+A versão .125 entrega o planejamento pessoal em Treinos, a escala de esforço de 0 a 10 nas observações por exercício e a opção de fotos por data em Composição. Planejamento e sessões concluídas ficam em registros separados. As fotos usam o armazenamento privado do titular e o original pode ser baixado pela área autenticada. A importação de fotos do MyFitnessPal ficou fora do pacote.
+
+PR504 passou 20/20 verificações candidatas. O merge normal `256fdda751dd18ecfb096722b8fb14a061ef210a` preservou a árvore testada. O teste com fotos fictícias conferiu o fluxo em 320, 393 e 1440 px, incluindo a nova tentativa depois de uma falha incerta e a reabertura do mesmo arquivo. Deploy 42315062955, Pages 42315191131 e 42315191226 e o teste protegido 42315062923 passaram. A entrada pública exata foi conferida com login visível e área privada oculta. A verificação protegida confirmou os dois painéis de Treinos e a abertura do formulário pessoal. A falha antiga de seleção do painel e sua correção continuam registradas.
+
+Fila com 119 concluídas, 9 bloqueadas por dependências externas, 2 lacunas aceitas e 2 alternativas substituídas. Zero itens internos prontos ou em execução. As pendências externas mantêm critérios separados. A confirmação do histórico e da chegada automática de água exige nova evidência da fonte ou acesso autorizado. O teste de publicação leu dados com acesso protegido e usou registros fictícios para gravações.
+
 ## 2026-11-06 — Treinos publicado e fotos opcionais em validação
 
 A .124 do PR503 passou 21/21 verificações de candidata. O merge normal `16e60f3811f4709b2d38f33107810877fb2e61fb` preservou a árvore testada. Deploy 42313070528 e entradas Pages 42313135292/42313135394 passaram, e a entrada pública exata foi conferida com a área privada oculta. O teste protegido 42313070577 alcançou Treinos e confirmou a leitura independente das cargas. O teste seguinte consultava o primeiro painel com uma classe de estilo compartilhada e passou a encontrar o painel pessoal. A .125 restringe a consulta ao painel documental e verifica a abertura do formulário pessoal com autenticação e sem gravar dados.
