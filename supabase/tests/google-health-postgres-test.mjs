@@ -287,7 +287,7 @@ test('a separate committed ticket dispatch uses bounded private transport, clear
 });
 test('malformed or sensitive transport results cannot become retained health or error content',()=>{
   prepareSchedule();enableSchedule();issue();run("update health_transport.fixture_reply set content='synthetic-provider-secret';");assert.equal(dispatch(),'599');assert.equal(scheduleRow().last_dispatch_counts,null);assert.equal(scheduleRow().ticket_value,null);assert.equal(count(),0);
-  issue();run("update health_transport.fixture_reply set content='{\"attempted\":0,\"completed\":0,\"skipped\":0,\"failed\":0,\"private\":\"synthetic-secret\"}';");assert.equal(dispatch(),'200');assert.ok(!JSON.stringify(schedulerStatus()).includes('synthetic-secret'));
+  prepareSchedule();enableSchedule();assert.equal(issue(),'t');run("update health_transport.fixture_reply set content='{\"attempted\":0,\"completed\":0,\"skipped\":0,\"failed\":0,\"private\":\"synthetic-secret\"}';");assert.equal(dispatch(),'200');assert.ok(!JSON.stringify(schedulerStatus()).includes('synthetic-secret'));
 });
 test('scheduled candidates are connected, due, lease-free and bounded; recent manual reads and failed attempts back off',()=>{
   prepareSchedule();const first=link(),second=link(other);assert.equal(candidates().length,2);
