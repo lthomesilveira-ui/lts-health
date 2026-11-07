@@ -55,22 +55,25 @@ async function exchange(c,params,previous,fetcher,now){
 function status(c,row){return {configured:googleHealthConfigured(c),connected:row?.status==='connected',last_read_at:row?.last_read_at??null,last_attempt_at:row?.last_attempt_at??null,last_error:row?.last_error??null,canonical_updated:false};}
 
 // Dependencies are injected for invented-fixture HTTP/transaction tests. Production only injects verified Auth and a service-only store.
-export function createGoogleHealthHandlers({config,authenticate,storeFactory,fetcher=fetch,now=()=>Date.now()}){
+export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now()}){
   async function connection(request){
     const origin=request.headers.get('Origin');
     if(origin&&origin!==appOrigin)return failResponse(Error('origin_not_allowed'));
     if(request.method==='OPTIONS')return new Response('ok',{headers:cors});
     if(request.method!=='POST')return failResponse(Error('method_not_allowed'));
     try{
-      const c=config(),user=await authenticate(request,c);
+      let c=config();const user=await authenticate(request,c);
       if(!user||user.is_anonymous===true)error('unauthorized');
       const body=await boundedJson(request,2048),action=body?.action;
       const allowed=action==='read'?['action','from','to']:['action'];
       if(!body||typeof body!=='object'||Array.isArray(body)||!['status','authorize','read','disconnect'].includes(action)||Object.keys(body).some(k=>!allowed.includes(k)))error('invalid_action');
-      if(action==='status'&&!googleHealthConfigured(c))return json(status(c,null));
       if(action==='disconnect'){
-        await storeFactory(c).disconnect(user.id);return json(status(c,null));
+        await storeFactory(c).disconnect(user.id);
+        try{c=await resolveConfig(c);}catch{c={...c,enabled:false,encryptionKey:null};}
+        return json(status(c,null));
       }
+      c=await resolveConfig(c);
+      if(action==='status'&&!googleHealthConfigured(c))return json(status(c,null));
       if(!googleHealthConfigured(c))error('configuration_required');
       const store=storeFactory(c);
       if(action==='status')return json(status(c,await store.connection(user.id)));
@@ -105,7 +108,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,fet
   async function callback(request){
     if(request.method!=='GET')return failResponse(Error('method_not_allowed'));
     try{
-      const c=config();if(!googleHealthConfigured(c))error('configuration_required');
+      const c=await resolveConfig(config());if(!googleHealthConfigured(c))error('configuration_required');
       const params=new URL(request.url).searchParams,state=params.get('state'),code=params.get('code');
       if(params.getAll('state').length!==1||!/^[A-Za-z0-9_-]{43}$/.test(state||'')||
           (!params.has('error')&&(params.getAll('code').length!==1||!opaque(code)||code.length>4096)))error('invalid_callback');

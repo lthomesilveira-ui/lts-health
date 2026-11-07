@@ -37,7 +37,7 @@ class MemoryStore{
   }
   async release(id,generation,lease,reason){const row=this.rows.get(id);if(row?.generation===generation&&row.lease_token===lease){row.lease_token=null;row.last_error=reason;}}
 }
-function fixture({enabled=true,fetcher,authenticate}={}){
+function fixture({enabled=true,fetcher,authenticate,resolveConfig}={}){
   let clock=Date.parse('2030-02-11T16:00:00Z');const now=()=>clock,store=new MemoryStore(now),calls=[];
   const transport=async(url,init)=>{
     calls.push({url:String(url),init});
@@ -47,13 +47,42 @@ function fixture({enabled=true,fetcher,authenticate}={}){
     return response({dataPoints:[point]});
   };
   const auth=authenticate||(async req=>req.headers.get('Authorization')==='Bearer synthetic-owner'?{id:owner,is_anonymous:false}:req.headers.get('Authorization')==='Bearer synthetic-other'?{id:other,is_anonymous:false}:null);
-  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:()=>store,fetcher:transport,now});
+  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:()=>store,resolveConfig,fetcher:transport,now});
   const post=(body,auth='synthetic-owner',origin='https://lthomesilveira-ui.github.io')=>handlers.connection(new Request(config.url+'/functions/v1/health-google-connection',{method:'POST',headers:{Authorization:`Bearer ${auth}`,Origin:origin},body:typeof body==='string'?body:JSON.stringify(body)}));
   const authorize=async()=>{const r=await post({action:'authorize'});assert.equal(r.status,200);return new URL((await r.json()).authorization_url);};
   const callback=(url,extra='')=>handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),code:'synthetic-authorization-code'})+extra));
   return {handlers,store,calls,post,authorize,callback,advance:ms=>{clock+=ms;}};
 }
 async function connected(f){const url=await f.authorize();const r=await f.callback(url);assert.equal(r.status,302);return url;}
+
+test('private server configuration is resolved only after valid owner authentication and input; disconnect remains available without it',async()=>{
+  let lookups=0;const f=fixture({resolveConfig:async c=>{lookups++;return c;}});
+  assert.equal((await f.post({action:'status'},'unrecognized')).status,401);
+  assert.equal((await f.post({action:'status'},'synthetic-owner','https://unrelated.test')).status,403);
+  assert.equal((await f.post({action:'invalid'})).status,400);
+  assert.equal(lookups,0);
+  assert.equal((await f.post({action:'disconnect'})).status,200);assert.equal(lookups,1);
+  assert.equal((await f.post({action:'status'})).status,200);assert.equal(lookups,2);
+});
+test('disconnect commits even if private configuration lookup fails afterward',async()=>{
+  let unavailable=false;const f=fixture({resolveConfig:async c=>{if(unavailable)throw Error('synthetic private failure');return c;}});
+  await connected(f);unavailable=true;
+  const result=await f.post({action:'disconnect'});assert.equal(result.status,200);
+  assert.equal((await result.json()).connected,false);assert.equal(f.store.rows.get(owner).status,'unlinked');assert.equal(f.store.rows.get(owner).tokens_encrypted,null);
+});
+test('Vault-backed authorization and callback encrypt state/tokens with the same private key and expose only status',async()=>{
+  const vaultKey=btoa('v'.repeat(32));
+  const f=fixture({enabled:false,resolveConfig:async c=>({...c,enabled:true,encryptionKey:vaultKey})});
+  const url=await f.authorize(),saved=f.store.states.get(await digest(url.searchParams.get('state')));
+  const state=await decryptTokens(saved.payload_encrypted,vaultKey,`google-health:state:${owner}`);assert.ok(state.verifier);
+  await assert.rejects(()=>decryptTokens(saved.payload_encrypted,config.encryptionKey,`google-health:state:${owner}`));
+  assert.equal((await f.callback(url)).status,302);
+  const held=f.store.rows.get(owner);const tokens=await decryptTokens(held.tokens_encrypted,vaultKey,`google-health:tokens:${owner}`);
+  assert.equal(tokens.access_token,token.access_token);
+  const status=await (await f.post({action:'status'})).json();assert.equal(status.configured,true);assert.equal(status.connected,true);
+  assert.ok(!JSON.stringify(status).includes(vaultKey));assert.ok(!JSON.stringify(status).includes(config.clientSecret));
+  assert.equal(f.store.reads.length,0);
+});
 
 test('disabled configuration and unauthenticated requests make no Google request or private storage access',async()=>{
   const f=fixture({enabled:false});

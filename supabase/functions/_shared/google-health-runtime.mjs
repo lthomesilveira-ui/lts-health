@@ -1,7 +1,8 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.117.2';
 import {createGoogleHealthHandlers} from './google-health-connection.mjs';
+import {resolveGoogleHealthServerConfig} from './google-health-config.mjs';
 const config=()=>({url:Deno.env.get('SUPABASE_URL'),publicKey:Deno.env.get('SUPABASE_ANON_KEY'),serviceKey:Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
-  enabled:Deno.env.get('GOOGLE_HEALTH_ENABLED')==='true',clientId:Deno.env.get('GOOGLE_HEALTH_CLIENT_ID'),
+  enabled:Deno.env.get('GOOGLE_HEALTH_ENABLED')==='true',disabledByEnv:Deno.env.get('GOOGLE_HEALTH_ENABLED')==='false',clientId:Deno.env.get('GOOGLE_HEALTH_CLIENT_ID'),
   clientSecret:Deno.env.get('GOOGLE_HEALTH_CLIENT_SECRET'),encryptionKey:Deno.env.get('GOOGLE_HEALTH_TOKEN_ENCRYPTION_KEY')});
 async function authenticate(request,c){
   const header=request.headers.get('Authorization');if(!/^Bearer \S+$/.test(header||''))return null;
@@ -30,4 +31,10 @@ function storeFactory(c){
     async release(user,generation,lease,reason){checked(await owned({lease_token:null,lease_until:'1970-01-01T00:00:00Z',last_error:reason},user,generation,lease));}
   };
 }
-export const googleHealthHandlers=createGoogleHealthHandlers({config,authenticate,storeFactory});
+async function resolveConfig(c){
+  return resolveGoogleHealthServerConfig(c,async()=>{
+    const db=createClient(c.url,c.serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
+    return checked(await db.rpc('health_google_server_configuration').abortSignal(AbortSignal.timeout(5000)));
+  });
+}
+export const googleHealthHandlers=createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig});
