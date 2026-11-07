@@ -21,6 +21,7 @@ const service=sql=>'SET ROLE service_role; '+sql;
 assert.equal(scalar('select current_database();'),'google_health_test');assert.equal(scalar("select current_setting('server_version_num')::integer/10000;"),'17');
 assert.equal(scalar("select not exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public') and not exists(select 1 from pg_namespace where nspname='auth');"),'t','Refuse fixture setup over an existing database');
 const migration=readFileSync(new URL('../migrations/20261104113832_prepare_google_health_hydration_read.sql',import.meta.url),'utf8');
+const serverConfigMigration=readFileSync(new URL('../migrations/20261107203628_google_health_server_vault_configuration.sql',import.meta.url),'utf8');
 const owner='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222',scope='https://www.googleapis.com/auth/googlehealth.nutrition.readonly';
 run("create role anon;create role authenticated;create role service_role bypassrls;");
 function prepare(){
@@ -136,4 +137,48 @@ test('reapplying the same schema preserves encrypted connections and immutable r
   assert.deepEqual(object(service('select result from public.health_google_hydration_reads;')),readBefore);
   assert.equal(scalar("select has_table_privilege('authenticated','public.health_google_hydration_reads','SELECT');"),'f');
   assert.equal(scalar("select has_table_privilege('service_role','public.health_google_hydration_reads','UPDATE');"),'f');
+});
+
+function prepareServerConfig(){
+  prepare();
+  // This deliberately plaintext Vault stand-in is disposable synthetic ACL input, not a claim about production encryption.
+  run(`drop schema if exists vault cascade;create schema vault;
+    revoke all on schema vault from public,anon,authenticated,service_role;
+    create table vault.fixture_secrets(name text primary key,decrypted_secret text);
+    create view vault.decrypted_secrets as select * from vault.fixture_secrets;
+    revoke all on all tables in schema vault from public,anon,authenticated,service_role;
+    ${serverConfigMigration}`);
+}
+const serverConfig=()=>object(service('select coalesce(jsonb_agg(x),\'[]\') from public.health_google_server_configuration() x;'));
+const setupKey=btoa('v'.repeat(32));
+test('server configuration gives only the privileged server a fixed-purpose Vault read, with no direct Vault grants',()=>{
+  prepareServerConfig();
+  for(const role of ['anon','authenticated']){
+    assert.equal(scalar(`select has_function_privilege('${role}','public.health_google_server_configuration()','EXECUTE');`),'f');
+    const denied=run(`set role ${role};select * from public.health_google_server_configuration();`,false);assert.match(denied.stderr,/permission denied/);
+  }
+  assert.equal(scalar("select has_schema_privilege('service_role','vault','USAGE');"),'f');
+  assert.equal(scalar("select has_function_privilege('service_role','public.health_google_server_configuration()','EXECUTE');"),'t');
+  const metadata=object("select jsonb_build_object('definer',prosecdef,'args',pronargs,'config',proconfig) from pg_proc where oid='public.health_google_server_configuration()'::regprocedure;");
+  assert.equal(metadata.definer,true);assert.equal(metadata.args,0);assert.ok(metadata.config.includes('search_path=""'));
+  assert.deepEqual(serverConfig(),[]);
+});
+test('private activation is explicit, validates a 32-byte Base64 key and never returns an inactive key',()=>{
+  prepareServerConfig();
+  run(`insert into vault.fixture_secrets values('lts_health_google_token_encryption_key',${lit(setupKey)});`);assert.deepEqual(serverConfig(),[]);
+  run("insert into vault.fixture_secrets values('lts_health_google_connection_enabled','false');");assert.deepEqual(serverConfig(),[{enabled:false,token_encryption_key:null}]);
+  run("update vault.fixture_secrets set decrypted_secret='true' where name='lts_health_google_connection_enabled';");assert.deepEqual(serverConfig(),[{enabled:true,token_encryption_key:setupKey}]);
+  for(const invalid of ['invalid',btoa('short'),btoa('x'.repeat(33))]){
+    run(`update vault.fixture_secrets set decrypted_secret=${lit(invalid)} where name='lts_health_google_token_encryption_key';`);
+    assert.deepEqual(serverConfig(),[{enabled:false,token_encryption_key:null}]);
+  }
+  run("delete from vault.fixture_secrets where name='lts_health_google_token_encryption_key';");assert.deepEqual(serverConfig(),[{enabled:false,token_encryption_key:null}]);
+});
+test('reapplying server configuration does not change Vault values, clinical rows or OAuth state',()=>{
+  prepareServerConfig();const linked=link();
+  run(`insert into vault.fixture_secrets values('lts_health_google_token_encryption_key',${lit(setupKey)}),('lts_health_google_connection_enabled','true'),('unrelated-purpose','synthetic-unrelated');`);
+  const before=row(),keys=object('select jsonb_agg(x order by name) from vault.fixture_secrets x;');
+  run(serverConfigMigration);assert.deepEqual(row(),before);assert.deepEqual(object('select jsonb_agg(x order by name) from vault.fixture_secrets x;'),keys);
+  assert.deepEqual(serverConfig(),[{enabled:true,token_encryption_key:setupKey}]);assert.equal(count(),0);
+  assert.equal(scalar('select marker from public.health_metrics;'),'existing-synthetic-health-record');assert.equal(linked.status,'connected');
 });

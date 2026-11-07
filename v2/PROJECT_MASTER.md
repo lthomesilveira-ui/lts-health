@@ -1,3 +1,9 @@
+## 2026-11-07 — Configuração Google pelo cofre do servidor, em validação
+
+O acesso administrativo foi recuperado e a preparação OAuth avançou. A edição das credenciais pelo painel encontrou falhas de preenchimento. O pacote043 permite que o servidor resolva somente a chave e a ativação de sua própria finalidade no Vault, por uma função sem parâmetros e executável apenas pelo serviço privilegiado. O navegador continua recebendo apenas o estado da conexão. Desativação explícita e falha de leitura mantêm a conexão indisponível; desconectar continua funcionando.
+
+A candidata ainda depende dos testes PostgreSQL, permissões nativas, publicação exata das duas rotas e conferência autenticada. O frontend permanece .126. As nove condições originais de água, origem, histórico, cobertura e aceite não estão encerradas por essa preparação. Nenhum segredo ou identificador pessoal foi colocado nos controles públicos.
+
 ## 2026-11-07 — Abertura e navegação entregues, .126
 
 PR506 publicou a .126 após22/22 verificações da candidata exata. Abertura protegida com recuperação, retorno ao histórico do próprio app, filtros preservados, área ativa acessível, abas de Treinos por teclado e foco estável foram conferidos. Exames identificam método/datas nas opções de série; a Timeline distingue origens de linhas parecidas e nomeia seus filtros. A verificação autenticada percorreu as dez áreas, formulários sem envio e relatórios semanais/mensais.
