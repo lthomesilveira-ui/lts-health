@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-VAULT-CONFIGURATION-043",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Complete protected Google hydration server configuration using fixed-purpose Vault access when dashboard secret editing is unavailable.",
     "task_ids": [
       "LTS-GOOGLE-VAULT-CONFIGURATION-001"
@@ -64,13 +64,13 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-07",
-    "pending_gates": [
-      "candidate Node and PostgreSQL boundaries",
-      "service-only native permissions",
-      "exact Edge Function publication",
-      "authenticated configured status"
-    ],
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md",
+    "completed_on": "2026-11-07",
+    "candidate_commit": "fee6b6261dedfc59e2a57618478c42a5f2ec3c60",
+    "candidate_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
+    "candidate_checks_passed": 17,
+    "runtime_promotion_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261107.126",
@@ -3651,7 +3651,7 @@
       "id": "LTS-GOOGLE-VAULT-CONFIGURATION-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Resolve the dedicated server encryption key from a fixed-purpose private Vault configuration without exposing credentials to the browser.",
       "acceptance": [
@@ -3661,10 +3661,13 @@
         "Exact deployed Google connection and callback consume the same tested server key and report configured status through the authenticated app."
       ],
       "evidence": [
-        "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
+        "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md",
+        "PR507 exact candidate passed all17workflows including60Node tests and14PostgreSQL17.11 tests; normal merge preserved its exact tree.",
+        "Both Google Edge Functions version4 were read back with all6source files exact, preserving connection JWT and the public state-bound callback. Native service-only permissions and32-byte key validity were verified.",
+        "The authenticated public app showed Pronta para conectar and Conectar Google Health. Public callback with invalid state returned invalid_callback. The owner Google verification/consent was not completed."
       ],
-      "next_action": "Complete candidate tests, native permission verification, exact function publication and authenticated app verification.",
-      "blocker": "Candidate implementation and deployment verification are in progress."
+      "next_action": "Maintain verified server configuration; owner Google verification/consent, real hydration reads and recurrence remain separate.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -11744,20 +11747,55 @@
     "authorization": "explicit_owner_successive_round_request_20261030"
   },
   "last_verified_server_preparation": {
-    "package_id": "PKG-GOOGLE-HYDRATION-READ-039",
-    "implementation_pr": 498,
-    "implementation_merge": "eee4d2eff43bd5328d812e1399f47be1642e3bbd",
-    "candidate": "d8579bb87f80996e844d83ffcd002cb83d879e48",
-    "native_migration": "20261104233826",
-    "connection_version": 1,
-    "callback_version": 1,
-    "reader_authorization_tests": 53,
-    "postgres_tests": 11,
-    "authenticated_gate_run": 41936831636,
-    "ci_recovery_pr": 499,
-    "ci_recovery_merge": "86143c6e3ebec637f8adaff3c459f7ecf1229c52",
-    "frontend_build": "health-integrated-20261102.122",
-    "google_configured": false,
-    "real_hydration_verified": false
-  }
+    "kind": "google_health_service_only_vault_configuration",
+    "verified_on": "2026-11-07",
+    "main_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7",
+    "candidate_commit": "fee6b6261dedfc59e2a57618478c42a5f2ec3c60",
+    "tested_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
+    "candidate_workflows_passed": 17,
+    "publication_workflows_passed": 21,
+    "node_tests_passed": 60,
+    "postgresql_tests_passed": 14,
+    "native_migration_version": "20261107204909",
+    "source_migration": "supabase/migrations/20261107203628_google_health_server_vault_configuration.sql",
+    "edge_functions": [
+      {
+        "name": "health-google-connection",
+        "version": 4,
+        "verify_jwt": true,
+        "exact_files_verified": 6
+      },
+      {
+        "name": "health-google-callback",
+        "version": 4,
+        "verify_jwt": false,
+        "exact_files_verified": 6
+      }
+    ],
+    "authenticated_configured_status": "ready_to_connect",
+    "invalid_callback_probe": "invalid_callback",
+    "owner_consent_verified": false,
+    "real_hydration_read_verified": false,
+    "canonical_water_updated": false,
+    "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
+  },
+  "server_preparation_history": [
+    {
+      "package_id": "PKG-GOOGLE-HYDRATION-READ-039",
+      "implementation_pr": 498,
+      "implementation_merge": "eee4d2eff43bd5328d812e1399f47be1642e3bbd",
+      "candidate": "d8579bb87f80996e844d83ffcd002cb83d879e48",
+      "native_migration": "20261104233826",
+      "connection_version": 1,
+      "callback_version": 1,
+      "reader_authorization_tests": 53,
+      "postgres_tests": 11,
+      "authenticated_gate_run": 41936831636,
+      "ci_recovery_pr": 499,
+      "ci_recovery_merge": "86143c6e3ebec637f8adaff3c459f7ecf1229c52",
+      "frontend_build": "health-integrated-20261102.122",
+      "google_configured": false,
+      "real_hydration_verified": false
+    }
+  ]
 }

@@ -1,3 +1,11 @@
+## 2026-11-07 — Configuração protegida Google entregue; autorização do titular pendente
+
+PR507 passou17/17workflows da candidata e21/21de publicação.60testes Node e14PostgreSQL17.11 verificaram autorização, ACLs, ativação/desativação, chaves inválidas, reaplicação e preservação de dados. Merge normal c13cb9be8dabee56761b2c21cb31c34500d968e7 manteve a árvore exata14e3427c0377c0477c80d59ac05ece24b6d1c74f.
+
+A função de configuração foi aplicada e conferida com EXECUTE exclusivo do serviço. As duas rotas Google versão4 tiveram os seis arquivos relidos exatamente; os modos de JWT foram preservados. A chave própria de32bytes fica no Vault protegido. O app autenticado mostrou “Pronta para conectar” e “Conectar Google Health”; o callback com estado inválido respondeu invalid_callback. A configuração administrativa está entregue.
+
+A verificação de identidade do Google e o consentimento de leitura ainda dependem do titular. Não repetir configuração administrativa ou rotação da chave. Depois da autorização, conferir o perfil, a leitura delimitada, a origem dos registros e a atualização posterior. Fila124done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. As nove condições originais permanecem abertas e não equivalem à preparação do servidor. O frontend continua .126. Detalhes: v2/releases/GOOGLE_HEALTH_VAULT_20261107.md.
+
 ## 2026-11-07 — Configuração Google pelo cofre do servidor, em validação
 
 O acesso administrativo foi recuperado e a preparação OAuth avançou. A edição das credenciais pelo painel encontrou falhas de preenchimento. O pacote043 permite que o servidor resolva somente a chave e a ativação de sua própria finalidade no Vault, por uma função sem parâmetros e executável apenas pelo serviço privilegiado. O navegador continua recebendo apenas o estado da conexão. Desativação explícita e falha de leitura mantêm a conexão indisponível; desconectar continua funcionando.
