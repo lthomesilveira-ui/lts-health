@@ -56,6 +56,35 @@ function status(c,row){return {configured:googleHealthConfigured(c),connected:ro
 
 // Dependencies are injected for invented-fixture HTTP/transaction tests. Production only injects verified Auth and a service-only store.
 export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now()}){
+  async function performRead(c,userId,from,to,trigger='manual'){
+    hydrationReadParameters(from,to);
+    const store=storeFactory(c,{trigger}),row=await store.connection(userId);
+    if(row?.status!=='connected')return {connected:false,read:false,canonical_updated:false};
+    const lease=crypto.randomUUID();
+    if(!await store.claim(userId,row.generation,lease,new Date(now()).toISOString(),new Date(now()+120000).toISOString()))return {connected:true,read:false,in_progress:true,canonical_updated:false};
+    try{
+      let token;try{token=await open(row.tokens_encrypted,c,tokenDomain(userId));}catch{error('authorization_expired');}
+      if(!opaque(token.access_token)||!opaque(token.refresh_token)||token.scope!==scope||!Number.isFinite(token.expires_at)||
+          (token.refresh_expires_at!==null&&token.refresh_expires_at<=now()))error('authorization_expired');
+      if(token.expires_at<now()+60000){
+        token=await exchange(c,{grant_type:'refresh_token',refresh_token:token.refresh_token},token,fetcher,now);
+        if(!await store.refresh(userId,row.generation,lease,await seal(token,c,tokenDomain(userId))))error('authorization_superseded');
+      }
+      const result=await readGoogleHealthHydration({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher});
+      const stored=await store.finish(userId,row.generation,lease,result);
+      if(stored==='stale')return {connected:false,read:false,superseded:true,canonical_updated:false};
+      if(!['stored','unchanged'].includes(stored))error('write_failed');
+      return {connected:true,read:true,observations:result.unique_count,empty:result.status==='empty',unchanged:stored==='unchanged',canonical_updated:false};
+    }catch(e){await store.release(userId,row.generation,lease,safeCode(e));throw e;}
+  }
+  // Server dependency only: no public action accepts an owner ID or a schedule trigger.
+  async function scheduledReady(){return googleHealthConfigured(await resolveConfig(config()));}
+  async function scheduledRead(userId,from,to){
+    if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(userId||''))error('unauthorized');
+    const c=await resolveConfig(config());
+    if(!googleHealthConfigured(c))return {configured:false,read:false,canonical_updated:false};
+    return performRead(c,userId,from,to,'scheduled');
+  }
   async function connection(request){
     const origin=request.headers.get('Origin');
     if(origin&&origin!==appOrigin)return failResponse(Error('origin_not_allowed'));
@@ -86,23 +115,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
           access_type:'offline',prompt:'consent',include_granted_scopes:'false',state,code_challenge:challenge,code_challenge_method:'S256'}).toString();
         return json({authorization_url:url.href});
       }
-      hydrationReadParameters(body.from,body.to);
-      const row=await store.connection(user.id);if(row?.status!=='connected')return json({connected:false,read:false,canonical_updated:false});
-      const lease=crypto.randomUUID();
-      if(!await store.claim(user.id,row.generation,lease,new Date(now()).toISOString(),new Date(now()+120000).toISOString()))return json({connected:true,read:false,in_progress:true,canonical_updated:false});
-      try{
-        let token;try{token=await open(row.tokens_encrypted,c,tokenDomain(user.id));}catch{error('authorization_expired');}
-        if(!opaque(token.access_token)||!opaque(token.refresh_token)||token.scope!==scope||!Number.isFinite(token.expires_at)||
-            (token.refresh_expires_at!==null&&token.refresh_expires_at<=now()))error('authorization_expired');
-        if(token.expires_at<now()+60000){
-          token=await exchange(c,{grant_type:'refresh_token',refresh_token:token.refresh_token},token,fetcher,now);
-          if(!await store.refresh(user.id,row.generation,lease,await seal(token,c,tokenDomain(user.id))))error('authorization_superseded');
-        }
-        const result=await readGoogleHealthHydration({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from:body.from,to:body.to,fetcher});
-        const stored=await store.finish(user.id,row.generation,lease,result);
-        if(stored==='stale')return json({connected:false,read:false,superseded:true,canonical_updated:false});
-        return json({connected:true,read:true,observations:result.unique_count,empty:result.status==='empty',unchanged:stored==='unchanged',canonical_updated:false});
-      }catch(e){await store.release(user.id,row.generation,lease,safeCode(e));throw e;}
+      return json(await performRead(c,user.id,body.from,body.to));
     }catch(e){return failResponse(e);}
   }
   async function callback(request){
@@ -123,5 +136,5 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       return new Response(null,{status:302,headers:{Location:GOOGLE_HEALTH_APP+'#dados','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
     }catch(e){return failResponse(e);}
   }
-  return {connection,callback};
+  return {connection,callback,scheduledRead,scheduledReady};
 }

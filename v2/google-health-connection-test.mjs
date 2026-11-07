@@ -38,7 +38,7 @@ class MemoryStore{
   async release(id,generation,lease,reason){const row=this.rows.get(id);if(row?.generation===generation&&row.lease_token===lease){row.lease_token=null;row.last_error=reason;}}
 }
 function fixture({enabled=true,fetcher,authenticate,resolveConfig}={}){
-  let clock=Date.parse('2030-02-11T16:00:00Z');const now=()=>clock,store=new MemoryStore(now),calls=[];
+  let clock=Date.parse('2030-02-11T16:00:00Z');const now=()=>clock,store=new MemoryStore(now),calls=[],triggers=[];
   const transport=async(url,init)=>{
     calls.push({url:String(url),init});
     if(fetcher)return fetcher(url,init);
@@ -47,11 +47,11 @@ function fixture({enabled=true,fetcher,authenticate,resolveConfig}={}){
     return response({dataPoints:[point]});
   };
   const auth=authenticate||(async req=>req.headers.get('Authorization')==='Bearer synthetic-owner'?{id:owner,is_anonymous:false}:req.headers.get('Authorization')==='Bearer synthetic-other'?{id:other,is_anonymous:false}:null);
-  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:()=>store,resolveConfig,fetcher:transport,now});
+  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:(c,options)=>{triggers.push(options?.trigger??null);return store;},resolveConfig,fetcher:transport,now});
   const post=(body,auth='synthetic-owner',origin='https://lthomesilveira-ui.github.io')=>handlers.connection(new Request(config.url+'/functions/v1/health-google-connection',{method:'POST',headers:{Authorization:`Bearer ${auth}`,Origin:origin},body:typeof body==='string'?body:JSON.stringify(body)}));
   const authorize=async()=>{const r=await post({action:'authorize'});assert.equal(r.status,200);return new URL((await r.json()).authorization_url);};
   const callback=(url,extra='')=>handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),code:'synthetic-authorization-code'})+extra));
-  return {handlers,store,calls,post,authorize,callback,advance:ms=>{clock+=ms;}};
+  return {handlers,store,calls,triggers,post,authorize,callback,advance:ms=>{clock+=ms;}};
 }
 async function connected(f){const url=await f.authorize();const r=await f.callback(url);assert.equal(r.status,302);return url;}
 
@@ -198,4 +198,25 @@ test('provider token bodies and secrets do not cross the error response',async()
   const f=fixture({fetcher:async()=>response({error:config.clientSecret+' '+token.refresh_token},400)});
   const r=await f.callback(await f.authorize()),body=await r.text();assert.equal(r.status,502);
   assert.ok(!body.includes(config.clientSecret));assert.ok(!body.includes(token.refresh_token));assert.equal(f.store.rows.get(owner).status,'unlinked');
+});
+test('server-only scheduled reads share verified owner tokens, complete-source checks and the manual read lease',async()=>{
+  const f=fixture();await connected(f);f.triggers.length=0;
+  assert.equal(await f.handlers.scheduledReady(),true);
+  const result=await f.handlers.scheduledRead(owner,'2030-02-11','2030-02-12');assert.equal(result.read,true);assert.equal(result.canonical_updated,false);
+  assert.deepEqual(f.triggers,['scheduled']);assert.equal(f.store.reads.length,1);
+  assert.equal((await f.handlers.scheduledRead(other,'2030-02-11','2030-02-12')).connected,false);
+  assert.equal((await f.post({action:'scheduled',user_id:owner})).status,400);
+  const count=f.calls.length;await assert.rejects(()=>f.handlers.scheduledRead('invalid','2030-02-11','2030-02-12'));assert.equal(f.calls.length,count);
+  const disabled=fixture({enabled:false});assert.equal(await disabled.handlers.scheduledReady(),false);assert.equal((await disabled.handlers.scheduledRead(owner,'2030-02-11','2030-02-12')).configured,false);assert.equal(disabled.triggers.length,0);
+});
+test('a manual read and a scheduled read cannot concurrently store stale data after disconnect',async()=>{
+  const entered=deferred(),resume=deferred();
+  const f=fixture({fetcher:async url=>{
+    if(String(url).includes('/token'))return response(token);
+    if(new URL(url).pathname.endsWith('/identity'))return response(identity);
+    entered.resolve();await resume.promise;return response({dataPoints:[point]});
+  }});
+  await connected(f);const scheduled=f.handlers.scheduledRead(owner,'2030-02-11','2030-02-12');await entered.promise;
+  assert.equal((await (await f.post({action:'read',from:'2030-02-11',to:'2030-02-12'})).json()).in_progress,true);
+  await f.post({action:'disconnect'});resume.resolve();assert.equal((await scheduled).superseded,true);assert.equal(f.store.reads.length,0);
 });

@@ -1,3 +1,9 @@
+## 2026-11-07 — Leitura Google em segundo plano, pacote044 em validação
+
+A preparação administrativa já está entregue. Foi identificado um bloqueio interno independente do consentimento: o leitor Google ainda dependia de uma ação no app. O pacote044 adiciona uma agenda horária privada, ticket de uso único com cinco minutos de validade, seleção limitada de contas autorizadas e a mesma leitura completa com identidade verificada, renovação de token e exclusão de operações simultâneas.
+
+As leituras permanecem privadas e não alteram água canônica sem revisão da origem. A agenda é instalada desativada e só será ativada após testes PostgreSQL, permissões e publicação exata. A fila tem124done,1in_progress,9blocked_external,2accepted_gap,2superseded. Os71testes Node locais passaram; os demais critérios ainda estão pendentes. Frontend permanece .126. Não repetir login administrativo, criar clientes ou rotacionar a chave; o titular deve concluir uma autorização Google nova pelo botão existente no próprio app.
+
 ## 2026-11-07 — Configuração protegida Google entregue; autorização do titular pendente
 
 PR507 passou17/17workflows da candidata e21/21de publicação.60testes Node e14PostgreSQL17.11 verificaram autorização, ACLs, ativação/desativação, chaves inválidas, reaplicação e preservação de dados. Merge normal c13cb9be8dabee56761b2c21cb31c34500d968e7 manteve a árvore exata14e3427c0377c0477c80d59ac05ece24b6d1c74f.

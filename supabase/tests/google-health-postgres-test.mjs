@@ -22,6 +22,7 @@ assert.equal(scalar('select current_database();'),'google_health_test');assert.e
 assert.equal(scalar("select not exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public') and not exists(select 1 from pg_namespace where nspname='auth');"),'t','Refuse fixture setup over an existing database');
 const migration=readFileSync(new URL('../migrations/20261104113832_prepare_google_health_hydration_read.sql',import.meta.url),'utf8');
 const serverConfigMigration=readFileSync(new URL('../migrations/20261107203628_google_health_server_vault_configuration.sql',import.meta.url),'utf8');
+const scheduleMigration=readFileSync(new URL('../migrations/20261107213824_google_health_background_schedule.sql',import.meta.url),'utf8');
 const owner='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222',scope='https://www.googleapis.com/auth/googlehealth.nutrition.readonly';
 run("create role anon;create role authenticated;create role service_role bypassrls;");
 function prepare(){
@@ -181,4 +182,108 @@ test('reapplying server configuration does not change Vault values, clinical row
   run(serverConfigMigration);assert.deepEqual(row(),before);assert.deepEqual(object('select jsonb_agg(x order by name) from vault.fixture_secrets x;'),keys);
   assert.deepEqual(serverConfig(),[{enabled:true,token_encryption_key:setupKey}]);assert.equal(count(),0);
   assert.equal(scalar('select marker from public.health_metrics;'),'existing-synthetic-health-record');assert.equal(linked.status,'connected');
+});
+
+function prepareSchedule(){
+  run('drop schema if exists health_internal cascade;drop schema if exists cron cascade;drop schema if exists net cascade;');
+  prepare();
+  // Real PostgreSQL/pgcrypto and privileges; only the external cron/HTTP transport
+  // is replaced by explicit synthetic stand-ins. These tests cannot issue HTTP.
+  run(`create schema if not exists extensions;create extension if not exists pgcrypto with schema extensions;
+    create schema cron;create schema net;grant usage on schema net to public;
+    create table cron.job(jobid bigint generated always as identity primary key,jobname text unique,schedule text,command text,active boolean default true);
+    create function cron.schedule(job_name text,schedule text,command text) returns bigint language plpgsql as $$
+      declare inserted bigint;begin insert into cron.job(jobname,schedule,command) values($1,$2,$3) returning jobid into inserted;return inserted;end $$;
+    create function cron.alter_job(job_id bigint,schedule text default null,command text default null,active boolean default null) returns void language sql as $$
+      update cron.job j set schedule=coalesce($2,j.schedule),command=coalesce($3,j.command),active=coalesce($4,j.active) where jobid=$1;$$;
+    create table net.http_request_queue(id bigint generated always as identity primary key,url text,body jsonb,headers jsonb,timeout_milliseconds integer);
+    create table net._http_response(id bigint,status_code integer,content text);
+    grant all on net.http_request_queue,net._http_response,cron.job to public;
+    create function net.http_post(url text,body jsonb default '{}'::jsonb,params jsonb default '{}'::jsonb,headers jsonb default '{}'::jsonb,timeout_milliseconds integer default 1000)
+      returns bigint language plpgsql security definer set search_path='' as $$
+      declare inserted bigint;begin insert into net.http_request_queue(url,body,headers,timeout_milliseconds) values($1,$2,$4,$5) returning id into inserted;return inserted;end $$;
+    ${scheduleMigration}`);
+}
+const scheduleRow=()=>object('select to_jsonb(c) from health_internal.google_hydration_schedule_config c;');
+const schedulerStatus=()=>object(service('select to_jsonb(s) from public.health_google_scheduler_status() s;'));
+const enableSchedule=()=>run("update health_internal.google_hydration_schedule_config set enabled=true,endpoint_url='https://abcdefghijklmnopqrst.supabase.co/functions/v1/health-google-scheduled';select cron.alter_job(jobid,active:=true) from cron.job where jobname='lts-health-google-hourly';");
+const enqueue=()=>scalar('select health_internal.enqueue_google_hydration();');
+const consumeTicket=hash=>scalar(service(`select public.health_google_scheduler_authorized(${lit(hash)});`));
+const candidates=()=>object(service("select coalesce(jsonb_agg(c),'[]') from public.health_google_scheduled_candidates() c;"));
+const scheduledClaim=(r,token=lease)=>service(`select public.health_google_claim_scheduled_read('${r.user_id}','${r.generation}','${token}');`);
+const scheduledFinish=(r,result=payload(),token=lease)=>service(`select public.health_google_finish_scheduled_read('${r.user_id}','${r.generation}','${token}',${json(result)});`);
+test('Google agenda installs dormant; browser roles cannot inspect tickets, extension transport or service RPCs',()=>{
+  prepareSchedule();assert.equal(scheduleRow().enabled,false);assert.equal(schedulerStatus().enabled,false);assert.equal(enqueue(),'');
+  assert.equal(scalar('select count(*) from net.http_request_queue;'),'0');assert.equal(scalar('select active from cron.job;'),'f');
+  assert.equal(scalar("select relrowsecurity from pg_class where oid='health_internal.google_hydration_schedule_config'::regclass;"),'t');
+  for(const role of ['anon','authenticated']){
+    assert.equal(scalar(`select has_schema_privilege('${role}','health_internal','USAGE');`),'f');
+    for(const table of ['net.http_request_queue','net._http_response','cron.job']){
+      for(const privilege of ['SELECT','INSERT','UPDATE','DELETE'])assert.equal(scalar(`select has_table_privilege('${role}','${table}','${privilege}');`),'f');
+    }
+    assert.match(run(`set role ${role};select headers from net.http_request_queue;`,false).stderr,/permission denied/);
+  }
+  for(const signature of ['health_google_scheduler_authorized(text)','health_google_scheduled_candidates()','health_google_claim_scheduled_read(uuid,uuid,uuid)','health_google_finish_scheduled_read(uuid,uuid,uuid,jsonb)','health_google_scheduler_status()']){
+    const metadata=object(`select jsonb_build_object('definer',prosecdef,'config',proconfig) from pg_proc where oid='public.${signature}'::regprocedure;`);
+    assert.equal(metadata.definer,false);assert.ok(metadata.config.includes('search_path=""'));
+    for(const role of ['anon','authenticated'])assert.equal(scalar(`select has_function_privilege('${role}','public.${signature}','EXECUTE');`),'f');
+    assert.equal(scalar(`select has_function_privilege('service_role','public.${signature}','EXECUTE');`),'t');
+  }
+  assert.equal(scalar("select has_function_privilege('service_role','health_internal.enqueue_google_hydration()','EXECUTE');"),'f');
+});
+test('the service may consume a ticket but cannot issue, enable, extend or redirect it',()=>{
+  prepareSchedule();enableSchedule();enqueue();const before=scheduleRow();
+  for(const sql of ["enabled=false","key_hash='"+'b'.repeat(64)+"'","ticket_expires_at=clock_timestamp()+interval '5 minutes'","endpoint_url='https://abcdefghijklmnopqrst.supabase.co/functions/v1/health-google-scheduled'"]){
+    assert.match(run(service(`update health_internal.google_hydration_schedule_config set ${sql};`),false).stderr,/permission denied/);
+  }
+  assert.deepEqual(scheduleRow(),before);assert.equal(scalar("select has_column_privilege('service_role','health_internal.google_hydration_schedule_config','ticket_consumed_at','UPDATE');"),'t');
+  for(const url of ['https://untrusted.test/endpoint','https://abcdefghijklmnopqrst.supabase.co/functions/v1/health-google-scheduled?redirect=x'])assert.match(run(`update health_internal.google_hydration_schedule_config set endpoint_url=${lit(url)};`,false).stderr,/check constraint/);
+});
+test('each dispatched invocation has a random hashed five-minute single-use ticket and a fixed minimal request',async()=>{
+  prepareSchedule();enableSchedule();assert.equal(enqueue(),'1');const cfg=scheduleRow();
+  const request=object('select to_jsonb(q) from net.http_request_queue q;'),raw=request.headers['x-lts-google-scheduler'];assert.match(raw,/^[a-f0-9]{64}$/);assert.notEqual(raw,cfg.key_hash);
+  assert.equal(scalar(`select encode(extensions.digest(${lit(raw)},'sha256'),'hex');`),cfg.key_hash);
+  assert.equal(Date.parse(cfg.ticket_expires_at)-Date.parse(cfg.ticket_issued_at),300000);assert.equal(request.timeout_milliseconds,120000);assert.deepEqual(request.body,{action:'tick'});
+  assert.equal(enqueue(),'');assert.equal(scalar('select count(*) from net.http_request_queue;'),'1');
+  const query=service(`select public.health_google_scheduler_authorized('${cfg.key_hash}');`);
+  assert.deepEqual((await Promise.all([asyncSql(query),asyncSql(query)])).sort(),['f','t']);assert.equal(consumeTicket(cfg.key_hash),'f');
+  assert.ok(scheduleRow().ticket_consumed_at);assert.equal(enqueue(),'2');assert.notEqual(scheduleRow().key_hash,cfg.key_hash);
+  assert.equal(consumeTicket(cfg.key_hash),'f');assert.equal(consumeTicket('invalid'),'f');
+  const status=schedulerStatus();assert.equal(status.enabled,true);assert.equal(status.interval_minutes,60);assert.ok(!JSON.stringify(status).includes(raw));assert.ok(!JSON.stringify(status).includes(cfg.key_hash));
+});
+test('disabled, expired and future tickets cannot select an owner through the authorization RPC',()=>{
+  prepareSchedule();enableSchedule();enqueue();let cfg=scheduleRow();
+  run("update health_internal.google_hydration_schedule_config set ticket_issued_at=clock_timestamp()-interval '6 minutes',ticket_expires_at=clock_timestamp()-interval '1 minute';");assert.equal(consumeTicket(cfg.key_hash),'f');
+  enqueue();cfg=scheduleRow();run("update health_internal.google_hydration_schedule_config set enabled=false;");assert.equal(consumeTicket(cfg.key_hash),'f');
+  run("update health_internal.google_hydration_schedule_config set enabled=true,ticket_issued_at=clock_timestamp()+interval '1 minute',ticket_expires_at=clock_timestamp()+interval '5 minutes';");assert.equal(consumeTicket(cfg.key_hash),'f');
+  assert.equal(scalar('select count(*) from public.health_google_hydration_reads;'),'0');
+});
+test('scheduled candidates are connected, due, lease-free and bounded; recent manual reads and failed attempts back off',()=>{
+  prepareSchedule();const first=link(),second=link(other);assert.equal(candidates().length,2);
+  assert.equal(scalar(scheduledClaim(first)),'t');assert.deepEqual(candidates(),[{user_id:other}]);assert.equal(scalar(scheduledClaim(first)),'f');
+  run(service(`update public.health_google_connections set lease_token=null,lease_until='1970-01-01' where user_id='${owner}';`));assert.deepEqual(candidates(),[{user_id:other}]);
+  claim(second);assert.equal(scalar(finish(second)),'stored');assert.deepEqual(candidates(),[]);assert.equal(scalar(scheduledClaim(second)),'f');
+  run(service("update public.health_google_connections set last_scheduled_attempt_at=clock_timestamp()-interval '51 minutes',last_read_at=clock_timestamp()-interval '51 minutes';"));assert.equal(candidates().length,2);
+  for(const [id,hash] of [['44444444-4444-4444-8444-444444444444','4'.repeat(64)],['55555555-5555-4555-8555-555555555555','5'.repeat(64)]]){run(`insert into auth.users values('${id}');`);const g=begin(hash,id);consume(hash);assert.equal(save(g,hash,id),'t');}
+  assert.equal(candidates().length,2);
+});
+test('concurrent manual and scheduled claims share one transaction lease and a stale scheduled finish is rejected',async()=>{
+  prepareSchedule();const r=link();
+  const manual=service(`update public.health_google_connections set lease_token='55555555-5555-4555-8555-555555555555',lease_until=clock_timestamp()+interval '2 minutes' where user_id='${owner}' and generation='${r.generation}' and status='connected' and lease_until<=clock_timestamp() returning 't';`);
+  const results=await Promise.all([asyncSql(manual),asyncSql(scheduledClaim(r))]);assert.equal(results.filter(x=>x==='t').length,1);
+  run(service(`select public.health_google_disconnect('${owner}');`));assert.equal(scalar(scheduledFinish(r)),'stale');assert.equal(row().last_scheduled_read_at,null);assert.equal(count(),0);
+});
+test('a complete scheduled result is privately attributable, idempotent and erased only as connection proof on reauthorization',()=>{
+  prepareSchedule();let r=link();assert.equal(scalar(scheduledClaim(r)),'t');assert.equal(scalar(scheduledFinish(r)),'stored');assert.ok(row().last_scheduled_read_at);assert.equal(count(),1);
+  const stored=object(service('select result from public.health_google_hydration_reads;'));assert.equal(stored.read_trigger,'scheduled');assert.equal(stored.canonical_eligible,false);
+  run(service("update public.health_google_connections set last_read_at=clock_timestamp()-interval '51 minutes',last_scheduled_attempt_at=clock_timestamp()-interval '51 minutes';"));
+  assert.equal(scalar(scheduledClaim(r)),'t');assert.equal(scalar(scheduledFinish(r,payload({pages:2,received_count:2}))),'unchanged');assert.equal(count(),1);
+  begin('c'.repeat(64));assert.equal(row().last_scheduled_read_at,null);assert.equal(row().last_scheduled_attempt_at,null);assert.equal(count(),1);
+  assert.equal(scalar('select marker from public.health_metrics;'),'existing-synthetic-health-record');
+});
+test('reapplying the agenda preserves activation, the current ticket, encrypted connections and retained reads',()=>{
+  prepareSchedule();enableSchedule();const r=link();scalar(scheduledClaim(r));scalar(scheduledFinish(r));enqueue();
+  const before=scheduleRow(),connection=row(),job=object('select to_jsonb(j) from cron.job j;');run(scheduleMigration);
+  assert.deepEqual(scheduleRow(),before);assert.deepEqual(row(),connection);assert.deepEqual(object('select to_jsonb(j) from cron.job j;'),job);assert.equal(count(),1);
+  assert.equal(schedulerStatus().enabled,true);assert.equal(scalar('select count(*) from cron.job;'),'1');
 });
