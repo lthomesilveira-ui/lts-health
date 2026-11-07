@@ -1,3 +1,11 @@
+## 2026-11-07 — Agenda horária Google entregue; conexão real ainda pendente
+
+O pacote 044 / LTS-GOOGLE-BACKGROUND-001 está concluído. A rotina privada consulta as contas Google já autorizadas a cada hora, sem abrir o app. O leitor mantém identidade, origem, janela civil de 30 dias em São Paulo e proteção contra leituras simultâneas. Os registros recebidos ficam privados para conferência antes de qualquer inclusão nos totais de água.
+
+PR508: candidata 923658170da615fe42ab115be3f3de61911fdb1e e árvore ce811ba85e33f01c0792833cef8fe2f0e0ce398e passaram 17/17 workflows, 71 testes Node e 24 PostgreSQL 17.11. Merge normal feadc8c180d8e4971bfd6485015ed615267e0bca preservou a árvore; 21/21 verificações de publicação passaram. Migration nativa 20261107223447, permissões e arquivos das três rotas publicados foram conferidos. A agenda está ativa em intervalo de 60 minutos. Um despacho real com a lista de contas autorizadas vazia respondeu 200; o ticket foi consumido, apagado após o uso e recusado na repetição.
+
+A sessão genuína do aplicativo .126 foi atualizada e mostrou Google Health pronta para conectar. A recusa 403 anterior continua sem causa técnica comprovada; testador e retorno já cadastrados não demonstram autorização concluída. Não repetir configuração administrativa ou trocar credenciais. Consentimento, leitura real, origem e recorrência posterior têm aceites próprios. As nove dependências originais continuam abertas; 125 tarefas concluídas, 9 bloqueadas por dependência externa, 2 lacunas aceitas e 2 alternativas substituídas; zero ready/in_progress. O frontend permanece .126. Detalhes: v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md.
+
 # LTS Health — briefing consolidado do produto
 
 Este documento consolida as decisões de produto recuperadas do histórico, dos arquivos de passagem, do código, do banco e das homologações. Ele é público e, por isso, registra regras e expectativas sem dados pessoais de saúde, credenciais ou payloads privados.

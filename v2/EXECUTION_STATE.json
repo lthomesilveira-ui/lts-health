@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-BACKGROUND-044",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Read authorized Google hydration in the background without requiring the app to open, while preserving private source review and separate real recurrence acceptance.",
     "task_ids": [
       "LTS-GOOGLE-BACKGROUND-001"
@@ -64,13 +64,15 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-07",
-    "pending_gates": [
-      "Exact candidate CI including disposable PostgreSQL transaction tests",
-      "Native scheduler migration and least privilege verification",
-      "Exact three-function deployment and safe empty-owner dispatch",
-      "Postpublication workflow checks and authenticated app configuration continuity"
-    ],
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md",
+    "completed_on": "2026-11-07",
+    "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
+    "candidate_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
+    "candidate_checks_passed": 17,
+    "publication_checks_passed": 21,
+    "runtime_promotion_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+    "native_migration_version": "20261107223447"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261107.126",
@@ -3673,7 +3675,7 @@
       "id": "LTS-GOOGLE-BACKGROUND-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Implement the missing server agenda for authorized read-only Google hydration, independent of app opening.",
       "acceptance": [
@@ -3684,9 +3686,15 @@
       ],
       "evidence": [
         "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md",
-        "Existing implementation had only owner-triggered reads. Local read-only, token and schedule suites now pass 71 invented-data Node tests. Real PostgreSQL and native publication remain pending."
+        "Existing implementation had only owner-triggered reads. Local read-only, token and schedule suites now pass 71 invented-data Node tests. Real PostgreSQL and native publication remain pending.",
+        "PR508 exact candidate 923658170da615fe42ab115be3f3de61911fdb1e and tree ce811ba85e33f01c0792833cef8fe2f0e0ce398e passed 17/17 workflows; Google reader42418654023 passed71 Node and24 PostgreSQL17.11 tests. Earlier failed fixture runs remain recorded in the release document.",
+        "Normal merge feadc8c180d8e4971bfd6485015ed615267e0bca preserved the exact tested tree. All21 publication workflows passed, including deploy42421364912 and Pages42421401211/42421401221; no frontend asset changed.",
+        "Native migration20261107223447 installed the private http1.6 transport and dormant hourly jobs. RLS, empty search paths, service-only public RPCs and denied transport/raw-ticket access were verified.",
+        "Deployed connection5/callback5/scheduled1 preserve JWT true/false/false and match all6/6/7 reachable source files exactly. Live probes returned401/400/405/401/403 as required.",
+        "The enabled60-minute agenda completed one bounded empty-owner dispatch with HTTP200 and all aggregate counts zero. The ticket was consumed and its temporary raw value cleared; duplicate dispatch returned null.",
+        "The existing genuine authenticated public .126 refreshed successfully and showed Google Health ready to connect. Owner consent, real hydration recovery, source reconciliation and later recurrence remain independent and unverified."
       ],
-      "next_action": "Complete exact candidate, database, deployment and bounded empty-owner dispatch gates; then independently verify a real authorized source and later data arrival.",
+      "next_action": "Preserve the verified private hourly agenda. Investigate the owner-observed Google authorization refusal from actual request metadata in a secure owner interaction; after consent, reconcile a real hydration read and independently verify later attributable recurrence. Do not repeat administrative setup, rotate credentials or infer source delivery from the empty engineering run.",
       "blocker": null
     }
   ],
@@ -5488,6 +5496,31 @@
       "candidate_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
       "candidate_checks_passed": 17,
       "runtime_promotion_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7"
+    },
+    {
+      "id": "PKG-GOOGLE-BACKGROUND-044",
+      "status": "done",
+      "goal": "Read authorized Google hydration in the background without requiring the app to open, while preserving private source review and separate real recurrence acceptance.",
+      "task_ids": [
+        "LTS-GOOGLE-BACKGROUND-001"
+      ],
+      "candidate_build": "health-integrated-20261107.126",
+      "public_build": "health-integrated-20261107.126",
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-07",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md",
+      "completed_on": "2026-11-07",
+      "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
+      "candidate_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
+      "candidate_checks_passed": 17,
+      "publication_checks_passed": 21,
+      "runtime_promotion_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+      "native_migration_version": "20261107223447"
     }
   ],
   "latest_published_release": {
@@ -5498,26 +5531,22 @@
     "runtime_promotion_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
     "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All 22 exact candidate workflows passed. Deployment, both public Pages checks, public entry diagnostics and protected Real Auth passed. Unchanged-runtime publication repetitions are separately recorded.",
+    "automated_runtime_and_responsive_status": "All22 exact frontend candidate workflows and all25 frontend publication workflows passed. The four previously pending broad repetitions were read to completion without reruns. Server-only PR508 has separate21/21 publication evidence.",
     "ci_summary": {
-      "status": "required_release_gates_complete",
+      "status": "all_publication_workflows_complete",
       "main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
       "total": 25,
-      "success": 21,
+      "success": 25,
       "protected_actual_auth_run": 42383583877,
-      "pending_workflows": [
-        42383583881,
-        42383583875,
-        42383583939,
-        42383584066
-      ]
+      "pending_workflows": []
     },
     "evidence": [
       "PR506 exact candidate 44020ede2d386e2116bab359edce607e21462336 and tree 250f310b4e42e49c272d58bc393a92171215ca90 passed 22/22 workflows.",
       "Startup Chromium/WebKit covers 320/393/1440 px, delayed SDK, failed entry, late recovery and protected data boundaries; integrated journeys verify actual menus, preserved filters, scoped Back and tab focus.",
       "Synthetic training artifact 13578171747 SHA256 2d687a330748accdfccde341d56f5ba477004f9f009a99d4fe49ed2d8f507e20 was inspected at mobile and desktop resolutions.",
       "Normal merge 8fda51864f2466f1996ce853de2724760889d5a4 preserved the exact tested tree. Deploy42383584016, Pages42383625929/42383625953, public-entry42383583906 and protected actual-auth42383583877 passed.",
-      "The genuine public .126 restored the existing session. Composition Back returned to Training with the search preserved; tab arrows retained focus; Exames choices showed recorded method/dates; Timeline distinguished overlapping source rows and named its filters. Home was restored. No health record, dose, source identity, mapping or integration configuration was changed."
+      "The genuine public .126 restored the existing session. Composition Back returned to Training with the search preserved; tab arrows retained focus; Exames choices showed recorded method/dates; Timeline distinguished overlapping source rows and named its filters. Home was restored. No health record, dose, source identity, mapping or integration configuration was changed.",
+      "Continuity readback confirmed all25 original .126 publication workflows completed successfully, including the four previously pending broad repetitions; no test was rerun and the frontend release identity is unchanged."
     ],
     "recorded_failed_validation_runs": [
       {
@@ -10436,31 +10465,34 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-07",
-    "source_main_commit": "1208fb57a848a8fef95a705035012a36662cb935",
+    "source_main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
     "runtime_build": "health-integrated-20261107.126",
     "runtime_changed": true,
+    "frontend_runtime_changed": false,
     "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 124,
-      "in_progress": 1,
+      "done": 125,
       "blocked_external": 9,
-      "accepted_gap": 2,
-      "superseded": 2
+      "superseded": 2,
+      "accepted_gap": 2
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
-      "Protected Google server preparation is independently delivered in PR507.",
-      "The original nine unmet conditions remain open. Owner Google identity verification was not completed and the previous pending authorization expired.",
-      "One independently executable implementation gap remains: a background reader was missing. Package044 owns its implementation and publication gates."
+      "PR508 exact candidate 923658170da615fe42ab115be3f3de61911fdb1e and tree ce811ba85e33f01c0792833cef8fe2f0e0ce398e passed 17/17 workflows; Google reader42418654023 passed71 Node and24 PostgreSQL17.11 tests. Earlier failed fixture runs remain recorded in the release document.",
+      "Normal merge feadc8c180d8e4971bfd6485015ed615267e0bca preserved the exact tested tree. All21 publication workflows passed, including deploy42421364912 and Pages42421401211/42421401221; no frontend asset changed.",
+      "Native migration20261107223447 installed the private http1.6 transport and dormant hourly jobs. RLS, empty search paths, service-only public RPCs and denied transport/raw-ticket access were verified.",
+      "Deployed connection5/callback5/scheduled1 preserve JWT true/false/false and match all6/6/7 reachable source files exactly. Live probes returned401/400/405/401/403 as required.",
+      "The enabled60-minute agenda completed one bounded empty-owner dispatch with HTTP200 and all aggregate counts zero. The ticket was consumed and its temporary raw value cleared; duplicate dispatch returned null.",
+      "The existing genuine authenticated public .126 refreshed successfully and showed Google Health ready to connect. Owner consent, real hydration recovery, source reconciliation and later recurrence remain independent and unverified."
     ],
     "ux_review": {
       "area": "data_sources_google_hydration",
-      "mode": "existing_authenticated_app_and_native_server_status",
-      "result": "server_ready_to_connect_owner_consent_and_real_reads_pending"
+      "mode": "existing_authenticated_app_refreshed_after_exact_server_publication",
+      "result": "hourly_agenda_verified_app_ready_to_connect_owner_consent_and_real_reads_pending"
     },
-    "open_dependency_policy": "Do not relabel server configuration, an empty scheduler run or an unchanged source snapshot as real hydration delivery or later attributable recurrence."
+    "open_dependency_policy": "An empty engineering dispatch does not close any original source, recurrence, lineage, coverage, diagnostic, proposal-recovery or owner-acceptance condition. The prior Google403 cause is not proven by already-correct tester/callback administration."
   },
   "continuity_review_history": [
     {
@@ -11807,6 +11839,34 @@
         "result": "observed_defects_corrected_published_and_verified"
       },
       "open_dependency_policy": "Nine original source/provider/owner conditions remain independent. Hydration, original source lineage, basal coverage, legacy linking, payload diagnosis, exact historical correction proposal and overall acceptance are not closed by this UI delivery."
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "1208fb57a848a8fef95a705035012a36662cb935",
+      "runtime_build": "health-integrated-20261107.126",
+      "runtime_changed": true,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 124,
+        "in_progress": 1,
+        "blocked_external": 9,
+        "accepted_gap": 2,
+        "superseded": 2
+      },
+      "executable_task_count": 1,
+      "evidence": [
+        "Protected Google server preparation is independently delivered in PR507.",
+        "The original nine unmet conditions remain open. Owner Google identity verification was not completed and the previous pending authorization expired.",
+        "One independently executable implementation gap remains: a background reader was missing. Package044 owns its implementation and publication gates."
+      ],
+      "ux_review": {
+        "area": "data_sources_google_hydration",
+        "mode": "existing_authenticated_app_and_native_server_status",
+        "result": "server_ready_to_connect_owner_consent_and_real_reads_pending"
+      },
+      "open_dependency_policy": "Do not relabel server configuration, an empty scheduler run or an unchanged source snapshot as real hydration delivery or later attributable recurrence."
     }
   ],
   "continuation_automation": {
@@ -11818,37 +11878,53 @@
     "authorization": "explicit_owner_successive_round_request_20261030"
   },
   "last_verified_server_preparation": {
-    "kind": "google_health_service_only_vault_configuration",
+    "kind": "google_health_private_hourly_agenda",
     "verified_on": "2026-11-07",
-    "main_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7",
-    "candidate_commit": "fee6b6261dedfc59e2a57618478c42a5f2ec3c60",
-    "tested_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
+    "main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+    "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
+    "tested_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
     "candidate_workflows_passed": 17,
     "publication_workflows_passed": 21,
-    "node_tests_passed": 60,
-    "postgresql_tests_passed": 14,
-    "native_migration_version": "20261107204909",
-    "source_migration": "supabase/migrations/20261107203628_google_health_server_vault_configuration.sql",
+    "node_tests_passed": 71,
+    "postgresql_tests_passed": 24,
+    "native_migration_version": "20261107223447",
+    "source_migration": "supabase/migrations/20261107213824_google_health_background_schedule.sql",
     "edge_functions": [
       {
         "name": "health-google-connection",
-        "version": 4,
+        "version": 5,
         "verify_jwt": true,
         "exact_files_verified": 6
       },
       {
         "name": "health-google-callback",
-        "version": 4,
+        "version": 5,
         "verify_jwt": false,
         "exact_files_verified": 6
+      },
+      {
+        "name": "health-google-scheduled",
+        "version": 1,
+        "verify_jwt": false,
+        "exact_files_verified": 7
       }
     ],
+    "schedule": {
+      "enabled": true,
+      "interval_minutes": 60,
+      "window_days": 30,
+      "timezone": "America/Sao_Paulo",
+      "ticket_minute": 35,
+      "dispatch_minute": 36,
+      "empty_dispatch_status": 200,
+      "temporary_ticket_cleared": true,
+      "repeated_dispatch": "null"
+    },
     "authenticated_configured_status": "ready_to_connect",
-    "invalid_callback_probe": "invalid_callback",
     "owner_consent_verified": false,
     "real_hydration_read_verified": false,
     "canonical_water_updated": false,
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
+    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
   },
   "server_preparation_history": [
     {
@@ -11867,6 +11943,39 @@
       "frontend_build": "health-integrated-20261102.122",
       "google_configured": false,
       "real_hydration_verified": false
+    },
+    {
+      "kind": "google_health_service_only_vault_configuration",
+      "verified_on": "2026-11-07",
+      "main_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7",
+      "candidate_commit": "fee6b6261dedfc59e2a57618478c42a5f2ec3c60",
+      "tested_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
+      "candidate_workflows_passed": 17,
+      "publication_workflows_passed": 21,
+      "node_tests_passed": 60,
+      "postgresql_tests_passed": 14,
+      "native_migration_version": "20261107204909",
+      "source_migration": "supabase/migrations/20261107203628_google_health_server_vault_configuration.sql",
+      "edge_functions": [
+        {
+          "name": "health-google-connection",
+          "version": 4,
+          "verify_jwt": true,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-callback",
+          "version": 4,
+          "verify_jwt": false,
+          "exact_files_verified": 6
+        }
+      ],
+      "authenticated_configured_status": "ready_to_connect",
+      "invalid_callback_probe": "invalid_callback",
+      "owner_consent_verified": false,
+      "real_hydration_read_verified": false,
+      "canonical_water_updated": false,
+      "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
     }
   ]
 }
