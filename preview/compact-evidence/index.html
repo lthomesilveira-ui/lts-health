@@ -114,11 +114,24 @@
     "./src/health-lab-reviewed-numeric.js": "./src/health-lab-reviewed-numeric.js?v=health-dashboard-20261019.74",
     "./src/nutrition-archive.js": "./src/nutrition-archive.js?v=health-dashboard-20261019.74",
     "./src/evolution-body-chart.js": "./src/evolution-body-chart.js?v=health-dashboard-20261019.74",
-    "./src/training-load-qualifier.js": "./src/training-load-qualifier.js?v=health-dashboard-20261019.74"
+    "./src/training-load-qualifier.js": "./src/training-load-qualifier.js?v=health-dashboard-20261019.74",
+    "./src/navigation-history.js": "./src/navigation-history.js?v=health-dashboard-20261019.74"
   }
 }
 </script>
   <script>
+    (() => {
+      const startup=document.getElementById('appStartup');
+      let ready=false;
+      const timer=setTimeout(() => {
+        if(ready)return;
+        document.getElementById('appStartupMessage').textContent='O Health está demorando para abrir.';
+        document.getElementById('appStartupHelp').textContent='Verifique sua conexão e tente novamente. Seus dados continuam guardados.';
+        document.getElementById('appStartupRetry').hidden=false;
+      },8000);
+      document.getElementById('appStartupRetry').addEventListener('click',()=>location.reload());
+      window.addEventListener('lts-health-ready',()=>{ready=true;clearTimeout(timer);startup.hidden=true;},{once:true});
+    })();
     if (!new URLSearchParams(location.search).has('fixture')) {
       document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
     }
@@ -133,6 +146,17 @@
 <link rel="stylesheet" href="./health-cockpit.css?v=health-dashboard-20261019.74">
 </head>
 <body>
+  <section id="appStartup" class="appStartup" role="status" aria-live="polite" aria-label="Abrindo o LTS Health">
+    <div class="appStartupCard">
+      <span class="brandMark" aria-hidden="true">L</span>
+      <h1>LTS Health</h1>
+      <p id="appStartupMessage">Abrindo seu Health…</p>
+      <p id="appStartupHelp">Seu histórico fica protegido durante o carregamento.</p>
+      <button type="button" id="appStartupRetry" hidden>Tentar novamente</button>
+      <noscript><p>Ative o JavaScript do navegador para acessar seu Health.</p></noscript>
+    </div>
+  </section>
+
   <div id="login" class="login hidden">
     <div class="loginShell">
       <section class="loginStory" aria-label="Sobre o LTS Health">

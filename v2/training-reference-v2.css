@@ -1002,3 +1002,5 @@
 .personalWorkoutPlan h3{margin:0 0 4px}
 .personalWorkoutPlanText,.ltsRefExerciseNotes p{white-space:pre-wrap;overflow-wrap:anywhere}
 #personalWorkoutPlans button{min-height:44px;max-width:100%}
+
+#training-tab-panel{display:grid;gap:14px;min-width:0}

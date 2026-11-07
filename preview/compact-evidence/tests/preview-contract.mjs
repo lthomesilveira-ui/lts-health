@@ -23,7 +23,7 @@ const manifest={
     "data.css": "e9a188d6ae64f55c1dceb5f4817e84d6a5bf990f4ef2e8dfb1c286e930b36aaa",
     "details.css": "9dc9aba99add9f399f395bf9312c0db6b690a21739cba44e38036d24f1df8eb0",
     "domain-reference-parity-20260914.css": "1de1275a52a7af5d07bd6a0a74f8cb0badd7d57969f91c92ef3e8d1cdab7cde1",
-    "entry.css": "4448b31b193f468eb741f1e1ea646b293936abb615093b6232d1a224071152d4",
+    "entry.css": "23ba5d1009c24c6d73811a6e27cf7cd55ec2868679039bae1853d75a57796766",
     "evidence-priority.css": "a2de4cffa12b132bc6d610672f602b6db2f83950c88a04e0b51de27f2f3c36ba",
     "evolution-access.css": "13ade8c7da88fbb2342fa1ba3031d5a5ee0bae93ac232a05ccf7f4477e41021b",
     "evolution-product.css": "ebf799bf7d7779e3d8ca79c1f51c4cfca3408739ae257c0b5d128bc6c4fb69dc",
@@ -37,7 +37,7 @@ const manifest={
     "home-overview.css": "b0df7017b66de8a418fac54a6d4851bc223b0594d63f5998d195c478dc2a1ffc",
     "home-reference-experience.css": "94c100a731c1a163bbcbdbf3b6b9c9da9b945c09be5087d322b86034af87ab19",
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
-    "index.html": "4dea365b3fc6e8fa8b0618013e562af57fd10d2d8e45cdd382d67ede3b5b7634",
+    "index.html": "af192a1fc01289d59d56ae671a59d7e8bce8059f1affec0a9a886b0b8fd216b2",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
     "labs-model-v2.css": "a699db6270c8d3e49af4b0f8524375a1ef9c67069ff6cbf7ba67d8a334cb1fd5",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
@@ -69,7 +69,7 @@ const manifest={
     "src/calendar-report-overview.js": "8b4a6d271d4f10170af7fe84b36adae0157d410118eaeb8adce688ed795dfb7d",
     "src/calendar-report-view.js": "4e216354b48bbc3de827d995bd2657fef2e99d87821e87820650a88c8b2a096d",
     "src/care-followup.js": "d27adde998c8a5c643c357c22e010206f1abf3ac819479832e3cacc115d5c7e8",
-    "src/composition-layout-v2.js": "af52f43b8665d488309f957296ce19daeb6bb9724132c8ccc0ed9488ca3ef76f",
+    "src/composition-layout-v2.js": "4e35edff6cca8e13b3ef7efa98f9d51432c4b1c84d574f412f3adb285eab56c0",
     "src/core.js": "1677e751cb0fee25b63908bda15871cfe17e1a005acf5b6fe5646bfba9da7c3c",
     "src/dashboard-changes.js": "2826da829e3fe46cd62c1939e53e9cb2faa3b097d3bea11757a188faa991fc7a",
     "src/dashboard-reference-runtime.js": "184d98212c45dafbfb6a9ff73d8c5f37b20ca1ae79eb8bad284c661e5349b0e0",
@@ -120,10 +120,10 @@ const manifest={
     "src/integrated-review.js": "0a2b5f6414b706e06fa385bed405b9108ddca7c41140207a8b3908fef508b631",
     "src/intelligence-engine.js": "83d2b9177b7642d8c2eccfe2d68d4df2269e426887de65998c49bba26027246a",
     "src/lab-original-link.js": "9624bd8e469ca3be2aff6bb8cbfc1cc03b400d143d33d19080846cd35d0bd998",
-    "src/labs-layout-v2.js": "a6846fa83769d1d2b7841fd06fd7c17c6be7402679d891b7803a69ba6da05279",
+    "src/labs-layout-v2.js": "a542692d77fbc1552644ab7e88c1bf9568ffea0fbc2da22f851df2a65c9238b0",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
     "src/longitudinal-story.js": "d2b764d06c1073f0ae57e49290c8e39609ea2095ce6533cc9e8f99ade0c35c12",
-    "src/main.js": "8497f09db61d0e33d9cf5a7ee86f7719b1d767981b8ef8c2953f546142297681",
+    "src/main.js": "2c195c3d7f8c02ce28cd20df7c9b1575dd688d6cc1aaea713ad3c5957e2e240c",
     "src/progress-photos.js": "a634ba17cab35b6581de797aab2569367c8f745b6b56285f1f1355ccedafaca3",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
     "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
@@ -138,7 +138,7 @@ const manifest={
     "src/plan-original-link.js": "fe9ccd46f0286c5ccef49d060caa9276d2b62189f53b2c07f67ca4213d2fec26",
     "src/polar-connection.js": "18ce96581a1449b1f665d694f016c3e2ad8580b1e12cf47f03aa1ea064e9eca4",
     "src/preview-readonly.js": "a37032572f796651d3d41b323baace2a85eb899db69e6862aac3d4ef4c49f81e",
-    "src/product-layout-runtime.js": "2b3b0d52abd0b09dd80da64d77533e1af73d6d6fe218aae0ac0d46ba8467126f",
+    "src/product-layout-runtime.js": "45dd047865d11f8498d181a8fe416c62ccbf0a8d5786b92efee93fd8da03aed3",
     "src/product-layout-v2.js": "a70967aea9eed353798c630bcd6d3f576d9b1c7709af3c3cfd7164f508452a16",
     "src/product-shell.js": "b28304fe107abd7f33936f35a564cf4c595fb894b6794069bf82c39effdce114",
     "src/recovery-layout-v2.js": "154e8ae21f55df9de451049ee82c7f401ed51bc62dea66792d1e32643d0f0beb",
@@ -158,7 +158,7 @@ const manifest={
     "src/training-load-qualifier.js": "f3024be1f935a1b2b18d3f02d160a210ceefe2466af8b7ac2a97dd08cf23a9a8",
     "src/training-plan-view.js": "2b859001112a578207586c83d64594431f29b4c8981d0df49bf3ae2954fa6b63",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
-    "src/training-reference-v2.js": "3c341fb9b4989eb58345990188d1123ce46dc6daac4460f63d652af5d0b6f8b0",
+    "src/training-reference-v2.js": "ca8990f27309507218b0fd28ba7d85d3bcb80e1fa46044e7b46285b1dad56df0",
     "src/training-screen.js": "255481f1cfc2439d091bc7e0b138259206f1920804b8fcf795c53d90a229c759",
     "src/training-session-summary.js": "48bd4cad251ec9d2ea5b4d20f4fda79496a8874da1128f53ba246a1516e4bd43",
     "src/training-session-visuals.js": "c5818d875368342aeb0aa36d5cf80f0647d14d916feb4419400f484fa918399a",
@@ -170,12 +170,13 @@ const manifest={
     "src/writes.js": "b2150072e1a5cfb1ff45fb9f5721969e1ff00ddad353a58351d061aee9fc9c09",
     "styles.css": "90ca5a32254ba77ebb7394dffc85254f1790b7a70d6071c5772cf5b60336a274",
     "today.css": "c52c17b8471960e744307201f228dd3fcc6e3ed58819489add627a349f1fd21d",
-    "training-reference-v2.css": "db917689d098a253c641ca900f34166baa400110b4e9a2ec118d3f06d078becf",
+    "training-reference-v2.css": "18e0738372f0d7443e8a6fc7db3a7c377710263845b1459f3623417c8ac8c7d1",
     "training-reference.css": "4336e64042148a3ea94353dc3f98d3e5010930f14635d90158c480a440c6df10",
     "training.css": "123b48543b6e97893371bba86c15784644fad7096da4e4a2a1d38a99d72970ce",
     "ux-coherence.css": "5f51f49e3d9312c54523257544daa86769ee093f31a35c349aefb73b0abbe6f7",
     "visual-convergence-20260914.css": "84580ab11e8775919f130a587625631ed1ef0ea212dceeb9cc49e336e5a4abd7",
-    "water.css": "4b1245f9c6637f712d59847ac8e7da326f1451ba7bcda3f424a8aad3251038dd"
+    "water.css": "4b1245f9c6637f712d59847ac8e7da326f1451ba7bcda3f424a8aad3251038dd",
+    "src/navigation-history.js": "5667e32730da8a6ea50075ff89bca1d09d789ef09ab71ee193e35e5dfea8543f"
   }
 };
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -196,8 +197,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261106\.125/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261106.125'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261107\.126/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261107.126'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

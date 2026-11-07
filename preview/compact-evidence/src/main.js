@@ -32,6 +32,7 @@ import {checkGoogleHealthConnection,actOnGoogleHealth,resetGoogleHealthConnectio
 import {downloadIntegratedSummary} from './integrated-review-view.js';
 import {saveGoals} from './personal-goals.js';
 import {isConfirmedFleuryUpload} from './fleury-preview.js';
+import {navigationState,canNavigateBack} from './navigation-history.js';
 
 const legacyScreenRenderers={bio:renderBioHub,treinos:renderTrainingScreen,evolucao:renderEvolutionHub,analise:renderAnalysisHub,tratamentos:renderTreatmentHub,saude:renderHealthHub,nutricao:renderNutritionHub,hoje:renderTodayHub,dados:renderDataHub,timeline:renderTimelineHub};
 const screenRenderers=fixtureMode?legacyScreenRenderers:{...legacyScreenRenderers,evolucao:renderEvolutionOverview,bio:renderProductComposition,treinos:renderProductTraining,analise:renderRecoveryDepth,saude:renderProductLabs,nutricao:renderProductNutrition,hoje:renderProductHomeReference};
@@ -44,13 +45,13 @@ let routeScrollRevision=0;
 const mobileMoreRoutes=new Set(['timeline','nutricao','bio','saude','tratamentos','dados','analise']);
 
 function setSync(text){const el=$('syncText'),rail=$('railSyncText');if(el)el.textContent=text;if(rail)rail.textContent=text;}
-function showLogin(message=''){closeProgressPhotos();$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;}
-function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden');}
+function completeStartup(){window.dispatchEvent(new Event('lts-health-ready'));}
+function showLogin(message=''){closeProgressPhotos();$('login').classList.remove('hidden');$('app').classList.add('hidden');$('moreSheet').classList.add('hidden');$('entryModal').classList.add('hidden');$('loginMsg').textContent=message;completeStartup();}
+function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden');completeStartup();}
 
 function syncNav(){
-  document.querySelectorAll('#primaryNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route);});
-  document.querySelectorAll('#moreSheet [data-route]').forEach(button=>button.classList.toggle('active',button.dataset.route===state.route));
-  document.querySelectorAll('#mobileNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&mobileMoreRoutes.has(state.route)));});
+  document.querySelectorAll('#primaryNav [data-route],#moreSheet [data-route]').forEach(button=>{const active=button.dataset.route===state.route;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
+  document.querySelectorAll('#mobileNav [data-route]').forEach(button=>{const route=button.dataset.route;button.classList.toggle('active',route===state.route||(route==='mais'&&mobileMoreRoutes.has(state.route)));if(route===state.route)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
   const action=$('routeAction');
   if(state.route==='bio'){action.textContent='Registrar bio';action.dataset.entry='body';action.classList.remove('hidden');}
   else if(state.route==='treinos'){action.textContent='Registrar treino';action.dataset.entry='workout';action.classList.remove('hidden');}
@@ -90,7 +91,9 @@ function setRoute(route,{replace=true}={}){
   if(!fixtureMode)document.body.dataset.productRoute=route;
   $('moreSheet').classList.add('hidden');
   try{localStorage.setItem('lts-health-v2-route',route);}catch{}
-  const url=`#${route}`;if(replace)history.replaceState(null,'',url);else history.pushState(null,'',url);
+  const url=`#${route}`,replaceEntry=replace||location.hash===url;
+  const entry=navigationState(history.state,location.pathname,route,{replace:replaceEntry});
+  if(replaceEntry)history.replaceState(entry,'',url);else history.pushState(entry,'',url);
   syncNav();scheduleRender();
   if(state.loaded)ensureRouteData(route,setSync).then(scheduleRender);
   if(route==='dados'&&state.session)checkPolarConnection().then(scheduleRender);
@@ -269,6 +272,12 @@ function openTimelineTarget(button){
 
 function bindStaticEvents(){
   document.addEventListener('click',async event=>{
+    if(event.target.closest('[data-route-back]')){
+      event.preventDefault();
+      if(canNavigateBack(history.state,location.pathname,state.route))history.back();
+      else setRoute('hoje');
+      return;
+    }
     const overviewMetric=event.target.closest('[data-evolution-overview-metric]');if(overviewMetric){state.ui.evolutionOverviewMetric=overviewMetric.dataset.evolutionOverviewMetric;state.ui.evolutionOverviewPoint=null;render();return;}
     const overviewPeriod=event.target.closest('[data-evolution-period]');if(overviewPeriod){state.ui.evolutionOverviewPeriod=overviewPeriod.dataset.evolutionPeriod;state.ui.evolutionOverviewPoint=null;render();return;}
     const overviewPoint=event.target.closest('[data-evolution-point]');if(overviewPoint){event.preventDefault();state.ui.evolutionOverviewPoint=overviewPoint.dataset.evolutionPoint;render();return;}

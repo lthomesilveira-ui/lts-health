@@ -32,6 +32,7 @@ jobs:
           node v2/source-current-coverage-test.mjs
           node v2/workout-estimate-provenance-test.mjs
           node v2/home-cockpit-test.mjs
+          node v2/navigation-state-test.mjs
       - name: Verify promoted analytical models using synthetic data
         run: |
           TESTDIR="$(mktemp -d v2/.integration-tests.XXXXXX)"
@@ -52,6 +53,7 @@ jobs:
       - name: Verify actual renderer through mocked authentication, mobile routes and repeated cancel
         run: |
           node v2/production-integration-browser.mjs
+          node v2/startup-browser.mjs
           node v2/real-auth-dashboard-checks-test.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs

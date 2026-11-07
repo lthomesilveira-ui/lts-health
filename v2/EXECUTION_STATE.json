@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-06",
+  "updated_on": "2026-11-07",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,47 +50,29 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-TRAINING-PLANNING-041",
-    "status": "done",
-    "goal": "Deliver private workout planning, recorded effort and optional progress photos, with protected verification of both planning panels.",
+    "id": "PKG-UX-NAVIGATION-042",
+    "status": "in_progress",
+    "goal": "Repair observed cold-start and navigation problems in the existing app after genuine authenticated UX review.",
     "task_ids": [
-      "LTS-TRAINING-PLANNING-001",
-      "LTS-TRAINING-EFFORT-001",
-      "LTS-PROGRESS-PHOTOS-001"
+      "LTS-STARTUP-RECOVERY-001",
+      "LTS-ROUTE-RETURN-001",
+      "LTS-TRAINING-KEYBOARD-001",
+      "LTS-LAB-SERIES-CHOICE-001"
     ],
-    "candidate_build": "health-integrated-20261106.125",
+    "candidate_build": "health-integrated-20261107.126",
     "public_build": "health-integrated-20261106.125",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-06",
-    "pending_gates": [],
-    "evidence_document": "v2/CURRENT_HANDOFF.md",
-    "prior_promotion": {
-      "pr": 503,
-      "build_id": "health-integrated-20261106.124",
-      "candidate_commit": "c5bcdf6f1137ef49fc6dc013c4988125e7a90f82",
-      "tree": "1e155682099eccbd6e559208de986864fc872410",
-      "candidate_checks_passed": 21,
-      "main_commit": "16e60f3811f4709b2d38f33107810877fb2e61fb",
-      "deploy_workflow": 42313070528,
-      "public_entry_checks": [
-        42313135292,
-        42313135394
-      ],
-      "protected_auth_workflow": 42313070577,
-      "protected_auth_conclusion": "failure",
-      "protected_failure_evidence": "The Training documentary comparison assertion selected the first shared card class, which now belongs to the separate personal plans panel. The authenticated workflow had verified independent set projection and reported no runtime or public transport errors.",
-      "signed_out_public_build_checked": true
-    },
-    "completed_on": "2026-11-06",
-    "candidate_commit": "d23257178f81cffa1a49646058abe08321f7a988",
-    "candidate_tree": "b734d71adc493fe8e5b5a6417dc3a8edf62c7969",
-    "candidate_checks_passed": 20,
-    "runtime_promotion_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
-    "protected_auth_run": 42315062923
+    "started_on": "2026-11-07",
+    "pending_gates": [
+      "candidate responsive browser gates",
+      "exact publication",
+      "authenticated public verification"
+    ],
+    "evidence_document": "v2/releases/UX_NAVIGATION_20261107.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261106.125",
@@ -3577,6 +3559,79 @@
       ],
       "blocker": null,
       "next_action": "No executable follow-up for the delivered feature."
+    },
+    {
+      "id": "LTS-STARTUP-RECOVERY-001",
+      "area": "startup",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show an immediate protected loading surface and recover from a delayed SDK or failed entry module.",
+      "acceptance": [
+        "Loading is visible before the account SDK can block HTML parsing.",
+        "Delayed or failed startup exposes a retry without showing private content.",
+        "A late successful login/session restoration removes the recovery state."
+      ],
+      "evidence": [
+        "v2/releases/UX_NAVIGATION_20261107.md"
+      ],
+      "next_action": "Complete exact candidate responsive gates, publish and inspect the authenticated public app.",
+      "blocker": "No external blocker; candidate and publication verification are pending."
+    },
+    {
+      "id": "LTS-ROUTE-RETURN-001",
+      "area": "navigation",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Return to the previous visited app area while preserving filters; announce the active route.",
+      "acceptance": [
+        "Back from Composition, Exams and Training follows only app-created route history.",
+        "A fresh direct entry falls back to Home and cannot leave the app.",
+        "Repeated taps do not accumulate duplicate entries; refresh and browser Back preserve route state.",
+        "Primary, More and mobile destinations expose the current route accessibly."
+      ],
+      "evidence": [
+        "v2/releases/UX_NAVIGATION_20261107.md"
+      ],
+      "next_action": "Complete exact candidate responsive gates, publish and inspect the authenticated public app.",
+      "blocker": "No external blocker; candidate and publication verification are pending."
+    },
+    {
+      "id": "LTS-TRAINING-KEYBOARD-001",
+      "area": "training",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Support keyboard navigation and stable focus across workout tabs.",
+      "acceptance": [
+        "Arrow keys, Home and End select the correct tab, including wraparound.",
+        "The selected tab retains focus after redraw and is the single tab stop.",
+        "The current panel has a programmatic relationship with its tab."
+      ],
+      "evidence": [
+        "v2/releases/UX_NAVIGATION_20261107.md"
+      ],
+      "next_action": "Complete exact candidate responsive gates, publish and inspect the authenticated public app.",
+      "blocker": "No external blocker; candidate and publication verification are pending."
+    },
+    {
+      "id": "LTS-LAB-SERIES-CHOICE-001",
+      "area": "exams",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Distinguish laboratory series with the same laboratory and unit.",
+      "acceptance": [
+        "Each series choice shows the recorded method and dated extent.",
+        "Missing metadata remains explicitly unavailable.",
+        "Grouping, comparability, raw results and original links remain unchanged."
+      ],
+      "evidence": [
+        "v2/releases/UX_NAVIGATION_20261107.md"
+      ],
+      "next_action": "Complete exact candidate responsive gates, publish and inspect the authenticated public app.",
+      "blocker": "No external blocker; candidate and publication verification are pending."
     }
   ],
   "package_history": [
@@ -5285,6 +5340,49 @@
         "The authenticated public entry shows private Google connection status and keeps the connection control hidden while signed out. No Google account, consent or real hydration read was claimed."
       ],
       "evidence_document": "v2/CURRENT_HANDOFF.md"
+    },
+    {
+      "id": "PKG-TRAINING-PLANNING-041",
+      "status": "done",
+      "goal": "Deliver private workout planning, recorded effort and optional progress photos, with protected verification of both planning panels.",
+      "task_ids": [
+        "LTS-TRAINING-PLANNING-001",
+        "LTS-TRAINING-EFFORT-001",
+        "LTS-PROGRESS-PHOTOS-001"
+      ],
+      "candidate_build": "health-integrated-20261106.125",
+      "public_build": "health-integrated-20261106.125",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-06",
+      "pending_gates": [],
+      "evidence_document": "v2/CURRENT_HANDOFF.md",
+      "prior_promotion": {
+        "pr": 503,
+        "build_id": "health-integrated-20261106.124",
+        "candidate_commit": "c5bcdf6f1137ef49fc6dc013c4988125e7a90f82",
+        "tree": "1e155682099eccbd6e559208de986864fc872410",
+        "candidate_checks_passed": 21,
+        "main_commit": "16e60f3811f4709b2d38f33107810877fb2e61fb",
+        "deploy_workflow": 42313070528,
+        "public_entry_checks": [
+          42313135292,
+          42313135394
+        ],
+        "protected_auth_workflow": 42313070577,
+        "protected_auth_conclusion": "failure",
+        "protected_failure_evidence": "The Training documentary comparison assertion selected the first shared card class, which now belongs to the separate personal plans panel. The authenticated workflow had verified independent set projection and reported no runtime or public transport errors.",
+        "signed_out_public_build_checked": true
+      },
+      "completed_on": "2026-11-06",
+      "candidate_commit": "d23257178f81cffa1a49646058abe08321f7a988",
+      "candidate_tree": "b734d71adc493fe8e5b5a6417dc3a8edf62c7969",
+      "candidate_checks_passed": 20,
+      "runtime_promotion_commit": "256fdda751dd18ecfb096722b8fb14a061ef210a",
+      "protected_auth_run": 42315062923
     }
   ],
   "latest_published_release": {

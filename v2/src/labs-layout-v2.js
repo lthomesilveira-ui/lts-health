@@ -193,7 +193,7 @@ export function labsModel(){
   const query=norm(state.ui.productLabQuery),matches=groups.filter(g=>!query||norm(g.label).includes(query));
   return{allRows,rows,bounds,groups,ranked,item,cohort,latestRows,latest,lastDate,period,recent,history,matches,asOf};
 }
-const header=()=>`<header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1 tabindex="-1" id="productLabsTitle">Exames</h1><p>Seus resultados, referências e coletas anteriores.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>`;
+const header=()=>`<header class="ltsPageHeader"><button class="ltsBack" data-route="hoje" data-route-back aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Exames</span><h1 tabindex="-1" id="productLabsTitle">Exames</h1><p>Seus resultados, referências e coletas anteriores.</p></div><button class="ltsRoundAction" data-route="dados" aria-label="Dados e fontes">i</button></header>`;
 // Translate the importer flag without changing its stored value or free-form source text.
 function labFlagText(flag){
   if(flag===true)return 'Sinalizado no laudo';
@@ -201,6 +201,12 @@ function labFlagText(flag){
   return raw.trim()==='reported_outside_reference'?'Fora da referência no laudo':raw;
 }
 function resultMeta(row){return [origin(row)||'Origem não informada',unit(row)||'Unidade não informada',row.reference_range?`Referência: ${row.reference_range}`:'Referência não informada',method(row)?`Método: ${method(row)}`:''].filter(Boolean).join(' · ');}
+
+export function labSeriesChoice(cohort,index){
+  const dates=[...new Set((cohort.all||[]).map(row=>validDay(row.collection_date)).filter(Boolean))].sort();
+  const period=dates.length?dates[0]===dates.at(-1)?fmtDate(dates[0]):`${fmtDate(dates[0])}–${fmtDate(dates.at(-1))}`:'Data não informada';
+  return `${index+1}. ${cohort.origin||'Origem não informada'} · ${cohort.unit||'Sem unidade'} · ${cohort.method||'Método não informado'} · ${period} (${cohort.all.length})`;
+}
 
 function collectionOverview(rows,identityConflicts=new Set()){
   const dates=[...new Set(rows.map(r=>validDay(r.collection_date)).filter(Boolean))].sort().reverse();
@@ -232,7 +238,7 @@ export function renderProductLabs(){
     </section>
 
     <section class="ltsSection ltsLabsTrend" id="productLabsTrend"><div class="ltsSectionHead"><div><span>Evolução</span><h2 tabindex="-1">${esc(group.label)}</h2></div></div>
-      <label class="ltsField ltsSourceSelect">Série · laboratório e unidade<select id="productLabCohort" data-depth-field="productLabCohort" aria-describedby="productLabSeriesContext">${m.item.cohorts.map((co,index)=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${index+1}. ${esc(co.origin||'Origem não informada')} · ${esc(co.unit||'Sem unidade')} (${co.all.length})</option>`).join('')}</select></label>
+      <label class="ltsField ltsSourceSelect">Série · laboratório e unidade<select id="productLabCohort" data-depth-field="productLabCohort" aria-describedby="productLabSeriesContext">${m.item.cohorts.map((co,index)=>`<option value="${esc(co.key)}" ${co.key===c.key?'selected':''}>${esc(labSeriesChoice(co,index))}</option>`).join('')}</select></label>
       <div class="ltsHistoryContext ltsLabDelta"><b>Diferença na série selecionada</b><span>${esc(change)}</span>${comparison.comparable?'<small>Diferença numérica entre coletas; não é uma avaliação clínica.</small>':''}</div>
       <div class="ltsLabsChart">${labPointChart(c,{label:group.label,selected:state.ui.productLabPoint})}</div>
       <p class="ltsDepthNote">${countLabel(m.recent.length,'ponto exibido','pontos exibidos')} de ${countLabel(c.all.length,'resultado','resultados')} desta série. Os demais resultados permanecem no histórico, com suas notas, limites e referências originais. A janela usa o período de Exames; os intervalos do gráfico representam o tempo entre as coletas.${c.ambiguousDates.length?` ${c.ambiguousDates.length} data(s) com múltiplos resultados fica(m) fora da curva.`:''}</p>

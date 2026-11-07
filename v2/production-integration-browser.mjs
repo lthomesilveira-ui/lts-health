@@ -80,6 +80,32 @@ for(const width of [320,393,1440]){
  await page.locator('[data-health-dashboard]').waitFor();
  assert.equal(await page.locator('[data-preview-readonly-banner]').count(),0);
  assert.equal(await page.locator('[data-dashboard-card]').count(),7);
+ const navigate=async destination=>{
+  if(width>840)await page.locator(`#primaryNav [data-route="${destination}"]`).click();
+  else if(['hoje','treinos','evolucao'].includes(destination))await page.locator(`#mobileNav [data-route="${destination}"]`).click();
+  else{await page.locator('#mobileNav [data-route="mais"]').click();await page.locator(`#moreSheet [data-route="${destination}"]`).click();}
+  await page.waitForFunction(r=>document.querySelector(`#primaryNav [data-route="${r}"]`)?.getAttribute('aria-current')==='page',destination);
+ };
+ await navigate('treinos');await page.locator('#training-tab-history').click();
+ await page.getByRole('searchbox',{name:'Buscar',exact:true}).fill('preserved search');
+ const historyLength=await page.evaluate(()=>history.length);
+ await navigate('treinos');assert.equal(await page.evaluate(()=>history.length),historyLength,'repeated route tap adds no duplicate history');
+ await navigate('bio');await page.getByRole('button',{name:'Voltar',exact:true}).click();
+ await page.waitForURL('**/#treinos');
+ assert.equal(await page.getByRole('searchbox',{name:'Buscar',exact:true}).inputValue(),'preserved search','route Back preserves session filters');
+ await page.getByRole('button',{name:'Limpar filtros',exact:true}).click();
+ await page.locator('#training-tab-history').press('ArrowRight');
+ assert.equal(await page.locator('#training-tab-progress').getAttribute('aria-selected'),'true');
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'training-tab-progress','arrow navigation retains focus on the selected tab');
+ await page.locator('#training-tab-progress').press('End');
+ assert.equal(await page.locator('#training-tab-plan').getAttribute('aria-selected'),'true');
+ await page.locator('#training-tab-plan').press('ArrowRight');
+ assert.equal(await page.locator('#training-tab-summary').getAttribute('aria-selected'),'true','arrow navigation wraps');
+ await page.locator('#training-tab-summary').press('ArrowLeft');
+ await page.locator('#training-tab-plan').press('Home');
+ assert.equal(await page.getByRole('tabpanel').getAttribute('aria-labelledby'),'training-tab-summary');
+ assert.equal(await page.locator('[role="tab"][tabindex="0"]').count(),1);
+ await navigate('hoje');
  for(const route of ['treinos','bio','nutricao','saude','analise','tratamentos','dados','timeline','evolucao','hoje']){
   await page.evaluate(r=>{location.hash=r},route);
   await page.waitForTimeout(150);

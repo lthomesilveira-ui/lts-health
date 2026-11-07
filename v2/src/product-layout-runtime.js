@@ -83,6 +83,13 @@ if(!fixtureMode){
     const host=document.getElementById('screenHost');if(!host){setTimeout(boot,80);return;}
     // main.js owns canonical rendering. Depth controls redraw explicitly; no DOM rewrite observer.
     window.addEventListener('hashchange',settle);window.addEventListener('online',settle);
+    document.addEventListener('keydown',event=>{
+      const tab=event.target.closest('[role="tab"][data-depth-training-view]');
+      if(!tab||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+      const tabs=[...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')],index=tabs.indexOf(tab);
+      const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+      event.preventDefault();tabs[next].click();
+    });
     document.addEventListener('input',event=>{if(textFields.has(event.target.dataset?.depthField))fieldChanged(event.target);});
     document.addEventListener('change',event=>{
       const target=event.target;
@@ -101,7 +108,7 @@ if(!fixtureMode){
       if(metric&&route()==='bio'){state.ui.productCompositionMetric=metric.dataset.compositionMetric;state.ui.productCompositionPoint=null;redraw();return;}
       const marker=target.closest('[data-lab-marker]');if(marker&&route()==='saude'){selectMarker(marker.dataset.labMarker);return;}
       const view=target.closest('[data-depth-training-view]');
-      if(view){state.ui.productTrainingView=view.dataset.depthTrainingView;redraw('top');return;}
+      if(view){state.ui.productTrainingView=view.dataset.depthTrainingView;redraw('top');if(view.getAttribute('role')==='tab')document.getElementById(view.id)?.focus({preventScroll:true});return;}
       const workout=target.closest('[data-depth-workout]');
       if(workout){state.ui.openWorkout=workout.dataset.depthWorkout;state.ui.productTrainingView='session';redraw('top');return;}
       const exercise=target.closest('[data-depth-exercise]');

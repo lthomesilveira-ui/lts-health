@@ -1,3 +1,9 @@
+## 2026-11-07 — Auditoria de navegação e abertura, .126 em validação
+
+A inspeção autenticada do app existente identificou abertura vazia enquanto a biblioteca de conta carregava, retorno genérico à Home, abas de treino sem navegação por setas e escolhas de séries laboratoriais pouco distinguíveis. O pacote042 acrescenta uma abertura protegida com recuperação, histórico delimitado do próprio app, indicação acessível da rota e abas operáveis por teclado. Séries de exames passam a identificar método e datas sem mudar agrupamento ou valores.
+
+Contratos locais de navegação, fontes, autenticação, privacidade e paridade passaram. Os testes de navegador candidatos, a publicação e a inspeção pública exata permanecem pendentes. As nove dependências originais continuam abertas com seus próprios critérios; nenhuma observação clínica foi gravada ou reconstruída nesta revisão.
+
 ## 2026-11-06 — Treinos e fotos privadas concluídos, .125
 
 A versão .125 entrega o planejamento pessoal em Treinos, a escala de esforço de 0 a 10 nas observações por exercício e a opção de fotos por data em Composição. Planejamento e sessões concluídas ficam em registros separados. As fotos usam o armazenamento privado do titular e o original pode ser baixado pela área autenticada. A importação de fotos do MyFitnessPal ficou fora do pacote.
