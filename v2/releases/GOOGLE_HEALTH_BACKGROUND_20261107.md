@@ -17,3 +17,5 @@ The protected Google connection could read after an app action, but had no serve
 ## Validation status
 
 71 local invented-data Node tests passed. The added disposable PostgreSQL tests use a real PostgreSQL17 database and pgcrypto, with explicit synthetic cron/HTTP transport stand-ins. Native migration, exact function readback, live ACL checks and dispatch are still pending. No provider token, raw ticket, personal health observation or owner identifier is included here.
+
+The first PostgreSQL run42417604410 passed20/22 tests. Two fixture assertions failed: separate clock reads exceeded the strict five-minute synthetic expired-ticket interval by microseconds; a one-column SQL function alias aggregated its UUID as a scalar. The fixture now uses one captured clock and an explicit named JSON object. Production timing constraints and the HTTP candidate contract remain unchanged. The failed first run is retained rather than counted as passed.

@@ -209,7 +209,7 @@ const schedulerStatus=()=>object(service('select to_jsonb(s) from public.health_
 const enableSchedule=()=>run("update health_internal.google_hydration_schedule_config set enabled=true,endpoint_url='https://abcdefghijklmnopqrst.supabase.co/functions/v1/health-google-scheduled';select cron.alter_job(jobid,active:=true) from cron.job where jobname='lts-health-google-hourly';");
 const enqueue=()=>scalar('select health_internal.enqueue_google_hydration();');
 const consumeTicket=hash=>scalar(service(`select public.health_google_scheduler_authorized(${lit(hash)});`));
-const candidates=()=>object(service("select coalesce(jsonb_agg(c),'[]') from public.health_google_scheduled_candidates() c;"));
+const candidates=()=>object(service("select coalesce(jsonb_agg(jsonb_build_object('user_id',c.user_id)),'[]') from public.health_google_scheduled_candidates() c;"));
 const scheduledClaim=(r,token=lease)=>service(`select public.health_google_claim_scheduled_read('${r.user_id}','${r.generation}','${token}');`);
 const scheduledFinish=(r,result=payload(),token=lease)=>service(`select public.health_google_finish_scheduled_read('${r.user_id}','${r.generation}','${token}',${json(result)});`);
 test('Google agenda installs dormant; browser roles cannot inspect tickets, extension transport or service RPCs',()=>{
@@ -253,7 +253,7 @@ test('each dispatched invocation has a random hashed five-minute single-use tick
 });
 test('disabled, expired and future tickets cannot select an owner through the authorization RPC',()=>{
   prepareSchedule();enableSchedule();enqueue();let cfg=scheduleRow();
-  run("update health_internal.google_hydration_schedule_config set ticket_issued_at=clock_timestamp()-interval '6 minutes',ticket_expires_at=clock_timestamp()-interval '1 minute';");assert.equal(consumeTicket(cfg.key_hash),'f');
+  run("with stamp as materialized (select clock_timestamp() as n) update health_internal.google_hydration_schedule_config set ticket_issued_at=stamp.n-interval '6 minutes',ticket_expires_at=stamp.n-interval '1 minute' from stamp;");assert.equal(consumeTicket(cfg.key_hash),'f');
   enqueue();cfg=scheduleRow();run("update health_internal.google_hydration_schedule_config set enabled=false;");assert.equal(consumeTicket(cfg.key_hash),'f');
   run("update health_internal.google_hydration_schedule_config set enabled=true,ticket_issued_at=clock_timestamp()+interval '1 minute',ticket_expires_at=clock_timestamp()+interval '5 minutes';");assert.equal(consumeTicket(cfg.key_hash),'f');
   assert.equal(scalar('select count(*) from public.health_google_hydration_reads;'),'0');
