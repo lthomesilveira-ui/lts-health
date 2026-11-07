@@ -21,7 +21,8 @@ jobs:
           node --check supabase/functions/_shared/google-health-connection.mjs
           node --check supabase/functions/_shared/google-health-runtime.mjs
           node --check supabase/functions/_shared/google-health-config.mjs
-          node --test v2/google-health-reader-test.mjs v2/google-health-connection-test.mjs v2/google-health-config-test.mjs
+          node --check supabase/functions/_shared/google-health-schedule.mjs
+          node --test v2/google-health-reader-test.mjs v2/google-health-connection-test.mjs v2/google-health-config-test.mjs v2/google-health-schedule-test.mjs
           node v2/continuity-contract-smoke.mjs
           node v2/public-payload-guard.mjs
   google-health-database:

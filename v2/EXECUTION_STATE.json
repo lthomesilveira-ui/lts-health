@@ -50,11 +50,11 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-VAULT-CONFIGURATION-043",
-    "status": "done",
-    "goal": "Complete protected Google hydration server configuration using fixed-purpose Vault access when dashboard secret editing is unavailable.",
+    "id": "PKG-GOOGLE-BACKGROUND-044",
+    "status": "in_progress",
+    "goal": "Read authorized Google hydration in the background without requiring the app to open, while preserving private source review and separate real recurrence acceptance.",
     "task_ids": [
-      "LTS-GOOGLE-VAULT-CONFIGURATION-001"
+      "LTS-GOOGLE-BACKGROUND-001"
     ],
     "candidate_build": "health-integrated-20261107.126",
     "public_build": "health-integrated-20261107.126",
@@ -64,13 +64,13 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-07",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md",
-    "completed_on": "2026-11-07",
-    "candidate_commit": "fee6b6261dedfc59e2a57618478c42a5f2ec3c60",
-    "candidate_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
-    "candidate_checks_passed": 17,
-    "runtime_promotion_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7"
+    "pending_gates": [
+      "Exact candidate CI including disposable PostgreSQL transaction tests",
+      "Native scheduler migration and least privilege verification",
+      "Exact three-function deployment and safe empty-owner dispatch",
+      "Postpublication workflow checks and authenticated app configuration continuity"
+    ],
+    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261107.126",
@@ -3668,6 +3668,26 @@
       ],
       "next_action": "Maintain verified server configuration; owner Google verification/consent, real hydration reads and recurrence remain separate.",
       "blocker": null
+    },
+    {
+      "id": "LTS-GOOGLE-BACKGROUND-001",
+      "area": "integrations",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Implement the missing server agenda for authorized read-only Google hydration, independent of app opening.",
+      "acceptance": [
+        "Only a five-minute single-use private invocation ticket can dispatch; browser roles cannot read the transport ticket or select owners.",
+        "At most two due server-selected owners use a fixed 30-day BRT civil window and the existing verified identity, token refresh and shared lease.",
+        "A scheduled read is private, idempotent and attributable to the scheduler; new authorization clears prior connection proof.",
+        "Native cron and the exact deployed functions demonstrate a safe empty-owner run without claiming real water arrival or recurrence."
+      ],
+      "evidence": [
+        "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md",
+        "Existing implementation had only owner-triggered reads. Local read-only, token and schedule suites now pass 71 invented-data Node tests. Real PostgreSQL and native publication remain pending."
+      ],
+      "next_action": "Complete exact candidate, database, deployment and bounded empty-owner dispatch gates; then independently verify a real authorized source and later data arrival.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -5445,6 +5465,29 @@
       "candidate_tree": "250f310b4e42e49c272d58bc393a92171215ca90",
       "candidate_checks_passed": 22,
       "runtime_promotion_commit": "8fda51864f2466f1996ce853de2724760889d5a4"
+    },
+    {
+      "id": "PKG-GOOGLE-VAULT-CONFIGURATION-043",
+      "status": "done",
+      "goal": "Complete protected Google hydration server configuration using fixed-purpose Vault access when dashboard secret editing is unavailable.",
+      "task_ids": [
+        "LTS-GOOGLE-VAULT-CONFIGURATION-001"
+      ],
+      "candidate_build": "health-integrated-20261107.126",
+      "public_build": "health-integrated-20261107.126",
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-07",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md",
+      "completed_on": "2026-11-07",
+      "candidate_commit": "fee6b6261dedfc59e2a57618478c42a5f2ec3c60",
+      "candidate_tree": "14e3427c0377c0477c80d59ac05ece24b6d1c74f",
+      "candidate_checks_passed": 17,
+      "runtime_promotion_commit": "c13cb9be8dabee56761b2c21cb31c34500d968e7"
     }
   ],
   "latest_published_release": {
@@ -10393,30 +10436,31 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-07",
-    "source_main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
+    "source_main_commit": "1208fb57a848a8fef95a705035012a36662cb935",
     "runtime_build": "health-integrated-20261107.126",
     "runtime_changed": true,
-    "server_runtime_changed": false,
+    "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 123,
+      "done": 124,
+      "in_progress": 1,
       "blocked_external": 9,
-      "superseded": 2,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "superseded": 2
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "Genuine authenticated review covered all ten app areas, daily/period controls, history filters, forms without submission and weekly/monthly reports.",
-      "Four bounded UX tasks completed with exact candidate22/22, publication gates and authenticated public verification.",
-      "Fresh read-only source/integration checks did not provide attributable evidence closing any of the nine independent original conditions."
+      "Protected Google server preparation is independently delivered in PR507.",
+      "The original nine unmet conditions remain open. Owner Google identity verification was not completed and the previous pending authorization expired.",
+      "One independently executable implementation gap remains: a background reader was missing. Package044 owns its implementation and publication gates."
     ],
     "ux_review": {
-      "area": "startup_and_cross_area_navigation",
-      "mode": "genuine_authenticated_public_app_and_synthetic_responsive_gates",
-      "result": "observed_defects_corrected_published_and_verified"
+      "area": "data_sources_google_hydration",
+      "mode": "existing_authenticated_app_and_native_server_status",
+      "result": "server_ready_to_connect_owner_consent_and_real_reads_pending"
     },
-    "open_dependency_policy": "Nine original source/provider/owner conditions remain independent. Hydration, original source lineage, basal coverage, legacy linking, payload diagnosis, exact historical correction proposal and overall acceptance are not closed by this UI delivery."
+    "open_dependency_policy": "Do not relabel server configuration, an empty scheduler run or an unchanged source snapshot as real hydration delivery or later attributable recurrence."
   },
   "continuity_review_history": [
     {
@@ -11709,6 +11753,33 @@
       },
       "open_dependency_policy": "Nine independent original-source, provider-diagnostic, access and owner-acceptance conditions remain open. Resume on genuine new evidence; do not repeat completed phone checks, original uploads, support messages or reconstruct the historical clinical proposal.",
       "server_runtime_changed": true
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
+      "runtime_build": "health-integrated-20261107.126",
+      "runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 123,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Genuine authenticated review covered all ten app areas, daily/period controls, history filters, forms without submission and weekly/monthly reports.",
+        "Four bounded UX tasks completed with exact candidate22/22, publication gates and authenticated public verification.",
+        "Fresh read-only source/integration checks did not provide attributable evidence closing any of the nine independent original conditions."
+      ],
+      "ux_review": {
+        "area": "startup_and_cross_area_navigation",
+        "mode": "genuine_authenticated_public_app_and_synthetic_responsive_gates",
+        "result": "observed_defects_corrected_published_and_verified"
+      },
+      "open_dependency_policy": "Nine original source/provider/owner conditions remain independent. Hydration, original source lineage, basal coverage, legacy linking, payload diagnosis, exact historical correction proposal and overall acceptance are not closed by this UI delivery."
     },
     {
       "reviewed_on": "2026-11-07",

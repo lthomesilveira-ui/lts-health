@@ -1,0 +1,25 @@
+# Google hydration background reader — 2026-11-07
+
+## Problem and behavior
+
+The protected Google connection could read after an app action, but had no server agenda. Package044 adds an hourly server-only reader for already authorized connections. It does not require opening the app, add a permanent invocation credential, widen Google scopes or promote an unreviewed source into canonical water.
+
+## Boundaries
+
+- A private database job creates a cryptographically random single-use ticket, expires it after five minutes, and retains its raw value temporarily only in a private column denied even to the service role. Separate cron transactions issue the ticket at minute35 and dispatch it at36. Private synchronous HTTP keeps it out of the shared pg_net queue; only its hash and aggregate dispatch outcome remain after sending.
+- The endpoint rejects browser origins and accepts only a bounded JSON tick. It cannot accept an owner ID, date range or source mapping.
+- The service selects at most two connected, due, lease-free owners. Successful manual reads and failed scheduled attempts both enforce a50-minute backoff.
+- The fixed window contains today in São Paulo plus the previous29civil days. Original source offsets remain unchanged.
+- Manual and scheduled paths share encrypted owner-bound tokens, verified Health identity, token refresh, complete pagination, source validation and a two-minute transaction lease.
+- Scheduled snapshots carry a private trigger marker and remain idempotent. A new authorization generation clears previous scheduled connection proof, preserving retained source/clinical history.
+- Installation is dormant. Activation requires exact runtime deployment and a safe empty-owner dispatch. A successful empty run proves engineering only; real source arrival, canonical reconciliation and later attributable recurrence remain separate.
+
+## Validation status
+
+71 local invented-data Node tests passed. The added disposable PostgreSQL tests use a real PostgreSQL17 database and pgcrypto, with explicit synthetic cron/HTTP transport stand-ins. Native migration, exact function readback, live ACL checks and dispatch are still pending. No provider token, raw ticket, personal health observation or owner identifier is included here.
+
+The first PostgreSQL run42417604410 passed20/22 tests. Two fixture assertions failed: separate clock reads exceeded the strict five-minute synthetic expired-ticket interval by microseconds; a one-column SQL function alias aggregated its UUID as a scalar. The fixture now uses one captured clock and an explicit named JSON object. Production timing constraints and the HTTP candidate contract remain unchanged. The failed first run is retained rather than counted as passed.
+
+Native preflight found that pg_net0.20.4 transport objects belong to the managed administrator, grant PUBLIC access, and cannot safely be tightened by the project role. No ineffective revocation was applied. The revised path uses the supported http1.6 extension inside a private schema, with explicit120s/5s request/connect timeouts and two independently committed cron phases. It changes no existing Polar/pg_net ACL or job. The transport stands in the PostgreSQL fixture now model this private synchronous boundary and ticket consumption. The prior22/22 database result belongs to the earlier transport candidate; revised gates are pending.
+
+The first private-transport run42418468595 passed23/24 database tests. Its second malformed-response case tried to issue another ticket while the first was still unconsumed and valid after the synthetic transport subtransaction rolled back. The two independent malformed-response fixtures now start from separate fresh schedules. The production five-minute refusal and dispatch logic are unchanged. This failed run is retained separately.
