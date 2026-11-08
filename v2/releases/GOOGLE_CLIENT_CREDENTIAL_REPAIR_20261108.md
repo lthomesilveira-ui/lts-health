@@ -8,15 +8,16 @@ Administrative attempts did not confirm a completed deletion, creation or protec
 
 The existing internal scheduled endpoint gains configuration_check under its unchanged, consumed, five-minute single-use ticket. Method, Origin, content-type, size, replay and ticket checks precede it. The private body accepts only one expected public client ID and one or two four-character masked suffixes. Complete credentials, owner IDs, source windows, real grants and arbitrary destinations are rejected. Configuration lookup does not select an owner or read hydration.
 
-The response reports only configuration booleans and a closed provider-error classification. Matching hints may run one fixed HTTPS POST to Google with an explicitly invented authorization code, no redirects and a bounded timeout/body. No genuine code or token is obtained from the caller or store. Responses, exceptions, tokens, client ID and secret values are never returned or logged. An unexpected success cannot become a connection; canonical_updated and connection_verified remain false. An invalid_grant result is only controlled-probe evidence, not proof of a real connection or recovered water.
+The response reports only configuration booleans and a closed provider-error classification. The expected configured client with a nonempty secret may run one fixed HTTPS POST to Google with an explicitly invented authorization code, no redirects and a bounded timeout/body. No genuine code or token is obtained from the caller or store. Responses, exceptions, tokens, client ID and secret values are never returned or logged. An unexpected success cannot become a connection; canonical_updated and connection_verified remain false. An invalid_grant result is only controlled-probe evidence, not proof of a real connection or recovered water.
 
 Normal cron continues to send tick and retain its existing selection, range and aggregate behavior. No schema, scheduler, permanent key, OAuth setting, encryption key, frontend or clinical/source record changes. Only the scheduled backend is a deployment candidate; callback7 and connection8 stay unchanged.
 
 ## Validation and remaining gates
 
--100 synthetic Node tests passed locally, covering provider bounds/privacy, exact payloads, ticket denial/replay, no owner lookup or health read, and existing connection/reader behavior.
-- Exact candidate CI, normal merge, scheduled-function deployment/readback and native protected check are pending; do not claim them completed.
-- After reconciliation, take only the supported next action. No further credential mutation is justified by an ambiguous mask alone. A genuine owner connection and all nine original source/hydration conditions remain independent.
+- PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge6d710a1a1cdee3e799c0de510cf66d31085c1d29 preserved the exact candidate tree. Scheduled4 is ACTIVE with exact8-file/mode readback.
+- Native current/prior masked comparisons match the configured client ID but neither masked credential set. Both return provider_attempted=false; they do not establish current Google authentication failure. No raw values or tickets were returned; each invocation ticket was cleared. Public method/auth/origin probes pass and frontend128 bytes are unchanged.
+- A follow-up with101 locally passing synthetic Node tests decouples provider evidence from contradictory masked metadata. It still requires the expected configured client, a nonempty secret and the existing consumed ticket, and can establish neither connection nor hydration. Exact follow-up CI, native deployment/readback and direct provider probe are pending.
+- After reconciliation, take only the supported next action. Masked disagreement is reported independently and does not prevent direct provider evidence. No further credential mutation is justified by an ambiguous mask alone. A genuine owner connection and all nine original source/hydration conditions remain independent.
 
 ## Primary documentation
 

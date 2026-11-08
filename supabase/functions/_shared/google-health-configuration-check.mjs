@@ -34,7 +34,9 @@ export async function checkGoogleHealthConfiguration(config,hints,{fetcher=fetch
     client_id_matches:config.clientId===hints.client_id,
     secret_matches_listed_suffix:typeof config.clientSecret==='string'&&config.clientSecret.length>=16&&hints.secret_suffixes.some(value=>config.clientSecret.endsWith(value)),
     provider_attempted:false,provider_status:null,provider_error:null,connection_verified:false,canonical_updated:false};
-  if(!result.client_id_matches||!result.secret_matches_listed_suffix)return result;
+  // Report masked-metadata disagreement without treating it as authentication
+  // evidence. The provider can still evaluate the actual configured credential.
+  if(!result.client_id_matches||!result.client_secret_present)return result;
   result.provider_attempted=true;
   try{
     const response=await fetcher('https://oauth2.googleapis.com/token',{method:'POST',redirect:'error',signal:AbortSignal.timeout(8000),

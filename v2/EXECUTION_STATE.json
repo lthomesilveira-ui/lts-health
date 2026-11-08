@@ -65,14 +65,15 @@
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
     "pending_gates": [
-      "Validate and publish the ticket-protected server configuration comparison and invented-grant probe",
-      "Reconcile actual server configuration against current provider metadata before any further credential mutation",
+      "Publish and verify the protected actual-provider probe even when masked UI metadata disagrees",
+      "Reconcile direct provider evidence before another credential mutation or fresh owner connection",
       "A genuine owner connection and hydration remain separate from the configuration check"
     ],
     "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
     "owner_specific_approval_received": true,
     "candidate_backend_function": "health-google-scheduled",
-    "candidate_backend_change": "Private configuration_check action under existing consumed single-use ticket; normal tick and cron unchanged"
+    "candidate_backend_change": "Preserve masked comparison as evidence and run the bounded invented-grant probe for the expected configured client even if masks disagree",
+    "last_published_diagnostic_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -3822,9 +3823,10 @@
       "evidence": [
         "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
         "The owner specifically approved this concrete replacement. Initial execution reported no credential mutation; a bounded public-data transfer test succeeded but ended before real deletion/creation/save. A single direct execution is active.",
-        "Administrative execution ended without confirming deletion/creation/save; current reported masked metadata no longer matches the approved older target. No further rotation is allowed on that inconsistent evidence. A protected server-only comparison and invented-grant probe is now under validation."
+        "Administrative execution ended without confirming deletion/creation/save; current reported masked metadata no longer matches the approved older target. No further rotation is allowed on that inconsistent evidence. A protected server-only comparison and invented-grant probe is now under validation.",
+        "PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge and scheduled4 exact8-file native readback. Native comparisons match client ID but neither current nor prior masked secret metadata; provider_attempted=false, so they do not establish current Google credential rejection. A101-test follow-up permits a direct bounded provider probe independent of masked metadata."
       ],
-      "next_action": "Validate and publish the protected server check, then inspect actual configured-client and current masked-suffix matches without exposing values. Reconcile results before another mutation or fresh owner connection."
+      "next_action": "Complete exact follow-up validation and native provider probe; do not infer current credential validity from contradictory masked metadata, request another owner grant or rotate another key before that evidence."
     }
   ],
   "package_history": [
@@ -10778,7 +10780,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "c5f431c6f32d7276b301f9c7ca1dcc1d8df268e7",
+    "source_main_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
     "runtime_changed": true,
@@ -10795,10 +10797,10 @@
     },
     "executable_task_count": 1,
     "evidence": [
-      "Specific approval remains valid, but the original older target no longer matches current reported provider metadata; no further key mutation is authorized on that inconsistency.",
-      "All administrative runs are terminal; no protected credential save is confirmed. The latest final report disagrees with prior progress/metadata and is not proof of a completed replacement.",
-      "A server-only existing-ticket configuration comparison and invented-grant probe is in validation;100 synthetic Node tests pass locally.",
-      "All nine original hydration/source conditions remain independently open; no real connection or water recovery is claimed."
+      "PR512 exact17/17 and100 Node/24 PostgreSQL passed; scheduled4 deployed and all8 files/mode read back exactly. Frontend128 bytes unchanged.",
+      "Native current/prior masked comparisons return client_id_matches=true and suffix match=false, with provider_attempted=false. These are not direct provider validation or a completed credential repair.",
+      "A101-test follow-up retains masked disagreement but permits one private actual-configured-credential invented-grant probe; no key or health record changes.",
+      "All nine original conditions and the operational repair remain open; no new genuine owner login is requested yet."
     ],
     "open_dependency_policy": "Do not rotate a different key, repeat remote UI loops or request another owner connection until actual server configuration is reconciled. Publish and verify only the protected check; preserve client ID, credentials, scopes, encryption, cron and clinical/source records."
   },
@@ -12411,36 +12413,32 @@
     "resumption_policy": "explicit_request_to_reenable_the_automation_required; ordinary_interactive_work_does_not_resume_it"
   },
   "last_verified_server_preparation": {
-    "kind": "google_callback_failure_diagnostics",
+    "kind": "google_client_configuration_comparison",
     "verified_on": "2026-11-08",
-    "main_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
-    "candidate_commit": "a2a615bbf9c0a596660cdb5cafe2c97a74d06f76",
-    "tested_tree": "cb6f5004c0d03a60c9266730f70939c709c10a40",
+    "main_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29",
+    "candidate_commit": "c347cc79f6ba6945c053fa530c7e7461585dffb1",
+    "tested_tree": "946202a32f04917f653b0dc0381c5d26ed0679d0",
     "candidate_workflows_passed": 17,
-    "node_tests_passed": 90,
+    "node_tests_passed": 100,
     "postgresql_tests_passed": 24,
     "edge_functions": [
       {
-        "name": "health-google-callback",
-        "version": 7,
-        "verify_jwt": false,
-        "exact_files_verified": 6
-      },
-      {
-        "name": "health-google-connection",
-        "version": 8,
-        "verify_jwt": true,
-        "exact_files_verified": 6
-      },
-      {
         "name": "health-google-scheduled",
-        "version": 3,
+        "version": 4,
         "verify_jwt": false,
-        "exact_files_verified": 7
+        "exact_files_verified": 8
       }
     ],
+    "native_comparison": {
+      "client_id_matches": true,
+      "current_masked_suffix_matches": false,
+      "prior_masked_suffix_matches": false,
+      "provider_attempted": false,
+      "connection_verified": false,
+      "canonical_updated": false
+    },
     "real_hydration_verified": false,
-    "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md"
+    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
   },
   "server_preparation_history": [
     {
@@ -12541,6 +12539,38 @@
       "real_hydration_read_verified": false,
       "canonical_water_updated": false,
       "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
+    },
+    {
+      "kind": "google_callback_failure_diagnostics",
+      "verified_on": "2026-11-08",
+      "main_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
+      "candidate_commit": "a2a615bbf9c0a596660cdb5cafe2c97a74d06f76",
+      "tested_tree": "cb6f5004c0d03a60c9266730f70939c709c10a40",
+      "candidate_workflows_passed": 17,
+      "node_tests_passed": 90,
+      "postgresql_tests_passed": 24,
+      "edge_functions": [
+        {
+          "name": "health-google-callback",
+          "version": 7,
+          "verify_jwt": false,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-connection",
+          "version": 8,
+          "verify_jwt": true,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-scheduled",
+          "version": 3,
+          "verify_jwt": false,
+          "exact_files_verified": 7
+        }
+      ],
+      "real_hydration_verified": false,
+      "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md"
     }
   ]
 }
