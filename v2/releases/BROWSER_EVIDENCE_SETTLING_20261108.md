@@ -2,7 +2,7 @@
 
 PR514 candidate23f31c050e0b5024df69ef22e5ed2c50d2f80fd0 passed18/18 without reruns. The affected laboratory run42518293599/job128846021460 and visual training run42518293706/jobs128846021358,128846021766 all passed. The remaining exact-candidate preview and PDF checks also finished successfully before merge.
 
-An independent non-mutating merge-tree check against metadata-only main9029446bf61479a2509d7150e0bc007e9ca08b33 produced exactlya3bf34b9821118f4e1f851fce09c173ab57b5b2d. Normal merge2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad preserved that tree. No application, backend, credential or clinical/source deployment occurred. Automatic unchanged-tree postmerge checks are18/20 with two pending and no failures at this checkpoint; this is not a claim of complete publication checks.
+An independent non-mutating merge-tree check against metadata-only main9029446bf61479a2509d7150e0bc007e9ca08b33 produced exactlya3bf34b9821118f4e1f851fce09c173ab57b5b2d. Normal merge2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad preserved that tree. No application, backend, credential or clinical/source deployment occurred. All20/20 automatic unchanged-tree postmerge checks completed successfully without reruns. The candidate and publication validations are now complete.
 
 The observed native-control verification failure is repaired. Earlier failures below stay preserved and are not retroactively counted as successful. The credential operation and all nine original source/hydration conditions remain open.
 
