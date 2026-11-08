@@ -4,7 +4,7 @@ let calls=[],response={configured:true,connected:true,last_attempt_at:new Date()
 const client={functions:{async invoke(name,args){calls.push({name,...args.body});return {data:args.body.action==='sync'?{synced:true}:response,error:null};}}};
 globalThis.window={supabase:{createClient:()=>client}};
 const {state}=await import('./src/core.js');
-const {checkPolarConnection,resetPolarConnection}=await import('./src/polar-connection.js');
+const {checkPolarConnection,resetPolarConnection,renderConnections}=await import('./src/polar-connection.js');
 const {checkAutoExportConnection,resetAutoExportConnection}=await import('./src/health-auto-export-connection.js');
 const {actOnGoogleHealth,checkGoogleHealthConnection,renderGoogleHealthConnection,resetGoogleHealthConnection,googleHealthReadWindow}=await import('./src/google-health-connection.js');
 await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0,'absent owner does not call integrations');
@@ -13,6 +13,20 @@ await checkPolarConnection();assert.deepEqual(calls.map(c=>c.action),['status'],
 calls=[];await checkPolarConnection({syncOnOpen:true});assert.deepEqual(calls.map(c=>c.action),['status'],'recent connection does not sync again');
 calls=[];response={configured:true,connected:false};await checkPolarConnection({syncOnOpen:true});assert.deepEqual(calls.map(c=>c.action),['status'],'disconnected account never initiates access or sync');
 calls=[];response={configured:true,connected:true,last_attempt_at:'2000-01-01T00:00:00Z'};await checkPolarConnection({syncOnOpen:true});assert.deepEqual(calls.map(c=>c.action),['status','sync','status']);assert.equal(calls[1].trigger,'app_open','existing production refresh behavior retained, not expanded');
+// A timestamp near UTC midnight must use the same São Paulo civil date as
+// the already-localized automatic-update timestamp on the same actual card.
+for(const [instant,expected] of [
+  ['2030-02-12T02:59:59Z','11/02/2030'],
+  ['2030-02-12T03:00:00Z','12/02/2030'],
+  ['2030-01-01T02:30:00Z','31/12/2029'],
+  ['2028-03-01T02:59:59Z','29/02/2028'],
+  ['2030-02-11T23:59:59-03:00','11/02/2030'],
+  ['not-a-timestamp','—']
+]){
+  state.polarConnection={status:'ready',configured:true,connected:true,last_sync_at:instant};
+  assert.ok(renderConnections().includes(`Última atualização concluída: ${expected}.`),'actual connection card preserves the local update date');
+}
+console.log('Polar connection card uses São Paulo civil dates across midnight, year and leap-day boundaries; invalid timestamps do not break rendering.');
 calls=[];response={configured:false,received:false};await checkAutoExportConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'receiver check never creates or rotates a credential');
 resetPolarConnection();resetAutoExportConnection();state.session=null;calls=[];await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0);
 console.log('Production integration status reads, absent-owner and disconnected boundaries, existing bounded Polar refresh and no implicit credential creation passed.');

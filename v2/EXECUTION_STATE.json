@@ -50,33 +50,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-CONNECTION-RECOVERY-045",
-    "status": "done",
-    "goal": "Include current-day water in the manual 30-day Google read and return a failed browser authorization to a usable, private recovery entry.",
+    "id": "PKG-POLAR-LOCAL-UPDATE-DATE-046",
+    "status": "in_progress",
+    "goal": "Show the Polar synchronization timestamp on the correct São Paulo civil day in the existing connection card.",
     "task_ids": [
-      "LTS-GOOGLE-READ-TODAY-001",
-      "LTS-GOOGLE-CALLBACK-RECOVERY-001"
+      "LTS-POLAR-UPDATE-DATE-001"
     ],
-    "candidate_build": "health-integrated-20261107.127",
+    "candidate_build": "health-integrated-20261108.128",
     "public_build": "health-integrated-20261107.127",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-07",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md",
-    "completed_on": "2026-11-07",
-    "candidate_commit": "5f4ab5910be121262a77a00576324b4f67208c9e",
-    "candidate_tree": "74a710823a96fad6dcf430a71c016f8c2cc1a68c",
-    "candidate_checks_passed": 21,
-    "publication_checks_passed": 23,
-    "pending_publication_repetitions": [
-      42433150388,
-      42433150442
+    "pending_gates": [
+      "Exact candidate regression workflows",
+      "Published .128 bytes and genuine local-date connection card"
     ],
-    "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488"
+    "evidence_document": "v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261107.127",
@@ -3748,6 +3740,25 @@
         "Read-only native counts remain zero connected Google accounts, zero hydration reads and zero valid OAuth states. The prior DECLINED login is respected; all nine independent source/provider/acceptance conditions remain open and scheduled development messages stay disabled."
       ],
       "next_action": "Preserve the verified published behavior. Real Google consent, hydration, provenance and recurrence remain independent original-source conditions.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-POLAR-UPDATE-DATE-001",
+      "area": "connection UX",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "The Polar update timestamp was displayed as its UTC date while the adjacent automatic timestamp used São Paulo time.",
+      "acceptance": [
+        "The actual connection card uses the São Paulo civil date for a source timestamp, including midnight/year/leap-day boundaries.",
+        "Unknown timestamps do not break rendering; source times, records, synchronization and authorization remain unchanged.",
+        "The genuine published card has a coherent local update date."
+      ],
+      "evidence": [
+        "A genuine authenticated card showed the next UTC date beside the previous São Paulo day for automatic synchronization. The renderer used fmtDate directly on last_sync_at.",
+        "The actual renderer now passes independent fixed civil-date cases, including explicit UTC offsets and invalid input."
+      ],
+      "next_action": "Complete exact candidate and published app verification.",
       "blocker": null
     }
   ],
@@ -10587,36 +10598,28 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-07",
-    "source_main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "source_main_commit": "254a1cc5cac930b538c5cc1709efd552492bd262",
     "runtime_build": "health-integrated-20261107.127",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261108.128",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
       "done": 127,
       "blocked_external": 9,
       "superseded": 2,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "PR509 exact candidate 5f4ab5910be121262a77a00576324b4f67208c9e and tree 74a710823a96fad6dcf430a71c016f8c2cc1a68c passed all21 candidate workflows, including75 Node and24 PostgreSQL tests. The two failed browser-fixture revisions remain documented; no assertion was removed.",
-      "The exact Chromium/WebKit320/393/1440 recovery artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was inspected. Independent civil-calendar cases and the actual reader prove current-day inclusion without source writes.",
-      "Normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserved the tested tree. Deploy42433150422, Pages42433184986/42433184989, protected Real Auth42433150503 and Google reader42433150477 passed. Broad unchanged-tree publication repetitions remain separately enumerated until completed.",
-      "The public recovery HTML, browser connection module and production index returned200 and exactly matched the merged source before callback activation. Native readback verified callback6/connection7/scheduled2, JWT false/true/false and all6/6/7 reachable files without differences.",
-      "Live probes verified HTML callback303 to the fixed recovery entry, JSON400/invalid_callback, unauthenticated connection401, ticketless scheduled401 and browser-Origin scheduled403. No real OAuth grant or health write was created.",
-      "The genuine Cloud Browser followed the real deployed callback to the plain-Portuguese recovery page, discarded the query, and used Voltar ao Health to restore the existing authenticated Dados & fontes session. The DOM build was exactly health-integrated-20261107.127; Google remained ready to connect and water remained received only through13/10/2026.",
-      "Read-only native counts remain zero connected Google accounts, zero hydration reads and zero valid OAuth states. The prior DECLINED login is respected; all nine independent source/provider/acceptance conditions remain open and scheduled development messages stay disabled."
-    ],
-    "ux_review": {
-      "area": "data_sources_google_return",
-      "mode": "real_public_callback_and_existing_authenticated_session",
-      "result": "two_observed_defects_delivered_with_original_nine_conditions_preserved"
-    },
-    "open_dependency_policy": "No repeated login after DECLINED; no old phone checks, manual water entry, repeated exports, inferred source mapping or reconstruction of the original fifteen-record proposal. Continue only on genuinely available evidence. Scheduled development messages remain disabled."
+      "Package045 is delivered and verified on the public exact.127 build. Original nine source/authorization/acceptance conditions stay independently open.",
+      "Genuine Polar card inspection found a separate UTC versus São Paulo date disagreement. Package046 owns only that bounded display correction.",
+      "Health and Wealth scheduled development continuations remain disabled; interactive execution is authorized.",
+      "Publication record conflicts were resolved by retaining the complete verified package045 main history and adding only the independent package046 task and bounded date display change. No original task was reopened or removed."
+    ]
   },
   "continuity_review_history": [
     {
@@ -12079,6 +12082,31 @@
         "result": "two_observed_defects_delivered_with_original_nine_conditions_preserved"
       },
       "open_dependency_policy": "No repeated login after DECLINED; no old phone checks, manual water entry, repeated exports, inferred source mapping or reconstruction of the original fifteen-record proposal. Continue only on genuinely available evidence. Scheduled development messages remain disabled."
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "254a1cc5cac930b538c5cc1709efd552492bd262",
+      "runtime_build": "health-integrated-20261107.127",
+      "candidate_build": "health-integrated-20261108.128",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 127,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2,
+        "in_progress": 1
+      },
+      "executable_task_count": 1,
+      "evidence": [
+        "Package045 is delivered and verified on the public exact.127 build. Original nine source/authorization/acceptance conditions stay independently open.",
+        "Genuine Polar card inspection found a separate UTC versus São Paulo date disagreement. Package046 owns only that bounded display correction.",
+        "Health and Wealth scheduled development continuations remain disabled; interactive execution is authorized.",
+        "Publication record conflicts were resolved by retaining the complete verified package045 main history and adding only the independent package046 task and bounded date display change. No original task was reopened or removed."
+      ]
     }
   ],
   "continuation_automation": {

@@ -1,3 +1,9 @@
+## 2026-11-07 — Em execução: data da atualização Polar em São Paulo, .128
+
+A sessão real da .127 mostrava 08/11 na última atualização Polar e 07/11, 21:17:05 no horário automático de São Paulo. O pacote046/LTS-POLAR-UPDATE-DATE-001 converte apenas a apresentação desse instante para o dia civil de São Paulo. O horário original, os dados de saúde, a autorização e a agenda permanecem preservados. O renderizador real passou expectativas independentes de meia-noite, ano, bissexto, offset explícito e entrada inválida; faltam os gates da candidata e a conferência publicada.
+
+Os conflitos documentais da PR510 foram resolvidos preservando integralmente o registro verificado do pacote045 em main e acrescentando apenas a nova tarefa046. As duas correções .127 estão entregues; a terceira ainda não está encerrada. Fila127done,1in_progress,9blocked_external,2accepted_gap,2superseded. As nove condições originais permanecem independentes, e as mensagens de continuar Health/Wealth seguem desativadas. Detalhes: v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md.
+
 ## 2026-11-07 — Concluído: consulta inclui hoje e retorno da conexão, .127
 
 O pacote045 encerrou duas falhas de funcionamento: a consulta manual agora inclui hoje nos30dias civis de São Paulo; uma autorização Google inválida ou expirada oferece uma mensagem em português e Voltar ao Health. A sessão autenticada existente foi restaurada pelo retorno público real, na versão exata. Água real, origem e recorrência continuam com critérios próprios.
