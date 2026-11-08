@@ -41,4 +41,5 @@ async function resolveConfig(c){
     return checked(await db.rpc('health_google_server_configuration').abortSignal(AbortSignal.timeout(5000)));
   });
 }
-export const googleHealthHandlers=createGoogleHealthHandlers({config:googleHealthConfig,authenticate,storeFactory,resolveConfig});
+export const googleHealthHandlers=createGoogleHealthHandlers({config:googleHealthConfig,authenticate,storeFactory,resolveConfig,
+  reportCallbackFailure:event=>console.warn(JSON.stringify(event))});

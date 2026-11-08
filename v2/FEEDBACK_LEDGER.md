@@ -1,3 +1,7 @@
+## Google callback diagnosis in progress — 2026-11-08
+
+A genuine owner authorization code returned within its pending-state lifetime, but no connection was saved. Package047 preserves a safe callback stage/reason without changing credentials, scopes, records or frontend. Exact CI and backend publication are pending. None of the nine original conditions is closed; no repeat owner login yet. See `releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md` and `EXECUTION_STATE.json`.
+
 ## 2026-11-08 — Concluído .128: data Polar em São Paulo
 
 O pacote046/LTS-POLAR-UPDATE-DATE-001 está concluído. A atualização Polar agora mostra o dia civil de São Paulo e concorda com o horário automático no mesmo cartão. O instante original, os registros e as integrações permanecem preservados. A sessão genuína já autenticada foi recarregada na versão exata.128 e a correção foi conferida visualmente.

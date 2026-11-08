@@ -37,7 +37,7 @@ class MemoryStore{
   }
   async release(id,generation,lease,reason){const row=this.rows.get(id);if(row?.generation===generation&&row.lease_token===lease){row.lease_token=null;row.last_error=reason;}}
 }
-function fixture({enabled=true,fetcher,authenticate,resolveConfig}={}){
+function fixture({enabled=true,fetcher,authenticate,resolveConfig,reportCallbackFailure}={}){
   let clock=Date.parse('2030-02-11T16:00:00Z');const now=()=>clock,store=new MemoryStore(now),calls=[],triggers=[];
   const transport=async(url,init)=>{
     calls.push({url:String(url),init});
@@ -47,13 +47,72 @@ function fixture({enabled=true,fetcher,authenticate,resolveConfig}={}){
     return response({dataPoints:[point]});
   };
   const auth=authenticate||(async req=>req.headers.get('Authorization')==='Bearer synthetic-owner'?{id:owner,is_anonymous:false}:req.headers.get('Authorization')==='Bearer synthetic-other'?{id:other,is_anonymous:false}:null);
-  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:(c,options)=>{triggers.push(options?.trigger??null);return store;},resolveConfig,fetcher:transport,now});
+  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:(c,options)=>{triggers.push(options?.trigger??null);return store;},resolveConfig,fetcher:transport,now,reportCallbackFailure});
   const post=(body,auth='synthetic-owner',origin='https://lthomesilveira-ui.github.io')=>handlers.connection(new Request(config.url+'/functions/v1/health-google-connection',{method:'POST',headers:{Authorization:`Bearer ${auth}`,Origin:origin},body:typeof body==='string'?body:JSON.stringify(body)}));
   const authorize=async()=>{const r=await post({action:'authorize'});assert.equal(r.status,200);return new URL((await r.json()).authorization_url);};
   const callback=(url,extra='')=>handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),code:'synthetic-authorization-code'})+extra));
   return {handlers,store,calls,triggers,post,authorize,callback,advance:ms=>{clock+=ms;}};
 }
 async function connected(f){const url=await f.authorize();const r=await f.callback(url);assert.equal(r.status,302);return url;}
+
+test('consumed callbacks retain only closed-schema token failure diagnostics and preserve the API response',async t=>{
+  const cases=[
+    {label:'client rejection',body:{error:'invalid_client',error_description:'synthetic-private-provider-text',access_token:'synthetic-private-token'},status:401,detail:{token_problem:'provider_rejected',provider_status:401,provider_error:'invalid_client'}},
+    {label:'grant rejection',body:{error:'invalid_grant'},status:400,detail:{token_problem:'provider_rejected',provider_status:400,provider_error:'invalid_grant'}},
+    {label:'unknown provider error',body:{error:'synthetic-private-error',error_description:'synthetic-private-provider-text'},status:400,detail:{token_problem:'provider_rejected',provider_status:400,provider_error:'unclassified'}},
+    {label:'malformed provider failure',raw:'synthetic-private-provider-text',status:500,detail:{token_problem:'provider_rejected',provider_status:500,provider_error:'unclassified'}},
+    {label:'oversized provider failure',raw:'private'.repeat(6000),status:400,detail:{token_problem:'provider_rejected',provider_status:400,provider_error:'unclassified'}},
+    {label:'malformed token JSON',raw:'synthetic-private-provider-text',detail:{token_problem:'invalid_json'}},
+    {label:'missing access token',body:{...token,access_token:null},detail:{token_problem:'invalid_access_token'}},
+    {label:'missing refresh token',body:{...token,refresh_token:null},detail:{token_problem:'missing_refresh_token'}},
+    {label:'invalid type',body:{...token,token_type:'synthetic-private-type'},detail:{token_problem:'invalid_token_type'}},
+    {label:'invalid lifetime',body:{...token,expires_in:0},detail:{token_problem:'invalid_token_lifetime'}},
+    {label:'scope mismatch',body:{...token,scope:'synthetic-private-scope'},detail:{token_problem:'scope_mismatch'}},
+    {label:'invalid refresh lifetime',body:{...token,refresh_token_expires_in:0},detail:{token_problem:'invalid_refresh_lifetime'}}
+  ];
+  for(const c of cases)await t.test(c.label,async()=>{
+    const events=[],f=fixture({reportCallbackFailure:event=>events.push(event),fetcher:async()=>c.raw!==undefined?new Response(c.raw,{status:c.status??200}):response(c.body,c.status??200)});
+    const url=await f.authorize(),r=await f.callback(url);
+    assert.equal(r.status,502);assert.deepEqual(await r.json(),{error:'authorization_expired'});
+    assert.deepEqual(events,[{event:'google_health_callback_failure',stage:'token_exchange',code:'authorization_expired',...c.detail}]);
+    const serialized=JSON.stringify(events);
+    for(const canary of [owner,config.clientSecret,config.encryptionKey,url.searchParams.get('state'),'synthetic-authorization-code','synthetic-private','synthetic-access-only','synthetic-refresh-only'])assert.ok(!serialized.includes(canary));
+    assert.equal(f.store.rows.get(owner).status,'unlinked');assert.equal(f.store.reads.length,0);assert.equal(f.calls.length,1);
+    assert.equal((await f.callback(url)).status,400);assert.equal(events.length,1);assert.equal(f.calls.length,1);
+  });
+});
+test('diagnostics distinguish consumed-state decryption, identity validation and save failures without exposing exceptions',async()=>{
+  const events=[],reportCallbackFailure=event=>events.push(event);
+  const decrypt=fixture({reportCallbackFailure}),url=await decrypt.authorize();
+  decrypt.store.states.get(await digest(url.searchParams.get('state'))).payload_encrypted='synthetic-private-corrupt-state';
+  assert.equal((await decrypt.callback(url)).status,502);
+  assert.deepEqual(events.pop(),{event:'google_health_callback_failure',stage:'state_decryption',code:'operation_failed'});
+  assert.equal(decrypt.calls.length,0);
+  const identityFailure=fixture({reportCallbackFailure,fetcher:async url=>String(url).includes('/token')?response(token):response({error:{message:'synthetic-private-provider-text'}},403)});
+  assert.equal((await identityFailure.callback(await identityFailure.authorize())).status,502);
+  assert.deepEqual(events.pop(),{event:'google_health_callback_failure',stage:'identity_verification',code:'permission_denied'});
+  for(const throws of [false,true]){
+    const save=fixture({reportCallbackFailure}),pending=await save.authorize();
+    save.store.save=async()=>{if(throws)throw Error('synthetic-private-database-text');return false;};
+    assert.equal((await save.callback(pending)).status,throws?502:409);
+    assert.deepEqual(events.pop(),{event:'google_health_callback_failure',stage:'authorization_save',code:throws?'operation_failed':'authorization_superseded'});
+    assert.equal(save.store.rows.get(owner).status,'unlinked');assert.equal(save.store.reads.length,0);
+  }
+});
+test('diagnostics are quiet for success, random, expired and replayed callbacks; logging cannot change browser recovery',async()=>{
+  const events=[],f=fixture({reportCallbackFailure:event=>events.push(event)});
+  const url=await connected(f);assert.equal(events.length,0);
+  assert.equal((await f.callback(url)).status,400);assert.equal(events.length,0);
+  const expired=await f.authorize();f.advance(601000);
+  assert.equal((await f.callback(expired)).status,400);assert.equal(events.length,0);
+  assert.equal((await f.handlers.callback(new Request(googleHealthCallback(config)))).status,400);assert.equal(events.length,0);
+  let reports=0;const broken=fixture({reportCallbackFailure:()=>{reports++;throw Error('synthetic-private-logger-text');},fetcher:async()=>response({error:'invalid_client',error_description:'synthetic-private-provider-text'},401)});
+  const pending=await broken.authorize(),r=await broken.handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:pending.searchParams.get('state'),code:'synthetic-private-code'}),{headers:{Accept:'text/html'}}));
+  assert.equal(reports,1);assert.equal(r.status,303);assert.equal(await r.text(),'');
+  assert.equal(r.headers.get('Location'),'https://lthomesilveira-ui.github.io/lts-health/v2/google-health-return.html?result=retry');
+  assert.equal(r.headers.get('Referrer-Policy'),'no-referrer');assert.equal(r.headers.get('Cache-Control'),'no-store');
+  assert.equal(broken.store.rows.get(owner).status,'unlinked');assert.equal(broken.store.reads.length,0);
+});
 
 test('a browser callback failure returns a fixed recovery page without forwarding OAuth or input redirects; JSON API errors are preserved',async()=>{
   const f=fixture(),url=googleHealthCallback(config)+'?code=synthetic-private-canary&redirect_uri=https://unrelated.test&error_description=synthetic-provider-canary';
