@@ -6,7 +6,7 @@ globalThis.window={supabase:{createClient:()=>client}};
 const {state}=await import('./src/core.js');
 const {checkPolarConnection,resetPolarConnection}=await import('./src/polar-connection.js');
 const {checkAutoExportConnection,resetAutoExportConnection}=await import('./src/health-auto-export-connection.js');
-const {actOnGoogleHealth,checkGoogleHealthConnection,renderGoogleHealthConnection,resetGoogleHealthConnection}=await import('./src/google-health-connection.js');
+const {actOnGoogleHealth,checkGoogleHealthConnection,renderGoogleHealthConnection,resetGoogleHealthConnection,googleHealthReadWindow}=await import('./src/google-health-connection.js');
 await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0,'absent owner does not call integrations');
 state.session={user:{id:'synthetic-owner'}};
 await checkPolarConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'manual check is read-only');
@@ -38,7 +38,7 @@ client.functions.invoke=async(name,{body})=>{
   }
   if(body.action==='authorize')return {data:{authorization_url:authorizationUrl},error:null};
   if(body.action==='read'){
-    assert.equal((Date.parse(body.to)-Date.parse(body.from))/86400000,29);
+    assert.equal((Date.parse(body.to)-Date.parse(body.from))/86400000,30);
     status={...status,last_attempt_at:'2001-05-04T19:00:00Z',last_read_at:'2001-05-04T19:00:01Z'};
     return {data:{read:true,observations:1,empty:false,canonical_updated:false},error:null};
   }
@@ -95,3 +95,19 @@ await staleCheck;
 assert.equal(renderGoogleHealthConnection(),'');
 assert.deepEqual(googleCalls.map(c=>c.action),['status','read','status','status','status']);
 console.log('Google onboarding: private status, official read-only redirect, one bounded initial water check, and stale session isolation passed.');
+
+// Independent calendar expectations exercise São Paulo midnight, the year
+// boundary and leap day. The provider's upper bound is exclusive.
+for (const [instant, expected] of [
+  ['2030-02-11T16:00:00Z', {from:'2030-01-13',to:'2030-02-12',lastDay:'2030-02-11'}],
+  ['2027-01-01T02:30:00Z', {from:'2026-12-02',to:'2027-01-01',lastDay:'2026-12-31'}],
+  ['2027-01-01T03:00:00Z', {from:'2026-12-03',to:'2027-01-02',lastDay:'2027-01-01'}],
+  ['2028-03-01T02:00:00Z', {from:'2028-01-31',to:'2028-03-01',lastDay:'2028-02-29'}]
+]) assert.deepEqual(googleHealthReadWindow(new Date(instant)), expected);
+const {readGoogleHealthHydration,GOOGLE_HEALTH_NUTRITION_SCOPE}=await import('../supabase/functions/_shared/google-health-reader.mjs');
+const window=googleHealthReadWindow(new Date('2030-02-11T16:00:00Z'));
+const todayRecord={name:'users/synthetic-user/dataTypes/hydration-log/dataPoints/water-today',dataSource:{application:{googleWebClientId:'synthetic-source.apps.googleusercontent.com'}},hydrationLog:{interval:{startTime:'2030-02-11T15:00:00Z',endTime:'2030-02-11T15:00:00Z',startUtcOffset:'-10800s',endUtcOffset:'-10800s'},amountConsumed:{milliliters:321}}};
+const readToday=async to=>readGoogleHealthHydration({...window,to,accessToken:'synthetic-read-only',grantedScopes:GOOGLE_HEALTH_NUTRITION_SCOPE,fetcher:async url=>new Response(JSON.stringify(new URL(url).pathname.endsWith('/identity')?{name:'users/me/identity',healthUserId:'synthetic-user'}:{dataPoints:[todayRecord]}),{headers:{'Content-Type':'application/json'}})});
+assert.equal((await readToday(window.to)).unique_count,1,'a current-day provider record is accepted by the actual reader');
+await assert.rejects(()=>readToday(window.lastDay),e=>e.code==='record_outside_window','the former request excluded precisely this current-day record');
+console.log('Manual Google water read includes today in 30 São Paulo civil days, including midnight/year/leap boundaries; previous exclusion reproduced.');

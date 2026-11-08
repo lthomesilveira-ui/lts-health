@@ -50,29 +50,27 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-BACKGROUND-044",
-    "status": "done",
-    "goal": "Read authorized Google hydration in the background without requiring the app to open, while preserving private source review and separate real recurrence acceptance.",
+    "id": "PKG-GOOGLE-CONNECTION-RECOVERY-045",
+    "status": "in_progress",
+    "goal": "Include current-day water in the manual 30-day Google read and return a failed browser authorization to a usable, private recovery entry.",
     "task_ids": [
-      "LTS-GOOGLE-BACKGROUND-001"
+      "LTS-GOOGLE-READ-TODAY-001",
+      "LTS-GOOGLE-CALLBACK-RECOVERY-001"
     ],
-    "candidate_build": "health-integrated-20261107.126",
+    "candidate_build": "health-integrated-20261107.127",
     "public_build": "health-integrated-20261107.126",
     "runtime_changed": true,
-    "frontend_runtime_changed": false,
+    "frontend_runtime_changed": true,
     "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-07",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md",
-    "completed_on": "2026-11-07",
-    "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
-    "candidate_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
-    "candidate_checks_passed": 17,
-    "publication_checks_passed": 21,
-    "runtime_promotion_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
-    "native_migration_version": "20261107223447"
+    "pending_gates": [
+      "Exact candidate browser and regression workflows",
+      "Published static recovery entry and exact callback dependency readback",
+      "Existing authenticated app return without initiating a new OAuth grant"
+    ],
+    "evidence_document": "v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261107.126",
@@ -1915,10 +1913,11 @@
         "Health Sync version, permanent license and the disabled historical-only setting were supplied. Successful status and permissions do not establish that a matching hydration request returned records or that an Apple Health write occurred.",
         "The latest official support reply repeats earlier proposed steps without supplying the effective query, source family, time window, result or write outcome. Completed account alignment, reports and resynchronization must not be repeated on that basis.",
         "The owner explicitly rejects manual water re-entry after purchasing the bridge apps. Automatic consolidation of existing MyFitnessPal and Google Health records remains required; manual entry is not an accepted gap or resolution.",
-        "Current primary Google Health setup and dataPoints.list documentation supports a separate read-only integration using a Google Cloud project and OAuth authorization. The old no-new-project-onboarding statement is superseded. No LTS Google Health client, credentials, consent or successful API call has been configured; the Cloud console was unavailable in the current agent browser and no suitable connected tool was found."
+        "Current primary Google Health setup and dataPoints.list documentation supports a separate read-only integration using a Google Cloud project and OAuth authorization. The old no-new-project-onboarding statement is superseded. No LTS Google Health client, credentials, consent or successful API call has been configured; the Cloud console was unavailable in the current agent browser and no suitable connected tool was found.",
+        "Configuration and schedule delivery are verified separately. Missing source evidence is not an uncompleted basic phone setup. Manual current-day exclusion and raw browser failure recovery are now owned by package045, without closing this original condition."
       ],
       "next_action": "Analyze an actual hydration read/write diagnostic when available: account identity, hydration-log, date window/time zone, source family, pagination, returned records and Apple Health write outcome. Investigate a direct Google Health read-only route as an alternative only with a configured OAuth project and owner consent; retain source identities and avoid counting mirrored water twice. Do not request already supplied native screens, permissions, account reset, reports, date-specific resynchronization, manual re-entry, another purchase or recurring manual export. Keep the other original-source conditions independent.",
-      "blocker": "The effective third-party hydration request/result and native write outcome remain inaccessible. A direct alternative needs its own Google Cloud/OAuth configuration and consent, which are not available in this environment. Root cause and restored transfer remain unproved; native connection and visible source-read consent are already observed.",
+      "blocker": "The private Google alternative is configured and its hourly reader is deployed. Owner Google authentication/consent and a real attributed hydration read remain uncompleted; the observed403cause is not established. Existing native bridge diagnostics and source-write outcome are still unavailable.",
       "phone_status_capture_received": true
     },
     {
@@ -3695,6 +3694,46 @@
         "The existing genuine authenticated public .126 refreshed successfully and showed Google Health ready to connect. Owner consent, real hydration recovery, source reconciliation and later recurrence remain independent and unverified."
       ],
       "next_action": "Preserve the verified private hourly agenda. Investigate the owner-observed Google authorization refusal from actual request metadata in a secure owner interaction; after consent, reconcile a real hydration read and independently verify later attributable recurrence. Do not repeat administrative setup, rotate credentials or infer source delivery from the empty engineering run.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-GOOGLE-READ-TODAY-001",
+      "area": "integrations",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "The manual Google water request excluded today while describing the last30days.",
+      "acceptance": [
+        "The request contains today and the preceding29civil days in São Paulo, with tomorrow as the exclusive end.",
+        "An actual reader fixture accepts a current-day record; the former end date rejects the same record.",
+        "Midnight, year and leap-day boundaries preserve dates, provenance and read-only behavior."
+      ],
+      "evidence": [
+        "The manual reader used today as to, while hydrationReadParameters uses a strict less-than end date. The previous test asserted29 elapsed days and mirrored this exclusion.",
+        "The corrected window passes independent fixed calendar cases and an actual server-reader current-day fixture. No production hydration or clinical record is used."
+      ],
+      "next_action": "Complete exact candidate, publication and authenticated app checks.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-GOOGLE-CALLBACK-RECOVERY-001",
+      "area": "connection UX",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Browser authorization failures exposed a raw JSON error without an application return path.",
+      "acceptance": [
+        "Browser GET failures return a fixed public recovery page with plain Portuguese and a44px return action.",
+        "No state, code, provider text, account identity or user-supplied redirect is carried to the page.",
+        "JSON clients retain original status/body; successful authorization, replay and owner boundaries remain unchanged.",
+        "Chromium/WebKit at320/393/1440verify fixed messages, keyboard return, privacy and no provider calls or writes."
+      ],
+      "evidence": [
+        "An actual deployed callback GET with Accept text/html returned400 application/json and invalid_callback before this repair.",
+        "The candidate uses a303 redirect to a fixed static page because default Supabase domains rewrite served HTML as plain text.75 Node cases and production integration contracts passed locally.",
+        "Local browser launch was unavailable because the runtime browser executable is absent; this is not a passing browser test."
+      ],
+      "next_action": "Complete exact candidate browser checks, publish the page before deploying the callback and verify the real public return.",
       "blocker": null
     }
   ],
@@ -10465,10 +10504,11 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-07",
-    "source_main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+    "source_main_commit": "acad8ba67edeb02a5aae3a680966077ba9adb81a",
     "runtime_build": "health-integrated-20261107.126",
+    "candidate_build": "health-integrated-20261107.127",
     "runtime_changed": true,
-    "frontend_runtime_changed": false,
+    "frontend_runtime_changed": true,
     "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
@@ -10476,23 +10516,15 @@
       "done": 125,
       "blocked_external": 9,
       "superseded": 2,
-      "accepted_gap": 2
+      "accepted_gap": 2,
+      "in_progress": 2
     },
-    "executable_task_count": 0,
+    "executable_task_count": 2,
     "evidence": [
-      "PR508 exact candidate 923658170da615fe42ab115be3f3de61911fdb1e and tree ce811ba85e33f01c0792833cef8fe2f0e0ce398e passed 17/17 workflows; Google reader42418654023 passed71 Node and24 PostgreSQL17.11 tests. Earlier failed fixture runs remain recorded in the release document.",
-      "Normal merge feadc8c180d8e4971bfd6485015ed615267e0bca preserved the exact tested tree. All21 publication workflows passed, including deploy42421364912 and Pages42421401211/42421401221; no frontend asset changed.",
-      "Native migration20261107223447 installed the private http1.6 transport and dormant hourly jobs. RLS, empty search paths, service-only public RPCs and denied transport/raw-ticket access were verified.",
-      "Deployed connection5/callback5/scheduled1 preserve JWT true/false/false and match all6/6/7 reachable source files exactly. Live probes returned401/400/405/401/403 as required.",
-      "The enabled60-minute agenda completed one bounded empty-owner dispatch with HTTP200 and all aggregate counts zero. The ticket was consumed and its temporary raw value cleared; duplicate dispatch returned null.",
-      "The existing genuine authenticated public .126 refreshed successfully and showed Google Health ready to connect. Owner consent, real hydration recovery, source reconciliation and later recurrence remain independent and unverified."
-    ],
-    "ux_review": {
-      "area": "data_sources_google_hydration",
-      "mode": "existing_authenticated_app_refreshed_after_exact_server_publication",
-      "result": "hourly_agenda_verified_app_ready_to_connect_owner_consent_and_real_reads_pending"
-    },
-    "open_dependency_policy": "An empty engineering dispatch does not close any original source, recurrence, lineage, coverage, diagnostic, proposal-recovery or owner-acceptance condition. The prior Google403 cause is not proven by already-correct tester/callback administration."
+      "Two concrete defects reproduced in existing code/deployed callback: manual request excluded today and browser failures returned raw JSON.",
+      "Original nine source/authorization/acceptance conditions remain independently open.",
+      "Health and Wealth scheduled development continuations remain disabled by the later owner instruction; interactive execution is authorized."
+    ]
   },
   "continuity_review_history": [
     {
@@ -11867,15 +11899,47 @@
         "result": "server_ready_to_connect_owner_consent_and_real_reads_pending"
       },
       "open_dependency_policy": "Do not relabel server configuration, an empty scheduler run or an unchanged source snapshot as real hydration delivery or later attributable recurrence."
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+      "runtime_build": "health-integrated-20261107.126",
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 125,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "PR508 exact candidate 923658170da615fe42ab115be3f3de61911fdb1e and tree ce811ba85e33f01c0792833cef8fe2f0e0ce398e passed 17/17 workflows; Google reader42418654023 passed71 Node and24 PostgreSQL17.11 tests. Earlier failed fixture runs remain recorded in the release document.",
+        "Normal merge feadc8c180d8e4971bfd6485015ed615267e0bca preserved the exact tested tree. All21 publication workflows passed, including deploy42421364912 and Pages42421401211/42421401221; no frontend asset changed.",
+        "Native migration20261107223447 installed the private http1.6 transport and dormant hourly jobs. RLS, empty search paths, service-only public RPCs and denied transport/raw-ticket access were verified.",
+        "Deployed connection5/callback5/scheduled1 preserve JWT true/false/false and match all6/6/7 reachable source files exactly. Live probes returned401/400/405/401/403 as required.",
+        "The enabled60-minute agenda completed one bounded empty-owner dispatch with HTTP200 and all aggregate counts zero. The ticket was consumed and its temporary raw value cleared; duplicate dispatch returned null.",
+        "The existing genuine authenticated public .126 refreshed successfully and showed Google Health ready to connect. Owner consent, real hydration recovery, source reconciliation and later recurrence remain independent and unverified."
+      ],
+      "ux_review": {
+        "area": "data_sources_google_hydration",
+        "mode": "existing_authenticated_app_refreshed_after_exact_server_publication",
+        "result": "hourly_agenda_verified_app_ready_to_connect_owner_consent_and_real_reads_pending"
+      },
+      "open_dependency_policy": "An empty engineering dispatch does not close any original source, recurrence, lineage, coverage, diagnostic, proposal-recovery or owner-acceptance condition. The prior Google403 cause is not proven by already-correct tester/callback administration."
     }
   ],
   "continuation_automation": {
-    "status": "enabled",
+    "status": "disabled",
     "cadence": "hourly",
     "timezone": "America/Sao_Paulo",
-    "notification_policy": "material_progress_or_indispensable_owner_action",
+    "notification_policy": "no_scheduled_continuation_messages",
     "private_identity_location": "owner_checkpoint",
-    "authorization": "explicit_owner_successive_round_request_20261030"
+    "authorization": "owner_requested_discontinuation_20261107",
+    "resumption_policy": "explicit_request_to_reenable_the_automation_required; ordinary_interactive_work_does_not_resume_it"
   },
   "last_verified_server_preparation": {
     "kind": "google_health_private_hourly_agenda",

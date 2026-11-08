@@ -13,6 +13,26 @@ const failResponse=e=>{
     ['invalid_json','invalid_action','invalid_callback','invalid_state','invalid_date_window','authorization_denied'].includes(code)?400:502;
   return json({error:code,...(code==='rate_limited'&&Number.isInteger(e.retryAfterSeconds)?{retry_after_seconds:e.retryAfterSeconds}:{})},status);
 };
+function callbackFailure(request,e){
+  const failure=failResponse(e);
+  const html=request.method==='GET'&&(request.headers.get('Accept')||'').split(',').some(part=>{
+    const [type,...parameters]=part.trim().toLowerCase().split(';').map(value=>value.trim());
+    const quality=parameters.find(value=>value.startsWith('q='));
+    return type==='text/html'&&(!quality||(Number(quality.slice(2))>0&&Number(quality.slice(2))<=1));
+  });
+  if(!html)return failure;
+  const code=safeCode(e);
+  const result=['invalid_state','authorization_superseded'].includes(code)?'expired'
+    :code==='authorization_denied'?'not_authorized'
+    :code==='configuration_required'?'unavailable'
+    :['account_changed','identity_not_verified','record_account_mismatch'].includes(code)?'account'
+    :code==='invalid_callback'?'invalid_request':'retry';
+  // Only a fixed public outcome reaches the static recovery page. Never return
+  // OAuth state, code, provider text, account identity or an input redirect.
+  const target=new URL('google-health-return.html',GOOGLE_HEALTH_APP);
+  target.searchParams.set('result',result);
+  return new Response(null,{status:303,headers:{Location:target.href,'Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
+}
 export const googleHealthConfigured=c=>c.enabled===true&&/^https:\/\/[a-z0-9]{20}\.supabase\.co$/.test(c.url||'')&&
   /^\d+-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(c.clientId||'')&&typeof c.clientSecret==='string'&&Boolean(c.clientSecret)&&
   c.clientSecret.length<=8192&&!/[\x00-\x20\x7f]/.test(c.clientSecret)&&validKey(c.encryptionKey);
@@ -134,7 +154,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       const identity=await verifyGoogleHealthIdentity({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:saved.health_user_id??null,fetcher});
       if(!await store.save(saved.user_id,saved.generation,stateHash,identity.healthUserId,await seal(token,c,tokenDomain(saved.user_id))))error('authorization_superseded');
       return new Response(null,{status:302,headers:{Location:GOOGLE_HEALTH_APP+'#dados','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
-    }catch(e){return failResponse(e);}
+    }catch(e){return callbackFailure(request,e);}
   }
   return {connection,callback,scheduledRead,scheduledReady};
 }
