@@ -55,6 +55,40 @@ function fixture({enabled=true,fetcher,authenticate,resolveConfig}={}){
 }
 async function connected(f){const url=await f.authorize();const r=await f.callback(url);assert.equal(r.status,302);return url;}
 
+test('a browser callback failure returns a fixed recovery page without forwarding OAuth or input redirects; JSON API errors are preserved',async()=>{
+  const f=fixture(),url=googleHealthCallback(config)+'?code=synthetic-private-canary&redirect_uri=https://unrelated.test&error_description=synthetic-provider-canary';
+  const browser=await f.handlers.callback(new Request(url,{headers:{Accept:'text/html,application/xhtml+xml'}}));
+  assert.equal(browser.status,303);
+  assert.equal(browser.headers.get('Location'),'https://lthomesilveira-ui.github.io/lts-health/v2/google-health-return.html?result=invalid_request');
+  assert.equal(browser.headers.get('Cache-Control'),'no-store');assert.equal(browser.headers.get('Referrer-Policy'),'no-referrer');
+  assert.equal(await browser.text(),'');assert.equal(f.calls.length,0);assert.equal(f.store.reads.length,0);
+  for(const accept of ['application/json','*/*','text/html;q=0, application/json','text/html;q=invalid']){
+    const api=await f.handlers.callback(new Request(url,{headers:{Accept:accept}}));
+    assert.equal(api.status,400);assert.equal(api.headers.get('Location'),null);assert.deepEqual(await api.json(),{error:'invalid_callback'});
+  }
+});
+test('expired browser authorization recovers without obtaining a token or initiating another authorization',async()=>{
+  const f=fixture(),url=await f.authorize();f.advance(601000);
+  const response=await f.handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),code:'synthetic-private-canary'}),{headers:{Accept:'TEXT/HTML; q=1'}}));
+  assert.equal(response.status,303);assert.match(response.headers.get('Location'),/\?result=expired$/);
+  assert.equal(f.calls.length,0);assert.equal(f.store.rows.get(owner).status,'unlinked');assert.equal(f.store.reads.length,0);
+});
+test('provider denial has a neutral recovery outcome, consumes state once and preserves an existing connection',async()=>{
+  const f=fixture();await connected(f);const existing=f.store.rows.get(owner).tokens_encrypted;
+  const url=await f.authorize(),request=()=>new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),error:'access_denied',error_description:'synthetic-private-canary'}),{headers:{Accept:'text/html'}});
+  const count=f.calls.length,first=await f.handlers.callback(request()),second=await f.handlers.callback(request());
+  assert.match(first.headers.get('Location'),/\?result=not_authorized$/);assert.match(second.headers.get('Location'),/\?result=expired$/);
+  assert.equal(f.store.rows.get(owner).tokens_encrypted,existing);assert.equal(f.store.rows.get(owner).status,'connected');assert.equal(f.calls.length,count);
+});
+test('HTML recovery does not change a successful callback or bypass a disabled configuration',async()=>{
+  const f=fixture(),url=await f.authorize();
+  const response=await f.handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),code:'synthetic-code'}),{headers:{Accept:'text/html'}}));
+  assert.equal(response.status,302);assert.equal(response.headers.get('Location'),'https://lthomesilveira-ui.github.io/lts-health/v2/#dados');
+  assert.equal(f.store.rows.get(owner).status,'connected');assert.equal(f.store.reads.length,0);
+  const off=fixture({enabled:false}),blocked=await off.handlers.callback(new Request(googleHealthCallback(config),{headers:{Accept:'text/html'}}));
+  assert.equal(blocked.status,303);assert.match(blocked.headers.get('Location'),/\?result=unavailable$/);assert.equal(off.calls.length,0);
+});
+
 test('private server configuration is resolved only after valid owner authentication and input; disconnect remains available without it',async()=>{
   let lookups=0;const f=fixture({resolveConfig:async c=>{lookups++;return c;}});
   assert.equal((await f.post({action:'status'},'unrecognized')).status,401);

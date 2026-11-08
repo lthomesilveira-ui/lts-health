@@ -47,10 +47,16 @@ function run(entry, operation, failure) {
   return entry.pending;
 }
 
+export function googleHealthReadWindow(now = new Date()) {
+  const lastDay = localHealthDay(now);
+  return {from: addDays(lastDay, -29), to: addDays(lastDay, 1), lastDay};
+}
+
 async function readHydration(entry) {
-  const to = localHealthDay();
-  const from = addDays(to, -29);
-  const period = `De ${fmtDate(from)} a ${fmtDate(to)}`;
+  // Google treats the end date as exclusive; include today's records in the
+  // same 30 civil days that the owner sees and the background reader uses.
+  const {from, to, lastDay} = googleHealthReadWindow();
+  const period = `De ${fmtDate(from)} a ${fmtDate(lastDay)}`;
   let result;
   try {
     result = await invoke({action: 'read', from, to});

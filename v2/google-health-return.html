@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8I1RZ9JmEZVbUZ/XnpUph22dxqDC6Soho5c5jBoEZVI='; style-src 'sha256-fjwCaaOWyGZ7Aq2PYh92nzrkIadXyA4pUCG+wQSLQ20='; base-uri 'none'; form-action 'none'">
+  <title>Conexão Google · LTS Health</title>
+  <meta name="lts-build" content="health-integrated-20261107.127">
+  <style>*{box-sizing:border-box}body{margin:0;min-height:100svh;background:#f4f7fa;color:#173049;font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:grid;place-items:center;padding:24px}main{width:100%;max-width:560px;padding:32px;border:1px solid #dce5ec;border-radius:20px;background:#fff;box-shadow:0 14px 46px #1730490a}.brand{font-size:14px;font-weight:700;color:#1b6b70;letter-spacing:.03em}h1{font-size:clamp(24px,5vw,32px);line-height:1.2;margin:20px 0 16px;overflow-wrap:anywhere}p{margin:0 0 20px;color:#465d70}.note{font-size:14px;margin:20px 0 0}a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 20px;border-radius:10px;background:#11676b;color:#fff;text-decoration:none;font-weight:650;max-width:100%;text-align:center}a:focus-visible{outline:3px solid #d4931a;outline-offset:4px}@media(max-width:360px){body{padding:16px}main{padding:24px}}</style>
+</head>
+<body>
+  <main aria-labelledby="connectionTitle">
+    <div class="brand">LTS Health</div>
+    <h1 id="connectionTitle">Não foi possível concluir a conexão</h1>
+    <p id="connectionMessage">Volte ao Health para verificar a conexão com o Google.</p>
+    <a href="./#dados">Voltar ao Health</a>
+    <p class="note">Esta página não confirma que a conta foi conectada nem que novos registros de água foram recebidos.</p>
+  </main>
+  <script>const messages = Object.freeze({
+  expired: ['Esta autorização expirou', 'Volte ao Health e inicie uma nova conexão com o Google.'],
+  not_authorized: ['A autorização não foi concluída', 'O Health ainda não pode consultar a água dessa conta. Volte ao aplicativo para verificar a conexão.'],
+  unavailable: ['Conexão indisponível no momento', 'Volte ao Health para verificar a situação da conexão.'],
+  account: ['Não foi possível confirmar a conta', 'Volte ao Health e confira a conta Google antes de tentar novamente.'],
+  invalid_request: ['Não foi possível concluir a conexão', 'Esta solicitação não é válida. Inicie a conexão pelo próprio Health.'],
+  retry: ['Não foi possível concluir a conexão', 'Volte ao Health para conferir a conexão antes de tentar novamente.']
+});
+const result = new URLSearchParams(location.search).get('result');
+const message = Object.hasOwn(messages, result) ? messages[result] : messages.retry;
+document.getElementById('connectionTitle').textContent = message[0];
+document.getElementById('connectionMessage').textContent = message[1];
+// Discard unknown parameters; no credential or provider response is retained.
+history.replaceState(null, '', location.pathname);
+</script>
+</body>
+</html>

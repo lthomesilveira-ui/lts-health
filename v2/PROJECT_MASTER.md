@@ -1,3 +1,9 @@
+## 2026-11-07 — Em execução: água de hoje e retorno da autorização, .127
+
+O pacote045 corrige duas falhas concretas. A consulta manual anunciava os últimos30dias, mas usava hoje como limite exclusivo e descartava os registros do próprio dia. O retorno de autorização inválida/expirada mostrava JSON técnico sem caminho de volta ao Health. A candidata usa amanhã como limite exclusivo e uma página fixa em português para o retorno de falhas no navegador; as respostas JSON e o retorno de sucesso conservam o contrato.
+
+Os testes locais validaram calendário BRT, viradas de ano/dia, ano bissexto, um registro sintético de hoje no leitor real e limites de privacidade/replay/autorização. A página não recebe estado, código, identidade nem texto arbitrário do provedor. Gates de navegador, publicação e conferência autenticada continuam pendentes. Não há nova conexão ou água real comprovada, nem alteração clínica. As nove condições originais permanecem independentes. As duas rotinas de mensagens de continuar seguem desativadas por decisão posterior do titular. Detalhes: v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md.
+
 ## 2026-11-07 — Agenda horária Google entregue; conexão real ainda pendente
 
 O pacote 044 / LTS-GOOGLE-BACKGROUND-001 está concluído. A rotina privada consulta as contas Google já autorizadas a cada hora, sem abrir o app. O leitor mantém identidade, origem, janela civil de 30 dias em São Paulo e proteção contra leituras simultâneas. Os registros recebidos ficam privados para conferência antes de qualquer inclusão nos totais de água.

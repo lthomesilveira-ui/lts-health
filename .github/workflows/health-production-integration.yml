@@ -55,6 +55,7 @@ jobs:
         run: |
           node v2/production-integration-browser.mjs
           node v2/startup-browser.mjs
+          node v2/google-health-return-browser.mjs
           node v2/real-auth-dashboard-checks-test.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs
@@ -90,6 +91,7 @@ jobs:
           path: |
             artifacts/production-integration/*.png
             artifacts/production-integration/upload-receipt-evidence.json
+            artifacts/google-health-return/*.png
             artifacts/deployed-public-login-*.png
             artifacts/public-entry-diagnostic-*.json
             dashboard-changes-visual/*.png
