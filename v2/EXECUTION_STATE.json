@@ -70,11 +70,8 @@
     "candidate_commit": "11249a9d3467d994ece347308f3fcc2ae098eae9",
     "candidate_tree": "9484d7f906f542831435c0aa93eb008ad18ad618",
     "candidate_checks_passed": 20,
-    "publication_checks_passed": 22,
-    "pending_publication_repetitions": [
-      42434666947,
-      42434666973
-    ],
+    "publication_checks_passed": 24,
+    "pending_publication_repetitions": [],
     "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29"
   },
   "last_verified_release": {
@@ -85,17 +82,14 @@
     "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
     "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All20 exact candidate workflows and all affected publication/protected-auth gates passed. Unchanged-runtime broad publication repetitions are listed separately without claiming their completion.",
+    "automated_runtime_and_responsive_status": "All 20 exact candidate workflows and all 24 publication workflows completed successfully. The two prior pending unchanged-runtime repetitions were re-read successfully; no workflow was rerun.",
     "ci_summary": {
-      "status": "required_release_gates_complete",
+      "status": "complete",
       "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
       "total": 24,
-      "success": 22,
+      "success": 24,
       "protected_actual_auth_run": 42434666884,
-      "pending_workflows": [
-        42434666947,
-        42434666973
-      ]
+      "pending_workflows": []
     },
     "evidence": [
       "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
@@ -103,7 +97,8 @@
       "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
       "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
       "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
-      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
+      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled.",
+      "Continuation re-read: Isolated Preview 42434666947 completed successfully at 2026-11-08T01:42:36Z and Calendar/PDF 42434666973 at 2026-11-08T01:40:07Z. All24 publication workflows succeeded; no rerun or runtime change."
     ],
     "recorded_failed_validation_runs": [
       {
@@ -5662,17 +5657,14 @@
     "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
     "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All20 exact candidate workflows and all affected publication/protected-auth gates passed. Unchanged-runtime broad publication repetitions are listed separately without claiming their completion.",
+    "automated_runtime_and_responsive_status": "All 20 exact candidate workflows and all 24 publication workflows completed successfully. The two prior pending unchanged-runtime repetitions were re-read successfully; no workflow was rerun.",
     "ci_summary": {
-      "status": "required_release_gates_complete",
+      "status": "complete",
       "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
       "total": 24,
-      "success": 22,
+      "success": 24,
       "protected_actual_auth_run": 42434666884,
-      "pending_workflows": [
-        42434666947,
-        42434666973
-      ]
+      "pending_workflows": []
     },
     "evidence": [
       "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
@@ -5680,7 +5672,8 @@
       "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
       "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
       "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
-      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
+      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled.",
+      "Continuation re-read: Isolated Preview 42434666947 completed successfully at 2026-11-08T01:42:36Z and Calendar/PDF 42434666973 at 2026-11-08T01:40:07Z. All24 publication workflows succeeded; no rerun or runtime change."
     ],
     "recorded_failed_validation_runs": [
       {
@@ -10674,12 +10667,12 @@
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-08",
-    "source_main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+    "reviewed_on": "2026-11-07",
+    "source_main_commit": "36a843c2e5f71e829316d46a9bd4de3aa1e5e7a8",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": true,
-    "frontend_runtime_changed": true,
+    "runtime_changed": false,
+    "frontend_runtime_changed": false,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
@@ -10691,19 +10684,18 @@
     },
     "executable_task_count": 0,
     "evidence": [
-      "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
-      "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
-      "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
-      "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
-      "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
-      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
+      "Read the current exact main and re-read the two previously pending publication workflows: all24 completed successfully. No workflow or deployment was triggered.",
+      "Fresh native aggregate status remains zero connected Google accounts, zero hydration reads and zero valid authorization states. The enabled hourly agenda last completed an empty-owner dispatch with HTTP200; that is not actual hydration delivery.",
+      "Fresh protected receiver aggregate still ends water coverage at2026-10-13. General receipts and current non-water metrics do not close hydration recurrence.",
+      "A bounded provider-support mail search after2026-11-07 returned no new matching correspondence. No message was sent.",
+      "All141 task objects remain byte-for-byte unchanged. The nine original conditions remain open; no new task was created or closed."
     ],
     "ux_review": {
-      "area": "data_sources_polar_update_date",
-      "mode": "genuine_authenticated_public_card_and_exact_source",
-      "result": "third_observed_defect_delivered_original_nine_conditions_preserved"
+      "area": "data_sources_google_hydration",
+      "mode": "read_only_native_status_and_final_publication_completion",
+      "result": "all_publication_checks_complete_google_owner_authorization_still_required"
     },
-    "open_dependency_policy": "No repeat Google login after DECLINED/automatic rejection without a new explicit request. No repeated old phone checks, manual water input, source inference or reconstruction of the fifteen-record proposal. Scheduled development messages remain disabled."
+    "open_dependency_policy": "The prior declined login and automatic rejection of private Google-session access are preserved. The owner must explicitly reopen an assisted login or complete Conectar Google Health directly in the existing app. Do not repeat completed phone checks, manual water entry, source inference or original-proposal reconstruction. Scheduled development continuations stay disabled."
   },
   "continuity_review_history": [
     {
@@ -12216,6 +12208,37 @@
         "Health and Wealth scheduled development continuations remain disabled; interactive execution is authorized.",
         "Publication record conflicts were resolved by retaining the complete verified package045 main history and adding only the independent package046 task and bounded date display change. No original task was reopened or removed."
       ]
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "36a843c2e5f71e829316d46a9bd4de3aa1e5e7a8",
+      "runtime_build": "health-integrated-20261108.128",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 128,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Read the current exact main and re-read the two previously pending publication workflows: all24 completed successfully. No workflow or deployment was triggered.",
+        "Fresh native aggregate status remains zero connected Google accounts, zero hydration reads and zero valid authorization states. The enabled hourly agenda last completed an empty-owner dispatch with HTTP200; that is not actual hydration delivery.",
+        "Fresh protected receiver aggregate still ends water coverage at2026-10-13. General receipts and current non-water metrics do not close hydration recurrence.",
+        "A bounded provider-support mail search after2026-11-07 returned no new matching correspondence. No message was sent.",
+        "All141 task objects remain byte-for-byte unchanged. The nine original conditions remain open; no new task was created or closed."
+      ],
+      "ux_review": {
+        "area": "data_sources_google_hydration",
+        "mode": "read_only_native_status_and_final_publication_completion",
+        "result": "all_publication_checks_complete_google_owner_authorization_still_required"
+      },
+      "open_dependency_policy": "The prior declined login and automatic rejection of private Google-session access are preserved. The owner must explicitly reopen an assisted login or complete Conectar Google Health directly in the existing app. Do not repeat completed phone checks, manual water entry, source inference or original-proposal reconstruction. Scheduled development continuations stay disabled."
     }
   ],
   "continuation_automation": {

@@ -4,7 +4,7 @@ The genuine connection card displayed the next UTC date for the last synchroniza
 
 The bounded change converts only this timestamp to its São Paulo civil date before formatting. The original timestamp, all health dates/values, source identity, synchronization, background schedule and authorization are preserved. Invalid timestamps produce the existing unknown-date mark rather than breaking the card. Production and isolated preview use identical source.
 
-The actual card renderer passed independent expectations across São Paulo midnight, year transition, leap day, explicit UTC offset and invalid input. Existing owner/session/manual-read boundaries passed. Exact candidate regression and published genuine card verification remain pending. The completed.127 water-window/recovery package is recorded separately; original nine conditions stay open.
+The actual card renderer passed independent expectations across São Paulo midnight, year transition, leap day, explicit UTC offset and invalid input. Existing owner/session/manual-read boundaries passed. Exact candidate regression and published genuine card verification were completed as recorded below. The completed.127 water-window/recovery package is recorded separately; original nine conditions stay open.
 
 ## Delivered verification
 
@@ -20,4 +20,4 @@ The existing genuine authenticated app was reloaded on exact health-integrated-2
 
 No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled.
 
-Publication snapshot: 22/24 completed successfully; pending workflow IDs42434666947,42434666973. The first Laboratory Originals failure remains recorded alongside the single successful repeated job. No new source or clinical input was used.
+Final publication verification: 24/24 completed successfully. The previously pending Isolated Preview42434666947 finished at2026-11-08T01:42:36Z and Calendar/PDF42434666973 at2026-11-08T01:40:07Z. These existing runs were re-read; no rerun was triggered. The first Laboratory Originals failure remains recorded alongside the single successful repeated job. No new source or clinical input was used.
