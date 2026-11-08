@@ -1,3 +1,11 @@
+## 2026-11-07 — Concluído: consulta inclui hoje e retorno da conexão, .127
+
+O pacote045 encerrou duas falhas de funcionamento: a consulta manual agora inclui hoje nos30dias civis de São Paulo; uma autorização Google inválida ou expirada oferece uma mensagem em português e Voltar ao Health. A sessão autenticada existente foi restaurada pelo retorno público real, na versão exata. Água real, origem e recorrência continuam com critérios próprios.
+
+PR509: candidata5f4ab5910be121262a77a00576324b4f67208c9e, árvore74a710823a96fad6dcf430a71c016f8c2cc1a68c,21/21 verificações aprovadas. Merge normaldf88ad4f86c1fe133c20bf3bbafd4344ac42c488 preservou a árvore. Deploy, duas entradas Pages, acesso real protegido e leitor Google passaram. Página e módulos públicos foram comparados antes da ativação; callback6/conexão7/agenda2 tiveram6/6/7arquivos relidos sem diferenças, mantendoJWTfalse/true/false. As repetições gerais de publicação ainda em curso estão enumeradas no EXECUTION_STATE.json e não são contadas como sucesso.
+
+Fila127done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. Nenhuma das nove condições originais foi encerrada por estas correções. A conta Google ainda não está conectada, nenhuma leitura real foi recebida, e a água disponível continua até13/10. O loginDECLINED não foi repetido; as mensagens agendadas de continuar permanecem desativadas. Detalhes: v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md.
+
 ## 2026-11-07 — Em execução: água de hoje e retorno da autorização, .127
 
 O pacote045 corrige duas falhas concretas. A consulta manual anunciava os últimos30dias, mas usava hoje como limite exclusivo e descartava os registros do próprio dia. O retorno de autorização inválida/expirada mostrava JSON técnico sem caminho de volta ao Health. A candidata usa amanhã como limite exclusivo e uma página fixa em português para o retorno de falhas no navegador; as respostas JSON e o retorno de sucesso conservam o contrato.
