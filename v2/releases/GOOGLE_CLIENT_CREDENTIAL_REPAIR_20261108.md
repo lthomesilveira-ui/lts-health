@@ -1,3 +1,7 @@
+## Specific owner approval received; execution active
+
+The owner approved the exact replacement described below. Public-data clipboard transfer was demonstrated without saving a real credential. Initial attempts reported no Google-secret deletion/creation or protected server save; the current single execution proceeds directly with the approved replacement. Cancel any unsaved dummy editor first. Do not repeat approval or run concurrent rotations. No corrected credential, real connection or hydration recovery is yet claimed.
+
 # Repair the confirmed Google client authentication failure — package048
 
 The next genuine owner callback produced the new safe diagnostic: token_exchange, provider HTTP401, invalid_client. This confirms client-authentication rejection before Google Health identity verification, connection persistence or hydration reading. It does not diagnose the native bridge or establish recovered water.

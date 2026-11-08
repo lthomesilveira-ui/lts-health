@@ -1,3 +1,7 @@
+## Specific credential replacement approved and active — 2026-11-08
+
+The owner explicitly approved package048 old-secret replacement and protected server update. Do not ask for that approval again. Public clipboard transfer has been proven, but no real deletion/creation/save is yet confirmed; one administrative execution is active. Preserve the exact existing-client scope and do not duplicate rotation, delete the server variable or request another owner grant yet. See `EXECUTION_STATE.json` and the private continuity audit for the current execution identity. All nine original conditions remain open.
+
 ## Google client credential rejection confirmed — approval required, 2026-11-08
 
 The real callback diagnosis is token_exchange/HTTP401/invalid_client, before identity or water reading. The existing dedicated client/type/callback agree in read-only administration; two client secrets are reported at capacity and historical values cannot be retrieved. Package048 awaits specific approval to replace only the older dedicated-client secret and update its protected server setting. No secret, login, code or clinical data changed. Do not ask for another consent attempt before repair. Package047 final publication21/21 passed; preserve the earlier failed laboratory job. See `EXECUTION_STATE.json` and `releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md`.

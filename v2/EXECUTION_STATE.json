@@ -51,10 +51,10 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
-    "status": "blocked_user",
+    "status": "in_progress",
     "goal": "Repair the confirmed Google OAuth client-authentication rejection for the existing dedicated Health client and its protected server configuration.",
     "task_ids": [
-      "LTS-WATER-UPSTREAM-STATUS-001"
+      "LTS-GOOGLE-CLIENT-CREDENTIAL-001"
     ],
     "public_build": "health-integrated-20261108.128",
     "candidate_build": null,
@@ -65,10 +65,11 @@
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
     "pending_gates": [
-      "Specific owner approval before irreversible replacement of one existing OAuth client secret",
-      "Secure transfer to the existing protected server setting and real validation"
+      "Finish the owner-approved protected credential replacement and same-name server update",
+      "Validate the corrected credential before another genuine owner connection"
     ],
-    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
+    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
+    "owner_specific_approval_received": true
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -1868,7 +1869,7 @@
       "id": "LTS-WATER-UPSTREAM-STATUS-001",
       "area": "water source continuity",
       "priority": "P0",
-      "status": "blocked_user",
+      "status": "blocked_external",
       "owner": "Codex",
       "summary": "Resolve the missing automatic water transfer using the completed native connection, consent, source attribution and negative destination checks.",
       "acceptance": [
@@ -1908,10 +1909,11 @@
         "Current Google OAuth client documentation confirms that historical secret values are not retrievable, at most two secrets exist, and replacing one at capacity requires disabling and deleting an existing secret. Deletion is irreversible.",
         "The concrete next action is an owner-approved replacement of the older dedicated-client secret, preserving the client ID, scopes, callback, other secret, encryption key, settings and records; then update only the existing server OAuth client-secret setting through the protected administrative surface.",
         "No credential mutation, rotation, deletion, new client or login prompt was requested; the read-only administrative run reports no change. The provenance of the newer reported secret is not independently established. No code, schema or clinical write was made. A specific confirmation is required for the irreversible credential deletion; reconfirm actual target/status before any approved mutation and do not ask for another owner login before repair.",
-        "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved."
+        "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved.",
+        "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed."
       ],
-      "next_action": "Obtain the specific approval for replacing only the older secret of the existing dedicated Health OAuth client and securely updating its server setting. Reconfirm target/state before any deletion, preserve the other enabled secret and all existing client/scopes/callback/encryption/data, validate without exposing secrets, then request a new genuine owner grant only after credentials are repaired. Do not repeat completed native setup or manual water input.",
-      "blocker": "A genuine callback now proves HTTP401 invalid_client at OAuth token exchange. The existing dedicated-client credentials must be reconciled. The administrative inspection reports two secrets already at capacity, so generating a new value requires an irreversible secret deletion. Specific owner approval for that replacement and protected server update is pending. Real hydration/source/recurrence criteria remain open.",
+      "next_action": "Await verified completion of the single active owner-approved credential repair, then request a fresh genuine owner connection only when ready. Continue real hydration/source reconciliation and preserve all original acceptance criteria; do not repeat old phone checks or manual water entry.",
+      "blocker": "The confirmed OAuth client-credential rejection is being repaired in the separate owner-approved operational task. The original hydration/source acceptance remains unverified and independent of that internal configuration work. No new owner action is required until the protected credential update is complete.",
       "phone_status_capture_received": true
     },
     {
@@ -3798,6 +3800,26 @@
       ],
       "next_action": "Delivered. Use the next genuine owner callback to diagnose the original failure without exposing credentials or inferring water recovery.",
       "completed_on": "2026-11-08"
+    },
+    {
+      "id": "LTS-GOOGLE-CLIENT-CREDENTIAL-001",
+      "area": "Google server credential repair",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Execute the specifically approved replacement of the older dedicated Google client secret and protected server update.",
+      "acceptance": [
+        "Reconfirm the exact existing client and preserve the other enabled secret before the approved older-secret deletion.",
+        "Create one replacement and privately transfer its complete value into the existing server client-secret setting, without deleting that setting or exposing the value.",
+        "Save and confirm the same-name protected setting update while preserving client ID, callback, scopes, encryption, scheduler and clinical/source records.",
+        "Report actual completed steps and retain the original hydration, origin and recurrence conditions independently; a configuration update is not a genuine source read."
+      ],
+      "evidence": [
+        "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
+        "The owner specifically approved this concrete replacement. Initial execution reported no credential mutation; a bounded public-data transfer test succeeded but ended before real deletion/creation/save. A single direct execution is active."
+      ],
+      "next_action": "Finish the current single authorized administrative execution and reconcile actual delete/create/save booleans. Do not repeat approval, dummy transfer tests, parallel rotations or another client."
     }
   ],
   "package_history": [
@@ -10751,7 +10773,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "a054b7f76fa1c3ca0674daea2e0653a3fa94d33d",
+    "source_main_commit": "69919710b9c6f5ce9aada0295358ee0f9194f2f1",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
     "runtime_changed": false,
@@ -10761,21 +10783,19 @@
     "real_source_observations_changed": false,
     "status_counts": {
       "done": 129,
-      "blocked_external": 8,
-      "blocked_user": 1,
+      "blocked_external": 9,
+      "superseded": 2,
       "accepted_gap": 2,
-      "superseded": 2
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "The first genuine owner attempt after package047 emitted a closed-schema callback7 failure: stage token_exchange, provider HTTP401, allowlisted error invalid_client. The failure occurs before Google Health identity verification or hydration reading; another owner consent attempt alone cannot repair it.",
-      "The authorized saved administrative Google session was inspected read-only. The existing dedicated client, project, Web application type and saved callback agree. The inspection reports two enabled secret entries at the maximum capacity; no complete historical secret value is viewable. No secret value was read, returned or changed.",
-      "Current Google OAuth client documentation confirms that historical secret values are not retrievable, at most two secrets exist, and replacing one at capacity requires disabling and deleting an existing secret. Deletion is irreversible.",
-      "The concrete next action is an owner-approved replacement of the older dedicated-client secret, preserving the client ID, scopes, callback, other secret, encryption key, settings and records; then update only the existing server OAuth client-secret setting through the protected administrative surface.",
-      "No credential mutation, rotation, deletion, new client or login prompt was requested; the read-only administrative run reports no change. The provenance of the newer reported secret is not independently established. No code, schema or clinical write was made. A specific confirmation is required for the irreversible credential deletion; reconfirm actual target/status before any approved mutation and do not ask for another owner login before repair.",
-      "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved."
+      "Specific approval for the existing older secret replacement and same-name protected server update was received; do not ask again.",
+      "Public clipboard transfer is proven; no real Google secret deletion/creation or server save is yet confirmed. One current administrative execution is active.",
+      "All nine original conditions remain independently open; no consent or water recovery is claimed.",
+      "Original hydration/source acceptance stays blocked and independent; the approved internal credential operation is tracked separately so it cannot close the original condition artificially."
     ],
-    "open_dependency_policy": "Do not repeat a genuine owner login until the confirmed client-credential rejection is repaired. No irreversible secret deletion or new client before the specific approval. Never return secrets to chat, source, logs or files; never reuse a consumed OAuth code. Other original source conditions and disabled scheduled development messages stay independent."
+    "open_dependency_policy": "Do not duplicate the active rotation, delete any server setting, widen scope to another client or expose secret values. Await and reconcile completed-step booleans before any retry. Never replay an owner code or request another connection before the credential update."
   },
   "continuity_review_history": [
     {
