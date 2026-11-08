@@ -52,24 +52,27 @@
   "current_package": {
     "id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
     "status": "in_progress",
-    "goal": "Repair the confirmed Google OAuth client-authentication rejection for the existing dedicated Health client and its protected server configuration.",
+    "goal": "Safely reconcile and repair the confirmed Google client-authentication rejection without rotating an unverified target or exposing credentials.",
     "task_ids": [
       "LTS-GOOGLE-CLIENT-CREDENTIAL-001"
     ],
     "public_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": false,
+    "runtime_changed": true,
     "frontend_runtime_changed": false,
-    "server_runtime_changed": false,
+    "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
     "pending_gates": [
-      "Finish the owner-approved protected credential replacement and same-name server update",
-      "Validate the corrected credential before another genuine owner connection"
+      "Validate and publish the ticket-protected server configuration comparison and invented-grant probe",
+      "Reconcile actual server configuration against current provider metadata before any further credential mutation",
+      "A genuine owner connection and hydration remain separate from the configuration check"
     ],
     "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
-    "owner_specific_approval_received": true
+    "owner_specific_approval_received": true,
+    "candidate_backend_function": "health-google-scheduled",
+    "candidate_backend_change": "Private configuration_check action under existing consumed single-use ticket; normal tick and cron unchanged"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -3808,18 +3811,20 @@
       "owner": "Codex",
       "status": "in_progress",
       "blocker": null,
-      "summary": "Execute the specifically approved replacement of the older dedicated Google client secret and protected server update.",
+      "summary": "Reconcile actual current client credentials and repair the confirmed dedicated Google server authentication failure safely.",
       "acceptance": [
-        "Reconfirm the exact existing client and preserve the other enabled secret before the approved older-secret deletion.",
+        "Reconfirm the exact existing client and current provider metadata; preserve the other enabled secret and never delete a mismatched or unverified target.",
         "Create one replacement and privately transfer its complete value into the existing server client-secret setting, without deleting that setting or exposing the value.",
         "Save and confirm the same-name protected setting update while preserving client ID, callback, scopes, encryption, scheduler and clinical/source records.",
-        "Report actual completed steps and retain the original hydration, origin and recurrence conditions independently; a configuration update is not a genuine source read."
+        "Report actual completed steps and retain the original hydration, origin and recurrence conditions independently; a configuration update is not a genuine source read.",
+        "A configuration check uses the existing consumed one-use ticket, accepts no complete credentials, owner IDs or real grants, and cannot verify a connection or update canonical hydration."
       ],
       "evidence": [
         "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
-        "The owner specifically approved this concrete replacement. Initial execution reported no credential mutation; a bounded public-data transfer test succeeded but ended before real deletion/creation/save. A single direct execution is active."
+        "The owner specifically approved this concrete replacement. Initial execution reported no credential mutation; a bounded public-data transfer test succeeded but ended before real deletion/creation/save. A single direct execution is active.",
+        "Administrative execution ended without confirming deletion/creation/save; current reported masked metadata no longer matches the approved older target. No further rotation is allowed on that inconsistent evidence. A protected server-only comparison and invented-grant probe is now under validation."
       ],
-      "next_action": "Finish the current single authorized administrative execution and reconcile actual delete/create/save booleans. Do not repeat approval, dummy transfer tests, parallel rotations or another client."
+      "next_action": "Validate and publish the protected server check, then inspect actual configured-client and current masked-suffix matches without exposing values. Reconcile results before another mutation or fresh owner connection."
     }
   ],
   "package_history": [
@@ -10773,12 +10778,12 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "69919710b9c6f5ce9aada0295358ee0f9194f2f1",
+    "source_main_commit": "c5f431c6f32d7276b301f9c7ca1dcc1d8df268e7",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": false,
+    "runtime_changed": true,
     "frontend_runtime_changed": false,
-    "server_runtime_changed": false,
+    "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
@@ -10790,12 +10795,12 @@
     },
     "executable_task_count": 1,
     "evidence": [
-      "Specific approval for the existing older secret replacement and same-name protected server update was received; do not ask again.",
-      "Public clipboard transfer is proven; no real Google secret deletion/creation or server save is yet confirmed. One current administrative execution is active.",
-      "All nine original conditions remain independently open; no consent or water recovery is claimed.",
-      "Original hydration/source acceptance stays blocked and independent; the approved internal credential operation is tracked separately so it cannot close the original condition artificially."
+      "Specific approval remains valid, but the original older target no longer matches current reported provider metadata; no further key mutation is authorized on that inconsistency.",
+      "All administrative runs are terminal; no protected credential save is confirmed. The latest final report disagrees with prior progress/metadata and is not proof of a completed replacement.",
+      "A server-only existing-ticket configuration comparison and invented-grant probe is in validation;100 synthetic Node tests pass locally.",
+      "All nine original hydration/source conditions remain independently open; no real connection or water recovery is claimed."
     ],
-    "open_dependency_policy": "Do not duplicate the active rotation, delete any server setting, widen scope to another client or expose secret values. Await and reconcile completed-step booleans before any retry. Never replay an owner code or request another connection before the credential update."
+    "open_dependency_policy": "Do not rotate a different key, repeat remote UI loops or request another owner connection until actual server configuration is reconciled. Publish and verify only the protected check; preserve client ID, credentials, scopes, encryption, cron and clinical/source records."
   },
   "continuity_review_history": [
     {

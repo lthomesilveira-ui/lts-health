@@ -1,8 +1,10 @@
 import {googleHealthConfig,googleHealthService,googleHealthHandlers} from '../_shared/google-health-runtime.mjs';
 import {handleGoogleHydrationSchedule} from '../_shared/google-health-schedule.mjs';
+import {checkGoogleHealthConfiguration} from '../_shared/google-health-configuration-check.mjs';
 
 // Custom single-use ticket authentication precedes configuration and owner lookup.
 // Only this server endpoint disables gateway JWT verification. The owner route keeps it.
 Deno.serve(req=>handleGoogleHydrationSchedule(req,{
-  db:googleHealthService(googleHealthConfig()),ready:googleHealthHandlers.scheduledReady,read:googleHealthHandlers.scheduledRead
+  db:googleHealthService(googleHealthConfig()),ready:googleHealthHandlers.scheduledReady,read:googleHealthHandlers.scheduledRead,
+  configurationCheck:hints=>checkGoogleHealthConfiguration(googleHealthConfig(),hints)
 }));

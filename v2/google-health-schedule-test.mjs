@@ -66,3 +66,27 @@ test('database/secret lookup failures expose only scheduler_unavailable and make
   const f=fixture();f.db.rpc=async()=>{throw Error('synthetic-database-secret');};const r=await f.run();assert.equal(r.status,503);assert.deepEqual(await r.json(),{error:'scheduler_unavailable'});
   const g=fixture();g.dependencies.ready=async()=>{throw Error('synthetic-vault-secret');};assert.equal((await g.run()).status,503);assert.equal(g.calls.filter(x=>x.read).length,0);
 });
+const hints={action:'configuration_check',client_id:'123-synthetic.apps.googleusercontent.com',secret_suffixes:['demo','test']};
+test('configuration checks require the same consumed ticket and never select or read an owner',async()=>{
+  const f=fixture();let checked=0;
+  f.dependencies.configurationCheck=async body=>{checked++;assert.deepEqual(body,hints);return {check:'client_configuration',connection_verified:false,canonical_updated:false};};
+  const r=await f.run(hints);assert.equal(r.status,200);assert.equal(checked,1);assert.equal(f.calls.length,1);
+  assert.equal(r.headers.get('Cache-Control'),'no-store');assert.deepEqual(await r.json(),{check:'client_configuration',connection_verified:false,canonical_updated:false});
+  const denied=fixture({authorized:false});denied.dependencies.configurationCheck=async()=>{throw Error('must-not-reach');};
+  assert.equal((await denied.run(hints)).status,401);assert.equal(denied.calls.length,1);
+  const replay=fixture();let used=false;replay.db.rpc=async name=>{assert.equal(name,'health_google_scheduler_authorized');const data=!used;used=true;return {data};};
+  let probes=0;replay.dependencies.configurationCheck=async()=>{probes++;return {connection_verified:false};};
+  assert.equal((await replay.run(hints)).status,200);assert.equal((await replay.run(hints)).status,401);assert.equal(probes,1);
+});
+test('configuration payloads cannot supply complete credentials, source grants, owners or windows',async()=>{
+  for(const body of [{...hints,code:'synthetic-private-grant'},{...hints,user_id:owner},{...hints,from:'2030-01-01'},
+    {...hints,secret_suffixes:['synthetic-complete-secret']},{...hints,secret_suffixes:['demo','test','more']}]){
+    const f=fixture();f.dependencies.configurationCheck=async()=>{throw Error('must-not-reach');};
+    assert.equal((await f.run(body)).status,400);assert.equal(f.calls.length,1);
+  }
+});
+test('a missing or failing configuration checker stays private and does not fall through to hydration',async()=>{
+  const f=fixture();assert.equal((await f.run(hints)).status,503);assert.equal(f.calls.length,1);
+  const g=fixture();g.dependencies.configurationCheck=async()=>{throw Error('synthetic-server-secret');};
+  const r=await g.run(hints);assert.equal(r.status,503);assert.deepEqual(await r.json(),{error:'scheduler_unavailable'});assert.equal(g.calls.length,1);
+});
