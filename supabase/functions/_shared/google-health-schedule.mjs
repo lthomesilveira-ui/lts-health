@@ -1,4 +1,5 @@
 import {digest} from './polar-contract.mjs';
+import {validGoogleHealthConfigurationHints} from './google-health-configuration-check.mjs';
 const response=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 
@@ -15,13 +16,14 @@ async function tickBody(req){
       if(size>1024){try{await reader.cancel();}catch{}return {error:'payload_too_large',status:413};}
       text+=decoder.decode(value,{stream:true});}
     text+=decoder.decode();const body=JSON.parse(text);
-    return body&&!Array.isArray(body)&&body.action==='tick'&&Object.keys(body).length===1?{}:{error:'invalid_action',status:400};
+    if(body&&!Array.isArray(body)&&body.action==='tick'&&Object.keys(body).length===1)return {action:'tick'};
+    return validGoogleHealthConfigurationHints(body)?{action:'configuration_check',hints:body}:{error:'invalid_action',status:400};
   }catch{return {error:'invalid_json',status:400};}finally{reader.releaseLock();}
 }
 
 // The private database agenda issues a five-minute, single-use invocation ticket.
 // No owner, provider token, permanent key or data range is accepted from HTTP input.
-export async function handleGoogleHydrationSchedule(req,{db,ready,read,now=()=>Date.now()}){
+export async function handleGoogleHydrationSchedule(req,{db,ready,read,configurationCheck,now=()=>Date.now()}){
   if(req.method!=='POST')return response({error:'method_not_allowed'},405);
   if(req.headers.has('Origin'))return response({error:'origin_not_allowed'},403);
   const key=req.headers.get('x-lts-google-scheduler')||'';
@@ -32,6 +34,12 @@ export async function handleGoogleHydrationSchedule(req,{db,ready,read,now=()=>D
     if(auth.data!==true)return response({error:'unauthorized'},401);
     if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers.get('Content-Type')||''))return response({error:'invalid_content_type'},415);
     const body=await tickBody(req);if(body.error)return response({error:body.error},body.status);
+    // Same consumed single-use ticket, before configuration lookup or owner
+    // selection. Normal cron keeps sending only tick; no new agenda or key.
+    if(body.action==='configuration_check'){
+      if(typeof configurationCheck!=='function')return response({error:'scheduler_unavailable'},503);
+      return response(await configurationCheck(body.hints));
+    }
     if(!await ready())return response({disabled:true,attempted:0,completed:0,skipped:0,failed:0});
     const listed=await db.rpc('health_google_scheduled_candidates');
     if(listed.error||!Array.isArray(listed.data)||listed.data.length>2||

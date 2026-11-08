@@ -1,3 +1,7 @@
+## Current credential target mismatch; protected server reconciliation in validation — 2026-11-08
+
+All administrative executions are terminal. No protected credential save is confirmed. The latest report lists current masked credentials that do not include the approved older target; its narrative/booleans also conflict, so do not infer who changed anything, rotate another key or repeat the remote UI loop. Approval persists for its exact scope. Package048 now validates a server-only configuration comparison and invented-grant probe under the existing consumed single-use ticket. It accepts no complete secret, owner or genuine grant; normal tick, cron, clinical data and frontend .128 stay unchanged.100 synthetic Node tests pass locally; publication and native verification are pending. A masked-suffix comparison or invalid_grant probe is not a verified owner connection or hydration. All nine original conditions remain open.
+
 ## Specific credential replacement approved and active — 2026-11-08
 
 The owner explicitly approved package048 old-secret replacement and protected server update. Do not ask for that approval again. Public clipboard transfer has been proven, but no real deletion/creation/save is yet confirmed; one administrative execution is active. Preserve the exact existing-client scope and do not duplicate rotation, delete the server variable or request another owner grant yet. See `EXECUTION_STATE.json` and the private continuity audit for the current execution identity. All nine original conditions remain open.
