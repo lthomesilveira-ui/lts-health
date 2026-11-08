@@ -23,8 +23,9 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
   const browser=await engine.launch({headless:true});
   try{
     for(const width of [320,393,1440]){
-      const context=await browser.newContext({viewport:{width,height:800}}),page=await context.newPage(),errors=[];
+      const context=await browser.newContext({viewport:{width,height:800}}),page=await context.newPage(),errors=[],consoleErrors=[];
       page.on('pageerror',e=>errors.push(String(e)));
+      page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});
       await page.route('**/*',async route=>{
         const request=route.request(),url=new URL(request.url());
         assert.equal(request.method(),'GET');
@@ -39,7 +40,13 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
       });
       // Exercise the actual server failure response and the actual static page.
       await page.goto('https://lthomesilveira-ui.github.io/synthetic-callback?state='+'x'.repeat(43)+'&code=synthetic-private-canary');
-      await page.getByRole('heading',{name:'Esta autorização expirou',exact:true}).waitFor();
+      try{await page.getByRole('heading',{name:'Esta autorização expirou',exact:true}).waitFor({timeout:10000});}
+      catch(error){
+        const u=new URL(page.url());
+        console.error(JSON.stringify({engine:engineName,width,origin:u.origin,path:u.pathname,result:u.searchParams.get('result'),headings:await page.getByRole('heading').allTextContents(),consoleErrors,pageErrors:errors}));
+        await page.screenshot({path:`artifacts/google-health-return/${engineName}-${width}-failure.png`,fullPage:true});
+        throw error;
+      }
       assert.equal(await page.url(),app+'google-health-return.html','only the fixed recovery location remains');
       for(const [result,title] of outcomes){
         await page.goto(app+'google-health-return.html?result='+result+'&code=synthetic-private-canary');

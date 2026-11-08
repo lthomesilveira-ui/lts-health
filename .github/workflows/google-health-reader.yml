@@ -56,3 +56,25 @@ jobs:
           node-version: '22'
       - name: Verify private storage, RLS, callback replay and real transaction concurrency
         run: node --test supabase/tests/google-health-postgres-test.mjs
+  google-health-browser:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser runtime
+        run: npm install --no-save playwright@1.56.1
+      - name: Verify browser callback recovery without provider access or writes
+        run: node v2/google-health-return-browser.mjs
+      - name: Retain invented-data recovery screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-health-recovery-synthetic
+          path: artifacts/google-health-return/*.png
+          if-no-files-found: error
+          retention-days: 7
