@@ -1,3 +1,7 @@
+## Google client credential rejection confirmed — approval required, 2026-11-08
+
+The real callback diagnosis is token_exchange/HTTP401/invalid_client, before identity or water reading. The existing dedicated client/type/callback agree in read-only administration; two client secrets are reported at capacity and historical values cannot be retrieved. Package048 awaits specific approval to replace only the older dedicated-client secret and update its protected server setting. No secret, login, code or clinical data changed. Do not ask for another consent attempt before repair. Package047 final publication21/21 passed; preserve the earlier failed laboratory job. See `EXECUTION_STATE.json` and `releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md`.
+
 ## Google callback safe diagnosis delivered — 2026-11-08
 
 Package047/PR511 is published in callback7, connection8 and scheduled3 with exact source/mode readback,17 candidate gates,90 Node and24 PostgreSQL tests. It fixes discarded callback failure evidence, without changing the .128 frontend, credentials, scopes or health data. One fresh genuine owner attempt is now needed to capture the safe reason; water recovery and all nine original conditions remain open. See `releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md` and `EXECUTION_STATE.json`.

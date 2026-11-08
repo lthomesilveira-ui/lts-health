@@ -50,31 +50,25 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-CALLBACK-DIAGNOSTIC-047",
-    "status": "done",
-    "goal": "Retain safe stage-specific evidence when a genuine Google authorization callback fails after its state was consumed.",
+    "id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
+    "status": "blocked_user",
+    "goal": "Repair the confirmed Google OAuth client-authentication rejection for the existing dedicated Health client and its protected server configuration.",
     "task_ids": [
-      "LTS-GOOGLE-CALLBACK-DIAGNOSTIC-001"
+      "LTS-WATER-UPSTREAM-STATUS-001"
     ],
     "public_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": true,
+    "runtime_changed": false,
     "frontend_runtime_changed": false,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md",
-    "completed_on": "2026-11-08",
-    "candidate_commit": "a2a615bbf9c0a596660cdb5cafe2c97a74d06f76",
-    "candidate_tree": "cb6f5004c0d03a60c9266730f70939c709c10a40",
-    "candidate_checks_passed": 17,
-    "runtime_promotion_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
-    "publication_checks_passed": 20,
-    "pending_publication_repetitions": [
-      42506923880
-    ]
+    "pending_gates": [
+      "Specific owner approval before irreversible replacement of one existing OAuth client secret",
+      "Secure transfer to the existing protected server setting and real validation"
+    ],
+    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -1874,7 +1868,7 @@
       "id": "LTS-WATER-UPSTREAM-STATUS-001",
       "area": "water source continuity",
       "priority": "P0",
-      "status": "blocked_external",
+      "status": "blocked_user",
       "owner": "Codex",
       "summary": "Resolve the missing automatic water transfer using the completed native connection, consent, source attribution and negative destination checks.",
       "acceptance": [
@@ -1908,10 +1902,16 @@
         "Current primary Google Health setup and dataPoints.list documentation supports a separate read-only integration using a Google Cloud project and OAuth authorization. The old no-new-project-onboarding statement is superseded. No LTS Google Health client, credentials, consent or successful API call has been configured; the Cloud console was unavailable in the current agent browser and no suitable connected tool was found.",
         "Configuration and schedule delivery are verified separately. Missing source evidence is not an uncompleted basic phone setup. Manual current-day exclusion and raw browser failure recovery are now owned by package045, without closing this original condition.",
         "A new genuine owner callback returned an authorization code and the requested read-only scope, with its pending state consumed before expiry, but no connection was saved. The former backend did not retain the failing stage. This is separate from the older declined agent login and does not prove token exchange or hydration delivery.",
-        "Package047 safe callback diagnostics is published and verified separately. A fresh genuine attempt is now requested, without repeating old native setup or accessing the previously blocked private Google browser session. No original source condition is closed by the diagnostic."
+        "Package047 safe callback diagnostics is published and verified separately. A fresh genuine attempt is now requested, without repeating old native setup or accessing the previously blocked private Google browser session. No original source condition is closed by the diagnostic.",
+        "The first genuine owner attempt after package047 emitted a closed-schema callback7 failure: stage token_exchange, provider HTTP401, allowlisted error invalid_client. The failure occurs before Google Health identity verification or hydration reading; another owner consent attempt alone cannot repair it.",
+        "The authorized saved administrative Google session was inspected read-only. The existing dedicated client, project, Web application type and saved callback agree. The inspection reports two enabled secret entries at the maximum capacity; no complete historical secret value is viewable. No secret value was read, returned or changed.",
+        "Current Google OAuth client documentation confirms that historical secret values are not retrievable, at most two secrets exist, and replacing one at capacity requires disabling and deleting an existing secret. Deletion is irreversible.",
+        "The concrete next action is an owner-approved replacement of the older dedicated-client secret, preserving the client ID, scopes, callback, other secret, encryption key, settings and records; then update only the existing server OAuth client-secret setting through the protected administrative surface.",
+        "No credential mutation, rotation, deletion, new client or login prompt was requested; the read-only administrative run reports no change. The provenance of the newer reported secret is not independently established. No code, schema or clinical write was made. A specific confirmation is required for the irreversible credential deletion; reconfirm actual target/status before any approved mutation and do not ask for another owner login before repair.",
+        "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved."
       ],
-      "next_action": "Analyze an actual hydration read/write diagnostic when available: account identity, hydration-log, date window/time zone, source family, pagination, returned records and Apple Health write outcome. Investigate a direct Google Health read-only route as an alternative only with a configured OAuth project and owner consent; retain source identities and avoid counting mirrored water twice. Do not request already supplied native screens, permissions, account reset, reports, date-specific resynchronization, manual re-entry, another purchase or recurring manual export. Keep the other original-source conditions independent.",
-      "blocker": "The owner completed a genuine Google OAuth return, but the connection was not saved and the old backend did not retain the cause. Package047 now publishes safe stage-specific diagnosis; the next genuine owner attempt is needed to capture the current failure. Real hydration delivery, source reconciliation and native bridge diagnostics remain unverified.",
+      "next_action": "Obtain the specific approval for replacing only the older secret of the existing dedicated Health OAuth client and securely updating its server setting. Reconfirm target/state before any deletion, preserve the other enabled secret and all existing client/scopes/callback/encryption/data, validate without exposing secrets, then request a new genuine owner grant only after credentials are repaired. Do not repeat completed native setup or manual water input.",
+      "blocker": "A genuine callback now proves HTTP401 invalid_client at OAuth token exchange. The existing dedicated-client credentials must be reconciled. The administrative inspection reports two secrets already at capacity, so generating a new value requires an irreversible secret deletion. Specific owner approval for that replacement and protected server update is pending. Real hydration/source/recurrence criteria remain open.",
       "phone_status_capture_received": true
     },
     {
@@ -3793,7 +3793,8 @@
         "Normal PR511 merge 32d9cf48176054b7493bf03ec8e0592da0306db3 preserved the exact tested tree. Google publication42506923881 and deploy42506923919 passed; broad unchanged-frontend repetitions remain enumerated separately until completion.",
         "Native callback7/connection8/scheduled3 are ACTIVE, retain JWT false/true/false, and all6/6/7 deployed files exactly match the tested source. No schema, credential, setting, permission, scope or clinical record changed.",
         "Native probes verified callback JSON400/invalid_callback, browser303 to the fixed recovery page with no-referrer, connection401 and scheduled405/401/403. The public index remains exact .128 with SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d.",
-        "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed."
+        "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed.",
+        "The first genuine owner attempt after publication produced the expected private closed-schema event and pinpointed token_exchange/HTTP401/invalid_client. No code, state, token, identity or provider description was reported."
       ],
       "next_action": "Delivered. Use the next genuine owner callback to diagnose the original failure without exposing credentials or inferring water recovery.",
       "completed_on": "2026-11-08"
@@ -5704,6 +5705,31 @@
       "publication_checks_passed": 24,
       "pending_publication_repetitions": [],
       "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29"
+    },
+    {
+      "id": "PKG-GOOGLE-CALLBACK-DIAGNOSTIC-047",
+      "status": "done",
+      "goal": "Retain safe stage-specific evidence when a genuine Google authorization callback fails after its state was consumed.",
+      "task_ids": [
+        "LTS-GOOGLE-CALLBACK-DIAGNOSTIC-001"
+      ],
+      "public_build": "health-integrated-20261108.128",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-08",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md",
+      "completed_on": "2026-11-08",
+      "candidate_commit": "a2a615bbf9c0a596660cdb5cafe2c97a74d06f76",
+      "candidate_tree": "cb6f5004c0d03a60c9266730f70939c709c10a40",
+      "candidate_checks_passed": 17,
+      "runtime_promotion_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
+      "publication_checks_passed": 21,
+      "pending_publication_repetitions": []
     }
   ],
   "latest_published_release": {
@@ -10725,30 +10751,31 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
+    "source_main_commit": "a054b7f76fa1c3ca0674daea2e0653a3fa94d33d",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": true,
+    "runtime_changed": false,
     "frontend_runtime_changed": false,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
       "done": 129,
-      "blocked_external": 9,
-      "superseded": 2,
-      "accepted_gap": 2
+      "blocked_external": 8,
+      "blocked_user": 1,
+      "accepted_gap": 2,
+      "superseded": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "PR511 exact candidate a2a615bbf9c0a596660cdb5cafe2c97a74d06f76 and tree cb6f5004c0d03a60c9266730f70939c709c10a40 passed17/17 workflows, including90 Node tests,24 PostgreSQL tests and Chromium/WebKit callback recovery at320/393/1440. No diagnostic canary appears in a reported event.",
-      "Candidate Laboratory Originals42506470756/job128810080895 first failed on the existing null boundingBox read at lab-original-browser:38. Only that failed job was repeated on unchanged source; job128810465097 passed. Original failure/artifact13627363634 and SHA25676af7d55e5ac4030d4bf048d7181b31d545478b136a0861442066fb9363434fa are preserved.",
-      "Normal PR511 merge 32d9cf48176054b7493bf03ec8e0592da0306db3 preserved the exact tested tree. Google publication42506923881 and deploy42506923919 passed; broad unchanged-frontend repetitions remain enumerated separately until completion.",
-      "Native callback7/connection8/scheduled3 are ACTIVE, retain JWT false/true/false, and all6/6/7 deployed files exactly match the tested source. No schema, credential, setting, permission, scope or clinical record changed.",
-      "Native probes verified callback JSON400/invalid_callback, browser303 to the fixed recovery page with no-referrer, connection401 and scheduled405/401/403. The public index remains exact .128 with SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d.",
-      "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed."
+      "The first genuine owner attempt after package047 emitted a closed-schema callback7 failure: stage token_exchange, provider HTTP401, allowlisted error invalid_client. The failure occurs before Google Health identity verification or hydration reading; another owner consent attempt alone cannot repair it.",
+      "The authorized saved administrative Google session was inspected read-only. The existing dedicated client, project, Web application type and saved callback agree. The inspection reports two enabled secret entries at the maximum capacity; no complete historical secret value is viewable. No secret value was read, returned or changed.",
+      "Current Google OAuth client documentation confirms that historical secret values are not retrievable, at most two secrets exist, and replacing one at capacity requires disabling and deleting an existing secret. Deletion is irreversible.",
+      "The concrete next action is an owner-approved replacement of the older dedicated-client secret, preserving the client ID, scopes, callback, other secret, encryption key, settings and records; then update only the existing server OAuth client-secret setting through the protected administrative surface.",
+      "No credential mutation, rotation, deletion, new client or login prompt was requested; the read-only administrative run reports no change. The provenance of the newer reported secret is not independently established. No code, schema or clinical write was made. A specific confirmation is required for the irreversible credential deletion; reconfirm actual target/status before any approved mutation and do not ask for another owner login before repair.",
+      "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved."
     ],
-    "open_dependency_policy": "The owner has already supplied a genuine callback. Only one new official app connection is requested after diagnostic deployment because the old backend discarded its reason. Never replay consumed codes or access the previously rejected private Google browser session. Do not repeat old phone setup, manual water input, source inference or historical proposal reconstruction. Scheduled development messages stay disabled."
+    "open_dependency_policy": "Do not repeat a genuine owner login until the confirmed client-credential rejection is repaired. No irreversible secret deletion or new client before the specific approval. Never return secrets to chat, source, logs or files; never reuse a consumed OAuth code. Other original source conditions and disabled scheduled development messages stay independent."
   },
   "continuity_review_history": [
     {
@@ -12319,6 +12346,34 @@
         "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed."
       ],
       "open_dependency_policy": "The owner has already supplied a genuine callback. Only one new official app connection is requested after diagnostic deployment because the old backend discarded its reason. Never replay consumed codes or access the previously rejected private Google browser session. Do not repeat old phone setup, manual water input, source inference or historical proposal reconstruction. Scheduled development messages stay disabled."
+    },
+    {
+      "reviewed_on": "2026-11-08",
+      "source_main_commit": "a054b7f76fa1c3ca0674daea2e0653a3fa94d33d",
+      "runtime_build": "health-integrated-20261108.128",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 129,
+        "blocked_external": 8,
+        "blocked_user": 1,
+        "accepted_gap": 2,
+        "superseded": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "The first genuine owner attempt after package047 emitted a closed-schema callback7 failure: stage token_exchange, provider HTTP401, allowlisted error invalid_client. The failure occurs before Google Health identity verification or hydration reading; another owner consent attempt alone cannot repair it.",
+        "The authorized saved administrative Google session was inspected read-only. The existing dedicated client, project, Web application type and saved callback agree. The inspection reports two enabled secret entries at the maximum capacity; no complete historical secret value is viewable. No secret value was read, returned or changed.",
+        "Current Google OAuth client documentation confirms that historical secret values are not retrievable, at most two secrets exist, and replacing one at capacity requires disabling and deleting an existing secret. Deletion is irreversible.",
+        "The concrete next action is an owner-approved replacement of the older dedicated-client secret, preserving the client ID, scopes, callback, other secret, encryption key, settings and records; then update only the existing server OAuth client-secret setting through the protected administrative surface.",
+        "No credential mutation, rotation, deletion, new client or login prompt was requested; the read-only administrative run reports no change. The provenance of the newer reported secret is not independently established. No code, schema or clinical write was made. A specific confirmation is required for the irreversible credential deletion; reconfirm actual target/status before any approved mutation and do not ask for another owner login before repair.",
+        "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved."
+      ],
+      "open_dependency_policy": "Do not repeat a genuine owner login until the confirmed client-credential rejection is repaired. No irreversible secret deletion or new client before the specific approval. Never return secrets to chat, source, logs or files; never reuse a consumed OAuth code. Other original source conditions and disabled scheduled development messages stay independent."
     }
   ],
   "continuation_automation": {
