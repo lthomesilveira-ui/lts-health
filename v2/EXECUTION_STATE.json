@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-07",
+  "updated_on": "2026-11-08",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,73 +50,67 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-CONNECTION-RECOVERY-045",
+    "id": "PKG-POLAR-LOCAL-UPDATE-DATE-046",
     "status": "in_progress",
-    "goal": "Include current-day water in the manual 30-day Google read and return a failed browser authorization to a usable, private recovery entry.",
+    "goal": "Show the Polar synchronization timestamp on the correct São Paulo civil day in the existing connection card.",
     "task_ids": [
-      "LTS-GOOGLE-READ-TODAY-001",
-      "LTS-GOOGLE-CALLBACK-RECOVERY-001"
+      "LTS-POLAR-UPDATE-DATE-001"
     ],
-    "candidate_build": "health-integrated-20261107.127",
-    "public_build": "health-integrated-20261107.126",
+    "candidate_build": "health-integrated-20261108.128",
+    "public_build": "health-integrated-20261107.127",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-07",
+    "started_on": "2026-11-08",
     "pending_gates": [
-      "Exact candidate browser and regression workflows",
-      "Published static recovery entry and exact callback dependency readback",
-      "Existing authenticated app return without initiating a new OAuth grant"
+      "Exact candidate regression workflows",
+      "Published .128 bytes and genuine local-date connection card"
     ],
-    "evidence_document": "v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md"
+    "evidence_document": "v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md"
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261107.126",
-    "published_on": "2026-11-07",
-    "release_kind": "startup_and_navigation_ux",
-    "main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
-    "runtime_promotion_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+    "build_id": "health-integrated-20261107.127",
+    "published_on": "2026-11-08",
+    "release_kind": "current_day_water_and_browser_connection_recovery",
+    "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
     "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All 22 exact candidate workflows passed. Deployment, both public Pages checks, public entry diagnostics and protected Real Auth passed. Unchanged-runtime publication repetitions are separately recorded.",
+    "automated_runtime_and_responsive_status": "21/21 exact candidate workflows passed. Deployment, both public Pages checks and protected Real Auth passed. Three unchanged-runtime publication repetitions remain separately recorded.",
     "ci_summary": {
       "status": "required_release_gates_complete",
-      "main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
+      "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
       "total": 25,
-      "success": 21,
-      "protected_actual_auth_run": 42383583877,
+      "success": 22,
+      "protected_actual_auth_run": 42433150503,
       "pending_workflows": [
-        42383583881,
-        42383583875,
-        42383583939,
-        42383584066
+        42433150483,
+        42433150388,
+        42433150442
       ]
     },
     "evidence": [
-      "PR506 exact candidate 44020ede2d386e2116bab359edce607e21462336 and tree 250f310b4e42e49c272d58bc393a92171215ca90 passed 22/22 workflows.",
-      "Startup Chromium/WebKit covers 320/393/1440 px, delayed SDK, failed entry, late recovery and protected data boundaries; integrated journeys verify actual menus, preserved filters, scoped Back and tab focus.",
-      "Synthetic training artifact 13578171747 SHA256 2d687a330748accdfccde341d56f5ba477004f9f009a99d4fe49ed2d8f507e20 was inspected at mobile and desktop resolutions.",
-      "Normal merge 8fda51864f2466f1996ce853de2724760889d5a4 preserved the exact tested tree. Deploy42383584016, Pages42383625929/42383625953, public-entry42383583906 and protected actual-auth42383583877 passed.",
-      "The genuine public .126 restored the existing session. Composition Back returned to Training with the search preserved; tab arrows retained focus; Exames choices showed recorded method/dates; Timeline distinguished overlapping source rows and named its filters. Home was restored. No health record, dose, source identity, mapping or integration configuration was changed."
+      "PR509 final candidate5f4ab5910be121262a77a00576324b4f67208c9e and tree74a710823a96fad6dcf430a71c016f8c2cc1a68c passed21/21 workflows,75 Node and24 PostgreSQL tests; six Chromium/WebKit320/393/1440 HTTP/browser recovery cases passed.",
+      "Synthetic artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was verified and inspected at mobile/desktop widths.",
+      "Observed normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserves the exact tested tree. Static recovery HTML, index and Google module were compared byte for byte before final server verification.",
+      "Published connection/callback/scheduled bundles7/6/2 and JWTtrue/false/false have exact6/6/7 reachable files. Native probes preserved JSON400, owner401, schedule405/401/403 and fixed browser303 outcomes.",
+      "The genuine browser followed the deployed callback to the Portuguese recovery page, cleared its query and used Voltar ao Health to restore the existing authenticated app on the exact.127 build. No Google sign-in or consent was initiated.",
+      "No source observation or clinical record was changed. Real Google consent, original water, upstream restoration and later recurrence remain independent."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42381802939,
-        "scope": "initial preview/calendar startup guard ordering",
-        "resolution": "Moved startup/SDK/read-only guard after status markup, before application modules; exact final candidate passed."
+        "run_id": 42431266875,
+        "candidate": "23416b227f4ff477627961bc6b4ff648b2b877df",
+        "scope": "Recovery browser route fixture followed a fulfilled redirect to an unpublished public page.",
+        "resolution": "Diagnostic7ef5895 identified404; final candidate uses real loopback HTTP, asserts the exact fixed production Location and retains all privacy/layout/return assertions."
       },
       {
-        "run_id": 42382295981,
-        "scope": "late route render removed Training keyboard focus",
-        "resolution": "Preserve the current live rendered route context; exact final candidate passed including focus after two animation frames."
-      },
-      {
-        "run_id": 42382759656,
-        "attempt": 1,
-        "scope": "WebKit1440 transient null bounding-box read for an original-file action",
-        "resolution": "Retained the initial failure and reran only that failed job on unchanged source; attempt2 passed all cases."
+        "run_id": 42432012054,
+        "candidate": "7ef5895a88061788637ce8678a7f3783bd0e8883",
+        "scope": "Retained diagnostic404 from redirected request bypassing Playwright route fixture.",
+        "resolution": "Final5f4ab591 passed the browser regression. Runtime recovery source was not weakened."
       }
     ]
   },
@@ -3700,7 +3694,7 @@
       "id": "LTS-GOOGLE-READ-TODAY-001",
       "area": "integrations",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "The manual Google water request excluded today while describing the last30days.",
       "acceptance": [
@@ -3710,16 +3704,22 @@
       ],
       "evidence": [
         "The manual reader used today as to, while hydrationReadParameters uses a strict less-than end date. The previous test asserted29 elapsed days and mirrored this exclusion.",
-        "The corrected window passes independent fixed calendar cases and an actual server-reader current-day fixture. No production hydration or clinical record is used."
+        "The corrected window passes independent fixed calendar cases and an actual server-reader current-day fixture. No production hydration or clinical record is used.",
+        "PR509 final candidate5f4ab5910be121262a77a00576324b4f67208c9e and tree74a710823a96fad6dcf430a71c016f8c2cc1a68c passed21/21 workflows,75 Node and24 PostgreSQL tests; six Chromium/WebKit320/393/1440 HTTP/browser recovery cases passed.",
+        "Synthetic artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was verified and inspected at mobile/desktop widths.",
+        "Observed normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserves the exact tested tree. Static recovery HTML, index and Google module were compared byte for byte before final server verification.",
+        "Published connection/callback/scheduled bundles7/6/2 and JWTtrue/false/false have exact6/6/7 reachable files. Native probes preserved JSON400, owner401, schedule405/401/403 and fixed browser303 outcomes.",
+        "The genuine browser followed the deployed callback to the Portuguese recovery page, cleared its query and used Voltar ao Health to restore the existing authenticated app on the exact.127 build. No Google sign-in or consent was initiated."
       ],
-      "next_action": "Complete exact candidate, publication and authenticated app checks.",
-      "blocker": null
+      "next_action": "Delivered; do not reopen for absent source data or uncompleted Google consent.",
+      "blocker": null,
+      "completed_on": "2026-11-08"
     },
     {
       "id": "LTS-GOOGLE-CALLBACK-RECOVERY-001",
       "area": "connection UX",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Browser authorization failures exposed a raw JSON error without an application return path.",
       "acceptance": [
@@ -3731,9 +3731,34 @@
       "evidence": [
         "An actual deployed callback GET with Accept text/html returned400 application/json and invalid_callback before this repair.",
         "The candidate uses a303 redirect to a fixed static page because default Supabase domains rewrite served HTML as plain text.75 Node cases and production integration contracts passed locally.",
-        "Local browser launch was unavailable because the runtime browser executable is absent; this is not a passing browser test."
+        "Local browser launch was unavailable because the runtime browser executable is absent; this is not a passing browser test.",
+        "PR509 final candidate5f4ab5910be121262a77a00576324b4f67208c9e and tree74a710823a96fad6dcf430a71c016f8c2cc1a68c passed21/21 workflows,75 Node and24 PostgreSQL tests; six Chromium/WebKit320/393/1440 HTTP/browser recovery cases passed.",
+        "Synthetic artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was verified and inspected at mobile/desktop widths.",
+        "Observed normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserves the exact tested tree. Static recovery HTML, index and Google module were compared byte for byte before final server verification.",
+        "Published connection/callback/scheduled bundles7/6/2 and JWTtrue/false/false have exact6/6/7 reachable files. Native probes preserved JSON400, owner401, schedule405/401/403 and fixed browser303 outcomes.",
+        "The genuine browser followed the deployed callback to the Portuguese recovery page, cleared its query and used Voltar ao Health to restore the existing authenticated app on the exact.127 build. No Google sign-in or consent was initiated."
       ],
-      "next_action": "Complete exact candidate browser checks, publish the page before deploying the callback and verify the real public return.",
+      "next_action": "Delivered; do not reopen for absent source data or uncompleted Google consent.",
+      "blocker": null,
+      "completed_on": "2026-11-08"
+    },
+    {
+      "id": "LTS-POLAR-UPDATE-DATE-001",
+      "area": "connection UX",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "The Polar update timestamp was displayed as its UTC date while the adjacent automatic timestamp used São Paulo time.",
+      "acceptance": [
+        "The actual connection card uses the São Paulo civil date for a source timestamp, including midnight/year/leap-day boundaries.",
+        "Unknown timestamps do not break rendering; source times, records, synchronization and authorization remain unchanged.",
+        "The genuine published card has a coherent local update date."
+      ],
+      "evidence": [
+        "A genuine authenticated card showed the next UTC date beside the previous São Paulo day for automatic synchronization. The renderer used fmtDate directly on last_sync_at.",
+        "The actual renderer now passes independent fixed civil-date cases, including explicit UTC offsets and invalid input."
+      ],
+      "next_action": "Complete exact candidate and published app verification.",
       "blocker": null
     }
   ],
@@ -5560,49 +5585,74 @@
       "publication_checks_passed": 21,
       "runtime_promotion_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
       "native_migration_version": "20261107223447"
+    },
+    {
+      "id": "PKG-GOOGLE-CONNECTION-RECOVERY-045",
+      "status": "done",
+      "goal": "Include current-day water in the manual 30-day Google read and return a failed browser authorization to a usable, private recovery entry.",
+      "task_ids": [
+        "LTS-GOOGLE-READ-TODAY-001",
+        "LTS-GOOGLE-CALLBACK-RECOVERY-001"
+      ],
+      "candidate_build": "health-integrated-20261107.127",
+      "public_build": "health-integrated-20261107.127",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-07",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md",
+      "completed_on": "2026-11-08",
+      "candidate_commit": "5f4ab5910be121262a77a00576324b4f67208c9e",
+      "candidate_tree": "74a710823a96fad6dcf430a71c016f8c2cc1a68c",
+      "candidate_checks_passed": 21,
+      "publication_checks_passed": 22,
+      "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488"
     }
   ],
   "latest_published_release": {
-    "build_id": "health-integrated-20261107.126",
-    "published_on": "2026-11-07",
-    "release_kind": "startup_and_navigation_ux",
-    "main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
-    "runtime_promotion_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+    "build_id": "health-integrated-20261107.127",
+    "published_on": "2026-11-08",
+    "release_kind": "current_day_water_and_browser_connection_recovery",
+    "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
     "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All22 exact frontend candidate workflows and all25 frontend publication workflows passed. The four previously pending broad repetitions were read to completion without reruns. Server-only PR508 has separate21/21 publication evidence.",
+    "automated_runtime_and_responsive_status": "21/21 exact candidate workflows passed. Deployment, both public Pages checks and protected Real Auth passed. Three unchanged-runtime publication repetitions remain separately recorded.",
     "ci_summary": {
-      "status": "all_publication_workflows_complete",
-      "main_commit": "8fda51864f2466f1996ce853de2724760889d5a4",
+      "status": "required_release_gates_complete",
+      "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
       "total": 25,
-      "success": 25,
-      "protected_actual_auth_run": 42383583877,
-      "pending_workflows": []
+      "success": 22,
+      "protected_actual_auth_run": 42433150503,
+      "pending_workflows": [
+        42433150483,
+        42433150388,
+        42433150442
+      ]
     },
     "evidence": [
-      "PR506 exact candidate 44020ede2d386e2116bab359edce607e21462336 and tree 250f310b4e42e49c272d58bc393a92171215ca90 passed 22/22 workflows.",
-      "Startup Chromium/WebKit covers 320/393/1440 px, delayed SDK, failed entry, late recovery and protected data boundaries; integrated journeys verify actual menus, preserved filters, scoped Back and tab focus.",
-      "Synthetic training artifact 13578171747 SHA256 2d687a330748accdfccde341d56f5ba477004f9f009a99d4fe49ed2d8f507e20 was inspected at mobile and desktop resolutions.",
-      "Normal merge 8fda51864f2466f1996ce853de2724760889d5a4 preserved the exact tested tree. Deploy42383584016, Pages42383625929/42383625953, public-entry42383583906 and protected actual-auth42383583877 passed.",
-      "The genuine public .126 restored the existing session. Composition Back returned to Training with the search preserved; tab arrows retained focus; Exames choices showed recorded method/dates; Timeline distinguished overlapping source rows and named its filters. Home was restored. No health record, dose, source identity, mapping or integration configuration was changed.",
-      "Continuity readback confirmed all25 original .126 publication workflows completed successfully, including the four previously pending broad repetitions; no test was rerun and the frontend release identity is unchanged."
+      "PR509 final candidate5f4ab5910be121262a77a00576324b4f67208c9e and tree74a710823a96fad6dcf430a71c016f8c2cc1a68c passed21/21 workflows,75 Node and24 PostgreSQL tests; six Chromium/WebKit320/393/1440 HTTP/browser recovery cases passed.",
+      "Synthetic artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was verified and inspected at mobile/desktop widths.",
+      "Observed normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserves the exact tested tree. Static recovery HTML, index and Google module were compared byte for byte before final server verification.",
+      "Published connection/callback/scheduled bundles7/6/2 and JWTtrue/false/false have exact6/6/7 reachable files. Native probes preserved JSON400, owner401, schedule405/401/403 and fixed browser303 outcomes.",
+      "The genuine browser followed the deployed callback to the Portuguese recovery page, cleared its query and used Voltar ao Health to restore the existing authenticated app on the exact.127 build. No Google sign-in or consent was initiated.",
+      "No source observation or clinical record was changed. Real Google consent, original water, upstream restoration and later recurrence remain independent."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42381802939,
-        "scope": "initial preview/calendar startup guard ordering",
-        "resolution": "Moved startup/SDK/read-only guard after status markup, before application modules; exact final candidate passed."
+        "run_id": 42431266875,
+        "candidate": "23416b227f4ff477627961bc6b4ff648b2b877df",
+        "scope": "Recovery browser route fixture followed a fulfilled redirect to an unpublished public page.",
+        "resolution": "Diagnostic7ef5895 identified404; final candidate uses real loopback HTTP, asserts the exact fixed production Location and retains all privacy/layout/return assertions."
       },
       {
-        "run_id": 42382295981,
-        "scope": "late route render removed Training keyboard focus",
-        "resolution": "Preserve the current live rendered route context; exact final candidate passed including focus after two animation frames."
-      },
-      {
-        "run_id": 42382759656,
-        "attempt": 1,
-        "scope": "WebKit1440 transient null bounding-box read for an original-file action",
-        "resolution": "Retained the initial failure and reran only that failed job on unchanged source; attempt2 passed all cases."
+        "run_id": 42432012054,
+        "candidate": "7ef5895a88061788637ce8678a7f3783bd0e8883",
+        "scope": "Retained diagnostic404 from redirected request bypassing Playwright route fixture.",
+        "resolution": "Final5f4ab591 passed the browser regression. Runtime recovery source was not weakened."
       }
     ]
   },
@@ -10503,27 +10553,27 @@
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-07",
-    "source_main_commit": "acad8ba67edeb02a5aae3a680966077ba9adb81a",
-    "runtime_build": "health-integrated-20261107.126",
-    "candidate_build": "health-integrated-20261107.127",
+    "reviewed_on": "2026-11-08",
+    "source_main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "runtime_build": "health-integrated-20261107.127",
+    "candidate_build": "health-integrated-20261108.128",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 125,
+      "done": 127,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2,
-      "in_progress": 2
+      "in_progress": 1
     },
-    "executable_task_count": 2,
+    "executable_task_count": 1,
     "evidence": [
-      "Two concrete defects reproduced in existing code/deployed callback: manual request excluded today and browser failures returned raw JSON.",
-      "Original nine source/authorization/acceptance conditions remain independently open.",
-      "Health and Wealth scheduled development continuations remain disabled by the later owner instruction; interactive execution is authorized."
+      "Package045 is delivered and verified on the public exact.127 build. Original nine source/authorization/acceptance conditions stay independently open.",
+      "Genuine Polar card inspection found a separate UTC versus São Paulo date disagreement. Package046 owns only that bounded display correction.",
+      "Health and Wealth scheduled development continuations remain disabled; interactive execution is authorized."
     ]
   },
   "continuity_review_history": [
@@ -11930,6 +11980,30 @@
         "result": "hourly_agenda_verified_app_ready_to_connect_owner_consent_and_real_reads_pending"
       },
       "open_dependency_policy": "An empty engineering dispatch does not close any original source, recurrence, lineage, coverage, diagnostic, proposal-recovery or owner-acceptance condition. The prior Google403 cause is not proven by already-correct tester/callback administration."
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "acad8ba67edeb02a5aae3a680966077ba9adb81a",
+      "runtime_build": "health-integrated-20261107.126",
+      "candidate_build": "health-integrated-20261107.127",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 125,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2,
+        "in_progress": 2
+      },
+      "executable_task_count": 2,
+      "evidence": [
+        "Two concrete defects reproduced in existing code/deployed callback: manual request excluded today and browser failures returned raw JSON.",
+        "Original nine source/authorization/acceptance conditions remain independently open.",
+        "Health and Wealth scheduled development continuations remain disabled by the later owner instruction; interactive execution is authorized."
+      ]
     }
   ],
   "continuation_automation": {
@@ -11942,53 +12016,35 @@
     "resumption_policy": "explicit_request_to_reenable_the_automation_required; ordinary_interactive_work_does_not_resume_it"
   },
   "last_verified_server_preparation": {
-    "kind": "google_health_private_hourly_agenda",
-    "verified_on": "2026-11-07",
-    "main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
-    "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
-    "tested_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
-    "candidate_workflows_passed": 17,
-    "publication_workflows_passed": 21,
-    "node_tests_passed": 71,
-    "postgresql_tests_passed": 24,
-    "native_migration_version": "20261107223447",
-    "source_migration": "supabase/migrations/20261107213824_google_health_background_schedule.sql",
+    "kind": "google_health_browser_recovery",
+    "verified_on": "2026-11-08",
+    "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "candidate_commit": "5f4ab5910be121262a77a00576324b4f67208c9e",
+    "tested_tree": "74a710823a96fad6dcf430a71c016f8c2cc1a68c",
     "edge_functions": [
       {
         "name": "health-google-connection",
-        "version": 5,
+        "version": 7,
         "verify_jwt": true,
         "exact_files_verified": 6
       },
       {
         "name": "health-google-callback",
-        "version": 5,
+        "version": 6,
         "verify_jwt": false,
         "exact_files_verified": 6
       },
       {
         "name": "health-google-scheduled",
-        "version": 1,
+        "version": 2,
         "verify_jwt": false,
         "exact_files_verified": 7
       }
     ],
-    "schedule": {
-      "enabled": true,
-      "interval_minutes": 60,
-      "window_days": 30,
-      "timezone": "America/Sao_Paulo",
-      "ticket_minute": 35,
-      "dispatch_minute": 36,
-      "empty_dispatch_status": 200,
-      "temporary_ticket_cleared": true,
-      "repeated_dispatch": "null"
-    },
-    "authenticated_configured_status": "ready_to_connect",
     "owner_consent_verified": false,
     "real_hydration_read_verified": false,
     "canonical_water_updated": false,
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
+    "evidence_document": "v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md"
   },
   "server_preparation_history": [
     {
@@ -12040,6 +12096,55 @@
       "real_hydration_read_verified": false,
       "canonical_water_updated": false,
       "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
+    },
+    {
+      "kind": "google_health_private_hourly_agenda",
+      "verified_on": "2026-11-07",
+      "main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+      "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
+      "tested_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
+      "candidate_workflows_passed": 17,
+      "publication_workflows_passed": 21,
+      "node_tests_passed": 71,
+      "postgresql_tests_passed": 24,
+      "native_migration_version": "20261107223447",
+      "source_migration": "supabase/migrations/20261107213824_google_health_background_schedule.sql",
+      "edge_functions": [
+        {
+          "name": "health-google-connection",
+          "version": 5,
+          "verify_jwt": true,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-callback",
+          "version": 5,
+          "verify_jwt": false,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-scheduled",
+          "version": 1,
+          "verify_jwt": false,
+          "exact_files_verified": 7
+        }
+      ],
+      "schedule": {
+        "enabled": true,
+        "interval_minutes": 60,
+        "window_days": 30,
+        "timezone": "America/Sao_Paulo",
+        "ticket_minute": 35,
+        "dispatch_minute": 36,
+        "empty_dispatch_status": 200,
+        "temporary_ticket_cleared": true,
+        "repeated_dispatch": "null"
+      },
+      "authenticated_configured_status": "ready_to_connect",
+      "owner_consent_verified": false,
+      "real_hydration_read_verified": false,
+      "canonical_water_updated": false,
+      "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
     }
   ]
 }

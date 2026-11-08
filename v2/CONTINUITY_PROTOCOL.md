@@ -1,3 +1,11 @@
+## 2026-11-08 — Duas correções publicadas .127; data Polar em execução .128
+
+O pacote045 está concluído: a consulta manual de água inclui hoje nos30dias civis de São Paulo, e a autorização inválida/expirada no navegador oferece retorno em português ao Health. A candidata5f4ab5910be121262a77a00576324b4f67208c9e passou21/21 workflows; o merge normaldf88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserva a árvore74a710823a96fad6dcf430a71c016f8c2cc1a68c. As imagens sintéticas foram conferidas; publicação, ambos os smokes Pages e Real Auth passaram. Três repetições gerais de publicação ainda em execução ficam registradas sem contagem antecipada.
+
+A página estática foi comparada exatamente antes da verificação final das rotas7/6/2, JWTtrue/false/false,6/6/7 arquivos alcançáveis. Probes nativos preservaram limites de autenticação e agenda. O navegador real seguiu o callback para a página fixa e o botão Voltar ao Health restaurou a sessão existente na.127. Não houve novo login/consentimento Google ou alteração de registros clínicos. Água real e as nove condições originais permanecem independentes. As continuações agendadas de desenvolvimento seguem desativadas.
+
+A inspeção genuína encontrou uma terceira falha concreta: a atualização Polar mostrava o dia UTC seguinte ao lado do horário automático de São Paulo. O pacote046/LTS-POLAR-UPDATE-DATE-001 converte apenas a apresentação de last_sync_at para o dia civil de São Paulo, com expectativas independentes de meia-noite, ano, bissexto, offset explícito e entrada inválida no renderizador real. A candidata.128 ainda requer gates e conferência publicada. Detalhes: v2/releases/GOOGLE_CONNECTION_RECOVERY_20261107.md e v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md.
+
 ## 2026-11-07 — Em execução: água de hoje e retorno da autorização, .127
 
 O pacote045 corrige duas falhas concretas. A consulta manual anunciava os últimos30dias, mas usava hoje como limite exclusivo e descartava os registros do próprio dia. O retorno de autorização inválida/expirada mostrava JSON técnico sem caminho de volta ao Health. A candidata usa amanhã como limite exclusivo e uma página fixa em português para o retorno de falhas no navegador; as respostas JSON e o retorno de sucesso conservam o contrato.
