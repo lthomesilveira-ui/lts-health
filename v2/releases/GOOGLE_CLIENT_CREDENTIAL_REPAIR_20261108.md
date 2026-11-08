@@ -1,3 +1,11 @@
+## Verified direct provider result; operational repair awaits secure owner entry
+
+PR513 candidate89ff13aa587777ba2db8c95a179e069101d79587 and tree42343ffd376ab50616a4b9ea619a85b3ba625d2d passed17/17 exact candidate workflows. Normal mergea196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved that tree. Scheduled5 is ACTIVE in its existing custom ticket-authenticated mode, with all8 files read back exactly. The protected native call matches the expected client ID, actually contacts Google and returns HTTP401/invalid_client; no connection or canonical write is verified and its raw invocation ticket is cleared. No complete credential or provider body is returned/logged. The frontend index remains unchanged.
+
+The code diagnosis is delivered; the credential repair is still blocked. Automated administrative execution did not complete the saved-value update and the approved older target no longer matches current reported metadata. The next indispensable action is a secure owner-performed current-target replacement/complete-value server save. Preserve another actually enabled secret and every other setting; stop on any mismatch. No new generic approval or repeated app login is needed. Run this private check after the saved update before one genuine owner connection. The nine original source/hydration conditions remain open.
+
+PR512 publication21/21 passed. PR513 initial publication laboratory job128842982045 failed at the existing null boundingBox height read inlab-original-browser.mjs:38; initial artifact13631368280/sha256c100bbbf8f18f02e5ff12645b40ba6eff4678fddcab1eb8005ca3011eb55ae62 is preserved. The single retry also failed; publication finished19/21 with an additional WebKit320 native disclosure failure. The preserved test-only follow-up is package049; the credential result above remains independent. No laboratory correction or new clinical-data success is claimed.
+
 # Reconcile the Google client credential failure safely — package048
 
 A genuine callback established token_exchange/HTTP401/invalid_client before identity verification, connection persistence or hydration reading. The owner explicitly approved replacing only the older secret of the existing dedicated client and updating only its protected server setting. That approval remains valid; do not request it again.

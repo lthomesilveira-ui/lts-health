@@ -50,30 +50,26 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
+    "id": "PKG-BROWSER-EVIDENCE-SETTLING-049",
     "status": "in_progress",
-    "goal": "Safely reconcile and repair the confirmed Google client-authentication rejection without rotating an unverified target or exposing credentials.",
+    "goal": "Verify native controls after visible DOM state settles, retaining exact source/geometry/disclosure assertions and first-failure evidence.",
     "task_ids": [
-      "LTS-GOOGLE-CLIENT-CREDENTIAL-001"
+      "LTS-BROWSER-EVIDENCE-SETTLING-001"
     ],
     "public_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": true,
+    "runtime_changed": false,
     "frontend_runtime_changed": false,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
     "pending_gates": [
-      "Publish and verify the protected actual-provider probe even when masked UI metadata disagrees",
-      "Reconcile direct provider evidence before another credential mutation or fresh owner connection",
-      "A genuine owner connection and hydration remain separate from the configuration check"
+      "Exact candidate Chromium/WebKit laboratory source and native session disclosure suites",
+      "All affected safety/provenance assertions remain intact; no fixed sleeps, synthetic clicks or field mutations",
+      "Normal merge of the tested tree; no application or backend deployment is needed"
     ],
-    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
-    "owner_specific_approval_received": true,
-    "candidate_backend_function": "health-google-scheduled",
-    "candidate_backend_change": "Preserve masked comparison as evidence and run the bounded invented-grant probe for the expected configured client even if masks disagree",
-    "last_published_diagnostic_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29"
+    "evidence_document": "v2/releases/BROWSER_EVIDENCE_SETTLING_20261108.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -3810,8 +3806,8 @@
       "area": "Google server credential repair",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
-      "blocker": null,
+      "status": "blocked_user",
+      "blocker": "A native protected probe confirms the expected client ID and actual provider HTTP401/invalid_client for the current server secret. Automated administrative access did not complete the protected update, and the originally approved older deletion target no longer matches reported current keys. A secure owner-performed credential replacement/transfer is required; this is an operational handoff, not a request for the same approval again.",
       "summary": "Reconcile actual current client credentials and repair the confirmed dedicated Google server authentication failure safely.",
       "acceptance": [
         "Reconfirm the exact existing client and current provider metadata; preserve the other enabled secret and never delete a mismatched or unverified target.",
@@ -3824,9 +3820,29 @@
         "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
         "The owner specifically approved this concrete replacement. Initial execution reported no credential mutation; a bounded public-data transfer test succeeded but ended before real deletion/creation/save. A single direct execution is active.",
         "Administrative execution ended without confirming deletion/creation/save; current reported masked metadata no longer matches the approved older target. No further rotation is allowed on that inconsistent evidence. A protected server-only comparison and invented-grant probe is now under validation.",
-        "PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge and scheduled4 exact8-file native readback. Native comparisons match client ID but neither current nor prior masked secret metadata; provider_attempted=false, so they do not establish current Google credential rejection. A101-test follow-up permits a direct bounded provider probe independent of masked metadata."
+        "PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge and scheduled4 exact8-file native readback. Native comparisons match client ID but neither current nor prior masked secret metadata; provider_attempted=false, so they do not establish current Google credential rejection. A101-test follow-up permits a direct bounded provider probe independent of masked metadata.",
+        "PR513 exact17/17 passed;101 Node and24 PostgreSQL coverage. Normal merge a196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved tree42343ffd376ab50616a4b9ea619a85b3ba625d2d. Scheduled5 ACTIVE/JWTfalse exact8-file readback. Native check actually contacted Google and returned HTTP401/invalid_client with the expected configured client, no verified connection, no canonical write and cleared ticket. No credential was created/deleted/updated by the native check."
       ],
-      "next_action": "Complete exact follow-up validation and native provider probe; do not infer current credential validity from contradictory masked metadata, request another owner grant or rotate another key before that evidence."
+      "next_action": "The owner completes the exact dedicated-client replacement and same-name server-secret save inside the secure administrative flow, preserving another actually enabled secret and all other settings. Stop on a target/status mismatch. Then repeat the existing private provider check before one fresh genuine owner connection. Never request complete credentials in chat or repeat remote mutation loops."
+    },
+    {
+      "id": "LTS-BROWSER-EVIDENCE-SETTLING-001",
+      "area": "Browser verification",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "blocker": null,
+      "summary": "Await real visible source geometry and native disclosure state before browser assertions; keep first failures inspectable.",
+      "acceptance": [
+        "Laboratory source tests await an attached visible exact-source link before measuring, and retain44px/viewport/destination/history/zero-write assertions.",
+        "Native disclosure tests await actual browser open state after the real user click, retain the same equality assertion and never set open directly.",
+        "Any later laboratory failure retains the exact engine/viewport/mode and synthetic screenshot before teardown.",
+        "Affected actual Chromium/WebKit suites and continuity/privacy contracts pass on the exact candidate before merging; no runtime or clinical data changes."
+      ],
+      "evidence": [
+        "The unchanged-runtime publication a196596b393dbbd52486ef86d7d5b3e0bf74baa4 completed19/21; Laboratory Originals failed twice on a null boundingBox at line38, and Visual Training host failed one WebKit320 native disclosure equality immediately after click. Original artifacts and logs are preserved in the dedicated report."
+      ],
+      "next_action": "Run exact candidate suites for the bounded real-DOM waits; preserve any timeout rather than retrying or weakening assertions. No owner action is needed for this test-only work."
     }
   ],
   "package_history": [
@@ -5759,6 +5775,33 @@
       "runtime_promotion_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
       "publication_checks_passed": 21,
       "pending_publication_repetitions": []
+    },
+    {
+      "id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
+      "status": "blocked_user",
+      "goal": "Safely reconcile and repair the confirmed Google client-authentication rejection without rotating an unverified target or exposing credentials.",
+      "task_ids": [
+        "LTS-GOOGLE-CLIENT-CREDENTIAL-001"
+      ],
+      "public_build": "health-integrated-20261108.128",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-08",
+      "pending_gates": [
+        "Owner completes the secure current-target credential replacement and same-name server secret save",
+        "Native provider check after the complete saved value; no fresh owner login before that check",
+        "Real owner connection and hydration/source acceptance remain independent"
+      ],
+      "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
+      "owner_specific_approval_received": true,
+      "candidate_backend_function": null,
+      "last_published_diagnostic_commit": "a196596b393dbbd52486ef86d7d5b3e0bf74baa4",
+      "deployed_backend_function": "health-google-scheduled",
+      "deployed_backend_version": 5
     }
   ],
   "latest_published_release": {
@@ -10780,12 +10823,12 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29",
+    "source_main_commit": "a196596b393dbbd52486ef86d7d5b3e0bf74baa4",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
-    "runtime_changed": true,
+    "runtime_changed": false,
     "frontend_runtime_changed": false,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
@@ -10793,16 +10836,17 @@
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2,
+      "blocked_user": 1,
       "in_progress": 1
     },
     "executable_task_count": 1,
     "evidence": [
-      "PR512 exact17/17 and100 Node/24 PostgreSQL passed; scheduled4 deployed and all8 files/mode read back exactly. Frontend128 bytes unchanged.",
-      "Native current/prior masked comparisons return client_id_matches=true and suffix match=false, with provider_attempted=false. These are not direct provider validation or a completed credential repair.",
-      "A101-test follow-up retains masked disagreement but permits one private actual-configured-credential invented-grant probe; no key or health record changes.",
-      "All nine original conditions and the operational repair remain open; no new genuine owner login is requested yet."
+      "Credential repair remains blocked_user after the native provider401/invalid_client result; the secure manual owner step is prepared and no new key mutation is running.",
+      "PR513 exact17/17 passed and native scheduled5 is byte verified. Its broader publication finished19/21, preserving two laboratory failures and one WebKit320 disclosure failure.",
+      "New package049 changes only browser waits/failure capture, preserving all assertions, source bindings and runtime bytes. Candidate actual-browser suites remain pending.",
+      "All nine original source/hydration conditions remain open and independent."
     ],
-    "open_dependency_policy": "Do not rotate a different key, repeat remote UI loops or request another owner connection until actual server configuration is reconciled. Publish and verify only the protected check; preserve client ID, credentials, scopes, encryption, cron and clinical/source records."
+    "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
   },
   "continuity_review_history": [
     {
@@ -12413,31 +12457,52 @@
     "resumption_policy": "explicit_request_to_reenable_the_automation_required; ordinary_interactive_work_does_not_resume_it"
   },
   "last_verified_server_preparation": {
-    "kind": "google_client_configuration_comparison",
+    "kind": "google_client_direct_provider_diagnostic",
     "verified_on": "2026-11-08",
-    "main_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29",
-    "candidate_commit": "c347cc79f6ba6945c053fa530c7e7461585dffb1",
-    "tested_tree": "946202a32f04917f653b0dc0381c5d26ed0679d0",
+    "main_commit": "a196596b393dbbd52486ef86d7d5b3e0bf74baa4",
+    "candidate_commit": "89ff13aa587777ba2db8c95a179e069101d79587",
+    "tested_tree": "42343ffd376ab50616a4b9ea619a85b3ba625d2d",
     "candidate_workflows_passed": 17,
-    "node_tests_passed": 100,
+    "node_tests_passed": 101,
     "postgresql_tests_passed": 24,
     "edge_functions": [
       {
         "name": "health-google-scheduled",
-        "version": 4,
+        "version": 5,
         "verify_jwt": false,
         "exact_files_verified": 8
       }
     ],
-    "native_comparison": {
+    "native_provider_check": {
       "client_id_matches": true,
-      "current_masked_suffix_matches": false,
-      "prior_masked_suffix_matches": false,
-      "provider_attempted": false,
+      "client_secret_present": true,
+      "secret_matches_reported_suffix": false,
+      "provider_attempted": true,
+      "provider_status": 401,
+      "provider_error": "invalid_client",
       "connection_verified": false,
-      "canonical_updated": false
+      "canonical_updated": false,
+      "ticket_cleared": true
     },
+    "credential_repaired": false,
     "real_hydration_verified": false,
+    "publication_ci": {
+      "status": "completed_with_failures",
+      "total": 21,
+      "initial_failed_workflow": 42517290338,
+      "initial_failed_job": 128842982045,
+      "initial_failure": "Existing laboratory browser null boundingBox height at lab-original-browser.mjs:38",
+      "single_failed_job_retry_requested": true,
+      "pending_confirmation": false,
+      "success": 19,
+      "failed_workflows": [
+        42517290338,
+        42517290656
+      ],
+      "single_retry_job": 128843712409,
+      "single_retry_conclusion": "failure",
+      "follow_up_package": "PKG-BROWSER-EVIDENCE-SETTLING-049"
+    },
     "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
   },
   "server_preparation_history": [
@@ -12571,6 +12636,34 @@
       ],
       "real_hydration_verified": false,
       "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md"
+    },
+    {
+      "kind": "google_client_configuration_comparison",
+      "verified_on": "2026-11-08",
+      "main_commit": "6d710a1a1cdee3e799c0de510cf66d31085c1d29",
+      "candidate_commit": "c347cc79f6ba6945c053fa530c7e7461585dffb1",
+      "tested_tree": "946202a32f04917f653b0dc0381c5d26ed0679d0",
+      "candidate_workflows_passed": 17,
+      "node_tests_passed": 100,
+      "postgresql_tests_passed": 24,
+      "edge_functions": [
+        {
+          "name": "health-google-scheduled",
+          "version": 4,
+          "verify_jwt": false,
+          "exact_files_verified": 8
+        }
+      ],
+      "native_comparison": {
+        "client_id_matches": true,
+        "current_masked_suffix_matches": false,
+        "prior_masked_suffix_matches": false,
+        "provider_attempted": false,
+        "connection_verified": false,
+        "canonical_updated": false
+      },
+      "real_hydration_verified": false,
+      "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
     }
   ]
 }
