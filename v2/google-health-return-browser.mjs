@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {createServer} from 'node:http';
 import {chromium,webkit} from 'playwright';
 import {createGoogleHealthHandlers} from '../supabase/functions/_shared/google-health-connection.mjs';
 
@@ -10,6 +11,38 @@ const html=await fs.readFile(new URL('google-health-return.html',import.meta.url
 const config={enabled:true,url:'https://abcdefghijklmnopqrst.supabase.co',clientId:'123456-synthetic.apps.googleusercontent.com',clientSecret:'synthetic-test-only',encryptionKey:btoa('x'.repeat(32))};
 let providerCalls=0,saves=0;
 const handlers=createGoogleHealthHandlers({config:()=>config,authenticate:async()=>null,storeFactory:()=>({consume:async()=>null,save:async()=>{saves++;}}),fetcher:async()=>{providerCalls++;throw Error('Provider access prohibited');}});
+let fixtureOrigin,redirects=0;
+const networkErrors=[],blocked=[];
+// A fulfilled Playwright redirect bypasses routing for its target. Serve the
+// actual HTML over HTTP instead of accidentally requesting an unpublished page.
+// The original fixed production destination is asserted before binding only
+// its origin to this loopback fixture. Runtime source is not rewritten.
+const server=createServer(async(req,res)=>{
+  try{
+    assert.equal(req.method,'GET');
+    const url=new URL(req.url,fixtureOrigin);
+    if(url.pathname==='/lts-health/v2/google-health-return.html'){
+      res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end(html);
+    }
+    if(url.pathname==='/lts-health/v2/'){
+      res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});return res.end('<!doctype html><html lang="pt-BR"><title>Synthetic return destination</title><h1>Destino do aplicativo</h1></html>');
+    }
+    if(url.pathname==='/synthetic-callback'){
+      const result=await handlers.callback(new Request(config.url+'/functions/v1/health-google-callback'+url.search,{headers:{Accept:req.headers.accept||''}}));
+      assert.equal(result.status,303);
+      assert.equal(result.headers.get('location'),app+'google-health-return.html?result=expired');
+      const headers=Object.fromEntries(result.headers);
+      headers.location=fixtureOrigin+new URL(headers.location).pathname+new URL(headers.location).search;
+      redirects++;
+      res.writeHead(result.status,headers);return res.end(await result.text());
+    }
+    if(url.pathname==='/favicon.ico'){res.writeHead(204);return res.end();}
+    throw Error('Unexpected synthetic request '+url.pathname);
+  }catch(error){networkErrors.push(String(error));res.writeHead(500);res.end('Synthetic fixture failed');}
+});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+fixtureOrigin='http://127.0.0.1:'+server.address().port;
+const fixtureApp=fixtureOrigin+new URL(app).pathname;
 await fs.mkdir('artifacts/google-health-return',{recursive:true});
 const outcomes=[
   ['invalid_request','Não foi possível concluir a conexão'],
@@ -19,7 +52,7 @@ const outcomes=[
   ['unavailable','Conexão indisponível no momento'],
   ['%3Csvg%20onload%3Dalert(1)%3E','Não foi possível concluir a conexão']
 ];
-for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
+try{for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
   const browser=await engine.launch({headless:true});
   try{
     for(const width of [320,393,1440]){
@@ -28,18 +61,11 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
       page.on('console',message=>{if(message.type()==='error')consoleErrors.push(message.text());});
       await page.route('**/*',async route=>{
         const request=route.request(),url=new URL(request.url());
-        assert.equal(request.method(),'GET');
-        assert.equal(url.origin,'https://lthomesilveira-ui.github.io','no provider or arbitrary network destination');
-        if(url.pathname==='/lts-health/v2/google-health-return.html')return route.fulfill({contentType:'text/html; charset=utf-8',body:html});
-        if(url.pathname==='/lts-health/v2/')return route.fulfill({contentType:'text/html',body:'<!doctype html><html lang="pt-BR"><title>Synthetic return destination</title><h1>Destino do aplicativo</h1></html>'});
-        if(url.pathname==='/synthetic-callback'){
-          const result=await handlers.callback(new Request(config.url+'/functions/v1/health-google-callback'+url.search,{headers:{Accept:'text/html'}}));
-          return route.fulfill({status:result.status,headers:Object.fromEntries(result.headers),body:await result.text()});
-        }
-        throw Error('Unexpected synthetic request '+url.pathname);
+        if(request.method()==='GET'&&url.origin===fixtureOrigin)return route.continue();
+        blocked.push({method:request.method(),origin:url.origin});return route.abort();
       });
       // Exercise the actual server failure response and the actual static page.
-      await page.goto('https://lthomesilveira-ui.github.io/synthetic-callback?state='+'x'.repeat(43)+'&code=synthetic-private-canary');
+      await page.goto(fixtureOrigin+'/synthetic-callback?state='+'x'.repeat(43)+'&code=synthetic-private-canary');
       try{await page.getByRole('heading',{name:'Esta autorização expirou',exact:true}).waitFor({timeout:10000});}
       catch(error){
         const u=new URL(page.url());
@@ -47,29 +73,30 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
         await page.screenshot({path:`artifacts/google-health-return/${engineName}-${width}-failure.png`,fullPage:true});
         throw error;
       }
-      assert.equal(await page.url(),app+'google-health-return.html','only the fixed recovery location remains');
+      assert.equal(await page.url(),fixtureApp+'google-health-return.html','only the fixed recovery location remains');
       for(const [result,title] of outcomes){
-        await page.goto(app+'google-health-return.html?result='+result+'&code=synthetic-private-canary');
+        await page.goto(fixtureApp+'google-health-return.html?result='+result+'&code=synthetic-private-canary');
         await page.getByRole('heading',{name:title,exact:true}).waitFor();
-        assert.equal(await page.url(),app+'google-health-return.html','input parameters are not retained');
+        assert.equal(await page.url(),fixtureApp+'google-health-return.html','input parameters are not retained');
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'recovery fits '+engineName+' '+width);
         assert.doesNotMatch(await page.locator('body').innerText(),/synthetic-private-canary|invalid_state|<svg|OAuth|PKCE/);
         const link=page.getByRole('link',{name:'Voltar ao Health',exact:true}),box=await link.boundingBox();
         assert.ok(box&&box.height>=44&&box.x>=0&&box.x+box.width<=width,'usable return action');
         assert.equal(await link.getAttribute('href'),'./#dados');
       }
-      await page.goto(app+'google-health-return.html?result=expired');
+      await page.goto(fixtureApp+'google-health-return.html?result=expired');
       await page.getByRole('heading',{name:'Esta autorização expirou',exact:true}).waitFor();
       await page.keyboard.press('Tab');
       assert.equal(await page.getByRole('link',{name:'Voltar ao Health'}).evaluate(e=>e===document.activeElement),true,'return is keyboard reachable');
       await page.screenshot({path:`artifacts/google-health-return/${engineName}-${width}.png`,fullPage:true});
       await page.getByRole('link',{name:'Voltar ao Health',exact:true}).click();
       await page.getByRole('heading',{name:'Destino do aplicativo',exact:true}).waitFor();
-      assert.equal(await page.url(),app+'#dados');
+      assert.equal(await page.url(),fixtureApp+'#dados');
       assert.deepEqual(errors,[]);
       await context.close();
     }
   }finally{await browser.close();}
-}
+}}finally{await new Promise(resolve=>server.close(resolve));}
+assert.equal(redirects,6);assert.deepEqual(networkErrors,[]);assert.deepEqual(blocked,[]);
 assert.equal(providerCalls,0);assert.equal(saves,0);
 console.log('Google callback recovery: Chromium/WebKit at320/393/1440, real failure redirect, fixed copy, no sensitive query reflection, no provider calls/writes, layout and keyboard return passed.');
