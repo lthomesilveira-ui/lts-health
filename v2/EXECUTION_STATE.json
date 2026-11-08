@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-BROWSER-EVIDENCE-SETTLING-049",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Verify native controls after visible DOM state settles, retaining exact source/geometry/disclosure assertions and first-failure evidence.",
     "task_ids": [
       "LTS-BROWSER-EVIDENCE-SETTLING-001"
@@ -64,12 +64,26 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
-    "pending_gates": [
-      "Exact candidate Chromium/WebKit laboratory source and native session disclosure suites",
-      "All affected safety/provenance assertions remain intact; no fixed sleeps, synthetic clicks or field mutations",
-      "Normal merge of the tested tree; no application or backend deployment is needed"
-    ],
-    "evidence_document": "v2/releases/BROWSER_EVIDENCE_SETTLING_20261108.md"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/BROWSER_EVIDENCE_SETTLING_20261108.md",
+    "completed_on": "2026-11-08",
+    "candidate_commit": "23f31c050e0b5024df69ef22e5ed2c50d2f80fd0",
+    "tested_tree": "a3bf34b9821118f4e1f851fce09c173ab57b5b2d",
+    "main_commit": "2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad",
+    "candidate_workflows_passed": 18,
+    "merge_tree_verified": true,
+    "next_action_package_id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
+    "postmerge_ci": {
+      "total": 20,
+      "success": 18,
+      "pending_workflows": [
+        42529560429,
+        42529560288
+      ],
+      "failure": 0,
+      "status": "in_progress",
+      "note": "Automatic unchanged-tree postmerge checks; no complete publication success claimed."
+    }
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -1912,8 +1926,8 @@
         "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved.",
         "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed."
       ],
-      "next_action": "Await verified completion of the single active owner-approved credential repair, then request a fresh genuine owner connection only when ready. Continue real hydration/source reconciliation and preserve all original acceptance criteria; do not repeat old phone checks or manual water entry.",
-      "blocker": "The confirmed OAuth client-credential rejection is being repaired in the separate owner-approved operational task. The original hydration/source acceptance remains unverified and independent of that internal configuration work. No new owner action is required until the protected credential update is complete.",
+      "next_action": "Complete the secure credential save and private provider check in the separate operational task before one fresh genuine owner connection. Preserve the original Health Sync/origin/recurrence acceptance criteria and do not repeat completed phone setup or manual water entry.",
+      "blocker": "Current native provider evidence still rejects the dedicated client credential. The separate operational task awaits a secure owner-performed complete-value save. This does not establish upstream water/source identity or recovery.",
       "phone_status_capture_received": true
     },
     {
@@ -3821,7 +3835,8 @@
         "The owner specifically approved this concrete replacement. Initial execution reported no credential mutation; a bounded public-data transfer test succeeded but ended before real deletion/creation/save. A single direct execution is active.",
         "Administrative execution ended without confirming deletion/creation/save; current reported masked metadata no longer matches the approved older target. No further rotation is allowed on that inconsistent evidence. A protected server-only comparison and invented-grant probe is now under validation.",
         "PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge and scheduled4 exact8-file native readback. Native comparisons match client ID but neither current nor prior masked secret metadata; provider_attempted=false, so they do not establish current Google credential rejection. A101-test follow-up permits a direct bounded provider probe independent of masked metadata.",
-        "PR513 exact17/17 passed;101 Node and24 PostgreSQL coverage. Normal merge a196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved tree42343ffd376ab50616a4b9ea619a85b3ba625d2d. Scheduled5 ACTIVE/JWTfalse exact8-file readback. Native check actually contacted Google and returned HTTP401/invalid_client with the expected configured client, no verified connection, no canonical write and cleared ticket. No credential was created/deleted/updated by the native check."
+        "PR513 exact17/17 passed;101 Node and24 PostgreSQL coverage. Normal merge a196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved tree42343ffd376ab50616a4b9ea619a85b3ba625d2d. Scheduled5 ACTIVE/JWTfalse exact8-file readback. Native check actually contacted Google and returned HTTP401/invalid_client with the expected configured client, no verified connection, no canonical write and cleared ticket. No credential was created/deleted/updated by the native check.",
+        "Continuation native check still matches the expected configured client and actually receives provider401/invalid_client. No genuine Google connection or read exists. Earlier approval remains valid; an actual complete-value protected server update is still required."
       ],
       "next_action": "The owner completes the exact dedicated-client replacement and same-name server-secret save inside the secure administrative flow, preserving another actually enabled secret and all other settings. Stop on a target/status mismatch. Then repeat the existing private provider check before one fresh genuine owner connection. Never request complete credentials in chat or repeat remote mutation loops."
     },
@@ -3830,7 +3845,7 @@
       "area": "Browser verification",
       "priority": "P1",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Await real visible source geometry and native disclosure state before browser assertions; keep first failures inspectable.",
       "acceptance": [
@@ -3840,9 +3855,11 @@
         "Affected actual Chromium/WebKit suites and continuity/privacy contracts pass on the exact candidate before merging; no runtime or clinical data changes."
       ],
       "evidence": [
-        "The unchanged-runtime publication a196596b393dbbd52486ef86d7d5b3e0bf74baa4 completed19/21; Laboratory Originals failed twice on a null boundingBox at line38, and Visual Training host failed one WebKit320 native disclosure equality immediately after click. Original artifacts and logs are preserved in the dedicated report."
+        "The unchanged-runtime publication a196596b393dbbd52486ef86d7d5b3e0bf74baa4 completed19/21; Laboratory Originals failed twice on a null boundingBox at line38, and Visual Training host failed one WebKit320 native disclosure equality immediately after click. Original artifacts and logs are preserved in the dedicated report.",
+        "PR514 exact candidate23f31c050e0b5024df69ef22e5ed2c50d2f80fd0 passed18/18 without reruns, including both affected Chromium/WebKit suites. The independent merge-tree check and normal merge2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad match treea3bf34b9821118f4e1f851fce09c173ab57b5b2d exactly. No application/backend or clinical/source change was deployed."
       ],
-      "next_action": "Run exact candidate suites for the bounded real-DOM waits; preserve any timeout rather than retrying or weakening assertions. No owner action is needed for this test-only work."
+      "next_action": "Retain original failed artifacts and bounded-wait assertions. Do not repeat successful suites on unchanged source; the secure credential transfer and all original source conditions remain independent.",
+      "completed_on": "2026-11-08"
     }
   ],
   "package_history": [
@@ -10823,7 +10840,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "a196596b393dbbd52486ef86d7d5b3e0bf74baa4",
+    "source_main_commit": "2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
     "runtime_changed": false,
@@ -10832,19 +10849,18 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 129,
+      "done": 130,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2,
-      "blocked_user": 1,
-      "in_progress": 1
+      "blocked_user": 1
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
-      "Credential repair remains blocked_user after the native provider401/invalid_client result; the secure manual owner step is prepared and no new key mutation is running.",
-      "PR513 exact17/17 passed and native scheduled5 is byte verified. Its broader publication finished19/21, preserving two laboratory failures and one WebKit320 disclosure failure.",
-      "New package049 changes only browser waits/failure capture, preserving all assertions, source bindings and runtime bytes. Candidate actual-browser suites remain pending.",
-      "All nine original source/hydration conditions remain open and independent."
+      "Package049 is done: exact candidate18/18 success, independent merge-tree and normal merge preserve the tested tree. Only verification code changed; no app/backend deployment.",
+      "The native protected Google check still returns actual401/invalid_client for the expected configured client. The complete-value secure owner update remains blocked_user; approval is not missing.",
+      "Recent genuine bridge receipts still contain no new water or attributable basal interval. The attached original export fingerprint matches the already-reviewed older archive; no repeat mass parsing/import or inferred source mapping occurred.",
+      "All nine original hydration/source conditions remain independently open. Earlier publication19/21 and its failures stay preserved; latest automatic postmerge checks are separately in progress, not counted as complete."
     ],
     "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
   },
@@ -12503,7 +12519,16 @@
       "single_retry_conclusion": "failure",
       "follow_up_package": "PKG-BROWSER-EVIDENCE-SETTLING-049"
     },
-    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
+    "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md",
+    "last_rechecked_on": "2026-11-08",
+    "verification_follow_up": {
+      "package": "PKG-BROWSER-EVIDENCE-SETTLING-049",
+      "status": "done",
+      "candidate_workflows_passed": 18,
+      "main_commit": "2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad",
+      "tested_tree": "a3bf34b9821118f4e1f851fce09c173ab57b5b2d",
+      "runtime_changed": false
+    }
   },
   "server_preparation_history": [
     {

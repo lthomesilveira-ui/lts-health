@@ -1,3 +1,9 @@
+## Continuation confirms the operational blocker
+
+The same private actual-provider check still returns expected client_id_matches=true and provider401/invalid_client, without exposing values or validating a connection. A protected complete-value credential save is still required from the owner; earlier approval remains valid and no new generic authorization is requested. No new app login should be requested until this value is saved and privately checked.
+
+The independent package049 verification repair is now merged after18/18 exact candidate success; it changes no runtime and closes none of the original source/hydration conditions. The earlier19/21 publication and failed artifacts remain preserved below.
+
 ## Verified direct provider result; operational repair awaits secure owner entry
 
 PR513 candidate89ff13aa587777ba2db8c95a179e069101d79587 and tree42343ffd376ab50616a4b9ea619a85b3ba625d2d passed17/17 exact candidate workflows. Normal mergea196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved that tree. Scheduled5 is ACTIVE in its existing custom ticket-authenticated mode, with all8 files read back exactly. The protected native call matches the expected client ID, actually contacts Google and returns HTTP401/invalid_client; no connection or canonical write is verified and its raw invocation ticket is cleared. No complete credential or provider body is returned/logged. The frontend index remains unchanged.
