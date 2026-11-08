@@ -3818,7 +3818,7 @@
       "priority": "P0",
       "owner": "Codex",
       "status": "blocked_user",
-      "blocker": "The saved administrative Google Cloud session now requires sign-in. The owner explicitly asks the assistant to handle the technical workflow and offers to supply login securely. No credential mutation occurred in the bounded read-only access preflight; actual current client/secret metadata is unknown until authentication.",
+      "blocker": "Administrative login and the exact existing project/client were verified. The read-only execution ended at provider capacity; the separate direct browser could not load the observed client URL. No fresh masked target/status or protected save is confirmed. Additional execution capacity or an accessible owner final-action route is required; another login is not the missing input.",
       "summary": "Reconcile actual current client credentials and repair the confirmed dedicated Google server authentication failure safely.",
       "acceptance": [
         "Reconfirm the exact existing client and current provider metadata; preserve the other enabled secret and never delete a mismatched or unverified target.",
@@ -3834,10 +3834,11 @@
         "PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge and scheduled4 exact8-file native readback. Native comparisons match client ID but neither current nor prior masked secret metadata; provider_attempted=false, so they do not establish current Google credential rejection. A101-test follow-up permits a direct bounded provider probe independent of masked metadata.",
         "PR513 exact17/17 passed;101 Node and24 PostgreSQL coverage. Normal merge a196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved tree42343ffd376ab50616a4b9ea619a85b3ba625d2d. Scheduled5 ACTIVE/JWTfalse exact8-file readback. Native check actually contacted Google and returned HTTP401/invalid_client with the expected configured client, no verified connection, no canonical write and cleared ticket. No credential was created/deleted/updated by the native check.",
         "Continuation native check still matches the expected configured client and actually receives provider401/invalid_client. No genuine Google connection or read exists. Earlier approval remains valid; an actual complete-value protected server update is still required.",
-        "A new strictly read-only access preparation ended after7 steps with authentication_required, without reading current secret metadata or changing settings. Direct browser preparation reached Supabase sign-in while the Google console page was unavailable in that browser. No existing approval was revoked or repeated."
+        "A new strictly read-only access preparation ended after7 steps with authentication_required, without reading current secret metadata or changing settings. Direct browser preparation reached Supabase sign-in while the Google console page was unavailable in that browser. No existing approval was revoked or repeated.",
+        "Owner login-only Feito verified: the same-profile read-only execution matched the dedicated project and client, then ended at provider execution capacity. No fresh masked suffix/status or credential mutation/save was confirmed. Direct browser access to the actual observed details URL returned Site Unavailable. No purchase, new owner grant or health-data write occurred."
       ],
-      "next_action": "The owner signs in to the existing administrative profile and saves it. Then the assistant verifies the exact project/client and prepares the operation. A login-only Feito must not be mistaken for a saved new credential or trigger another app consent attempt. Request only any indispensable protected final action, stop on target or permission mismatch, and never collect secret values in chat.",
-      "owner_input": "administrative_sign_in"
+      "next_action": "Resume from the verified administrative login after a usable route exists, without repeating login or app OAuth. First verify current masked target and another enabled credential, then prepare and complete one protected same-name save. Do not start irreversible rotation without enough capacity and a complete transfer route, request a complete secret in chat or buy/reload without explicit authorization.",
+      "owner_input": "administrative_execution_capacity_or_protected_final_action"
     },
     {
       "id": "LTS-BROWSER-EVIDENCE-SETTLING-001",
@@ -10839,7 +10840,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "36ceaaff92e66b32fc6410dd28b04cc9b28e63c4",
+    "source_main_commit": "4a43b81755a842cc55faf62ba2b1c5500def7211",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
     "runtime_changed": false,
@@ -10860,7 +10861,8 @@
       "The native protected Google check still returns actual401/invalid_client for the expected configured client. The complete-value secure owner update remains blocked_user; approval is not missing.",
       "Recent genuine bridge receipts still contain no new water or attributable basal interval. The attached original export fingerprint matches the already-reviewed older archive; no repeat mass parsing/import or inferred source mapping occurred.",
       "All nine original conditions remain independently open. Earlier publication19/21 and its failures remain preserved; the new verification-source publication completed20/20 successfully.",
-      "The owner requests assistant handling and offers login only. The actual saved-profile preflight requires administrative authentication; the next owner input is sign-in, followed by assistant preparation, not a repeated list of manual technical menus. No credential or health record changed."
+      "The owner requests assistant handling and offers login only. The actual saved-profile preflight requires administrative authentication; the next owner input is sign-in, followed by assistant preparation, not a repeated list of manual technical menus. No credential or health record changed.",
+      "The offered administrative login was completed and independently verified in the saved profile at the exact project/client. Execution capacity, not authentication or missing generic approval, now blocks the protected update. The alternate direct browser cannot load that panel. No credential or source/clinical data changed."
     ],
     "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
   },
