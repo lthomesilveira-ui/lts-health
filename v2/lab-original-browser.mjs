@@ -10,6 +10,7 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]]){
  const browser=await type.launch({headless:true});
  try{for(const [width,height,failTable]of [[320,740,null],[393,650,null],[1440,900,null],...(engine==='chromium'?[[393,650,'health_documents'],[393,650,'health_lab_results']]:[])]){
   const context=await browser.newContext({viewport:{width,height},serviceWorkers:'block'}),page=await context.newPage(),errors=[],outside=[],opened=[];
+  try{
   await context.addInitScript(today=>{const Native=Date;window.Date=class extends Native{constructor(...a){super(...(a.length?a:[today+'T12:00:00Z']));}static now(){return new Native(today+'T12:00:00Z').getTime();}};},LAB_ORIGINAL_TODAY);
   const {row,document}=labOriginalFixture(),prior={...row,source_record_id:'synthetic-prior',collection_date:'2026-01-20',report_date:'2026-01-21',original_file_id:null,result_raw:'4,50',result_numeric:4.5};
   const textual={...row,source_record_id:'fleury:synthetic-text',biomarker:'Resultado textual',result_raw:'Ausente',result_numeric:null,unit:'',original_page:4};
@@ -33,9 +34,15 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]]){
     await page.waitForSelector('[data-lab-original-read-error]');assert.equal(await page.locator('[data-lab-original]').count(),0);
    }else{
     const links=page.locator('[data-lab-original]');assert.equal(await links.count(),2,'selected chart point and its exact historical row each offer the source');
-    const a=links.first();assert.equal(await a.getAttribute('href'),`https://chatgpt.com/library?file_id=${LAB_ORIGINAL_ID}&account_id=personal`);
+    const a=links.first();await a.waitFor({state:'visible'});
+    assert.equal(await a.getAttribute('href'),`https://chatgpt.com/library?file_id=${LAB_ORIGINAL_ID}&account_id=personal`);
     assert.equal(await a.getAttribute('target'),'_blank');assert.equal(await a.getAttribute('rel'),'noopener noreferrer');assert.equal(await a.getAttribute('referrerpolicy'),'no-referrer');
-    const box=await a.boundingBox();assert.ok(box.height>=44&&box.x>=0&&box.x+box.width<=width+1);
+    const measured=await page.waitForFunction(expectedHref=>{
+      const link=document.querySelector('[data-lab-original]');
+      if(!link||link.href!==expectedHref||!link.getClientRects().length)return null;
+      const box=link.getBoundingClientRect();return {x:box.x,width:box.width,height:box.height};
+    },`https://chatgpt.com/library?file_id=${LAB_ORIGINAL_ID}&account_id=personal`);
+    const box=await measured.jsonValue();assert.ok(box.height>=44&&box.x>=0&&box.x+box.width<=width+1);
     await page.evaluate(()=>{document.getElementById('screenHost').scrollTop=0;});await page.screenshot({path:`${dir}/${engine}-${width}-entry.png`,fullPage:true});
     const [popup]=await Promise.all([context.waitForEvent('page'),a.click()]);await popup.waitForLoadState('domcontentloaded');assert.equal(await popup.title(),'Synthetic laboratory original');assert.equal(await popup.evaluate(()=>window.opener),null);await popup.close();
     await page.locator('#productLabPoint').selectOption('0');assert.equal(await page.locator('.ltsPointReadout [data-lab-original]').count(),0,'older unlinked point never borrows the new PDF');assert.equal(await page.locator('.ltsLabsHistory [data-lab-original]').count(),1);
@@ -52,7 +59,12 @@ for(const [engine,type]of [['chromium',chromium],['webkit',webkit]]){
   }
   await checkFit();assert.deepEqual(await page.evaluate(()=>window.__historyQA?.writes||[]),[]);assert.deepEqual(outside,[]);assert.deepEqual(errors,[]);
   await page.screenshot({path:`${dir}/${engine}-${width}-${failTable||'withheld'}.png`,fullPage:true});
-  results.push({engine,width,height,mode:failTable||'verified-original',fixedDestination:true,isolatedWindow:true,originalPointBinding:true,missingAndFailedReadersPreserved:true,zeroWrites:true});await context.close();
+  results.push({engine,width,height,mode:failTable||'verified-original',fixedDestination:true,isolatedWindow:true,originalPointBinding:true,missingAndFailedReadersPreserved:true,zeroWrites:true});
+  }catch(error){
+    results.push({engine,width,height,mode:failTable||'verified-original',status:'failed',message:String(error.message),syntheticOnly:true});
+    await page.screenshot({path:`${dir}/${engine}-${width}-${failTable||'verified-original'}-failure.png`,fullPage:true}).catch(()=>{});
+    throw error;
+  }finally{await context.close();}
  }}finally{await browser.close();writeFileSync(dir+'/results.json',JSON.stringify(results,null,2));}
 }
 console.log('Laboratory original story: Chromium/WebKit mobile/desktop, exact point/history binding, textual results, unavailable/failed readers, isolated external access and zero writes passed.');

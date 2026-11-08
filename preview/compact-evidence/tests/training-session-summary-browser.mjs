@@ -84,6 +84,8 @@ async function disclose(page,kind,open=true,id=SUMMARY_IDS.current){
   const summary=details.locator(':scope > summary');
   assert.equal(await summary.isVisible(),true,'Disclosure is an actual visible user control');
   if(await details.evaluate(el=>el.open)!==open)await summary.click();
+  await page.waitForFunction(({selector,expected})=>document.querySelector(selector)?.open===expected,
+    {selector:disclosureSelector(kind,id),expected:open});
   assert.equal(await details.evaluate(el=>el.open),open,`${kind}: native details toggles`);
 }
 
