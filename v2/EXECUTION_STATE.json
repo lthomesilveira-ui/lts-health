@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-07",
+  "updated_on": "2026-11-08",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -51,64 +51,67 @@
   },
   "current_package": {
     "id": "PKG-POLAR-LOCAL-UPDATE-DATE-046",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Show the Polar synchronization timestamp on the correct São Paulo civil day in the existing connection card.",
     "task_ids": [
       "LTS-POLAR-UPDATE-DATE-001"
     ],
     "candidate_build": "health-integrated-20261108.128",
-    "public_build": "health-integrated-20261107.127",
+    "public_build": "health-integrated-20261108.128",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-07",
-    "pending_gates": [
-      "Exact candidate regression workflows",
-      "Published .128 bytes and genuine local-date connection card"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md",
+    "completed_on": "2026-11-08",
+    "candidate_commit": "11249a9d3467d994ece347308f3fcc2ae098eae9",
+    "candidate_tree": "9484d7f906f542831435c0aa93eb008ad18ad618",
+    "candidate_checks_passed": 20,
+    "publication_checks_passed": 22,
+    "pending_publication_repetitions": [
+      42434666947,
+      42434666973
     ],
-    "evidence_document": "v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md"
+    "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29"
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261107.127",
-    "published_on": "2026-11-07",
-    "release_kind": "google_current_day_and_browser_recovery",
-    "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
-    "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+    "build_id": "health-integrated-20261108.128",
+    "published_on": "2026-11-08",
+    "release_kind": "polar_update_local_date",
+    "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+    "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
     "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All21 exact candidate workflows and all affected deployment, protected-auth, public-entry and Google reader gates passed. Remaining unchanged-tree broad publication repetitions are enumerated without claiming success.",
+    "automated_runtime_and_responsive_status": "All20 exact candidate workflows and all affected publication/protected-auth gates passed. Unchanged-runtime broad publication repetitions are listed separately without claiming their completion.",
     "ci_summary": {
       "status": "required_release_gates_complete",
-      "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
-      "total": 25,
-      "success": 23,
-      "protected_actual_auth_run": 42433150503,
+      "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+      "total": 24,
+      "success": 22,
+      "protected_actual_auth_run": 42434666884,
       "pending_workflows": [
-        42433150388,
-        42433150442
+        42434666947,
+        42434666973
       ]
     },
     "evidence": [
-      "PR509 exact candidate 5f4ab5910be121262a77a00576324b4f67208c9e and tree 74a710823a96fad6dcf430a71c016f8c2cc1a68c passed all21 candidate workflows, including75 Node and24 PostgreSQL tests. The two failed browser-fixture revisions remain documented; no assertion was removed.",
-      "The exact Chromium/WebKit320/393/1440 recovery artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was inspected. Independent civil-calendar cases and the actual reader prove current-day inclusion without source writes.",
-      "Normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserved the tested tree. Deploy42433150422, Pages42433184986/42433184989, protected Real Auth42433150503 and Google reader42433150477 passed. Broad unchanged-tree publication repetitions remain separately enumerated until completed.",
-      "The public recovery HTML, browser connection module and production index returned200 and exactly matched the merged source before callback activation. Native readback verified callback6/connection7/scheduled2, JWT false/true/false and all6/6/7 reachable files without differences.",
-      "Live probes verified HTML callback303 to the fixed recovery entry, JSON400/invalid_callback, unauthenticated connection401, ticketless scheduled401 and browser-Origin scheduled403. No real OAuth grant or health write was created.",
-      "The genuine Cloud Browser followed the real deployed callback to the plain-Portuguese recovery page, discarded the query, and used Voltar ao Health to restore the existing authenticated Dados & fontes session. The DOM build was exactly health-integrated-20261107.127; Google remained ready to connect and water remained received only through13/10/2026.",
-      "Read-only native counts remain zero connected Google accounts, zero hydration reads and zero valid OAuth states. The prior DECLINED login is respected; all nine independent source/provider/acceptance conditions remain open and scheduled development messages stay disabled."
+      "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
+      "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
+      "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
+      "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
+      "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
+      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42431266875,
-        "scope": "fulfilled redirect escaped the fixture to the unpublished public page",
-        "resolution": "Retained failure; diagnosed under42432012054; real loopback HTTP fixture now asserts the fixed production Location and browser behavior. Runtime sources unchanged by fixture repair."
-      },
-      {
-        "run_id": 42432012054,
-        "scope": "diagnostic fixture404",
-        "resolution": "Final exact candidate passed all21 workflows after the HTTP fixture correction."
+        "run_id": 42433961829,
+        "attempt": 1,
+        "job_id": 128588687968,
+        "scope": "Existing laboratory original test: null boundingBox during separate DOM measurement.",
+        "resolution": "Only the failed job was repeated on unchanged source. Attempt2/job128589204682 passed; no assertion removed."
       }
     ]
   },
@@ -3746,7 +3749,7 @@
       "id": "LTS-POLAR-UPDATE-DATE-001",
       "area": "connection UX",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "The Polar update timestamp was displayed as its UTC date while the adjacent automatic timestamp used São Paulo time.",
       "acceptance": [
@@ -3756,10 +3759,17 @@
       ],
       "evidence": [
         "A genuine authenticated card showed the next UTC date beside the previous São Paulo day for automatic synchronization. The renderer used fmtDate directly on last_sync_at.",
-        "The actual renderer now passes independent fixed civil-date cases, including explicit UTC offsets and invalid input."
+        "The actual renderer now passes independent fixed civil-date cases, including explicit UTC offsets and invalid input.",
+        "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
+        "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
+        "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
+        "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
+        "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
+        "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
       ],
-      "next_action": "Complete exact candidate and published app verification.",
-      "blocker": null
+      "next_action": "Delivered; keep original source times and independent source/consent conditions unchanged.",
+      "blocker": null,
+      "completed_on": "2026-11-08"
     }
   ],
   "package_history": [
@@ -5608,53 +5618,77 @@
       "candidate_commit": "5f4ab5910be121262a77a00576324b4f67208c9e",
       "candidate_tree": "74a710823a96fad6dcf430a71c016f8c2cc1a68c",
       "candidate_checks_passed": 21,
-      "publication_checks_passed": 23,
-      "pending_publication_repetitions": [
-        42433150388,
-        42433150442
-      ],
-      "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488"
-    }
-  ],
-  "latest_published_release": {
-    "build_id": "health-integrated-20261107.127",
-    "published_on": "2026-11-07",
-    "release_kind": "google_current_day_and_browser_recovery",
-    "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
-    "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
-    "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All21 exact candidate workflows and all affected deployment, protected-auth, public-entry and Google reader gates passed. Remaining unchanged-tree broad publication repetitions are enumerated without claiming success.",
-    "ci_summary": {
-      "status": "required_release_gates_complete",
-      "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
-      "total": 25,
-      "success": 23,
-      "protected_actual_auth_run": 42433150503,
-      "pending_workflows": [
-        42433150388,
+      "publication_checks_passed": 24,
+      "pending_publication_repetitions": [],
+      "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
+      "failed_publication_repetitions": [
         42433150442
       ]
     },
+    {
+      "id": "PKG-POLAR-LOCAL-UPDATE-DATE-046",
+      "status": "done",
+      "goal": "Show the Polar synchronization timestamp on the correct São Paulo civil day in the existing connection card.",
+      "task_ids": [
+        "LTS-POLAR-UPDATE-DATE-001"
+      ],
+      "candidate_build": "health-integrated-20261108.128",
+      "public_build": "health-integrated-20261108.128",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-07",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md",
+      "completed_on": "2026-11-08",
+      "candidate_commit": "11249a9d3467d994ece347308f3fcc2ae098eae9",
+      "candidate_tree": "9484d7f906f542831435c0aa93eb008ad18ad618",
+      "candidate_checks_passed": 20,
+      "publication_checks_passed": 22,
+      "pending_publication_repetitions": [
+        42434666947,
+        42434666973
+      ],
+      "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29"
+    }
+  ],
+  "latest_published_release": {
+    "build_id": "health-integrated-20261108.128",
+    "published_on": "2026-11-08",
+    "release_kind": "polar_update_local_date",
+    "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+    "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
+    "manual_exact_public_status": "exact_authenticated_public_build_verified",
+    "automated_runtime_and_responsive_status": "All20 exact candidate workflows and all affected publication/protected-auth gates passed. Unchanged-runtime broad publication repetitions are listed separately without claiming their completion.",
+    "ci_summary": {
+      "status": "required_release_gates_complete",
+      "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+      "total": 24,
+      "success": 22,
+      "protected_actual_auth_run": 42434666884,
+      "pending_workflows": [
+        42434666947,
+        42434666973
+      ]
+    },
     "evidence": [
-      "PR509 exact candidate 5f4ab5910be121262a77a00576324b4f67208c9e and tree 74a710823a96fad6dcf430a71c016f8c2cc1a68c passed all21 candidate workflows, including75 Node and24 PostgreSQL tests. The two failed browser-fixture revisions remain documented; no assertion was removed.",
-      "The exact Chromium/WebKit320/393/1440 recovery artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was inspected. Independent civil-calendar cases and the actual reader prove current-day inclusion without source writes.",
-      "Normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserved the tested tree. Deploy42433150422, Pages42433184986/42433184989, protected Real Auth42433150503 and Google reader42433150477 passed. Broad unchanged-tree publication repetitions remain separately enumerated until completed.",
-      "The public recovery HTML, browser connection module and production index returned200 and exactly matched the merged source before callback activation. Native readback verified callback6/connection7/scheduled2, JWT false/true/false and all6/6/7 reachable files without differences.",
-      "Live probes verified HTML callback303 to the fixed recovery entry, JSON400/invalid_callback, unauthenticated connection401, ticketless scheduled401 and browser-Origin scheduled403. No real OAuth grant or health write was created.",
-      "The genuine Cloud Browser followed the real deployed callback to the plain-Portuguese recovery page, discarded the query, and used Voltar ao Health to restore the existing authenticated Dados & fontes session. The DOM build was exactly health-integrated-20261107.127; Google remained ready to connect and water remained received only through13/10/2026.",
-      "Read-only native counts remain zero connected Google accounts, zero hydration reads and zero valid OAuth states. The prior DECLINED login is respected; all nine independent source/provider/acceptance conditions remain open and scheduled development messages stay disabled."
+      "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
+      "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
+      "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
+      "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
+      "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
+      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42431266875,
-        "scope": "fulfilled redirect escaped the fixture to the unpublished public page",
-        "resolution": "Retained failure; diagnosed under42432012054; real loopback HTTP fixture now asserts the fixed production Location and browser behavior. Runtime sources unchanged by fixture repair."
-      },
-      {
-        "run_id": 42432012054,
-        "scope": "diagnostic fixture404",
-        "resolution": "Final exact candidate passed all21 workflows after the HTTP fixture correction."
+        "run_id": 42433961829,
+        "attempt": 1,
+        "job_id": 128588687968,
+        "scope": "Existing laboratory original test: null boundingBox during separate DOM measurement.",
+        "resolution": "Only the failed job was repeated on unchanged source. Attempt2/job128589204682 passed; no assertion removed."
       }
     ]
   },
@@ -10561,15 +10595,15 @@
       "runtime_promotion_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
       "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
       "manual_exact_public_status": "exact_authenticated_public_build_verified",
-      "automated_runtime_and_responsive_status": "All21 exact candidate workflows and all affected deployment, protected-auth, public-entry and Google reader gates passed. Remaining unchanged-tree broad publication repetitions are enumerated without claiming success.",
+      "automated_runtime_and_responsive_status": "All21 exact .127 candidate and24 of25 .127 publication workflows passed. A WebKit1180 native disclosure-toggle failure in Isolated Preview42433150442 is retained; the exact .128 candidate passed the same full eight-case training step without changing the training runtime or assertions.",
       "ci_summary": {
-        "status": "required_release_gates_complete",
+        "status": "publication_regression_failure_recorded",
         "main_commit": "df88ad4f86c1fe133c20bf3bbafd4344ac42c488",
         "total": 25,
-        "success": 23,
+        "success": 24,
         "protected_actual_auth_run": 42433150503,
-        "pending_workflows": [
-          42433150388,
+        "pending_workflows": [],
+        "failed_workflows": [
           42433150442
         ]
       },
@@ -10592,34 +10626,84 @@
           "run_id": 42432012054,
           "scope": "diagnostic fixture404",
           "resolution": "Final exact candidate passed all21 workflows after the HTTP fixture correction."
+        },
+        {
+          "run_id": 42433150442,
+          "scope": "WebKit1180 native session distribution disclosure did not remain open after partial refresh.",
+          "resolution": "Retained with synthetic artifact13598732190 SHA256436c121733d02d4fc989542b87d38ebbe5ceb36018fa8129345429c70e5fcdad. Same full eight-case training regression passed in exact .128 candidate42433961983; no cause or training runtime repair is inferred."
+        }
+      ]
+    },
+    {
+      "build_id": "health-integrated-20261108.128",
+      "published_on": "2026-11-08",
+      "release_kind": "polar_update_local_date",
+      "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+      "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
+      "manual_exact_public_status": "exact_authenticated_public_build_verified",
+      "automated_runtime_and_responsive_status": "All20 exact candidate workflows and all affected publication/protected-auth gates passed. Unchanged-runtime broad publication repetitions are listed separately without claiming their completion.",
+      "ci_summary": {
+        "status": "required_release_gates_complete",
+        "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+        "total": 24,
+        "success": 22,
+        "protected_actual_auth_run": 42434666884,
+        "pending_workflows": [
+          42434666947,
+          42434666973
+        ]
+      },
+      "evidence": [
+        "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
+        "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
+        "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
+        "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
+        "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
+        "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
+      ],
+      "recorded_failed_validation_runs": [
+        {
+          "run_id": 42433961829,
+          "attempt": 1,
+          "job_id": 128588687968,
+          "scope": "Existing laboratory original test: null boundingBox during separate DOM measurement.",
+          "resolution": "Only the failed job was repeated on unchanged source. Attempt2/job128589204682 passed; no assertion removed."
         }
       ]
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-07",
-    "source_main_commit": "254a1cc5cac930b538c5cc1709efd552492bd262",
-    "runtime_build": "health-integrated-20261107.127",
-    "candidate_build": "health-integrated-20261108.128",
+    "reviewed_on": "2026-11-08",
+    "source_main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+    "runtime_build": "health-integrated-20261108.128",
+    "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 127,
+      "done": 128,
       "blocked_external": 9,
       "superseded": 2,
-      "accepted_gap": 2,
-      "in_progress": 1
+      "accepted_gap": 2
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
-      "Package045 is delivered and verified on the public exact.127 build. Original nine source/authorization/acceptance conditions stay independently open.",
-      "Genuine Polar card inspection found a separate UTC versus São Paulo date disagreement. Package046 owns only that bounded display correction.",
-      "Health and Wealth scheduled development continuations remain disabled; interactive execution is authorized.",
-      "Publication record conflicts were resolved by retaining the complete verified package045 main history and adding only the independent package046 task and bounded date display change. No original task was reopened or removed."
-    ]
+      "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
+      "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
+      "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
+      "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
+      "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
+      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled."
+    ],
+    "ux_review": {
+      "area": "data_sources_polar_update_date",
+      "mode": "genuine_authenticated_public_card_and_exact_source",
+      "result": "third_observed_defect_delivered_original_nine_conditions_preserved"
+    },
+    "open_dependency_policy": "No repeat Google login after DECLINED/automatic rejection without a new explicit request. No repeated old phone checks, manual water input, source inference or reconstruction of the fifteen-record proposal. Scheduled development messages remain disabled."
   },
   "continuity_review_history": [
     {
@@ -12082,6 +12166,31 @@
         "result": "two_observed_defects_delivered_with_original_nine_conditions_preserved"
       },
       "open_dependency_policy": "No repeated login after DECLINED; no old phone checks, manual water entry, repeated exports, inferred source mapping or reconstruction of the original fifteen-record proposal. Continue only on genuinely available evidence. Scheduled development messages remain disabled."
+    },
+    {
+      "reviewed_on": "2026-11-07",
+      "source_main_commit": "254a1cc5cac930b538c5cc1709efd552492bd262",
+      "runtime_build": "health-integrated-20261107.127",
+      "candidate_build": "health-integrated-20261108.128",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 127,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2,
+        "in_progress": 1
+      },
+      "executable_task_count": 1,
+      "evidence": [
+        "Package045 is delivered and verified on the public exact.127 build. Original nine source/authorization/acceptance conditions stay independently open.",
+        "Genuine Polar card inspection found a separate UTC versus São Paulo date disagreement. Package046 owns only that bounded display correction.",
+        "Health and Wealth scheduled development continuations remain disabled; interactive execution is authorized.",
+        "Publication record conflicts were resolved by retaining the complete verified package045 main history and adding only the independent package046 task and bounded date display change. No original task was reopened or removed."
+      ]
     },
     {
       "reviewed_on": "2026-11-07",

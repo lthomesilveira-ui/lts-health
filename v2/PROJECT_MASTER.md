@@ -1,3 +1,11 @@
+## 2026-11-08 — Concluído .128: data Polar em São Paulo
+
+O pacote046/LTS-POLAR-UPDATE-DATE-001 está concluído. A atualização Polar agora mostra o dia civil de São Paulo e concorda com o horário automático no mesmo cartão. O instante original, os registros e as integrações permanecem preservados. A sessão genuína já autenticada foi recarregada na versão exata.128 e a correção foi conferida visualmente.
+
+PR510: candidata11249a9d3467d994ece347308f3fcc2ae098eae9, árvore9484d7f906f542831435c0aa93eb008ad18ad618,20/20 workflows aprovados. A primeira leitura de boundingBox no teste laboratorial falhou; somente esse job foi repetido, com sucesso na tentativa2 e falha inicial preservada. Merge normalec60d94ea6ea7a78ab30d335053f6e155b211c29 conserva a árvore. Deploy, ambos os smokes Pages e Real Auth passaram; index e módulo Polar publicados coincidem com os bytes testados. Repetições gerais ainda em execução estão enumeradas no EXECUTION_STATE.json, sem sucesso presumido.
+
+Esta rodada entregou três falhas novas: duas na.127 (dia atual da consulta de água e retorno de autorização) e uma na.128 (data Polar). Nenhuma das nove condições originais foi encerrada por essas correções. A repetição.127 de prévia teve falha WebKit1180 no disclosure de treino; a mesma etapa completa passou na candidata.128, sem inferir causa nem alterar o treino. Fila128done,9blocked_external,2accepted_gap,2superseded; zero ready/in_progress. Google continua sem nova conexão/leitura comprovada e as mensagens agendadas de continuar permanecem desativadas. Detalhes: v2/releases/POLAR_LOCAL_UPDATE_DATE_20261108.md.
+
 ## 2026-11-07 — Em execução: data da atualização Polar em São Paulo, .128
 
 A sessão real da .127 mostrava 08/11 na última atualização Polar e 07/11, 21:17:05 no horário automático de São Paulo. O pacote046/LTS-POLAR-UPDATE-DATE-001 converte apenas a apresentação desse instante para o dia civil de São Paulo. O horário original, os dados de saúde, a autorização e a agenda permanecem preservados. O renderizador real passou expectativas independentes de meia-noite, ano, bissexto, offset explícito e entrada inválida; faltam os gates da candidata e a conferência publicada.
