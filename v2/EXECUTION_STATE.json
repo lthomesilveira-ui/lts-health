@@ -51,7 +51,7 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-CALLBACK-DIAGNOSTIC-047",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Retain safe stage-specific evidence when a genuine Google authorization callback fails after its state was consumed.",
     "task_ids": [
       "LTS-GOOGLE-CALLBACK-DIAGNOSTIC-001"
@@ -64,12 +64,17 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-08",
-    "pending_gates": [
-      "exact candidate validation",
-      "normal merge",
-      "exact backend publication and readback"
-    ],
-    "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md",
+    "completed_on": "2026-11-08",
+    "candidate_commit": "a2a615bbf9c0a596660cdb5cafe2c97a74d06f76",
+    "candidate_tree": "cb6f5004c0d03a60c9266730f70939c709c10a40",
+    "candidate_checks_passed": 17,
+    "runtime_promotion_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
+    "publication_checks_passed": 20,
+    "pending_publication_repetitions": [
+      42506923880
+    ]
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -1902,10 +1907,11 @@
         "The owner explicitly rejects manual water re-entry after purchasing the bridge apps. Automatic consolidation of existing MyFitnessPal and Google Health records remains required; manual entry is not an accepted gap or resolution.",
         "Current primary Google Health setup and dataPoints.list documentation supports a separate read-only integration using a Google Cloud project and OAuth authorization. The old no-new-project-onboarding statement is superseded. No LTS Google Health client, credentials, consent or successful API call has been configured; the Cloud console was unavailable in the current agent browser and no suitable connected tool was found.",
         "Configuration and schedule delivery are verified separately. Missing source evidence is not an uncompleted basic phone setup. Manual current-day exclusion and raw browser failure recovery are now owned by package045, without closing this original condition.",
-        "A new genuine owner callback returned an authorization code and the requested read-only scope, with its pending state consumed before expiry, but no connection was saved. The former backend did not retain the failing stage. This is separate from the older declined agent login and does not prove token exchange or hydration delivery."
+        "A new genuine owner callback returned an authorization code and the requested read-only scope, with its pending state consumed before expiry, but no connection was saved. The former backend did not retain the failing stage. This is separate from the older declined agent login and does not prove token exchange or hydration delivery.",
+        "Package047 safe callback diagnostics is published and verified separately. A fresh genuine attempt is now requested, without repeating old native setup or accessing the previously blocked private Google browser session. No original source condition is closed by the diagnostic."
       ],
       "next_action": "Analyze an actual hydration read/write diagnostic when available: account identity, hydration-log, date window/time zone, source family, pagination, returned records and Apple Health write outcome. Investigate a direct Google Health read-only route as an alternative only with a configured OAuth project and owner consent; retain source identities and avoid counting mirrored water twice. Do not request already supplied native screens, permissions, account reset, reports, date-specific resynchronization, manual re-entry, another purchase or recurring manual export. Keep the other original-source conditions independent.",
-      "blocker": "A genuine owner Google authorization returned successfully to the callback but failed before connection persistence. The earlier backend discarded the precise reason; safe callback diagnosis is being delivered separately. A real attributed hydration read, source reconciliation and native bridge diagnostic/write outcome remain unverified.",
+      "blocker": "The owner completed a genuine Google OAuth return, but the connection was not saved and the old backend did not retain the cause. Package047 now publishes safe stage-specific diagnosis; the next genuine owner attempt is needed to capture the current failure. Real hydration delivery, source reconciliation and native bridge diagnostics remain unverified.",
       "phone_status_capture_received": true
     },
     {
@@ -3769,7 +3775,7 @@
       "area": "Google connection failure diagnosis",
       "priority": "P0",
       "owner": "Codex",
-      "status": "in_progress",
+      "status": "done",
       "blocker": null,
       "summary": "Do not discard the reason for a failed genuine Google callback behind the generic recovery page.",
       "acceptance": [
@@ -3781,9 +3787,16 @@
       ],
       "evidence": [
         "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md",
-        "Local 90 Node tests and continuity/public-payload contracts passed; no actual provider recovery claimed."
+        "Local 90 Node tests and continuity/public-payload contracts passed; no actual provider recovery claimed.",
+        "PR511 exact candidate a2a615bbf9c0a596660cdb5cafe2c97a74d06f76 and tree cb6f5004c0d03a60c9266730f70939c709c10a40 passed17/17 workflows, including90 Node tests,24 PostgreSQL tests and Chromium/WebKit callback recovery at320/393/1440. No diagnostic canary appears in a reported event.",
+        "Candidate Laboratory Originals42506470756/job128810080895 first failed on the existing null boundingBox read at lab-original-browser:38. Only that failed job was repeated on unchanged source; job128810465097 passed. Original failure/artifact13627363634 and SHA25676af7d55e5ac4030d4bf048d7181b31d545478b136a0861442066fb9363434fa are preserved.",
+        "Normal PR511 merge 32d9cf48176054b7493bf03ec8e0592da0306db3 preserved the exact tested tree. Google publication42506923881 and deploy42506923919 passed; broad unchanged-frontend repetitions remain enumerated separately until completion.",
+        "Native callback7/connection8/scheduled3 are ACTIVE, retain JWT false/true/false, and all6/6/7 deployed files exactly match the tested source. No schema, credential, setting, permission, scope or clinical record changed.",
+        "Native probes verified callback JSON400/invalid_callback, browser303 to the fixed recovery page with no-referrer, connection401 and scheduled405/401/403. The public index remains exact .128 with SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d.",
+        "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed."
       ],
-      "next_action": "Finish exact validation and backend publication. The earlier callback error cannot be recovered retroactively; preserve the independent original nine conditions."
+      "next_action": "Delivered. Use the next genuine owner callback to diagnose the original failure without exposing credentials or inferring water recovery.",
+      "completed_on": "2026-11-08"
     }
   ],
   "package_history": [
@@ -10712,7 +10725,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "bf17d28c3d9c90d187f2b1e1464d672e0110842b",
+    "source_main_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
     "runtime_changed": true,
@@ -10721,18 +10734,21 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 128,
-      "in_progress": 1,
+      "done": 129,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 2
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
-      "Genuine callback evidence supersedes the assumption that the owner has not attempted Google authorization.",
-      "One independently executable defect remains: the safe stage/reason was discarded. Package047 owns its correction; none of the original nine conditions is closed."
+      "PR511 exact candidate a2a615bbf9c0a596660cdb5cafe2c97a74d06f76 and tree cb6f5004c0d03a60c9266730f70939c709c10a40 passed17/17 workflows, including90 Node tests,24 PostgreSQL tests and Chromium/WebKit callback recovery at320/393/1440. No diagnostic canary appears in a reported event.",
+      "Candidate Laboratory Originals42506470756/job128810080895 first failed on the existing null boundingBox read at lab-original-browser:38. Only that failed job was repeated on unchanged source; job128810465097 passed. Original failure/artifact13627363634 and SHA25676af7d55e5ac4030d4bf048d7181b31d545478b136a0861442066fb9363434fa are preserved.",
+      "Normal PR511 merge 32d9cf48176054b7493bf03ec8e0592da0306db3 preserved the exact tested tree. Google publication42506923881 and deploy42506923919 passed; broad unchanged-frontend repetitions remain enumerated separately until completion.",
+      "Native callback7/connection8/scheduled3 are ACTIVE, retain JWT false/true/false, and all6/6/7 deployed files exactly match the tested source. No schema, credential, setting, permission, scope or clinical record changed.",
+      "Native probes verified callback JSON400/invalid_callback, browser303 to the fixed recovery page with no-referrer, connection401 and scheduled405/401/403. The public index remains exact .128 with SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d.",
+      "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed."
     ],
-    "open_dependency_policy": "Do not repeat the owner login before exact diagnostic publication. Never replay a consumed code, access the previously blocked private Google browser session or infer the missing cause."
+    "open_dependency_policy": "The owner has already supplied a genuine callback. Only one new official app connection is requested after diagnostic deployment because the old backend discarded its reason. Never replay consumed codes or access the previously rejected private Google browser session. Do not repeat old phone setup, manual water input, source inference or historical proposal reconstruction. Scheduled development messages stay disabled."
   },
   "continuity_review_history": [
     {
@@ -12276,6 +12292,33 @@
         "result": "all_publication_checks_complete_google_owner_authorization_still_required"
       },
       "open_dependency_policy": "The prior declined login and automatic rejection of private Google-session access are preserved. The owner must explicitly reopen an assisted login or complete Conectar Google Health directly in the existing app. Do not repeat completed phone checks, manual water entry, source inference or original-proposal reconstruction. Scheduled development continuations stay disabled."
+    },
+    {
+      "reviewed_on": "2026-11-08",
+      "source_main_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
+      "runtime_build": "health-integrated-20261108.128",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 129,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "PR511 exact candidate a2a615bbf9c0a596660cdb5cafe2c97a74d06f76 and tree cb6f5004c0d03a60c9266730f70939c709c10a40 passed17/17 workflows, including90 Node tests,24 PostgreSQL tests and Chromium/WebKit callback recovery at320/393/1440. No diagnostic canary appears in a reported event.",
+        "Candidate Laboratory Originals42506470756/job128810080895 first failed on the existing null boundingBox read at lab-original-browser:38. Only that failed job was repeated on unchanged source; job128810465097 passed. Original failure/artifact13627363634 and SHA25676af7d55e5ac4030d4bf048d7181b31d545478b136a0861442066fb9363434fa are preserved.",
+        "Normal PR511 merge 32d9cf48176054b7493bf03ec8e0592da0306db3 preserved the exact tested tree. Google publication42506923881 and deploy42506923919 passed; broad unchanged-frontend repetitions remain enumerated separately until completion.",
+        "Native callback7/connection8/scheduled3 are ACTIVE, retain JWT false/true/false, and all6/6/7 deployed files exactly match the tested source. No schema, credential, setting, permission, scope or clinical record changed.",
+        "Native probes verified callback JSON400/invalid_callback, browser303 to the fixed recovery page with no-referrer, connection401 and scheduled405/401/403. The public index remains exact .128 with SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d.",
+        "Live aggregate remains zero connected Google accounts and zero hydration reads. A fresh genuine owner callback is needed to capture the safe failure stage; the earlier consumed code is not replayed. None of the original nine conditions is closed."
+      ],
+      "open_dependency_policy": "The owner has already supplied a genuine callback. Only one new official app connection is requested after diagnostic deployment because the old backend discarded its reason. Never replay consumed codes or access the previously rejected private Google browser session. Do not repeat old phone setup, manual water input, source inference or historical proposal reconstruction. Scheduled development messages stay disabled."
     }
   ],
   "continuation_automation": {
@@ -12288,53 +12331,36 @@
     "resumption_policy": "explicit_request_to_reenable_the_automation_required; ordinary_interactive_work_does_not_resume_it"
   },
   "last_verified_server_preparation": {
-    "kind": "google_health_private_hourly_agenda",
-    "verified_on": "2026-11-07",
-    "main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
-    "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
-    "tested_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
+    "kind": "google_callback_failure_diagnostics",
+    "verified_on": "2026-11-08",
+    "main_commit": "32d9cf48176054b7493bf03ec8e0592da0306db3",
+    "candidate_commit": "a2a615bbf9c0a596660cdb5cafe2c97a74d06f76",
+    "tested_tree": "cb6f5004c0d03a60c9266730f70939c709c10a40",
     "candidate_workflows_passed": 17,
-    "publication_workflows_passed": 21,
-    "node_tests_passed": 71,
+    "node_tests_passed": 90,
     "postgresql_tests_passed": 24,
-    "native_migration_version": "20261107223447",
-    "source_migration": "supabase/migrations/20261107213824_google_health_background_schedule.sql",
     "edge_functions": [
       {
+        "name": "health-google-callback",
+        "version": 7,
+        "verify_jwt": false,
+        "exact_files_verified": 6
+      },
+      {
         "name": "health-google-connection",
-        "version": 5,
+        "version": 8,
         "verify_jwt": true,
         "exact_files_verified": 6
       },
       {
-        "name": "health-google-callback",
-        "version": 5,
-        "verify_jwt": false,
-        "exact_files_verified": 6
-      },
-      {
         "name": "health-google-scheduled",
-        "version": 1,
+        "version": 3,
         "verify_jwt": false,
         "exact_files_verified": 7
       }
     ],
-    "schedule": {
-      "enabled": true,
-      "interval_minutes": 60,
-      "window_days": 30,
-      "timezone": "America/Sao_Paulo",
-      "ticket_minute": 35,
-      "dispatch_minute": 36,
-      "empty_dispatch_status": 200,
-      "temporary_ticket_cleared": true,
-      "repeated_dispatch": "null"
-    },
-    "authenticated_configured_status": "ready_to_connect",
-    "owner_consent_verified": false,
-    "real_hydration_read_verified": false,
-    "canonical_water_updated": false,
-    "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
+    "real_hydration_verified": false,
+    "evidence_document": "v2/releases/GOOGLE_CALLBACK_DIAGNOSTIC_20261108.md"
   },
   "server_preparation_history": [
     {
@@ -12386,6 +12412,55 @@
       "real_hydration_read_verified": false,
       "canonical_water_updated": false,
       "evidence_document": "v2/releases/GOOGLE_HEALTH_VAULT_20261107.md"
+    },
+    {
+      "kind": "google_health_private_hourly_agenda",
+      "verified_on": "2026-11-07",
+      "main_commit": "feadc8c180d8e4971bfd6485015ed615267e0bca",
+      "candidate_commit": "923658170da615fe42ab115be3f3de61911fdb1e",
+      "tested_tree": "ce811ba85e33f01c0792833cef8fe2f0e0ce398e",
+      "candidate_workflows_passed": 17,
+      "publication_workflows_passed": 21,
+      "node_tests_passed": 71,
+      "postgresql_tests_passed": 24,
+      "native_migration_version": "20261107223447",
+      "source_migration": "supabase/migrations/20261107213824_google_health_background_schedule.sql",
+      "edge_functions": [
+        {
+          "name": "health-google-connection",
+          "version": 5,
+          "verify_jwt": true,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-callback",
+          "version": 5,
+          "verify_jwt": false,
+          "exact_files_verified": 6
+        },
+        {
+          "name": "health-google-scheduled",
+          "version": 1,
+          "verify_jwt": false,
+          "exact_files_verified": 7
+        }
+      ],
+      "schedule": {
+        "enabled": true,
+        "interval_minutes": 60,
+        "window_days": 30,
+        "timezone": "America/Sao_Paulo",
+        "ticket_minute": 35,
+        "dispatch_minute": 36,
+        "empty_dispatch_status": 200,
+        "temporary_ticket_cleared": true,
+        "repeated_dispatch": "null"
+      },
+      "authenticated_configured_status": "ready_to_connect",
+      "owner_consent_verified": false,
+      "real_hydration_read_verified": false,
+      "canonical_water_updated": false,
+      "evidence_document": "v2/releases/GOOGLE_HEALTH_BACKGROUND_20261107.md"
     }
   ]
 }
