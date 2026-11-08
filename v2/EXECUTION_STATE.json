@@ -1923,7 +1923,7 @@
         "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved.",
         "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed."
       ],
-      "next_action": "Complete the secure credential save and private provider check in the separate operational task before one fresh genuine owner connection. Preserve the original Health Sync/origin/recurrence acceptance criteria and do not repeat completed phone setup or manual water entry.",
+      "next_action": "Resume the separate assistant-guided credential operation after administrative sign-in. Verify an actual protected saved value before a fresh genuine app connection; retain all original source, Health Sync and recurrence criteria.",
       "blocker": "Current native provider evidence still rejects the dedicated client credential. The separate operational task awaits a secure owner-performed complete-value save. This does not establish upstream water/source identity or recovery.",
       "phone_status_capture_received": true
     },
@@ -3818,7 +3818,7 @@
       "priority": "P0",
       "owner": "Codex",
       "status": "blocked_user",
-      "blocker": "A native protected probe confirms the expected client ID and actual provider HTTP401/invalid_client for the current server secret. Automated administrative access did not complete the protected update, and the originally approved older deletion target no longer matches reported current keys. A secure owner-performed credential replacement/transfer is required; this is an operational handoff, not a request for the same approval again.",
+      "blocker": "The saved administrative Google Cloud session now requires sign-in. The owner explicitly asks the assistant to handle the technical workflow and offers to supply login securely. No credential mutation occurred in the bounded read-only access preflight; actual current client/secret metadata is unknown until authentication.",
       "summary": "Reconcile actual current client credentials and repair the confirmed dedicated Google server authentication failure safely.",
       "acceptance": [
         "Reconfirm the exact existing client and current provider metadata; preserve the other enabled secret and never delete a mismatched or unverified target.",
@@ -3833,9 +3833,11 @@
         "Administrative execution ended without confirming deletion/creation/save; current reported masked metadata no longer matches the approved older target. No further rotation is allowed on that inconsistent evidence. A protected server-only comparison and invented-grant probe is now under validation.",
         "PR512 exact17/17 passed,100 Node/24 PostgreSQL; normal merge and scheduled4 exact8-file native readback. Native comparisons match client ID but neither current nor prior masked secret metadata; provider_attempted=false, so they do not establish current Google credential rejection. A101-test follow-up permits a direct bounded provider probe independent of masked metadata.",
         "PR513 exact17/17 passed;101 Node and24 PostgreSQL coverage. Normal merge a196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved tree42343ffd376ab50616a4b9ea619a85b3ba625d2d. Scheduled5 ACTIVE/JWTfalse exact8-file readback. Native check actually contacted Google and returned HTTP401/invalid_client with the expected configured client, no verified connection, no canonical write and cleared ticket. No credential was created/deleted/updated by the native check.",
-        "Continuation native check still matches the expected configured client and actually receives provider401/invalid_client. No genuine Google connection or read exists. Earlier approval remains valid; an actual complete-value protected server update is still required."
+        "Continuation native check still matches the expected configured client and actually receives provider401/invalid_client. No genuine Google connection or read exists. Earlier approval remains valid; an actual complete-value protected server update is still required.",
+        "A new strictly read-only access preparation ended after7 steps with authentication_required, without reading current secret metadata or changing settings. Direct browser preparation reached Supabase sign-in while the Google console page was unavailable in that browser. No existing approval was revoked or repeated."
       ],
-      "next_action": "The owner completes the exact dedicated-client replacement and same-name server-secret save inside the secure administrative flow, preserving another actually enabled secret and all other settings. Stop on a target/status mismatch. Then repeat the existing private provider check before one fresh genuine owner connection. Never request complete credentials in chat or repeat remote mutation loops."
+      "next_action": "The owner signs in to the existing administrative profile and saves it. Then the assistant verifies the exact project/client and prepares the operation. A login-only Feito must not be mistaken for a saved new credential or trigger another app consent attempt. Request only any indispensable protected final action, stop on target or permission mismatch, and never collect secret values in chat.",
+      "owner_input": "administrative_sign_in"
     },
     {
       "id": "LTS-BROWSER-EVIDENCE-SETTLING-001",
@@ -10837,7 +10839,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-08",
-    "source_main_commit": "98d9a5013663afa1700de512aa15b64ee9b70bfc",
+    "source_main_commit": "36ceaaff92e66b32fc6410dd28b04cc9b28e63c4",
     "runtime_build": "health-integrated-20261108.128",
     "candidate_build": null,
     "runtime_changed": false,
@@ -10857,7 +10859,8 @@
       "Package049 is done: exact candidate18/18 and postmerge20/20 succeeded without reruns. Independent merge-tree and normal merge preserve the tested tree; only verification code changed and no app/backend deployment occurred.",
       "The native protected Google check still returns actual401/invalid_client for the expected configured client. The complete-value secure owner update remains blocked_user; approval is not missing.",
       "Recent genuine bridge receipts still contain no new water or attributable basal interval. The attached original export fingerprint matches the already-reviewed older archive; no repeat mass parsing/import or inferred source mapping occurred.",
-      "All nine original conditions remain independently open. Earlier publication19/21 and its failures remain preserved; the new verification-source publication completed20/20 successfully."
+      "All nine original conditions remain independently open. Earlier publication19/21 and its failures remain preserved; the new verification-source publication completed20/20 successfully.",
+      "The owner requests assistant handling and offers login only. The actual saved-profile preflight requires administrative authentication; the next owner input is sign-in, followed by assistant preparation, not a repeated list of manual technical menus. No credential or health record changed."
     ],
     "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
   },

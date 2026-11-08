@@ -1,3 +1,7 @@
+## Assistant-guided credential work awaits administrative sign-in — 2026-11-08
+
+The owner explicitly asks the assistant to handle the operation and offers login. A bounded strictly read-only saved-profile preflight ended after7steps with authentication_required and no changes; it did not reach current client metadata. Direct browser preparation reached Supabase sign-in while Google Console was unavailable in that browser. The next owner action is only to sign in through the existing administrative profile and save access. Then the assistant resumes exact-client navigation/preparation. Do not interpret that login-only Feito as a new key save, re-run app OAuth prematurely or hand back the full technical menu sequence. Request only an indispensable protected final action if the selected route requires it. No destructive target may be inferred from stale masks. Earlier approval, the original nine conditions, completed049 and all20/20 publication checks remain preserved.
+
 ## Continuation confirms the operational blocker
 
 The same private actual-provider check still returns expected client_id_matches=true and provider401/invalid_client, without exposing values or validating a connection. A protected complete-value credential save is still required from the owner; earlier approval remains valid and no new generic authorization is requested. No new app login should be requested until this value is saved and privately checked.
