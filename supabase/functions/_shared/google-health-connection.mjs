@@ -6,6 +6,22 @@ const cors={'Access-Control-Allow-Origin':appOrigin,'Access-Control-Allow-Header
 const codes=new Set(['configuration_required','unauthorized','origin_not_allowed','method_not_allowed','payload_too_large','invalid_json','invalid_action','invalid_callback','invalid_state','authorization_denied','authorization_expired','authorization_superseded','write_failed','invalid_date_window','invalid_access_token','read_scope_required','invalid_expected_identity','identity_not_verified','account_changed','record_account_mismatch','invalid_hydration_record','invalid_volume','invalid_interval','inconsistent_civil_date','record_outside_window','invalid_source','invalid_response','response_too_large','network_error','permission_denied','rate_limited','provider_unavailable','provider_request_rejected','pagination_limit','record_limit','invalid_pagination','duplicate_identity_conflict']);
 const error=code=>{throw Error(code);};
 const safeCode=e=>codes.has(e?.code)?e.code:codes.has(e?.message)?e.message:'operation_failed';
+const oauthErrors=new Set(['invalid_request','invalid_client','invalid_grant','unauthorized_client','unsupported_grant_type','invalid_scope','access_denied','server_error','temporarily_unavailable']);
+const tokenProblems=new Set(['provider_rejected','invalid_json','invalid_access_token','missing_refresh_token','invalid_token_type','invalid_token_lifetime','scope_mismatch','invalid_refresh_lifetime']);
+function tokenFailure(problem,providerStatus,providerCode){
+  const failure=Error('authorization_expired');
+  failure.tokenProblem=problem;failure.providerStatus=providerStatus;failure.providerCode=providerCode;
+  throw failure;
+}
+function callbackDiagnostic(stage,e){
+  // Construct a new closed-schema event: never serialize the exception, request,
+  // account, state, authorization code, tokens or provider response/description.
+  const event={event:'google_health_callback_failure',stage,code:safeCode(e)};
+  if(tokenProblems.has(e?.tokenProblem))event.token_problem=e.tokenProblem;
+  if(Number.isInteger(e?.providerStatus)&&e.providerStatus>=100&&e.providerStatus<=599)event.provider_status=e.providerStatus;
+  if(e?.providerCode!==undefined)event.provider_error=oauthErrors.has(e.providerCode)?e.providerCode:'unclassified';
+  return event;
+}
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json'}});
 const failResponse=e=>{
   const code=safeCode(e),status=code==='unauthorized'?401:code==='origin_not_allowed'?403:code==='method_not_allowed'?405:code==='payload_too_large'?413:code==='rate_limited'?429:
@@ -56,26 +72,31 @@ async function exchange(c,params,previous,fetcher,now){
   try{response=await fetcher('https://oauth2.googleapis.com/token',{method:'POST',redirect:'error',signal:AbortSignal.timeout(15000),
     headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:c.clientId,client_secret:c.clientSecret,...params})});}
   catch{error('network_error');}
-  if(!response.ok){try{await response.body?.cancel();}catch{}error('authorization_expired');}
-  let body;try{body=await boundedJson(response,32000);}catch{error('authorization_expired');}
+  if(!response.ok){
+    let rejected;try{rejected=await boundedJson(response,32000);}catch{}
+    tokenFailure('provider_rejected',response.status,oauthErrors.has(rejected?.error)?rejected.error:'unclassified');
+  }
+  let body;try{body=await boundedJson(response,32000);}catch{tokenFailure('invalid_json');}
   const grant=body?.scope===undefined?previous?.scope:body.scope;
   const scopes=typeof grant==='string'?grant.split(/\s+/).filter(Boolean):[];
   const refresh=body?.refresh_token===undefined?previous?.refresh_token:body.refresh_token;
-  if(!opaque(body?.access_token)||!opaque(refresh)||typeof body?.token_type!=='string'||body.token_type.toLowerCase()!=='bearer'||
-      !Number.isInteger(body?.expires_in)||body.expires_in<=0||body.expires_in>86400||
-      scopes.length!==1||scopes[0]!==scope)error('authorization_expired');
+  if(!opaque(body?.access_token))tokenFailure('invalid_access_token');
+  if(!opaque(refresh))tokenFailure('missing_refresh_token');
+  if(typeof body?.token_type!=='string'||body.token_type.toLowerCase()!=='bearer')tokenFailure('invalid_token_type');
+  if(!Number.isInteger(body?.expires_in)||body.expires_in<=0||body.expires_in>86400)tokenFailure('invalid_token_lifetime');
+  if(scopes.length!==1||scopes[0]!==scope)tokenFailure('scope_mismatch');
   let refreshExpires=previous?.refresh_expires_at??null;
   if(body.refresh_token_expires_in!==undefined){
-    if(!Number.isInteger(body.refresh_token_expires_in)||body.refresh_token_expires_in<=0)error('authorization_expired');
+    if(!Number.isInteger(body.refresh_token_expires_in)||body.refresh_token_expires_in<=0)tokenFailure('invalid_refresh_lifetime');
     refreshExpires=now()+body.refresh_token_expires_in*1000;
-    if(!Number.isSafeInteger(refreshExpires))error('authorization_expired');
+    if(!Number.isSafeInteger(refreshExpires))tokenFailure('invalid_refresh_lifetime');
   }
   return {access_token:body.access_token,refresh_token:refresh,scope,expires_at:now()+body.expires_in*1000,refresh_expires_at:refreshExpires};
 }
 function status(c,row){return {configured:googleHealthConfigured(c),connected:row?.status==='connected',last_read_at:row?.last_read_at??null,last_attempt_at:row?.last_attempt_at??null,last_error:row?.last_error??null,canonical_updated:false};}
 
 // Dependencies are injected for invented-fixture HTTP/transaction tests. Production only injects verified Auth and a service-only store.
-export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now()}){
+export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now(),reportCallbackFailure=()=>{}}){
   async function performRead(c,userId,from,to,trigger='manual'){
     hydrationReadParameters(from,to);
     const store=storeFactory(c,{trigger}),row=await store.connection(userId);
@@ -140,6 +161,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
   }
   async function callback(request){
     if(request.method!=='GET')return failResponse(Error('method_not_allowed'));
+    let stage='configuration',diagnosticEligible=false;
     try{
       const c=await resolveConfig(config());if(!googleHealthConfigured(c))error('configuration_required');
       const params=new URL(request.url).searchParams,state=params.get('state'),code=params.get('code');
@@ -147,14 +169,26 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
           (!params.has('error')&&(params.getAll('code').length!==1||!opaque(code)||code.length>4096)))error('invalid_callback');
       const stateHash=await digest(state),store=storeFactory(c),saved=await store.consume(stateHash);
       if(!saved)error('invalid_state');
+      // Log at most once, only after a genuine pending state is atomically consumed.
+      // Random, malformed, expired and replayed callbacks cannot generate events.
+      diagnosticEligible=true;stage='provider_consent';
       if(params.has('error'))error('authorization_denied');
+      stage='state_decryption';
       const payload=await open(saved.payload_encrypted,c,stateDomain(saved.user_id));
       if(!/^[A-Za-z0-9_-]{43}$/.test(payload?.verifier||''))error('invalid_state');
+      stage='token_exchange';
       const token=await exchange(c,{grant_type:'authorization_code',code,redirect_uri:googleHealthCallback(c),code_verifier:payload.verifier},null,fetcher,now);
+      stage='identity_verification';
       const identity=await verifyGoogleHealthIdentity({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:saved.health_user_id??null,fetcher});
-      if(!await store.save(saved.user_id,saved.generation,stateHash,identity.healthUserId,await seal(token,c,tokenDomain(saved.user_id))))error('authorization_superseded');
+      stage='token_encryption';
+      const encrypted=await seal(token,c,tokenDomain(saved.user_id));
+      stage='authorization_save';
+      if(!await store.save(saved.user_id,saved.generation,stateHash,identity.healthUserId,encrypted))error('authorization_superseded');
       return new Response(null,{status:302,headers:{Location:GOOGLE_HEALTH_APP+'#dados','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
-    }catch(e){return callbackFailure(request,e);}
+    }catch(e){
+      if(diagnosticEligible){try{reportCallbackFailure(callbackDiagnostic(stage,e));}catch{}}
+      return callbackFailure(request,e);
+    }
   }
   return {connection,callback,scheduledRead,scheduledReady};
 }
