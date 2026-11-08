@@ -1,4 +1,4 @@
-# Google connection recovery and current-day water — candidate .127
+# Google connection recovery and current-day water — published .127
 
 ## Reproduced defects
 
@@ -20,8 +20,22 @@ Candidate23416b227f4ff477627961bc6b4ff648b2b877df passed75 Node and24 PostgreSQL
 
 Diagnostic candidate7ef5895a88061788637ce8678a7f3783bd0e8883 / run42432012054 identified a404 from the unpublished public recovery URL after Playwright fulfilled the initial redirect. Redirect targets bypassed the route fixture. The final regression uses a real loopback HTTP server, asserts the actual handler's exact303 and fixed production Location, then binds only that Location's origin to the loopback fixture. The real browser follows an HTTP redirect to the unchanged static HTML. All copy, privacy, layout, keyboard, no-provider and no-write assertions remain. Neither runtime behavior nor production verification is substituted by this test fixture.
 
-## Delivered verification
+## Publication and genuine authenticated return
 
-Final candidate5f4ab5910be121262a77a00576324b4f67208c9e / tree74a710823a96fad6dcf430a71c016f8c2cc1a68c passed21/21 workflows,75 Node,24 PostgreSQL and six Chromium/WebKit recovery cases. Artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was verified and inspected. Observed normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserved that tree. Static page, index and Google module matched the candidate bytes. Deployment42433150422, Pages42433184989/42433184986 and protected Real Auth42433150503 passed; three broad publication repetitions remain separately recorded.
+PR509 exact candidate 5f4ab5910be121262a77a00576324b4f67208c9e and tree 74a710823a96fad6dcf430a71c016f8c2cc1a68c passed all21 candidate workflows, including75 Node and24 PostgreSQL tests. The two failed browser-fixture revisions remain documented; no assertion was removed.
 
-Final reachable server bundles were read back at versions7/6/2, JWTtrue/false/false, exact6/6/7 files. The callback was already at matchingv6 and the scheduler at matchingv2 when re-read; only the connection had an additional identical deployment tov7 in this interactive verification. No other route was redundantly redeployed. Native probes confirmed JSON400, fixed browser303 invalid/expired, owner401, scheduled405/401/403. The genuine browser used the published recovery and Voltar ao Health to restore its existing authenticated.127 session. No Google grant was completed. The separate Polar update-date defect found during that inspection is owned by package046/.128.
+The exact Chromium/WebKit320/393/1440 recovery artifact13598371177 SHA256 ae3cdc15382843a36e14434b534784157e66f3e2bf8eaf51303a438a7c58f52f was inspected. Independent civil-calendar cases and the actual reader prove current-day inclusion without source writes.
+
+Normal merge df88ad4f86c1fe133c20bf3bbafd4344ac42c488 preserved the tested tree. Deploy42433150422, Pages42433184986/42433184989, protected Real Auth42433150503 and Google reader42433150477 passed. Broad unchanged-tree publication repetitions remain separately enumerated until completed.
+
+The public recovery HTML, browser connection module and production index returned200 and exactly matched the merged source before callback activation. Native readback verified callback6/connection7/scheduled2, JWT false/true/false and all6/6/7 reachable files without differences.
+
+Live probes verified HTML callback303 to the fixed recovery entry, JSON400/invalid_callback, unauthenticated connection401, ticketless scheduled401 and browser-Origin scheduled403. No real OAuth grant or health write was created.
+
+The genuine Cloud Browser followed the real deployed callback to the plain-Portuguese recovery page, discarded the query, and used Voltar ao Health to restore the existing authenticated Dados & fontes session. The DOM build was exactly health-integrated-20261107.127; Google remained ready to connect and water remained received only through13/10/2026.
+
+Read-only native counts remain zero connected Google accounts, zero hydration reads and zero valid OAuth states. The prior DECLINED login is respected; all nine independent source/provider/acceptance conditions remain open and scheduled development messages stay disabled.
+
+Publication snapshot: 23/25 workflows successful; broad repetition IDs still pending: 42433150388, 42433150442. They were not counted as passed or restarted.
+
+Final task counts:127done,9blocked_external,2accepted_gap,2superseded; zero executable work. The two fixes do not close any of the original nine unmet conditions.
