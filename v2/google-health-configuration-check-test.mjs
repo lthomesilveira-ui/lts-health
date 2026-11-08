@@ -13,13 +13,23 @@ test('configuration hints reject complete secrets, owner/grant inputs, unbounded
     {...hints,secret_suffixes:[secret]},{...hints,secret_suffixes:[1234]},
     {...hints,code:privateMarker},{...hints,user_id:privateMarker},{...hints,client_secret:secret}])assert.ok(!validGoogleHealthConfigurationHints(body));
 });
-test('missing, different or stale credentials are compared privately without contacting a provider',async()=>{
-  for(const c of [{...config,clientSecret:undefined},{...config,clientId:undefined},{...config,clientId:'456-other.apps.googleusercontent.com'},
-    {...config,clientSecret:'synthetic-stale-client-secret-old1'}]){
+test('missing credentials or a different client are compared privately without contacting a provider',async()=>{
+  for(const c of [{...config,clientSecret:undefined},{...config,clientId:undefined},{...config,clientId:'456-other.apps.googleusercontent.com'}]){
     let calls=0;const r=await checkGoogleHealthConfiguration(c,hints,{fetcher:async()=>{calls++;throw Error(privateMarker);}});
     assert.equal(calls,0);assert.equal(r.provider_attempted,false);assert.equal(r.provider_status,null);assert.equal(r.provider_error,null);
     assert.equal(r.connection_verified,false);assert.equal(r.canonical_updated,false);
     assert.ok(!JSON.stringify(r).includes(secret));assert.ok(!JSON.stringify(r).includes(hints.client_id));assert.ok(!JSON.stringify(r).includes(privateMarker));
+  }
+});
+test('a masked metadata mismatch cannot replace direct provider evidence for the actual configured credential',async()=>{
+  for(const [error,status] of [['invalid_grant',400],['invalid_client',401]]){
+    let calls=0;const actual={...config,clientSecret:'synthetic-different-credential-tail'};
+    const r=await checkGoogleHealthConfiguration(actual,hints,{fetcher:async(url,init)=>{
+      calls++;assert.equal(url,'https://oauth2.googleapis.com/token');assert.equal(init.body.get('client_secret'),actual.clientSecret);return reply(error,status);
+    }});
+    assert.equal(calls,1);assert.equal(r.secret_matches_listed_suffix,false);assert.equal(r.provider_attempted,true);
+    assert.equal(r.provider_status,status);assert.equal(r.provider_error,error);assert.equal(r.connection_verified,false);assert.equal(r.canonical_updated,false);
+    assert.ok(!JSON.stringify(r).includes(actual.clientSecret));assert.ok(!JSON.stringify(r).includes(privateMarker));
   }
 });
 test('a matching masked hint permits only one fixed Google POST with an invented grant and bounded timeout',async()=>{
