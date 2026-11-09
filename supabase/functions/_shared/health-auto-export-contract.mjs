@@ -33,6 +33,16 @@ export function validDay(day){
   return y>=2000&&date.getUTCFullYear()===y&&date.getUTCMonth()===m-1&&date.getUTCDate()===d;
 }
 export function localToday(now=new Date()){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);}
+const aggregationGroups = new Map([
+  ['none','none'],
+  ['second','second'], ['seconds','second'],
+  ['minute','minute'], ['minutes','minute'],
+  ['hour','hour'], ['hours','hour'], ['hourly','hour'],
+  ['day','day'], ['days','day'], ['daily','day'],
+]);
+export function automationAggregation(value){
+  return typeof value==='string' ? aggregationGroups.get(value.trim().toLowerCase()) ?? 'unknown' : 'unknown';
+}
 function pointDay(value,today){
   if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}(?: [0-2]\d:[0-5]\d:[0-5]\d [+-]\d{4})?$/.test(value))throw Error('invalid_date');
   const day=value.slice(0,10);if(!validDay(day)||day>today)throw Error('invalid_date');
@@ -71,7 +81,7 @@ function converted(qty,unit,kind,max,name){
 }
 export function normalizeExport(payload,{aggregation,today=localToday()}={}){
   // Missing/unknown grouping cannot establish that qty is a daily total.
-  if(!['day','days','daily'].includes(String(aggregation||'').trim().toLowerCase()))throw Error('daily_aggregation_required');
+  if(automationAggregation(aggregation)!=='day')throw Error('daily_aggregation_required');
   const metrics=payload?.data?.metrics;
   if(!Array.isArray(metrics)||metrics.length>80)throw Error('invalid_payload');
   for(const [type,entries] of Object.entries(payload.data))if(type!=='metrics'&&(!Array.isArray(entries)||entries.length))throw Error('health_metrics_only');
@@ -95,7 +105,8 @@ export function normalizeExport(payload,{aggregation,today=localToday()}={}){
       ignored+=metric.data.length;continue;
     }
     for(const point of metric.data){
-      if(!point||typeof point!=='object'||point.startDate||point.endDate)throw Error('daily_aggregation_required');
+      // The exporter uses both pairs of interval keys for individual samples.
+      if(!point||typeof point!=='object'||point.start||point.end||point.startDate||point.endDate)throw Error('daily_aggregation_required');
       const date=pointDay(point.date,today),originalSource=source(point);
       if(metric.name==='sleep_analysis'){
         if(point.totalSleep==null)throw Error('daily_aggregation_required');

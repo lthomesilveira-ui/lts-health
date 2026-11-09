@@ -38,6 +38,13 @@ for(const input of invalidPeriods){
 }
 console.log(`Period diagnostics: ${periodCases.length} documented label/token cases and ${invalidPeriods.length} invalid/unknown cases; no coverage or payload expansion.`);
 // Water diagnostics use only exact-name counts after successful normalization.
+for(const [aggregation,expected] of [['Seconds','second'],['Minutes','minute'],['Hours','hour'],['Daily','day'],['Day','day'],['None','none'],['PRIVATE_GROUPING','unknown'],[null,'unknown'],[['Day'],'unknown']]){
+ const result=receiveSummary({aggregation});
+ assert.equal(result.automation_aggregation,expected);
+ assert.equal(result.requested_interval,'unknown');
+ assert.equal(result.coverage_verified,false);
+ assert.ok(!JSON.stringify(result).includes('PRIVATE_GROUPING'));
+}
 const waterRow={metric_type:'dietary_water_ml',metric_date:'2026-09-01',source_name:'PRIVATE_WATER_SOURCE',value:765.4321};
 const observedWater=(waterBlocks,metrics=[])=>receiveSummary({outcome:'accepted',waterBlocks,metrics,acceptedMetrics:metrics.length});
 assert.equal(observedWater(0).water_observation,'absent');
