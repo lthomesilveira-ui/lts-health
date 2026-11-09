@@ -1,3 +1,7 @@
+## New bridge request and hydration dependency — 2026-11-08
+
+A fresh accepted bridge request arrived in full with its hydration block absent. The readback shows no connected Google account or genuine Google hydration read. Execution capacity remains the dependency for the protected credential update after the verified administrative sign-in. The next provider check follows an actual save. Historical source attribution and automatic recurrence require separate evidence.
+
 ## Administrative login verified; execution capacity blocks the protected update — 2026-11-08
 
 The owner's login-only Feito was verified in the same saved administrative profile. A read-only execution reached the exact dedicated project and existing server OAuth client; both identifiers match. It did not expose complete credentials, observe fresh masked secret suffixes or establish their enabled states, and it confirmed no edit, deletion, creation or server save. The provider stopped the execution at its capacity limit. A separate direct-browser attempt at the actually observed client URL returned Site Unavailable before login; it is an access limitation of that browser, not a provider bot block or approval rejection. Do not ask the owner to repeat the already completed login, infer current secret targets from older reports or launch another run without usable capacity.
