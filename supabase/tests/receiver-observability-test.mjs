@@ -10,6 +10,18 @@ assert.equal((await receiveHealthExport(request([], 'bad'),db,{emit:x=>events.pu
 let [status,body,event]=await run([]);assert.equal(status,200);assert.equal(event.outcome,'no_supported_data');assert.equal(calls,0);
 [status,body,event]=await run([metric('step_count')]);assert.equal(status,200);assert.equal(event.outcome,'accepted_without_nutrition');
 [status,body,event]=await run([metric()]);assert.equal(event.nutrition_dates_observed,1);assert.equal(event.nutrition_first_date_observed,'2026-09-01');assert.equal(event.accepted_metrics,1);assert.equal(event.requested_interval,'unknown');assert.equal(event.coverage_verified,false);
+const foodSampleTime='2026-09-01 12:00:00 -0300';
+const priorCalls=calls;
+for(const bounds of [{start:foodSampleTime},{end:foodSampleTime},{start:foodSampleTime,end:foodSampleTime}]){
+ const individual={name:'dietary_energy',units:'kcal',data:[{qty:120,date:foodSampleTime,source:'PRIVATE_SOURCE',...bounds}]};
+ [status,body,event]=await run([metric(),individual]);
+ assert.equal(status,422);
+ assert.equal(body.error,'daily_aggregation_required');
+ assert.equal(event.automation_aggregation,'day');
+ assert.equal(event.accepted_metrics,0);
+ assert.ok(!JSON.stringify(event).includes(foodSampleTime));
+}
+assert.equal(calls,priorCalls,'an interval sample must not replace a daily total or allow a partial write');
 result={data:{error:'rate_limited'}};[status,body,event]=await run([metric()]);assert.equal(status,429);assert.equal(event.outcome,'rate_limited');assert.equal(body.correlation_id,event.correlation_id);assert.equal(event.accepted_metrics,0);
 result={error:{message:'PRIVATE_DB_ERROR'}};[status,body,event]=await run([metric()]);assert.equal(status,503);assert.equal(event.outcome,'ingestion_failed');assert.equal(body.correlation_id,event.correlation_id);
 [status,body,event]=await run([metric('protein',-1)]);assert.equal(status,422);assert.equal(event.outcome,'validation_rejected');assert.equal(body.correlation_id,event.correlation_id);

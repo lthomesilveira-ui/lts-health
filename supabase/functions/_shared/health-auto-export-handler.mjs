@@ -28,12 +28,24 @@ export async function boundedJson(req,max=MAX_BODY_BYTES,observe=()=>{}){
   }
 }
 export async function receiveHealthExport(req,db,{emit=event=>console.info(JSON.stringify(event))}={}){
-  let authenticated=false,batch=null,transport=null;
-  const correlationId=crypto.randomUUID();
-  const record=(outcome,acceptedMetrics=0,validationCode=null,acceptedBasalCandidates=0)=>{if(authenticated)try{emit(receiveSummary({outcome,transport,metrics:batch?.metrics||[],ignoredPoints:batch?.ignored_points||0,ignoredBasalBlocks:batch?.ignored_basal_blocks,ignoredBasalPoints:batch?.ignored_basal_points,waterBlocks:batch?.water_blocks_observed,acceptedMetrics,acceptedBasalCandidates,basalCandidatePoints:batch?.basal_candidates?.length,correlationId,validationCode,automationPeriod:req.headers.get('automation-period')}));}catch{/* Logging cannot change ingestion. */}};
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   if(req.method!=='POST')return json({error:'method_not_allowed'},405);
   const token=req.headers.get(KEY_HEADER);if(!validToken(token))return json({error:'unauthorized'},401);
+  let authenticated=false,batch=null,transport=null;
+  const correlationId=crypto.randomUUID();
+  const aggregation=req.headers.get('automation-aggregation');
+  const record=(outcome,acceptedMetrics=0,validationCode=null,acceptedBasalCandidates=0)=>{
+    if(!authenticated)return;
+    try{
+      emit(receiveSummary({
+        outcome,transport,aggregation,acceptedMetrics,acceptedBasalCandidates,correlationId,validationCode,
+        automationPeriod:req.headers.get('automation-period'),
+        metrics:batch?.metrics||[],ignoredPoints:batch?.ignored_points||0,
+        ignoredBasalBlocks:batch?.ignored_basal_blocks,ignoredBasalPoints:batch?.ignored_basal_points,
+        waterBlocks:batch?.water_blocks_observed,basalCandidatePoints:batch?.basal_candidates?.length,
+      }));
+    }catch{/* Logging cannot change ingestion. */}
+  };
   try{
     const keyHash=await digest(token);
     const lookup=await db.from('health_auto_export_connections').select('active').eq('key_hash',keyHash).eq('active',true).maybeSingle();
@@ -41,7 +53,7 @@ export async function receiveHealthExport(req,db,{emit=event=>console.info(JSON.
     if(!lookup.data)return json({error:'unauthorized'},401);
     authenticated=true;
     if(!/^application\/json(?:;|$)/i.test(req.headers.get('content-type')||'')){record('validation_rejected',0,'json_required');return json({error:'json_required',correlation_id:correlationId},415);}
-    const payload=await boundedJson(req,MAX_BODY_BYTES,value=>{transport=value;});batch=normalizeExport(payload,{aggregation:req.headers.get('automation-aggregation')});
+    const payload=await boundedJson(req,MAX_BODY_BYTES,value=>{transport=value;});batch=normalizeExport(payload,{aggregation});
     // Count only the exact documented water identifier after full validation.
     batch.water_blocks_observed=payload.data.metrics.filter(metric=>metric.name==='dietary_water').length;
     const basal=captureBasalCandidates(payload);batch.basal_candidates=basal.candidates;

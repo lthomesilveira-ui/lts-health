@@ -25,15 +25,19 @@ assert.equal(result.event.request_declared_bytes,bytes(payload).byteLength);
 assert.equal(result.event.request_bytes_observed,bytes(payload).byteLength);
 assert.equal(result.event.request_body_complete,true);assert.equal(result.event.request_limit_trigger,null);
 assert.equal(result.event.request_body_limit_bytes,MAX_BODY_BYTES);
-for(const key of ['request_declared_bytes','request_bytes_observed','request_body_complete','request_body_limit_bytes','request_limit_trigger'])assert.ok(!Object.hasOwn(result.body,key),'transport details remain private');
+assert.equal(result.event.automation_aggregation,'day');
+for(const key of ['request_declared_bytes','request_bytes_observed','request_body_complete','request_body_limit_bytes','request_limit_trigger','automation_aggregation'])assert.ok(!Object.hasOwn(result.body,key),'transport details remain private');
 
-const unread={method:'POST',headers:new Headers({'content-type':'application/json',[KEY_HEADER]:token,'content-length':String(MAX_BODY_BYTES+123)}),body:{getReader(){reads++;throw Error('must not read body');}}};
+const unread={method:'POST',headers:new Headers({'content-type':'application/json',[KEY_HEADER]:token,'content-length':String(MAX_BODY_BYTES+123),'automation-aggregation':'Hours','automation-period':'Previous 7 Days'}),body:{getReader(){reads++;throw Error('must not read body');}}};
 result=await execute(unread);
 assert.equal(result.status,413);assert.equal(reads,0);assert.equal(writes,1);
 assert.deepEqual(result.body,{error:'payload_too_large',correlation_id:result.body.correlation_id});
 assert.equal(result.event.request_declared_bytes,MAX_BODY_BYTES+123);
 assert.equal(result.event.request_bytes_observed,null,'unread is unknown, not empty');
 assert.equal(result.event.request_body_complete,false);assert.equal(result.event.request_limit_trigger,'declared_length');
+assert.equal(result.event.automation_period,'previous7days');
+assert.equal(result.event.automation_aggregation,'hour');
+assert.equal(result.event.requested_interval,'unknown');
 assert.ok(!Object.hasOwn(result.event,'water_observation'),'a rejected body cannot establish absent water');
 
 const streamRequest=(cancelThrows=false)=>{
