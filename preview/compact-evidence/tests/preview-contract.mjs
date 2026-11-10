@@ -89,7 +89,7 @@ const manifest={
     "src/executive-cockpit.js": "d16048560dc7506980afa191b001fcdd3ffc3cbcc8198e12fd952439ca72c0db",
     "src/fleury-preview.js": "7759d42b3b62800f405ba9cb216cd6ea51b61051f7421bef293bcddcb40f3855",
     "src/google-health-connection.js": "1fb51432d3b0c24e52656c13ae64a8b246e6ed1088537e527457c569308df1d6",
-    "src/health-auto-export-connection.js": "e4b1f1f17c44ff9a1e3f48aced3a59b3f5215f86380ddea73b1cf7191beb6f37",
+    "src/health-auto-export-connection.js": "0b7c3deab61df8671c32acc779ef5d71b2f18e3a035b36ebb4d4f5fdd36b621c",
     "src/health-auto-export-data.js": "241dd41d8a5372f25dbd7c395028c51ebb43b25490f135a22b5fcffde5b415f2",
     "src/health-cockpit.js": "bdf5401f4a3f3b22a2bb9a651ff85e22b8494d6a7f8c6c4d773f5c481343c201",
     "src/health-context.js": "26af9d2436d1145f0e4b155eb1ea26c7138adf6a68db12e26d7dd7fe4c359bf7",
@@ -197,8 +197,8 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261108\.128/,'production is either the legacy entry or the independently tested integrated build');
-if(productionIndex.includes('health-integrated-20261108.128'))await import('../../../v2/production-integration-contract.mjs');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261109\.129/,'production is either the legacy entry or the independently tested integrated build');
+if(productionIndex.includes('health-integrated-20261109.129'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8'),guardTag='<script src="./src/preview-readonly.js?v=health-dashboard-20261019.74"></script>';

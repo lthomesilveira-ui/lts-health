@@ -61,6 +61,10 @@ try{
     await card.getByText('Configurar o Health Auto Export',{exact:true}).click();
     assert.match(await card.innerText(),/JSON · versão 2/);assert.match(await card.innerText(),/Dias \/ Day/);
     assert.match(await card.innerText(),/água precisa aparecer no Saúde/);
+    assert.match(await card.innerText(),/quando o iPhone informa esse nome/);
+    assert.match(await card.innerText(),/No iOS 27\.2 ou mais recente, abra Navegar → Fontes → Informações da Fonte/);
+    assert.match(await card.innerText(),/Habilitar Fontes do iOS 27/);
+    assert.match(await card.innerText(),/ontem e hoje até a hora do envio/);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'no horizontal overflow');
     for(const box of await card.locator('button:visible').evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().height)))assert.ok(box>=44,'phone touch target');
     // Status-only synthetic responses. No key creation, connection changes or real writes.
