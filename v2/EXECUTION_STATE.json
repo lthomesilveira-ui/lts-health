@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/HEALTH_COCKPIT_20261027.md"
+    "latest_release": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -51,60 +51,69 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-TAKEOUT-WATER-050",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Import source-proven positive daily hydration without changing existing source totals or completing the independent full-history request.",
     "task_ids": [
       "LTS-GOOGLE-TAKEOUT-WATER-001"
     ],
-    "public_build": "health-integrated-20261109.129",
-    "candidate_build": "health-integrated-20261111.130",
+    "public_build": "health-integrated-20261111.130",
+    "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": true,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": false,
+    "real_source_observations_changed": true,
     "started_on": "2026-11-11",
-    "pending_gates": [
-      "PostgreSQL source boundary",
-      "candidate CI and browser consumers",
-      "native guarded import",
-      "public deployment and authenticated readback"
-    ],
-    "evidence_document": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md",
+    "completed_on": "2026-11-11",
+    "candidate_commit": "364e9e5b645ed7217b79260621157ebd72bcb611",
+    "tested_tree": "d484dd08e10c5ebd66488a1d7e174105afde5fea",
+    "main_commit": "c6538c772b6d56c12408148a581d04e1eb1ec757",
+    "candidate_workflows_passed": 22,
+    "authenticated_audit_main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
+    "protected_actual_auth_run": 42950262629
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261108.128",
-    "published_on": "2026-11-08",
-    "release_kind": "polar_update_local_date",
-    "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
-    "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
-    "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All 20 exact candidate workflows and all 24 publication workflows completed successfully. The two prior pending unchanged-runtime repetitions were re-read successfully; no workflow was rerun.",
+    "build_id": "health-integrated-20261111.130",
+    "published_on": "2026-11-11",
+    "release_kind": "authenticated_google_takeout_water",
+    "main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
+    "runtime_promotion_commit": "c6538c772b6d56c12408148a581d04e1eb1ec757",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+    "manual_exact_public_status": "exact_public_build_verified_signed_out",
+    "automated_runtime_and_responsive_status": "Exact source candidate22/22 passed; actual-auth42950262629 passes full private desktop/mobile and histories. Complete history, current water, recurrence and physical-owner acceptance remain independent.",
     "ci_summary": {
-      "status": "complete",
-      "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
-      "total": 24,
-      "success": 24,
-      "protected_actual_auth_run": 42434666884,
-      "pending_workflows": []
+      "status": "functional_gates_passed",
+      "protected_actual_auth_run": 42950262629,
+      "candidate_total": 22,
+      "candidate_success": 22,
+      "main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
+      "publication_metadata_followup": "The audit-only publication encountered artifact metadata visibility failure; this checkpoint adds a bounded registration check before the unchanged official deploy action."
     },
     "evidence": [
-      "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
-      "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
-      "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
-      "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
-      "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
-      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled.",
-      "Continuation re-read: Isolated Preview 42434666947 completed successfully at 2026-11-08T01:42:36Z and Calendar/PDF 42434666973 at 2026-11-08T01:40:07Z. All24 publication workflows succeeded; no rerun or runtime change."
+      "Native guarded import, original archive and unchanged preimage proof remain private.",
+      "Published index and hydration module match the exact tested bytes; Cloud Browser confirms .130, protected sign-in and no overflow.",
+      "No physical-device acceptance or restoration of current automatic water is claimed."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42433961829,
-        "attempt": 1,
-        "job_id": 128588687968,
-        "scope": "Existing laboratory original test: null boundingBox during separate DOM measurement.",
-        "resolution": "Only the failed job was repeated on unchanged source. Attempt2/job128589204682 passed; no assertion removed."
+        "run_id": 42949449475,
+        "attempts": [
+          1,
+          2
+        ],
+        "scope": "Authenticated audit lacked the newly supported source family.",
+        "resolution": "PR518 adds strict independent original proof; corrected actual-auth42950262629 passes."
+      },
+      {
+        "run_id": 42950262616,
+        "attempts": [
+          1,
+          2
+        ],
+        "scope": "Official deploy action did not find uploaded Pages artifact metadata.",
+        "resolution": "Original uploaded artifacts are independently visible in the Actions API; add bounded registration preflight without weakening the official deployment action."
       }
     ]
   },
@@ -888,10 +897,11 @@
         "v2/mfp-water-import-smoke.mjs",
         "2026-10-04: authorized cloud-browser attempt was rejected by MyFitnessPal security before sign-in; one reload did not recover access.",
         "2026-10-26: task ownership/classification reconciled with the documented provider block and completed phone evidence; original authenticated-source acceptance is unchanged.",
-        "2026-10-29: one fresh direct provider-home access in the existing browser again displays a site-served security block before authentication. It was reported as access_denied and the attempt ended; no alternate-route probing, reset or bypass was performed."
+        "2026-10-29: one fresh direct provider-home access in the existing browser again displays a site-served security block before authentication. It was reported as access_denied and the attempt ended; no alternate-route probing, reset or bypass was performed.",
+        "Authenticated Google Health Takeout recovered and consumed under LTS-GOOGLE-TAKEOUT-WATER-001. Remaining full-history condition stays open."
       ],
       "next_action": "Resume supported provider authentication/extraction or validate an already available authentic export when access exists. The existing notebook helper remains available; do not repeat completed phone checks, request recurring manual exports or bypass provider security.",
-      "blocker": "A persistent provider-served security block prevents the agent browser from reaching authenticated history. No authenticated original water export is available. This is not an uncompleted owner phone setup step; no immediate repeated owner action is requested."
+      "blocker": "An authenticated Google Health Takeout original provides partial typed hydration history. Remaining days lack valid typed totals; the direct MyFitnessPal provider still security-blocks this browser. Partial recovery does not establish complete history."
     },
     {
       "id": "LTS-MFP-OAUTH-001",
@@ -1913,8 +1923,8 @@
         "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved.",
         "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed."
       ],
-      "next_action": "Resume the separate assistant-guided credential operation after administrative sign-in. Verify an actual protected saved value before a fresh genuine app connection; retain all original source, Health Sync and recurrence criteria.",
-      "blocker": "Current native provider evidence still rejects the dedicated client credential. The separate operational task awaits a secure owner-performed complete-value save. This does not establish upstream water/source identity or recovery.",
+      "next_action": "Obtain a valid current upstream observation and compare source and destination. Restore the dedicated credential through a usable administrative route before another genuine direct Google connection.",
+      "blocker": "The original Takeout includes subsequent zero amounts with unspecified volume units, which cannot establish consumption or resolve the source/export discrepancy. No current valid water has reached LTS; the direct Google credential remains invalid.",
       "phone_status_capture_received": true
     },
     {
@@ -2491,7 +2501,8 @@
         "Official exporter health-metric documentation permits source omission for cumulative and heart-rate data on iOS 27 and later. This is a plausible mechanism, not a proven diagnosis of this connection.",
         "Synthetic receipt coverage is repaired independently of source lineage and must not pool means or rename historical records.",
         "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten.",
-        "The supplied original native archive was independently inspected. Historical origin fields do not establish a stable mapping to later received candidates; no source was reassigned by matching values or dates."
+        "The supplied original native archive was independently inspected. Historical origin fields do not establish a stable mapping to later received candidates; no source was reassigned by matching values or dates.",
+        "The authenticated Google Health Takeout has source-bearing meal rows but no explicit energy/carbohydrate fields for the unresolved day, and does not establish the remaining activity source identities."
       ],
       "next_action": "Use an original source-bearing export or a supported provider mapping when it becomes available; retain separate source segments in the meantime.",
       "blocker": "No attributable original source identity or stable mapping exists in the currently received metadata."
@@ -3808,8 +3819,8 @@
       "area": "Google server credential repair",
       "priority": "P0",
       "owner": "Codex",
-      "status": "blocked_user",
-      "blocker": "Administrative login and the exact existing project/client were verified. The read-only execution ended at provider capacity; the separate direct browser could not load the observed client URL. No fresh masked target/status or protected save is confirmed. Additional execution capacity or an accessible owner final-action route is required; another login is not the missing input.",
+      "status": "blocked_external",
+      "blocker": "The exact client ID is confirmed and its saved server secret fails both current listed-mask comparison and Google authentication. Secure Google sign-in succeeded, but Cloud Console still renders Site Unavailable in this browser. No protected credential change occurred; repeating sign-in is not the missing step.",
       "summary": "Reconcile actual current client credentials and repair the confirmed dedicated Google server authentication failure safely.",
       "acceptance": [
         "Reconfirm the exact existing client and current provider metadata; preserve the other enabled secret and never delete a mismatched or unverified target.",
@@ -3828,7 +3839,7 @@
         "A new strictly read-only access preparation ended after7 steps with authentication_required, without reading current secret metadata or changing settings. Direct browser preparation reached Supabase sign-in while the Google console page was unavailable in that browser. No existing approval was revoked or repeated.",
         "Owner login-only Feito verified: the same-profile read-only execution matched the dedicated project and client, then ended at provider execution capacity. No fresh masked suffix/status or credential mutation/save was confirmed. Direct browser access to the actual observed details URL returned Site Unavailable. No purchase, new owner grant or health-data write occurred."
       ],
-      "next_action": "Resume from the verified administrative login after a usable route exists, without repeating login or app OAuth. First verify current masked target and another enabled credential, then prepare and complete one protected same-name save. Do not start irreversible rotation without enough capacity and a complete transfer route, request a complete secret in chat or buy/reload without explicit authorization.",
+      "next_action": "Resume only when the administrative console is usable. Preserve the two currently enabled credentials until a concrete complete protected replacement route exists; verify a saved change before another credential probe or genuine app connection.",
       "owner_input": "administrative_execution_capacity_or_protected_final_action"
     },
     {
@@ -3856,7 +3867,7 @@
       "id": "LTS-GOOGLE-TAKEOUT-WATER-001",
       "area": "hydration",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "agent",
       "summary": "Consume authenticated Google Health Takeout daily hydration with independent source identity.",
       "acceptance": [
@@ -3867,9 +3878,12 @@
         "Public model and authenticated readback include the new source; the full-history request remains pending."
       ],
       "evidence": [
-        "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md"
+        "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md",
+        "PR517 publishes the source boundary and consumption model; PR518 validates independent original proof in the authenticated audit.",
+        "All 22 exact source-candidate workflows passed. Actual-auth run42950262629 passes complete desktop/mobile and full-history checks on the public build.",
+        "The guarded native import and independent readback are preserved privately; existing canonical days are unchanged."
       ],
-      "next_action": "Run disposable PostgreSQL and browser gates, import only reviewed absent days, deploy and verify.",
+      "next_action": "Keep original source evidence private and preserve independent full-history, present-day and recurring-delivery criteria.",
       "blocker": null
     }
   ],

@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -32,6 +33,28 @@ jobs:
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: .
+      - name: Wait for Pages artifact visibility
+        uses: actions/github-script@v7
+        env:
+          PAGES_ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+        with:
+          script: |
+            const name = process.env.PAGES_ARTIFACT_NAME;
+            for (let attempt = 0; attempt < 8; attempt++) {
+              const {data} = await github.rest.actions.listWorkflowRunArtifacts({
+                ...context.repo, run_id: context.runId, per_page: 100
+              });
+              const matches = data.artifacts.filter(a => a.name === name && !a.expired && a.size_in_bytes > 0);
+              if (matches.length > 1) throw new Error('Ambiguous Pages artifact');
+              if (matches.length === 1) {
+                // Let the Actions results index used by deploy-pages settle too.
+                await new Promise(resolve => setTimeout(resolve, 4000));
+                core.info('Current Pages artifact is visible');
+                return;
+              }
+              await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+            throw new Error('Current Pages artifact did not become visible');
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
