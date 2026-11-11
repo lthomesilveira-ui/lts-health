@@ -2,10 +2,10 @@ name: LTS Health Google Takeout water
 on:
   pull_request:
     branches: [main]
-    paths: ['tools/google_takeout_water.py', 'tools/tests/test_google_takeout_water.py', 'supabase/migrations/**', 'supabase/tests/google-takeout-water-postgres-test.py', 'v2/src/hydration.js', 'v2/hydration-contract-test.mjs', '.github/workflows/google-takeout-water.yml']
+    paths: ['tools/google_takeout_water.py', 'tools/tests/test_google_takeout_water.py', 'supabase/migrations/**', 'supabase/tests/google-takeout-water-postgres-test.py', 'v2/src/hydration.js', 'v2/hydration-contract-test.mjs', 'v2/real-auth-e2e.mjs', 'v2/takeout-auth-boundary-test.mjs', '.github/workflows/google-takeout-water.yml']
   push:
     branches: [main]
-    paths: ['tools/google_takeout_water.py', 'tools/tests/test_google_takeout_water.py', 'supabase/migrations/**', 'supabase/tests/google-takeout-water-postgres-test.py', 'v2/src/hydration.js', 'v2/hydration-contract-test.mjs', '.github/workflows/google-takeout-water.yml']
+    paths: ['tools/google_takeout_water.py', 'tools/tests/test_google_takeout_water.py', 'supabase/migrations/**', 'supabase/tests/google-takeout-water-postgres-test.py', 'v2/src/hydration.js', 'v2/hydration-contract-test.mjs', 'v2/real-auth-e2e.mjs', 'v2/takeout-auth-boundary-test.mjs', '.github/workflows/google-takeout-water.yml']
 permissions:
   contents: read
 jobs:
@@ -40,5 +40,6 @@ jobs:
           python3 -m unittest discover -s tools/tests -p test_google_takeout_water.py
           python3 supabase/tests/google-takeout-water-postgres-test.py
           node v2/hydration-contract-test.mjs
+          node v2/takeout-auth-boundary-test.mjs
           node v2/production-integration-contract.mjs
           node v2/public-payload-guard.mjs

@@ -151,10 +151,12 @@ async function readIntegritySnapshot(){
     const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});
     const {data:sessionData,error:sessionError}=await client.auth.getSession();
     if(sessionError||!sessionData?.session?.user)return{error:'authenticated data session unavailable'};
-    async function fetchAll(table,select){
+    async function fetchAll(table,select,family=null){
       const rows=[],pageSize=1000;
       for(let from=0;;from+=pageSize){
-        const {data,error}=await client.from(table).select(select).range(from,from+pageSize-1);
+        let query=client.from(table).select(select);
+        if(family)query=query.eq('source_family',family);
+        const {data,error}=await query.range(from,from+pageSize-1);
         if(error)return{error:`${table}: ${error.message}`};
         const chunk=data||[];rows.push(...chunk);if(chunk.length<pageSize)break;
       }
@@ -165,11 +167,12 @@ async function readIntegritySnapshot(){
       ['exercises','health_workout_exercises','source_record_id,workout_source_record_id'],
       ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,phase'],
       ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id,evidence_kind,evidence_status,field_names'],
-      ['sourceMetrics','health_source_daily_metrics','source_record_id,metric_type,source_family,source_name,canonical_status,confidence,unit,value'],
+      ['sourceMetrics','health_source_daily_metrics','source_record_id,metric_date,metric_type,source_family,source_name,canonical_status,confidence,unit,value'],
+      ['takeoutWater','health_source_daily_metrics','source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status,confidence,source_payload','google_health_takeout'],
       ['quality','health_data_quality_issues','source_record_id,status'],
       ['uploads','health_uploads','id,status']
     ];
-    const results=await Promise.all(specs.map(([,table,select])=>fetchAll(table,select)));
+    const results=await Promise.all(specs.map(([,table,select,family])=>fetchAll(table,select,family)));
     const failure=results.find(r=>r.error);if(failure)return{error:failure.error};
     const data=Object.fromEntries(specs.map(([name],i)=>[name,results[i].rows]));
     const workoutIds=new Set(data.workouts.map(r=>r.source_record_id).filter(Boolean));
@@ -183,6 +186,9 @@ async function readIntegritySnapshot(){
     const bridgeTypes={dietary_energy_kcal:['kcal',20000],dietary_protein_g:['g',2000],dietary_carbs_g:['g',5000],dietary_fat_g:['g',2000],dietary_fiber_g:['g',1000],dietary_water_ml:['mL',100000]};
     const validBridge=r=>r.source_family==='health_auto_export'&&r.confidence==='authenticated_auto_export'&&String(r.source_record_id||'').startsWith('health_auto_export:')&&bridgeTypes[r.metric_type]?.[0]===r.unit&&Number.isFinite(Number(r.value))&&Number(r.value)>=0&&Number(r.value)<=bridgeTypes[r.metric_type][1];
     const validOriginalWater=r=>r.source_family==='myfitnesspal'&&r.source_name==='MyFitnessPal'&&r.metric_type==='dietary_water_ml'&&r.unit==='mL'&&Number(r.value)>0&&Number(r.value)<=100000&&['user_confirmed','account_authenticated_export'].includes(r.confidence);
+    const takeoutProof=new Map(data.takeoutWater.map(r=>[r.source_record_id,r]));
+    const validTakeoutWater=(r,p)=>r.source_family==='google_health_takeout'&&r.source_name==='MyFitnessPal · Google Health'&&r.confidence==='authenticated_google_takeout'&&/^google_health_takeout:water:[a-f0-9]{64}$/.test(String(r.source_record_id||''))&&r.metric_type==='dietary_water_ml'&&r.unit==='mL'&&Number.isFinite(Number(r.value))&&Number(r.value)>0&&Number(r.value)<=100000&&p?.canonical_status==='canonical'&&p?.source_record_id===r.source_record_id&&p?.metric_date===r.metric_date&&Number(p?.value)===Number(r.value)&&p?.source_payload?.entry_method==='google_health_takeout_water_v1'&&String(p?.source_payload?.export_version)==='1'&&/^[a-f0-9]{64}$/.test(String(p?.source_payload?.archive_sha256||''))&&p?.source_payload?.original_unit==='MILLILITER'&&p?.source_payload?.original_source==='MyFitnessPal Fitbit 3P Web API'&&p?.source_payload?.aggregation==='day'&&p?.source_payload?.local_date===r.metric_date;
+
 
     return{
       orphanExercises:data.exercises.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
@@ -190,7 +196,7 @@ async function readIntegritySnapshot(){
       orphanSetsByExercise:data.sets.filter(r=>r.exercise_source_record_id&&!exerciseIds.has(r.exercise_source_record_id)).length,
       orphanEvidence:data.evidence.filter(r=>!r.workout_source_record_id||!workoutIds.has(r.workout_source_record_id)).length,
       legacyWorkoutsMissingSource:visibleWorkouts.filter(r=>String(r.source_file||'').includes('SEED_TREINOS')&&!String(r.raw_exercises||'').trim()).length,
-      canonicalBoundaryViolations:data.sourceMetrics.filter(r=>String(r.canonical_status||'').toLowerCase()==='canonical'&&!allowedCanonical.has(`${String(r.source_family||'').toLowerCase()}|${String(r.metric_type||'').toLowerCase()}`)&&!validBridge(r)&&!validOriginalWater(r)).length,
+      canonicalBoundaryViolations:data.sourceMetrics.filter(r=>String(r.canonical_status||'').toLowerCase()==='canonical'&&!allowedCanonical.has(`${String(r.source_family||'').toLowerCase()}|${String(r.metric_type||'').toLowerCase()}`)&&!validBridge(r)&&!validOriginalWater(r)&&!validTakeoutWater(r,takeoutProof.get(r.source_record_id))).length,
       latestWorkoutId:latest?.source_record_id||null,
       latestWorkoutDate:latest?.workout_date||null,
       latestExpectedExercises:latest?data.exercises.filter(r=>r.workout_source_record_id===latest.source_record_id).length:0,
