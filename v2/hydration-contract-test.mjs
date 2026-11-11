@@ -23,6 +23,18 @@ assert.deepEqual(hydrationModel({sourceMetrics:[canonical]}).rows.map(row=>[row.
 assert.equal(hydrationModel({sourceMetrics:[{...canonical,canonical_status:'candidate'}]}).rows.length,0);
 assert.equal(hydrationModel({sourceMetrics:[{...canonical,unit:'L'}]}).rows.length,0);
 
+// Synthetic original Takeout rows keep their source and do not complete the
+// independent request for a complete authenticated MyFitnessPal history.
+const takeout={...canonical,value:1234,source_family:'google_health_takeout',source_name:'MyFitnessPal · Google Health',confidence:'authenticated_google_takeout',source_record_id:'google_health_takeout:water:'+'a'.repeat(64)};
+assert.equal(hydrationModel({sourceMetrics:[takeout]}).rows[0].value,1234);
+assert.equal(historicalMyFitnessPalWaterStatus({sourceMetrics:[takeout]},{sourceMetrics:'ready'}),'pending');
+for(const changed of [{canonical_status:'held'},{value:0},{unit:'VOLUME_UNIT_UNSPECIFIED'},{confidence:'user_confirmed'},{source_record_id:'google_health_takeout:water:unverified'}]){
+  assert.equal(hydrationModel({sourceMetrics:[{...takeout,...changed}]}).rows.length,0);
+}
+assert.equal(hydrationModel({sourceMetrics:[takeout,{...takeout}]}).rows[0].value,1234,'equal mirrors are not added');
+assert.equal(hydrationModel({sourceMetrics:[takeout,{...canonical,value:2500}]}).rows.length,0,'different source totals remain conflicts');
+assert.equal(hydrationModel({sourceMetrics:[takeout,{...canonical,value:2500}]}).conflicts.length,1);
+
 const equalSources=hydrationModel({nutrition:[{nutrition_date:'2026-09-08',water_ml:2500,source:'MFP ZIP'}],sourceMetrics:[canonical]});
 assert.equal(equalSources.rows.length,1);
 assert.equal(equalSources.conflicts.length,0);
