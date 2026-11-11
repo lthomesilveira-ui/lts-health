@@ -51,7 +51,7 @@ grant all on public.health_source_daily_metrics to anon,authenticated,service_ro
 run(f"""insert into public.health_source_daily_metrics(user_id,source_record_id,metric_date,metric_type,value,unit,source_name,source_family,canonical_status)
 values('{owner}','existing-synthetic','2030-02-10','exercise_minutes',42,'min','Apple Health','apple_activity_summary','canonical');""")
 baseline = run("select md5(row_to_json(t)::text) from public.health_source_daily_metrics t;")
-migration = root / 'supabase/migrations/20261111023742_allow_authenticated_google_takeout_water.sql'
+migration = root / 'supabase/migrations/20261111024734_allow_authenticated_google_takeout_water.sql'
 run(migration.read_text())
 assert run("select md5(row_to_json(t)::text) from public.health_source_daily_metrics t;") == baseline
 payload = dict(entry_method="google_health_takeout_water_v1", export_version=1,
