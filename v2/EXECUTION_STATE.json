@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-08",
+  "updated_on": "2026-11-11",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,37 +50,27 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-BROWSER-EVIDENCE-SETTLING-049",
-    "status": "done",
-    "goal": "Verify native controls after visible DOM state settles, retaining exact source/geometry/disclosure assertions and first-failure evidence.",
+    "id": "PKG-GOOGLE-TAKEOUT-WATER-050",
+    "status": "in_progress",
+    "goal": "Import source-proven positive daily hydration without changing existing source totals or completing the independent full-history request.",
     "task_ids": [
-      "LTS-BROWSER-EVIDENCE-SETTLING-001"
+      "LTS-GOOGLE-TAKEOUT-WATER-001"
     ],
-    "public_build": "health-integrated-20261108.128",
-    "candidate_build": null,
-    "runtime_changed": false,
-    "frontend_runtime_changed": false,
-    "server_runtime_changed": false,
+    "public_build": "health-integrated-20261109.129",
+    "candidate_build": "health-integrated-20261111.130",
+    "runtime_changed": true,
+    "frontend_runtime_changed": true,
+    "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-08",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/BROWSER_EVIDENCE_SETTLING_20261108.md",
-    "completed_on": "2026-11-08",
-    "candidate_commit": "23f31c050e0b5024df69ef22e5ed2c50d2f80fd0",
-    "tested_tree": "a3bf34b9821118f4e1f851fce09c173ab57b5b2d",
-    "main_commit": "2aa1b4bce3cb80df8dc0323aee22ecb2a4a81dad",
-    "candidate_workflows_passed": 18,
-    "merge_tree_verified": true,
-    "next_action_package_id": "PKG-GOOGLE-CLIENT-CREDENTIAL-REPAIR-048",
-    "postmerge_ci": {
-      "total": 20,
-      "success": 20,
-      "pending_workflows": [],
-      "failure": 0,
-      "status": "complete",
-      "note": "All automatic postmerge checks completed successfully on the unchanged tested source; no rerun was requested."
-    }
+    "started_on": "2026-11-11",
+    "pending_gates": [
+      "PostgreSQL source boundary",
+      "candidate CI and browser consumers",
+      "native guarded import",
+      "public deployment and authenticated readback"
+    ],
+    "evidence_document": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261108.128",
@@ -3861,6 +3851,26 @@
       ],
       "next_action": "Retain original failed artifacts and bounded-wait assertions. Do not repeat successful suites on unchanged source; the secure credential transfer and all original source conditions remain independent.",
       "completed_on": "2026-11-08"
+    },
+    {
+      "id": "LTS-GOOGLE-TAKEOUT-WATER-001",
+      "area": "hydration",
+      "priority": "P0",
+      "status": "in_progress",
+      "owner": "agent",
+      "summary": "Consume authenticated Google Health Takeout daily hydration with independent source identity.",
+      "acceptance": [
+        "Only positive, typed, unambiguous MyFitnessPal daily source logs can be promoted.",
+        "Every imported row retains archive digest, member, original fields, line and timezone in private evidence.",
+        "Existing days are unchanged; matching mirrors do not add and differing totals remain conflicts.",
+        "Browser roles cannot forge or relabel authenticated Takeout observations.",
+        "Public model and authenticated readback include the new source; the full-history request remains pending."
+      ],
+      "evidence": [
+        "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md"
+      ],
+      "next_action": "Run disposable PostgreSQL and browser gates, import only reviewed absent days, deploy and verify.",
+      "blocker": null
     }
   ],
   "package_history": [
