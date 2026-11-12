@@ -4,15 +4,17 @@ import {webkit} from 'playwright';
 // Authentication state and observations stay in memory. Only fixed case names
 // and booleans may enter logs; screenshots use the existing encrypted path.
 const ready={hoje:'[data-reference-home]',treinos:'.ltsTrainingV2',saude:'.ltsLabsV2',nutricao:'.ltsNutritionProduct',dados:'[data-health-auto-export]'};
-const requireCheck=(ok,stage)=>{if(!ok){const error=new Error('Owner browser flow failed; private observations withheld');error.auditCode=`owner-flow-${stage}`;throw error;}};
+const requireCheck=(ok,stage,checks)=>{if(!ok){const error=new Error('Owner browser flow failed; private observations withheld');error.auditCode=`owner-flow-${stage}`;error.flowChecks=checks;throw error;}};
 
 async function geometry(page){
- const ok=await page.evaluate(()=>{
+ const checks=await page.evaluate(()=>{
   const host=document.querySelector('#screenHost');
   const controls=[...document.querySelectorAll('.refMetricLine b,.refMetricLine small,.ltsPointReadout p,.ltsRefSetTable')].filter(el=>el.getBoundingClientRect().width>0);
-  return document.documentElement.scrollWidth<=innerWidth+1&&(!host||host.scrollWidth<=host.clientWidth+1)&&controls.every(el=>parseFloat(getComputedStyle(el).fontSize)>=10.5);
+  return {documentFits:document.documentElement.scrollWidth<=innerWidth+1,hostFits:!host||host.scrollWidth<=host.clientWidth+1,
+   fontsReadable:controls.every(el=>parseFloat(getComputedStyle(el).fontSize)>=10.5),minimumFont:controls.length?Math.min(...controls.map(el=>parseFloat(getComputedStyle(el).fontSize))):null,
+   documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth,hostWidth:host?.clientWidth??0,hostScrollWidth:host?.scrollWidth??0};
  });
- requireCheck(ok,'geometry');
+ requireCheck(checks.documentFits&&checks.hostFits&&checks.fontsReadable,'geometry',checks);
 }
 
 async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner}){
@@ -48,15 +50,15 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner}){
      };
      const svgs=[...document.querySelectorAll('[data-reference-home] svg[data-period-start]')];
      const last=m.water.latest||m.water.rows?.at(-1);
-     return ['body','workouts','exercises','sets','nutrition','sourceMetrics','labs'].every(key=>state.domainStatus[key]==='ready')&&m.period===period&&
-      document.querySelector('.refPeriod small')?.textContent.includes(`${fmtDate(m.bounds.start)}–${fmtDate(m.bounds.end)}`)&&
-      svgs.length>0&&svgs.every(svg=>svg.dataset.periodStart===m.bounds.start&&svg.dataset.periodEnd===m.bounds.end)&&
-      document.querySelector('.refPanel.nutrition .refMetricLine b')?.textContent===v(m.nutrition.means?.calories_kcal,'kcal/dia',0)&&
-      document.querySelector('.refPanel.sleep .refMetricLine b')?.textContent===v(m.sleep.mean,'h/noite')&&
-      document.querySelector('.refPanel.water .refMetricLine b')?.textContent===(m.water.available===false?'Indisponível':last?v(last.value,'mL',0):m.water.partial?'Leitura parcial':'Sem registro')&&
-      chart('nutrition',m.nutrition.caloriesPoints)&&chart('sleep',m.sleep.points||m.sleep.rows)&&chart('water',e.water.points);
+     return {ready:['body','workouts','exercises','sets','nutrition','sourceMetrics','labs'].every(key=>state.domainStatus[key]==='ready'),period:m.period===period,
+      range:Boolean(document.querySelector('.refPeriod small')?.textContent.includes(`${fmtDate(m.bounds.start)}–${fmtDate(m.bounds.end)}`)),
+      chartBounds:svgs.length>0&&svgs.every(svg=>svg.dataset.periodStart===m.bounds.start&&svg.dataset.periodEnd===m.bounds.end),
+      nutrition:document.querySelector('.refPanel.nutrition .refMetricLine b')?.textContent===v(m.nutrition.means?.calories_kcal,'kcal/dia',0),
+      sleep:document.querySelector('.refPanel.sleep .refMetricLine b')?.textContent===v(m.sleep.mean,'h/noite'),
+      water:document.querySelector('.refPanel.water .refMetricLine b')?.textContent===(m.water.available===false?'Indisponível':last?v(last.value,'mL',0):m.water.partial?'Leitura parcial':'Sem registro'),
+      nutritionChart:chart('nutrition',m.nutrition.caloriesPoints),sleepChart:chart('sleep',m.sleep.points||m.sleep.rows),waterChart:chart('water',e.water.points)};
     },period);
-    requireCheck(matches,'home');await geometry(page);
+    requireCheck(Object.values(matches).every(value=>value===true),'home',matches);await geometry(page);
     await page.screenshot({path:`${evidenceDir}/owner-${label}-home-${period}.png`,fullPage:true});
    }
   },
@@ -169,7 +171,9 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner}){
   catch(error){
    const stage=/^owner-flow-(?:auth|home|workout|workout-return|labs|water|receipts|integrations|geometry)$/.test(error?.auditCode||'')?error.auditCode:`owner-flow-${name}`;
    try{await page.screenshot({path:`${evidenceDir}/owner-${label}-${name}-failure.png`,fullPage:true});}catch{}
-   report.push({surface:label,case:name,passed:false,stage});
+   const allowed=['ready','period','range','chartBounds','nutrition','sleep','water','nutritionChart','sleepChart','waterChart','documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth'];
+   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>allowed.includes(key)&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)||value===null)));
+   report.push({surface:label,case:name,passed:false,stage,...(checks?{checks}:{})});
   }
  }
  return report;
