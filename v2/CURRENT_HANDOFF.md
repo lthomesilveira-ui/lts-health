@@ -1,3 +1,13 @@
+## 2026-11-12 — Comprovação laboratorial validada; lacunas de origem delimitadas
+
+A revisão independente existente passou no banco, na identidade do PDF original e no aplicativo autenticado: os15 cartões e pontos foram conferidos em1440px e390px, com valores, unidades e referências originais. A releitura nativa completa após a rotina43147576489 confirmou todos os campos preservados. A falha anterior era a comparação por innerText de referências com quebras de linha; o verificador agora compara o texto original exato. Não houve nova versão funcional nem alteração clínica; runtime.131 permanece. Evidências privadas continuam criptografadas.
+
+`LTS-LAB-DOCUMENTARY-PRESENTATION-001` está concluída. O manifesto literal da antiga proposta continua não recuperado em `LTS-LAB-PROPOSAL-RECOVERY-001`; a reconciliação delimita essa lacuna arquivística e não a transforma em instrução para alterar os resultados verificados. Não repetir a revisão nem pesquisas inalteradas.
+
+Também foram conferidos os vínculos Polar existentes, a ausência de identidade precisa no legado, a cobertura basal incompleta, as origens históricas não informadas e as respostas reais dos fornecedores. Os seis arquivos do receptor coincidem com o código testado, e envios genuínos completos passaram; isso não recupera o corpo, tamanho ou lote do envio antigo rejeitado. Nenhum limite foi ampliado. A resposta Polar recomenda reset sem comprovar recuperação; reset, reinstalação e desvinculação não foram executados. Google segue dependente de caminho protegido de instalação da credencial, sem rotação, exposição, exclusão, nova contratação ou pedido repetido de login.
+
+Detalhes e evidências: `v2/reviews/LAB_DOCUMENTARY_AND_SOURCE_EVIDENCE_20261112.md`. Critérios originais não satisfeitos permanecem abertos individualmente, e as mensagens automáticas de desenvolvimento permanecem desativadas.
+
 ## 2026-11-12 — Publicado e verificado: estados claros de conexões e arquivos, .131
 
 O pacote051 está concluído: o Google Health distingue conta não conectada, conta autorizada e integração indisponível; a área Seus arquivos limita a ausência de ação ao reenvio de arquivos. A configuração técnica não é atribuída ao usuário.
