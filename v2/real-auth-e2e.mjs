@@ -7,6 +7,7 @@ import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs'
 import {verifyRecordedLoadSourceProjection} from './real-auth-training-load-checks.mjs';
 import {verifyOriginalPolarHistory} from './real-auth-polar-history-checks.mjs';
 import {verifyReviewedLaboratoryPresentation} from './real-auth-lab-documentary-checks.mjs';
+import {verifyOwnerBrowserFlows} from './real-auth-owner-flows.mjs';
 import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
 import {observePublicFailures} from './public-entry-diagnostics.mjs';
 
@@ -517,6 +518,9 @@ try{
   verificationStage='deep-history';
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
 
+  verificationStage='owner-browser-flows';
+  await verifyOwnerBrowserFlows(page,{appUrl,evidenceDir});
+
   verificationStage='reviewed-laboratory-presentation';
   await verifyReviewedLaboratoryPresentation(page,{waitForRoute,evidenceDir});
 
@@ -526,7 +530,7 @@ try{
   console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
 }catch(error){
   const auditCode=String(error?.auditCode||'');
-  if(/^depth-check-\d{1,3}$/.test(auditCode)||/^lab-reviewed-(?:read|loaded|identity|eligibility|collection-card|collection-value|collection-reference|graph-point|graph-original|overflow|final-integrity)$/.test(auditCode)||['nutrition-contrast','runtime-errors'].includes(auditCode))verificationStage+=` (${auditCode})`;
+  if(/^depth-check-\d{1,3}$/.test(auditCode)||/^lab-reviewed-(?:read|loaded|identity|eligibility|collection-card|collection-value|collection-reference|graph-point|graph-original|overflow|final-integrity)$/.test(auditCode)||/^owner-flow-(?:auth|home|workout|workout-return|labs|water|receipts|integrations|geometry|runtime)$/.test(auditCode)||['nutrition-contrast','runtime-errors'].includes(auditCode))verificationStage+=` (${auditCode})`;
   console.log('Real-auth bounded failure evidence: '+JSON.stringify({runtimeErrorCount,runtimeErrorKinds,network:networkFailures.failures,networkCounts:networkFailures.counts}));
   try{await page.screenshot({path:`${evidenceDir}/e2e-failure.png`,fullPage:true});}catch{}
   throw new Error(`Real authenticated verification failed in ${verificationStage}; private details are withheld from public logs. Inspect the encrypted evidence.`);
