@@ -6,6 +6,7 @@ import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
 import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs';
 import {verifyRecordedLoadSourceProjection} from './real-auth-training-load-checks.mjs';
 import {verifyOriginalPolarHistory} from './real-auth-polar-history-checks.mjs';
+import {verifyReviewedLaboratoryPresentation} from './real-auth-lab-documentary-checks.mjs';
 import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
 import {observePublicFailures} from './public-entry-diagnostics.mjs';
 
@@ -515,6 +516,9 @@ try{
 
   verificationStage='deep-history';
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
+
+  verificationStage='reviewed-laboratory-presentation';
+  await verifyReviewedLaboratoryPresentation(page,{waitForRoute,evidenceDir});
 
   verificationStage='sign-out';
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});
