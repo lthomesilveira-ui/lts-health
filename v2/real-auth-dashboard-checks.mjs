@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 
 // Called only inside the established authenticated CI session. No fixtures,
 // writes, credentials, medical values or source identifiers are printed.
-async function inspectIntegratedDashboard(page,{expectedBuild}){
+async function inspectIntegratedDashboard(page,{expectedBuild,onPhase=()=>{},onCheck=()=>{}}){
+ onPhase('initial');
  const keys=['water','protein','energy','activeEnergy','totalEnergy','steps','sleep'];
  assert.equal(await page.locator('meta[name="lts-build"]').getAttribute('content'),expectedBuild);
  const check=async()=>{
@@ -27,6 +28,7 @@ async function inspectIntegratedDashboard(page,{expectedBuild}){
    });
    return {matched,qualityMatched,overflow:document.documentElement.scrollWidth>innerWidth+1,missingWater:d.metricsByKey.water.value==null,ambiguousWater:Boolean(d.metricsByKey.water.ambiguousDays),latestWater:d.metricsByKey.water.latestRecorded?.date||null};
   });
+  onCheck({dashboardMatched:reading.matched,dashboardCoverage:reading.qualityMatched,dashboardNoOverflow:!reading.overflow,dashboardMissingWater:reading.missingWater,dashboardAmbiguousWater:reading.ambiguousWater,dashboardHasOldWater:Boolean(reading.latestWater)});
   assert.equal(reading.matched,true,'actual seven-card readings match the loaded source-specific calendar');
   assert.equal(reading.overflow,false,'actual dashboard fits viewport');
   assert.equal(reading.qualityMatched,true,'actual daily receipt audit, source-specific coverage and total-energy absence agree across all windows');
@@ -35,6 +37,7 @@ async function inspectIntegratedDashboard(page,{expectedBuild}){
  };
  await check();
  for(const period of ['7','30','60','90','6m','1y','all']){
+  onPhase('period_'+period);
   await page.locator('[data-dashboard-mode="period"]').click();
   await page.locator('#dashboard-period').selectOption(period);
   await page.waitForFunction(period=>document.querySelector('#dashboard-period')?.value===period,period);
@@ -42,6 +45,7 @@ async function inspectIntegratedDashboard(page,{expectedBuild}){
  }
  // Independently read the selected water origin from the authenticated API,
  // then reopen an actual observed day through the published date control.
+ onPhase('water_read');
  await page.locator('#dashboard-period').selectOption('7');
  await check();
  const truth=await page.evaluate(async()=>{
@@ -63,12 +67,14 @@ async function inspectIntegratedDashboard(page,{expectedBuild}){
   return {date,value:numeric(row),today:d.today};
  });
  if(truth){
+  onPhase('water_open');
   await page.locator('[data-dashboard-mode="day"]').click();
   await page.locator('#dashboard-date').fill(truth.date);
   await page.locator('#dashboard-date').dispatchEvent('change');
   await page.waitForFunction(date=>document.querySelector('#dashboard-date')?.value===date,truth.date);
   await check();
   assert.equal(await page.locator('[data-dashboard-card="water"] .healthMetricValue strong').innerText(),Number(truth.value).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}),'observed historical water day agrees with independent API');
+  onPhase('water_today');
   await page.locator('#dashboard-today').click();
   const current=await check();
   if(truth.date<truth.today&&current.missingWater){
@@ -76,6 +82,7 @@ async function inspectIntegratedDashboard(page,{expectedBuild}){
    assert.ok((await page.locator('[data-last-known="water"]').innerText()).includes(truth.date.split('-').reverse().join('/')));
   }
  }
+ onPhase('final');
  await page.locator('[data-dashboard-mode="period"]').click();
  await page.locator('#dashboard-period').selectOption('7');
  await check();

@@ -12,13 +12,19 @@ async function geometry(page){
   const host=document.querySelector('#screenHost');
   const controls=[...document.querySelectorAll('.refMetricLine b,.refMetricLine small,.ltsPointReadout p,.ltsRefSetTable')].filter(el=>el.getBoundingClientRect().width>0);
   const components={};
-  for(const [name,selector]of Object.entries({labPage:'.ltsLabsV2',labMarker:'#productLabMarkerSelect',labCohort:'#productLabCohort',labPoint:'#productLabPoint',labTrend:'#productLabsTrend',labHistory:'#productLabsHistory',labCollection:'#productLabsCollection',labContext:'.ltsLabSeriesContext',labHistoryRow:'.ltsLabsHistoryRow',labRail:'.ltsLabsMarkerRail'})){
+  for(const [name,selector]of Object.entries({labPage:'.ltsLabsV2',labMarker:'#productLabMarkerSelect',labCohort:'#productLabCohort',labPoint:'#productLabPoint',labTrend:'#productLabsTrend',labHistory:'#productLabsHistory',labCollection:'#productLabsCollection',labContext:'.ltsLabSeriesContext',labHistoryRow:'.ltsLabsHistoryRow',labRail:'.ltsLabsMarkerRail',labPlot:'.ltsLabTrendPlot',labSvg:'.ltsLabTrendPlot .ltsDepthPlot svg',labPlotGrid:'.ltsLabTrendPlot .ltsDepthPlot',labEndpoints:'.ltsLabEndpoints',labLegend:'.ltsLabReferenceLegend',labLegendContent:'.ltsLabReferenceLegend>div',labReadout:'.ltsPointReadout'})){
    const nodes=[...document.querySelectorAll(selector)];
    components[name+'Width']=Math.max(0,...nodes.map(el=>el.getBoundingClientRect().width));
    components[name+'Right']=Math.max(0,...nodes.map(el=>el.getBoundingClientRect().right));
    components[name+'Scroll']=Math.max(0,...nodes.map(el=>el.scrollWidth));
   }
-  return {...components,documentFits:document.documentElement.scrollWidth<=innerWidth+1,hostFits:!host||host.scrollWidth<=host.clientWidth+1,
+  // Diagnostic style probes never change pass/fail: each is removed before
+  // measuring the original layout and before capturing any evidence.
+  const probes={};
+  if(host&&host.scrollWidth>host.clientWidth+1)for(const [name,css]of Object.entries({legendShrinkProbe:'.ltsLabsV2 .ltsLabReferenceLegend>div{min-width:0}',svgShrinkProbe:'.ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot svg{min-width:0;max-width:100%;display:block}',readoutShrinkProbe:'.ltsLabsV2 .ltsPointReadout{min-width:0}',plotChildrenShrinkProbe:'.ltsLabsV2 .ltsLabTrendPlot>*{min-width:0;max-width:100%;overflow-wrap:anywhere}'})){
+   const style=document.createElement('style');style.textContent=css;document.head.append(style);probes[name]=host.scrollWidth<=host.clientWidth+1;style.remove();
+  }
+  return {...components,...probes,documentFits:document.documentElement.scrollWidth<=innerWidth+1,hostFits:!host||host.scrollWidth<=host.clientWidth+1,
    fontsReadable:controls.every(el=>parseFloat(getComputedStyle(el).fontSize)>=10.5),minimumFont:controls.length?Math.min(...controls.map(el=>parseFloat(getComputedStyle(el).fontSize))):null,
    documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth,hostWidth:host?.clientWidth??0,hostScrollWidth:host?.scrollWidth??0};
  });
@@ -43,7 +49,9 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
    await visit('hoje');
    // The published import map routes Home to the integrated dashboard. Reuse
    // its established source/coverage audit, rather than the retired renderer.
-   await auditIntegratedDashboard(page,{expectedBuild});
+   let phase='initial',reading={};
+   try{await auditIntegratedDashboard(page,{expectedBuild,onPhase:value=>{phase=value;},onCheck:value=>{reading=value;}});}
+   catch{requireCheck(false,'home',{...reading,['dashboard_'+phase]:false});}
    for(const period of ['30','90','30']){
     await activate(page.locator('[data-dashboard-mode="period"]'));
     await page.locator('#dashboard-period').selectOption(period);
@@ -113,16 +121,18 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
   },
   water:async()=>{
    await visit('nutricao');
+   await activate(page.locator('.ltsHomePeriod [data-period="90"]'));
+   await page.waitForFunction(async()=>{const {state}=await import('./src/core.js');return state.ui.nutritionPeriod==='90'&&document.querySelector('.ltsHomePeriod [data-period="90"]')?.getAttribute('aria-pressed')==='true';});
    const matches=await page.evaluate(async()=>{
     const {state,fmtDate,fmtNum}=await import('./src/core.js'),{homeCockpitModel}=await import('./src/home-cockpit.js');
     const c=homeCockpitModel(state.data,state.domainStatus,state.ui.nutritionPeriod||state.ui.analysisPeriod||'90',state.ui),last=c.evo.latestWater;
     const panel=[...document.querySelectorAll('.ltsCockpitPanel')].find(node=>node.querySelector('h2')?.textContent==='Água consumida');
-    if(!panel||!c.r.water.available||!last)return false;
-    return panel.querySelector('.ltsCockpitCaption')?.textContent===`${fmtDate(last.date)} · consumo registrado`&&
-     panel.textContent.includes(`${fmtNum(last.value,0)} mL`)&&panel.textContent.includes('dias ausentes não são zero')&&
-     (last.date>=c.m.today||!c.r.water.rows.some(row=>row.date===c.m.today));
+    return {waterPanel:Boolean(panel),waterAvailable:Boolean(c.r.water.available),waterHistory:Boolean(last),
+     waterCaption:Boolean(last&&panel?.querySelector('.ltsCockpitCaption')?.textContent===`${fmtDate(last.date)} · consumo registrado`),
+     waterValue:Boolean(last&&panel?.textContent.includes(`${fmtNum(last.value,0)} mL`)),waterAbsence:Boolean(panel?.textContent.includes('dias ausentes não são zero')),
+     waterToday:Boolean(last&&(last.date>=c.m.today||!c.r.water.rows.some(row=>row.date===c.m.today)))};
    });
-   requireCheck(matches,'water');await geometry(page);
+   requireCheck(Object.values(matches).every(value=>value===true),'water',matches);await geometry(page);
    await page.getByRole('heading',{name:'Água consumida',exact:true}).scrollIntoViewIfNeeded();
    await page.screenshot({path:`${evidenceDir}/owner-${label}-water-history.png`,fullPage:true});
   },
@@ -166,8 +176,8 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
   catch(error){
    const stage=/^owner-flow-(?:auth|home|workout|workout-return|labs|water|receipts|integrations|geometry)$/.test(error?.auditCode||'')?error.auditCode:`owner-flow-${name}`;
    try{await page.screenshot({path:`${evidenceDir}/owner-${label}-${name}-failure.png`,fullPage:true});}catch{}
-   const allowed=['ready','period','range','chartBounds','nutrition','sleep','water','nutritionChart','sleepChart','waterChart','documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth'];
-   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>(allowed.includes(key)||/^lab(?:Page|Marker|Cohort|Point|Trend|History|Collection|Context|HistoryRow|Rail)(?:Width|Right|Scroll)$/.test(key))&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)&&Math.abs(value)<=100000||value===null)));
+   const allowed=['documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth','waterPanel','waterAvailable','waterHistory','waterCaption','waterValue','waterAbsence','waterToday','legendShrinkProbe','svgShrinkProbe','readoutShrinkProbe','plotChildrenShrinkProbe','dashboardMatched','dashboardCoverage','dashboardNoOverflow','dashboardMissingWater','dashboardAmbiguousWater','dashboardHasOldWater'];
+   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>(allowed.includes(key)||/^lab(?:Page|Marker|Cohort|Point|Trend|History|Collection|Context|HistoryRow|Rail|Plot|Svg|PlotGrid|Endpoints|Legend|LegendContent|Readout)(?:Width|Right|Scroll)$/.test(key)||/^dashboard_(?:initial|period_(?:7|30|60|90|6m|1y|all)|water_read|water_open|water_today|final)$/.test(key))&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)&&Math.abs(value)<=100000||value===null)));
    report.push({surface:label,case:name,passed:false,stage,...(checks?{checks}:{})});
   }
  }
