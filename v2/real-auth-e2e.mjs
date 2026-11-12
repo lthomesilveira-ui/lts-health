@@ -519,7 +519,7 @@ try{
   await runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell});
 
   verificationStage='owner-browser-flows';
-  await verifyOwnerBrowserFlows(page,{appUrl,evidenceDir});
+  await verifyOwnerBrowserFlows(page,{appUrl,evidenceDir,expectedBuild});
 
   verificationStage='reviewed-laboratory-presentation';
   await verifyReviewedLaboratoryPresentation(page,{waitForRoute,evidenceDir});
