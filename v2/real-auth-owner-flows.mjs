@@ -1,23 +1,31 @@
 import {webkit} from 'playwright';
+import {auditIntegratedDashboard} from './real-auth-dashboard-checks.mjs';
 
 // Uses the existing one-time owner audit session against the public app.
-// Authentication state and observations stay in memory. Only fixed case names
-// and booleans may enter logs; screenshots use the existing encrypted path.
-const ready={hoje:'[data-reference-home]',treinos:'.ltsTrainingV2',saude:'.ltsLabsV2',nutricao:'.ltsNutritionProduct',dados:'[data-health-auto-export]'};
+// Authentication state and observations stay in memory. Only fixed case names,
+// booleans and layout dimensions enter logs; screenshots use the encrypted path.
+const ready={hoje:'[data-health-dashboard]',treinos:'.ltsTrainingV2',saude:'.ltsLabsV2',nutricao:'.ltsNutritionProduct',dados:'[data-health-auto-export]'};
 const requireCheck=(ok,stage,checks)=>{if(!ok){const error=new Error('Owner browser flow failed; private observations withheld');error.auditCode=`owner-flow-${stage}`;error.flowChecks=checks;throw error;}};
 
 async function geometry(page){
  const checks=await page.evaluate(()=>{
   const host=document.querySelector('#screenHost');
   const controls=[...document.querySelectorAll('.refMetricLine b,.refMetricLine small,.ltsPointReadout p,.ltsRefSetTable')].filter(el=>el.getBoundingClientRect().width>0);
-  return {documentFits:document.documentElement.scrollWidth<=innerWidth+1,hostFits:!host||host.scrollWidth<=host.clientWidth+1,
+  const components={};
+  for(const [name,selector]of Object.entries({labPage:'.ltsLabsV2',labMarker:'#productLabMarkerSelect',labCohort:'#productLabCohort',labPoint:'#productLabPoint',labTrend:'#productLabsTrend',labHistory:'#productLabsHistory',labCollection:'#productLabsCollection',labContext:'.ltsLabSeriesContext',labHistoryRow:'.ltsLabsHistoryRow',labRail:'.ltsLabsMarkerRail'})){
+   const nodes=[...document.querySelectorAll(selector)];
+   components[name+'Width']=Math.max(0,...nodes.map(el=>el.getBoundingClientRect().width));
+   components[name+'Right']=Math.max(0,...nodes.map(el=>el.getBoundingClientRect().right));
+   components[name+'Scroll']=Math.max(0,...nodes.map(el=>el.scrollWidth));
+  }
+  return {...components,documentFits:document.documentElement.scrollWidth<=innerWidth+1,hostFits:!host||host.scrollWidth<=host.clientWidth+1,
    fontsReadable:controls.every(el=>parseFloat(getComputedStyle(el).fontSize)>=10.5),minimumFont:controls.length?Math.min(...controls.map(el=>parseFloat(getComputedStyle(el).fontSize))):null,
    documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth,hostWidth:host?.clientWidth??0,hostScrollWidth:host?.scrollWidth??0};
  });
  requireCheck(checks.documentFits&&checks.hostFits&&checks.fontsReadable,'geometry',checks);
 }
 
-async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner}){
+async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBuild}){
  const report=[],activate=locator=>mobile?locator.tap():locator.click();
  const visit=async route=>{
   const nav=mobile?'#mobileNav':'#primaryNav',direct=page.locator(`${nav} [data-route="${route}"]`);
@@ -33,32 +41,19 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner}){
  const cases={
   home:async()=>{
    await visit('hoje');
+   // The published import map routes Home to the integrated dashboard. Reuse
+   // its established source/coverage audit, rather than the retired renderer.
+   await auditIntegratedDashboard(page,{expectedBuild});
    for(const period of ['30','90','30']){
-    if(mobile)await page.locator('#home-period-mobile').selectOption(period);
-    else await activate(page.locator(`#home-period-${period}`));
-    await page.waitForFunction(async period=>{const {state}=await import('./src/core.js');return state.ui.homePeriod===period&&document.querySelector('#home-period-mobile')?.value===period&&document.querySelector(`#home-period-${period}`)?.getAttribute('aria-pressed')==='true';},period);
-    const matches=await page.evaluate(async period=>{
-     const {state,fmtNum,fmtDate,num}=await import('./src/core.js');
-     const {homePeriodModel}=await import('./src/home-period-model.js'),{homeEvidence}=await import('./src/home-evidence-insights.js');
-     const m=homePeriodModel(state.data,state.domainStatus,period,state.ui),e=homeEvidence(state.data,state.domainStatus,m,state.ui);
-     const v=(n,u,d=1)=>num(n)==null?'Sem dado':`${fmtNum(n,d)} ${u}`;
-     const sorted=rows=>JSON.stringify(rows.map(p=>({date:p.date,value:Number(p.value)})).sort((a,b)=>a.date.localeCompare(b.date)||a.value-b.value));
-     const chart=(kind,points)=>{
-      const expected=(points||[]).filter(p=>num(p.value)!=null);
-      const actual=[...document.querySelectorAll(`.refPanel.${kind} .refPlot [data-date][data-value]`)].map(el=>({date:el.dataset.date,value:Number(el.dataset.value)}));
-      return sorted(actual)===sorted(expected)&&actual.every(p=>p.date>=m.bounds.start&&p.date<=m.bounds.end);
-     };
-     const svgs=[...document.querySelectorAll('[data-reference-home] svg[data-period-start]')];
-     const last=m.water.latest||m.water.rows?.at(-1);
-     return {ready:['body','workouts','exercises','sets','nutrition','sourceMetrics','labs'].every(key=>state.domainStatus[key]==='ready'),period:m.period===period,
-      range:Boolean(document.querySelector('.refPeriod small')?.textContent.includes(`${fmtDate(m.bounds.start)}–${fmtDate(m.bounds.end)}`)),
-      chartBounds:svgs.length>0&&svgs.every(svg=>svg.dataset.periodStart===m.bounds.start&&svg.dataset.periodEnd===m.bounds.end),
-      nutrition:document.querySelector('.refPanel.nutrition .refMetricLine b')?.textContent===v(m.nutrition.means?.calories_kcal,'kcal/dia',0),
-      sleep:document.querySelector('.refPanel.sleep .refMetricLine b')?.textContent===v(m.sleep.mean,'h/noite'),
-      water:document.querySelector('.refPanel.water .refMetricLine b')?.textContent===(m.water.available===false?'Indisponível':last?v(last.value,'mL',0):m.water.partial?'Leitura parcial':'Sem registro'),
-      nutritionChart:chart('nutrition',m.nutrition.caloriesPoints),sleepChart:chart('sleep',m.sleep.points||m.sleep.rows),waterChart:chart('water',e.water.points)};
+    await activate(page.locator('[data-dashboard-mode="period"]'));
+    await page.locator('#dashboard-period').selectOption(period);
+    await page.waitForFunction(async period=>{
+     const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
+     const model=healthDashboardModel(state.data,state.domainStatus,state.ui);
+     return state.ui.dashboardPeriod===period&&model.mode==='period'&&document.querySelector('#dashboard-period')?.value===period&&
+      model.metrics.every(metric=>document.querySelector(`[data-dashboard-card="${metric.key}"] .healthMetricValue strong`)?.textContent===(metric.value==null?'—':fmtNum(metric.value,metric.key==='sleep'?1:0)));
     },period);
-    requireCheck(Object.values(matches).every(value=>value===true),'home',matches);await geometry(page);
+    await geometry(page);
     await page.screenshot({path:`${evidenceDir}/owner-${label}-home-${period}.png`,fullPage:true});
    }
   },
@@ -172,18 +167,18 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner}){
    const stage=/^owner-flow-(?:auth|home|workout|workout-return|labs|water|receipts|integrations|geometry)$/.test(error?.auditCode||'')?error.auditCode:`owner-flow-${name}`;
    try{await page.screenshot({path:`${evidenceDir}/owner-${label}-${name}-failure.png`,fullPage:true});}catch{}
    const allowed=['ready','period','range','chartBounds','nutrition','sleep','water','nutritionChart','sleepChart','waterChart','documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth'];
-   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>allowed.includes(key)&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)||value===null)));
+   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>(allowed.includes(key)||/^lab(?:Page|Marker|Cohort|Point|Trend|History|Collection|Context|HistoryRow|Rail)(?:Width|Right|Scroll)$/.test(key))&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)&&Math.abs(value)<=100000||value===null)));
    report.push({surface:label,case:name,passed:false,stage,...(checks?{checks}:{})});
   }
  }
  return report;
 }
 
-export async function verifyOwnerBrowserFlows(page,{appUrl,evidenceDir}){
+export async function verifyOwnerBrowserFlows(page,{appUrl,evidenceDir,expectedBuild}){
  const owner=await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.session?.user?.id;});
  requireCheck(Boolean(owner),'auth');
  await page.setViewportSize({width:1440,height:1000});
- const report=await runSurface(page,{label:'desktop-chromium',mobile:false,appUrl,evidenceDir,owner});
+ const report=await runSurface(page,{label:'desktop-chromium',mobile:false,appUrl,evidenceDir,owner,expectedBuild});
  let browser;
  try{
   browser=await webkit.launch({headless:true});
@@ -191,7 +186,7 @@ export async function verifyOwnerBrowserFlows(page,{appUrl,evidenceDir}){
   const mobile=await context.newPage();let errors=0;
   mobile.on('pageerror',()=>errors++);mobile.on('console',message=>{if(message.type()==='error')errors++;});
   await mobile.goto(appUrl,{waitUntil:'domcontentloaded'});await mobile.waitForSelector('#app:not(.hidden)',{timeout:30000});
-  report.push(...await runSurface(mobile,{label:'mobile-webkit-touch',mobile:true,appUrl,evidenceDir,owner}));
+  report.push(...await runSurface(mobile,{label:'mobile-webkit-touch',mobile:true,appUrl,evidenceDir,owner,expectedBuild}));
   requireCheck(errors===0,'runtime');await context.close();
  }catch(error){report.push({surface:'mobile-webkit-touch',case:'environment',passed:false,stage:/^owner-flow-(?:auth|runtime)$/.test(error?.auditCode||'')?error.auditCode:'owner-flow-auth'});}
  finally{if(browser)await browser.close();}
