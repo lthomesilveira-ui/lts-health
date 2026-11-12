@@ -4,39 +4,33 @@ import assert from 'node:assert/strict';
 // writes, credentials, medical values or source identifiers are printed.
 async function inspectIntegratedDashboard(page,{expectedBuild,onPhase=()=>{},onCheck=()=>{}}){
  onPhase('initial');
- const keys=['water','protein','energy','activeEnergy','totalEnergy','steps','sleep'];
  const buildMatched=await page.locator('meta[name="lts-build"]').getAttribute('content')===expectedBuild;
  onCheck({dashboardBuildMatched:buildMatched});assert.ok(buildMatched);
- const check=async()=>{
-  try{await page.waitForFunction(async()=>{
-   const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
-   if(!state.loaded||state.route!=='hoje'||!document.querySelector('[data-health-dashboard]')||document.querySelector('.loadingState'))return false;
-   return healthDashboardModel(state.data,state.domainStatus,state.ui).metrics.every(m=>document.querySelector(`[data-dashboard-card="${m.key}"] .healthMetricValue strong`)?.textContent===(m.value==null?'—':fmtNum(m.value,m.key==='sleep'?1:0)));
-  });}catch(error){
-   onCheck(await page.evaluate(async()=>{
-    const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
-    const d=healthDashboardModel(state.data,state.domainStatus,state.ui);
-    return {dashboardLoaded:state.loaded,dashboardRoute:state.route==='hoje',dashboardPresent:Boolean(document.querySelector('[data-health-dashboard]')),dashboardLoadingAbsent:!document.querySelector('.loadingState'),dashboardMatched:d.metrics.every(m=>document.querySelector(`[data-dashboard-card="${m.key}"] .healthMetricValue strong`)?.textContent===(m.value==null?'—':fmtNum(m.value,m.key==='sleep'?1:0)))};
-   }));throw error;
-  }
-  const cardKeysMatched=JSON.stringify(await page.locator('[data-dashboard-card]').evaluateAll(es=>es.map(e=>e.dataset.dashboardCard)))===JSON.stringify(keys);
-  const reading=await page.evaluate(async()=>{
-   const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
-   const d=healthDashboardModel(state.data,state.domainStatus,state.ui);
-   const matched=d.metrics.every(m=>document.querySelector(`[data-dashboard-card="${m.key}"] .healthMetricValue strong`)?.textContent===(m.value==null?'—':fmtNum(m.value,m.key==='sleep'?1:0)));
-   const qualityMatched=d.metrics.every(m=>{
-    const audit=m.coverageAudit,card=document.querySelector(`[data-dashboard-card="${m.key}"]`),detail=card?.querySelector(`[data-coverage-audit="${m.key}"]`);
-    if(!audit||!detail||audit.usedDays!==m.count||audit.receivedDays>m.expectedDays||new Set(audit.rows.map(row=>row.date)).size!==audit.rows.length)return false;
-    if(detail.querySelectorAll('[data-coverage-date]').length!==Math.min(31,audit.rows.length))return false;
-    const receipt=card.querySelector('[data-received-coverage]'),shouldShow=d.mode==='period'&&audit.receivedDays>audit.usedDays;
-    if(Boolean(receipt)!==shouldShow||shouldShow&&!receipt.textContent.includes(`${audit.receivedDays}/${audit.expectedDays}`))return false;
-    if(m.key==='totalEnergy'&&Boolean(card.querySelector('[data-total-energy-unavailable]'))!==(m.value==null))return false;
-    return audit.rows.every(row=>row.date>=d.bounds.start&&row.date<=d.bounds.end&&(d.mode==='day'||row.date<d.today));
-   });
-   return {matched,qualityMatched,overflow:document.documentElement.scrollWidth>innerWidth+1,missingWater:d.metricsByKey.water.value==null,ambiguousWater:Boolean(d.metricsByKey.water.ambiguousDays),latestWater:d.metricsByKey.water.latestRecorded?.date||null};
+ const inspectCurrent=async(allowIncomplete=false)=>{
+  const {state,fmtNum}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
+  const d=healthDashboardModel(state.data,state.domainStatus,state.ui);
+  const loaded=state.loaded&&isRouteReady('hoje'),route=state.route==='hoje',present=Boolean(document.querySelector('[data-health-dashboard]')),loadingAbsent=!document.querySelector('.loadingState');
+  const cards=JSON.stringify([...document.querySelectorAll('[data-dashboard-card]')].map(el=>el.dataset.dashboardCard))===JSON.stringify(['water','protein','energy','activeEnergy','totalEnergy','steps','sleep']);
+  const matched=d.metrics.every(m=>document.querySelector(`[data-dashboard-card="${m.key}"] .healthMetricValue strong`)?.textContent===(m.value==null?'—':fmtNum(m.value,m.key==='sleep'?1:0)));
+  const qualityMatched=d.metrics.every(m=>{
+   const audit=m.coverageAudit,card=document.querySelector(`[data-dashboard-card="${m.key}"]`),detail=card?.querySelector(`[data-coverage-audit="${m.key}"]`);
+   if(!audit||!detail||audit.usedDays!==m.count||audit.receivedDays>m.expectedDays||new Set(audit.rows.map(row=>row.date)).size!==audit.rows.length)return false;
+   if(detail.querySelectorAll('[data-coverage-date]').length!==Math.min(31,audit.rows.length))return false;
+   const receipt=card.querySelector('[data-received-coverage]'),shouldShow=d.mode==='period'&&audit.receivedDays>audit.usedDays;
+   if(Boolean(receipt)!==shouldShow||shouldShow&&!receipt.textContent.includes(`${audit.receivedDays}/${audit.expectedDays}`))return false;
+   if(m.key==='totalEnergy'&&Boolean(card.querySelector('[data-total-energy-unavailable]'))!==(m.value==null))return false;
+   return audit.rows.every(row=>row.date>=d.bounds.start&&row.date<=d.bounds.end&&(d.mode==='day'||row.date<d.today));
   });
-  onCheck({dashboardCards:cardKeysMatched,dashboardMatched:reading.matched,dashboardCoverage:reading.qualityMatched,dashboardNoOverflow:!reading.overflow,dashboardMissingWater:reading.missingWater,dashboardAmbiguousWater:reading.ambiguousWater,dashboardHasOldWater:Boolean(reading.latestWater)});
-  assert.ok(cardKeysMatched,'actual seven cards retain their declared order');
+  const reading={loaded,route,present,loadingAbsent,cards,matched,qualityMatched,overflow:document.documentElement.scrollWidth>innerWidth+1,missingWater:d.metricsByKey.water.value==null,ambiguousWater:Boolean(d.metricsByKey.water.ambiguousDays),latestWater:d.metricsByKey.water.latestRecorded?.date||null};
+  return allowIncomplete||loaded&&route&&present&&loadingAbsent&&cards&&matched&&qualityMatched&&!reading.overflow?reading:null;
+ };
+ const check=async()=>{
+  const report=reading=>onCheck({dashboardLoaded:reading.loaded,dashboardRoute:reading.route,dashboardPresent:reading.present,dashboardLoadingAbsent:reading.loadingAbsent,dashboardCards:reading.cards,dashboardMatched:reading.matched,dashboardCoverage:reading.qualityMatched,dashboardNoOverflow:!reading.overflow,dashboardMissingWater:reading.missingWater,dashboardAmbiguousWater:reading.ambiguousWater,dashboardHasOldWater:Boolean(reading.latestWater)});
+  let reading;
+  try{const handle=await page.waitForFunction(inspectCurrent);reading=await handle.jsonValue();await handle.dispose();}
+  catch(error){report(await page.evaluate(inspectCurrent,true));throw error;}
+  report(reading);
+  assert.ok(reading.cards,'actual seven cards retain their declared order');
   assert.equal(reading.matched,true,'actual seven-card readings match the loaded source-specific calendar');
   assert.equal(reading.overflow,false,'actual dashboard fits viewport');
   assert.equal(reading.qualityMatched,true,'actual daily receipt audit, source-specific coverage and total-energy absence agree across all windows');
