@@ -1,3 +1,13 @@
+## 2026-11-12 — Validação autônoma concluída em navegador, .133
+
+Os cinco fluxos pedidos passaram com dados reais e sessão autenticada em Chromium1440×1000 e WebKit móvel390×844 com toque emulado: períodos30/90 e gráficos, treino/séries/retorno, ponto de exame/contexto completo, água histórica/ausência recente e recebimentos/estados. A rotina protegida43308148800 passou e cifrou54 capturas. A correção contém o seletor nativo de séries no WebKit e restaura sua seta; os verificadores aguardam dados/tela de forma síncrona. Publicação e bytes exatos conferidos; o merge3e8b0b890ac8e4a009b5bff2af09a2851caddfe2 preserva a árvore testada.
+
+A releitura nativa final mantém os15 exames e25 treinos com vínculos Polar completos e intactos. `LTS-OWNER-BROWSER-VALIDATION-001` está concluída; `LTS-OWNER-DELIVERY-20261025` continua aberta. Não houve teste em iPhone físico, app instalado ou entrega nativa em segundo plano, nem aceite final do titular. A água automática, Google, lacunas históricas e envio antigo permanecem separados. Nenhum novo login é necessário para repetir estes fluxos já comprovados; não devolver o roteiro ao titular.
+
+Evidência: `v2/releases/OWNER_BROWSER_VALIDATION_20261112.md`. No checkpoint,18/19 gates gerais da candidata passaram; a repetição ampla da prévia43307262721 ainda está em execução e não é contada como sucesso. Não repetir verificações concluídas sem mudança ou preocupação nova.
+
+### Checkpoints anteriores preservados
+
 ## 2026-11-12 — Validação técnica em navegador em execução
 
 O titular dispensou o roteiro manual e pediu execução autenticada em computador e formato móvel. A candidata .133 define a largura explícita do rótulo e contém o menu nativo WebKit com o tratamento já usado no calendário; o contexto completo continua legível no detalhe. A .132 passou19/19 gates sintéticos, mas a publicação manteve a falha móvel real e não encerrou a tarefa. O novo diagnóstico comprovou que largura explícita resolve o caso; a regressão agora inclui WebKit com toque e série sintética longa. Os verificadores foram corrigidos para a Home publicada e para uma leitura consistente durante o carregamento; os cinco fluxos são percorridos com a sessão protegida existente. Gates e repetição autenticada ainda pendentes: não declarar conclusão antecipada.
