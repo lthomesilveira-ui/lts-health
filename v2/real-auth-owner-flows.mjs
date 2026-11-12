@@ -129,7 +129,8 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
    await page.locator('#productLabCohort').selectOption(target.cohort);await page.locator('#productLabPoint').selectOption(String(target.index));
    await page.waitForFunction(expected=>document.querySelector('.ltsPointReadout p > b')?.textContent===expected,`${Number(target.value).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:20})} ${target.unit}`);
    const exact=await page.locator('.ltsPointReadout').evaluate((node,target)=>node.textContent.includes(target.date.split('-').reverse().join('/'))&&[...node.querySelectorAll('span')].some(span=>span.textContent===`Resultado original: ${target.raw}`),target);
-   requireCheck(exact,'labs');await geometry(page);
+   requireCheck(exact,'labs');
+   requireCheck(await page.locator('#productLabCohort').evaluate(el=>getComputedStyle(el).backgroundImage.includes('linear-gradient')),'labs');await geometry(page);
    await page.screenshot({path:`${evidenceDir}/owner-${label}-lab-point.png`,fullPage:true});
    await activate(page.locator('#productLabMethodDetails>summary'));
    const contextMatches=await page.locator('#productLabSeriesContext').evaluate((node,target)=>{

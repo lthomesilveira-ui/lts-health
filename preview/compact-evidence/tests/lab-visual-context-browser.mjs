@@ -77,6 +77,8 @@ try{
           pointDisplacement:Math.abs(Number(circles[0].getAttribute('cy'))-Number(circles[1].getAttribute('cy'))),
           rootOverflow:document.documentElement.scrollWidth-innerWidth,hostOverflow:host.scrollWidth-host.clientWidth};
       });
+      const sourceControl=await page.locator('#productLabCohort').evaluate(el=>{const style=getComputedStyle(el);return {arrow:style.backgroundImage.includes('linear-gradient'),noRepeat:style.backgroundRepeat.split(',').every(value=>value.trim()==='no-repeat'),paddingRight:parseFloat(style.paddingRight)};});
+      assert.ok(sourceControl.arrow&&sourceControl.noRepeat&&sourceControl.paddingRight>=28,'the bounded native series control retains a visible menu indicator');
       assert.ok(geometry.min<42&&geometry.min>0&&geometry.max>61.7);assert.ok(geometry.pointDisplacement<10);
       assert.ok(geometry.bandY>0&&geometry.bandY+geometry.bandHeight<geometry.viewHeight);assert.ok(geometry.rootOverflow<=1&&geometry.hostOverflow<=1);
       for(const target of [geometry.valuesBox,geometry.referenceBox])assert.ok(target.top>=geometry.visibleTop-1&&target.bottom<=geometry.visibleBottom+1,'dates, values and the report range are fully visible after the chart jump');
@@ -100,7 +102,7 @@ try{
       await page.evaluate(()=>{location.hash='#hoje';});await stable(page,'hoje');await page.evaluate(()=>{location.hash='#saude';});await stable(page);
       assert.equal(await page.locator('#productLabMarkerSelect').inputValue(),'marcador condicional sintetico');assert.equal(await page.locator('.ltsLabReferenceBand').count(),0);
       assert.equal(await page.evaluate(()=>JSON.stringify(window.__languageApp.state.data.labs)),before);assert.deepEqual(await page.evaluate(()=>window.__historyQA.writes),[]);assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
-      results.push({engine:engine.name(),width,height,geometry,methodGeometry,methodDisclosure:true,neutralDelta:true,datedValues:true,referenceFailClosed:true,pointSelection:true,routeReturn:true,immutableRecords:true,traffic,status:'passed'});
+      results.push({engine:engine.name(),width,height,geometry,methodGeometry,sourceControl,methodDisclosure:true,neutralDelta:true,datedValues:true,referenceFailClosed:true,pointSelection:true,routeReturn:true,immutableRecords:true,traffic,status:'passed'});
     }catch(error){failures.push({engine:engine.name(),width,message:String(error.message),traffic});await page.screenshot({path:`${dir}/${width}-failure.png`,animations:'disabled',scale:'css'}).catch(()=>{});}
     finally{await context.close();save();}
   }
