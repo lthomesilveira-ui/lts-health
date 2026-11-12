@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
+    "latest_release": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -51,86 +51,65 @@
   },
   "current_package": {
     "id": "PKG-OWNER-BROWSER-VALIDATION-052",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Verify the requested owner flows with real authenticated data in desktop Chromium and touch mobile WebKit, fixing only demonstrated defects.",
     "task_ids": [
       "LTS-OWNER-BROWSER-VALIDATION-001"
     ],
-    "public_build": "health-integrated-20261112.132",
-    "candidate_build": "health-integrated-20261112.133",
+    "public_build": "health-integrated-20261112.133",
+    "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-12",
-    "pending_gates": [
-      "Exact candidate browser and privacy gates",
-      "Authenticated public desktop and touch mobile owner flows",
-      "Exact publication bytes and public entry inspection"
-    ],
+    "pending_gates": [],
     "evidence_document": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
     "prior_runtime_candidate_workflows_passed": 19,
-    "prior_protected_actual_auth_run": 43302272288
+    "prior_protected_actual_auth_run": 43302272288,
+    "completed_on": "2026-11-12",
+    "candidate_commit": "a765b6e0478ce3f16520b16acc5b6747214a413e",
+    "tested_tree": "e89a1e90fb27a9a5ec166cfd7d530d0adfbf65d9",
+    "runtime_promotion_commit": "3e8b0b890ac8e4a009b5bff2af09a2851caddfe2",
+    "protected_actual_auth_run": 43308148800,
+    "protected_owner_cases_passed": 10,
+    "candidate_workflows_passed_at_completion": 18,
+    "candidate_workflows_total": 19,
+    "broader_ci_running_at_completion": [
+      43307262721
+    ],
+    "physical_device_tested": false,
+    "owner_acceptance_granted": false
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261112.131",
+    "build_id": "health-integrated-20261112.133",
     "published_on": "2026-11-12",
-    "release_kind": "connection_and_file_status",
-    "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
-    "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
+    "release_kind": "authenticated_owner_browser_validation",
+    "main_commit": "3e8b0b890ac8e4a009b5bff2af09a2851caddfe2",
+    "runtime_promotion_commit": "3e8b0b890ac8e4a009b5bff2af09a2851caddfe2",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
     "manual_exact_public_status": "exact_public_build_verified_signed_out",
-    "automated_runtime_and_responsive_status": "Runtime candidate21/21 and verification-only candidate14/14 pass. Protected actual-auth43133094623 passes exact connection-label comparison, private desktop/mobile histories and encrypted visual evidence. Physical-device acceptance remains independent.",
+    "automated_runtime_and_responsive_status": "Protected actual-auth43308148800 passes10/10 requested owner cases in Chromium desktop1440x1000 and touch WebKit390x844. Full histories pass and54 screenshots are encrypted. Existing reviewed source scopes are unchanged. Physical-device and owner acceptance remain independent.",
+    "candidate_commit": "a765b6e0478ce3f16520b16acc5b6747214a413e",
+    "tested_tree": "e89a1e90fb27a9a5ec166cfd7d530d0adfbf65d9",
     "ci_summary": {
-      "status": "complete",
-      "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
-      "runtime_candidate_total": 21,
-      "runtime_candidate_success": 21,
-      "verification_candidate_total": 14,
-      "verification_candidate_success": 14,
-      "protected_actual_auth_run": 43133094623,
-      "deploy_run": 43133094588,
-      "total": 19,
-      "success": 19,
-      "pending_workflows": []
+      "candidate_passed_at_checkpoint": 18,
+      "candidate_total": 19,
+      "broader_candidate_running_at_checkpoint": [
+        43307262721
+      ],
+      "deploy_run": 43308148861,
+      "deploy_status": "success",
+      "actual_auth_run": 43308148800,
+      "actual_auth_status": "success",
+      "owner_cases_passed": 10,
+      "owner_cases_total": 10
     },
-    "evidence": [
-      "PR520 normal merge preserved tested tree0673f250f36c9f0facd78fda8c80126924302dcd. PR521 changes only the protected verifier and preserves application runtime bytes. Its normal merge preserves tree0698cb70cd22ea87ac798844e2844d231d3c955e.",
-      "Cloud Browser confirms exact health-integrated-20261112.131, protected sign-in and no public-page overflow. Synthetic actual components at390px preserve readable labels, scoped file details and no horizontal overflow; no physical-iPhone acceptance is claimed.",
-      "Published SHA256: index7291d0b393ec03daf5379d9fb790fa464bf57999f9d496fc30a20f00185dc3cf; Google modulef4045737842e1d21eba433afc147633ffd3db5ebf088458badd40fac0013dd76; file module221e9836548ecdfc3c4526e4bce5bc89dbb55bf5f8ae9716aa0f32933b405071. All match the tested local bytes.",
-      "The independent protected status read now verifies all four Google labels. Existing no-authorization/no-read checks and endpoint authorization checks remain intact.",
-      "No credentials, permissions, encryption, backend, health records, source observations or automatic-development messages were changed. No new purchase or recurring charge. All ten original source/integration/physical acceptance conditions remain open."
-    ],
-    "recorded_failed_validation_runs": [
-      {
-        "run_id": 43130654716,
-        "scope": "Initial candidate preview hash inventory described the prior source modules.",
-        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
-      },
-      {
-        "run_id": 43130654721,
-        "scope": "Initial candidate preview hash inventory described the prior source modules.",
-        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
-      },
-      {
-        "run_id": 43130654829,
-        "scope": "Initial candidate preview hash inventory described the prior source modules.",
-        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
-      },
-      {
-        "run_id": 43133094766,
-        "attempt": 1,
-        "job_id": 130901761435,
-        "scope": "WebKit1440 synthetic upload leave/reentry timed out waiting for uploadForm after the real navigation click. Runtime and verifier candidates and the preceding public-tree repetition passed.",
-        "resolution": "Only the failed job was repeated once on unchanged source; attempt2/job130903982669 passed. All19 postmerge workflows pass; the original timeout remains recorded and no assertion was removed.",
-        "attempts": [
-          1,
-          2
-        ],
-        "retry_job_id": 130903982669
-      }
-    ]
+    "physical_device_tested": false,
+    "owner_acceptance_granted": false,
+    "clinical_runtime_changed": false,
+    "real_source_observations_changed": false
   },
   "tasks": [
     {
@@ -2073,7 +2052,8 @@
         "Owner-reported Home Screen installation is confirmed on29/10. Icon feedback is actionable and tracked separately; overall acceptance is not granted.",
         "The requested heart/pulse icon is published and independently visible in the stable public app after normal PR430 promotion. Candidate13/13 and post-merge17/17 workflows passed; physical refresh and overall acceptance are not inferred.",
         "Owner feedback on 2026-11-01 reiterates autonomous closure and concrete UX progress. The .112 receiving journey is separately verified; overall acceptance and the original source/device dependencies remain open.",
-        "2026-11-12 evidence review: The reviewed laboratory cards, exact references and graph points passed protected desktop/mobile-width verification. This is independent of physical iPhone acceptance, current hydration and the remaining source-history criteria."
+        "2026-11-12 evidence review: The reviewed laboratory cards, exact references and graph points passed protected desktop/mobile-width verification. This is independent of physical iPhone acceptance, current hydration and the remaining source-history criteria.",
+        "The autonomous browser-only request passes ten actual-data desktop/touch-WebKit cases in43308148800. This verifies those flows without a phone checklist; it does not grant overall owner acceptance or establish physical-device/background operation."
       ],
       "next_action": "Preserve the passed authenticated review while keeping physical-device acceptance and unresolved source conditions distinct.",
       "blocker": "Home Screen installation is owner-confirmed and the revised health icon is published. Overall owner acceptance, actual water continuity, original source/history evidence and remaining physical/native verification stay open."
@@ -3984,7 +3964,7 @@
       "id": "LTS-OWNER-BROWSER-VALIDATION-001",
       "area": "owner browser validation",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "agent",
       "summary": "Perform the five requested authenticated owner browser flows and correct bounded mobile presentation defects.",
       "acceptance": [
@@ -4003,10 +3983,16 @@
         "Protected diagnostic43303351934 confirms the style is present and that a definite width on the source label alone restores host fit; that dynamic probe was insufficient at initial static layout, so the new touch regression remains decisive.",
         "Added a390px touch WebKit long-series regression and synchronous polling predicates using awaited module setup.",
         "The initial .133 candidate987509c589567c598ef61d3c91e3c4250111da6b reproduces the native menu overflow in the new touch WebKit390 regression. Retain its failed bounds assertion, zero traffic/writes and unchanged method checks; apply the existing calendar native-control treatment while preserving full provenance outside the compact selector.",
-        "The corrected native-control source candidate passes the390px WebKit bounds/full-method test. Exact artifact13982907869 digestec13a2307082c8c70b26829e5ceb932b7736c31b41caa04cb480f2261842aee3 was inspected; a legacy important background reset hid the menu arrow. Scoped important background longhands and explicit synthetic/real indicator checks correct this before promotion."
+        "The corrected native-control source candidate passes the390px WebKit bounds/full-method test. Exact artifact13982907869 digestec13a2307082c8c70b26829e5ceb932b7736c31b41caa04cb480f2261842aee3 was inspected; a legacy important background reset hid the menu arrow. Scoped important background longhands and explicit synthetic/real indicator checks correct this before promotion.",
+        "PR535 final candidatea765b6e0478ce3f16520b16acc5b6747214a413e: all affected required gates pass;18/19 total at the completion snapshot. Broader isolated-preview43307262721 remains running and is not counted as successful.",
+        "Normal promotion3e8b0b890ac8e4a009b5bff2af09a2851caddfe2 exactly matches tested treee89a1e90fb27a9a5ec166cfd7d530d0adfbf65d9; deploy43308148861 succeeds.",
+        "Protected real-auth43308148800 passes all ten requested surface/case combinations in desktop Chromium1440x1000 and touch mobile WebKit390x844, plus the existing full-history checks.54 private screenshots were sealed before upload in artifact13984941845.",
+        "Final native preservation reread at2026-11-12T21:17:26.515424Z confirms the completed laboratory and Polar scopes remain unchanged. Physical iPhone/PWA/background behavior and overall owner acceptance are not claimed.",
+        "Independent public responses match exact candidate bytes: index13bae3213a24264c7e8f39e80fd2792c7d525c7109ad3d3d0e0f4c3897acd0d4; lab CSSfce3949ccccd66229e15a33c48685fc02c01ce266c47bd1198c97d41d70ae3e8. Cloud Browser confirms exact .133, protected sign-in and viewport fit."
       ],
-      "next_action": "Run exact candidate browser gates, publish the localized selector fix only after they pass, and repeat all requested protected owner flows.",
-      "blocker": null
+      "next_action": "Preserve the ten protected owner-flow regressions and completed original proofs. Do not repeat a phone checklist or conflate browser verification with physical-device, historical-source or owner acceptance.",
+      "blocker": null,
+      "completed_on": "2026-11-12"
     }
   ],
   "package_history": [
