@@ -1,4 +1,4 @@
-# Authenticated owner browser validation — candidate .132
+# Authenticated owner browser validation — candidate .133
 
 The owner requested technical browser validation rather than a phone checklist. The existing documentary laboratory review and audited Polar links remain completed and must not be rewritten. The historical proposal manifest, original failed upload and automatic hydration remain independent.
 
@@ -6,6 +6,10 @@ The protected real-data checks now cover the active dashboard, 30/90-day plotted
 
 Initial failures are retained. A retired Home selector was corrected; dashboard assertions now read one ready source-and-DOM snapshot instead of separate moments during loading. The unchanged .131 runtime passed all five desktop cases, plus mobile workout, hydration and receipt cases. Run43299398224 identifies the exact cause: the source label is364px wide but contributes574px of scroll width. A reversible min-width/max-width probe on that label alone restores host fit; chart, point, headings and method content already fit.
 
-The candidate applies exactly the successful min-width/max-width bounds to the source label. It does not hide or truncate content or restyle the native menu. Complete laboratory, method and unit remain in the existing context disclosure and the owner-flow test also opens and checks it. No value, date, reference, comparison rule, credential, server function or health row changes. The .132 build identifier lets an installed app discover the actual CSS change through the existing update flow.
+The .133 candidate applies the successful definite-width, min-width/max-width and border-box bounds to the source label. It does not hide or truncate content or restyle the native menu. Complete laboratory, method and unit remain in the existing context disclosure and the owner-flow test also opens and checks it. No value, date, reference, comparison rule, credential, server function or health row changes. The .133 build identifier lets an installed app discover the actual CSS change through the existing update flow.
 
-Candidate gates, fresh authenticated post-publication owner flows, native preservation reread and exact public bytes are pending. No pending source or physical acceptance condition is closed by this candidate. No messages, purchases, credential operations or deletion were performed.
+PR533 candidatec1e73ef5f14ce250c5f4aadc65eded3ec67a8401 passed19/19, and the .132 publication matched its exact bytes. Protected public run43302272288 still failed mobile laboratory geometry while passing the other nine surface/case combinations; it did not complete this task. Diagnostic43303351934 confirms the original max-width is present and that a definite width on the label alone restores fit. The .133 candidate includes that exact additional width and a390px touch WebKit regression with a long synthetic series.
+
+The pinned browser polling API does not poll awaited async predicates as intended. Module imports now finish in page.evaluate before synchronous state-and-DOM polling; the isolated harness guards this boundary. This corrects verification timing, without changing application models or clinical data.
+
+New candidate gates, fresh authenticated post-publication owner flows, native preservation reread and exact public bytes are pending. No pending source or physical acceptance condition is closed by this candidate. No messages, purchases, credential operations or deletion were performed.

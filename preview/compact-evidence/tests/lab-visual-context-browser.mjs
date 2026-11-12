@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
-import {chromium} from 'playwright';
+import {chromium,webkit} from 'playwright';
 import {sourceWindowService} from './source-window-service-fixture.mjs';
 import {makeConsumerLanguageFixture,languageDatabase,LANGUAGE_TODAY} from './consumer-language-fixture.mjs';
 import {consumerRouteSettled} from './consumer-language-readiness.mjs';
@@ -33,9 +33,10 @@ async function stable(page,route='saude'){
   });
   await page.waitForFunction(consumerRouteSettled,{route,selector:route==='saude'?'.ltsLabsV2':'[data-health-dashboard]'});
 }
-const browser=await chromium.launch({headless:true});
+for(const engine of [chromium,webkit]){
+const browser=await engine.launch({headless:true});
 try{
-  for(const [width,height] of [[320,740],[393,844],[1180,757],[1440,900]]){
+  for(const [width,height] of engine===webkit?[[390,844]]:[[320,740],[393,844],[1180,757],[1440,900]]){
     const fixture=makeConsumerLanguageFixture('empty');fixture.data.labs=structuredClone(originalRows);fixture.db=languageDatabase(fixture.data);
     const traffic={external:[],writes:[],errors:[]};
     const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,isMobile:width<=840,hasTouch:width<=840,locale:'pt-BR',timezoneId:'America/Sao_Paulo',serviceWorkers:'block'});
@@ -99,10 +100,11 @@ try{
       await page.evaluate(()=>{location.hash='#hoje';});await stable(page,'hoje');await page.evaluate(()=>{location.hash='#saude';});await stable(page);
       assert.equal(await page.locator('#productLabMarkerSelect').inputValue(),'marcador condicional sintetico');assert.equal(await page.locator('.ltsLabReferenceBand').count(),0);
       assert.equal(await page.evaluate(()=>JSON.stringify(window.__languageApp.state.data.labs)),before);assert.deepEqual(await page.evaluate(()=>window.__historyQA.writes),[]);assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
-      results.push({width,height,geometry,methodGeometry,methodDisclosure:true,neutralDelta:true,datedValues:true,referenceFailClosed:true,pointSelection:true,routeReturn:true,immutableRecords:true,traffic,status:'passed'});
-    }catch(error){failures.push({width,message:String(error.message),traffic});await page.screenshot({path:`${dir}/${width}-failure.png`,animations:'disabled',scale:'css'}).catch(()=>{});}
+      results.push({engine:engine.name(),width,height,geometry,methodGeometry,methodDisclosure:true,neutralDelta:true,datedValues:true,referenceFailClosed:true,pointSelection:true,routeReturn:true,immutableRecords:true,traffic,status:'passed'});
+    }catch(error){failures.push({engine:engine.name(),width,message:String(error.message),traffic});await page.screenshot({path:`${dir}/${width}-failure.png`,animations:'disabled',scale:'css'}).catch(()=>{});}
     finally{await context.close();save();}
   }
 }finally{save();await browser.close();}
+}
 assert.equal(failures.length,0,`Laboratory visual-context failures: ${JSON.stringify(failures)}`);
-console.log('Laboratory chart context: CI-only synthetic values, neutral scale/delta, validated reference band, full method, point selection, route return and no writes at 320/393/1180/1440.');
+console.log('Laboratory chart context: CI-only synthetic values, neutral scale/delta, validated reference band, full method, point selection, route return and no writes in Chromium320/393/1180/1440 and touch WebKit390.');

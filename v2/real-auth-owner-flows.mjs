@@ -33,12 +33,18 @@ async function geometry(page){
 
 async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBuild}){
  const report=[],activate=locator=>mobile?locator.tap():locator.click();
+ // Pinned Playwright polling does not await async predicates. Import once,
+ // then poll the actual state and DOM synchronously.
+ await page.evaluate(async()=>{
+  const {state,fmtNum}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
+  window.__ownerBrowserAudit={state,fmtNum,isRouteReady,healthDashboardModel};
+ });
  const visit=async route=>{
   const nav=mobile?'#mobileNav':'#primaryNav',direct=page.locator(`${nav} [data-route="${route}"]`);
   if(await direct.count())await activate(direct);
   else{await activate(page.locator(`${nav} [data-route="mais"]`));await page.waitForSelector('#moreSheet:not(.hidden)');await activate(page.locator(`#moreSheet [data-route="${route}"]`));}
-  await page.waitForFunction(async({route,selector})=>{
-   const {state}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');
+  await page.waitForFunction(({route,selector})=>{
+   const {state,isRouteReady}=window.__ownerBrowserAudit;
    return state.loaded&&isRouteReady(route)&&state.route===route&&location.hash===`#${route}`&&document.body.dataset.productRoute===route&&Boolean(document.querySelector(selector))&&!document.querySelector('#screenHost .loadingState');
   },{route,selector:ready[route]});
  };
@@ -50,8 +56,8 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
    for(const period of ['30','90','30']){
     await activate(page.locator('[data-dashboard-mode="period"]'));
     await page.locator('#dashboard-period').selectOption(period);
-    await page.waitForFunction(async period=>{
-     const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
+    await page.waitForFunction(period=>{
+     const {state,fmtNum,healthDashboardModel}=window.__ownerBrowserAudit;
      const model=healthDashboardModel(state.data,state.domainStatus,state.ui);
      return state.ui.dashboardPeriod===period&&model.mode==='period'&&document.querySelector('#dashboard-period')?.value===period&&
       model.metrics.every(metric=>{
@@ -136,7 +142,7 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
   water:async()=>{
    await visit('nutricao');
    await activate(page.locator('.ltsHomePeriod [data-period="90"]'));
-   await page.waitForFunction(async()=>{const {state}=await import('./src/core.js');return state.ui.nutritionPeriod==='90'&&document.querySelector('.ltsHomePeriod [data-period="90"]')?.getAttribute('aria-pressed')==='true';});
+   await page.waitForFunction(()=>{const {state}=window.__ownerBrowserAudit;return state.ui.nutritionPeriod==='90'&&document.querySelector('.ltsHomePeriod [data-period="90"]')?.getAttribute('aria-pressed')==='true';});
    const matches=await page.evaluate(async()=>{
     const {state,fmtDate,fmtNum}=await import('./src/core.js'),{homeCockpitModel}=await import('./src/home-cockpit.js');
     const c=homeCockpitModel(state.data,state.domainStatus,state.ui.nutritionPeriod||state.ui.analysisPeriod||'90',state.ui),last=c.evo.latestWater;
@@ -156,8 +162,8 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
    const response=page.waitForResponse(response=>response.url().endsWith('/functions/v1/health-auto-export-connection')&&response.request().method()==='POST'&&response.request().postDataJSON()?.action==='status');
    await activate(page.locator('[data-hae-check]'));const received=await response;
    requireCheck(received.ok(),'receipts');const status=await received.json();
-   await page.waitForFunction(async status=>{
-    const {state}=await import('./src/core.js');const actual=state.autoExportConnection;
+   await page.waitForFunction(status=>{
+    const {state}=window.__ownerBrowserAudit;const actual=state.autoExportConnection;
     return actual?.status==='ready'&&['configured','received','last_received_at','last_metric_date','last_metric_count','last_water_date'].every(key=>JSON.stringify(actual[key]??null)===JSON.stringify(status[key]??null))&&!document.querySelector('[data-hae-check]')?.disabled;
    },status);
    const matches=await page.evaluate(async status=>{

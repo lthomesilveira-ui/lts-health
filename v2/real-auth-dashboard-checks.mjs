@@ -4,10 +4,14 @@ import assert from 'node:assert/strict';
 // writes, credentials, medical values or source identifiers are printed.
 async function inspectIntegratedDashboard(page,{expectedBuild,onPhase=()=>{},onCheck=()=>{}}){
  onPhase('initial');
+ await page.evaluate(async()=>{
+  const {state,fmtNum}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
+  window.__dashboardAuditState={state,fmtNum,isRouteReady,healthDashboardModel};
+ });
  const buildMatched=await page.locator('meta[name="lts-build"]').getAttribute('content')===expectedBuild;
  onCheck({dashboardBuildMatched:buildMatched});assert.ok(buildMatched);
- const inspectCurrent=async(allowIncomplete=false)=>{
-  const {state,fmtNum}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
+ const inspectCurrent=(allowIncomplete=false)=>{
+  const {state,fmtNum,isRouteReady,healthDashboardModel}=window.__dashboardAuditState;
   const d=healthDashboardModel(state.data,state.domainStatus,state.ui);
   const loaded=state.loaded&&isRouteReady('hoje'),route=state.route==='hoje',present=Boolean(document.querySelector('[data-health-dashboard]')),loadingAbsent=!document.querySelector('.loadingState');
   const cards=JSON.stringify([...document.querySelectorAll('[data-dashboard-card]')].map(el=>el.dataset.dashboardCard))===JSON.stringify(['water','protein','energy','activeEnergy','totalEnergy','steps','sleep']);

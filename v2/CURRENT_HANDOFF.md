@@ -1,6 +1,6 @@
 ## 2026-11-12 — Validação técnica em navegador em execução
 
-O titular dispensou o roteiro manual e pediu execução autenticada em computador e formato móvel. A candidata .132 aplica somente a largura mínima/máxima do rótulo do seletor de séries no WebKit, preservando o contexto completo. Os verificadores foram corrigidos para a Home publicada e para uma leitura consistente durante o carregamento; os cinco fluxos são percorridos com a sessão protegida existente. Gates e repetição autenticada ainda pendentes: não declarar conclusão antecipada.
+O titular dispensou o roteiro manual e pediu execução autenticada em computador e formato móvel. A candidata .133 define a largura explícita do rótulo do seletor de séries no WebKit, preservando o contexto completo. A .132 passou19/19 gates sintéticos, mas a publicação manteve a falha móvel real e não encerrou a tarefa. O novo diagnóstico comprovou que largura explícita resolve o caso; a regressão agora inclui WebKit com toque e série sintética longa. Os verificadores foram corrigidos para a Home publicada e para uma leitura consistente durante o carregamento; os cinco fluxos são percorridos com a sessão protegida existente. Gates e repetição autenticada ainda pendentes: não declarar conclusão antecipada.
 
 Os15 exames e25 vínculos Polar concluídos permanecem preservados por releitura nativa. Proposta histórica não recuperada, envio antigo, água automática e aceite físico continuam separados. Evidência: `v2/releases/OWNER_BROWSER_VALIDATION_20261112.md`.
 
