@@ -1,3 +1,9 @@
+## 2026-11-12 — Validação técnica em navegador em execução
+
+O titular dispensou o roteiro manual e pediu execução autenticada em computador e formato móvel. A candidata .132 aplica somente a largura mínima/máxima do rótulo do seletor de séries no WebKit, preservando o contexto completo. Os verificadores foram corrigidos para a Home publicada e para uma leitura consistente durante o carregamento; os cinco fluxos são percorridos com a sessão protegida existente. Gates e repetição autenticada ainda pendentes: não declarar conclusão antecipada.
+
+Os15 exames e25 vínculos Polar concluídos permanecem preservados por releitura nativa. Proposta histórica não recuperada, envio antigo, água automática e aceite físico continuam separados. Evidência: `v2/releases/OWNER_BROWSER_VALIDATION_20261112.md`.
+
 ## 2026-11-12 — Comprovação laboratorial validada; lacunas de origem delimitadas
 
 A revisão independente existente passou no banco, na identidade do PDF original e no aplicativo autenticado: os15 cartões e pontos foram conferidos em1440px e390px, com valores, unidades e referências originais. A releitura nativa completa após a rotina43147576489 confirmou todos os campos preservados. A falha anterior era a comparação por innerText de referências com quebras de linha; o verificador agora compara o texto original exato. Não houve nova versão funcional nem alteração clínica; runtime.131 permanece. Evidências privadas continuam criptografadas.

@@ -50,33 +50,26 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-CONNECTION-AND-FILE-STATUS-051",
-    "status": "done",
-    "goal": "Use truthful, scoped integration and file states without technical setup requests or misleading completion claims.",
+    "id": "PKG-OWNER-BROWSER-VALIDATION-052",
+    "status": "in_progress",
+    "goal": "Verify the requested owner flows with real authenticated data in desktop Chromium and touch mobile WebKit, fixing only demonstrated defects.",
     "task_ids": [
-      "LTS-GOOGLE-CONNECTION-LABEL-001",
-      "LTS-FILE-ACTION-SCOPE-001"
+      "LTS-OWNER-BROWSER-VALIDATION-001"
     ],
     "public_build": "health-integrated-20261112.131",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261112.132",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-12",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md",
-    "completed_on": "2026-11-12",
-    "candidate_commit": "791088c7209166bad646ce39c923c7889a63f62c",
-    "tested_tree": "0673f250f36c9f0facd78fda8c80126924302dcd",
-    "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
-    "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
-    "candidate_workflows_passed": 21,
-    "verification_candidate_commit": "b0b847b46cd29cd91eac5f1db9ace704aa53d083",
-    "verification_tree": "0698cb70cd22ea87ac798844e2844d231d3c955e",
-    "verification_candidate_workflows_passed": 14,
-    "protected_actual_auth_run": 43133094623
+    "pending_gates": [
+      "Exact candidate browser and privacy gates",
+      "Authenticated public desktop and touch mobile owner flows",
+      "Exact publication bytes and public entry inspection"
+    ],
+    "evidence_document": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261112.131",
@@ -3984,9 +3977,61 @@
       "verified_on": "2026-11-12",
       "next_action": "Retain the read-only regression check and original documentary boundary; do not duplicate the review or infer clinical improvement.",
       "blocker": null
+    },
+    {
+      "id": "LTS-OWNER-BROWSER-VALIDATION-001",
+      "area": "owner browser validation",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "agent",
+      "summary": "Perform the five requested authenticated owner browser flows and correct bounded mobile presentation defects.",
+      "acceptance": [
+        "Thirty and ninety day readings and plotted observations agree with the selected actual source calendar.",
+        "A structured workout opens its actual exercises and sets, then returns to the same history page and filters.",
+        "A laboratory chart point preserves its date, original result and full series context at mobile width without horizontal overflow.",
+        "Historical hydration is dated and never carried forward as present-day water.",
+        "Receipt checking and integration labels agree with independently read actual status responses.",
+        "Existing completed laboratory proofs and audited Polar links remain unchanged; physical-device and owner acceptance remain independent."
+      ],
+      "evidence": [
+        "v2/real-auth-owner-flows.mjs",
+        "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
+        "Protected diagnostic runs43297183339 and43298156999 retain the initial mobile failures; successful desktop and other mobile flows are not discarded."
+      ],
+      "next_action": "Run exact candidate browser gates, publish the localized selector fix only after they pass, and repeat all requested protected owner flows.",
+      "blocker": null
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-CONNECTION-AND-FILE-STATUS-051",
+      "status": "done",
+      "goal": "Use truthful, scoped integration and file states without technical setup requests or misleading completion claims.",
+      "task_ids": [
+        "LTS-GOOGLE-CONNECTION-LABEL-001",
+        "LTS-FILE-ACTION-SCOPE-001"
+      ],
+      "public_build": "health-integrated-20261112.131",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-12",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md",
+      "completed_on": "2026-11-12",
+      "candidate_commit": "791088c7209166bad646ce39c923c7889a63f62c",
+      "tested_tree": "0673f250f36c9f0facd78fda8c80126924302dcd",
+      "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
+      "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+      "candidate_workflows_passed": 21,
+      "verification_candidate_commit": "b0b847b46cd29cd91eac5f1db9ace704aa53d083",
+      "verification_tree": "0698cb70cd22ea87ac798844e2844d231d3c955e",
+      "verification_candidate_workflows_passed": 14,
+      "protected_actual_auth_run": 43133094623
+    },
     {
       "id": "PKG-EXAMS-MOBILE-CONTROLS-026",
       "status": "done",

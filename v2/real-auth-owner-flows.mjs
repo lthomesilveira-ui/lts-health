@@ -47,11 +47,6 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
  const cases={
   home:async()=>{
    await visit('hoje');
-   // The published import map routes Home to the integrated dashboard. Reuse
-   // its established source/coverage audit, rather than the retired renderer.
-   let phase='initial',reading={};
-   try{await auditIntegratedDashboard(page,{expectedBuild,onPhase:value=>{phase=value;},onCheck:value=>{reading=value;}});}
-   catch{requireCheck(false,'home',{...reading,['dashboard_'+phase]:false});}
    for(const period of ['30','90','30']){
     await activate(page.locator('[data-dashboard-mode="period"]'));
     await page.locator('#dashboard-period').selectOption(period);
@@ -70,6 +65,12 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
     await geometry(page);
     await page.screenshot({path:`${evidenceDir}/owner-${label}-home-${period}.png`,fullPage:true});
    }
+   // The published import map routes Home to the integrated dashboard. Reuse
+   // its established source/coverage audit, rather than the retired renderer.
+   let phase='initial',reading={};
+   try{await auditIntegratedDashboard(page,{expectedBuild,onPhase:value=>{phase=value;},onCheck:value=>{reading=value;}});}
+   catch(error){requireCheck(false,'home',{...reading,...(error?.auditDiagnostics||{}),['dashboard_'+phase]:false});}
+
   },
   workout:async()=>{
    await visit('treinos');await activate(page.locator('.ltsRefTrainTabs [data-depth-training-view="history"]'));
@@ -115,7 +116,7 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
     const {state}=await import('./src/core.js');const {labGroups,labCohorts,labChartModel,labResultText}=await import('./src/labs-layout-v2.js');
     for(const group of labGroups(state.data.labs))for(const cohort of labCohorts(group)){
      const points=labChartModel(cohort).points;if(points.length<2)continue;
-     return{marker:group.key,cohort:cohort.key,index:0,date:points[0].date,value:points[0].value,unit:cohort.unit,raw:labResultText(points[0].row)};
+     return{marker:group.key,cohort:cohort.key,index:0,date:points[0].date,value:points[0].value,unit:cohort.unit,origin:cohort.origin||'Não informado',method:cohort.method||'Não informado',raw:labResultText(points[0].row)};
     }return null;
    });
    requireCheck(Boolean(target),'labs');await page.locator('#productLabMarkerSelect').selectOption(target.marker);
@@ -124,6 +125,13 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
    const exact=await page.locator('.ltsPointReadout').evaluate((node,target)=>node.textContent.includes(target.date.split('-').reverse().join('/'))&&[...node.querySelectorAll('span')].some(span=>span.textContent===`Resultado original: ${target.raw}`),target);
    requireCheck(exact,'labs');await geometry(page);
    await page.screenshot({path:`${evidenceDir}/owner-${label}-lab-point.png`,fullPage:true});
+   await activate(page.locator('#productLabMethodDetails>summary'));
+   const contextMatches=await page.locator('#productLabSeriesContext').evaluate((node,target)=>{
+    const values=[...node.querySelectorAll('dd')].map(el=>el.textContent);
+    return node.closest('details')?.open&&JSON.stringify(values)===JSON.stringify([target.origin,target.unit||'Não informada',target.method]);
+   },target);
+   requireCheck(contextMatches,'labs');await geometry(page);
+   await page.screenshot({path:`${evidenceDir}/owner-${label}-lab-method.png`,fullPage:true});
   },
   water:async()=>{
    await visit('nutricao');
@@ -182,7 +190,7 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
   catch(error){
    const stage=/^owner-flow-(?:auth|home|workout|workout-return|labs|water|receipts|integrations|geometry)$/.test(error?.auditCode||'')?error.auditCode:`owner-flow-${name}`;
    try{await page.screenshot({path:`${evidenceDir}/owner-${label}-${name}-failure.png`,fullPage:true});}catch{}
-   const allowed=['documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth','waterPanel','waterAvailable','waterHistory','waterCaption','waterValue','waterAbsence','waterToday','sourceLabelShrinkProbe','chartShrinkProbe','closedMethodProbe','headingShrinkProbe','legendShrinkProbe','svgShrinkProbe','readoutShrinkProbe','plotChildrenShrinkProbe','dashboardBuildMatched','dashboardLoaded','dashboardRoute','dashboardPresent','dashboardLoadingAbsent','dashboardCards','dashboardMatched','dashboardCoverage','dashboardNoOverflow','dashboardMissingWater','dashboardAmbiguousWater','dashboardHasOldWater'];
+   const allowed=['documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth','waterPanel','waterAvailable','waterHistory','waterCaption','waterValue','waterAbsence','waterToday','sourceLabelShrinkProbe','chartShrinkProbe','closedMethodProbe','headingShrinkProbe','legendShrinkProbe','svgShrinkProbe','readoutShrinkProbe','plotChildrenShrinkProbe','dashboardTimeout','dashboardTypeError','dashboardSyntaxError','dashboardImportError','dashboardContextError','dashboardBuildMatched','dashboardLoaded','dashboardRoute','dashboardPresent','dashboardLoadingAbsent','dashboardCards','dashboardMatched','dashboardCoverage','dashboardNoOverflow','dashboardMissingWater','dashboardAmbiguousWater','dashboardHasOldWater'];
    const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>(allowed.includes(key)||/^lab(?:Page|Marker|Cohort|Point|Trend|SourceLabel|Chart|Method|MethodSummary|Axis|Heading|Title|Delta|Note|History|Collection|Context|HistoryRow|Rail|Plot|Svg|PlotGrid|Endpoints|Legend|LegendContent|Readout)(?:Width|Right|Scroll)$/.test(key)||/^dashboard_(?:initial|period_(?:7|30|60|90|6m|1y|all)|water_read|water_open|water_today|final)$/.test(key))&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)&&Math.abs(value)<=100000||value===null)));
    report.push({surface:label,case:name,passed:false,stage,...(checks?{checks}:{})});
   }
