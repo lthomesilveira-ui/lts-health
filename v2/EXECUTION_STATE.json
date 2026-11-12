@@ -51,67 +51,89 @@
   },
   "current_package": {
     "id": "PKG-CONNECTION-AND-FILE-STATUS-051",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Use truthful, scoped integration and file states without technical setup requests or misleading completion claims.",
     "task_ids": [
       "LTS-GOOGLE-CONNECTION-LABEL-001",
       "LTS-FILE-ACTION-SCOPE-001"
     ],
-    "public_build": "health-integrated-20261111.130",
-    "candidate_build": "health-integrated-20261112.131",
+    "public_build": "health-integrated-20261112.131",
+    "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-12",
-    "pending_gates": [
-      "Exact candidate responsive browser workflows",
-      "Normal merge and public deployment",
-      "Exact public runtime and protected read-only verification"
-    ],
-    "evidence_document": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
+    "pending_gates": [],
+    "evidence_document": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md",
+    "completed_on": "2026-11-12",
+    "candidate_commit": "791088c7209166bad646ce39c923c7889a63f62c",
+    "tested_tree": "0673f250f36c9f0facd78fda8c80126924302dcd",
+    "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
+    "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+    "candidate_workflows_passed": 21,
+    "verification_candidate_commit": "b0b847b46cd29cd91eac5f1db9ace704aa53d083",
+    "verification_tree": "0698cb70cd22ea87ac798844e2844d231d3c955e",
+    "verification_candidate_workflows_passed": 14,
+    "protected_actual_auth_run": 43133094623
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261111.130",
-    "published_on": "2026-11-11",
-    "release_kind": "authenticated_google_takeout_water",
-    "main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
-    "runtime_promotion_commit": "c6538c772b6d56c12408148a581d04e1eb1ec757",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+    "build_id": "health-integrated-20261112.131",
+    "published_on": "2026-11-12",
+    "release_kind": "connection_and_file_status",
+    "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+    "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
     "manual_exact_public_status": "exact_public_build_verified_signed_out",
-    "automated_runtime_and_responsive_status": "Exact source candidate22/22 passed; actual-auth42950262629 passes full private desktop/mobile and histories. Complete history, current water, recurrence and physical-owner acceptance remain independent.",
+    "automated_runtime_and_responsive_status": "Runtime candidate21/21 and verification-only candidate14/14 pass. Protected actual-auth43133094623 passes exact connection-label comparison, private desktop/mobile histories and encrypted visual evidence. Physical-device acceptance remains independent.",
     "ci_summary": {
-      "status": "functional_gates_passed",
-      "protected_actual_auth_run": 42950262629,
-      "candidate_total": 22,
-      "candidate_success": 22,
-      "main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
-      "publication_metadata_followup": "The audit-only publication encountered artifact metadata visibility failure; this checkpoint adds a bounded registration check before the unchanged official deploy action."
+      "status": "complete",
+      "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+      "runtime_candidate_total": 21,
+      "runtime_candidate_success": 21,
+      "verification_candidate_total": 14,
+      "verification_candidate_success": 14,
+      "protected_actual_auth_run": 43133094623,
+      "deploy_run": 43133094588,
+      "total": 19,
+      "success": 19,
+      "pending_workflows": []
     },
     "evidence": [
-      "Native guarded import, original archive and unchanged preimage proof remain private.",
-      "Published index and hydration module match the exact tested bytes; Cloud Browser confirms .130, protected sign-in and no overflow.",
-      "No physical-device acceptance or restoration of current automatic water is claimed."
+      "PR520 normal merge preserved tested tree0673f250f36c9f0facd78fda8c80126924302dcd. PR521 changes only the protected verifier and preserves application runtime bytes. Its normal merge preserves tree0698cb70cd22ea87ac798844e2844d231d3c955e.",
+      "Cloud Browser confirms exact health-integrated-20261112.131, protected sign-in and no public-page overflow. Synthetic actual components at390px preserve readable labels, scoped file details and no horizontal overflow; no physical-iPhone acceptance is claimed.",
+      "Published SHA256: index7291d0b393ec03daf5379d9fb790fa464bf57999f9d496fc30a20f00185dc3cf; Google modulef4045737842e1d21eba433afc147633ffd3db5ebf088458badd40fac0013dd76; file module221e9836548ecdfc3c4526e4bce5bc89dbb55bf5f8ae9716aa0f32933b405071. All match the tested local bytes.",
+      "The independent protected status read now verifies all four Google labels. Existing no-authorization/no-read checks and endpoint authorization checks remain intact.",
+      "No credentials, permissions, encryption, backend, health records, source observations or automatic-development messages were changed. No new purchase or recurring charge. All ten original source/integration/physical acceptance conditions remain open."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42949449475,
-        "attempts": [
-          1,
-          2
-        ],
-        "scope": "Authenticated audit lacked the newly supported source family.",
-        "resolution": "PR518 adds strict independent original proof; corrected actual-auth42950262629 passes."
+        "run_id": 43130654716,
+        "scope": "Initial candidate preview hash inventory described the prior source modules.",
+        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
       },
       {
-        "run_id": 42950262616,
+        "run_id": 43130654721,
+        "scope": "Initial candidate preview hash inventory described the prior source modules.",
+        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+      },
+      {
+        "run_id": 43130654829,
+        "scope": "Initial candidate preview hash inventory described the prior source modules.",
+        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+      },
+      {
+        "run_id": 43133094766,
+        "attempt": 1,
+        "job_id": 130901761435,
+        "scope": "WebKit1440 synthetic upload leave/reentry timed out waiting for uploadForm after the real navigation click. Runtime and verifier candidates and the preceding public-tree repetition passed.",
+        "resolution": "Only the failed job was repeated once on unchanged source; attempt2/job130903982669 passed. All19 postmerge workflows pass; the original timeout remains recorded and no assertion was removed.",
         "attempts": [
           1,
           2
         ],
-        "scope": "Official deploy action did not find uploaded Pages artifact metadata.",
-        "resolution": "Original uploaded artifacts are independently visible in the Actions API; add bounded registration preflight without weakening the official deployment action."
+        "retry_job_id": 130903982669
       }
     ]
   },
@@ -3888,7 +3910,7 @@
       "id": "LTS-GOOGLE-CONNECTION-LABEL-001",
       "area": "connections",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "agent",
       "summary": "Distinguish configured, authorized and received states without claiming Google readiness from credential presence.",
       "acceptance": [
@@ -3899,16 +3921,18 @@
       ],
       "evidence": [
         "v2/production-connection-boundary-test.mjs",
-        "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
+        "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md",
+        "PR520 exact runtime candidate21/21; PR521 verifier candidate14/14; protected actual-auth43133094623 passed on the unchanged .131 runtime."
       ],
-      "next_action": "Complete exact candidate browser gates, publication and verification.",
-      "blocker": null
+      "next_action": "Preserve the scoped status through the existing connection and file-state checks.",
+      "blocker": null,
+      "verified_on": "2026-11-12"
     },
     {
       "id": "LTS-FILE-ACTION-SCOPE-001",
       "area": "data",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "agent",
       "summary": "Limit the Data Inbox action summary to file resubmission, rather than declaring all app work free of pending actions.",
       "acceptance": [
@@ -3920,10 +3944,12 @@
       "evidence": [
         "preview/compact-evidence/tests/consumer-diagnostics-test.mjs",
         "v2/real-auth-e2e.mjs",
-        "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
+        "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md",
+        "PR520 exact runtime candidate21/21; PR521 verifier candidate14/14; protected actual-auth43133094623 passed on the unchanged .131 runtime."
       ],
-      "next_action": "Complete exact candidate browser gates, publication and verification.",
-      "blocker": null
+      "next_action": "Preserve the scoped status through the existing connection and file-state checks.",
+      "blocker": null,
+      "verified_on": "2026-11-12"
     }
   ],
   "package_history": [
@@ -5911,38 +5937,61 @@
     }
   ],
   "latest_published_release": {
-    "build_id": "health-integrated-20261108.128",
-    "published_on": "2026-11-08",
-    "release_kind": "polar_update_local_date",
-    "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
-    "runtime_promotion_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
+    "build_id": "health-integrated-20261112.131",
+    "published_on": "2026-11-12",
+    "release_kind": "connection_and_file_status",
+    "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+    "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
-    "manual_exact_public_status": "exact_authenticated_public_build_verified",
-    "automated_runtime_and_responsive_status": "All 20 exact candidate workflows and all 24 publication workflows completed successfully. The two prior pending unchanged-runtime repetitions were re-read successfully; no workflow was rerun.",
+    "manual_exact_public_status": "exact_public_build_verified_signed_out",
+    "automated_runtime_and_responsive_status": "Runtime candidate21/21 and verification-only candidate14/14 pass. Protected actual-auth43133094623 passes exact connection-label comparison, private desktop/mobile histories and encrypted visual evidence. Physical-device acceptance remains independent.",
     "ci_summary": {
       "status": "complete",
-      "main_commit": "ec60d94ea6ea7a78ab30d335053f6e155b211c29",
-      "total": 24,
-      "success": 24,
-      "protected_actual_auth_run": 42434666884,
+      "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+      "runtime_candidate_total": 21,
+      "runtime_candidate_success": 21,
+      "verification_candidate_total": 14,
+      "verification_candidate_success": 14,
+      "protected_actual_auth_run": 43133094623,
+      "deploy_run": 43133094588,
+      "total": 19,
+      "success": 19,
       "pending_workflows": []
     },
     "evidence": [
-      "PR510 exact candidate11249a9d3467d994ece347308f3fcc2ae098eae9 and tree9484d7f906f542831435c0aa93eb008ad18ad618 passed20/20 workflows. Independent actual-renderer cases cover São Paulo midnight, year, leap day, explicit offset and invalid timestamp.",
-      "Laboratory Originals42433961829 attempt1 encountered a null bounding-box read in the existing browser test. Only that failed job was repeated on unchanged source; attempt2/job128589204682 passed. The original failure is preserved.",
-      "Normal merge ec60d94ea6ea7a78ab30d335053f6e155b211c29 preserved the exact tested tree. Deploy42434666970, Pages42434698507/42434698520 and protected Real Auth42434666884 passed.",
-      "Published index and Polar connection module matched the tested bytes: SHA2565b653531e930ed4361f326a694ce083d350742c1ac717e3dc67f7ce091c3282d and cd2f1273e4d2cfb9b37654229026a3a19291aadc3f62bd47f0c865469f2602b7.",
-      "The existing genuine authenticated app was reloaded on exact health-integrated-20261108.128. Its Polar update day now agrees with the adjacent São Paulo automatic timestamp. Private visual evidence was captured; no credential or health record was submitted.",
-      "No server deployment, source timestamp, health record, synchronization setting or Google grant was changed by package046. The original nine conditions stay independently open; scheduled development messages stay disabled.",
-      "Continuation re-read: Isolated Preview 42434666947 completed successfully at 2026-11-08T01:42:36Z and Calendar/PDF 42434666973 at 2026-11-08T01:40:07Z. All24 publication workflows succeeded; no rerun or runtime change."
+      "PR520 normal merge preserved tested tree0673f250f36c9f0facd78fda8c80126924302dcd. PR521 changes only the protected verifier and preserves application runtime bytes. Its normal merge preserves tree0698cb70cd22ea87ac798844e2844d231d3c955e.",
+      "Cloud Browser confirms exact health-integrated-20261112.131, protected sign-in and no public-page overflow. Synthetic actual components at390px preserve readable labels, scoped file details and no horizontal overflow; no physical-iPhone acceptance is claimed.",
+      "Published SHA256: index7291d0b393ec03daf5379d9fb790fa464bf57999f9d496fc30a20f00185dc3cf; Google modulef4045737842e1d21eba433afc147633ffd3db5ebf088458badd40fac0013dd76; file module221e9836548ecdfc3c4526e4bce5bc89dbb55bf5f8ae9716aa0f32933b405071. All match the tested local bytes.",
+      "The independent protected status read now verifies all four Google labels. Existing no-authorization/no-read checks and endpoint authorization checks remain intact.",
+      "No credentials, permissions, encryption, backend, health records, source observations or automatic-development messages were changed. No new purchase or recurring charge. All ten original source/integration/physical acceptance conditions remain open."
     ],
     "recorded_failed_validation_runs": [
       {
-        "run_id": 42433961829,
+        "run_id": 43130654716,
+        "scope": "Initial candidate preview hash inventory described the prior source modules.",
+        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+      },
+      {
+        "run_id": 43130654721,
+        "scope": "Initial candidate preview hash inventory described the prior source modules.",
+        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+      },
+      {
+        "run_id": 43130654829,
+        "scope": "Initial candidate preview hash inventory described the prior source modules.",
+        "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+      },
+      {
+        "run_id": 43133094766,
         "attempt": 1,
-        "job_id": 128588687968,
-        "scope": "Existing laboratory original test: null boundingBox during separate DOM measurement.",
-        "resolution": "Only the failed job was repeated on unchanged source. Attempt2/job128589204682 passed; no assertion removed."
+        "job_id": 130901761435,
+        "scope": "WebKit1440 synthetic upload leave/reentry timed out waiting for uploadForm after the real navigation click. Runtime and verifier candidates and the preceding public-tree repetition passed.",
+        "resolution": "Only the failed job was repeated once on unchanged source; attempt2/job130903982669 passed. All19 postmerge workflows pass; the original timeout remains recorded and no assertion was removed.",
+        "attempts": [
+          1,
+          2
+        ],
+        "retry_job_id": 130903982669
       }
     ]
   },
@@ -10925,35 +10974,134 @@
           "resolution": "Only the failed job was repeated on unchanged source. Attempt2/job128589204682 passed; no assertion removed."
         }
       ]
+    },
+    {
+      "build_id": "health-integrated-20261111.130",
+      "published_on": "2026-11-11",
+      "release_kind": "authenticated_google_takeout_water",
+      "main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
+      "runtime_promotion_commit": "c6538c772b6d56c12408148a581d04e1eb1ec757",
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#hoje",
+      "manual_exact_public_status": "exact_public_build_verified_signed_out",
+      "automated_runtime_and_responsive_status": "Exact source candidate22/22 passed; actual-auth42950262629 passes full private desktop/mobile and histories. Complete history, current water, recurrence and physical-owner acceptance remain independent.",
+      "ci_summary": {
+        "status": "functional_gates_passed",
+        "protected_actual_auth_run": 42950262629,
+        "candidate_total": 22,
+        "candidate_success": 22,
+        "main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
+        "publication_metadata_followup": "The audit-only publication encountered artifact metadata visibility failure; this checkpoint adds a bounded registration check before the unchanged official deploy action."
+      },
+      "evidence": [
+        "Native guarded import, original archive and unchanged preimage proof remain private.",
+        "Published index and hydration module match the exact tested bytes; Cloud Browser confirms .130, protected sign-in and no overflow.",
+        "No physical-device acceptance or restoration of current automatic water is claimed."
+      ],
+      "recorded_failed_validation_runs": [
+        {
+          "run_id": 42949449475,
+          "attempts": [
+            1,
+            2
+          ],
+          "scope": "Authenticated audit lacked the newly supported source family.",
+          "resolution": "PR518 adds strict independent original proof; corrected actual-auth42950262629 passes."
+        },
+        {
+          "run_id": 42950262616,
+          "attempts": [
+            1,
+            2
+          ],
+          "scope": "Official deploy action did not find uploaded Pages artifact metadata.",
+          "resolution": "Original uploaded artifacts are independently visible in the Actions API; add bounded registration preflight without weakening the official deployment action."
+        }
+      ]
+    },
+    {
+      "build_id": "health-integrated-20261112.131",
+      "published_on": "2026-11-12",
+      "release_kind": "connection_and_file_status",
+      "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+      "runtime_promotion_commit": "dfcf1bba3326a53625467ec1a96b680472fd5746",
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
+      "manual_exact_public_status": "exact_public_build_verified_signed_out",
+      "automated_runtime_and_responsive_status": "Runtime candidate21/21 and verification-only candidate14/14 pass. Protected actual-auth43133094623 passes exact connection-label comparison, private desktop/mobile histories and encrypted visual evidence. Physical-device acceptance remains independent.",
+      "ci_summary": {
+        "status": "complete",
+        "main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+        "runtime_candidate_total": 21,
+        "runtime_candidate_success": 21,
+        "verification_candidate_total": 14,
+        "verification_candidate_success": 14,
+        "protected_actual_auth_run": 43133094623,
+        "deploy_run": 43133094588,
+        "total": 19,
+        "success": 19,
+        "pending_workflows": []
+      },
+      "evidence": [
+        "PR520 normal merge preserved tested tree0673f250f36c9f0facd78fda8c80126924302dcd. PR521 changes only the protected verifier and preserves application runtime bytes. Its normal merge preserves tree0698cb70cd22ea87ac798844e2844d231d3c955e.",
+        "Cloud Browser confirms exact health-integrated-20261112.131, protected sign-in and no public-page overflow. Synthetic actual components at390px preserve readable labels, scoped file details and no horizontal overflow; no physical-iPhone acceptance is claimed.",
+        "Published SHA256: index7291d0b393ec03daf5379d9fb790fa464bf57999f9d496fc30a20f00185dc3cf; Google modulef4045737842e1d21eba433afc147633ffd3db5ebf088458badd40fac0013dd76; file module221e9836548ecdfc3c4526e4bce5bc89dbb55bf5f8ae9716aa0f32933b405071. All match the tested local bytes.",
+        "The independent protected status read now verifies all four Google labels. Existing no-authorization/no-read checks and endpoint authorization checks remain intact.",
+        "No credentials, permissions, encryption, backend, health records, source observations or automatic-development messages were changed. No new purchase or recurring charge. All ten original source/integration/physical acceptance conditions remain open."
+      ],
+      "recorded_failed_validation_runs": [
+        {
+          "run_id": 43130654716,
+          "scope": "Initial candidate preview hash inventory described the prior source modules.",
+          "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+        },
+        {
+          "run_id": 43130654721,
+          "scope": "Initial candidate preview hash inventory described the prior source modules.",
+          "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+        },
+        {
+          "run_id": 43130654829,
+          "scope": "Initial candidate preview hash inventory described the prior source modules.",
+          "resolution": "Align only the two changed module hashes and build expectation; all21 corrected runtime-candidate workflows pass."
+        },
+        {
+          "run_id": 43133094766,
+          "attempt": 1,
+          "job_id": 130901761435,
+          "scope": "WebKit1440 synthetic upload leave/reentry timed out waiting for uploadForm after the real navigation click. Runtime and verifier candidates and the preceding public-tree repetition passed.",
+          "resolution": "Only the failed job was repeated once on unchanged source; attempt2/job130903982669 passed. All19 postmerge workflows pass; the original timeout remains recorded and no assertion was removed.",
+          "attempts": [
+            1,
+            2
+          ],
+          "retry_job_id": 130903982669
+        }
+      ]
     }
   ],
   "last_continuity_review": {
-    "reviewed_on": "2026-11-08",
-    "source_main_commit": "4a43b81755a842cc55faf62ba2b1c5500def7211",
-    "runtime_build": "health-integrated-20261108.128",
+    "reviewed_on": "2026-11-12",
+    "source_main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+    "runtime_build": "health-integrated-20261112.131",
     "candidate_build": null,
-    "runtime_changed": false,
-    "frontend_runtime_changed": false,
+    "runtime_changed": true,
+    "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 130,
-      "blocked_external": 9,
+      "done": 133,
+      "blocked_external": 10,
       "superseded": 2,
-      "accepted_gap": 2,
-      "blocked_user": 1
+      "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "Package049 is done: exact candidate18/18 and postmerge20/20 succeeded without reruns. Independent merge-tree and normal merge preserve the tested tree; only verification code changed and no app/backend deployment occurred.",
-      "The native protected Google check still returns actual401/invalid_client for the expected configured client. The complete-value secure owner update remains blocked_user; approval is not missing.",
-      "Recent genuine bridge receipts still contain no new water or attributable basal interval. The attached original export fingerprint matches the already-reviewed older archive; no repeat mass parsing/import or inferred source mapping occurred.",
-      "All nine original conditions remain independently open. Earlier publication19/21 and its failures remain preserved; the new verification-source publication completed20/20 successfully.",
-      "The owner requests assistant handling and offers login only. The actual saved-profile preflight requires administrative authentication; the next owner input is sign-in, followed by assistant preparation, not a repeated list of manual technical menus. No credential or health record changed.",
-      "The offered administrative login was completed and independently verified in the saved profile at the exact project/client. Execution capacity, not authentication or missing generic approval, now blocks the protected update. The alternate direct browser cannot load that panel. No credential or source/clinical data changed."
+      "Package051 closes two additional presentation defects; the original ten conditions retain their independently unmet acceptance criteria.",
+      "All exact runtime and verification candidates passed. Protected publication and actual-auth verification passed without changing health or credential state.",
+      "A later native read confirms that automatic receipt alone still does not establish current hydration, complete basal coverage or the missing original source identities.",
+      "The owner rejected credential exposure and irreversible deletion. That route is withdrawn; do not resume it from older historical approval language or request another technical approval."
     ],
-    "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
+    "open_dependency_policy": "Retain all ten original acceptance conditions, private source boundaries and disabled development-message automations. No credential exposure, security weakening, inferred clinical corrections or substitute source linkage. Resume a dependency only through an already authorized supported protected route or genuinely new original evidence."
   },
   "continuity_review_history": [
     {
@@ -12576,6 +12724,34 @@
         "The native protected Google check still returns actual401/invalid_client for the expected configured client. The complete-value secure owner update remains blocked_user; approval is not missing.",
         "Recent genuine bridge receipts still contain no new water or attributable basal interval. The attached original export fingerprint matches the already-reviewed older archive; no repeat mass parsing/import or inferred source mapping occurred.",
         "All nine original hydration/source conditions remain independently open. Earlier publication19/21 and its failures stay preserved; latest automatic postmerge checks are separately in progress, not counted as complete."
+      ],
+      "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
+    },
+    {
+      "reviewed_on": "2026-11-08",
+      "source_main_commit": "4a43b81755a842cc55faf62ba2b1c5500def7211",
+      "runtime_build": "health-integrated-20261108.128",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 130,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 2,
+        "blocked_user": 1
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Package049 is done: exact candidate18/18 and postmerge20/20 succeeded without reruns. Independent merge-tree and normal merge preserve the tested tree; only verification code changed and no app/backend deployment occurred.",
+        "The native protected Google check still returns actual401/invalid_client for the expected configured client. The complete-value secure owner update remains blocked_user; approval is not missing.",
+        "Recent genuine bridge receipts still contain no new water or attributable basal interval. The attached original export fingerprint matches the already-reviewed older archive; no repeat mass parsing/import or inferred source mapping occurred.",
+        "All nine original conditions remain independently open. Earlier publication19/21 and its failures remain preserved; the new verification-source publication completed20/20 successfully.",
+        "The owner requests assistant handling and offers login only. The actual saved-profile preflight requires administrative authentication; the next owner input is sign-in, followed by assistant preparation, not a repeated list of manual technical menus. No credential or health record changed.",
+        "The offered administrative login was completed and independently verified in the saved profile at the exact project/client. Execution capacity, not authentication or missing generic approval, now blocks the protected update. The alternate direct browser cannot load that panel. No credential or source/clinical data changed."
       ],
       "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
     }
