@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
-import {chromium} from 'playwright';
+import {chromium,webkit} from 'playwright';
 import {auditIntegratedDashboard,auditIntegratedEvolution,auditObservedNutritionContrast} from './real-auth-dashboard-checks.mjs';
 import {sourceWindowService} from '../preview/compact-evidence/tests/source-window-service-fixture.mjs';
 import {languageDatabase} from '../preview/compact-evidence/tests/consumer-language-fixture.mjs';
@@ -10,9 +10,10 @@ const base='http://127.0.0.1:4175/v2/',today='2024-08-21';
 const sdk=sourceWindowService(languageDatabase({body:[{source_record_id:'synthetic-body-old',measured_at:'2022-01-01',weight_kg:80,body_fat_pct:20,skeletal_muscle_mass_kg:35,fat_mass_kg:16,source_name:'Synthetic scale A',device_name:'Synthetic A'},{source_record_id:'synthetic-body-prior',measured_at:'2024-02-01',weight_kg:78,body_fat_pct:null,skeletal_muscle_mass_kg:36,fat_mass_kg:15,source_name:'Synthetic scale A',device_name:'Synthetic A'},{source_record_id:'synthetic-body-recent',measured_at:'2024-08-08',weight_kg:77,body_fat_pct:18,skeletal_muscle_mass_kg:37,fat_mass_kg:14,source_name:'Synthetic scale B',device_name:'Synthetic B'}],workouts:[{source_record_id:'synthetic-comparison-workout',workout_date:'2024-08-19',is_canonical:true,record_status:'validated'}],nutrition:[{source_record_id:'synthetic-contrast-training',nutrition_date:'2024-08-19',source:'Synthetic food',protein_g:90,calories_kcal:1800,carbs_g:200,fat_g:60},{source_record_id:'synthetic-contrast-no-training',nutrition_date:'2024-08-20',source:'Synthetic food',protein_g:0,calories_kcal:1500,carbs_g:150,fat_g:50},{source_record_id:'synthetic-contrast-other-origin',nutrition_date:'2024-08-20',source:'Synthetic other food',protein_g:700,calories_kcal:9000,carbs_g:800,fat_g:500},{source_record_id:'synthetic-food-no-water',nutrition_date:today,source:'Synthetic food',water_ml:null,calories_kcal:2100,protein_g:150}],sourceMetrics:[{source_record_id:'synthetic-water-prior',metric_date:'2024-08-08',metric_type:'dietary_water_ml',value:1750,unit:'mL',source_family:'synthetic_bridge',source_name:'Synthetic water bridge',canonical_status:'candidate',updated_at:'2024-08-09T11:20:00Z'}]})).replace("name==='health-polar-connection'","['health-polar-connection','health-auto-export-connection','health-google-connection'].includes(name)").replace("Object.keys(options.body).length===1","(Object.keys(options.body).length===1||name==='health-auto-export-connection'&&Object.keys(options.body).length===2&&options.body.key_revision===null)");
 await assert.rejects(()=>auditIntegratedDashboard({locator(){throw Error('Synthetic confidential value');},screenshot(){throw Error('Synthetic screenshot unavailable');}},{}),error=>!error.message.includes('Synthetic confidential')&&!error.cause&&/private observations withheld/.test(error.message),'public failure text must not contain private assertion values');
 mkdirSync('water-continuity-visual',{recursive:true});
-const browser=await chromium.launch({headless:true});
+for(const engine of [chromium,webkit]){
+const browser=await engine.launch({headless:true});
 try{
- for(const [width,height]of [[1440,864],[393,650],[320,740]]){
+ for(const [width,height]of engine===webkit?[[390,844]]:[[1440,864],[393,650],[320,740]]){
   const context=await browser.newContext({viewport:{width,height},timezoneId:'America/Sao_Paulo'}),page=await context.newPage(),errors=[],blocked=[];
   page.on('pageerror',e=>errors.push(e.message));
   await context.route('**/*',route=>{
@@ -24,7 +25,9 @@ try{
   await page.clock.setFixedTime(new Date(today+'T15:00:00Z'));
   await page.goto(base+'#hoje');await page.locator('[data-health-dashboard]').waitFor();
   const expectedBuild=await page.locator('meta[name="lts-build"]').getAttribute('content');
-  await auditIntegratedDashboard(page,{expectedBuild});
+  let phase='initial',checks={};
+  try{await auditIntegratedDashboard(page,{expectedBuild,onPhase:value=>{phase=value;},onCheck:value=>{checks=value;}});}
+  catch(error){console.log('Invented dashboard verification diagnostics: '+JSON.stringify({engine:engine.name(),width,phase,checks,...error.auditDiagnostics}));throw error;}
   await page.locator('[data-dashboard-card="water"]').scrollIntoViewIfNeeded();
   assert.ok(await page.locator('[data-last-known="water"]').isVisible(),'last genuine water remains dated in the primary card');
   await page.locator('[data-disclosure="dashboard-metric-water"]>summary').click();
@@ -46,4 +49,5 @@ try{
   await context.close();
  }
 }finally{await browser.close();}
-console.log('Current authenticated dashboard assertions validated with invented local data at desktop/393×650/320px: exact seven cards, all windows, historical reopening, current evolution metrics/windows and no external reads or writes.');
+}
+console.log('Current authenticated dashboard assertions validated with invented local data in Chromium desktop/393×650/320px and WebKit390×844: exact seven cards, all windows, historical reopening, current evolution metrics/windows and no external reads or writes.');
