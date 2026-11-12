@@ -56,8 +56,8 @@
     "task_ids": [
       "LTS-OWNER-BROWSER-VALIDATION-001"
     ],
-    "public_build": "health-integrated-20261112.131",
-    "candidate_build": "health-integrated-20261112.132",
+    "public_build": "health-integrated-20261112.132",
+    "candidate_build": "health-integrated-20261112.133",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
@@ -69,7 +69,9 @@
       "Authenticated public desktop and touch mobile owner flows",
       "Exact publication bytes and public entry inspection"
     ],
-    "evidence_document": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md"
+    "evidence_document": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
+    "prior_runtime_candidate_workflows_passed": 19,
+    "prior_protected_actual_auth_run": 43302272288
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261112.131",
@@ -3996,7 +3998,12 @@
       "evidence": [
         "v2/real-auth-owner-flows.mjs",
         "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
-        "Protected diagnostic runs43297183339 and43298156999 retain the initial mobile failures; successful desktop and other mobile flows are not discarded."
+        "Protected diagnostic runs43297183339 and43298156999 retain the initial mobile failures; successful desktop and other mobile flows are not discarded.",
+        "PR533 source candidate c1e73ef5f14ce250c5f4aadc65eded3ec67a8401 passed19/19, but protected public run43302272288 retained the mobile laboratory overflow. The task remains in progress.",
+        "Protected diagnostic43303351934 confirms the style is present and that a definite width on the source label alone restores host fit; that dynamic probe was insufficient at initial static layout, so the new touch regression remains decisive.",
+        "Added a390px touch WebKit long-series regression and synchronous polling predicates using awaited module setup.",
+        "The initial .133 candidate987509c589567c598ef61d3c91e3c4250111da6b reproduces the native menu overflow in the new touch WebKit390 regression. Retain its failed bounds assertion, zero traffic/writes and unchanged method checks; apply the existing calendar native-control treatment while preserving full provenance outside the compact selector.",
+        "The corrected native-control source candidate passes the390px WebKit bounds/full-method test. Exact artifact13982907869 digestec13a2307082c8c70b26829e5ceb932b7736c31b41caa04cb480f2261842aee3 was inspected; a legacy important background reset hid the menu arrow. Scoped important background longhands and explicit synthetic/real indicator checks correct this before promotion."
       ],
       "next_action": "Run exact candidate browser gates, publish the localized selector fix only after they pass, and repeat all requested protected owner flows.",
       "blocker": null
