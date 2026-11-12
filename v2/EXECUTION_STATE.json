@@ -4000,8 +4000,9 @@
         "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
         "Protected diagnostic runs43297183339 and43298156999 retain the initial mobile failures; successful desktop and other mobile flows are not discarded.",
         "PR533 source candidate c1e73ef5f14ce250c5f4aadc65eded3ec67a8401 passed19/19, but protected public run43302272288 retained the mobile laboratory overflow. The task remains in progress.",
-        "Protected diagnostic43303351934 confirms the style is present and that a definite width on the source label alone restores host fit; no native-menu restyle or clipping is required.",
-        "Added a390px touch WebKit long-series regression and synchronous polling predicates using awaited module setup."
+        "Protected diagnostic43303351934 confirms the style is present and that a definite width on the source label alone restores host fit; that dynamic probe was insufficient at initial static layout, so the new touch regression remains decisive.",
+        "Added a390px touch WebKit long-series regression and synchronous polling predicates using awaited module setup.",
+        "The initial .133 candidate987509c589567c598ef61d3c91e3c4250111da6b reproduces the native menu overflow in the new touch WebKit390 regression. Retain its failed bounds assertion, zero traffic/writes and unchanged method checks; apply the existing calendar native-control treatment while preserving full provenance outside the compact selector."
       ],
       "next_action": "Run exact candidate browser gates, publish the localized selector fix only after they pass, and repeat all requested protected owner flows.",
       "blocker": null

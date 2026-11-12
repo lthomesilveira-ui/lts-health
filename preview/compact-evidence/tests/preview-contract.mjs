@@ -39,7 +39,7 @@ const manifest={
     "home-reference.css": "33a736c10df124c86f1ff8be54d41be05d0443235b8a688b6923307eb8ff2377",
     "index.html": "0e24e49bbb801df9ac40550fe3f95ba31ae1820a8ee41fb5b09a7996ecfca615",
     "integrated-review.css": "a83434613ae31b91bfb5fda9f529cbf95d71b66f732b5f490d59599eedc57ec3",
-    "labs-model-v2.css": "17fb878a487d26ae4efdd483b2a44370b26243fb837f15540f796c40e56a1e2f",
+    "labs-model-v2.css": "22c0264fa3720041f37a9f427592ef8054125f5e2d83a75a61395129f992b527",
     "longitudinal-story.css": "ecb43a3a94892a99f2d06ebfce6303072ef3208f3298d27693bffa3a69945b44",
     "mfp-water-extractor.css": "a28f5aa6885b9605efd7294d485f8f2eec14b4bfee29901316acc753e933b590",
     "mobile-study.css": "a834a6977c280b3142b9ac8c2f35784b63a4b4aa3a8d50fdab7cc38fd6ff041b",
