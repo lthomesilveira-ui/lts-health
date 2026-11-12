@@ -10,9 +10,9 @@ const requireCheck=(ok,stage,checks)=>{if(!ok){const error=new Error('Owner brow
 async function geometry(page){
  const checks=await page.evaluate(()=>{
   const host=document.querySelector('#screenHost');
-  const controls=[...document.querySelectorAll('.refMetricLine b,.refMetricLine small,.ltsPointReadout p,.ltsRefSetTable')].filter(el=>el.getBoundingClientRect().width>0);
+  const controls=[...document.querySelectorAll('.healthMetricValue strong,.healthMetricValue>span,.healthCoverage,.healthControls select,.ltsPointReadout p,.ltsRefSetTable')].filter(el=>el.getBoundingClientRect().width>0);
   const components={};
-  for(const [name,selector]of Object.entries({labPage:'.ltsLabsV2',labMarker:'#productLabMarkerSelect',labCohort:'#productLabCohort',labPoint:'#productLabPoint',labTrend:'#productLabsTrend',labHeading:'#productLabsTrend .ltsSectionHead',labTitle:'#productLabsTrend h2',labDelta:'.ltsLabDelta',labNote:'#productLabsTrend>.ltsDepthNote',labHistory:'#productLabsHistory',labCollection:'#productLabsCollection',labContext:'.ltsLabSeriesContext',labHistoryRow:'.ltsLabsHistoryRow',labRail:'.ltsLabsMarkerRail',labPlot:'.ltsLabTrendPlot',labSvg:'.ltsLabTrendPlot .ltsDepthPlot svg',labPlotGrid:'.ltsLabTrendPlot .ltsDepthPlot',labEndpoints:'.ltsLabEndpoints',labLegend:'.ltsLabReferenceLegend',labLegendContent:'.ltsLabReferenceLegend>div',labReadout:'.ltsPointReadout'})){
+  for(const [name,selector]of Object.entries({labPage:'.ltsLabsV2',labMarker:'#productLabMarkerSelect',labCohort:'#productLabCohort',labPoint:'#productLabPoint',labTrend:'#productLabsTrend',labSourceLabel:'#productLabsTrend>.ltsSourceSelect',labChart:'#productLabsTrend>.ltsLabsChart',labMethod:'.ltsLabSeriesDetails',labMethodSummary:'.ltsLabSeriesDetails>summary',labAxis:'.ltsLabTrendPlot .ltsDepthAxis',labHeading:'#productLabsTrend .ltsSectionHead',labTitle:'#productLabsTrend h2',labDelta:'.ltsLabDelta',labNote:'#productLabsTrend>.ltsDepthNote',labHistory:'#productLabsHistory',labCollection:'#productLabsCollection',labContext:'.ltsLabSeriesContext',labHistoryRow:'.ltsLabsHistoryRow',labRail:'.ltsLabsMarkerRail',labPlot:'.ltsLabTrendPlot',labSvg:'.ltsLabTrendPlot .ltsDepthPlot svg',labPlotGrid:'.ltsLabTrendPlot .ltsDepthPlot',labEndpoints:'.ltsLabEndpoints',labLegend:'.ltsLabReferenceLegend',labLegendContent:'.ltsLabReferenceLegend>div',labReadout:'.ltsPointReadout'})){
    const nodes=[...document.querySelectorAll(selector)];
    components[name+'Width']=Math.max(0,...nodes.map(el=>el.getBoundingClientRect().width));
    components[name+'Right']=Math.max(0,...nodes.map(el=>el.getBoundingClientRect().right));
@@ -21,7 +21,7 @@ async function geometry(page){
   // Diagnostic style probes never change pass/fail: each is removed before
   // measuring the original layout and before capturing any evidence.
   const probes={};
-  if(host&&host.scrollWidth>host.clientWidth+1)for(const [name,css]of Object.entries({headingShrinkProbe:'.ltsLabsV2 #productLabsTrend .ltsSectionHead>*{min-width:0;max-width:100%}.ltsLabsV2 #productLabsTrend h2{white-space:normal;overflow-wrap:anywhere}',legendShrinkProbe:'.ltsLabsV2 .ltsLabReferenceLegend>div{min-width:0}',svgShrinkProbe:'.ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot svg{min-width:0;max-width:100%;display:block}',readoutShrinkProbe:'.ltsLabsV2 .ltsPointReadout{min-width:0}',plotChildrenShrinkProbe:'.ltsLabsV2 .ltsLabTrendPlot>*{min-width:0;max-width:100%;overflow-wrap:anywhere}'})){
+  if(host&&host.scrollWidth>host.clientWidth+1)for(const [name,css]of Object.entries({sourceLabelShrinkProbe:'.ltsLabsV2 #productLabsTrend>.ltsSourceSelect{min-width:0;max-width:100%}',chartShrinkProbe:'.ltsLabsV2 #productLabsTrend>.ltsLabsChart{min-width:0;max-width:100%;box-sizing:border-box}',closedMethodProbe:'.ltsLabsV2 .ltsLabSeriesDetails:not([open])>:not(summary){display:none}',headingShrinkProbe:'.ltsLabsV2 #productLabsTrend .ltsSectionHead>*{min-width:0;max-width:100%}.ltsLabsV2 #productLabsTrend h2{white-space:normal;overflow-wrap:anywhere}',legendShrinkProbe:'.ltsLabsV2 .ltsLabReferenceLegend>div{min-width:0}',svgShrinkProbe:'.ltsLabsV2 .ltsLabTrendPlot .ltsDepthPlot svg{min-width:0;max-width:100%;display:block}',readoutShrinkProbe:'.ltsLabsV2 .ltsPointReadout{min-width:0}',plotChildrenShrinkProbe:'.ltsLabsV2 .ltsLabTrendPlot>*{min-width:0;max-width:100%;overflow-wrap:anywhere}'})){
    const style=document.createElement('style');style.textContent=css;document.head.append(style);probes[name]=host.scrollWidth<=host.clientWidth+1;style.remove();
   }
   return {...components,...probes,documentFits:document.documentElement.scrollWidth<=innerWidth+1,hostFits:!host||host.scrollWidth<=host.clientWidth+1,
@@ -38,8 +38,8 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
   if(await direct.count())await activate(direct);
   else{await activate(page.locator(`${nav} [data-route="mais"]`));await page.waitForSelector('#moreSheet:not(.hidden)');await activate(page.locator(`#moreSheet [data-route="${route}"]`));}
   await page.waitForFunction(async({route,selector})=>{
-   const {state}=await import('./src/core.js');
-   return state.route===route&&location.hash===`#${route}`&&document.body.dataset.productRoute===route&&Boolean(document.querySelector(selector))&&!document.querySelector('#screenHost .loadingState');
+   const {state}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');
+   return state.loaded&&isRouteReady(route)&&state.route===route&&location.hash===`#${route}`&&document.body.dataset.productRoute===route&&Boolean(document.querySelector(selector))&&!document.querySelector('#screenHost .loadingState');
   },{route,selector:ready[route]});
  };
  requireCheck(await page.evaluate(async expected=>{const {state,fixtureMode}=await import('./src/core.js');return !fixtureMode&&state.session?.user?.id===expected;},owner),'auth');
@@ -59,7 +59,13 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
      const {state,fmtNum}=await import('./src/core.js'),{healthDashboardModel}=await import('./src/health-dashboard-model.js');
      const model=healthDashboardModel(state.data,state.domainStatus,state.ui);
      return state.ui.dashboardPeriod===period&&model.mode==='period'&&document.querySelector('#dashboard-period')?.value===period&&
-      model.metrics.every(metric=>document.querySelector(`[data-dashboard-card="${metric.key}"] .healthMetricValue strong`)?.textContent===(metric.value==null?'—':fmtNum(metric.value,metric.key==='sleep'?1:0)));
+      model.metrics.every(metric=>{
+       const card=document.querySelector(`[data-dashboard-card="${metric.key}"]`),chart=card?.querySelector('.healthSpark');
+       const points=(metric.points||[]).filter(point=>point.value!=null&&typeof point.value!=='boolean'&&String(point.value).trim()!==''&&Number.isFinite(Number(point.value)));
+       const plotted=[...card?.querySelectorAll('.healthSpark [data-dashboard-day]')||[]];
+       const chartMatches=points.length?Boolean(chart&&chart.dataset.start===model.bounds.start&&chart.dataset.end===model.bounds.end&&plotted.length===points.length&&plotted.every((node,index)=>node.dataset.dashboardDay===points[index].date)&&[...chart.querySelectorAll('circle')].every(node=>Number.isFinite(Number(node.getAttribute('cx')))&&Number.isFinite(Number(node.getAttribute('cy')))&&Number(node.getAttribute('cx'))>=0&&Number(node.getAttribute('cx'))<=286&&Number(node.getAttribute('cy'))>=0&&Number(node.getAttribute('cy'))<=68)):!chart;
+       return chartMatches&&card?.querySelector('.healthMetricValue strong')?.textContent===(metric.value==null?'—':fmtNum(metric.value,metric.key==='sleep'?1:0));
+      });
     },period);
     await geometry(page);
     await page.screenshot({path:`${evidenceDir}/owner-${label}-home-${period}.png`,fullPage:true});
@@ -176,8 +182,8 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
   catch(error){
    const stage=/^owner-flow-(?:auth|home|workout|workout-return|labs|water|receipts|integrations|geometry)$/.test(error?.auditCode||'')?error.auditCode:`owner-flow-${name}`;
    try{await page.screenshot({path:`${evidenceDir}/owner-${label}-${name}-failure.png`,fullPage:true});}catch{}
-   const allowed=['documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth','waterPanel','waterAvailable','waterHistory','waterCaption','waterValue','waterAbsence','waterToday','headingShrinkProbe','legendShrinkProbe','svgShrinkProbe','readoutShrinkProbe','plotChildrenShrinkProbe','dashboardBuildMatched','dashboardLoaded','dashboardRoute','dashboardPresent','dashboardLoadingAbsent','dashboardCards','dashboardMatched','dashboardCoverage','dashboardNoOverflow','dashboardMissingWater','dashboardAmbiguousWater','dashboardHasOldWater'];
-   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>(allowed.includes(key)||/^lab(?:Page|Marker|Cohort|Point|Trend|Heading|Title|Delta|Note|History|Collection|Context|HistoryRow|Rail|Plot|Svg|PlotGrid|Endpoints|Legend|LegendContent|Readout)(?:Width|Right|Scroll)$/.test(key)||/^dashboard_(?:initial|period_(?:7|30|60|90|6m|1y|all)|water_read|water_open|water_today|final)$/.test(key))&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)&&Math.abs(value)<=100000||value===null)));
+   const allowed=['documentFits','hostFits','fontsReadable','minimumFont','documentWidth','viewportWidth','hostWidth','hostScrollWidth','waterPanel','waterAvailable','waterHistory','waterCaption','waterValue','waterAbsence','waterToday','sourceLabelShrinkProbe','chartShrinkProbe','closedMethodProbe','headingShrinkProbe','legendShrinkProbe','svgShrinkProbe','readoutShrinkProbe','plotChildrenShrinkProbe','dashboardBuildMatched','dashboardLoaded','dashboardRoute','dashboardPresent','dashboardLoadingAbsent','dashboardCards','dashboardMatched','dashboardCoverage','dashboardNoOverflow','dashboardMissingWater','dashboardAmbiguousWater','dashboardHasOldWater'];
+   const checks=error?.flowChecks&&Object.fromEntries(Object.entries(error.flowChecks).filter(([key,value])=>(allowed.includes(key)||/^lab(?:Page|Marker|Cohort|Point|Trend|SourceLabel|Chart|Method|MethodSummary|Axis|Heading|Title|Delta|Note|History|Collection|Context|HistoryRow|Rail|Plot|Svg|PlotGrid|Endpoints|Legend|LegendContent|Readout)(?:Width|Right|Scroll)$/.test(key)||/^dashboard_(?:initial|period_(?:7|30|60|90|6m|1y|all)|water_read|water_open|water_today|final)$/.test(key))&&(typeof value==='boolean'||typeof value==='number'&&Number.isFinite(value)&&Math.abs(value)<=100000||value===null)));
    report.push({surface:label,case:name,passed:false,stage,...(checks?{checks}:{})});
   }
  }
