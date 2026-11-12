@@ -13,3 +13,5 @@ A alteração é apenas de apresentação. Requests, escopos, controles de acess
 ## Validação
 
 Contratos locais existentes verificam dono ausente, conta não configurada, configuração sem conta, conta autorizada sem leitura, retorno de autorização, isolamento de sessão, ausência de novas operações de credencial e janela civil de consulta. O diagnóstico de arquivos verifica estado vazio com integração incompleta, erros de consulta, falhas reais e preservação de registros. Paridade entre produção e prévia, integridade do grafo e proteção de conteúdo público passam. Verificações responsivas e publicação ainda pendentes.
+
+A primeira candidata9e8b975 teve três workflows interrompidos no mesmo gate estático: o inventário de hashes da prévia ainda descrevia os módulos anteriores. O inventário foi alinhado aos dois arquivos alterados e ao novo identificador de build, sem remover nenhuma validação. Os resultados iniciais foram preservados; a candidata corrigida exige os gates completos.
