@@ -1,3 +1,9 @@
+## 2026-11-12 — Em validação: estados claros de conexões e arquivos, .131
+
+O pacote051 corrige duas mensagens: presença de configuração Google não é conta autorizada nem recebimento de água; ausência de arquivos para reenvio não significa ausência de pendências em todas as integrações. A apresentação usa estados específicos e não atribui configuração técnica ao usuário.
+
+Os contratos locais de conexão, ações de arquivo, linguagem e privacidade passaram. Gates responsivos, publicação e verificação exata ainda estão pendentes. Não há alteração de credenciais, escopos, autorização, criptografia, banco ou dados de saúde. As condições independentes de água, origem, histórico e aceite permanecem abertas. Detalhes: `v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md`.
+
 ## 2026-11-08 — Concluído .128: data Polar em São Paulo
 
 O pacote046/LTS-POLAR-UPDATE-DATE-001 está concluído. A atualização Polar agora mostra o dia civil de São Paulo e concorda com o horário automático no mesmo cartão. O instante original, os registros e as integrações permanecem preservados. A sessão genuína já autenticada foi recarregada na versão exata.128 e a correção foi conferida visualmente.

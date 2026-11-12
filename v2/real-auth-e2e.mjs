@@ -315,8 +315,8 @@ try{
   if(resolvedCount<1)throw new Error('resolved real quality item missing');
   const inbox=page.locator('[data-review-inbox]');
   const inboxHeadline=await inbox.locator('h2').innerText();
-  if(integrity.uploadActionCount===0&&inboxHeadline!=='Nenhuma ação sua é necessária')throw new Error('real Data Inbox action state is contradictory');
-  if(integrity.uploadActionCount>0&&inboxHeadline==='Nenhuma ação sua é necessária')throw new Error('real Data Inbox hides required user action');
+  if(integrity.uploadActionCount===0&&inboxHeadline!=='Nenhum arquivo precisa ser reenviado')throw new Error('real Data Inbox action state is contradictory');
+  if(integrity.uploadActionCount>0&&inboxHeadline==='Nenhum arquivo precisa ser reenviado')throw new Error('real Data Inbox hides required user action');
   if(await inbox.locator('[data-user-actions] .reviewActionRow').count()!==integrity.uploadActionCount)throw new Error('real Data Inbox user-action coverage differs from independent read');
   if(await inbox.locator('[data-internal-quality] .reviewActionRow').count()!==Math.min(8,integrity.internalQualityCount))throw new Error('real Data Inbox internal-quality coverage differs from independent read');
   await inbox.locator('details[data-disclosure="data-record-status"] > summary').click();

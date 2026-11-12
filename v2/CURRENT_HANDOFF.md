@@ -1,3 +1,9 @@
+## 2026-11-12 — Em validação: estados claros de conexões e arquivos, .131
+
+O pacote051 corrige duas mensagens: presença de configuração Google não é conta autorizada nem recebimento de água; ausência de arquivos para reenvio não significa ausência de pendências em todas as integrações. A apresentação usa estados específicos e não atribui configuração técnica ao usuário.
+
+Os contratos locais de conexão, ações de arquivo, linguagem e privacidade passaram. Gates responsivos, publicação e verificação exata ainda estão pendentes. Não há alteração de credenciais, escopos, autorização, criptografia, banco ou dados de saúde. As condições independentes de água, origem, histórico e aceite permanecem abertas. Detalhes: `v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md`.
+
 # Current checkpoint — verified Google Health Takeout recovery
 
 Package `PKG-GOOGLE-TAKEOUT-WATER-050` is complete. Public `.130` is published and its exact bytes verified. PR517 adds the source boundary and hydration consumption; PR518 corrects the independent authenticated audit. All22 source-candidate workflows and actual-auth42950262629 pass. The original export and guarded native readback are private; existing canonical totals remain unchanged. Full MyFitnessPal history, current water, recurrence and the other original conditions stay open with updated concrete blockers in `EXECUTION_STATE.json`. Google sign-in succeeded; Cloud Console remains unavailable in this browser, so another login is not the immediate missing step. The audit-only publication failed to see its uploaded Pages artifact metadata twice; a bounded preflight now checks registration before the unchanged official deployment action. See `v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md`.
