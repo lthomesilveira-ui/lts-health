@@ -4,7 +4,7 @@
 const auditId='health-lab-documentary-review-20261112';
 const expectedCount=15;
 const projection='id,source_record_id,collection_date,report_date,laboratory,biomarker,result_raw,result_numeric,unit,reference_range,flag,method,source,source_file,numeric_kind:source_payload->>numeric_kind,numeric_reading_verification:source_payload->numeric_reading_verification';
-const fail=()=>{throw new Error('Reviewed laboratory presentation or read-only integrity check failed; private details withheld');};
+const fail=(stage)=>{const error=new Error('Reviewed laboratory presentation or read-only integrity check failed; private details withheld');error.auditCode=`lab-reviewed-${stage}`;throw error;};
 
 async function snapshot(page){
   return page.evaluate(async({auditId,projection})=>{
@@ -48,8 +48,10 @@ export async function verifyReviewedLaboratoryPresentation(page,{waitForRoute,ev
   await page.locator('#productLabQuery').fill('');
   await page.locator('[data-depth-period="productLabPeriod"][data-value="all"]').click();
   const before=await snapshot(page);
-  if(!before.read||!before.loadedAgree||!before.unique||!before.sameDate||
-    before.targets.length!==expectedCount||before.targets.some(row=>!row.accepted||!row.cohort))fail();
+  if(!before.read)fail('read');
+  if(!before.loadedAgree)fail('loaded');
+  if(!before.unique||!before.sameDate||before.targets.length!==expectedCount)fail('identity');
+  if(before.targets.some(row=>!row.accepted||!row.cohort))fail('eligibility');
   for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
     await page.setViewportSize(viewport);
     await page.locator('#productLabCollection').selectOption(before.targets[0].date);
@@ -57,10 +59,10 @@ export async function verifyReviewedLaboratoryPresentation(page,{waitForRoute,ev
       document.querySelector('#productLabsCollection h2')?.textContent?.includes(date.split('-').reverse().join('/')),before.targets[0].date);
     for(const target of before.targets){
       const selected=page.locator(`#productLabsCollection [data-lab-marker=${JSON.stringify(target.marker)}]`);
-      if(await selected.count()!==1)fail();
+      if(await selected.count()!==1)fail('collection-card');
       const expectedRaw=`${target.raw} ${target.unit}`;
-      if(await selected.locator('strong').innerText()!==expectedRaw)fail();
-      if(target.reference&&!(await selected.innerText()).includes(`Referência do laudo: ${target.reference}`))fail();
+      if(await selected.locator('strong').innerText()!==expectedRaw)fail('collection-value');
+      if(target.reference&&!(await selected.innerText()).includes(`Referência do laudo: ${target.reference}`))fail('collection-reference');
     }
     await page.locator('#productLabsCollection').scrollIntoViewIfNeeded();
     await page.screenshot({path:`${evidenceDir}/reviewed-labs-${viewport.width}-collection.png`,fullPage:true});
@@ -76,17 +78,17 @@ export async function verifyReviewedLaboratoryPresentation(page,{waitForRoute,ev
         const {labsModel,labChartModel}=await import('./src/labs-layout-v2.js');
         return labChartModel(labsModel().cohort).points.findIndex(item=>item.row.id===id);
       },target.id);
-      if(point<0)fail();
+      if(point<0)fail('graph-point');
       await page.locator('#productLabPoint').selectOption(String(point));
       const expectedValue=`${Number(target.value).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:20})} ${target.unit}`;
       await page.waitForFunction(expected=>document.querySelector('.ltsPointReadout p > b')?.textContent===expected,expectedValue);
       const readout=await page.locator('.ltsPointReadout').innerText();
       if(!readout.includes(`Resultado original: ${target.raw} ${target.unit}`)||
-        !readout.includes(target.date.split('-').reverse().join('/')))fail();
-      if(!await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1))fail();
+        !readout.includes(target.date.split('-').reverse().join('/')))fail('graph-original');
+      if(!await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1))fail('overflow');
     }
     await page.screenshot({path:`${evidenceDir}/reviewed-labs-${viewport.width}-point.png`,fullPage:true});
   }
   const after=await snapshot(page);
-  if(!after.read||!after.loadedAgree||after.fingerprint!==before.fingerprint)fail();
+  if(!after.read||!after.loadedAgree||after.fingerprint!==before.fingerprint)fail('final-integrity');
 }

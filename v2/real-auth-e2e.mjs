@@ -526,7 +526,7 @@ try{
   console.log(`LTS Health real authenticated E2E passed; integrity=${JSON.stringify({orphanExercises:integrity.orphanExercises,orphanSetsByWorkout:integrity.orphanSetsByWorkout,orphanSetsByExercise:integrity.orphanSetsByExercise,orphanEvidence:integrity.orphanEvidence,canonicalBoundaryViolations:integrity.canonicalBoundaryViolations})}`);
 }catch(error){
   const auditCode=String(error?.auditCode||'');
-  if(/^depth-check-\d{1,3}$/.test(auditCode)||['nutrition-contrast','runtime-errors'].includes(auditCode))verificationStage+=` (${auditCode})`;
+  if(/^depth-check-\d{1,3}$/.test(auditCode)||/^lab-reviewed-(?:read|loaded|identity|eligibility|collection-card|collection-value|collection-reference|graph-point|graph-original|overflow|final-integrity)$/.test(auditCode)||['nutrition-contrast','runtime-errors'].includes(auditCode))verificationStage+=` (${auditCode})`;
   console.log('Real-auth bounded failure evidence: '+JSON.stringify({runtimeErrorCount,runtimeErrorKinds,network:networkFailures.failures,networkCounts:networkFailures.counts}));
   try{await page.screenshot({path:`${evidenceDir}/e2e-failure.png`,fullPage:true});}catch{}
   throw new Error(`Real authenticated verification failed in ${verificationStage}; private details are withheld from public logs. Inspect the encrypted evidence.`);
