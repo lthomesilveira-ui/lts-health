@@ -1,8 +1,8 @@
-## 2026-11-12 — Em validação: estados claros de conexões e arquivos, .131
+## 2026-11-12 — Publicado e verificado: estados claros de conexões e arquivos, .131
 
-O pacote051 corrige duas mensagens: presença de configuração Google não é conta autorizada nem recebimento de água; ausência de arquivos para reenvio não significa ausência de pendências em todas as integrações. A apresentação usa estados específicos e não atribui configuração técnica ao usuário.
+O pacote051 está concluído: o Google Health distingue conta não conectada, conta autorizada e integração indisponível; a área Seus arquivos limita a ausência de ação ao reenvio de arquivos. A configuração técnica não é atribuída ao usuário.
 
-Os contratos locais de conexão, ações de arquivo, linguagem e privacidade passaram. Gates responsivos, publicação e verificação exata ainda estão pendentes. Não há alteração de credenciais, escopos, autorização, criptografia, banco ou dados de saúde. As condições independentes de água, origem, histórico e aceite permanecem abertas. Detalhes: `v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md`.
+PR520 passou 21/21, com árvore preservada no merge normal. PR521 ajusta somente o verificador e passou 14/14. A versão pública .131 e seus três arquivos alterados correspondem aos bytes testados; a checagem protegida 43133094623 passa com dados autenticados e a leitura independente do estado Google. Há validação sintética de 390px e desktop; aceite físico continua separado. Sem alteração de credenciais, escopos, banco ou dados de saúde. As dez condições originais continuam abertas em `EXECUTION_STATE.json`. Detalhes: `v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md`.
 
 # Current checkpoint — verified Google Health Takeout recovery
 
