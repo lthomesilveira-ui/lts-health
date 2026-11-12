@@ -38,8 +38,9 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   check(googleInvalidCallback.status()===(google.status.configured?400:409),'Google callback accepted an invalid or unconfigured authorization');
   await goto('dados','[data-google-health][aria-busy="false"]');
   const googleCard=page.locator('[data-google-health]');
+  const googleLabel=google.status.last_error==='authorization_expired'?'Autorização expirada':google.status.connected?'Conta autorizada':google.status.configured?'Conta não conectada':'Integração indisponível';
+  check(await googleCard.locator('.pill').textContent()===googleLabel,'Google connection label differs from the independent authenticated status');
   if(!google.status.configured){
-    check(await googleCard.getByText('Em preparação',{exact:true}).count()===1,'unconfigured Google entry is not clearly labelled');
     check(await googleCard.locator('[data-google-health-action="authorize"],[data-google-health-action="read"]').count()===0,'unconfigured Google entry offers authorization or a read');
   }
   await page.setViewportSize({width:390,height:844});
