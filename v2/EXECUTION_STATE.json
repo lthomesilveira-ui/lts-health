@@ -1020,9 +1020,10 @@
         "v2/src/workout-evidence.js",
         "v2/apple-polar-history-review.py",
         "v2/releases/POLAR_ORIGINAL_HISTORY_20261101.md",
-        "2026-11-01: original application synchronization identities and timestamped source observations were recovered from the supplied localized Apple Health XML. Earlier non-overlapping source history was inserted privately and verified against the original; idempotent replay inserted nothing. Existing provider rows, canonical workouts and workout evidence were compared before/after and preserved. Overlapping observations remain held; no legacy event was linked by matching date or value."
+        "2026-11-01: original application synchronization identities and timestamped source observations were recovered from the supplied localized Apple Health XML. Earlier non-overlapping source history was inserted privately and verified against the original; idempotent replay inserted nothing. Existing provider rows, canonical workouts and workout evidence were compared before/after and preserved. Overlapping observations remain held; no legacy event was linked by matching date or value.",
+        "2026-11-12 evidence review: Existing canonical Polar evidence was independently checked with zero orphan or date-mismatched references. Precise legacy event linkage is still unsupported; the recovered native XML events remain separate. A new supplier reply suggests reinstall/reset without proving recovery or addressing local-only data preservation; no reset was performed."
       ],
-      "next_action": "Use the recovered source history already visible through the existing source-history projection. Establish independent linkage for legacy sessions and held overlaps before attaching canonical telemetry; do not reimport the original or infer identity from matching values.",
+      "next_action": "Resume legacy linking only on a precise common start/event identifier or independently attributable mapping; preserve existing canonical evidence and separate original events.",
       "blocker": "Original source history is now recovered separately. The remaining legacy-to-event linkage is unverified: legacy summaries lack precise start times or source-event identifiers, and overlapping provider/export observations have no independent cross-provider identity mapping."
     },
     {
@@ -1941,9 +1942,10 @@
         "The concrete next action is an owner-approved replacement of the older dedicated-client secret, preserving the client ID, scopes, callback, other secret, encryption key, settings and records; then update only the existing server OAuth client-secret setting through the protected administrative surface.",
         "No credential mutation, rotation, deletion, new client or login prompt was requested; the read-only administrative run reports no change. The provenance of the newer reported secret is not independently established. No code, schema or clinical write was made. A specific confirmation is required for the irreversible credential deletion; reconfirm actual target/status before any approved mutation and do not ask for another owner login before repair.",
         "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved.",
-        "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed."
+        "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed.",
+        "2026-11-12 evidence review: Recent genuine receiver summaries contain no water. Health Sync correspondence adds no source-specific diagnosis, and the existing export-provider request has no reply. The recent Polar reset recommendation is a separate activity issue and proves no hydration recovery."
       ],
-      "next_action": "Obtain a valid current upstream observation and compare source and destination. Restore the dedicated credential through a usable administrative route before another genuine direct Google connection.",
+      "next_action": "Use genuinely attributable upstream water evidence when available; preserve the open current-water condition and avoid repeating completed phone checks.",
       "blocker": "The original Takeout includes subsequent zero amounts with unspecified volume units, which cannot establish consumption or resolve the source/export discrepancy. No current valid water has reached LTS; the direct Google credential remains invalid.",
       "phone_status_capture_received": true
     },
@@ -1968,10 +1970,12 @@
         "Continuity restart: targeted context and Library searches did not recover the exact original fifteen-record manifest. No substitute list was generated and no laboratory record was changed.",
         "2026-10-29: targeted durable-context recovery again returns references to the missing proposal, without the exact fifteen targets, original values or per-record authority. No clinical proposal is reconstructed.",
         "Historical supplied migration/handoff files were inspected. They do not provide the original exact fifteen-record correction manifest; no earlier clinical assumptions are promoted or reimported.",
-        "Home Screen continuation: one fresh focused context search returns secondary project summaries and prior unsuccessful searches, without the literal fifteen-record original or exact authorization. This does not prove that the original was never supplied; the blocker remains open and no clinical changes are made."
+        "Home Screen continuation: one fresh focused context search returns secondary project summaries and prior unsuccessful searches, without the literal fifteen-record original or exact authorization. This does not prove that the original was never supplied; the blocker remains open and no clinical changes are made.",
+        "2026-11-12: a separately bound independent documentary review is now verified in the native database, original PDF identity, shared reader and authenticated collection/graph presentation. This proves the current reviewed rows without changing any result. It does not recover or execute the literal historical mutation manifest. See LTS-LAB-DOCUMENTARY-PRESENTATION-001."
       ],
-      "next_action": "Recover the original private proposal from a durable source; keep this as agent-side continuity work and do not ask the owner to repeat the medical history.",
-      "blocker": "The exact original private fifteen-record manifest is not currently recovered."
+      "next_action": "Resume archival proposal recovery only when genuinely new durable original evidence appears. Do not reconstruct mutations, retouch the verified current rows, repeat unchanged searches or ask the owner to recreate the medical history.",
+      "blocker": "The literal historical private before/after proposal remains unrecovered. The separately reviewed current laboratory rows and their presentation have been verified; this archival continuity gap is not evidence that those results need alteration.",
+      "reconciled_with": "LTS-LAB-DOCUMENTARY-PRESENTATION-001"
     },
     {
       "id": "LTS-BASAL-COVERAGE-001",
@@ -1991,9 +1995,10 @@
         "Current private candidate recheck still has no independently identified original source, interval boundaries or verified coverage; candidates remain excluded from totals.",
         "2026-10-29: private aggregate review still finds no source-identified, interval-bounded, verified full-day basal coverage. Candidates remain private and non-additive; no energy total is inferred.",
         "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten.",
-        "The supplied original native archive was audited without imports or energy summation. Its available historical intervals do not establish eligible whole-day coverage for the prospective candidates. Unknown source/coverage remains held."
+        "The supplied original native archive was audited without imports or energy summation. Its available historical intervals do not establish eligible whole-day coverage for the prospective candidates. Unknown source/coverage remains held.",
+        "2026-11-12 evidence review: Fresh candidates include some declared source names but no record establishes both interval bounds and verified full-day coverage. Subsequent fully received daily requests also report coverage_verified=false. No basal total was promoted."
       ],
-      "next_action": "Inspect a genuine origin-bearing full-day export when available; preserve the current non-additive boundary.",
+      "next_action": "Wait for an attributable original interval with independently established full-day coverage; ordinary daily receipt alone is insufficient.",
       "blocker": "Available prospective candidates do not establish source identity or full-day coverage."
     },
     {
@@ -2072,9 +2077,10 @@
         "Owner has not yet reviewed the prior publication and provides a new source plan/current-use correction. Bounded .96 comparison/status implementation is now technically verified; global acceptance is not inferred.",
         "Owner-reported Home Screen installation is confirmed on29/10. Icon feedback is actionable and tracked separately; overall acceptance is not granted.",
         "The requested heart/pulse icon is published and independently visible in the stable public app after normal PR430 promotion. Candidate13/13 and post-merge17/17 workflows passed; physical refresh and overall acceptance are not inferred.",
-        "Owner feedback on 2026-11-01 reiterates autonomous closure and concrete UX progress. The .112 receiving journey is separately verified; overall acceptance and the original source/device dependencies remain open."
+        "Owner feedback on 2026-11-01 reiterates autonomous closure and concrete UX progress. The .112 receiving journey is separately verified; overall acceptance and the original source/device dependencies remain open.",
+        "2026-11-12 evidence review: The reviewed laboratory cards, exact references and graph points passed protected desktop/mobile-width verification. This is independent of physical iPhone acceptance, current hydration and the remaining source-history criteria."
       ],
-      "next_action": "Preserve the verified heart/pulse revision and stable entry. Continue the independent source/provider/original-record work when usable evidence exists; keep global acceptance separate from installation.",
+      "next_action": "Preserve the passed authenticated review while keeping physical-device acceptance and unresolved source conditions distinct.",
       "blocker": "Home Screen installation is owner-confirmed and the revised health icon is published. Overall owner acceptance, actual water continuity, original source/history evidence and remaining physical/native verification stay open."
     },
     {
@@ -2163,9 +2169,10 @@
         "2026-10-29: existing official support correspondence read again; no new substantive reply follows the already-recorded questions. No duplicate message or repeated completed phone step was requested.",
         "Home Screen continuation: both existing provider threads were freshly read; no message follows the already recorded technical questions. No duplicate message or completed native step was requested.",
         "2026-10-29 continuation: current primary REST documentation explicitly supports JSON Batch Requests. The existing SQL projection recomputes touched days from all stored same-source metrics, including split-by-metric requests. Archived 25/10 receiver headers show accepted small bodies and one small503, but do not recover the original rejected413 body. No receiver limit, source identity, key, cadence or phone configuration changed.",
-        "2026-11-08 candidate: the documented start/end fields for an individual sample reproduced an incorrect canonical daily row. The receiver regression test now rejects that shape atomically. Private summaries classify the declared grouping even before a body-limit rejection. The original rejection's matching logs do not contain its declared size, period or grouping."
+        "2026-11-08 candidate: the documented start/end fields for an individual sample reproduced an incorrect canonical daily row. The receiver regression test now rejects that shape atomically. Private summaries classify the declared grouping even before a body-limit rejection. The original rejection's matching logs do not contain its declared size, period or grouping.",
+        "2026-11-12 evidence review: All six deployed receiver files match the tested source. Current body/observability/summary/basal tests pass, and three genuine requests were read completely and accepted below the unchanged limit. They establish current behavior, not recovery of the old rejected body."
       ],
-      "next_action": "Validate the receiver candidate and verify declared grouping on a genuine later request. Recover the original interval, size and effective batching from native diagnostics before attributing the prior rejection or closing the task.",
+      "next_action": "Recover the original rejected-request size, interval, aggregation/batch and activity/error log from the device or supplier. Do not repeat current guard tests as a substitute or raise the limit without that diagnosis.",
       "blocker": "The original rejected request size/composition/interval and actual device batching configuration are unobserved; documented feature support alone does not prove recovery of missing metrics."
     },
     {
@@ -2522,9 +2529,10 @@
         "Synthetic receipt coverage is repaired independently of source lineage and must not pool means or rename historical records.",
         "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten.",
         "The supplied original native archive was independently inspected. Historical origin fields do not establish a stable mapping to later received candidates; no source was reassigned by matching values or dates.",
-        "The authenticated Google Health Takeout has source-bearing meal rows but no explicit energy/carbohydrate fields for the unresolved day, and does not establish the remaining activity source identities."
+        "The authenticated Google Health Takeout has source-bearing meal rows but no explicit energy/carbohydrate fields for the unresolved day, and does not establish the remaining activity source identities.",
+        "2026-11-12 evidence review: A fresh exact-source reread still finds only the explicit unknown-origin placeholder for each unresolved historical metric. Current supplier documentation says source is present when available; it does not establish a current iOS-version-specific diagnosis. Later source-bearing nutrients cannot retroattribute those records."
       ],
-      "next_action": "Use an original source-bearing export or a supported provider mapping when it becomes available; retain separate source segments in the meantime.",
+      "next_action": "Resume only with an original source-bearing record or supported stable mapping; preserve separate segments and the explicit unknown origin.",
       "blocker": "No attributable original source identity or stable mapping exists in the currently received metadata."
     },
     {
@@ -3857,9 +3865,10 @@
         "PR513 exact17/17 passed;101 Node and24 PostgreSQL coverage. Normal merge a196596b393dbbd52486ef86d7d5b3e0bf74baa4 preserved tree42343ffd376ab50616a4b9ea619a85b3ba625d2d. Scheduled5 ACTIVE/JWTfalse exact8-file readback. Native check actually contacted Google and returned HTTP401/invalid_client with the expected configured client, no verified connection, no canonical write and cleared ticket. No credential was created/deleted/updated by the native check.",
         "Continuation native check still matches the expected configured client and actually receives provider401/invalid_client. No genuine Google connection or read exists. Earlier approval remains valid; an actual complete-value protected server update is still required.",
         "A new strictly read-only access preparation ended after7 steps with authentication_required, without reading current secret metadata or changing settings. Direct browser preparation reached Supabase sign-in while the Google console page was unavailable in that browser. No existing approval was revoked or repeated.",
-        "Owner login-only Feito verified: the same-profile read-only execution matched the dedicated project and client, then ended at provider execution capacity. No fresh masked suffix/status or credential mutation/save was confirmed. Direct browser access to the actual observed details URL returned Site Unavailable. No purchase, new owner grant or health-data write occurred."
+        "Owner login-only Feito verified: the same-profile read-only execution matched the dedicated project and client, then ended at provider execution capacity. No fresh masked suffix/status or credential mutation/save was confirmed. Direct browser access to the actual observed details URL returned Site Unavailable. No purchase, new owner grant or health-data write occurred.",
+        "2026-11-12 evidence review: This review performed no credential read, rotation, deletion, complete-value transfer, server save, extra service purchase or new login. The rejected exposed/deletion path remains withdrawn. A protected update path is still required before another connection attempt."
       ],
-      "next_action": "Keep the integration unlinked until the credential can be installed through a supported protected mechanism; do not weaken security or expose the key.",
+      "next_action": "Resume only through a supported protected complete-value installation mechanism; another login alone does not repair the credential path.",
       "owner_input": "administrative_execution_capacity_or_protected_final_action"
     },
     {
@@ -3950,6 +3959,31 @@
       "next_action": "Preserve the scoped status through the existing connection and file-state checks.",
       "blocker": null,
       "verified_on": "2026-11-12"
+    },
+    {
+      "id": "LTS-LAB-DOCUMENTARY-PRESENTATION-001",
+      "area": "laboratory documentary verification",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Verify the existing independent laboratory proofs and their actual presentation without changing clinical data.",
+      "acceptance": [
+        "Original recovered document identity agrees with the stored documentary evidence.",
+        "All reviewed proofs remain exact-bound and are accepted by the full-row and actual loader readers.",
+        "Every reviewed collection card and graph point passes the protected authenticated desktop/mobile-width flow with original values, units and references preserved.",
+        "A complete native post-run reread matches every original field.",
+        "Reconcile the older proposal continuity task without falsely claiming its historical manifest recovered."
+      ],
+      "evidence": [
+        "v2/real-auth-lab-documentary-checks.mjs",
+        "v2/reviews/LAB_DOCUMENTARY_AND_SOURCE_EVIDENCE_20261112.md",
+        "PR523/524 exact candidates15/15 each; PR525 reference-text correction14/14; protected actual-auth43147576489 passed on unchanged .131 runtime.",
+        "Initial actual-auth43143578212 and bounded diagnostic43145511593 are preserved. The failure was a visual-whitespace comparison in the verifier; no source data or assertion was removed.",
+        "Post-run full native reread confirms all15 records and every original field unchanged; private screenshots encrypted before upload."
+      ],
+      "verified_on": "2026-11-12",
+      "next_action": "Retain the read-only regression check and original documentary boundary; do not duplicate the review or infer clinical improvement.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -11080,28 +11114,29 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-12",
-    "source_main_commit": "dde3b1a009fdb1cba4498562ec3d8c752b90d873",
+    "source_main_commit": "5b39f3eb00c62200386fd10712f1d1b3dbf0da1b",
     "runtime_build": "health-integrated-20261112.131",
     "candidate_build": null,
-    "runtime_changed": true,
-    "frontend_runtime_changed": true,
+    "runtime_changed": false,
+    "frontend_runtime_changed": false,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 133,
+      "done": 134,
       "blocked_external": 10,
       "superseded": 2,
       "accepted_gap": 2
     },
     "executable_task_count": 0,
     "evidence": [
-      "Package051 closes two additional presentation defects; the original ten conditions retain their independently unmet acceptance criteria.",
-      "All exact runtime and verification candidates passed. Protected publication and actual-auth verification passed without changing health or credential state.",
-      "A later native read confirms that automatic receipt alone still does not establish current hydration, complete basal coverage or the missing original source identities.",
-      "The owner rejected credential exposure and irreversible deletion. That route is withdrawn; do not resume it from older historical approval language or request another technical approval."
+      "v2/reviews/LAB_DOCUMENTARY_AND_SOURCE_EVIDENCE_20261112.md",
+      "The existing independent laboratory review and protected presentation pass; current results/proofs remain unchanged. The literal older mutation proposal remains an archival gap.",
+      "Current deployed receiver protection and actual accepted small requests are verified independently of the unrecovered original rejected upload.",
+      "Canonical Polar evidence integrity, missing legacy identity, unresolved historical origins, incomplete basal coverage and supplier-response limits were independently checked.",
+      "No Google credential handling, deletion, purchase, outbound supplier message or automation reactivation occurred."
     ],
-    "open_dependency_policy": "Retain all ten original acceptance conditions, private source boundaries and disabled development-message automations. No credential exposure, security weakening, inferred clinical corrections or substitute source linkage. Resume a dependency only through an already authorized supported protected route or genuinely new original evidence."
+    "open_dependency_policy": "Preserve each unmet original acceptance condition. Do not treat current documentary verification as recovery of a historical mutation proposal, accepted requests as recovery of an old rejected body, generic support closure as data recovery, or later named sources as historical lineage. Keep the withdrawn credential route withdrawn."
   },
   "continuity_review_history": [
     {
@@ -12754,6 +12789,32 @@
         "The offered administrative login was completed and independently verified in the saved profile at the exact project/client. Execution capacity, not authentication or missing generic approval, now blocks the protected update. The alternate direct browser cannot load that panel. No credential or source/clinical data changed."
       ],
       "open_dependency_policy": "Do not rotate a different unverified target, request a complete secret in chat or repeat the owner app connection before the server credential save and private check. Preserve the one-use ticket boundary, all original acceptance criteria and disabled continuation-message automations."
+    },
+    {
+      "reviewed_on": "2026-11-12",
+      "source_main_commit": "5b39f3eb00c62200386fd10712f1d1b3dbf0da1b",
+      "runtime_build": "health-integrated-20261112.131",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 134,
+        "blocked_external": 10,
+        "superseded": 2,
+        "accepted_gap": 2
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "v2/reviews/LAB_DOCUMENTARY_AND_SOURCE_EVIDENCE_20261112.md",
+        "The existing independent laboratory review and protected presentation pass; current results/proofs remain unchanged. The literal older mutation proposal remains an archival gap.",
+        "Current deployed receiver protection and actual accepted small requests are verified independently of the unrecovered original rejected upload.",
+        "Canonical Polar evidence integrity, missing legacy identity, unresolved historical origins, incomplete basal coverage and supplier-response limits were independently checked.",
+        "No Google credential handling, deletion, purchase, outbound supplier message or automation reactivation occurred."
+      ],
+      "open_dependency_policy": "Preserve each unmet original acceptance condition. Do not treat current documentary verification as recovery of a historical mutation proposal, accepted requests as recovery of an old rejected body, generic support closure as data recovery, or later named sources as historical lineage. Keep the withdrawn credential route withdrawn."
     }
   ],
   "continuation_automation": {
