@@ -62,7 +62,10 @@ export async function verifyReviewedLaboratoryPresentation(page,{waitForRoute,ev
       if(await selected.count()!==1)fail('collection-card');
       const expectedRaw=`${target.raw} ${target.unit}`;
       if(await selected.locator('strong').innerText()!==expectedRaw)fail('collection-value');
-      if(target.reference&&!(await selected.innerText()).includes(`Referência do laudo: ${target.reference}`))fail('collection-reference');
+      // innerText collapses source newlines under normal HTML whitespace.
+      // Compare the exact preserved reference text node, without rewriting the
+      // source or normalizing clinically meaningful characters in the audit.
+      if(target.reference&&!(await selected.locator('small').allTextContents()).includes(`Referência do laudo: ${target.reference}`))fail('collection-reference');
     }
     await page.locator('#productLabsCollection').scrollIntoViewIfNeeded();
     await page.screenshot({path:`${evidenceDir}/reviewed-labs-${viewport.width}-collection.png`,fullPage:true});
