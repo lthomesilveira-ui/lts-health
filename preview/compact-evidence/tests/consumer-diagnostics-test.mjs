@@ -34,6 +34,12 @@ state.domainStatus=Object.fromEntries(Object.keys(state.data).map(key=>[key,'rea
 state.errors={};state.ui={};
 state.polarConnection={status:'ready',configured:true,connected:true,update_mode:'scheduled_hourly',last_sync_at:'2025-04-11',last_scheduled_sync_at:'2025-04-11T12:00:00Z'};
 state.autoExportConnection={status:'ready',configured:true,received:true,last_received_at:'2025-04-10T12:00:00Z',last_metric_date:'2025-04-10',last_water_date:'2025-04-10'};
+const files=state.data.uploads;
+state.data.uploads=[];
+const noFileActions=htmlText(renderDataHub());
+assert.match(noFileActions,/Nenhum arquivo precisa ser reenviado/);
+assert.doesNotMatch(noFileActions,/Nenhuma ação sua é necessária|nenhuma decisão pendente/,'file status must not claim all integration work is complete');
+state.data.uploads=files;
 const original=structuredClone(state.data),coverage=sourceCoverageFor('apple_health');
 assert.deepEqual(coverage,{confirmedDate:'2025-04-10',preservedDate:'2025-04-12',latestDate:'2025-04-12'});
 assert.equal(sourceStatusFor('apple_health'),'ready');

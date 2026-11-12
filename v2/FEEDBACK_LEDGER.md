@@ -1,3 +1,9 @@
+## 2026-11-12 — Em validação: estados claros de conexões e arquivos, .131
+
+O pacote051 corrige duas mensagens: presença de configuração Google não é conta autorizada nem recebimento de água; ausência de arquivos para reenvio não significa ausência de pendências em todas as integrações. A apresentação usa estados específicos e não atribui configuração técnica ao usuário.
+
+Os contratos locais de conexão, ações de arquivo, linguagem e privacidade passaram. Gates responsivos, publicação e verificação exata ainda estão pendentes. Não há alteração de credenciais, escopos, autorização, criptografia, banco ou dados de saúde. As condições independentes de água, origem, histórico e aceite permanecem abertas. Detalhes: `v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md`.
+
 ## Administrative login verified; execution capacity blocks the protected update — 2026-11-08
 
 The owner's login-only Feito was verified in the same saved administrative profile. A read-only execution reached the exact dedicated project and existing server OAuth client; both identifiers match. It did not expose complete credentials, observe fresh masked secret suffixes or establish their enabled states, and it confirmed no edit, deletion, creation or server save. The provider stopped the execution at its capacity limit. A separate direct-browser attempt at the actually observed client URL returned Site Unavailable before login; it is an access limitation of that browser, not a provider bot block or approval rejection. Do not ask the owner to repeat the already completed login, infer current secret targets from older reports or launch another run without usable capacity.

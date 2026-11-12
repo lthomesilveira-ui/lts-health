@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-11",
+  "updated_on": "2026-11-12",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -14,7 +14,7 @@
     "data_contract": "v2/DATA_AUDIT.md",
     "current_handoff": "v2/CURRENT_HANDOFF.md",
     "functional_depth": "v2/FUNCTIONAL_DEPTH.md",
-    "latest_release": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md"
+    "latest_release": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
   },
   "status_definitions": {
     "done": "Critério de aceite comprovado por evidência registrada.",
@@ -50,29 +50,27 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-TAKEOUT-WATER-050",
-    "status": "done",
-    "goal": "Import source-proven positive daily hydration without changing existing source totals or completing the independent full-history request.",
+    "id": "PKG-CONNECTION-AND-FILE-STATUS-051",
+    "status": "in_progress",
+    "goal": "Use truthful, scoped integration and file states without technical setup requests or misleading completion claims.",
     "task_ids": [
-      "LTS-GOOGLE-TAKEOUT-WATER-001"
+      "LTS-GOOGLE-CONNECTION-LABEL-001",
+      "LTS-FILE-ACTION-SCOPE-001"
     ],
     "public_build": "health-integrated-20261111.130",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261112.131",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": true,
-    "started_on": "2026-11-11",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md",
-    "completed_on": "2026-11-11",
-    "candidate_commit": "364e9e5b645ed7217b79260621157ebd72bcb611",
-    "tested_tree": "d484dd08e10c5ebd66488a1d7e174105afde5fea",
-    "main_commit": "c6538c772b6d56c12408148a581d04e1eb1ec757",
-    "candidate_workflows_passed": 22,
-    "authenticated_audit_main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
-    "protected_actual_auth_run": 42950262629
+    "real_source_observations_changed": false,
+    "started_on": "2026-11-12",
+    "pending_gates": [
+      "Exact candidate responsive browser workflows",
+      "Normal merge and public deployment",
+      "Exact public runtime and protected read-only verification"
+    ],
+    "evidence_document": "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261111.130",
@@ -3820,7 +3818,7 @@
       "priority": "P0",
       "owner": "Codex",
       "status": "blocked_external",
-      "blocker": "The exact client ID is confirmed and its saved server secret fails both current listed-mask comparison and Google authentication. Secure Google sign-in succeeded, but Cloud Console still renders Site Unavailable in this browser. No protected credential change occurred; repeating sign-in is not the missing step.",
+      "blocker": "A supported credential-handling path that preserves the current privacy boundary is unavailable; do not repeat a risky rotation or present this as ordinary user setup.",
       "summary": "Reconcile actual current client credentials and repair the confirmed dedicated Google server authentication failure safely.",
       "acceptance": [
         "Reconfirm the exact existing client and current provider metadata; preserve the other enabled secret and never delete a mismatched or unverified target.",
@@ -3839,7 +3837,7 @@
         "A new strictly read-only access preparation ended after7 steps with authentication_required, without reading current secret metadata or changing settings. Direct browser preparation reached Supabase sign-in while the Google console page was unavailable in that browser. No existing approval was revoked or repeated.",
         "Owner login-only Feito verified: the same-profile read-only execution matched the dedicated project and client, then ended at provider execution capacity. No fresh masked suffix/status or credential mutation/save was confirmed. Direct browser access to the actual observed details URL returned Site Unavailable. No purchase, new owner grant or health-data write occurred."
       ],
-      "next_action": "Resume only when the administrative console is usable. Preserve the two currently enabled credentials until a concrete complete protected replacement route exists; verify a saved change before another credential probe or genuine app connection.",
+      "next_action": "Keep the integration unlinked until the credential can be installed through a supported protected mechanism; do not weaken security or expose the key.",
       "owner_input": "administrative_execution_capacity_or_protected_final_action"
     },
     {
@@ -3884,6 +3882,47 @@
         "The guarded native import and independent readback are preserved privately; existing canonical days are unchanged."
       ],
       "next_action": "Keep original source evidence private and preserve independent full-history, present-day and recurring-delivery criteria.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-GOOGLE-CONNECTION-LABEL-001",
+      "area": "connections",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "agent",
+      "summary": "Distinguish configured, authorized and received states without claiming Google readiness from credential presence.",
+      "acceptance": [
+        "An unlinked account never claims ready-to-connect or received hydration.",
+        "An authorized account is explicitly separate from a completed hydration read.",
+        "Unavailable configuration never promises active preparation or asks for technical setup.",
+        "Existing requests, scopes, redirects, credentials and private data remain unchanged."
+      ],
+      "evidence": [
+        "v2/production-connection-boundary-test.mjs",
+        "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
+      ],
+      "next_action": "Complete exact candidate browser gates, publication and verification.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-FILE-ACTION-SCOPE-001",
+      "area": "data",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "agent",
+      "summary": "Limit the Data Inbox action summary to file resubmission, rather than declaring all app work free of pending actions.",
+      "acceptance": [
+        "Zero failed uploads reports only that no file needs resubmission.",
+        "Unknown upload reads remain unavailable, and nonzero failures remain visible.",
+        "Quality observations and integration work are never declared complete by the file-only count.",
+        "Clinical records and upload statuses remain unchanged."
+      ],
+      "evidence": [
+        "preview/compact-evidence/tests/consumer-diagnostics-test.mjs",
+        "v2/real-auth-e2e.mjs",
+        "v2/releases/CONNECTION_AND_FILE_STATUS_20261112.md"
+      ],
+      "next_action": "Complete exact candidate browser gates, publication and verification.",
       "blocker": null
     }
   ],
@@ -5844,6 +5883,31 @@
       "last_published_diagnostic_commit": "a196596b393dbbd52486ef86d7d5b3e0bf74baa4",
       "deployed_backend_function": "health-google-scheduled",
       "deployed_backend_version": 5
+    },
+    {
+      "id": "PKG-GOOGLE-TAKEOUT-WATER-050",
+      "status": "done",
+      "goal": "Import source-proven positive daily hydration without changing existing source totals or completing the independent full-history request.",
+      "task_ids": [
+        "LTS-GOOGLE-TAKEOUT-WATER-001"
+      ],
+      "public_build": "health-integrated-20261111.130",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": true,
+      "started_on": "2026-11-11",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_TAKEOUT_WATER_20261111.md",
+      "completed_on": "2026-11-11",
+      "candidate_commit": "364e9e5b645ed7217b79260621157ebd72bcb611",
+      "tested_tree": "d484dd08e10c5ebd66488a1d7e174105afde5fea",
+      "main_commit": "c6538c772b6d56c12408148a581d04e1eb1ec757",
+      "candidate_workflows_passed": 22,
+      "authenticated_audit_main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
+      "protected_actual_auth_run": 42950262629
     }
   ],
   "latest_published_release": {

@@ -162,8 +162,13 @@ export function renderGoogleHealthConnection() {
   const reconnect = status?.last_error === 'authorization_expired';
   const label = !status ? (entry.pending ? 'Verificando' : 'A verificar')
     : reconnect ? 'Autorização expirada'
-    : status.connected ? 'Conta conectada'
-    : status.configured ? 'Pronta para conectar' : 'Em preparação';
+    : status.connected ? 'Conta autorizada'
+    : status.configured ? 'Conta não conectada' : 'Integração indisponível';
+  const statusMessage = !status ? 'Verifique a conexão para consultar a situação da conta.'
+    : reconnect ? 'A autorização precisa ser renovada para voltar a consultar os registros.'
+    : status.connected ? 'A autorização da conta e o recebimento de água são conferidos separadamente.'
+    : status.configured ? 'A conta Google ainda não foi conectada. Nenhum recebimento de água foi confirmado por esta conexão.'
+    : 'A integração Google ainda não está disponível. Os registros de água já existentes continuam no aplicativo.';
   const lastRead = status?.last_read_at ? new Date(status.last_read_at) : null;
   const disabled = entry.pending ? ' disabled' : '';
   const button = (action, caption) => `<button type="button" data-google-health-action="${action}"${disabled}>${caption}</button>`;
@@ -177,6 +182,6 @@ export function renderGoogleHealthConnection() {
       ${status?.connected ? button('disconnect', 'Desconectar do LTS Health') : ''}
       ${!status?.configured ? button('check', 'Verificar Google Health') : ''}
     </div>
-    <p class="footerNote" role="status">${esc(entry.message || (entry.pending ? 'Aguarde um instante.' : ''))}</p>
+    <p class="footerNote" role="status">${esc(entry.message || (entry.pending ? 'Aguarde um instante.' : statusMessage))}</p>
   </section>`;
 }
