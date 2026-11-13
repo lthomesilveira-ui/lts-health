@@ -144,15 +144,15 @@ async function surface(page,label,truth){
  for(let i=0;i<exercises.length;i++){
   const e=exercises[i],card=cards.nth(i),expected=sets.filter(s=>s.exercise_source_record_id===e.source_record_id).sort((a,b)=>a.set_index-b.set_index);
   check((await card.locator('header').innerText()).includes(e.exercise),'exercise-name');
+  if(e.notes){await card.locator('.ltsRefExerciseNotes > summary').click();check((await card.innerText()).includes(e.notes),'exercise-note');}
   const displayed=card.locator('.ltsRefSetTable > div');check(await displayed.count()===expected.length,'exercise-set-count');
   for(let j=0;j<expected.length;j++){
    const s=expected[j],r=displayed.nth(j),load=space(await r.locator('b').innerText());
    check(load===`${Number(s.weight).toLocaleString('pt-BR',{maximumFractionDigits:20})} ${s.weight_unit}`,'set-load');
    const reps=await r.locator('i').evaluate(el=>el.childNodes[0]?.textContent.trim());
    check(reps===String(s.reps_raw??s.reps_numeric),'set-repetitions');
-   if(s.technique)check((await r.innerText()).includes(s.technique),'set-execution-note');
+   if(s.technique)check((await r.innerText()).includes(s.technique)||(e.notes?.includes(s.technique)&&(await card.locator('.ltsRefExerciseNotes').innerText()).includes(s.technique)),'set-execution-note');
   }
-  if(e.notes){await card.locator('.ltsRefExerciseNotes > summary').click();check((await card.innerText()).includes(e.notes),'exercise-note');}
  }
  await capture(page,label,'workout-exercises');
  await page.locator('[data-depth-training-view="history"]').first().click();
