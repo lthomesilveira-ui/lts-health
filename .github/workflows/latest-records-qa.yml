@@ -1,0 +1,61 @@
+name: LTS Health Latest Records QA
+on:
+  pull_request:
+    paths: ['v2/latest-records-qa.mjs', 'v2/qa-latest-records-public.pem', '.github/workflows/latest-records-qa.yml']
+  push:
+    branches: [main]
+    paths: ['v2/latest-records-qa.mjs', 'v2/qa-latest-records-public.pem', '.github/workflows/latest-records-qa.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check v2/latest-records-qa.mjs
+  private-records:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    container: {image: 'mcr.microsoft.com/playwright:v1.56.1-noble'}
+    permissions:
+      contents: read
+      id-token: write
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install pinned test runtime
+        run: npm install --no-save playwright@1.56.1
+      - name: Obtain existing protected owner test session
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          OIDC_RESPONSE="$(curl -fsS --max-time 30 -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const f=require('fs');const x=JSON.parse(f.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
+          echo "::add-mask::$OIDC_TOKEN"
+          curl -fsS --max-time 30 -X POST -H "Authorization: Bearer $OIDC_TOKEN" 'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' -o /tmp/lts-health-latest-token.json
+          TOKEN_HASH="$(node -e "const f=require('fs');const x=JSON.parse(f.readFileSync('/tmp/lts-health-latest-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          echo "::add-mask::$TOKEN_HASH"
+          printf '%s' "$TOKEN_HASH" > /tmp/lts-health-latest-token-hash
+      - name: Verify current records in desktop and touch mobile
+        env: {HEALTH_RECORD_DATE: '2026-11-13'}
+        run: node v2/latest-records-qa.mjs
+      - name: Seal private visual evidence
+        if: always()
+        id: seal
+        run: node --input-type=module -e "import {readFileSync} from 'node:fs';import {sealEvidence} from './v2/seal-visual-evidence.mjs';console.log('Sealed images:',sealEvidence('v2/latest-records-evidence','v2/latest-records-encrypted',readFileSync('v2/qa-latest-records-public.pem')));"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.seal.outcome == 'success'
+        with:
+          name: latest-records-visual-encrypted
+          path: v2/latest-records-encrypted/*.sealed.json
+          if-no-files-found: warn
+          retention-days: 3
+      - name: Remove plaintext evidence and session material
+        if: always()
+        run: rm -rf v2/latest-records-evidence /tmp/lts-health-latest-token.json /tmp/lts-health-latest-token-hash
