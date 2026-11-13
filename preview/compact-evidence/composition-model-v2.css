@@ -106,3 +106,14 @@
 .ltsProgressPhotos [data-photos-list]{display:grid;gap:6px;list-style:none;margin:0;padding:0}
 .ltsProgressPhotos [data-photos-list] button{width:100%;text-align:left}
 .ltsProgressPhotos img{display:block;max-width:100%;max-height:52dvh;object-fit:contain;margin:8px auto 0;border-radius:12px}
+
+/* Give complete civil dates room beside native mobile select indicators. */
+@media(max-width:840px){
+  .ltsCompositionV2.ltsCompositionV2 .ltsPointReadout,
+  .ltsCompositionV2.ltsCompositionV2 .ltsCompareDisclosure .ltsFilters{grid-template-columns:minmax(0,1fr)!important}
+  .ltsCompositionV2.ltsCompositionV2 .ltsPointReadout>.ltsField,
+  .ltsCompositionV2.ltsCompositionV2 .ltsCompareDisclosure .ltsField{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+  .ltsCompositionV2.ltsCompositionV2 #productCompositionPoint,
+  .ltsCompositionV2.ltsCompositionV2 #productCompareA,
+  .ltsCompositionV2.ltsCompositionV2 #productCompareB{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+}
