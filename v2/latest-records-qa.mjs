@@ -88,6 +88,7 @@ async function surface(page,label,truth){
   check(row.includes(name)&&row.includes(f(seg[0][`lean_${key}_kg`],2))&&row.includes(f(seg[0][`fat_${key}_kg`],2)),'segmental-laterality-values');
  }
  await capture(page,label,'composition-detail');
+ await page.locator('.ltsSegmentTable').screenshot({path:`${evidenceDir}/${label}-region-table.png`});
  await page.locator('[data-depth-composition-back]').first().click();
  await page.locator('[data-composition-view="overview"]').waitFor();
 
@@ -108,16 +109,19 @@ async function surface(page,label,truth){
   check(comparison.includes(`${delta>0?'+':''}${f(delta)} ${unit}`),'comparison-delta');
  }
  await capture(page,label,'composition-comparison');
+ await page.locator('.ltsCompositionChart').screenshot({path:`${evidenceDir}/${label}-comparison-chart.png`});
+ await page.locator('.ltsCompareDisclosure').screenshot({path:`${evidenceDir}/${label}-comparison-values.png`});
  outcomes.push({surface:label,case:'composition-and-regions',passed:true});
 
  stage='medications';
  await route(page,'tratamentos','.protocolSummaryGrid');
- for(const event of truth.medications){
+ for(const [eventIndex,event] of truth.medications.entries()){
   const card=page.locator('.protocolSummaryCard').filter({has:page.locator('h3').getByText(event.medication,{exact:true})});
   check(await card.count()===1,'medication-card-unique');
   const text=space(await card.innerText()),p=event.source_payload||{};
   const site={abdomen:'abdômen',glute:'glúteo'}[p.site],side={left:'esquerdo',right:'direito'}[p.side];
   check(text.includes(dayText(date))&&text.includes(p.local_time)&&text.includes('Brasília')&&text.includes(`${site} ${side}`),'medication-time-site-side');
+  await card.screenshot({path:`${evidenceDir}/${label}-medication-${eventIndex}.png`});
  }
  await capture(page,label,'medications');
  outcomes.push({surface:label,case:'medication-time-and-side',passed:true});
@@ -136,6 +140,7 @@ async function surface(page,label,truth){
  for(const value of [w.calories_kcal,w.heart_rate_avg,w.heart_rate_min,w.heart_rate_max])check(summary.includes(f(value,0)),'polar-visible-metric');
  check(summary.toLocaleLowerCase('pt-BR').includes('energia estimada')&&summary.includes('Polar Flow'),'polar-estimate-and-source');
  await capture(page,label,'workout-summary');
+ await page.locator('.ltsRefHrPanel').screenshot({path:`${evidenceDir}/${label}-polar-source.png`});
 
  stage='workout-exercises';
  await page.locator('[data-depth-training-view="exercises"]').first().click();
@@ -153,6 +158,7 @@ async function surface(page,label,truth){
    check(reps===String(s.reps_raw??s.reps_numeric),'set-repetitions');
    if(s.technique)check((await r.innerText()).includes(s.technique)||(e.notes?.includes(s.technique)&&(await card.locator('.ltsRefExerciseNotes').innerText()).includes(s.technique)),'set-execution-note');
   }
+  await card.screenshot({path:`${evidenceDir}/${label}-exercise-${String(i+1).padStart(2,'0')}.png`});
  }
  await capture(page,label,'workout-exercises');
  await page.locator('[data-depth-training-view="history"]').first().click();
