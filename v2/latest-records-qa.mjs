@@ -1,4 +1,5 @@
 import {readFileSync,mkdirSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {chromium,webkit} from 'playwright';
 
 // Read-only verification of a pinned record day against the deployed app.
@@ -7,6 +8,7 @@ const appUrl='https://lthomesilveira-ui.github.io/lts-health/v2/';
 const evidenceDir='v2/latest-records-evidence';
 const date=process.env.HEALTH_RECORD_DATE;
 const expectedBuild=/name="lts-build" content="([^"]+)"/.exec(readFileSync('v2/index.html','utf8'))?.[1];
+const expectedIndexDigest=createHash('sha256').update(readFileSync('v2/index.html')).digest('hex');
 const tokenHash=readFileSync('/tmp/lts-health-latest-token-hash','utf8').trim();
 if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')||!tokenHash||!expectedBuild)throw Error('qa-configuration');
 mkdirSync(evidenceDir,{recursive:true});
@@ -60,6 +62,16 @@ async function capture(page,surface,name){
  await layout(page,`${name}-layout`);
  await page.screenshot({path:`${evidenceDir}/${surface}-${name}.png`,fullPage:true});
 }
+async function completeDateControls(page){
+ const fit=await page.locator('#productCompositionPoint,#productCompareA,#productCompareB').evaluateAll(selects=>selects.every(select=>{
+  const style=getComputedStyle(select),canvas=document.createElement('canvas'),context=canvas.getContext('2d');
+  context.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const required=context.measureText(select.selectedOptions[0]?.textContent||'').width;
+  const available=select.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-24;
+  return available>=required+2&&select.getBoundingClientRect().height>=44;
+ }));
+ check(fit,'complete-native-date-controls');
+}
 async function surface(page,label,truth){
  const latest=truth.body.filter(r=>r.measured_at===date);
  check(latest.length===1,'body-unique');
@@ -108,6 +120,7 @@ async function surface(page,label,truth){
   const delta=Number(body[key])-Number(previous[key]);
   check(comparison.includes(`${delta>0?'+':''}${f(delta)} ${unit}`),'comparison-delta');
  }
+ await completeDateControls(page);
  await capture(page,label,'composition-comparison');
  await page.locator('.ltsCompositionChart').screenshot({path:`${evidenceDir}/${label}-comparison-chart.png`});
  await page.locator('.ltsCompareDisclosure').screenshot({path:`${evidenceDir}/${label}-comparison-values.png`});
@@ -168,6 +181,12 @@ async function surface(page,label,truth){
 }
 
 try{
+ stage='published-assets';let published=false;
+ for(let attempt=0;attempt<35;attempt++){
+  try{const response=await fetch(`${appUrl}?latest-records-release=${Date.now()}`,{signal:AbortSignal.timeout(5000)});if(response.ok&&createHash('sha256').update(await response.text()).digest('hex')===expectedIndexDigest){published=true;break;}}catch{}
+  await new Promise(resolve=>setTimeout(resolve,3000));
+ }
+ check(published,'exact-public-index');
  stage='authentication';browser=await chromium.launch({headless:true});
  const context=await browser.newContext({viewport:{width:1440,height:1000},timezoneId:'America/Sao_Paulo'});contexts.push(context);
  let mutations=0,runtimeErrors=0;
