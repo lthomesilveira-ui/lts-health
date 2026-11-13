@@ -134,7 +134,7 @@ async function surface(page,label,truth){
  const telemetry=truth.evidence.filter(e=>e.workout_source_record_id===w.source_record_id&&e.evidence_kind==='telemetry'&&e.evidence_status==='confirmed');
  check(telemetry.length>0,'polar-evidence-present');
  for(const value of [w.calories_kcal,w.heart_rate_avg,w.heart_rate_min,w.heart_rate_max])check(summary.includes(f(value,0)),'polar-visible-metric');
- check(summary.includes('Energia estimada')&&summary.includes('Polar Flow'),'polar-estimate-and-source');
+ check(summary.toLocaleLowerCase('pt-BR').includes('energia estimada')&&summary.includes('Polar Flow'),'polar-estimate-and-source');
  await capture(page,label,'workout-summary');
 
  stage='workout-exercises';
