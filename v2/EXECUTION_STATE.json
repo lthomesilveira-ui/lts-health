@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-12",
+  "updated_on": "2026-11-14",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,35 +50,26 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-OWNER-BROWSER-VALIDATION-052",
-    "status": "done",
-    "goal": "Verify the requested owner flows with real authenticated data in desktop Chromium and touch mobile WebKit, fixing only demonstrated defects.",
+    "id": "PKG-FULL-PRODUCT-AUDIT-053",
+    "status": "in_progress",
+    "goal": "Reconcile recovered owner requests against actual authenticated journeys and fix demonstrated UI defects without reopening completed data proofs.",
     "task_ids": [
-      "LTS-OWNER-BROWSER-VALIDATION-001"
+      "LTS-TIMELINE-TYPED-LABELS-001",
+      "LTS-REPORT-SOURCE-RECOVERY-001"
     ],
     "public_build": "health-integrated-20261112.133",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261114.134",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-12",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
-    "prior_runtime_candidate_workflows_passed": 19,
-    "prior_protected_actual_auth_run": 43302272288,
-    "completed_on": "2026-11-12",
-    "candidate_commit": "a765b6e0478ce3f16520b16acc5b6747214a413e",
-    "tested_tree": "e89a1e90fb27a9a5ec166cfd7d530d0adfbf65d9",
-    "runtime_promotion_commit": "3e8b0b890ac8e4a009b5bff2af09a2851caddfe2",
-    "protected_actual_auth_run": 43308148800,
-    "protected_owner_cases_passed": 10,
-    "candidate_workflows_passed_at_completion": 18,
-    "candidate_workflows_total": 19,
-    "broader_ci_running_at_completion": [
-      43307262721
+    "started_on": "2026-11-14",
+    "pending_gates": [
+      "exact-candidate desktop/mobile browser gates",
+      "public deploy and same-session inspection"
     ],
+    "evidence_document": "v2/reviews/FULL_PRODUCT_AUDIT_20261114.md",
     "physical_device_tested": false,
     "owner_acceptance_granted": false
   },
@@ -3993,6 +3984,61 @@
       "next_action": "Preserve the ten protected owner-flow regressions and completed original proofs. Do not repeat a phone checklist or conflate browser verification with physical-device, historical-source or owner acceptance.",
       "blocker": null,
       "completed_on": "2026-11-12"
+    },
+    {
+      "id": "LTS-TIMELINE-TYPED-LABELS-001",
+      "area": "Owner-requested product audit",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Identify recorded average heart rate and oxygen saturation instead of a generic metric label.",
+      "blocker": null,
+      "acceptance": [
+        "Known supported types have precise Portuguese labels while value, unit, origin, status and observation identity remain unchanged.",
+        "Exact candidate desktop/mobile gates and actual published authenticated Timeline pass."
+      ],
+      "evidence": [
+        "Observed directly in the real authenticated published .133 during the full audit.",
+        "Scoped presentation patch and unit/source/nonmutation contracts passed; browser/publication gates remain pending."
+      ],
+      "next_action": "Complete candidate browser gates, deploy only the tested tree and verify in the current authenticated public session."
+    },
+    {
+      "id": "LTS-REPORT-SOURCE-RECOVERY-001",
+      "area": "Owner-requested product audit",
+      "priority": "P1",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Expose a direct explicit diary-selection recovery from a report with no values in the chosen origin.",
+      "blocker": null,
+      "acceptance": [
+        "Show a recovery only when another loaded origin has usable observations; never silently change the chosen source.",
+        "The actual control opens its existing native source workspace, focuses its picker and preserves the reporting period.",
+        "No recovery button appears in PDF output or on a failed coverage read; use natural singular/plural origin labels.",
+        "Exact candidate desktop/mobile gates and actual published authenticated recovery pass."
+      ],
+      "evidence": [
+        "Observed directly in the real authenticated published .133 during the full audit.",
+        "Scoped presentation patch and unit/source/nonmutation contracts passed; browser/publication gates remain pending."
+      ],
+      "next_action": "Complete candidate browser gates, deploy only the tested tree and verify in the current authenticated public session."
+    },
+    {
+      "id": "LTS-MFP-PHOTOS-001",
+      "area": "Optional provider photo import",
+      "priority": "P2",
+      "owner": "Codex",
+      "status": "accepted_gap",
+      "summary": "The separate MyFitnessPal-photo import was conditional on a simple supported route; it has not been implemented.",
+      "blocker": "Recovered owner request permits deferral when complex; available exports/bridge provide no photo payload. The private Composition photo workspace is a separate implemented feature.",
+      "acceptance": [
+        "Use only an authentic supported photo source; do not infer images from nutrition totals or classify progress-photo support as MFP import."
+      ],
+      "evidence": [
+        "Recovered owner message dated 2026-11-04 asks for MFP photos only if not complex, and separately requests optional progress photos.",
+        "The actual published progress-photo workspace opens and reads its private listing; no genuine photo upload was manufactured during this audit."
+      ],
+      "next_action": "Keep explicitly deferred; resume only if a supported authentic photo source becomes available without another service or recurring manual work."
     }
   ],
   "package_history": [
@@ -13083,5 +13129,38 @@
       "real_hydration_verified": false,
       "evidence_document": "v2/releases/GOOGLE_CLIENT_CREDENTIAL_REPAIR_20261108.md"
     }
-  ]
+  ],
+  "prior_verified_package_052": {
+    "id": "PKG-OWNER-BROWSER-VALIDATION-052",
+    "status": "done",
+    "goal": "Verify the requested owner flows with real authenticated data in desktop Chromium and touch mobile WebKit, fixing only demonstrated defects.",
+    "task_ids": [
+      "LTS-OWNER-BROWSER-VALIDATION-001"
+    ],
+    "public_build": "health-integrated-20261112.133",
+    "candidate_build": null,
+    "runtime_changed": true,
+    "frontend_runtime_changed": true,
+    "server_runtime_changed": false,
+    "clinical_runtime_changed": false,
+    "real_source_observations_changed": false,
+    "started_on": "2026-11-12",
+    "pending_gates": [],
+    "evidence_document": "v2/releases/OWNER_BROWSER_VALIDATION_20261112.md",
+    "prior_runtime_candidate_workflows_passed": 19,
+    "prior_protected_actual_auth_run": 43302272288,
+    "completed_on": "2026-11-12",
+    "candidate_commit": "a765b6e0478ce3f16520b16acc5b6747214a413e",
+    "tested_tree": "e89a1e90fb27a9a5ec166cfd7d530d0adfbf65d9",
+    "runtime_promotion_commit": "3e8b0b890ac8e4a009b5bff2af09a2851caddfe2",
+    "protected_actual_auth_run": 43308148800,
+    "protected_owner_cases_passed": 10,
+    "candidate_workflows_passed_at_completion": 18,
+    "candidate_workflows_total": 19,
+    "broader_ci_running_at_completion": [
+      43307262721
+    ],
+    "physical_device_tested": false,
+    "owner_acceptance_granted": false
+  }
 }
