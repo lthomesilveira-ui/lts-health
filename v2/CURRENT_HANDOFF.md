@@ -1,3 +1,28 @@
+## 2026-11-14 — Passagem reconciliada com as correções de 13/11
+
+Este adendo corrige a defasagem documental da passagem; não representa nova publicação nem nova execução de testes. A versão funcional permanece .133. Nenhum dado pessoal, conteúdo de registro ou evidência visual privada é reproduzido aqui.
+
+### Evidência posterior ao checkpoint de 12/11
+
+- PR539 preserva a verificação das observações completas pelo controle existente.
+- PR540 amplia a captura das regiões completas no formato móvel.
+- PR541 corrige o encaixe das datas completas de composição nos controles nativos móveis, preservando .133.
+- O merge de PR541 é `91b9638aee56c13dff90f2e9b75a3c1891be4e0d`.
+- A execução [Latest Records QA 43521921988](https://github.com/lthomesilveira-ui/lts-health/actions/runs/43521921988), vinculada exatamente a esse commit, foi relida pela API em 14/11: `completed/success`, concluída em 13/11 às 22:47:06 UTC. Isso é conferência de evidência existente, não repetição dos testes.
+- O workflow utiliza a sessão protegida existente para a validação em desktop e formato móvel, cifra as capturas e remove os arquivos temporários de sessão/evidência. Não há alegação de teste em iPhone físico ou aceite final do titular.
+
+### Continuidade sem refazer trabalho
+
+Preservar as correções e os registros já validados. Não repetir importações, verificações inalteradas ou pedir ao titular testes técnicos já cobertos. O `EXECUTION_STATE.json` ainda contém o pacote e a evidência histórica de 12/11; eles permanecem válidos como histórico, mas não devem ocultar os merges e a execução posterior acima.
+
+As dependências de água, credencial Google, recorrência e fontes históricas mantêm seus critérios originais. O sucesso deste QA não comprova reparo da credencial, leitura nova de água, recuperação de origem ausente ou recuperação do corpo de um envio antigo rejeitado. Ausência de dado não é consumo zero.
+
+O bloqueio de uma integração não bloqueia, por definição, novas melhorias demonstráveis nas áreas com dados já aceitos. Antes de uma nova entrega, comparar o comportamento atual com o briefing, registrar uma lacuna concreta e seu critério de aceite, e testar somente o escopo afetado. Não criar melhorias fictícias ou repetir builds para diminuir artificialmente a fila. Não reativar mensagens automáticas nos chats.
+
+### Escopo desta revisão
+
+Somente este adendo de continuidade. Sem alteração de runtime, banco, registros, credenciais, permissões, automações ou publicação. Os checkpoints anteriores abaixo são preservados integralmente.
+
 ## 2026-11-12 — Validação autônoma concluída em navegador, .133
 
 Os cinco fluxos pedidos passaram com dados reais e sessão autenticada em Chromium1440×1000 e WebKit móvel390×844 com toque emulado: períodos30/90 e gráficos, treino/séries/retorno, ponto de exame/contexto completo, água histórica/ausência recente e recebimentos/estados. A rotina protegida43308148800 passou e cifrou54 capturas. A correção contém o seletor nativo de séries no WebKit e restaura sua seta; os verificadores aguardam dados/tela de forma síncrona. Publicação e bytes exatos conferidos; o merge3e8b0b890ac8e4a009b5bff2af09a2851caddfe2 preserva a árvore testada.
