@@ -1,0 +1,30 @@
+name: LTS Health audit regressions
+on:
+  pull_request:
+    paths: ['v2/src/**', 'v2/audit-regressions*.mjs', 'preview/compact-evidence/src/**', '.github/workflows/audit-regressions.yml']
+permissions:
+  contents: read
+jobs:
+  synthetic-audit-regressions:
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node v2/audit-regressions-test.mjs
+      - run: npm install --no-save playwright@1.56.1
+      - name: Serve synthetic application
+        run: |
+          python3 -m http.server 4173 >/tmp/health-audit-http.log 2>&1 &
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4173/preview/compact-evidence/ >/dev/null && break; sleep 1; done
+      - run: node v2/audit-regressions-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-regressions-synthetic-evidence
+          path: audit-regressions-synthetic
+          retention-days: 7

@@ -23,7 +23,7 @@ const manifest={
     "data.css": "e9a188d6ae64f55c1dceb5f4817e84d6a5bf990f4ef2e8dfb1c286e930b36aaa",
     "details.css": "9dc9aba99add9f399f395bf9312c0db6b690a21739cba44e38036d24f1df8eb0",
     "domain-reference-parity-20260914.css": "1de1275a52a7af5d07bd6a0a74f8cb0badd7d57969f91c92ef3e8d1cdab7cde1",
-    "entry.css": "23ba5d1009c24c6d73811a6e27cf7cd55ec2868679039bae1853d75a57796766",
+    "entry.css": "5761b4eae65e76fc0a980f6ee45fa40aa4131841695c066090ed60876e461713",
     "evidence-priority.css": "a2de4cffa12b132bc6d610672f602b6db2f83950c88a04e0b51de27f2f3c36ba",
     "evolution-access.css": "13ade8c7da88fbb2342fa1ba3031d5a5ee0bae93ac232a05ccf7f4477e41021b",
     "evolution-product.css": "ebf799bf7d7779e3d8ca79c1f51c4cfca3408739ae257c0b5d128bc6c4fb69dc",
@@ -66,7 +66,7 @@ const manifest={
     "src/body-interval-view.js": "59b21ecf7f6bab1da1ee5f0e6362e7cd5c1a3390b27c46953ac4062c2af7c7c8",
     "src/calendar-report-highlights.js": "3cccf50528715fe13fee11c016694f339358ecb0e7bea12344e1b31c2de614e7",
     "src/calendar-report-model.js": "d26e5eff6d5aea8187050b1aa4d547de8eb5bcf0a2710f265995c28fb91ecb85",
-    "src/calendar-report-overview.js": "8b4a6d271d4f10170af7fe84b36adae0157d410118eaeb8adce688ed795dfb7d",
+    "src/calendar-report-overview.js": "fadae161e7244f50e79dab5a28557d84684cfce746947c199a3bf4a0c71fa823",
     "src/calendar-report-view.js": "4e216354b48bbc3de827d995bd2657fef2e99d87821e87820650a88c8b2a096d",
     "src/care-followup.js": "d27adde998c8a5c643c357c22e010206f1abf3ac819479832e3cacc115d5c7e8",
     "src/composition-layout-v2.js": "4e35edff6cca8e13b3ef7efa98f9d51432c4b1c84d574f412f3adb285eab56c0",
@@ -78,7 +78,7 @@ const manifest={
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
     "src/documented-training-plan.js": "6d0d1415c129327585047b8e8c3477ddcec178fdb8c4c9ad43a25524a56d3bf5",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
-    "src/entry.js": "27e9496ab4f3c855615c9fb655868513a87a140e55ef3b6c11419396cc1491d2",
+    "src/entry.js": "ecb2ae8192b6842e770fd472acb11280c7f5851be5385250a9dbc833547a636c",
     "src/evidence-insights-view.js": "b2dababf8c8ae008af62c3f49362e9e2f62173653eb566dec5504c28a58a6141",
     "src/evidence-insights.js": "46fd88e8c3d7be0ab6de361201581d5a6cab1c4ee785ebf3f53f2bac9387f1a3",
     "src/evidence-priority.js": "a35801fda348552067a5e334643b364ad75304db92c72494325f2c83b275a47a",
@@ -123,7 +123,7 @@ const manifest={
     "src/labs-layout-v2.js": "a542692d77fbc1552644ab7e88c1bf9568ffea0fbc2da22f851df2a65c9238b0",
     "src/longitudinal-model.js": "c06b9b2502b1ac95158076f65c2f352348bd787bc27842a8d9cb4bbc2f53fe84",
     "src/longitudinal-story.js": "d2b764d06c1073f0ae57e49290c8e39609ea2095ce6533cc9e8f99ade0c35c12",
-    "src/main.js": "8d497ba65dd8bb1c316c3a2cf56b6a06d8e1610d776ce4af648b6da00d9c9101",
+    "src/main.js": "3b4a76cfa7f29e5bc2638b048fbcf1b25a4cfc7cee7fd5fa743b39da8d54aaab",
     "src/progress-photos.js": "a634ba17cab35b6581de797aab2569367c8f745b6b56285f1f1355ccedafaca3",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
     "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
@@ -147,11 +147,11 @@ const manifest={
     "src/shell-accessibility.js": "fd6f3c38276ee014523ca2e72a234157daa43c62e6da6f7d202c041228ff77b5",
     "src/source-display.js": "319c9f7061543315fffefaaa27dc9f8c3450ce0d12626dcfe2c6fd6c5ff3e6e8",
     "src/source-status.js": "874f4d35beac15871b63a1b1ad18aa977984625c0feebbedf0f8caef86822a11",
-    "src/source-window-view.js": "59d3723f62eec1f0eb7390c8a27ff0b61851798dbd071d8ab6f624e79635a0eb",
+    "src/source-window-view.js": "84a30d5a0c1ddc262ead5a6fa16bff6fc75d372ce3495e461a19f8958fe08730",
     "src/steps-evidence-view.js": "fe5ce4e8299e684b7061b49ace897bd115afb3fc4e64bdcdf759e20b6e528b6b",
     "src/steps-evidence.js": "288fe0eaa92554e6e99d1a7bf4a5c00feaeacaa3c0eea706b219fab35a9f20da",
     "src/study-findings.js": "112a5925feb0fcb9267e6c1d5483f9b1ee1befcfc7444336cbe1b603ab550e80",
-    "src/timeline-screen.js": "5860f6f35a7a17e30c890de70cffea102210b0fe4fe5749b95e0b6e1fdbf92e9",
+    "src/timeline-screen.js": "24119d77bc98e60bc4fcb8cb2b6f70aff00c5f4bfccc2abc81d920173ac79e42",
     "src/today-screen.js": "0686db7acb46bd8147e9c5bf8aa6e30d2bd5f670fdfa0e1a1c5eab397bf4313c",
     "src/training-comparability.js": "29cbde79fed598028c4fffcf6789d8793909b7df64c9f7bec31c2a3a8919cc99",
     "src/training-history.js": "b1e565b2d74d07a3be82958ac08cff3f4161909735cabd12d7dee32e09552e55",
@@ -197,7 +197,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261112\.133/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261114\.134/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261112.133'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
