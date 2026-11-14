@@ -1,6 +1,6 @@
 # Full product audit — 2026-11-14
 
-Status: candidate .134; not published or accepted yet. The frozen .133 source is preserved at main `91b9638aee56c13dff90f2e9b75a3c1891be4e0d`. Existing laboratory, Polar-link and latest-record proofs are not reopened. No clinical or source records are changed.
+Status: .134 published and technically verified; overall owner and physical-device acceptance remain separate. The frozen .133 source is preserved at main `91b9638aee56c13dff90f2e9b75a3c1891be4e0d`. Existing laboratory, Polar-link and latest-record proofs are not reopened. No clinical or source records are changed.
 
 ## Authority and concurrency
 
@@ -39,9 +39,9 @@ The complete task-level expected outcomes, evidence and next actions remain in E
 - Keep recovery controls out of PDF output and failed-coverage states. Correct the alternate-origin singular/plural wording.
 - .134 uses fresh asset keys. .133 remains in Git history with all existing validations.
 
-## Validation still required
+## Completed scoped validation
 
-Local typed-label/source-recovery/nonmutation, integration parity, calendar view and 42 calendar model checks passed. Candidate Chromium and WebKit desktop/mobile interaction, source integrity, zero-write checks, readable screenshots, exact-tree promotion and authenticated public verification remain pending. No code-only or automated-only completion claim is made.
+Local typed-label/source-recovery/nonmutation, integration parity, calendar view and 42 calendar model checks passed. The exact candidate passed21/21 workflows and six Chromium/WebKit320/390/1440 cases. Verified artifact14116993035 SHA2564058e7208bf080c042c497c7952fc74b3490b1fabe62be22ca257e65b87b52ba contains the synthetic evidence. Normal PR543 merge7fbe111b0295dbc7a5326b1b357405bf6f396857 preserves tested tree715cb505eb47ed15fe701eb1eb1725be80242279; deploy43604067956 succeeded. Published source bytes match the tested files. Real authenticated desktop source recovery, Timeline labels, clean entry dialog and stable icon entry were manually inspected. Protected real-auth43604067943 passes10/10 desktop Chromium/touch mobile WebKit owner cases and full histories; artifact14118270111 SHA25652c2cc864f72e0b18878ecd30af2d71a981da191bbbc3af404c498885b3deea6 is encrypted. The three newly observed defects are closed only in this bounded scope. No code-only or automated-only completion claim is made.
 
 ## Preserved boundaries
 
@@ -56,3 +56,9 @@ Candidate d0413cc83273dd65d227321d29a697dc2bcf09d4 was not promoted. Preview/pla
 A direct authenticated narrow-browser inspection of the real entry dialog found unreadable inherited dark fields against the light product theme, nine-pixel labels, native series selectors below44px, unnamed series fields and modal z60 below navigation z80. The candidate adds a scoped light dialog, readable labels, explicit series names,44px controls, safe narrow layout and modal stacking. Save logic, field names and serialized values are unchanged. A synthetic browser journey and actual post-deploy dialog inspection are required; no production record will be fabricated to claim persistence.
 
 The first form candidate494862c37929ec7cacdbc7d0cd7fa910a188f769 passed all four narrow Chromium/WebKit cases. Its two desktop checks stopped because hidden navigation has CSS z-index auto, which the harness converted to NaN. The verifier now treats auto as the CSS zero stacking level while retaining the full mobile overlay assertion, contrast, label,44px, width, source and zero-write checks. Run43602467699 and its failure artifact remain preserved. Application source is unchanged by this verifier-only follow-up.
+
+## Final audit scope and remaining conditions
+
+The private control records all153 operational items and27 consolidated feedback requests with expected behavior, actual state, evidence and next action. Task totals are138 done,10 blocked_external,3 accepted_gap and2 superseded; these are operational criteria, not overall owner acceptance. Raw conversation retrieval remains partial. Previously validated15 laboratory proofs,25 Polar links and latest medication/composition/workout records are preserved. No new source row or provider authorization is inferred. Google protected configuration and historical source conditions remain open. No basic phone checklist or unsupported login-only request is issued. Administrative execution with a per-step charge was excluded under the no-new-expense instruction.
+
+Pre-promotion manual exploration covered the live owner cockpit, Evolution periods and source points, filtered Timeline return, training, Composition/photos, historical Nutrition, Reports/return, Protocols, Examinations and Data/Sources in desktop and narrow browser surfaces. Post-promotion manual targeted checks used1363x936; the protected automated mobile case is WebKit390x844 and the synthetic correction cases are320/390/1440. None is a physical-iPhone claim.
