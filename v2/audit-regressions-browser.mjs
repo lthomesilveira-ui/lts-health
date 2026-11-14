@@ -26,6 +26,15 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
   await page.clock.setFixedTime(new Date(`${CALENDAR_TODAY}T15:00:00Z`));
   try{
    await page.goto(base+'#analise');await page.locator('#calendarReport').waitFor();
+   await page.evaluate(async()=>{
+    const {state,fixtureMode}=await import('./src/core.js'),{isRouteReady}=await import('./src/data-layer.js');
+    const imports=JSON.parse(document.querySelector('script[type="importmap"]').textContent).imports;
+    const actual=await import(new URL(imports['./src/core.js'],document.baseURI).href);
+    if(actual.state!==state)throw new Error('QA must inspect the actual application core instance');
+    window.__languageApp={state,fixtureMode,isRouteReady};
+   });
+   await page.waitForFunction(()=>window.__languageApp.state.loaded&&window.__languageApp.isRouteReady('analise')&&document.querySelector('#calendarReport'));
+
    const originalData=await page.evaluate(()=>JSON.stringify(window.__historyDb));
    const selection=await page.evaluate(async()=>{
     const {state}=window.__languageApp,{calendarReport}=await import('./src/calendar-report-model.js');

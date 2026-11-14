@@ -46,3 +46,7 @@ Local typed-label/source-recovery/nonmutation, integration parity, calendar view
 ## Preserved boundaries
 
 No health-data write, reimport, schema, authorization, encryption-key, credential, source promotion or provider call is part of this patch. No service purchase, paid runner, new recurring job or message to a supplier is introduced. Physical iPhone, overall owner acceptance and automatic water retain their independent criteria.
+
+## First candidate verification retained
+
+Candidate d0413cc83273dd65d227321d29a697dc2bcf09d4 was not promoted. Preview/plan/integration gates correctly rejected stale expected asset hashes. The new browser harness failed before interactions because its explicit core probe was not installed. The follow-up updates the four exact asset hashes and installs/verifies the same core-instance probe as existing acceptance suites; no assertion, source boundary or UI rule is removed. Original failure runs 43601481963, 43601482018, 43601481822 and 43601482068 remain recorded.
