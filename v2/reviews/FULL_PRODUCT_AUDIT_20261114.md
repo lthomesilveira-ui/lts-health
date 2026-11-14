@@ -50,3 +50,7 @@ No health-data write, reimport, schema, authorization, encryption-key, credentia
 ## First candidate verification retained
 
 Candidate d0413cc83273dd65d227321d29a697dc2bcf09d4 was not promoted. Preview/plan/integration gates correctly rejected stale expected asset hashes. The new browser harness failed before interactions because its explicit core probe was not installed. The follow-up updates the four exact asset hashes and installs/verifies the same core-instance probe as existing acceptance suites; no assertion, source boundary or UI rule is removed. Original failure runs 43601481963, 43601482018, 43601481822 and 43601482068 remain recorded.
+
+## Additional genuine mobile defect
+
+A direct authenticated narrow-browser inspection of the real entry dialog found unreadable inherited dark fields against the light product theme, nine-pixel labels, native series selectors below44px, unnamed series fields and modal z60 below navigation z80. The candidate adds a scoped light dialog, readable labels, explicit series names,44px controls, safe narrow layout and modal stacking. Save logic, field names and serialized values are unchanged. A synthetic browser journey and actual post-deploy dialog inspection are required; no production record will be fabricated to claim persistence.

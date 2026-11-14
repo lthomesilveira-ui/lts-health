@@ -55,7 +55,8 @@
     "goal": "Reconcile recovered owner requests against actual authenticated journeys and fix demonstrated UI defects without reopening completed data proofs.",
     "task_ids": [
       "LTS-TIMELINE-TYPED-LABELS-001",
-      "LTS-REPORT-SOURCE-RECOVERY-001"
+      "LTS-REPORT-SOURCE-RECOVERY-001",
+      "LTS-ENTRY-READABILITY-001"
     ],
     "public_build": "health-integrated-20261112.133",
     "candidate_build": "health-integrated-20261114.134",
@@ -4039,6 +4040,25 @@
         "The actual published progress-photo workspace opens and reads its private listing; no genuine photo upload was manufactured during this audit."
       ],
       "next_action": "Keep explicitly deferred; resume only if a supported authentic photo source becomes available without another service or recurring manual work."
+    },
+    {
+      "id": "LTS-ENTRY-READABILITY-001",
+      "area": "Genuine mobile entry form",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Make entry forms readable, accessible and operable above mobile navigation.",
+      "blocker": null,
+      "acceptance": [
+        "Entry labels are readable; field text and backgrounds meet 4.5:1 contrast.",
+        "Series phase/load/unit/repetitions have explicit accessible names and native controls at least44px high.",
+        "The modal is above mobile navigation; narrow selectors fit and no page overflow is introduced.",
+        "Actual published authenticated form is inspected without fabricating a production record."
+      ],
+      "evidence": [
+        "Actual authenticated mobile .133 inspection found nine-pixel labels, dark text on a dark field surface, unnamed set controls and a dialog below the mobile navigation stacking layer."
+      ],
+      "next_action": "Pass exact-candidate desktop/mobile rendering and inspect the actual published clean entry dialog; preserve all save logic and source data."
     }
   ],
   "package_history": [

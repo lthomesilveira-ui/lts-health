@@ -68,6 +68,26 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),originalData);
    assert.deepEqual(traffic,{writes:[],external:[],errors:[]});
    await page.screenshot({path:`${dir}/${engine}-${width}-timeline-synthetic.png`,fullPage:false});
+   // Open the real entry renderer in its existing synthetic fixture mode.
+   // No form is submitted and no production identity or data is involved.
+   await page.goto('http://127.0.0.1:4173/v2/?fixture=1#treinos');
+   await page.locator('#routeAction:not(.hidden)').waitFor();await page.locator('#routeAction').click();
+   await page.getByRole('textbox',{name:'Carga da série 1',exact:true}).waitFor();
+   for(const [role,name] of [['combobox','Tipo da série 1'],['textbox','Carga da série 1'],['combobox','Unidade da carga da série 1'],['textbox','Repetições da série 1']]){
+    const control=page.getByRole(role,{name,exact:true}),box=await control.boundingBox();assert.ok(box.height>=44,name+' touch target');
+   }
+   await page.getByRole('combobox',{name:'Unidade da carga da série 1',exact:true}).selectOption('plate_index');
+   const geometry=await page.evaluate(()=>{
+    const luminance=color=>{const v=color.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{n/=255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4;});return .2126*v[0]+.7152*v[1]+.0722*v[2];};
+    const field=document.querySelector('.setEntry input'),css=getComputedStyle(field),a=luminance(css.color),b=luminance(css.backgroundColor);
+    const controls=[...document.querySelectorAll('.setEntry input,.setEntry select,.setEntry button')].map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,height:r.height};});
+    const select=document.querySelector('.setEntry select[name=weight_unit]'),sc=getComputedStyle(select),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=sc.font;
+    return{contrast:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),labelSize:Math.min(...[...document.querySelectorAll('#workoutEntryForm label')].map(el=>parseFloat(getComputedStyle(el).fontSize))),modalZ:Number(getComputedStyle(document.getElementById('entryModal')).zIndex),navZ:Number(getComputedStyle(document.getElementById('mobileNav')).zIndex),controls,selectFits:ctx.measureText(select.selectedOptions[0].textContent).width+parseFloat(sc.paddingLeft)+parseFloat(sc.paddingRight)+28<=select.clientWidth};
+   });
+   assert.ok(geometry.contrast>=4.5);assert.ok(geometry.labelSize>=14);assert.ok(geometry.modalZ>geometry.navZ);assert.ok(geometry.selectFits);
+   assert.ok(geometry.controls.every(r=>r.left>=0&&r.right<=width&&r.height>=44));
+   assert.deepEqual(traffic,{writes:[],external:[],errors:[]});
+   await page.locator('.setEntry').screenshot({path:`${dir}/${engine}-${width}-entry-synthetic.png`});
    results.push({engine,width,status:'passed',syntheticOnly:true,physicalIPhone:false,zeroWrites:true,observationsUnchanged:true});
   }catch(e){await page.screenshot({path:`${dir}/${engine}-${width}-failure-synthetic.png`}).catch(()=>{});results.push({engine,width,status:'failed',message:String(e.message),syntheticOnly:true});}
   finally{await context.close();writeFileSync(`${dir}/results.json`,JSON.stringify(results,null,2));}
