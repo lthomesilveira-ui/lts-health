@@ -7,6 +7,15 @@ const device=(steps=[2,4],id='synthetic-device',startTime='10:00:00',interval='6
 const payload=(devices=[device()],day=date)=>({activities:{activityDays:[{date:day,activitiesPerDevice:devices}]}});
 const copy=value=>structuredClone(value);
 const original=payload(),before=JSON.stringify(original),rows=await normalizeActivitySamples(original,owner,date);
+assert.deepEqual(await normalizeActivitySamples(original.activities,owner,date),rows,'the observed direct envelope and documented wrapped envelope preserve identical source observations');
+assert.deepEqual(await normalizeActivitySamples({activityDays:[]},owner,date),[]);
+const boundary=copy(original);boundary.activities.activityDays.push({...copy(boundary.activities.activityDays[0]),date:'2001-04-04'});
+assert.deepEqual(await normalizeActivitySamples(boundary,owner,date),rows,'an additional following boundary date must not leak into the requested day or double observations');
+for(const extraDate of ['2001-04-02','2001-04-05',date]){
+ const invalid=copy(original);invalid.activities.activityDays.push({...copy(invalid.activities.activityDays[0]),date:extraDate});
+ await assert.rejects(normalizeActivitySamples(invalid,owner,date),/provider_activity_schema/);
+}
+await assert.rejects(normalizeActivitySamples({...original,activityDays:original.activities.activityDays},owner,date),/provider_activity_schema/,'two competing envelopes must not be selected silently');
 assert.equal(JSON.stringify(original),before,'original provider payload is not modified');
 assert.equal(rows.length,1);assert.equal(rows[0].value,6);assert.equal(rows[0].unit,'count');
 assert.equal(rows[0].canonical_status,'held');assert.equal(rows[0].source_payload.coverage_verified,false);
@@ -27,6 +36,9 @@ const repeated=payload();repeated.activities.activityDays[0].activitiesPerDevice
 assert.equal((await normalizeActivitySamples(repeated,owner,date))[0].value,6,'identical repeated buckets cannot double the observed count');
 const two=await normalizeActivitySamples(payload([device([2]),device([9],'another-device')]),owner,date);
 assert.equal(two.length,2);assert.deepEqual(two.map(row=>row.value),[2,9],'devices remain separate');
+assert.deepEqual(await normalizeActivitySamples(payload([device([],''),device([2])]),owner,date),await normalizeActivitySamples(payload([device([2])]),owner,date),'an activity-only empty device reference cannot discard attributable step observations');
+assert.deepEqual(await normalizeActivitySamples(payload([device([], '')]),owner,date),[]);
+await assert.rejects(normalizeActivitySamples(payload([device([0],'')]),owner,date),/provider_activity_schema/,'even explicit zero buckets require a genuine device reference');
 const badPayloads=[{},payload([device([1.5])]),payload([device([null])]),payload([device([-1])]),payload([device([1], '', '10:00:00')]),payload([device([1],'synthetic-device','24:00:00')]),payload([device([1],'synthetic-device','23:59:30','60000')]),payload([device([1],'synthetic-device','10:00:00','0')]),payload([device([1])],'2001-04-04')];
 for(const p of badPayloads)await assert.rejects(normalizeActivitySamples(p,owner,date));
 const conflict=payload();conflict.activities.activityDays[0].activitiesPerDevice[0].activitySamples.push({stepSamples:{startTime:'10:00:30',interval:'60000',steps:[7]}});
@@ -35,6 +47,16 @@ assert.equal(projectActivityRows([{...rows[0],value:null}]).length,0);
 assert.doesNotMatch(JSON.stringify(projectActivityRows(rows)),/original_samples|original_device_id|synthetic-device/);
 assert.equal(hasActivityScope({scopes:['training_sessions:read','sleep:read']}),false);
 assert.equal(hasActivityScope({scopes:['training_sessions:read','sleep:read','activity:read']}),true);
+
+const privateMarker='private-provider-value-must-never-be-logged',schemaLogs=[],savedInfo=console.info;
+console.info=(...args)=>schemaLogs.push(args.join(' '));
+try{
+ for(const broken of [{[privateMarker]:privateMarker},{data:{items:[{date:privateMarker,[privateMarker]:privateMarker}]}},{activities:{activityDays:privateMarker}},payload([device([privateMarker],privateMarker)]),payload([device([1],privateMarker,privateMarker)])])await assert.rejects(normalizeActivitySamples(broken,owner,date),/provider_activity_schema/);
+}finally{console.info=savedInfo;}
+assert.ok(schemaLogs.some(line=>line.includes('activity_days')||line.includes('activity_envelope')));
+assert.ok(schemaLogs.some(line=>line.includes('sample_value')));
+assert.ok(schemaLogs.some(line=>line.includes('start_time')));
+assert.doesNotMatch(schemaLogs.join(' '),new RegExp(privateMarker+'|synthetic-owner|synthetic-device|original_samples|access_token'));
 
 function database({rev=revision,existing=[],failWrite=false}={}){
  const stored=new Map(existing.map(row=>[row.source_record_id,copy(row)])),writes=[];
