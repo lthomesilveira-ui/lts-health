@@ -1,4 +1,5 @@
-import {config,configured,service,consumeState,tokenExchange,saveAuthorization,callbackUrl,APP_URL} from '../_shared/polar-runtime.mjs';
+import {hasActivityScope} from '../_shared/polar-activity.mjs';
+import {config,configured,service,consumeState,tokenExchange,saveAuthorization,callbackUrl,APP_URL,syncPolar} from '../_shared/polar-runtime.mjs';
 
 const redirect=()=>new Response(null,{status:303,headers:{Location:`${APP_URL}#dados`,'Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
 const invalid=()=>new Response('A autorização Polar não foi concluída. Volte a Dados & fontes e inicie novamente.',{status:400,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
@@ -12,6 +13,8 @@ Deno.serve(async req=>{
     if(query.has('error'))return redirect();
     const code=query.get('code');if(!code||code.length>2048)return invalid();
     const token=await tokenExchange(c,{grant_type:'authorization_code',code,redirect_uri:callbackUrl(c)});
-    await saveAuthorization(db,c,userId,token);return redirect();
+    await saveAuthorization(db,c,userId,token);
+    if(hasActivityScope(token)){try{await syncPolar(db,c,userId,{activityOnly:true,activityDays:1});}catch{/* Consent remains valid if source data is unavailable. */}}
+    return redirect();
   }catch{return invalid();}
 });
