@@ -20,7 +20,7 @@ const manifest={
     "dashboard-parity.css": "c370a25ea7e501fc4bff32e5d9463cbcbb489f7cb6e026fbccf260485ea20826",
     "dashboard-pixel-parity.css": "391ee883ea04982dd5f8c133fd3621a64972f3e1b8bee093a4e3cf8772cfe639",
     "dashboard-reference-contract.css": "f6af7d09fa862026cf9fb2da3ea39e8abe9999e786d5199d5544b2f075ac7d93",
-    "data.css": "e9a188d6ae64f55c1dceb5f4817e84d6a5bf990f4ef2e8dfb1c286e930b36aaa",
+    "data.css": "31cbaf1ed83be78d0ce7f2e26a60f68a00a745b8912a4bf121c09cfa8d6d5d6b",
     "details.css": "9dc9aba99add9f399f395bf9312c0db6b690a21739cba44e38036d24f1df8eb0",
     "domain-reference-parity-20260914.css": "1de1275a52a7af5d07bd6a0a74f8cb0badd7d57969f91c92ef3e8d1cdab7cde1",
     "entry.css": "5761b4eae65e76fc0a980f6ee45fa40aa4131841695c066090ed60876e461713",
@@ -197,7 +197,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261114\.134/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261115\.135/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261112.133'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
