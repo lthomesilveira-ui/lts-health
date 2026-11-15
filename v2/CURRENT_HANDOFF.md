@@ -1,3 +1,56 @@
+## 2026-11-14 — Continuidade da .134; fontes ainda abertas
+
+A versão ativa é `health-integrated-20261114.134`. Os adendos anteriores que descrevem .133 são históricos: a entrega posterior comprovada prevalece. Esta passagem não é uma nova versão funcional nem reabre seus testes e dados.
+
+### Entrega preservada e concorrência
+
+- Main observado: `fe0c28082e4c55cf4a56d5f20a7c30b20a564806`; a .134 foi promovida no PR543 e seu registro foi concluído no PR544.
+- A candidata da correção passou21/21, a publicação passou24/24 e os dez fluxos protegidos de desktop/mobile passaram. Essas provas são preservadas, sem nova bateria de testes clínicos.
+- A sessão real existente foi reutilizada e mostra .134. Dados/Fontes distingue a conta Polar ativa, recebimentos gerais mais recentes e Google não conectado. Recebimento geral não comprova água automática.
+- A retomada não encontrou workflow ativo. O único PR aberto era este rascunho542, limitado à passagem. Seu adendo anterior foi preservado abaixo e reconciliado com main por merge normal, sem force.
+- Permanecem153 itens:138 com critérios específicos comprovados,10 bloqueados,3 lacunas explícitas e2 alternativas substituídas. Não há item funcional ready ou in_progress. Não contar este reparo documental como resolução de fonte ou funcionalidade.
+
+### Cobertura dos pedidos ainda parcialmente recuperados
+
+A busca foi limitada aos pedidos posteriores ao último bloco consolidado de feedback. O mecanismo devolveu referências estruturadas com datas e também trechos de outro projeto, que foram descartados. Isso não equivale a transcrição literal completa.
+
+| Pedido recuperável | Registro já existente | Situação desta retomada |
+| --- | --- | --- |
+| Relato original do treino e telemetria parcial (06/10) | LTS-LEGACY-WORKOUT-SOURCE-001; LTS-WORKOUT-PARTIAL-TELEMETRY-001 | Provas preservadas; sem reimportar ou completar por hipótese |
+| Relatórios profissionais, claros e legíveis no celular, mantendo a Home aprovada (26/10) | LTS-REPORT-LOWER-READING-001; LTS-CALENDAR-HIGHLIGHTS-001 | Entrega anterior preservada; não confundir nova reconciliação documental com nova correção |
+| Comparar treino e alimentação realizados com os planos recebidos (29/10) | LTS-TRAINING-PLAN-COMPARISON-001; LTS-NUTRITION-PLAN-ACCESS-001; LTS-PLAN-ORIGINAL-001 | Critérios e evidências anteriores mantidos |
+| Plano de treino apenas como referência, sem presumir adesão (29/10) | LTS-TRAINING-PLAN-COMPARISON-001 | Não converter referência em execução, prescrição ou adesão |
+| Ícone relacionado à saúde (29/10) | LTS-HEALTH-ICON-001 | Ícone e identidade de instalação preservados; sem alegação física nova |
+| Evitar confirmações e login repetidos (05/11) | Política de execução e bloqueio LTS-GOOGLE-CLIENT-CREDENTIAL-001 | Acesso existente reutilizado; nenhuma credencial ou aprovação repetida solicitada |
+
+O pedido condicional de fotos do MyFitnessPal permanece em LTS-MFP-PHOTOS-001 e não equivale à área de fotos de progresso. A proposta literal antiga dos quinze registros continua faltante, com seus próprios critérios, sem reabrir os resultados já conferidos.
+
+### Condições abertas: evidência nova e próximo passo
+
+| Item | Situação / próximo passo concreto |
+| --- | --- |
+| LTS-GOOGLE-CLIENT-CREDENTIAL-001 | Não existe operação nativa para transferência completa protegida do segredo. O recurso seguro do navegador recebe apenas credenciais de login. A entrada oficial alternativa do Google também não abre neste navegador. Falta uma sessão/execução administrativa capaz de abrir o cliente correto e instalar integralmente o valor no segredo existente do Supabase, sem expô-lo nem gerar cobrança. Não pedir só outro login, não repetir invalid_client e não rotacionar alvos não conferidos. |
+| LTS-HYD-IMPORT-001 | Histórico integral ainda depende de uma fonte autenticada com unidades válidas ou da consulta Google após a configuração e o consentimento válidos. Não reinterpretar a recuperação parcial como completude. |
+| LTS-WATER-UPSTREAM-STATUS-001 | Ainda falta uma leitura atribuível da água ausente. Os novos recebimentos gerais não fornecem essa evidência. |
+| LTS-WATER-RECURRENCE-001 | Após restaurar o caminho, comprovar uma atualização genuína identificada como automática; não pedir novo teste manual no telefone. |
+| LTS-BASAL-COVERAGE-001 | Há novos candidatos, mas faltam os dois limites originais do intervalo; não há cobertura diária comprovada. Preservar unidade/origem e aguardar evidência original de intervalo completo antes de qualquer cálculo total. |
+| LTS-SOURCE-LINEAGE-001 | Nenhuma atualização nova resolve as origens históricas. É necessário um registro original com origem ou um mapeamento estável independente. |
+| LTS-POLAR-HISTORY-001 | O arquivo reapresentado tem a mesma identidade já processada; falta início preciso ou identificador comum para a ligação legada. Não repetir parser nem vincular por data/valor. |
+| LTS-LAB-PROPOSAL-RECOVERY-001 | Nenhuma fonte original nova recupera a proposta exata. Retomar somente com o manifesto original, preservando os quinze resultados já validados. |
+| LTS-EXPORT-PAYLOAD-001 | Nenhuma evidência nova recupera o corpo/intervalo/configuração do envio antigo rejeitado. Retomar somente com o log original do aparelho ou fornecedor; não aumentar limites sem diagnóstico. |
+| LTS-OWNER-DELIVERY-20261025 | Aceite global e evidência física continuam separados das provas de navegador e dos bloqueios acima. Nenhum teste técnico foi delegado ao proprietário. |
+| LTS-DOCUMENTS-001 | É necessário o original correspondente para as entradas ainda sem arquivo; metadados não viram links presumidos. |
+| LTS-MEASUREMENTS-001 | É necessário um original adicional datado; não reconstruir medidas históricas. |
+| LTS-MFP-PHOTOS-001 | Adiamento condicional preservado até existir uma fonte autêntica simples, sem outro serviço ou rotina manual recorrente. |
+
+As consultas incrementais usaram o checkpoint privado anterior como corte. Não houve nova fonte pertinente nos arquivos modificados ou nas conversas de suporte após esse corte. A evidência específica e os limites permanecem no controle privado, sem valores pessoais neste repositório.
+
+A consulta Google preparada para14–25/10 usa fim exclusivo26/10, todas as fontes, paginação e preservação de unidades/origem. Não foi executada sem configuração e autorização válidas. Ausência não é zero.
+
+### Escopo e validação
+
+Somente reconciliação documental. Sem alteração de código de aplicação, versão, banco, importação, credencial, chave de criptografia, permissões, agenda ou despesas. Preservar os exames, vínculos Polar e registros já validados. Contratos documentais e comparação da árvore devem comprovar que os ativos da .134 são idênticos; o aplicativo foi conferido na sessão real existente, sem refazer a auditoria geral.
+
 ## 2026-11-14 — Passagem reconciliada com as correções de 13/11
 
 Este adendo corrige a defasagem documental da passagem; não representa nova publicação nem nova execução de testes. A versão funcional permanece .133. Nenhum dado pessoal, conteúdo de registro ou evidência visual privada é reproduzido aqui.

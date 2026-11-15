@@ -36,10 +36,10 @@ function bodyForm(){
 
 function setRow(exId,setId){
   return `<div class="setEntry" data-set-id="${setId}">
-    <select name="phase"><option value="working">Série</option><option value="warmup">Aquecimento</option><option value="other">Outro</option></select>
-    <input name="weight" inputmode="decimal" placeholder="Carga">
-    <select name="weight_unit"><option value="kg">kg</option><option value="lb">lb</option><option value="plate_index">índice da placa</option><option value="unitless">sem unidade</option></select>
-    <input name="reps" inputmode="decimal" placeholder="Reps">
+    <select name="phase" aria-label="Tipo da série ${setId}"><option value="working">Série</option><option value="warmup">Aquecimento</option><option value="other">Outro</option></select>
+    <input name="weight" inputmode="decimal" placeholder="Carga" aria-label="Carga da série ${setId}">
+    <select name="weight_unit" aria-label="Unidade da carga da série ${setId}"><option value="kg">kg</option><option value="lb">lb</option><option value="plate_index">índice da placa</option><option value="unitless">sem unidade</option></select>
+    <input name="reps" inputmode="decimal" placeholder="Reps" aria-label="Repetições da série ${setId}">
     <button type="button" class="iconBtn" data-remove-set aria-label="Remover série">×</button>
   </div>`;
 }

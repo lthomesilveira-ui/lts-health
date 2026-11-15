@@ -286,6 +286,12 @@ function bindStaticEvents(){
     const overviewBody=event.target.closest('[data-evolution-body]');if(overviewBody){state.ui.productCompositionRecord=overviewBody.dataset.evolutionBody;setRoute('bio',{replace:false});return;}
     const overviewExercise=event.target.closest('[data-evolution-exercise]');if(overviewExercise){state.ui.productExerciseId=overviewExercise.dataset.evolutionExercise;state.ui.productExercisePage=1;state.ui.productExerciseUnit=null;state.ui.productTrainingView='exercise';setRoute('treinos',{replace:false});return;}
     if(event.target.closest('[data-evolution-training]')){state.ui.productTrainingView='progress';setRoute('treinos',{replace:false});return;}
+    const calendarSourceJump=event.target.closest('[data-calendar-source-jump]');
+    if(calendarSourceJump&&['energy','protein','carbs','fat','fiber'].includes(calendarSourceJump.dataset.calendarSourceJump)){
+      const picker=document.getElementById(`calendar-source-${calendarSourceJump.dataset.calendarSourceJump}`);
+      if(picker){for(let parent=picker.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;picker.scrollIntoView({block:'center'});picker.focus({preventScroll:true});}
+      return;
+    }
     const calendarPrint=event.target.closest('[data-calendar-print]');if(calendarPrint){printCalendarReport(state.data,state.domainStatus,state.ui,undefined,{summary:calendarPrint.dataset.calendarPrint==='summary'});return;}
     const calendarChart=event.target.closest('[data-calendar-chart]');if(calendarChart&&['energy','protein','carbs','fat','fiber'].includes(calendarChart.dataset.calendarChart)){state.ui.calendarReportChart=calendarChart.dataset.calendarChart;render();return;}
     const calendarMode=event.target.closest('[data-calendar-mode]');if(calendarMode){const patch=updateCalendarReportSelection(state.ui,'mode',calendarMode.dataset.calendarMode);if(patch)Object.assign(state.ui,patch);render();return;}

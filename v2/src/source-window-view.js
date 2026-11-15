@@ -9,7 +9,7 @@ export function sourceWindowView(metric,{scope='dashboard',print=false,compact=f
   const coverage=source=>`${source.count??0}/${metric.expectedDays??0} dias${source.firstDate?` · ${date(source.firstDate)} a ${date(source.periodLastDate)}`:''}`;
   const mode=automatic?'Automática por cobertura no período; pode mudar ao trocar a janela.':'Origem escolhida por você; mantida ao trocar o período.';
   const empty=metric.requestedSourceMissing?'A origem escolhida não está disponível; nenhuma outra foi usada no lugar.':metric.count===0&&metric.otherSourcesWithData?'Sem valor utilizável nesta origem. Há registros em outra origem neste período.':'';
-  const alternatives=metric.otherSourcesWithData?`${metric.otherSourcesWithData} outra(s) origem(ns) com registros neste período. Consulte separadamente; não somamos dias nem valores entre origens.`:'';
+  const alternatives=metric.otherSourcesWithData?`${metric.otherSourcesWithData} ${metric.otherSourcesWithData===1?'outra origem':'outras origens'} com registros neste período. Consulte separadamente; não somamos dias nem valores entre origens.`:'';
   if(compact&&!print){
     // Keep the full origin readable even when a narrow select truncates its
     // option. Selection rules and empty/alternate states remain explicit.

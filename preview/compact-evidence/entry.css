@@ -2,3 +2,18 @@
 
 /* This surface exists before the account library and application modules load. */
 .appStartup{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px;background:#f5f7fb;color:#182d40}.appStartup[hidden]{display:none}.appStartupCard{width:min(420px,100%);padding:32px;border:1px solid #dce5ec;border-radius:22px;background:#fff;text-align:center;box-shadow:0 12px 40px #172e4010}.appStartupCard .brandMark{margin:0 auto}.appStartupCard h1{font-size:25px;margin:20px 0 12px}.appStartupCard p{font-size:15px;line-height:1.6;margin:10px 0}.appStartupCard #appStartupHelp{font-size:13px;color:#52697c}.appStartupCard button{min-height:44px;margin-top:16px;padding:12px 20px;border:0;border-radius:12px;background:#1466a5;color:#fff;font-size:15px;font-weight:700}.appStartupCard button[hidden]{display:none}
+
+/* The entry dialog has its own readable light surface above mobile navigation. */
+#entryModal{z-index:2000}
+#entryModal .entryPanel{background:#fff;color:#17324f;border-color:#c6d4e3}
+#entryModal .entryForm label,#entryModal .entrySectionHead small,#entryModal .setEntryHead span{font-size:14px;line-height:1.5;color:#435c75}
+#entryModal .entryForm input,#entryModal .entryForm select,#entryModal .entryForm textarea{background:#f8fafc;color:#17324f;border-color:#9db0c3;min-height:44px;font-size:16px;min-width:0}
+#entryModal .entryForm input::placeholder,#entryModal .entryForm textarea::placeholder{color:#52677c;opacity:1}
+#entryModal .exerciseEntry{background:#f5f8fc;border-color:#c6d4e3}
+#entryModal .exerciseEntryHead b{font-size:15px;color:#17324f}
+#entryModal .ghostSmall,#entryModal .iconBtn{min-height:44px;min-width:44px;font-size:14px;color:#17324f;background:#edf3fa;border-color:#9db0c3}
+#entryModal .entryForm .primary{min-height:48px}
+#entryModal .setEntry{grid-template-columns:minmax(140px,1.1fr) minmax(80px,1fr) minmax(170px,1.2fr) minmax(80px,1fr) 44px}
+#entryModal :is(input,select,textarea,button):focus-visible{outline:3px solid #176dc6;outline-offset:2px}
+@media(max-width:720px){#entryModal .setEntry{grid-template-columns:repeat(2,minmax(0,1fr))}#entryModal .setEntry .iconBtn{grid-column:2}}
+@media(max-width:460px){#entryModal .setEntry{grid-template-columns:minmax(0,1fr)}#entryModal .setEntry .iconBtn{grid-column:1}}
