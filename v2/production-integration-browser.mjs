@@ -260,6 +260,11 @@ for(const width of [320,393,1440]){
  assert.ok(mfpText.includes('pelo Saúde do iPhone até: 01/04/2001'));
  assert.ok(!mfpText.includes('02/04/2001'),'anonymous newer source cannot advance MyFitnessPal coverage');
  assert.equal(await page.getByText('Sessões recebidas do Polar até: 02/04/2001',{exact:true}).count(),1);
+ const connectionGrid=page.locator('[data-connections]>.sourceStatusGrid');
+ const gridBox=await connectionGrid.boundingBox(),connectionBoxes=await connectionGrid.locator(':scope>.sourceStatus').evaluateAll(nodes=>nodes.map(el=>({x:el.getBoundingClientRect().x,y:el.getBoundingClientRect().y,width:el.getBoundingClientRect().width})));
+ assert.equal(connectionBoxes.length,2,'both existing connection cards remain present');
+ assert.ok(connectionBoxes.every(box=>box.width>=gridBox.width*(width<=720?.95:.45)),'connection cards use their available panel width at '+width);
+ assert.equal(Math.abs(connectionBoxes[0].y-connectionBoxes[1].y)<1,width>720,'connection cards share a desktop row and stack on mobile');
  await page.screenshot({path:`artifacts/production-integration/source-history-${width}.png`,fullPage:true});
  await page.screenshot({path:`artifacts/production-integration/source-viewport-${width}.png`});
  await mfpCard.screenshot({path:`artifacts/production-integration/source-card-${width}.png`});
