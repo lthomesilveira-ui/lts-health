@@ -5,46 +5,67 @@ export const POLAR_ACTIVITY_SCOPE='activity:read';
 export const POLAR_ACTIVITY_FILE='Polar AccessLink v4 · amostras de passos';
 export const hasActivityScope=row=>Array.isArray(row?.scopes)&&row.scopes.includes(POLAR_ACTIVITY_SCOPE);
 const METHOD='polar_activity_samples_v1';
-const schemaError=()=>{throw Error('provider_activity_schema');};
+const kind=value=>value===null?'null':Array.isArray(value)?'array':typeof value;
+const shapeFields=['activities','activityDays','activityDates','data','dates','days','date','items','results','activity','list','errorMessage','message'];
+function structure(value,depth=0){
+  if(depth>4||!value||typeof value!=='object')return kind(value);
+  if(Array.isArray(value))return {kind:'array',count:value.length,...(value.length?{item:structure(value[0],depth+1)}:{})};
+  return {kind:'object',field_count:Object.keys(value).length,...Object.fromEntries(shapeFields.filter(key=>Object.hasOwn(value,key)).map(key=>[key,structure(value[key],depth+1)]))};
+}
+// Structural facts only: fixed schema field names and kinds; never values or raw bodies.
+const schemaError=(stage='samples',facts={})=>{console.info('polar_activity_schema',JSON.stringify({stage,...facts}));throw Error('provider_activity_schema');};
 function activityDays(payload){
-  if(!payload||typeof payload!=='object'||Array.isArray(payload)||!Array.isArray(payload.activities?.activityDays))schemaError();
-  const days=payload.activities.activityDays;
-  if(days.length>90||days.some(day=>!day||validDay(day.date)!==day.date))schemaError();
+  if(!payload||typeof payload!=='object'||Array.isArray(payload))schemaError('activity_days',{structure:structure(payload)});
+  // Live responses use activityDays at the root; the published schema also shows
+  // an activities wrapper. Never choose silently between two supplied envelopes.
+  const wrapped=Object.hasOwn(payload,'activities'),direct=Object.hasOwn(payload,'activityDays');
+  if(wrapped===direct)schemaError('activity_envelope',{structure:structure(payload)});
+  const container=wrapped?payload.activities:payload;
+  if(!container||typeof container!=='object'||Array.isArray(container)||!Array.isArray(container.activityDays))schemaError('activity_days',{structure:structure(payload)});
+  const days=container.activityDays;
+  if(days.length>90||days.some(day=>!day||validDay(day.date)!==day.date))schemaError('activity_dates',{day_count:days.length,dates_valid:days.every(day=>day&&validDay(day.date)===day.date)});
   return days;
 }
 function startMillis(value,date){
-  if(typeof value!=='string')schemaError();
+  if(typeof value!=='string')schemaError('start_time',{kind:kind(value)});
   const time=value.startsWith(date+'T')?value.slice(11):value;
   const match=/^(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?$/.exec(time);
-  if(!match||Number(match[1])>23||Number(match[2])>59||Number(match[3])>59)schemaError();
+  if(!match||Number(match[1])>23||Number(match[2])>59||Number(match[3])>59)schemaError('start_time',{format_valid:Boolean(match),date_prefix:value.startsWith(date+'T')});
   return Number(match[1])*3600000+Number(match[2])*60000+Number(match[3])*1000+Number((match[4]||'').padEnd(3,'0'));
 }
 // These are observed buckets, never a reconstructed complete daily total.
 // Missing samples do not produce zero; devices and overlapping buckets cannot be summed.
 export async function normalizeActivitySamples(payload,userId,date){
-  const days=activityDays(payload),rows=[],seenDevices=new Set();
-  if(days.some(day=>day.date!==date)||days.length>1)schemaError();
+  const returned=activityDays(payload),days=returned.filter(day=>day.date===date),rows=[],seenDevices=new Set();
+  // Some live detail responses include the following boundary day. Keep only the
+  // explicitly requested original date; reject missing, duplicate or distant days.
+  if(days.length>1||returned.length&&!days.length||returned.some(day=>day.date!==date&&day.date!==addDays(date,1)))schemaError('detail_dates',{day_count:returned.length,requested_count:days.length,only_requested_or_next:returned.every(day=>day.date===date||day.date===addDays(date,1))});
   for(const day of days){
     const devices=day.activitiesPerDevice??[];
-    if(!Array.isArray(devices)||devices.length>8)schemaError();
+    if(!Array.isArray(devices)||devices.length>8)schemaError('devices',{kind:kind(devices),count:Array.isArray(devices)?devices.length:0});
     for(const device of devices){
+      if(device?.activitySamples!=null&&!Array.isArray(device.activitySamples))schemaError('activity_samples',{kind:kind(device.activitySamples)});
+      const parts=device?.activitySamples||[];
+      for(const part of parts){const steps=part?.stepSamples?.steps;if(steps!=null&&!Array.isArray(steps))schemaError('step_samples',{kind:kind(steps)});}
+      // Activity-only entries can have an empty device reference. Require an
+      // attributable device only when actual step buckets are present.
+      if(!parts.some(part=>Array.isArray(part?.stepSamples?.steps)&&part.stepSamples.steps.length))continue;
       const deviceId=device?.deviceReference?.deviceId;
-      if(typeof deviceId!=='string'||!deviceId.trim()||deviceId.length>180||/[\u0000-\u001f]/.test(deviceId)||seenDevices.has(deviceId))schemaError();
+      if(typeof deviceId!=='string'||!deviceId.trim()||deviceId.length>180||/[\u0000-\u001f]/.test(deviceId)||seenDevices.has(deviceId))schemaError('device_reference',{kind:kind(deviceId),nonempty:typeof deviceId==='string'&&Boolean(deviceId.trim()),bounded:typeof deviceId==='string'&&deviceId.length<=180,no_controls:typeof deviceId==='string'&&!/[\u0000-\u001f]/.test(deviceId),duplicate:seenDevices.has(deviceId),has_step_samples:true});
       seenDevices.add(deviceId);
-      if(device.activitySamples!=null&&!Array.isArray(device.activitySamples))schemaError();
       const slots=new Map(),original=[];
-      for(const part of device.activitySamples||[]){
+      for(const part of parts){
         const block=part?.stepSamples;if(block==null)continue;
         if(block.steps==null)continue;
-        if(!Array.isArray(block.steps))schemaError();
+        if(!Array.isArray(block.steps))schemaError('step_samples',{kind:kind(block.steps)});
         if(!block.steps.length)continue;
         const start=startMillis(block.startTime,date),rawInterval=block.interval;
         const interval=typeof rawInterval==='number'?rawInterval:typeof rawInterval==='string'&&/^\d+$/.test(rawInterval)?Number(rawInterval):NaN;
-        if(!Number.isSafeInteger(interval)||interval<=0||interval>86400000||block.steps.length>86400||start+interval*block.steps.length>86400000)schemaError();
+        if(!Number.isSafeInteger(interval)||interval<=0||interval>86400000||block.steps.length>86400||start+interval*block.steps.length>86400000)schemaError('sample_interval',{interval_kind:kind(rawInterval),interval_valid:Number.isSafeInteger(interval)&&interval>0&&interval<=86400000,sample_count:block.steps.length,within_day:start+interval*block.steps.length<=86400000});
         const values=[];
         for(let i=0;i<block.steps.length;i++){
           const steps=block.steps[i];
-          if(!Number.isSafeInteger(steps)||steps<0||steps>200000)schemaError();
+          if(!Number.isSafeInteger(steps)||steps<0||steps>200000)schemaError('sample_value',{kind:kind(steps),integer:Number.isSafeInteger(steps),nonnegative:typeof steps==='number'&&steps>=0});
           const at=start+i*interval,previous=slots.get(at);
           if(previous&&(previous.interval!==interval||previous.steps!==steps))throw Error('provider_activity_conflicting_samples');
           slots.set(at,{at,interval,steps});values.push(steps);
@@ -58,7 +79,7 @@ export async function normalizeActivitySamples(payload,userId,date){
         if(i&&buckets[i].at<buckets[i-1].at+buckets[i-1].interval)throw Error('provider_activity_conflicting_samples');
         observedSteps+=buckets[i].steps;
       }
-      if(!Number.isSafeInteger(observedSteps)||observedSteps>200000)schemaError();
+      if(!Number.isSafeInteger(observedSteps)||observedSteps>200000)schemaError('observed_sum',{integer:Number.isSafeInteger(observedSteps),within_bound:observedSteps<=200000});
       const alias=(await digest(deviceId)).slice(0,10),fingerprint=await digest(JSON.stringify({date,deviceId,buckets}));
       rows.push({user_id:userId,source_record_id:`polar_v4:step_samples:${date}:${alias}`,metric_date:date,metric_type:'polar_step_samples_count',value:observedSteps,unit:'count',source_name:`Polar Flow · aparelho ${alias}`,source_family:'polar_flow',canonical_status:'held',confidence:'provider_authenticated_samples',source_file:POLAR_ACTIVITY_FILE,
         source_payload:{schema:'polar_accesslink_v4',entry_method:METHOD,aggregation:'observed_step_samples',coverage_verified:false,original_unit:'count',original_device_id:deviceId,original_samples:original,sample_count:buckets.length,fingerprint}});
@@ -78,7 +99,7 @@ export async function activitySnapshot(db,userId){
 export async function receiveActivitySamples(db,{userId,revision,accessToken,from,to,trigger='manual',read=providerRead,now=()=>new Date().toISOString()}){
   if(validDay(from)!==from||validDay(to)!==to||from>=to||to>addDays(from,7))throw Error('invalid_date_window');
   const list=activityDays(await read(accessToken,'activity/list',{from,to}));
-  if(list.some(day=>day.date<from||day.date>=to))schemaError();
+  if(list.some(day=>day.date<from||day.date>=to))schemaError('list_dates',{day_count:list.length,in_requested_window:false});
   const dates=[...new Set(list.map(day=>day.date))].sort();
   const rows=[];
   for(let i=0;i<dates.length;i+=3){
