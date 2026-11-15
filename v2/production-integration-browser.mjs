@@ -265,6 +265,7 @@ for(const width of [320,393,1440]){
  assert.equal(connectionBoxes.length,2,'both existing connection cards remain present');
  assert.ok(connectionBoxes.every(box=>box.width>=gridBox.width*(width<=720?.95:.45)),'connection cards use their available panel width at '+width);
  assert.equal(Math.abs(connectionBoxes[0].y-connectionBoxes[1].y)<1,width>720,'connection cards share a desktop row and stack on mobile');
+ assert.ok(await connectionGrid.locator('button,summary').evaluateAll(nodes=>nodes.filter(el=>el.getBoundingClientRect().height>0).every(el=>el.getBoundingClientRect().height>=44&&Number.parseFloat(getComputedStyle(el).fontSize)>=14)),'visible account actions remain readable touch targets at '+width);
  await page.screenshot({path:`artifacts/production-integration/source-history-${width}.png`,fullPage:true});
  await page.screenshot({path:`artifacts/production-integration/source-viewport-${width}.png`});
  await mfpCard.screenshot({path:`artifacts/production-integration/source-card-${width}.png`});
