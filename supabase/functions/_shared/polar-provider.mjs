@@ -1,7 +1,7 @@
 import {validDay,addDays} from './polar-contract.mjs';
-const domains=new Map([['training-sessions/list','sessions'],['sleeps','sleep']]);
-const failurePattern=/^provider_(sessions|sleep)_(network|invalid_response|schema|empty_object|http_[1-5][0-9]{2}(?:_range|_date|_future)?)$/;
-const phases=new Set(['token','refresh','calendar','lists','sleep_dates','sleep_details','sessions','ownership','write']);
+const domains=new Map([['training-sessions/list','sessions'],['sleeps','sleep'],['activity/list','activity']]);
+const failurePattern=/^provider_(sessions|sleep|activity)_(network|invalid_response|schema|empty_object|conflicting_samples|http_[1-5][0-9]{2}(?:_range|_date|_future)?)$/;
+const phases=new Set(['token','refresh','calendar','lists','sleep_dates','sleep_details','sessions','ownership','write','activity']);
 const validationWords=new Set('from to date dates format parse parsing parsed valid invalid required missing must should expected provided start end before after time datetime timestamp timezone offset utc iso iso8601 rfc3339 yyyy-mm-dd yyyy-mm-ddthh:mm:ss yyyymmdd yyyy-mm-ddthh:mm:ssz milliseconds seconds epoch query parameter parameters range interval days future integer string client request failed error unknown unsupported bad accepted not cannot be both present include included'.split(' '));
 export function validationKeywords(text){return [...new Set((String(text).match(/[a-z][a-z0-9:_-]*/gi)||[]).map(x=>x.toLowerCase()).filter(x=>validationWords.has(x)))].join(',');}
 

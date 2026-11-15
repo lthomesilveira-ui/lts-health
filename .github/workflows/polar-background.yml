@@ -23,6 +23,8 @@ jobs:
           node v2/polar-background-test.mjs
           node v2/polar-contract-test.mjs
           node v2/polar-provider-test.mjs
+          node v2/polar-activity-test.mjs
+          node v2/polar-activity-runtime-test.mjs
           node v2/health-auto-export-test.mjs
           node v2/continuity-contract-smoke.mjs
           node v2/public-payload-guard.mjs

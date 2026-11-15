@@ -260,6 +260,16 @@ for(const width of [320,393,1440]){
  assert.ok(mfpText.includes('pelo Saúde do iPhone até: 01/04/2001'));
  assert.ok(!mfpText.includes('02/04/2001'),'anonymous newer source cannot advance MyFitnessPal coverage');
  assert.equal(await page.getByText('Sessões recebidas do Polar até: 02/04/2001',{exact:true}).count(),1);
+ const activity=page.locator('[data-polar-activity]');
+ await activity.getByRole('button',{name:'Permitir passos do Polar',exact:true}).waitFor();
+ assert.equal(await activity.getByRole('button',{name:'Conferir passos do Polar',exact:true}).count(),0,'an existing training/sleep grant does not authorize daily activity');
+ await page.evaluate(()=>{window.__statusOverrides['health-polar-connection']={...window.__statusOverrides['health-polar-connection'],activity_authorized:true,activity_observations:[{date:'2001-04-03',observed_steps:12,unit:'count',sample_count:2,source_name:'Polar Flow · aparelho de exemplo',received_at:'2001-04-03T08:00:00Z',coverage_verified:false}]};});
+ await page.locator('[data-polar-check]').click();
+ await activity.getByRole('button',{name:'Conferir passos do Polar',exact:true}).waitFor();
+ await activity.locator('summary').click();
+ assert.ok((await activity.innerText()).includes('12 passos nas amostras'));
+ assert.ok((await activity.innerText()).includes('não comprovam o total de um dia completo'));
+ assert.ok((await activity.innerText()).includes('Polar Flow · aparelho de exemplo'));
  const connectionGrid=page.locator('[data-connections]>.sourceStatusGrid');
  const gridBox=await connectionGrid.boundingBox(),connectionBoxes=await connectionGrid.locator(':scope>.sourceStatus').evaluateAll(nodes=>nodes.map(el=>({x:el.getBoundingClientRect().x,y:el.getBoundingClientRect().y,width:el.getBoundingClientRect().width})));
  assert.equal(connectionBoxes.length,2,'both existing connection cards remain present');
