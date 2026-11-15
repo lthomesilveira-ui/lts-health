@@ -187,7 +187,29 @@ async function runSurface(page,{label,mobile,appUrl,evidenceDir,owner,expectedBu
     return document.querySelector('[data-google-health] .pill')?.textContent===googleLabel&&polarCard?.querySelector('.pill')?.textContent===polarLabel&&mfpCard?.querySelector('.pill')?.textContent==='Pelo Saúde do iPhone'&&
      !document.querySelector('[data-disclosure="health-auto-export-setup"]')?.open&&!document.querySelector('input[aria-label="Chave privada do Health Auto Export"]');
    },status);
-   requireCheck(matches,'integrations');await geometry(page);
+   requireCheck(matches,'integrations');
+   const polarResponse=page.waitForResponse(response=>response.url().endsWith('/functions/v1/health-polar-connection')&&response.request().method()==='POST'&&response.request().postDataJSON()?.action==='status');
+   await activate(page.locator('[data-polar-check]'));const polarReceived=await polarResponse;
+   requireCheck(polarReceived.ok(),'integrations');const polarStatus=await polarReceived.json();
+   await page.waitForFunction(expected=>{
+    const actual=window.__ownerBrowserAudit.state.polarConnection;
+    return actual?.status==='ready'&&actual.activity_authorized===expected.activity_authorized&&JSON.stringify(actual.activity_observations||[])===JSON.stringify(expected.activity_observations||[])&&!document.querySelector('[data-polar-check]')?.disabled;
+   },polarStatus);
+   if(polarStatus.activity_authorized===true&&polarStatus.activity_observations?.length){
+    if(!await page.locator('[data-polar-activity] details').evaluate(element=>element.open))await activate(page.locator('[data-polar-activity] summary'));
+    const activityMatches=await page.evaluate(async expected=>{
+     const {fmtDate}=await import('./src/core.js'),panel=document.querySelector('[data-polar-activity]'),items=[...panel.querySelectorAll('li')];
+     return panel.querySelector('details')?.open===true&&items.length===expected.length&&panel.textContent.includes('não são somadas às do iPhone')&&panel.textContent.includes('não comprovam o total de um dia completo')&&expected.every((row,index)=>{
+      const text=items[index].textContent;
+      return row.unit==='count'&&Number.isSafeInteger(row.observed_steps)&&row.observed_steps>=0&&row.coverage_verified===false&&row.sample_count>0&&text.includes(fmtDate(row.date))&&text.includes(`${row.observed_steps.toLocaleString('pt-BR')} passos nas amostras`)&&text.includes(row.source_name)&&text.includes(`${row.sample_count} amostras`);
+     });
+    },polarStatus.activity_observations);
+    requireCheck(activityMatches,'integrations');await geometry(page);
+    await page.locator('[data-polar-activity]').scrollIntoViewIfNeeded();
+    await page.screenshot({path:`${evidenceDir}/owner-${label}-polar-step-samples.png`,fullPage:true});
+    console.log(`Authenticated Polar sample rendering verified on ${label}; no health observations logged.`);
+   }
+   await geometry(page);
    await page.locator('[data-health-auto-export]').scrollIntoViewIfNeeded();
    await page.screenshot({path:`${evidenceDir}/owner-${label}-receipt-states.png`,fullPage:true});
   }
