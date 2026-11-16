@@ -20,8 +20,9 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
       return invoke(name,{body});
      }
      window.__googlePeriodCalls.push(structuredClone(body));
-     if(body.action==='status'&&Object.keys(body).length===1)return{data:{configured:true,connected:true},error:null};
+     if(body.action==='status'&&Object.keys(body).length===1)return{data:{configured:true,connected:true,last_scheduled_attempt_at:'2030-10-27T14:36:00Z',last_scheduled_read_at:'2030-10-27T14:36:02Z',scheduled_result:{from:'2030-10-21',to_exclusive:'2030-10-28',observations:0,empty:true}},error:null};
      if(body.action==='read'&&Object.keys(body).sort().join(',')==='action,from,to')return{data:{read:true,observations:0,empty:true,canonical_updated:false},error:null};
+     if(body.action==='inspect-nutrition'&&Object.keys(body).sort().join(',')==='action,from,to')return{data:{inspected:true,complete:true,data_type:'nutrition-log',from:body.from,to_exclusive:body.to,observations:0,canonical_updated:false,water_received:false},error:null};
      throw Error('Unexpected synthetic Google operation');
     };return client;
    };
@@ -39,6 +40,9 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    await card.getByText('Conta autorizada',{exact:true}).waitFor();
    const before=await page.evaluate(()=>JSON.stringify(window.__historyDb));
    assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='read')),false);
+   assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-nutrition')),false);
+   await card.getByText('Última consulta automática: 27/10/2030, 11:36 (Brasília).',{exact:true}).waitFor();
+   await card.getByText('De 21/10/2030 a 27/10/2030, o Google não retornou registros de água. Dias sem registro continuam sem informação.',{exact:true}).waitFor();
    await card.getByText('Consultar outro período',{exact:true}).click();
    await card.getByLabel('Data inicial',{exact:true}).fill('2030-10-14');
    await card.getByLabel('Data final',{exact:true}).fill('2030-10-25');
@@ -57,6 +61,13 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    await card.getByRole('button',{name:'Conferir água deste período',exact:true}).click();
    await card.getByRole('status').filter({hasText:'Escolha uma data inicial e uma final, em ordem, com até 31 dias no período.'}).waitFor();
    assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='read').length),1);
+   await card.getByText('Comparar chegada da alimentação',{exact:true}).click();
+   await card.getByRole('button',{name:'Conferir alimentação no Google',exact:true}).click();
+   await card.getByRole('status').filter({hasText:'o Google também não retornou registros de alimentação. Isso não informa o que está salvo no MyFitnessPal.'}).waitFor();
+   const inspections=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-nutrition'));
+   assert.equal(inspections.length,1);assert.equal((Date.parse(inspections[0].to)-Date.parse(inspections[0].from))/86400000,7);
+   assert.doesNotMatch(await card.innerText(),/0 mL|0 ml|consumo zero/);
+   await card.screenshot({path:`${dir}/${engineName}-${width}-source.png`});
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),before);
    assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
    results.push({engine:engineName,width,status:'passed',zeroWrites:true,physicalIPhone:false});

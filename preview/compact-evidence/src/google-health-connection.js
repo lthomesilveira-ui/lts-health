@@ -88,6 +88,26 @@ async function readHydration(entry, periodWindow = googleHealthReadWindow()) {
     : `${period}, o Google Health retornou ${countLabel(result.observations, 'registro de água', 'registros de água')} para conferência de origem.`;
 }
 
+async function inspectNutrition(entry) {
+  const {lastDay, to} = googleHealthReadWindow();
+  const from = addDays(lastDay, -6);
+  const result = await invoke({action: 'inspect-nutrition', from, to});
+  if (!isCurrent(entry)) return;
+  if (result.in_progress === true) {
+    entry.message = 'Já existe uma conferência em andamento.';
+    return;
+  }
+  if (result.inspected !== true || result.complete !== true || result.canonical_updated !== false ||
+      result.water_received !== false || result.data_type !== 'nutrition-log' ||
+      result.from !== from || result.to_exclusive !== to ||
+      !Number.isInteger(result.observations) || result.observations < 0 || result.observations > 10000) {
+    throw Error('Invalid source inspection');
+  }
+  entry.message = result.observations === 0
+    ? `De ${fmtDate(from)} a ${fmtDate(lastDay)}, o Google também não retornou registros de alimentação. Isso não informa o que está salvo no MyFitnessPal.`
+    : `De ${fmtDate(from)} a ${fmtDate(lastDay)}, o Google retornou ${countLabel(result.observations, 'registro de alimentação', 'registros de alimentação')}. O recebimento de água continua sendo conferido separadamente.`;
+}
+
 function googleAuthorizationUrl(value) {
   const url = new URL(value);
   const exactParameter = (name, expected) => {
@@ -149,6 +169,9 @@ export function actOnGoogleHealth(action, requestedPeriod) {
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
+  if (action === 'inspect-nutrition') {
+    return run(entry, () => inspectNutrition(entry), 'Não foi possível comparar a chegada da alimentação agora.');
+  }
   if (action === 'read') {
     return run(entry, () => readHydration(entry), 'Não foi possível conferir os registros de água agora.');
   }
@@ -187,6 +210,20 @@ export function renderGoogleHealthConnection() {
     : status.configured ? 'A conta Google ainda não foi conectada. Nenhum recebimento de água foi confirmado por esta conexão.'
     : 'A integração Google ainda não está disponível. Os registros de água já existentes continuam no aplicativo.';
   const lastRead = status?.last_read_at ? new Date(status.last_read_at) : null;
+  const stamp = value => {
+    const date = value ? new Date(value) : null;
+    return date && Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short'}).format(date) : null;
+  };
+  const scheduledAt = stamp(status?.last_scheduled_read_at);
+  const scheduledAttempt = stamp(status?.last_scheduled_attempt_at);
+  const scheduledPending = scheduledAttempt && (!scheduledAt || Date.parse(status.last_scheduled_attempt_at) > Date.parse(status.last_scheduled_read_at));
+  const scheduled = status?.scheduled_result;
+  let scheduledPeriod = null;
+  if (scheduled) {
+    try { scheduledPeriod = googleHealthPeriodWindow(scheduled.from, addDays(scheduled.to_exclusive, -1)); } catch {}
+  }
+  const scheduledValid = scheduledPeriod && Number.isInteger(scheduled.observations) && scheduled.observations >= 0 &&
+    scheduled.observations <= 10000 && scheduled.empty === (scheduled.observations === 0);
   const disabled = entry.pending ? ' disabled' : '';
   const selected = entry.period || googleHealthReadWindow();
   const button = (action, caption) => `<button type="button" data-google-health-action="${action}"${disabled}>${caption}</button>`;
@@ -194,6 +231,11 @@ export function renderGoogleHealthConnection() {
     <div class="sourceStatusTop"><h2 id="google-health-title">Google Health</h2><span class="pill">${label}</span></div>
     <p>Consulte a água registrada no Google Health. A origem é conferida antes de incluir os valores nos totais.</p>
     ${lastRead && Number.isFinite(lastRead.getTime()) ? `<p>Última conferência em ${fmtDate(localHealthDay(lastRead))}.</p>` : ''}
+    ${status?.connected ? `<div class="googleHealthAutomatic">
+      <p>${scheduledAt ? `Última consulta automática: ${esc(scheduledAt)} (Brasília).` : scheduledAttempt ? `Consulta automática iniciada em ${esc(scheduledAttempt)} (Brasília), ainda sem conclusão confirmada.` : 'Nenhuma consulta automática concluída foi confirmada nesta conexão.'}</p>
+      ${scheduledAt && scheduledPending ? `<p>A tentativa automática mais recente, em ${esc(scheduledAttempt)} (Brasília), ainda não tem conclusão confirmada.</p>` : ''}
+      ${scheduledAt && scheduledValid ? `<p>De ${fmtDate(scheduledPeriod.from)} a ${fmtDate(scheduledPeriod.lastDay)}, ${scheduled.empty ? 'o Google não retornou registros de água. Dias sem registro continuam sem informação.' : `${countLabel(scheduled.observations, 'registro de água recebido', 'registros de água recebidos')} para conferir a origem; os totais não foram alterados.`}</p>` : ''}
+    </div>` : ''}
     <div class="googleHealthActions">
       ${status?.configured && (!status.connected || reconnect) ? button('authorize', reconnect ? 'Autorizar novamente' : 'Conectar Google Health') : ''}
       ${status?.connected && !reconnect ? button('read', 'Conferir água dos últimos 30 dias') : ''}
@@ -206,6 +248,10 @@ export function renderGoogleHealthConnection() {
         <label>Data inicial<input type="date" data-google-health-from value="${esc(selected.from)}"${disabled}></label>
         <label>Data final<input type="date" data-google-health-through value="${esc(selected.lastDay)}"${disabled}></label>
       </div>${button('read-period', 'Conferir água deste período')}
+    </details>` : ''}
+    ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Comparar chegada da alimentação</summary>
+      <p>Consulta os últimos 7 dias de alimentação no Google para distinguir esse envio do de água. Não importa refeições nem altera os totais.</p>
+      ${button('inspect-nutrition', 'Conferir alimentação no Google')}
     </details>` : ''}
     <p class="footerNote" role="status">${esc(entry.message || (entry.pending ? 'Aguarde um instante.' : statusMessage))}</p>
   </section>`;

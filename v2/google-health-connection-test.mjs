@@ -12,6 +12,7 @@ const token={access_token:'synthetic-access-only',refresh_token:'synthetic-refre
 class MemoryStore{
   constructor(now){this.now=now;this.rows=new Map();this.states=new Map();this.reads=[];}
   async connection(id){return structuredClone(this.rows.get(id)??null);}
+  async scheduledSummary(id){return this.rows.get(id)?.scheduled_summary??null;}
   async begin(id,hash,payload,expires){
     const row=this.rows.get(id)||{user_id:id,status:'unlinked',health_user_id:null};
     row.generation=crypto.randomUUID();row.pending_state_hash=hash;row.lease_token=null;
@@ -35,7 +36,7 @@ class MemoryStore{
     const fingerprint=JSON.stringify(result.records);const exists=this.reads.some(r=>r.user_id===id&&r.fingerprint===fingerprint);
     if(!exists)this.reads.push({user_id:id,fingerprint,result:structuredClone(result)});row.lease_token=null;row.last_read_at=new Date(this.now()).toISOString();return exists?'unchanged':'stored';
   }
-  async release(id,generation,lease,reason){const row=this.rows.get(id);if(row?.generation===generation&&row.lease_token===lease){row.lease_token=null;row.last_error=reason;}}
+  async release(id,generation,lease,reason){const row=this.rows.get(id);if(row?.generation===generation&&row.lease_token===lease){row.lease_token=null;row.last_error=reason;return true;}return false;}
 }
 function fixture({enabled=true,fetcher,authenticate,resolveConfig,reportCallbackFailure}={}){
   let clock=Date.parse('2030-02-11T16:00:00Z');const now=()=>clock,store=new MemoryStore(now),calls=[],triggers=[];
@@ -312,4 +313,26 @@ test('a manual read and a scheduled read cannot concurrently store stale data af
   await connected(f);const scheduled=f.handlers.scheduledRead(owner,'2030-02-11','2030-02-12');await entered.promise;
   assert.equal((await (await f.post({action:'read',from:'2030-02-11',to:'2030-02-12'})).json()).in_progress,true);
   await f.post({action:'disconnect'});resume.resolve();assert.equal((await scheduled).superseded,true);assert.equal(f.store.reads.length,0);
+});
+
+test('owner nutrition inspection is source-only and cannot fabricate water, persist meals or reset hydration freshness',async()=>{
+  const f=fixture({fetcher:async url=>String(url).includes('/token')?response(token):String(url).endsWith('/identity')?response(identity):response({})});
+  await connected(f);const row=f.store.rows.get(owner);row.last_read_at='2030-02-11T15:00:00Z';row.last_scheduled_read_at='2030-02-11T14:00:00Z';
+  const encrypted=row.tokens_encrypted,r=await f.post({action:'inspect-nutrition',from:'2030-02-05',to:'2030-02-12'}),out=await r.json();
+  assert.equal(r.status,200);assert.equal(out.inspected,true);assert.equal(out.complete,true);assert.equal(out.observations,0);assert.equal(out.water_received,false);assert.equal(out.canonical_updated,false);
+  assert.equal(row.last_read_at,'2030-02-11T15:00:00Z');assert.equal(row.last_scheduled_read_at,'2030-02-11T14:00:00Z');assert.equal(row.tokens_encrypted,encrypted);assert.equal(row.lease_token,null);assert.equal(f.store.reads.length,0);
+  assert.ok(f.calls.some(c=>new URL(c.url).pathname.endsWith('/nutrition-log/dataPoints')));
+  assert.equal((await f.post({action:'inspect-nutrition',from:'2030-02-05',to:'2030-02-12',owner})).status,400);
+  assert.equal((await f.post({action:'inspect-nutrition',from:'2030-02-05',to:'2030-02-12'},'unrecognized')).status,401);
+  assert.equal((await f.post({action:'inspect-nutrition',from:'2030-02-05',to:'2030-02-12'},'synthetic-other')).status,200);
+  assert.equal(f.store.reads.length,0);
+});
+test('scheduled status returns bounded owner summary without source payload, identity or credentials',async()=>{
+  const f=fixture();await connected(f);const row=f.store.rows.get(owner);
+  Object.assign(row,{last_scheduled_attempt_at:'2030-02-11T14:00:00Z',last_scheduled_read_at:'2030-02-11T14:00:02Z',scheduled_summary:{from_date:'2030-02-05',to_date_exclusive:'2030-02-12',observations:0,result_status:'empty',raw:'synthetic-private-food',tokens_encrypted:row.tokens_encrypted}});
+  const out=await (await f.post({action:'status'})).json();
+  assert.equal(out.last_scheduled_read_at,'2030-02-11T14:00:02Z');assert.deepEqual(out.scheduled_result,{from:'2030-02-05',to_exclusive:'2030-02-12',observations:0,empty:true});
+  for(const canary of ['synthetic-private-food',row.tokens_encrypted,owner,identity.healthUserId])assert.ok(!JSON.stringify(out).includes(canary));
+  row.scheduled_summary.observations=1;assert.equal((await (await f.post({action:'status'})).json()).scheduled_result,null);
+  row.scheduled_summary={from_date:'2030-01-01',to_date_exclusive:'2030-02-12',observations:0,result_status:'empty'};assert.equal((await (await f.post({action:'status'})).json()).scheduled_result,null);
 });

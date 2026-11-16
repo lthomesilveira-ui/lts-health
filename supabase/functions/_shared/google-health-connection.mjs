@@ -1,5 +1,5 @@
 import {randomState,digest,validKey,encryptTokens,decryptTokens} from './polar-contract.mjs';
-import {GOOGLE_HEALTH_NUTRITION_SCOPE as scope,hydrationReadParameters,verifyGoogleHealthIdentity,readGoogleHealthHydration} from './google-health-reader.mjs';
+import {GOOGLE_HEALTH_NUTRITION_SCOPE as scope,hydrationReadParameters,verifyGoogleHealthIdentity,readGoogleHealthHydration,inspectGoogleHealthNutrition} from './google-health-reader.mjs';
 export const GOOGLE_HEALTH_APP='https://lthomesilveira-ui.github.io/lts-health/v2/';
 const appOrigin=new URL(GOOGLE_HEALTH_APP).origin;
 const cors={'Access-Control-Allow-Origin':appOrigin,'Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'POST,OPTIONS','Cache-Control':'no-store','Vary':'Origin'};
@@ -93,11 +93,20 @@ async function exchange(c,params,previous,fetcher,now){
   }
   return {access_token:body.access_token,refresh_token:refresh,scope,expires_at:now()+body.expires_in*1000,refresh_expires_at:refreshExpires};
 }
-function status(c,row){return {configured:googleHealthConfigured(c),connected:row?.status==='connected',last_read_at:row?.last_read_at??null,last_attempt_at:row?.last_attempt_at??null,last_error:row?.last_error??null,canonical_updated:false};}
+function status(c,row,scheduled=null){
+  let scheduledResult=null;
+  if(row?.status==='connected'&&scheduled&&['empty','observations_unverified'].includes(scheduled.result_status)&&
+      Number.isInteger(scheduled.observations)&&scheduled.observations>=0&&scheduled.observations<=10000&&
+      (scheduled.result_status==='empty')===(scheduled.observations===0)){
+    try{hydrationReadParameters(scheduled.from_date,scheduled.to_date_exclusive);scheduledResult={from:scheduled.from_date,to_exclusive:scheduled.to_date_exclusive,observations:scheduled.observations,empty:scheduled.result_status==='empty'};}catch{}
+  }
+  return {configured:googleHealthConfigured(c),connected:row?.status==='connected',last_read_at:row?.last_read_at??null,last_attempt_at:row?.last_attempt_at??null,last_error:row?.last_error??null,
+    last_scheduled_attempt_at:row?.last_scheduled_attempt_at??null,last_scheduled_read_at:row?.last_scheduled_read_at??null,scheduled_result:scheduledResult,canonical_updated:false};
+}
 
 // Dependencies are injected for invented-fixture HTTP/transaction tests. Production only injects verified Auth and a service-only store.
 export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now(),reportCallbackFailure=()=>{},reportReadDiagnostic=()=>{}}){
-  async function performRead(c,userId,from,to,trigger='manual'){
+  async function performRead(c,userId,from,to,trigger='manual',inspection=false){
     hydrationReadParameters(from,to);
     const store=storeFactory(c,{trigger}),row=await store.connection(userId);
     if(row?.status!=='connected')return {connected:false,read:false,canonical_updated:false};
@@ -110,6 +119,11 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       if(token.expires_at<now()+60000){
         token=await exchange(c,{grant_type:'refresh_token',refresh_token:token.refresh_token},token,fetcher,now);
         if(!await store.refresh(userId,row.generation,lease,await seal(token,c,tokenDomain(userId))))error('authorization_superseded');
+      }
+      if(inspection){
+        const result=await inspectGoogleHealthNutrition({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher});
+        if(!await store.release(userId,row.generation,lease,null))error('authorization_superseded');
+        return {connected:true,inspected:true,inspected_at:new Date(now()).toISOString(),...result};
       }
       const result=await readGoogleHealthHydration({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher,reportDiagnostic:reportReadDiagnostic});
       const stored=await store.finish(userId,row.generation,lease,result);
@@ -135,8 +149,8 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       let c=config();const user=await authenticate(request,c);
       if(!user||user.is_anonymous===true)error('unauthorized');
       const body=await boundedJson(request,2048),action=body?.action;
-      const allowed=action==='read'?['action','from','to']:['action'];
-      if(!body||typeof body!=='object'||Array.isArray(body)||!['status','authorize','read','disconnect'].includes(action)||Object.keys(body).some(k=>!allowed.includes(k)))error('invalid_action');
+      const allowed=['read','inspect-nutrition'].includes(action)?['action','from','to']:['action'];
+      if(!body||typeof body!=='object'||Array.isArray(body)||!['status','authorize','read','inspect-nutrition','disconnect'].includes(action)||Object.keys(body).some(k=>!allowed.includes(k)))error('invalid_action');
       if(action==='disconnect'){
         await storeFactory(c).disconnect(user.id);
         try{c=await resolveConfig(c);}catch{c={...c,enabled:false,encryptionKey:null};}
@@ -146,7 +160,10 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       if(action==='status'&&!googleHealthConfigured(c))return json(status(c,null));
       if(!googleHealthConfigured(c))error('configuration_required');
       const store=storeFactory(c);
-      if(action==='status')return json(status(c,await store.connection(user.id)));
+      if(action==='status'){
+        const row=await store.connection(user.id);
+        return json(status(c,row,row?.status==='connected'?await store.scheduledSummary(user.id):null));
+      }
       if(action==='authorize'){
         const state=randomState(),verifier=randomState(),stateHash=await digest(state);
         const challenge=btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier))))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
@@ -156,7 +173,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
           access_type:'offline',prompt:'consent',include_granted_scopes:'false',state,code_challenge:challenge,code_challenge_method:'S256'}).toString();
         return json({authorization_url:url.href});
       }
-      return json(await performRead(c,user.id,body.from,body.to));
+      return json(await performRead(c,user.id,body.from,body.to,'manual',action==='inspect-nutrition'));
     }catch(e){return failResponse(e);}
   }
   async function callback(request){
