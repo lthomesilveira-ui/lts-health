@@ -51,7 +51,7 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    await card.getByRole('status').filter({hasText:'De 14/10/2030 a 25/10/2030, o Google Health não retornou registros de água.'}).waitFor();
    assert.deepEqual(await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='read')),[{action:'read',from:'2030-10-14',to:'2030-10-26'}]);
    assert.doesNotMatch(await card.innerText(),/0 mL|0 ml|consumo zero/);
-   await card.getByText('Consultar outro período',{exact:true}).click();
+   if(!await card.locator('details.googleHealthPeriod').evaluate(element=>element.open))await card.getByText('Consultar outro período',{exact:true}).click();
    assert.equal(await card.getByLabel('Data inicial',{exact:true}).inputValue(),'2030-10-14');
    await card.getByLabel('Data final',{exact:true}).fill('2030-11-25');
    await card.getByRole('button',{name:'Conferir água deste período',exact:true}).click();
