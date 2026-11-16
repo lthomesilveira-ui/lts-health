@@ -88,6 +88,36 @@ async function readHydration(entry, periodWindow = googleHealthReadWindow()) {
     : `${period}, o Google Health retornou ${countLabel(result.observations, 'registro de água', 'registros de água')} para conferência de origem.`;
 }
 
+async function inspectWaterAvailability(entry) {
+  const {lastDay, to} = googleHealthReadWindow(), from = addDays(lastDay, -6);
+  const result = await invoke({action: 'inspect-hydration', from, to});
+  if (!isCurrent(entry)) return;
+  if (result.in_progress === true) { entry.message = 'Já existe uma conferência em andamento.'; return; }
+  const kinds = ['civil_window', 'latest_all_sources', 'latest_default_sources'];
+  const validDay = day => {
+    try { googleHealthPeriodWindow(day, day); return true; } catch { return false; }
+  };
+  if (result.inspected !== true || result.bounded !== true || result.data_type !== 'hydration-log' ||
+      result.mode !== 'read_only' || result.canonical_updated !== false || result.water_received !== false ||
+      result.from !== from || result.to_exclusive !== to || result.max_points_per_probe !== 25 ||
+      !Array.isArray(result.probes) || result.probes.length !== kinds.length || result.probes.some((probe, index) =>
+        !probe || probe.kind !== kinds[index] || typeof probe.truncated !== 'boolean' ||
+        ![probe.observations, probe.recent_observations, probe.undated_observations].every(value => Number.isInteger(value) && value >= 0 && value <= 25) ||
+        probe.recent_observations + probe.undated_observations > probe.observations ||
+        (probe.observations === probe.undated_observations
+          ? probe.first_day !== null || probe.last_day !== null
+          : !validDay(probe.first_day) || !validDay(probe.last_day) || probe.first_day > probe.last_day))) {
+    throw Error('Invalid water availability inspection');
+  }
+  const recent = result.probes.some(probe => probe.recent_observations > 0);
+  const undated = result.probes.some(probe => probe.undated_observations > 0);
+  const latest = result.probes.map(probe => probe.last_day).filter(Boolean).sort().at(-1);
+  entry.message = recent
+    ? 'O Google disponibilizou registros recentes de água nesta conferência complementar. A origem ainda precisa ser conferida; nenhum valor foi incluído nos totais.'
+    : `O Google não disponibilizou água de ${fmtDate(from)} a ${fmtDate(lastDay)} nesta conferência.${latest ? ` Entre os registros retornados, a data mais recente é ${fmtDate(latest)}.` : ''}${undated ? ' Há registros sem data local verificável.' : ''} Nenhum valor foi incluído nos totais.`;
+  if (result.probes.some(probe => probe.truncated)) entry.message += ' A conferência dos registros recentes foi limitada a 25 por consulta.';
+}
+
 async function inspectNutrition(entry) {
   const {lastDay, to} = googleHealthReadWindow();
   const from = addDays(lastDay, -6);
@@ -169,6 +199,9 @@ export function actOnGoogleHealth(action, requestedPeriod) {
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
+  if (action === 'inspect-hydration') {
+    return run(entry, () => inspectWaterAvailability(entry), 'Não foi possível conferir a disponibilidade da água agora.');
+  }
   if (action === 'inspect-nutrition') {
     return run(entry, () => inspectNutrition(entry), 'Não foi possível comparar a chegada da alimentação agora.');
   }
@@ -248,6 +281,10 @@ export function renderGoogleHealthConnection() {
         <label>Data inicial<input type="date" data-google-health-from value="${esc(selected.from)}"${disabled}></label>
         <label>Data final<input type="date" data-google-health-through value="${esc(selected.lastDay)}"${disabled}></label>
       </div>${button('read-period', 'Conferir água deste período')}
+    </details>` : ''}
+    ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Conferir disponibilidade da água</summary>
+      <p>Use quando a água aparecer no Google, mas não chegar por esta conexão. Compara o período recente com os últimos registros disponíveis, sem alterar os totais.</p>
+      ${button('inspect-hydration', 'Conferir disponibilidade no Google')}
     </details>` : ''}
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Comparar chegada da alimentação</summary>
       <p>Consulta os últimos 7 dias de alimentação no Google para distinguir esse envio do de água. Não importa refeições nem altera os totais.</p>

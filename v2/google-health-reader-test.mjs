@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {createServer} from 'node:http';
 import {once} from 'node:events';
 import {GOOGLE_HEALTH_NUTRITION_SCOPE as scope,GOOGLE_HEALTH_SOURCE_FAMILY as family,
-  readGoogleHealthHydration as read,hydrationReadParameters,GoogleHealthReadError} from '../supabase/functions/_shared/google-health-reader.mjs';
+  readGoogleHealthHydration as read,hydrationReadParameters,GoogleHealthReadError,inspectGoogleHealthHydrationAvailability as availability} from '../supabase/functions/_shared/google-health-reader.mjs';
 
 // Entirely invented fixtures. No account credentials, live Google calls or storage.
 const options={accessToken:'synthetic-token-only',grantedScopes:scope,from:'2030-02-11',to:'2030-02-12'};
@@ -27,6 +27,39 @@ function transport(pages,{identityResponse=identity}={}){
 async function errorCode(code,run){
   await assert.rejects(run,error=>error instanceof GoogleHealthReadError&&error.code===code&&error.message===code);
 }
+
+test('water availability compares civil and latest source families with one bounded page each and no amounts',async()=>{
+  const recent=point(),old=point('water-old1',654);old.hydrationLog.interval.startTime=old.hydrationLog.interval.endTime='2029-10-01T15:00:00Z';
+  recent.privateNotes='synthetic-private-provider-canary';
+  const t=transport([{dataPoints:[]},{dataPoints:[recent,old],nextPageToken:'do-not-follow'},{dataPoints:[recent]}]);
+  const out=await availability({...options,expectedHealthUserId:identity.healthUserId,fetcher:t.fetcher});
+  assert.equal(out.bounded,true);assert.equal(out.water_received,false);assert.equal(out.canonical_updated,false);assert.equal(out.max_points_per_probe,25);
+  assert.equal(t.calls.length,4);assert.deepEqual(out.probes.map(p=>p.observations),[0,2,1]);assert.deepEqual(out.probes.map(p=>p.recent_observations),[0,1,1]);
+  assert.deepEqual(out.probes.map(p=>p.truncated),[false,true,false]);assert.equal(out.probes[1].first_day,'2029-10-01');assert.equal(out.probes[1].last_day,'2030-02-11');
+  assert.equal(t.calls[1].url.searchParams.get('filter'),hydrationReadParameters(options.from,options.to).filter);
+  for(const i of [2,3])assert.equal(t.calls[i].url.searchParams.has('filter'),false);
+  assert.equal(t.calls[2].url.searchParams.get('dataSourceFamily'),family);assert.equal(t.calls[3].url.searchParams.has('dataSourceFamily'),false);
+  for(const call of t.calls.slice(1)){assert.equal(call.url.searchParams.get('pageSize'),'25');assert.equal(call.url.searchParams.has('pageToken'),false);assert.equal(call.request.method,'GET');}
+  const text=JSON.stringify(out);for(const canary of ['321','654','water-0001','water-old1','synthetic-private-provider-canary','hydrationLog','raw','MyFitnessPal'])assert.ok(!text.includes(canary));
+});
+test('water availability validates the seven-day boundary, expected account and provider records before returning metadata',async()=>{
+  let requests=0;await errorCode('invalid_date_window',()=>availability({...options,from:'2030-02-01',fetcher:async()=>{requests++;}}));assert.equal(requests,0);
+  const wrong=transport([]);await errorCode('account_changed',()=>availability({...options,expectedHealthUserId:'another-user',fetcher:wrong.fetcher}));assert.equal(wrong.calls.length,1);
+  for(const phase of [0,1,2]){
+    const p=point();p.name=p.name.replace('synthetic-user','different-owner');
+    const pages=[{}, {}, {}];pages[phase]={dataPoints:[p]};
+    const t=transport(pages);await errorCode('record_account_mismatch',()=>availability({...options,fetcher:t.fetcher}));
+  }
+});
+test('water availability never turns missing date offsets, duplicate points or truncation into a water total',async()=>{
+  const p=point();delete p.hydrationLog.interval.startUtcOffset;delete p.hydrationLog.interval.endUtcOffset;
+  const t=transport([{}, {dataPoints:[p,p]},{}]),out=await availability({...options,fetcher:t.fetcher});
+  assert.equal(out.probes[1].observations,1);assert.equal(out.probes[1].recent_observations,0);assert.equal(out.probes[1].undated_observations,1);assert.equal(out.probes[1].last_day,null);
+  const conflict=transport([{}, {dataPoints:[point(),point('water-0001',322)]}]);await errorCode('duplicate_identity_conflict',()=>availability({...options,fetcher:conflict.fetcher}));
+  for(const bad of [{dataPoints:Array.from({length:26},(_,i)=>point('water-'+String(i).padStart(4,'0')))},{dataPoints:[],nextPageToken:null},{error:{message:'synthetic-private-canary'}},{dataPoints:null}]){
+    const b=transport([{},bad]);await errorCode(bad.dataPoints?.length>25?'record_limit':Object.hasOwn(bad,'nextPageToken')?'invalid_pagination':'invalid_response',()=>availability({...options,fetcher:b.fetcher}));
+  }
+});
 
 test('complete pagination preserves identities, raw volume, interval and source without aggregation',async()=>{
   const a=point(),b=point('water-0002'),c=point('water-0003',0),raw=structuredClone(a);
