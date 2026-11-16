@@ -114,7 +114,9 @@ async function inspectWaterAvailability(entry) {
   const latest = result.probes.map(probe => probe.last_day).filter(Boolean).sort().at(-1);
   entry.message = recent
     ? 'O Google disponibilizou registros recentes de água nesta conferência complementar. A origem ainda precisa ser conferida; nenhum valor foi incluído nos totais.'
-    : `O Google não disponibilizou água de ${fmtDate(from)} a ${fmtDate(lastDay)} nesta conferência.${latest ? ` Entre os registros retornados, a data mais recente é ${fmtDate(latest)}.` : ''}${undated ? ' Há registros sem data local verificável.' : ''} Nenhum valor foi incluído nos totais.`;
+    : undated
+      ? `Há registros de água sem data local verificável. Não foi possível confirmar o período de ${fmtDate(from)} a ${fmtDate(lastDay)}. Nenhum valor foi incluído nos totais.`
+      : `O Google não disponibilizou água de ${fmtDate(from)} a ${fmtDate(lastDay)} nesta conferência.${latest ? ` Entre os registros retornados, a data mais recente é ${fmtDate(latest)}.` : ''} Nenhum valor foi incluído nos totais.`;
   if (result.probes.some(probe => probe.truncated)) entry.message += ' A conferência dos registros recentes foi limitada a 25 por consulta.';
 }
 

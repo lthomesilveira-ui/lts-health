@@ -24,9 +24,9 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
      if(body.action==='read'&&Object.keys(body).sort().join(',')==='action,from,to')return{data:{read:true,observations:0,empty:true,canonical_updated:false},error:null};
      if(body.action==='inspect-nutrition'&&Object.keys(body).sort().join(',')==='action,from,to')return{data:{inspected:true,complete:true,data_type:'nutrition-log',from:body.from,to_exclusive:body.to,observations:0,canonical_updated:false,water_received:false},error:null};
      if(body.action==='inspect-hydration'&&Object.keys(body).sort().join(',')==='action,from,to'){
-      const recent=window.__googleAvailabilityMode==='recent',invalid=window.__googleAvailabilityMode==='invalid',day=recent?body.from:new Date(Date.parse(body.from)-86400000).toISOString().slice(0,10);
+      const recent=window.__googleAvailabilityMode==='recent',invalid=window.__googleAvailabilityMode==='invalid',undated=window.__googleAvailabilityMode==='undated',day=recent?body.from:new Date(Date.parse(body.from)-86400000).toISOString().slice(0,10);
       return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,canonical_updated:false,water_received:false,
-       probes:['civil_window','latest_all_sources','latest_default_sources'].map((kind,i)=>({kind,observations:invalid?26:i?1:0,recent_observations:recent&&i?1:0,undated_observations:0,first_day:i?day:null,last_day:i?day:null,truncated:false,sources:[]}))},error:null};
+       probes:['civil_window','latest_all_sources','latest_default_sources'].map((kind,i)=>({kind,observations:invalid?26:i?1:0,recent_observations:recent&&i?1:0,undated_observations:undated&&i?1:0,first_day:i&&!undated?day:null,last_day:i&&!undated?day:null,truncated:false,sources:[]}))},error:null};
      }
      throw Error('Unexpected synthetic Google operation');
     };return client;
@@ -87,12 +87,17 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    if(!await availability.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
    await availability.click();
    await card.getByRole('status').filter({hasText:'A origem ainda precisa ser conferida; nenhum valor foi incluído nos totais.'}).waitFor();
+   await page.evaluate(()=>{window.__googleAvailabilityMode='undated';});
+   if(!await availability.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
+   await availability.click();
+   await card.getByRole('status').filter({hasText:'Há registros de água sem data local verificável. Não foi possível confirmar o período'}).waitFor();
+   assert.doesNotMatch(await card.getByRole('status').innerText(),/não disponibilizou água/);
    await page.evaluate(()=>{window.__googleAvailabilityMode='invalid';});
    if(!await availability.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
    await availability.click();
    await card.getByRole('status').filter({hasText:'Não foi possível conferir a disponibilidade da água agora.'}).waitFor();
    const availabilityCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration'));
-   assert.equal(availabilityCalls.length,3);assert.ok(availabilityCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   assert.equal(availabilityCalls.length,4);assert.ok(availabilityCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),before);
    assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
    results.push({engine:engineName,width,status:'passed',zeroWrites:true,physicalIPhone:false});
