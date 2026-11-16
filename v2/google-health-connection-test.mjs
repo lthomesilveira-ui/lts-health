@@ -38,7 +38,7 @@ class MemoryStore{
   }
   async release(id,generation,lease,reason){const row=this.rows.get(id);if(row?.generation===generation&&row.lease_token===lease){row.lease_token=null;row.last_error=reason;return true;}return false;}
 }
-function fixture({enabled=true,fetcher,authenticate,resolveConfig,reportCallbackFailure}={}){
+function fixture({enabled=true,fetcher,authenticate,resolveConfig,reportCallbackFailure,reportReadDiagnostic}={}){
   let clock=Date.parse('2030-02-11T16:00:00Z');const now=()=>clock,store=new MemoryStore(now),calls=[],triggers=[];
   const transport=async(url,init)=>{
     calls.push({url:String(url),init});
@@ -48,7 +48,7 @@ function fixture({enabled=true,fetcher,authenticate,resolveConfig,reportCallback
     return response({dataPoints:[point]});
   };
   const auth=authenticate||(async req=>req.headers.get('Authorization')==='Bearer synthetic-owner'?{id:owner,is_anonymous:false}:req.headers.get('Authorization')==='Bearer synthetic-other'?{id:other,is_anonymous:false}:null);
-  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:(c,options)=>{triggers.push(options?.trigger??null);return store;},resolveConfig,fetcher:transport,now,reportCallbackFailure});
+  const handlers=createGoogleHealthHandlers({config:()=>({...config,enabled}),authenticate:auth,storeFactory:(c,options)=>{triggers.push(options?.trigger??null);return store;},resolveConfig,fetcher:transport,now,reportCallbackFailure,reportReadDiagnostic});
   const post=(body,auth='synthetic-owner',origin='https://lthomesilveira-ui.github.io')=>handlers.connection(new Request(config.url+'/functions/v1/health-google-connection',{method:'POST',headers:{Authorization:`Bearer ${auth}`,Origin:origin},body:typeof body==='string'?body:JSON.stringify(body)}));
   const authorize=async()=>{const r=await post({action:'authorize'});assert.equal(r.status,200);return new URL((await r.json()).authorization_url);};
   const callback=(url,extra='')=>handlers.callback(new Request(googleHealthCallback(config)+'?'+new URLSearchParams({state:url.searchParams.get('state'),code:'synthetic-authorization-code'})+extra));
@@ -326,6 +326,33 @@ test('owner nutrition inspection is source-only and cannot fabricate water, pers
   assert.equal((await f.post({action:'inspect-nutrition',from:'2030-02-05',to:'2030-02-12'},'unrecognized')).status,401);
   assert.equal((await f.post({action:'inspect-nutrition',from:'2030-02-05',to:'2030-02-12'},'synthetic-other')).status,200);
   assert.equal(f.store.reads.length,0);
+});
+test('water availability uses the owner lease and existing encrypted grant without snapshots or hydration freshness changes',async()=>{
+  const events=[],f=fixture({reportReadDiagnostic:event=>events.push(event)});await connected(f);
+  const row=f.store.rows.get(owner);row.last_read_at='2030-02-11T15:00:00Z';row.last_scheduled_read_at='2030-02-11T14:00:00Z';
+  const encrypted=row.tokens_encrypted,beforeCalls=f.calls.length;
+  const r=await f.post({action:'inspect-hydration',from:'2030-02-05',to:'2030-02-12'}),out=await r.json();
+  assert.equal(r.status,200);assert.equal(out.inspected,true);assert.equal(out.bounded,true);assert.equal(out.water_received,false);assert.equal(out.canonical_updated,false);
+  assert.equal(f.calls.length-beforeCalls,4);assert.equal(f.store.reads.length,0);assert.equal(row.tokens_encrypted,encrypted);assert.equal(row.last_read_at,'2030-02-11T15:00:00Z');assert.equal(row.last_scheduled_read_at,'2030-02-11T14:00:00Z');assert.equal(row.lease_token,null);
+  assert.deepEqual(events,[{event:'google_health_water_availability_v1',civil_window_observations:1,civil_window_recent:1,civil_window_truncated:false,latest_all_sources_observations:1,latest_all_sources_recent:1,latest_all_sources_truncated:false,latest_default_sources_observations:1,latest_default_sources_recent:1,latest_default_sources_truncated:false}]);
+  for(const canary of [owner,encrypted,'321',identity.healthUserId,'synthetic-source.apps.googleusercontent.com','synthetic-access-only'])assert.ok(!JSON.stringify(events).includes(canary));
+  const calls=f.calls.length;
+  assert.equal((await f.post({action:'inspect-hydration',from:'2030-02-01',to:'2030-02-12'})).status,400);
+  assert.equal((await f.post({action:'inspect-hydration',from:'2030-02-05',to:'2030-02-12',owner})).status,400);
+  assert.equal((await f.post({action:'inspect-hydration',from:'2030-02-05',to:'2030-02-12'},'unrecognized')).status,401);
+  assert.equal((await f.post({action:'inspect-hydration',from:'2030-02-05',to:'2030-02-12'},'synthetic-other')).status,200);
+  assert.equal(f.calls.length,calls);assert.equal(f.store.reads.length,0);
+});
+test('a disconnect during water availability discards the response and emits no success event',async()=>{
+  let resume,entered;const paused=new Promise(resolve=>{resume=resolve;}),seen=new Promise(resolve=>{entered=resolve;}),events=[];
+  const f=fixture({reportReadDiagnostic:event=>events.push(event),fetcher:async url=>{
+    if(String(url).includes('/token'))return response(token);
+    if(new URL(url).pathname.endsWith('/identity'))return response(identity);
+    entered();await paused;return response({});
+  }});await connected(f);
+  const pending=f.post({action:'inspect-hydration',from:'2030-02-05',to:'2030-02-12'});await seen;
+  await f.post({action:'disconnect'});resume();const r=await pending;
+  assert.equal(r.status,409);assert.deepEqual(await r.json(),{error:'authorization_superseded'});assert.deepEqual(events,[]);assert.equal(f.store.reads.length,0);
 });
 test('scheduled status returns bounded owner summary without source payload, identity or credentials',async()=>{
   const f=fixture();await connected(f);const row=f.store.rows.get(owner);
