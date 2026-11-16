@@ -6,7 +6,7 @@ globalThis.window={supabase:{createClient:()=>client}};
 const {state}=await import('./src/core.js');
 const {checkPolarConnection,resetPolarConnection,renderConnections}=await import('./src/polar-connection.js');
 const {checkAutoExportConnection,resetAutoExportConnection}=await import('./src/health-auto-export-connection.js');
-const {actOnGoogleHealth,checkGoogleHealthConnection,renderGoogleHealthConnection,resetGoogleHealthConnection,googleHealthReadWindow}=await import('./src/google-health-connection.js');
+const {actOnGoogleHealth,checkGoogleHealthConnection,renderGoogleHealthConnection,resetGoogleHealthConnection,googleHealthReadWindow,googleHealthPeriodWindow}=await import('./src/google-health-connection.js');
 await checkPolarConnection({syncOnOpen:true});await checkAutoExportConnection();assert.equal(calls.length,0,'absent owner does not call integrations');
 state.session={user:{id:'synthetic-owner'}};
 await checkPolarConnection();assert.deepEqual(calls.map(c=>c.action),['status'],'manual check is read-only');
@@ -43,6 +43,7 @@ Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{
 let status={configured:false,connected:false};
 let authorizationUrl;
 let afterStatus=null;
+let expectedReadDays=30,readResult={read:true,observations:1,empty:false,canonical_updated:false};
 client.functions.invoke=async(name,{body})=>{
   assert.equal(name,'health-google-connection');
   googleCalls.push(body);
@@ -52,9 +53,9 @@ client.functions.invoke=async(name,{body})=>{
   }
   if(body.action==='authorize')return {data:{authorization_url:authorizationUrl},error:null};
   if(body.action==='read'){
-    assert.equal((Date.parse(body.to)-Date.parse(body.from))/86400000,30);
+    assert.equal((Date.parse(body.to)-Date.parse(body.from))/86400000,expectedReadDays);
     status={...status,last_attempt_at:'2001-05-04T19:00:00Z',last_read_at:'2001-05-04T19:00:01Z'};
-    return {data:{read:true,observations:1,empty:false,canonical_updated:false},error:null};
+    return {data:readResult,error:null};
   }
   throw Error('Unexpected Google action');
 };
@@ -132,3 +133,17 @@ const readToday=async to=>readGoogleHealthHydration({...window,to,accessToken:'s
 assert.equal((await readToday(window.to)).unique_count,1,'a current-day provider record is accepted by the actual reader');
 await assert.rejects(()=>readToday(window.lastDay),e=>e.code==='record_outside_window','the former request excluded precisely this current-day record');
 console.log('Manual Google water read includes today in 30 São Paulo civil days, including midnight/year/leap boundaries; previous exclusion reproduced.');
+
+assert.deepEqual(googleHealthPeriodWindow('2030-10-14','2030-10-25'),{from:'2030-10-14',to:'2030-10-26',lastDay:'2030-10-25'});
+assert.deepEqual(googleHealthPeriodWindow('2028-02-29','2028-02-29'),{from:'2028-02-29',to:'2028-03-01',lastDay:'2028-02-29'});
+for(const pair of [['2030-02-29','2030-03-01'],['2030-10-26','2030-10-14'],['2030-01-01','2030-02-01'],['','2030-01-01'],['2030-01-01','<script>']])assert.throws(()=>googleHealthPeriodWindow(...pair));
+afterStatus=null;state.session={user:{id:'synthetic-owner'}};status={configured:true,connected:true};await checkGoogleHealthConnection();googleCalls.length=0;
+expectedReadDays=12;readResult={read:true,observations:0,empty:true,canonical_updated:false};
+await actOnGoogleHealth('read-period',{from:'2030-10-14',lastDay:'2030-10-25'});
+assert.deepEqual(googleCalls,[{action:'read',from:'2030-10-14',to:'2030-10-26'},{action:'status'}]);
+assert.match(renderGoogleHealthConnection(),/De 14\/10\/2030 a 25\/10\/2030, o Google Health não retornou registros de água/);
+assert.doesNotMatch(renderGoogleHealthConnection(),/0 mL|0 ml|consumo zero/);
+googleCalls.length=0;
+await actOnGoogleHealth('read-period',{from:'2030-10-14',lastDay:'2030-11-25'});
+assert.deepEqual(googleCalls,[]);assert.match(renderGoogleHealthConnection(),/até 31 dias/);
+console.log('Owner-selected bounded dates use an exclusive provider end, reject invalid periods before access, and preserve missing water without zero.');

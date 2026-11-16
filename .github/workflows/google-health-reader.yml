@@ -71,11 +71,17 @@ jobs:
         run: npm install --no-save playwright@1.56.1
       - name: Verify browser callback recovery without provider access or writes
         run: node v2/google-health-return-browser.mjs
+      - name: Serve the existing synthetic application
+        run: |
+          python3 -m http.server 4173 >/tmp/health-google-period-http.log 2>&1 &
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:4173/preview/compact-evidence/ >/dev/null && break; sleep 1; done
+      - name: Verify bounded hydration period in desktop and mobile browsers
+        run: node v2/google-health-period-browser.mjs
       - name: Retain invented-data recovery screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: google-health-recovery-synthetic
-          path: artifacts/google-health-return/*.png
+          path: artifacts/google-health-*/*
           if-no-files-found: error
           retention-days: 7

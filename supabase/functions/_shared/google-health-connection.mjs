@@ -96,7 +96,7 @@ async function exchange(c,params,previous,fetcher,now){
 function status(c,row){return {configured:googleHealthConfigured(c),connected:row?.status==='connected',last_read_at:row?.last_read_at??null,last_attempt_at:row?.last_attempt_at??null,last_error:row?.last_error??null,canonical_updated:false};}
 
 // Dependencies are injected for invented-fixture HTTP/transaction tests. Production only injects verified Auth and a service-only store.
-export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now(),reportCallbackFailure=()=>{}}){
+export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now(),reportCallbackFailure=()=>{},reportReadDiagnostic=()=>{}}){
   async function performRead(c,userId,from,to,trigger='manual'){
     hydrationReadParameters(from,to);
     const store=storeFactory(c,{trigger}),row=await store.connection(userId);
@@ -111,7 +111,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
         token=await exchange(c,{grant_type:'refresh_token',refresh_token:token.refresh_token},token,fetcher,now);
         if(!await store.refresh(userId,row.generation,lease,await seal(token,c,tokenDomain(userId))))error('authorization_superseded');
       }
-      const result=await readGoogleHealthHydration({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher});
+      const result=await readGoogleHealthHydration({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher,reportDiagnostic:reportReadDiagnostic});
       const stored=await store.finish(userId,row.generation,lease,result);
       if(stored==='stale')return {connected:false,read:false,superseded:true,canonical_updated:false};
       if(!['stored','unchanged'].includes(stored))error('write_failed');

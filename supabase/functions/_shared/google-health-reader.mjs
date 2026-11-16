@@ -156,7 +156,7 @@ export async function verifyGoogleHealthIdentity({accessToken,grantedScopes,expe
 
 // Caller supplies a server-held OAuth token and the grant returned by Google.
 // This module neither obtains consent nor marks a connection/persistence as complete.
-export async function readGoogleHealthHydration({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch}){
+export async function readGoogleHealthHydration({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch,reportDiagnostic=()=>{}}){
   const params=hydrationReadParameters(from,to);
   const budget={bytes:0},deadline=AbortSignal.timeout(30000);
   const identity=await verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,budget,deadline);
@@ -165,9 +165,14 @@ export async function readGoogleHealthHydration({accessToken,grantedScopes,from,
     if(pages>=maxPages)fail('pagination_limit');
     const payload=await get('/v4/users/me/dataTypes/hydration-log/dataPoints',pageToken?{...params,pageToken}:params,accessToken,fetcher,budget,deadline);
     pages++;
-    if(!Array.isArray(payload.dataPoints))fail('invalid_response');
-    received+=payload.dataPoints.length;if(received>maxPoints)fail('record_limit');
-    for(const point of payload.dataPoints){
+    // ProtoJSON omits empty repeated fields. Accept only the documented empty
+    // list envelope; an error object or an explicitly malformed list stays fatal.
+    const omitted=!Object.hasOwn(payload,'dataPoints')&&Object.keys(payload).every(key=>key==='nextPageToken');
+    if(!omitted&&!Array.isArray(payload.dataPoints))fail('invalid_response');
+    if(omitted){try{reportDiagnostic({event:'google_health_empty_list_omitted'});}catch{}}
+    const points=omitted?[]:payload.dataPoints;
+    received+=points.length;if(received>maxPoints)fail('record_limit');
+    for(const point of points){
       stable(point); // Bound depth and JSON numeric values before cloning private provider data.
       const normalized=observation(point,identity.healthUserId,from,to),previous=records.get(point.name);
       if(previous&&stable(previous.raw)!==stable(point))fail('duplicate_identity_conflict');

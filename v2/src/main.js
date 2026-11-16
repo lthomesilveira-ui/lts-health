@@ -331,7 +331,12 @@ function bindStaticEvents(){
     if(haeCopy){await copyAutoExport(haeCopy.dataset.haeCopy);scheduleRender();return;}
     const googleHealthAction=event.target.closest('[data-google-health-action]');
     if(googleHealthAction){
-      const action=actOnGoogleHealth(googleHealthAction.dataset.googleHealthAction);
+      const card=googleHealthAction.closest('[data-google-health]');
+      const period=googleHealthAction.dataset.googleHealthAction==='read-period'?{
+        from:card.querySelector('[data-google-health-from]')?.value,
+        lastDay:card.querySelector('[data-google-health-through]')?.value
+      }:undefined;
+      const action=actOnGoogleHealth(googleHealthAction.dataset.googleHealthAction,period);
       scheduleRender();await action;scheduleRender();return;
     }
     const polarCheck=event.target.closest('[data-polar-check]');

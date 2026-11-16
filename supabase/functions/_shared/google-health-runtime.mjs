@@ -42,4 +42,5 @@ async function resolveConfig(c){
   });
 }
 export const googleHealthHandlers=createGoogleHealthHandlers({config:googleHealthConfig,authenticate,storeFactory,resolveConfig,
-  reportCallbackFailure:event=>console.warn(JSON.stringify(event))});
+  reportCallbackFailure:event=>console.warn(JSON.stringify(event)),
+  reportReadDiagnostic:event=>console.info(JSON.stringify(event))});
