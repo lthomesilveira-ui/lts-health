@@ -215,3 +215,33 @@ test('an untrusted body-cancellation error cannot escape the fixed provider erro
   const body=new ReadableStream({cancel(){throw Error('sensitive synthetic cancellation');}});
   const t=transport([new Response(body,{status:403})]);await errorCode('permission_denied',()=>read({...options,fetcher:t.fetcher}));
 });
+
+test('nutrition source inspection follows every page, deduplicates identities and withholds food contents',async()=>{
+  const {inspectGoogleHealthNutrition:inspect}=await import('../supabase/functions/_shared/google-health-reader.mjs');
+  const make=(id,day)=>({name:`users/synthetic-user/dataTypes/nutrition-log/dataPoints/${id}`,dataSource:{platform:'FITBIT_WEB_API',application:{webClientId:'SYN123'}},nutritionLog:{interval:{startTime:`${day}T15:00:00Z`,endTime:`${day}T15:01:00Z`,startUtcOffset:'-10800s'},foodDisplayName:'synthetic-private-food',energy:{kilocalories:123},nutrients:[{nutrient:'WATER',amount:999}]}});
+  const a=make('food-0001','2030-02-11'),b=make('food-0002','2030-02-12');
+  const t=transport([{dataPoints:[a],nextPageToken:'second'},{dataPoints:[a,b]}]);
+  const out=await inspect({...options,to:'2030-02-13',fetcher:t.fetcher});
+  assert.equal(out.complete,true);assert.equal(out.observations,2);assert.equal(out.first_day,'2030-02-11');assert.equal(out.last_day,'2030-02-12');
+  assert.deepEqual(out.sources,[{source:{platform:'FITBIT_WEB_API',web_client_id:'SYN123'},observations:2,first_day:'2030-02-11',last_day:'2030-02-12'}]);
+  assert.equal(out.water_received,false);assert.equal(out.canonical_updated,false);
+  for(const canary of ['synthetic-private-food','kilocalories','nutrients','WATER','999','MyFitnessPal','synthetic-token-only'])assert.ok(!JSON.stringify(out).includes(canary));
+  for(const {url,request} of t.calls.slice(1)){
+    assert.equal(url.pathname,'/v4/users/me/dataTypes/nutrition-log/dataPoints');assert.equal(request.method,'GET');assert.equal(request.redirect,'error');assert.equal(request.body,undefined);
+    assert.equal(url.searchParams.get('dataSourceFamily'),family);assert.equal(url.searchParams.get('filter'),'nutrition_log.interval.civil_start_time >= "2030-02-11" AND nutrition_log.interval.civil_start_time < "2030-02-13"');
+  }
+});
+test('nutrition absence remains absence and malformed, foreign or conflicting sources fail closed',async()=>{
+  const {inspectGoogleHealthNutrition:inspect}=await import('../supabase/functions/_shared/google-health-reader.mjs');
+  const empty=await inspect({...options,fetcher:transport([{}]).fetcher});assert.equal(empty.observations,0);assert.equal(empty.first_day,null);assert.equal(empty.last_day,null);assert.equal(empty.water_received,false);assert.deepEqual(empty.sources,[]);
+  const p={name:'users/synthetic-user/dataTypes/nutrition-log/dataPoints/food-0001',nutritionLog:{interval:{startTime:'2030-02-11T15:00:00Z',endTime:'2030-02-11T15:01:00Z',startUtcOffset:'-10800s'}}};
+  for(const [code,pages] of [
+    ['invalid_response',[{dataPoints:null}]],['invalid_response',[{error:{code:500}}]],
+    ['record_account_mismatch',[{dataPoints:[{...p,name:p.name.replace('synthetic-user','another-user')}]}]],
+    ['duplicate_identity_conflict',[{dataPoints:[p],nextPageToken:'more'},{dataPoints:[{...p,food:'changed'}]}]],
+    ['record_outside_window',[{dataPoints:[{...p,nutritionLog:{interval:{...p.nutritionLog.interval,startTime:'2030-02-10T15:00:00Z'}}}]}]],
+    ['invalid_source',[{dataPoints:[{...p,dataSource:{application:{webClientId:{bad:'source'}}}}]}]],
+    ['invalid_pagination',[{nextPageToken:'again'},{nextPageToken:'again'}]]
+  ])await errorCode(code,()=>inspect({...options,fetcher:transport(pages).fetcher}));
+  let calls=0;await errorCode('invalid_date_window',()=>inspect({...options,to:'2030-03-20',fetcher:async()=>calls++}));assert.equal(calls,0);
+});

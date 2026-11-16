@@ -154,6 +154,59 @@ export async function verifyGoogleHealthIdentity({accessToken,grantedScopes,expe
   return verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,{bytes:0},AbortSignal.timeout(30000));
 }
 
+// A separate, owner-requested source check. It never reads hydration as a food
+// nutrient, returns meal contents, infers an app name or writes clinical data.
+export async function inspectGoogleHealthNutrition({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch}){
+  hydrationReadParameters(from,to);
+  const budget={bytes:0},deadline=AbortSignal.timeout(30000);
+  const identity=await verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,budget,deadline);
+  const seen=new Map(),seenTokens=new Set(),groups=new Map(),days=[];
+  let pageToken='',pages=0,received=0,undated=0;
+  for(;;){
+    if(pages>=maxPages)fail('pagination_limit');
+    const payload=await get('/v4/users/me/dataTypes/nutrition-log/dataPoints',{
+      filter:`nutrition_log.interval.civil_start_time >= "${from}" AND nutrition_log.interval.civil_start_time < "${to}"`,
+      dataSourceFamily:GOOGLE_HEALTH_SOURCE_FAMILY,pageSize:'1000',...(pageToken?{pageToken}:{})
+    },accessToken,fetcher,budget,deadline);
+    pages++;
+    const omitted=!Object.hasOwn(payload,'dataPoints')&&Object.keys(payload).every(key=>key==='nextPageToken');
+    if(!omitted&&!Array.isArray(payload.dataPoints))fail('invalid_response');
+    const points=omitted?[]:payload.dataPoints;
+    received+=points.length;if(received>maxPoints)fail('record_limit');
+    for(const point of points){
+      const fingerprint=stable(point),match=object(point)&&typeof point.name==='string'&&/^users\/([A-Za-z0-9-]{1,63})\/dataTypes\/nutrition-log\/dataPoints\/([a-z0-9-]{4,63})$/.exec(point.name);
+      if(!match||!object(point.nutritionLog)||!object(point.nutritionLog.interval))fail('invalid_response');
+      if(match[1]!==identity.healthUserId&&match[1]!=='me')fail('record_account_mismatch');
+      if(seen.has(point.name)){if(seen.get(point.name)!==fingerprint)fail('duplicate_identity_conflict');continue;}
+      seen.set(point.name,fingerprint);
+      const interval=point.nutritionLog.interval,start=instant(interval.startTime),end=instant(interval.endTime);
+      if(end<start)fail('invalid_interval');
+      const offset=offsetNs(interval.startUtcOffset),day=offset===null?null:dayAt(start+offset);
+      if(day!==null&&(day<from||day>=to))fail('record_outside_window');
+      if(interval.civilStartTime!==undefined){const civil=civilDay(interval.civilStartTime);if(!civil||(day!==null&&civil!==day))fail('inconsistent_civil_date');}
+      if(day===null)undated++;else days.push(day);
+      const source=point.dataSource;
+      if(source!==undefined&&!object(source))fail('invalid_source');
+      if(source?.application!==undefined&&!object(source.application))fail('invalid_source');
+      const metadata={};
+      for(const [key,value] of Object.entries({platform:source?.platform,package_name:source?.application?.packageName,web_client_id:source?.application?.webClientId,google_web_client_id:source?.application?.googleWebClientId})){
+        if(value!==undefined){if(typeof value!=='string'||!value||value.length>256||/[\x00-\x1f\x7f]/.test(value))fail('invalid_source');metadata[key]=value;}
+      }
+      const key=stable(metadata),group=groups.get(key)||{source:metadata,observations:0,first_day:null,last_day:null};
+      group.observations++;if(day!==null){if(group.first_day===null||day<group.first_day)group.first_day=day;if(group.last_day===null||day>group.last_day)group.last_day=day;}
+      groups.set(key,group);
+    }
+    const next=payload.nextPageToken;
+    if(next===undefined||next==='')break;
+    if(typeof next!=='string'||next.length>4096||/[^\x21-\x7e]/.test(next)||seenTokens.has(next))fail('invalid_pagination');
+    seenTokens.add(next);pageToken=next;
+  }
+  days.sort();
+  return {complete:true,mode:'read_only',data_type:'nutrition-log',source_family:GOOGLE_HEALTH_SOURCE_FAMILY,from,to_exclusive:to,
+    observations:seen.size,undated_observations:undated,first_day:days[0]??null,last_day:days.at(-1)??null,
+    sources:[...groups.values()],canonical_updated:false,water_received:false};
+}
+
 // Caller supplies a server-held OAuth token and the grant returned by Google.
 // This module neither obtains consent nor marks a connection/persistence as complete.
 export async function readGoogleHealthHydration({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch,reportDiagnostic=()=>{}}){

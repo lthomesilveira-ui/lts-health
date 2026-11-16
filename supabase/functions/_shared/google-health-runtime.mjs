@@ -19,7 +19,8 @@ function storeFactory(c,{trigger='manual'}={}){
   const owned=(values,user,generation,lease)=>db.from('health_google_connections').update(values)
     .eq('user_id',user).eq('generation',generation).eq('lease_token',lease).eq('status','connected');
   return {
-    async connection(user){return checked(await db.from('health_google_connections').select('user_id,generation,status,health_user_id,tokens_encrypted,last_read_at,last_attempt_at,last_error').eq('user_id',user).maybeSingle());},
+    async connection(user){return checked(await db.from('health_google_connections').select('user_id,generation,status,health_user_id,tokens_encrypted,last_read_at,last_attempt_at,last_error,last_scheduled_attempt_at,last_scheduled_read_at').eq('user_id',user).maybeSingle());},
+    async scheduledSummary(user){return checked(await db.from('health_google_hydration_reads').select('from_date,to_date_exclusive,result_status:result->>status,observations:result->unique_count').eq('user_id',user).eq('result->>read_trigger','scheduled').order('received_at',{ascending:false}).limit(1).maybeSingle());},
     async begin(user,hash,payload,expires){return checked(await db.rpc('health_google_begin_authorization',{p_user_id:user,p_state_hash:hash,p_payload_encrypted:payload,p_expires_at:expires}));},
     async consume(hash){const rows=checked(await db.rpc('health_google_consume_state',{p_state_hash:hash}));return rows?.[0]??null;},
     async save(user,generation,hash,healthUserId,tokens){return checked(await db.rpc('health_google_save_authorization',{p_user_id:user,p_generation:generation,p_state_hash:hash,p_health_user_id:healthUserId,p_tokens_encrypted:tokens}));},
@@ -32,7 +33,7 @@ function storeFactory(c,{trigger='manual'}={}){
     },
     async refresh(user,generation,lease,tokens){return Boolean(checked(await owned({tokens_encrypted:tokens},user,generation,lease).select('user_id').maybeSingle()));},
     async finish(user,generation,lease,result){return checked(await db.rpc(trigger==='scheduled'?'health_google_finish_scheduled_read':'health_google_finish_read',{p_user_id:user,p_generation:generation,p_lease_token:lease,p_result:result}));},
-    async release(user,generation,lease,reason){checked(await owned({lease_token:null,lease_until:'1970-01-01T00:00:00Z',last_error:reason},user,generation,lease));}
+    async release(user,generation,lease,reason){return Boolean(checked(await owned({lease_token:null,lease_until:'1970-01-01T00:00:00Z',last_error:reason},user,generation,lease).select('user_id').maybeSingle()));}
   };
 }
 async function resolveConfig(c){
