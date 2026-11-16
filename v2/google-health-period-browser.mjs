@@ -4,7 +4,7 @@ import {chromium,webkit} from 'playwright';
 import {makeCalendarReportFixture,calendarReportService} from '../preview/compact-evidence/tests/calendar-report-fixture.mjs';
 
 assert.ok(process.env.CI,'Use the existing approved repository CI environment');
-const base='http://127.0.0.1:4173/preview/compact-evidence/',dir='artifacts/google-health-period';
+const base='http://127.0.0.1:4173/v2/',dir='artifacts/google-health-period';
 mkdirSync(dir,{recursive:true});
 const results=[];
 for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
@@ -15,7 +15,10 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    window.__googlePeriodCalls=[];const create=window.supabase.createClient;
    window.supabase.createClient=(...args)=>{const client=create(...args),invoke=client.functions.invoke;
     client.functions.invoke=async(name,{body})=>{
-     if(name!=='health-google-connection')return invoke(name,{body});
+     if(name!=='health-google-connection'){
+      if(['health-polar-connection','health-auto-export-connection'].includes(name)&&body.action==='status'&&Object.keys(body).length===1)return{data:{configured:false,connected:false,received:false},error:null};
+      return invoke(name,{body});
+     }
      window.__googlePeriodCalls.push(structuredClone(body));
      if(body.action==='status'&&Object.keys(body).length===1)return{data:{configured:true,connected:true},error:null};
      if(body.action==='read'&&Object.keys(body).sort().join(',')==='action,from,to')return{data:{read:true,observations:0,empty:true,canonical_updated:false},error:null};
