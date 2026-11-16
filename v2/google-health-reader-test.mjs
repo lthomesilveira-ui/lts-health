@@ -119,9 +119,22 @@ for(const milliliters of [null,'321',-1,100001,Infinity]){
 test('empty result is distinct from explicit zero and from a malformed response',async()=>{
   const t=transport([{dataPoints:[]}]),out=await read({...options,fetcher:t.fetcher});
   assert.equal(out.status,'empty');assert.equal(out.complete,true);assert.deepEqual(out.records,[]);assert.equal(out.unique_count,0);
-  for(const payload of [{},{dataPoints:null},[],{dataPoints:{}}]){
+  for(const payload of [{error:{message:'synthetic private canary'}},{dataPoints:null},[],{dataPoints:{}},{unexpected:[]}]){
     const broken=transport([json(payload)]);await errorCode('invalid_response',()=>read({...options,fetcher:broken.fetcher}));
   }
+});
+test('ProtoJSON omitted empty list is absence, preserves pagination, and emits only a fixed diagnostic',async()=>{
+  const events=[],t=transport([{}]);
+  const out=await read({...options,fetcher:t.fetcher,reportDiagnostic:event=>events.push(event)});
+  assert.equal(out.status,'empty');assert.equal(out.complete,true);assert.deepEqual(out.records,[]);
+  assert.deepEqual(events,[{event:'google_health_empty_list_omitted'}]);
+  assert.equal(Object.hasOwn(out,'daily_total'),false);assert.equal(Object.hasOwn(out,'water_ml_total'),false);
+  const paged=transport([{nextPageToken:'synthetic-next'},{dataPoints:[point()]}]);
+  const next=await read({...options,fetcher:paged.fetcher,reportDiagnostic:()=>{throw Error('synthetic logger failure');}});
+  assert.equal(next.pages,2);assert.equal(next.unique_count,1);assert.equal(next.records[0].milliliters,321);
+  assert.equal(paged.calls[2].url.searchParams.get('pageToken'),'synthetic-next');
+  const malformed=transport([{nextPageToken:null}]);
+  await errorCode('invalid_pagination',()=>read({...options,fetcher:malformed.fetcher}));
 });
 test('HTML, malformed JSON and invalid UTF-8 never appear as a successful empty read',async()=>{
   for(const response of [new Response('<html>error</html>'),new Response('{',{headers:{'Content-Type':'application/json'}}),new Response(Uint8Array.from([255]),{headers:{'Content-Type':'application/json'}})]){

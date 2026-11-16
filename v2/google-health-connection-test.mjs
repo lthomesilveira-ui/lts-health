@@ -246,7 +246,7 @@ test('a complete read is stored privately, retained on disconnect, and never ret
 });
 test('a malformed later page cannot create a partial private read or canonical update',async()=>{
   let list=0;
-  const f=fixture({fetcher:async url=>String(url).includes('/token')?response(token):new URL(url).pathname.endsWith('/identity')?response(identity):response(++list===1?{dataPoints:[point],nextPageToken:'two'}:{})});
+  const f=fixture({fetcher:async url=>String(url).includes('/token')?response(token):new URL(url).pathname.endsWith('/identity')?response(identity):response(++list===1?{dataPoints:[point],nextPageToken:'two'}:{dataPoints:null})});
   await connected(f);const r=await f.post({action:'read',from:'2030-02-11',to:'2030-02-12'});assert.equal(r.status,502);assert.equal(f.store.reads.length,0);assert.equal(f.store.rows.get(owner).lease_token,null);
 });
 test('refresh is on demand and preserves an unrotated refresh token and read-only scope',async()=>{

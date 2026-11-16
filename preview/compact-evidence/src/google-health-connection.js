@@ -52,10 +52,18 @@ export function googleHealthReadWindow(now = new Date()) {
   return {from: addDays(lastDay, -29), to: addDays(lastDay, 1), lastDay};
 }
 
-async function readHydration(entry) {
+export function googleHealthPeriodWindow(from, lastDay) {
+  const valid = day => typeof day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(day) &&
+    Number.isFinite(Date.parse(day + 'T00:00:00Z')) && new Date(day + 'T00:00:00Z').toISOString().slice(0, 10) === day;
+  if (!valid(from) || !valid(lastDay) || from > lastDay ||
+      (Date.parse(lastDay) - Date.parse(from)) / 86400000 >= 31) throw Error('Invalid period');
+  return {from, to: addDays(lastDay, 1), lastDay};
+}
+
+async function readHydration(entry, periodWindow = googleHealthReadWindow()) {
   // Google treats the end date as exclusive; include today's records in the
   // same 30 civil days that the owner sees and the background reader uses.
-  const {from, to, lastDay} = googleHealthReadWindow();
+  const {from, to, lastDay} = periodWindow;
   const period = `De ${fmtDate(from)} a ${fmtDate(lastDay)}`;
   let result;
   try {
@@ -127,7 +135,7 @@ export function checkGoogleHealthConnection({initialRead = false} = {}) {
   }, 'Não foi possível concluir a verificação agora. Tente novamente em Dados & fontes.');
 }
 
-export function actOnGoogleHealth(action) {
+export function actOnGoogleHealth(action, requestedPeriod) {
   if (action === 'check') return checkGoogleHealthConnection();
   const entry = activeConnection();
   if (!entry?.status?.configured) return;
@@ -143,6 +151,15 @@ export function actOnGoogleHealth(action) {
   if (!entry.status.connected) return;
   if (action === 'read') {
     return run(entry, () => readHydration(entry), 'Não foi possível conferir os registros de água agora.');
+  }
+  if (action === 'read-period') {
+    entry.period = {from: requestedPeriod?.from || '', lastDay: requestedPeriod?.lastDay || ''};
+    return run(entry, async () => {
+      let period;
+      try { period = googleHealthPeriodWindow(entry.period.from, entry.period.lastDay); }
+      catch { entry.message = 'Escolha uma data inicial e uma final, em ordem, com até 31 dias no período.'; return; }
+      await readHydration(entry, period);
+    }, 'Não foi possível conferir os registros de água agora.');
   }
   if (action === 'disconnect') {
     return run(entry, async () => {
@@ -171,6 +188,7 @@ export function renderGoogleHealthConnection() {
     : 'A integração Google ainda não está disponível. Os registros de água já existentes continuam no aplicativo.';
   const lastRead = status?.last_read_at ? new Date(status.last_read_at) : null;
   const disabled = entry.pending ? ' disabled' : '';
+  const selected = entry.period || googleHealthReadWindow();
   const button = (action, caption) => `<button type="button" data-google-health-action="${action}"${disabled}>${caption}</button>`;
   return `<section class="card sectionGap ltsConnections" data-google-health aria-labelledby="google-health-title" aria-busy="${Boolean(entry.pending)}">
     <div class="sourceStatusTop"><h2 id="google-health-title">Google Health</h2><span class="pill">${label}</span></div>
@@ -182,6 +200,13 @@ export function renderGoogleHealthConnection() {
       ${status?.connected ? button('disconnect', 'Desconectar do LTS Health') : ''}
       ${!status?.configured ? button('check', 'Verificar Google Health') : ''}
     </div>
+    ${status?.connected && !reconnect ? `<details class="googleHealthPeriod"><summary>Consultar outro período</summary>
+      <p>Inclui a data final, com até 31 dias por consulta. Dias sem registro continuam sem informação.</p>
+      <div class="googleHealthPeriodFields">
+        <label>Data inicial<input type="date" data-google-health-from value="${esc(selected.from)}"${disabled}></label>
+        <label>Data final<input type="date" data-google-health-through value="${esc(selected.lastDay)}"${disabled}></label>
+      </div>${button('read-period', 'Conferir água deste período')}
+    </details>` : ''}
     <p class="footerNote" role="status">${esc(entry.message || (entry.pending ? 'Aguarde um instante.' : statusMessage))}</p>
   </section>`;
 }
