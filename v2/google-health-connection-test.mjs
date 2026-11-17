@@ -384,6 +384,29 @@ test('a concurrent disconnect discards alternative method results and diagnostic
   const pending=f.post({action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12'});await seen;
   await f.post({action:'disconnect'});resume();assert.equal((await pending).status,409);assert.equal(f.store.reads.length,0);assert.deepEqual(events,[]);
 });
+test('physical method opt-in is authenticated and isolated, while old clients keep their two-method response',async()=>{
+  const events=[],f=fixture({reportReadDiagnostic:event=>events.push(event),fetcher:async url=>{
+    if(String(url).includes('/token'))return response(token);
+    const path=new URL(url).pathname;
+    if(path.endsWith('/identity'))return response(identity);
+    if(path.endsWith(':reconcile')||path.endsWith(':dailyRollUp'))return response({});
+    if(path.endsWith(':rollUp'))return response({rollupDataPoints:[{startTime:'2030-02-11T03:00:00Z',endTime:'2030-02-12T03:00:00Z',hydrationLog:{amountConsumed:{millilitersSum:321}}}]});
+    throw Error('Unexpected physical method path');
+  }});await connected(f);
+  const row=f.store.rows.get(owner);row.last_read_at='2030-02-11T15:00:00Z';row.last_scheduled_read_at='2030-02-11T14:00:00Z';
+  const encrypted=row.tokens_encrypted,before=f.calls.length;
+  const r=await f.post({action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12',physical_time:true}),out=await r.json();
+  assert.equal(r.status,200);assert.equal(out.physical_time_included,true);assert.deepEqual(out.probes.map(p=>p.observations),[0,0,1]);assert.equal(f.calls.length-before,4);
+  assert.equal(f.store.reads.length,0);assert.equal(row.tokens_encrypted,encrypted);assert.equal(row.last_read_at,'2030-02-11T15:00:00Z');assert.equal(row.last_scheduled_read_at,'2030-02-11T14:00:00Z');assert.equal(row.lease_token,null);
+  assert.equal(events[0].physical_rollup_window_status,'ok');assert.equal(events[0].physical_rollup_window_observations,1);
+  for(const canary of ['321',encrypted,identity.healthUserId,'synthetic-access-only','hydrationLog'])assert.ok(!JSON.stringify([out,events]).includes(canary));
+  const old=await(await f.post({action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12'})).json();assert.equal(old.probes.length,2);assert.equal(old.physical_time_included,false);
+  const calls=f.calls.length;
+  for(const body of [{action:'inspect-hydration-methods',physical_time:false},{action:'inspect-hydration-methods',physical_time:'true'},{action:'read',physical_time:true},{action:'status',physical_time:true}]){
+    assert.equal((await f.post({...body,from:'2030-02-05',to:'2030-02-12'})).status,400);
+  }
+  assert.equal(f.calls.length,calls);
+});
 test('scheduled status returns bounded owner summary without source payload, identity or credentials',async()=>{
   const f=fixture();await connected(f);const row=f.store.rows.get(owner);
   Object.assign(row,{last_scheduled_attempt_at:'2030-02-11T14:00:00Z',last_scheduled_read_at:'2030-02-11T14:00:02Z',scheduled_summary:{from_date:'2030-02-05',to_date_exclusive:'2030-02-12',observations:0,result_status:'empty',raw:'synthetic-private-food',tokens_encrypted:row.tokens_encrypted}});

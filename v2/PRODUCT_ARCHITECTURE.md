@@ -1,3 +1,7 @@
+## 2026-11-17 — Em validação: água por horário e comparação histórica, .141
+
+O pacote055 acrescenta uma consulta opcional por intervalos reais de24horas e permite comparar até7dias escolhidos, usando os campos de período já existentes. A consulta por dia e os registros entre fontes permanecem independentes.123 testes Node passaram, incluindo fronteiras de fuso/DST, intervalos ausentes, zero explícito, resposta recusada, privacidade, concorrência e compatibilidade com a .140. A conta, os registros, os snapshots e a agenda não mudam. Publicação e resultado real ainda dependem dos gates; a ausência atual de água não foi resolvida.
+
 ## 2026-11-16 — Concluído: comparação adicional de água, .140
 
 O pacote054 foi entregue após autorização explícita,118 testes locais e22/22 workflows candidatos; a falha inicial de navegação de arquivos foi preservada e a repetição do mesmo job passou. PR553 preserva a árvore testada; conexão13 autenticada, publicação, smokes e acesso real protegido foram conferidos. A sessão existente executou a comparação de registros conciliados e totais diários uma única vez; resultado, origem e limites ficam no checkpoint privado. Nenhum total, snapshot ou frescor automático foi alterado, e recuperação da água não foi declarada. A alternativa552 permanece no histórico com branch preservada.

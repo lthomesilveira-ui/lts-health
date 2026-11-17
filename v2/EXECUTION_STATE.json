@@ -1,7 +1,7 @@
 {
   "format": "lts-health-execution-state",
   "schema_version": 1,
-  "updated_on": "2026-11-16",
+  "updated_on": "2026-11-17",
   "scope": "public_project_metadata_only",
   "authoritative_documents": {
     "brief": "v2/PROJECT_BRIEF.md",
@@ -50,37 +50,35 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-WATER-METHODS-054",
-    "status": "done",
-    "goal": "Compare documented reconciled hydration and daily rollups when the native Google app and existing API listing disagree.",
+    "id": "PKG-GOOGLE-WATER-PHYSICAL-055",
+    "status": "blocked_external",
+    "goal": "Test physical-time water aggregation and compare a selected known historical window while preserving all clinical data.",
     "task_ids": [
-      "LTS-GOOGLE-WATER-METHODS-001"
+      "LTS-WATER-UPSTREAM-STATUS-001"
     ],
     "public_build": "health-integrated-20261116.140",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261117.141",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-16",
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_WATER_METHODS_20261116.md",
+    "started_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "evidence": [
-      "118 Node tests pass locally.",
-      "Local pinned Playwright1.56.1 Chromium synthetic journeys pass at320/390/1440px with zero writes and unchanged observations.",
-      "GitHub publication was rejected by automatic approval review; branch does not exist remotely. Current public application and server remain unchanged.",
-      "The owner explicitly authorized publication of the reviewed change and application update after the remaining checks. The previous approval block is resolved; historical rejection remains recorded.",
-      "Final candidate3ce8aa059c9fffe4612b223b0d4b6d1db188d2bb passed22/22 workflows. Integrated Production43996826027 passed on attempt2 after a WebKit1440 return-to-files timeout; attempt1 remains recorded.",
-      "Google43996826057 passed reader, PostgreSQL/RLS/concurrency and six Chromium/WebKit320/390/1440px cases. Artifact14290029091 SHA256a99c560f479b243282ac9f6fcc32b5fd0d0728a2d46ce45a5b924e455a364c6b verified; narrow/mobile/desktop images inspected.",
-      "Normal PR553 merge452a17d2c360da72a0f9d092c43c8cb2cc0a6fce preserves tested tree7094b9b08d2bae30a19ed6776556afa70c967b0d. Connection server13 ACTIVE/JWT required and all six files match the tested bundle; unauthenticated status rejects401. Callback and scheduler were not republished.",
-      "Deploy43998339623, Pages43998503579, Homologation43998503635, Google43998339822 and protected real-auth43998339743 passed. Public index and changed module match exact tested bytes.",
-      "Existing authenticated Chrome session manually inspected the exact .140 and completed the two alternative reads once. Valid provider responses, owner isolation, unchanged clinical totals/snapshots and unchanged read/background freshness were verified privately. The outcome is not water recovery or physical-iPhone acceptance.",
-      "Alternative PR552 was reviewed and closed as superseded without deleting its branch or promoting its failed browser candidate."
+    "pending_gates": [
+      "exact candidate CI and responsive browser verification",
+      "connection-server exact readback",
+      "public deploy and actual authenticated comparison"
     ],
-    "completed_on": "2026-11-16"
+    "evidence_document": "v2/releases/GOOGLE_WATER_PHYSICAL_20261117.md",
+    "evidence": [
+      "123 local Node tests pass, preserving all118 prior tests.",
+      "The added physical-time read is explicit and opt-in; the previous two-method request remains compatible.",
+      "The ordinary source reader, scopes, encryption, snapshots, scheduler and canonical totals are preserved.",
+      "Local pinned Playwright1.56.1 Chromium320/390/1440 passed all period, physical-only, missing/unavailable and unchanged-observation checks. Narrow historical and desktop screenshots inspected. WebKit remains a remote candidate gate."
+    ],
+    "investigation_status": "candidate_in_progress"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261116.140",
@@ -1925,10 +1923,11 @@
         "The remaining previous publication repetition42506923880 completed successfully. Package047 publication is now21/21 success, without rerunning the workflow. The original candidate laboratory failure remains preserved.",
         "The owner explicitly approved the concrete old-secret replacement and protected server update. The initial execution reported no deletion/creation/save. A second bounded attempt proved public clipboard transfer but ended before real mutation; an unsaved dummy edit must be cancelled. The current execution proceeds directly with the already approved repair. No credential or hydration recovery is yet claimed.",
         "2026-11-12 evidence review: Recent genuine receiver summaries contain no water. Health Sync correspondence adds no source-specific diagnosis, and the existing export-provider request has no reply. The recent Polar reset recommendation is a separate activity issue and proves no hydration recovery.",
-        "The exact authenticated .140 alternative-method comparison completed once with valid provider responses; private integrity evidence shows no new water observation or automatic-water receipt. Missing source availability and recurrence remain open; no credential or phone retest is required by this negative result."
+        "The exact authenticated .140 alternative-method comparison completed once with valid provider responses; private integrity evidence shows no new water observation or automatic-water receipt. Missing source availability and recurrence remain open; no credential or phone retest is required by this negative result.",
+        "2026-11-17: genuine later phone receipts are accepted but contain no water block. Google automatic reads remain authorized and valid-empty. Package055 tests one untested physical-time method and enables the same comparison over a selected historical interval; no restoration is yet claimed."
       ],
-      "next_action": "Use genuinely attributable upstream water evidence when available; preserve the open current-water condition and avoid repeating completed phone checks.",
-      "blocker": "The original Takeout includes subsequent zero amounts with unspecified volume units, which cannot establish consumption or resolve the source/export discrepancy. No current valid water has reached LTS; the direct Google credential remains invalid.",
+      "next_action": "Verify physical-time aggregation and a bounded selected historical comparison through the existing authorized account. Preserve independent recent-water and automatic-new-water acceptance.",
+      "blocker": "Recent water is visible in the native Google app but has not been made available through the verified source reads or Apple Health transport. The credential repair is complete; it is not an active blocker.",
       "phone_status_capture_received": true
     },
     {
@@ -6244,6 +6243,39 @@
         "The exact public .134 was manually inspected with the real authenticated owner session at1363x936: report recovery opens/focuses the native picker while preserving explicit origin and calendar; typed Timeline names retain units/origins; entry form has14px labels,16px fields,44px native series controls, light backgrounds and modal z2000. The clean form was closed without a health write.",
         "Protected post-merge real-auth43604067943 succeeds with10/10 requested owner cases in desktop Chromium1440x1000 and touch mobile WebKit390x844 plus full-history checks. Private visual evidence was encrypted before upload in artifact14118270111 SHA25652c2cc864f72e0b18878ecd30af2d71a981da191bbbc3af404c498885b3deea6. Physical iPhone and overall owner acceptance remain unclaimed."
       ]
+    },
+    {
+      "id": "PKG-GOOGLE-WATER-METHODS-054",
+      "status": "done",
+      "goal": "Compare documented reconciled hydration and daily rollups when the native Google app and existing API listing disagree.",
+      "task_ids": [
+        "LTS-GOOGLE-WATER-METHODS-001"
+      ],
+      "public_build": "health-integrated-20261116.140",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-16",
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_WATER_METHODS_20261116.md",
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "evidence": [
+        "118 Node tests pass locally.",
+        "Local pinned Playwright1.56.1 Chromium synthetic journeys pass at320/390/1440px with zero writes and unchanged observations.",
+        "GitHub publication was rejected by automatic approval review; branch does not exist remotely. Current public application and server remain unchanged.",
+        "The owner explicitly authorized publication of the reviewed change and application update after the remaining checks. The previous approval block is resolved; historical rejection remains recorded.",
+        "Final candidate3ce8aa059c9fffe4612b223b0d4b6d1db188d2bb passed22/22 workflows. Integrated Production43996826027 passed on attempt2 after a WebKit1440 return-to-files timeout; attempt1 remains recorded.",
+        "Google43996826057 passed reader, PostgreSQL/RLS/concurrency and six Chromium/WebKit320/390/1440px cases. Artifact14290029091 SHA256a99c560f479b243282ac9f6fcc32b5fd0d0728a2d46ce45a5b924e455a364c6b verified; narrow/mobile/desktop images inspected.",
+        "Normal PR553 merge452a17d2c360da72a0f9d092c43c8cb2cc0a6fce preserves tested tree7094b9b08d2bae30a19ed6776556afa70c967b0d. Connection server13 ACTIVE/JWT required and all six files match the tested bundle; unauthenticated status rejects401. Callback and scheduler were not republished.",
+        "Deploy43998339623, Pages43998503579, Homologation43998503635, Google43998339822 and protected real-auth43998339743 passed. Public index and changed module match exact tested bytes.",
+        "Existing authenticated Chrome session manually inspected the exact .140 and completed the two alternative reads once. Valid provider responses, owner isolation, unchanged clinical totals/snapshots and unchanged read/background freshness were verified privately. The outcome is not water recovery or physical-iPhone acceptance.",
+        "Alternative PR552 was reviewed and closed as superseded without deleting its branch or promoting its failed browser candidate."
+      ],
+      "completed_on": "2026-11-16"
     }
   ],
   "latest_published_release": {

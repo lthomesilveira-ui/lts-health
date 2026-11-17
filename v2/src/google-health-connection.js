@@ -140,30 +140,40 @@ async function inspectNutrition(entry) {
     : `De ${fmtDate(from)} a ${fmtDate(lastDay)}, o Google retornou ${countLabel(result.observations, 'registro de alimentação', 'registros de alimentação')}. O recebimento de água continua sendo conferido separadamente.`;
 }
 
-async function inspectWaterMethods(entry) {
-  const {lastDay, to} = googleHealthReadWindow(), from = addDays(lastDay, -6);
-  const result = await invoke({action: 'inspect-hydration-methods', from, to});
+async function inspectWaterMethods(entry, requestedPeriod) {
+  let period;
+  if (requestedPeriod) {
+    try {
+      period = googleHealthPeriodWindow(requestedPeriod.from, requestedPeriod.lastDay);
+      if ((Date.parse(period.to) - Date.parse(period.from)) / 86400000 > 7) throw Error('Comparison window');
+    } catch { entry.message = 'Escolha uma data inicial e uma final, em ordem, com até 7 dias para comparar a disponibilidade.'; return; }
+  } else {
+    const current = googleHealthReadWindow();
+    period = {...current, from: addDays(current.lastDay, -6)};
+  }
+  const {from, to, lastDay} = period;
+  const result = await invoke({action: 'inspect-hydration-methods', from, to, physical_time: true});
   if (!isCurrent(entry)) return;
   if (result.in_progress === true) { entry.message = 'Já existe uma conferência em andamento.'; return; }
-  const kinds = ['reconciled_window', 'daily_rollup_window'];
+  const kinds = ['reconciled_window', 'daily_rollup_window', 'physical_rollup_window'], limits = [25, 7, 8];
   if (result.inspected !== true || result.bounded !== true || result.data_type !== 'hydration-log' ||
       result.mode !== 'read_only' || result.canonical_updated !== false || result.water_received !== false ||
-      result.from !== from || result.to_exclusive !== to || result.max_points_per_probe !== 25 ||
-      !Array.isArray(result.probes) || result.probes.length !== 2 || result.probes.some((probe, index) => {
+      result.from !== from || result.to_exclusive !== to || result.max_points_per_probe !== 25 || result.physical_time_included !== true ||
+      !Array.isArray(result.probes) || result.probes.length !== 3 || result.probes.some((probe, index) => {
         if (!probe || probe.kind !== kinds[index]) return true;
         if (probe.status === 'unavailable') return !['permission_denied', 'provider_request_rejected'].includes(probe.error_code);
         if (probe.status !== 'ok' || typeof probe.truncated !== 'boolean' ||
             ![probe.observations, probe.recent_observations, probe.undated_observations, probe.empty_intervals]
-              .every(value => Number.isInteger(value) && value >= 0 && value <= (index ? 7 : 25)) ||
+              .every(value => Number.isInteger(value) && value >= 0 && value <= limits[index]) ||
             probe.recent_observations + probe.undated_observations !== probe.observations ||
-            probe.empty_intervals > (index ? 7 - probe.observations : 0)) return true;
+            probe.empty_intervals > (index ? limits[index] - probe.observations : 0)) return true;
         if (!probe.recent_observations) return probe.first_day !== null || probe.last_day !== null;
         try {
           googleHealthPeriodWindow(probe.first_day, probe.last_day);
           return probe.first_day < from || probe.last_day >= to;
         } catch { return true; }
       })) throw Error('Invalid water methods inspection');
-  const labels = ['Registros entre fontes', 'Totais por dia'];
+  const labels = ['Registros entre fontes', 'Totais por dia', 'Totais por intervalos de 24 horas'];
   const messages = result.probes.map((probe, index) => `${labels[index]}: ${probe.status === 'unavailable'
     ? 'o Google não permitiu concluir esta leitura'
     : probe.recent_observations ? 'o Google retornou informação de água; a origem ainda precisa ser conferida'
@@ -234,8 +244,9 @@ export function actOnGoogleHealth(action, requestedPeriod) {
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
-  if (action === 'inspect-hydration-methods') {
-    return run(entry, () => inspectWaterMethods(entry), 'Não foi possível comparar as outras leituras de água agora.');
+  if (action === 'inspect-hydration-methods' || action === 'inspect-methods-period') {
+    if (action === 'inspect-methods-period') entry.period = {from: requestedPeriod?.from || '', lastDay: requestedPeriod?.lastDay || ''};
+    return run(entry, () => inspectWaterMethods(entry, action === 'inspect-methods-period' ? entry.period : undefined), 'Não foi possível comparar as outras leituras de água agora.');
   }
   if (action === 'inspect-hydration') {
     return run(entry, () => inspectWaterAvailability(entry), 'Não foi possível conferir a disponibilidade da água agora.');
@@ -319,11 +330,13 @@ export function renderGoogleHealthConnection() {
         <label>Data inicial<input type="date" data-google-health-from value="${esc(selected.from)}"${disabled}></label>
         <label>Data final<input type="date" data-google-health-through value="${esc(selected.lastDay)}"${disabled}></label>
       </div>${button('read-period', 'Conferir água deste período')}
+      <p>Para comparar a disponibilidade entre as leituras do Google, escolha até 7 dias.</p>
+      ${button('inspect-methods-period', 'Comparar disponibilidade neste período')}
     </details>` : ''}
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Conferir disponibilidade da água</summary>
       <p>Use quando a água aparecer no Google, mas não chegar por esta conexão. Compara o período recente com os últimos registros disponíveis, sem alterar os totais.</p>
       ${button('inspect-hydration', 'Conferir disponibilidade no Google')}
-      <p>Se a diferença continuar, compare também os registros entre fontes e os totais por dia dos últimos 7 dias.</p>
+      <p>Se a diferença continuar, compare também os registros entre fontes, os totais por dia e os intervalos de 24 horas dos últimos 7 dias.</p>
       ${button('inspect-hydration-methods', 'Comparar outras leituras de água')}
     </details>` : ''}
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Comparar chegada da alimentação</summary>

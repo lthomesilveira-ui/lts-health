@@ -18,6 +18,73 @@ function transport(reconciled={},daily={}){
 }
 const rejects=(code,work)=>assert.rejects(work,e=>e.code===code);
 
+function physicalTransport(body={}){
+  const calls=[];
+  return {calls,fetcher:async(url,init)=>{
+    calls.push({url:new URL(url),init});
+    if(calls.length===1)return json({name:'users/me/identity',healthUserId:'invented-user'});
+    if(calls.length===2||calls.length===3)return json({});
+    if(calls.length===4)return body instanceof Response?body:json(body);
+    throw Error('Unexpected physical provider request');
+  }};
+}
+const physicalBucket=(hydration=true)=>({startTime:'2030-02-11T03:00:00Z',endTime:'2030-02-12T03:00:00Z',...(hydration?{hydrationLog:{amountConsumed:{millilitersSum:654.25}}}:{})});
+
+test('opt-in physical rollup uses one bounded POST with actual Sao Paulo instants and no clinical values in the result',async()=>{
+  const b=physicalBucket(),t=physicalTransport({rollupDataPoints:[b,b],nextPageToken:'physical-not-followed'});
+  const out=await inspect({...options,fetcher:t.fetcher,includePhysicalTime:true});
+  assert.equal(t.calls.length,4);assert.deepEqual(out.probes.map(p=>p.observations),[0,0,1]);
+  assert.equal(out.physical_time_included,true);assert.equal(out.probes[2].kind,'physical_rollup_window');
+  assert.equal(out.probes[2].first_day,'2030-02-11');assert.equal(out.probes[2].last_day,'2030-02-11');assert.equal(out.probes[2].truncated,true);
+  const request=t.calls[3];assert.equal(request.url.pathname,'/v4/users/me/dataTypes/hydration-log/dataPoints:rollUp');
+  assert.equal(request.init.method,'POST');
+  assert.deepEqual(JSON.parse(request.init.body),{range:{startTime:'2030-02-05T03:00:00.000Z',endTime:'2030-02-12T03:00:00.000Z'},windowSize:'86400s',pageSize:8,dataSourceFamily:family});
+  assert.ok(t.calls.every(c=>c.init.signal===t.calls[0].init.signal&&c.init.redirect==='error'));
+  assert.equal(out.canonical_updated,false);assert.equal(out.water_received,false);
+  for(const canary of ['654.25','invented-access-only','invented-user','hydrationLog','millilitersSum'])assert.ok(!JSON.stringify(out).includes(canary));
+});
+
+test('physical buckets distinguish empty responses, missing payloads, explicit zero and unavailable methods',async()=>{
+  const zero=physicalBucket();zero.hydrationLog.amountConsumed.millilitersSum=0;
+  for(const [body,count,empty] of [[{},0,0],[{rollupDataPoints:[physicalBucket(false)]},0,1],[{rollupDataPoints:[zero]},1,0]]){
+    const t=physicalTransport(body),out=await inspect({...options,fetcher:t.fetcher,includePhysicalTime:true});
+    assert.equal(out.probes[2].observations,count);assert.equal(out.probes[2].empty_intervals,empty);
+  }
+  for(const status of [400,403]){
+    const t=physicalTransport(json({error:{message:'invented-private-error'}},status)),out=await inspect({...options,fetcher:t.fetcher,includePhysicalTime:true});
+    assert.equal(out.probes[2].status,'unavailable');assert.equal(out.probes[2].observations,undefined);assert.ok(!JSON.stringify(out).includes('invented-private-error'));
+  }
+});
+
+test('physical date boundaries retain historical DST, a skipped midnight and the final shorter bucket',async()=>{
+  const cases=[
+    {from:'2018-11-03',to:'2018-11-05',start:'2018-11-03T03:00:00.000Z',end:'2018-11-05T02:00:00.000Z',bucket:{startTime:'2018-11-04T03:00:00Z',endTime:'2018-11-05T02:00:00Z'}},
+    {from:'2018-11-04',to:'2018-11-05',start:'2018-11-04T03:00:00.000Z',end:'2018-11-05T02:00:00.000Z',bucket:{startTime:'2018-11-04T03:00:00Z',endTime:'2018-11-05T02:00:00Z'}},
+    {from:'2019-02-16',to:'2019-02-18',start:'2019-02-16T02:00:00.000Z',end:'2019-02-18T03:00:00.000Z',bucket:{startTime:'2019-02-18T02:00:00Z',endTime:'2019-02-18T03:00:00Z'}}
+  ];
+  for(const c of cases){
+    const t=physicalTransport({rollupDataPoints:[{...c.bucket,hydrationLog:{amountConsumed:{millilitersSum:12}}}]}),out=await inspect({...options,from:c.from,to:c.to,fetcher:t.fetcher,includePhysicalTime:true});
+    assert.deepEqual(JSON.parse(t.calls[3].init.body).range,{startTime:c.start,endTime:c.end});assert.equal(out.probes[2].observations,1);
+    assert.ok(out.probes[2].first_day>=c.from&&out.probes[2].last_day<c.to);
+  }
+});
+
+test('invalid physical windows, foreign metric fields, conflicting buckets and excessive responses are rejected',async()=>{
+  const b=physicalBucket();
+  const cases=[
+    [{rollupDataPoints:[{...b,startTime:'2030-02-11T04:00:00Z'}]},'invalid_interval'],
+    [{rollupDataPoints:[{...b,endTime:'2030-02-12T02:00:00Z'}]},'invalid_interval'],
+    [{rollupDataPoints:[{...b,startTime:'2030-02-04T03:00:00Z',endTime:'2030-02-05T03:00:00Z'}]},'record_outside_window'],
+    [{rollupDataPoints:[{...b,startTime:'2030-02-11T03:00:00',endTime:'2030-02-12T03:00:00Z'}]},'invalid_interval'],
+    [{rollupDataPoints:[{...physicalBucket(false),steps:{countSum:'3'}}]},'invalid_response'],
+    [{rollupDataPoints:[{...b,hydrationLog:{amountConsumed:{millilitersSum:-1}}}]},'invalid_volume'],
+    [{rollupDataPoints:[b,{...b,hydrationLog:{amountConsumed:{millilitersSum:655}}}]},'duplicate_identity_conflict'],
+    [{rollupDataPoints:Array(9).fill(b)},'record_limit'],
+    [{rollupDataPoints:null},'invalid_response']
+  ];
+  for(const [body,code] of cases){const t=physicalTransport(body);await rejects(code,()=>inspect({...options,fetcher:t.fetcher,includePhysicalTime:true}));}
+});
+
 test('alternative reads use documented GET reconciliation and POST daily rollup with bounded civil dates and all-sources',async()=>{
   const point=water(),t=transport({dataPoints:[point,point],nextPageToken:'not-followed'},{rollupDataPoints:[bucket()]});
   const out=await inspect({...options,fetcher:t.fetcher});

@@ -28,11 +28,11 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
       return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,canonical_updated:false,water_received:false,
        probes:['civil_window','latest_all_sources','latest_default_sources'].map((kind,i)=>({kind,observations:invalid?26:i?1:0,recent_observations:recent&&i?1:0,undated_observations:undated&&i?1:0,first_day:i&&!undated?day:null,last_day:i&&!undated?day:null,truncated:false,sources:[]}))},error:null};
      }
-     if(body.action==='inspect-hydration-methods'&&Object.keys(body).sort().join(',')==='action,from,to'){
+     if(body.action==='inspect-hydration-methods'&&body.physical_time===true&&Object.keys(body).sort().join(',')==='action,from,physical_time,to'){
       const mode=window.__googleMethodsMode;
-      return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,canonical_updated:false,water_received:false,
-       probes:['reconciled_window','daily_rollup_window'].map((kind,i)=>mode==='unavailable'&&!i?{kind,status:'unavailable',error_code:'provider_request_rejected'}:
-        {kind,status:'ok',observations:mode==='invalid'?26:mode==='recent'?1:0,recent_observations:mode==='recent'?1:0,undated_observations:0,empty_intervals:mode==='recent'?0:i?7:0,first_day:mode==='recent'?body.from:null,last_day:mode==='recent'?body.from:null,truncated:false})},error:null};
+      return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,physical_time_included:true,canonical_updated:false,water_received:false,
+       probes:['reconciled_window','daily_rollup_window','physical_rollup_window'].map((kind,i)=>mode==='unavailable'&&!i?{kind,status:'unavailable',error_code:'provider_request_rejected'}:
+        {kind,status:'ok',observations:mode==='invalid'?26:mode==='recent'||mode==='physical-only'&&i===2?1:0,recent_observations:mode==='recent'||mode==='physical-only'&&i===2?1:0,undated_observations:0,empty_intervals:mode==='recent'||mode==='physical-only'&&i===2?0:i?Math.min(7,(Date.parse(body.to)-Date.parse(body.from))/86400000):0,first_day:mode==='recent'||mode==='physical-only'&&i===2?body.from:null,last_day:mode==='recent'||mode==='physical-only'&&i===2?body.from:null,truncated:false})},error:null};
      }
      throw Error('Unexpected synthetic Google operation');
     };return client;
@@ -106,18 +106,34 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    const availabilityCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration'));
    assert.equal(availabilityCalls.length,4);assert.ok(availabilityCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
    const methods=card.getByRole('button',{name:'Comparar outras leituras de água',exact:true});
-   for(const mode of ['empty','recent','unavailable','invalid']){
+   for(const mode of ['empty','recent','unavailable','invalid','physical-only']){
     await page.evaluate(value=>{window.__googleMethodsMode=value;},mode);
     if(!await methods.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
     const box=await methods.boundingBox();assert.ok(box&&box.height>=44&&box.x>=0&&box.x+box.width<=width+1);
     await methods.click();
-    await card.getByRole('status').filter({hasText:mode==='invalid'?'Não foi possível comparar as outras leituras de água agora.':mode==='unavailable'?'o Google não permitiu concluir esta leitura':mode==='recent'?'o Google retornou informação de água; a origem ainda precisa ser conferida':'Totais por dia: o Google não retornou informação de água no período.'}).waitFor();
+    await card.getByRole('status').filter({hasText:mode==='invalid'?'Não foi possível comparar as outras leituras de água agora.':mode==='unavailable'?'o Google não permitiu concluir esta leitura':mode==='physical-only'?'Totais por intervalos de 24 horas: o Google retornou informação de água; a origem ainda precisa ser conferida':mode==='recent'?'o Google retornou informação de água; a origem ainda precisa ser conferida':'Totais por dia: o Google não retornou informação de água no período.'}).waitFor();
     assert.doesNotMatch(await card.getByRole('status').innerText(),/0 mL|0 ml|consumo zero/);
     if(mode==='unavailable')assert.doesNotMatch(await card.getByRole('status').innerText(),/Registros entre fontes: o Google não retornou/);
     if(mode==='empty')await card.screenshot({path:`${dir}/${engineName}-${width}-water-methods.png`});
    }
    const methodCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration-methods'));
-   assert.equal(methodCalls.length,4);assert.ok(methodCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   assert.equal(methodCalls.length,5);assert.ok(methodCalls.every(call=>call.physical_time===true&&(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   const periodButton=card.getByRole('button',{name:'Comparar disponibilidade neste período',exact:true});
+   if(!await periodButton.isVisible())await card.getByText('Consultar outro período',{exact:true}).click();
+   await card.getByLabel('Data inicial',{exact:true}).fill('2030-10-14');
+   await card.getByLabel('Data final',{exact:true}).fill('2030-10-25');
+   await periodButton.click();
+   await card.getByRole('status').filter({hasText:'com até 7 dias para comparar a disponibilidade'}).waitFor();
+   assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration-methods').length),5);
+   if(!await periodButton.isVisible())await card.getByText('Consultar outro período',{exact:true}).click();
+   await card.getByLabel('Data final',{exact:true}).fill('2030-10-15');
+   const periodBox=await periodButton.boundingBox();assert.ok(periodBox&&periodBox.height>=44&&periodBox.x>=0&&periodBox.x+periodBox.width<=width+1);
+   await periodButton.click();
+   await card.getByRole('status').filter({hasText:'De 14/10/2030 a 15/10/2030.'}).waitFor();
+   const historical=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration-methods').at(-1));
+   assert.deepEqual(historical,{action:'inspect-hydration-methods',from:'2030-10-14',to:'2030-10-16',physical_time:true});
+   assert.match(await card.getByRole('status').innerText(),/Totais por intervalos de 24 horas: o Google retornou/);
+   await card.screenshot({path:`${dir}/${engineName}-${width}-water-history-methods.png`});
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),before);
    assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
    results.push({engine:engineName,width,status:'passed',zeroWrites:true,physicalIPhone:false});
