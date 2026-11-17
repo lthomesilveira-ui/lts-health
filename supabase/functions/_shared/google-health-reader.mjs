@@ -345,6 +345,49 @@ export async function inspectGoogleHealthHydrationMethods({accessToken,grantedSc
     probes,physical_time_included:includePhysicalTime,canonical_updated:false,water_received:false};
 }
 
+// Explicit one-off evaluation only. Stable/background reads never call beta.
+// Both channels use the same verified owner, physical range, grant and limits.
+// Only fixed summary fields leave this function; no point, source ID or amount.
+export async function inspectGoogleHealthHydrationChannels({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch}){
+  hydrationReadParameters(from,to);
+  if((Date.parse(to)-Date.parse(from))/86400000>7)fail('invalid_date_window');
+  const budget={bytes:0},deadline=AbortSignal.timeout(30000);
+  const identity=await verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,budget,deadline);
+  const start=physicalDayBoundary(from),end=physicalDayBoundary(to),limit=100,probes=[];
+  const params={filter:`hydration_log.interval.start_time >= "${start}" AND hydration_log.interval.start_time < "${end}"`,dataSourceFamily:GOOGLE_HEALTH_SOURCE_FAMILY,pageSize:String(limit)};
+  for(const channel of ['v4','v4beta']){
+    try{
+      const payload=await get(`/${channel}/users/me/dataTypes/hydration-log/dataPoints`,params,accessToken,fetcher,budget,deadline);
+      const omitted=!Object.hasOwn(payload,'dataPoints')&&Object.keys(payload).every(key=>key==='nextPageToken');
+      if(!omitted&&!Array.isArray(payload.dataPoints))fail('invalid_response');
+      const points=omitted?[]:payload.dataPoints,next=payload.nextPageToken;
+      if(points.length>limit)fail('record_limit');
+      if(next!==undefined&&next!==''&&(typeof next!=='string'||next.length>4096||/[^\x21-\x7e]/.test(next)))fail('invalid_pagination');
+      const seen=new Map(),days=[];
+      let positive=0,zero=0,undated=0,identified=0;
+      for(const point of points){
+        const row=observation(point,identity.healthUserId,from,to),fingerprint=stable(point);
+        if(instant(row.interval.startTime)<instant(start)||instant(row.interval.startTime)>=instant(end))fail('record_outside_window');
+        if(seen.has(point.name)){if(seen.get(point.name)!==fingerprint)fail('duplicate_identity_conflict');continue;}
+        seen.set(point.name,fingerprint);
+        if(row.local_day===null){undated++;continue;}
+        days.push(row.local_day);
+        if(row.milliliters===0)zero++;
+        else{positive++;if(!row.held_reasons.includes('source_identity_missing'))identified++;}
+      }
+      days.sort();
+      probes.push({channel,status:'ok',observations:seen.size,positive_observations:positive,zero_observations:zero,
+        undated_observations:undated,source_identified_positive_observations:identified,
+        first_day:days[0]??null,last_day:days.at(-1)??null,truncated:Boolean(next)});
+    }catch(e){
+      if(!(e instanceof GoogleHealthReadError)||!['permission_denied','provider_request_rejected'].includes(e.code))throw e;
+      probes.push({channel,status:'unavailable',error_code:e.code});
+    }
+  }
+  return {mode:'read_only',bounded:true,data_type:'hydration-log',from,to_exclusive:to,max_points_per_channel:limit,
+    experimental_channel_evaluation:true,probes,canonical_updated:false,water_received:false};
+}
+
 // Caller supplies a server-held OAuth token and the grant returned by Google.
 // This module neither obtains consent nor marks a connection/persistence as complete.
 export async function readGoogleHealthHydration({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch,reportDiagnostic=()=>{}}){

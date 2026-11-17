@@ -416,3 +416,19 @@ test('scheduled status returns bounded owner summary without source payload, ide
   row.scheduled_summary.observations=1;assert.equal((await (await f.post({action:'status'})).json()).scheduled_result,null);
   row.scheduled_summary={from_date:'2030-01-01',to_date_exclusive:'2030-02-12',observations:0,result_status:'empty'};assert.equal((await (await f.post({action:'status'})).json()).scheduled_result,null);
 });
+
+test('explicit channel comparison reuses owner lease without snapshots, clinical writes or background channel changes',async()=>{
+  const events=[],f=fixture({reportReadDiagnostic:event=>events.push(event)});await connected(f);
+  const row=f.store.rows.get(owner);row.last_read_at='2030-02-11T15:00:00Z';row.last_scheduled_read_at='2030-02-11T14:00:00Z';
+  const encrypted=row.tokens_encrypted,before=f.calls.length;
+  const r=await f.post({action:'inspect-hydration-channels',from:'2030-02-05',to:'2030-02-12'}),out=await r.json();
+  assert.equal(r.status,200);assert.equal(out.inspected,true);assert.equal(out.experimental_channel_evaluation,true);assert.deepEqual(out.probes.map(p=>p.positive_observations),[1,1]);
+  assert.equal(f.calls.length-before,3);assert.equal(f.store.reads.length,0);assert.equal(row.tokens_encrypted,encrypted);assert.equal(row.last_read_at,'2030-02-11T15:00:00Z');assert.equal(row.last_scheduled_read_at,'2030-02-11T14:00:00Z');assert.equal(row.lease_token,null);
+  assert.equal(events[0].event,'google_health_water_channels_v1');assert.equal(events[0].v4beta_positive_observations,1);
+  for(const canary of [owner,encrypted,'321',identity.healthUserId,'synthetic-access-only','synthetic-source.apps.googleusercontent.com'])assert.ok(!JSON.stringify([out,events]).includes(canary));
+  const calls=f.calls.length;
+  for(const [body,auth,status] of [[{action:'inspect-hydration-channels',from:'2030-02-01',to:'2030-02-12'},undefined,400],[{action:'inspect-hydration-channels',from:'2030-02-05',to:'2030-02-12',owner},undefined,400],[{action:'inspect-hydration-channels',from:'2030-02-05',to:'2030-02-12'},'unrecognized',401],[{action:'inspect-hydration-channels',from:'2030-02-05',to:'2030-02-12'},'synthetic-other',200]])assert.equal((await f.post(body,auth)).status,status);
+  assert.equal(f.calls.length,calls);
+  const start=f.calls.length;await f.handlers.scheduledRead(owner,'2030-02-05','2030-02-12');
+  assert.ok(f.calls.slice(start).every(c=>!c.url.includes('/v4beta/')));
+});
