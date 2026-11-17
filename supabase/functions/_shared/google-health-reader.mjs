@@ -119,10 +119,10 @@ async function readJson(response,budget){
   if(!object(parsed))fail('invalid_response');
   return parsed;
 }
-async function get(path,params,token,fetcher,budget,signal){
+async function get(path,params,token,fetcher,budget,signal,body){
   const url=new URL(path,origin);url.search=new URLSearchParams(params).toString();
   let response;
-  try{response=await fetcher(url,{method:'GET',headers:{Authorization:`Bearer ${token}`,Accept:'application/json'},redirect:'error',signal});}
+  try{response=await fetcher(url,{method:body===undefined?'GET':'POST',headers:{Authorization:`Bearer ${token}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},...(body===undefined?{}:{body:JSON.stringify(body)}),redirect:'error',signal});}
   catch{fail('network_error');}
   if(!response.ok){
     const status=response.status;
@@ -248,6 +248,76 @@ export async function inspectGoogleHealthHydrationAvailability({accessToken,gran
     days.sort();
     probes.push({kind,observations:seen.size,recent_observations:recent,undated_observations:undated,
       first_day:days[0]??null,last_day:days.at(-1)??null,truncated:Boolean(next),sources:[...groups.values()]});
+  }
+  return {mode:'read_only',bounded:true,data_type:'hydration-log',from,to_exclusive:to,max_points_per_probe:25,
+    probes,canonical_updated:false,water_received:false};
+}
+
+// Explicit, bounded comparison of documented alternative hydration reads. Daily
+// rollup buckets without a hydration payload are missing data, never zero water.
+// Amounts are validated privately and never returned, logged or persisted.
+export async function inspectGoogleHealthHydrationMethods({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch}){
+  const civil=hydrationReadParameters(from,to);
+  if((Date.parse(to)-Date.parse(from))/86400000>7)fail('invalid_date_window');
+  const budget={bytes:0},deadline=AbortSignal.timeout(30000);
+  const identity=await verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,budget,deadline);
+  const midnight=day=>{const [year,month,date]=day.split('-').map(Number);return {date:{year,month,day:date},time:{hours:0,minutes:0,seconds:0,nanos:0}};};
+  const probes=[];
+  for(const kind of ['reconciled_window','daily_rollup_window']){
+    try{
+      const daily=kind==='daily_rollup_window';
+      const payload=await get('/v4/users/me/dataTypes/hydration-log/dataPoints:'+(daily?'dailyRollUp':'reconcile'),
+        daily?{}:{...civil,pageSize:'25'},accessToken,fetcher,budget,deadline,
+        daily?{range:{start:midnight(from),end:midnight(to)},windowSizeDays:1,pageSize:7,dataSourceFamily:GOOGLE_HEALTH_SOURCE_FAMILY}:undefined);
+      const field=daily?'rollupDataPoints':'dataPoints';
+      const omitted=!Object.hasOwn(payload,field)&&Object.keys(payload).every(key=>key==='nextPageToken');
+      if(!omitted&&!Array.isArray(payload[field]))fail('invalid_response');
+      const points=omitted?[]:payload[field],limit=daily?7:25;
+      if(points.length>limit)fail('record_limit');
+      const next=payload.nextPageToken;
+      if(next!==undefined&&next!==''&&(typeof next!=='string'||next.length>4096||/[^\x21-\x7e]/.test(next)))fail('invalid_pagination');
+      const seen=new Map(),days=[];let observations=0,undated=0,emptyIntervals=0;
+      for(const point of points){
+        const fingerprint=stable(point);if(!object(point))fail('invalid_response');
+        const fields=daily?['civilStartTime','civilEndTime','hydrationLog']:['dataPointName','hydrationLog'];
+        if(Object.keys(point).some(key=>!fields.includes(key)))fail('invalid_response');
+        let day,key;
+        if(daily){
+          day=civilDay(point.civilStartTime);const end=civilDay(point.civilEndTime);
+          // CivilDateTime.time is optional and defaults to midnight in v4.
+          const aligned=value=>value.time===undefined||object(value.time)&&['hours','minutes','seconds','nanos'].every(k=>value.time[k]===undefined||value.time[k]===0);
+          if(!day||!end||!aligned(point.civilStartTime)||!aligned(point.civilEndTime)||Date.parse(end)-Date.parse(day)!==86400000)fail('invalid_interval');
+          if(day<from||end>to)fail('record_outside_window');key=day;
+        }else{
+          if(point.dataPointName!==undefined&&point.dataPointName!==''){
+            const m=typeof point.dataPointName==='string'&&/^users\/([A-Za-z0-9-]{1,63})\/dataTypes\/hydration-log\/dataPoints\/([a-z0-9-]{4,63})$/.exec(point.dataPointName);
+            if(!m||(m[1]!==identity.healthUserId&&m[1]!=='me'))fail('record_account_mismatch');key=point.dataPointName;
+          }
+          const interval=point.hydrationLog?.interval;
+          if(!object(interval)||!object(point.hydrationLog?.amountConsumed))fail('invalid_hydration_record');
+          const start=instant(interval.startTime),end=instant(interval.endTime),offset=offsetNs(interval.startUtcOffset),endOffset=offsetNs(interval.endUtcOffset);
+          if(end<start)fail('invalid_interval');day=offset===null?null:dayAt(start+offset);
+          for(const [value,ns,zone] of [[interval.civilStartTime,start,offset],[interval.civilEndTime,end,endOffset]]){
+            if(value!==undefined&&(!civilDay(value)||(zone!==null&&civilDay(value)!==dayAt(ns+zone))))fail('inconsistent_civil_date');
+          }
+          if(day!==null&&(day<from||day>=to))fail('record_outside_window');
+        }
+        if(key!==undefined&&seen.has(key)){if(seen.get(key)!==fingerprint)fail('duplicate_identity_conflict');continue;}
+        if(key!==undefined)seen.set(key,fingerprint);
+        if(daily&&point.hydrationLog===undefined){emptyIntervals++;continue;}
+        const amount=point.hydrationLog?.amountConsumed;
+        const ml=amount?.[daily?'millilitersSum':'milliliters'];
+        if(!object(amount)||typeof ml!=='number'||!Number.isFinite(ml)||ml<0||ml>100000)fail('invalid_volume');
+        observations++;if(day===null)undated++;else days.push(day);
+      }
+      days.sort();probes.push({kind,status:'ok',observations,recent_observations:observations-undated,undated_observations:undated,
+        empty_intervals:emptyIntervals,first_day:days[0]??null,last_day:days.at(-1)??null,truncated:Boolean(next)});
+    }catch(e){
+      // A method rejected by the provider is not an empty result. Preserve the
+      // independent method's opportunity without exposing provider error text.
+      if(!(e instanceof GoogleHealthReadError)||!['permission_denied','provider_request_rejected'].includes(e.code))throw e;
+      probes.push({kind,status:'unavailable',error_code:e.code});
+    }
   }
   return {mode:'read_only',bounded:true,data_type:'hydration-log',from,to_exclusive:to,max_points_per_probe:25,
     probes,canonical_updated:false,water_received:false};

@@ -140,6 +140,39 @@ async function inspectNutrition(entry) {
     : `De ${fmtDate(from)} a ${fmtDate(lastDay)}, o Google retornou ${countLabel(result.observations, 'registro de alimentação', 'registros de alimentação')}. O recebimento de água continua sendo conferido separadamente.`;
 }
 
+async function inspectWaterMethods(entry) {
+  const {lastDay, to} = googleHealthReadWindow(), from = addDays(lastDay, -6);
+  const result = await invoke({action: 'inspect-hydration-methods', from, to});
+  if (!isCurrent(entry)) return;
+  if (result.in_progress === true) { entry.message = 'Já existe uma conferência em andamento.'; return; }
+  const kinds = ['reconciled_window', 'daily_rollup_window'];
+  if (result.inspected !== true || result.bounded !== true || result.data_type !== 'hydration-log' ||
+      result.mode !== 'read_only' || result.canonical_updated !== false || result.water_received !== false ||
+      result.from !== from || result.to_exclusive !== to || result.max_points_per_probe !== 25 ||
+      !Array.isArray(result.probes) || result.probes.length !== 2 || result.probes.some((probe, index) => {
+        if (!probe || probe.kind !== kinds[index]) return true;
+        if (probe.status === 'unavailable') return !['permission_denied', 'provider_request_rejected'].includes(probe.error_code);
+        if (probe.status !== 'ok' || typeof probe.truncated !== 'boolean' ||
+            ![probe.observations, probe.recent_observations, probe.undated_observations, probe.empty_intervals]
+              .every(value => Number.isInteger(value) && value >= 0 && value <= (index ? 7 : 25)) ||
+            probe.recent_observations + probe.undated_observations !== probe.observations ||
+            probe.empty_intervals > (index ? 7 - probe.observations : 0)) return true;
+        if (!probe.recent_observations) return probe.first_day !== null || probe.last_day !== null;
+        try {
+          googleHealthPeriodWindow(probe.first_day, probe.last_day);
+          return probe.first_day < from || probe.last_day >= to;
+        } catch { return true; }
+      })) throw Error('Invalid water methods inspection');
+  const labels = ['Registros entre fontes', 'Totais por dia'];
+  const messages = result.probes.map((probe, index) => `${labels[index]}: ${probe.status === 'unavailable'
+    ? 'o Google não permitiu concluir esta leitura'
+    : probe.recent_observations ? 'o Google retornou informação de água; a origem ainda precisa ser conferida'
+    : probe.undated_observations ? 'há registros sem data local verificável'
+    : probe.truncated ? 'não apareceu água nesta página limitada'
+    : 'o Google não retornou informação de água no período'}.`);
+  entry.message = `De ${fmtDate(from)} a ${fmtDate(lastDay)}. ${messages.join(' ')} Nenhum valor foi incluído nos totais.`;
+}
+
 function googleAuthorizationUrl(value) {
   const url = new URL(value);
   const exactParameter = (name, expected) => {
@@ -201,6 +234,9 @@ export function actOnGoogleHealth(action, requestedPeriod) {
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
+  if (action === 'inspect-hydration-methods') {
+    return run(entry, () => inspectWaterMethods(entry), 'Não foi possível comparar as outras leituras de água agora.');
+  }
   if (action === 'inspect-hydration') {
     return run(entry, () => inspectWaterAvailability(entry), 'Não foi possível conferir a disponibilidade da água agora.');
   }
@@ -287,6 +323,8 @@ export function renderGoogleHealthConnection() {
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Conferir disponibilidade da água</summary>
       <p>Use quando a água aparecer no Google, mas não chegar por esta conexão. Compara o período recente com os últimos registros disponíveis, sem alterar os totais.</p>
       ${button('inspect-hydration', 'Conferir disponibilidade no Google')}
+      <p>Se a diferença continuar, compare também os registros entre fontes e os totais por dia dos últimos 7 dias.</p>
+      ${button('inspect-hydration-methods', 'Comparar outras leituras de água')}
     </details>` : ''}
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Comparar chegada da alimentação</summary>
       <p>Consulta os últimos 7 dias de alimentação no Google para distinguir esse envio do de água. Não importa refeições nem altera os totais.</p>

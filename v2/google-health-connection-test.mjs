@@ -354,6 +354,36 @@ test('a disconnect during water availability discards the response and emits no 
   await f.post({action:'disconnect'});resume();const r=await pending;
   assert.equal(r.status,409);assert.deepEqual(await r.json(),{error:'authorization_superseded'});assert.deepEqual(events,[]);assert.equal(f.store.reads.length,0);
 });
+test('alternative water methods retain owner isolation, unchanged snapshots and freshness, and private diagnostics',async()=>{
+  const events=[],f=fixture({reportReadDiagnostic:event=>events.push(event),fetcher:async url=>{
+    if(String(url).includes('/token'))return response(token);
+    if(new URL(url).pathname.endsWith('/identity'))return response(identity);
+    if(new URL(url).pathname.endsWith(':reconcile'))return response({dataPoints:[{dataPointName:point.name,hydrationLog:point.hydrationLog}]});
+    if(new URL(url).pathname.endsWith(':dailyRollUp'))return response({rollupDataPoints:[{civilStartTime:{date:{year:2030,month:2,day:11},time:{}},civilEndTime:{date:{year:2030,month:2,day:12},time:{}}}]});
+    throw Error('Unexpected provider path');
+  }});await connected(f);
+  const row=f.store.rows.get(owner);row.last_read_at='2030-02-11T15:00:00Z';row.last_scheduled_read_at='2030-02-11T14:00:00Z';
+  const encrypted=row.tokens_encrypted,beforeCalls=f.calls.length;
+  const result=await f.post({action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12'}),out=await result.json();
+  assert.equal(result.status,200);assert.equal(out.inspected,true);assert.deepEqual(out.probes.map(p=>p.observations),[1,0]);
+  assert.equal(out.probes[1].empty_intervals,1);assert.equal(f.calls.length-beforeCalls,3);assert.equal(f.store.reads.length,0);
+  assert.equal(row.tokens_encrypted,encrypted);assert.equal(row.last_read_at,'2030-02-11T15:00:00Z');assert.equal(row.last_scheduled_read_at,'2030-02-11T14:00:00Z');assert.equal(row.lease_token,null);
+  assert.equal(events.length,1);assert.equal(events[0].event,'google_health_water_methods_v1');
+  for(const privateValue of [owner,encrypted,'321',identity.healthUserId,'synthetic-access-only','hydrationLog'])assert.ok(!JSON.stringify(events).includes(privateValue));
+  const calls=f.calls.length;
+  for(const [body,auth,status] of [[{action:'inspect-hydration-methods',from:'2030-02-01',to:'2030-02-12'},undefined,400],[{action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12',owner},undefined,400],[{action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12'},'unrecognized',401],[{action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12'},'synthetic-other',200]])assert.equal((await f.post(body,auth)).status,status);
+  assert.equal(f.calls.length,calls);
+});
+test('a concurrent disconnect discards alternative method results and diagnostics',async()=>{
+  let resume,entered;const paused=new Promise(resolve=>{resume=resolve;}),seen=new Promise(resolve=>{entered=resolve;}),events=[];
+  const f=fixture({reportReadDiagnostic:event=>events.push(event),fetcher:async url=>{
+    if(String(url).includes('/token'))return response(token);
+    if(new URL(url).pathname.endsWith('/identity'))return response(identity);
+    entered();await paused;return response({});
+  }});await connected(f);
+  const pending=f.post({action:'inspect-hydration-methods',from:'2030-02-05',to:'2030-02-12'});await seen;
+  await f.post({action:'disconnect'});resume();assert.equal((await pending).status,409);assert.equal(f.store.reads.length,0);assert.deepEqual(events,[]);
+});
 test('scheduled status returns bounded owner summary without source payload, identity or credentials',async()=>{
   const f=fixture();await connected(f);const row=f.store.rows.get(owner);
   Object.assign(row,{last_scheduled_attempt_at:'2030-02-11T14:00:00Z',last_scheduled_read_at:'2030-02-11T14:00:02Z',scheduled_summary:{from_date:'2030-02-05',to_date_exclusive:'2030-02-12',observations:0,result_status:'empty',raw:'synthetic-private-food',tokens_encrypted:row.tokens_encrypted}});
