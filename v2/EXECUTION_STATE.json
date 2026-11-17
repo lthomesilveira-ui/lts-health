@@ -51,14 +51,14 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-STARTUP-ASSET-RECOVERY-059",
+    "id": "PKG-REPORT-SOURCE-COPY-060",
     "status": "in_progress",
-    "goal": "Recover transient public stylesheet and module failures without trapping startup, losing open input or reloading an active health screen.",
+    "goal": "Show a human training-source label in the report while retaining the distinction between recorded workout and confirmed or unknown measurement origins.",
     "task_ids": [
-      "LTS-STARTUP-ASSET-RECOVERY-001"
+      "LTS-REPORT-SOURCE-COPY-001"
     ],
-    "public_build": "health-integrated-20261117.143",
-    "candidate_build": "health-integrated-20261117.144",
+    "public_build": "health-integrated-20261117.144",
+    "candidate_build": "health-integrated-20261117.145",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
@@ -68,35 +68,35 @@
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
     "pending_gates": [
-      "browser_fault_injection",
       "remote_candidate_checks",
+      "responsive_browser",
       "exact_publication",
       "protected_authenticated_app"
     ],
-    "evidence_document": "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+    "evidence_document": "v2/releases/REPORT_SOURCE_COPY_20261117.md",
     "evidence": [
-      "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
-      "Retained production runs44183502867 and44186458378 show public CSS/module HTTP503 failures; the original document has only a manual startup recovery.",
-      "Six local recovery-boundary tests passed. Deployed inventory, production graph/source parity, Home Screen contract, privacy and public-payload checks passed. Browser fault-injection, candidate CI, publication and protected owner checks remain pending."
+      "v2/releases/REPORT_SOURCE_COPY_20261117.md",
+      "Authenticated.144 report inspection reproduced a primary training source label containing user_chat and the internal telemetry marker. Original record values and source identity remain intact.",
+      "The actual report renderer and source-label helper passed synthetic regression checks for unknown/confirmed session origins, unchanged stored source/status/duration and exact clinical text. Candidate browser and publication checks remain pending."
     ]
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261117.143",
+    "build_id": "health-integrated-20261117.144",
     "published_on": "2026-11-17",
-    "release_kind": "calendar_report_group_presentation",
-    "main_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
-    "runtime_promotion_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
-    "candidate_commit": "a2c8e9f22cac591f714a19f7b8ed1bca570b2618",
-    "tested_tree": "4863641f59fcb6a3c34240f9ab7bb3d7a6570092",
+    "release_kind": "startup_asset_recovery",
+    "main_commit": "4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c",
+    "runtime_promotion_commit": "4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c",
+    "candidate_commit": "221fac198dfce4bab663b563b9ef3e719c5ba42b",
+    "tested_tree": "a2f896a0516f2624977c7759df69a4f153ecae89",
     "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#analise",
-    "manual_exact_public_status": "authenticated_report_group_totals_verified",
-    "automated_runtime_and_responsive_status": "Exact candidate checks, Chromium/WebKit calendar/PDF evidence, publication and protected actual-owner desktop/mobile journeys passed. Physical iPhone acceptance remains separate.",
+    "manual_exact_public_status": "existing_authenticated_session_opened_exact_build",
+    "automated_runtime_and_responsive_status": "Twenty candidate workflows, actual503 recovery cases, desktop/mobile application routes, public publication and protected actual-owner checks passed.",
     "ci_summary": {
-      "candidate_success": 21,
-      "candidate_total": 21,
-      "deploy_run": 44148403294,
+      "candidate_success": 20,
+      "candidate_total": 20,
+      "deploy_run": 44199845541,
       "deploy_status": "success",
-      "actual_auth_run": 44148403236,
+      "actual_auth_run": 44199845488,
       "actual_auth_status": "success"
     },
     "physical_device_tested": false,
@@ -107,12 +107,11 @@
     "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
     "preserved_base_build": "health-integrated-20261112.133",
     "evidence": [
-      "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
-      "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
-      "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
-      "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
-      "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
-      "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
+      "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+      "PR563 candidate221fac198dfce4bab663b563b9ef3e719c5ba42b/treea2f896a0516f2624977c7759df69a4f153ecae89 passed20/20 workflows, including eighteen actual503 baseline/recovery scenarios in Chromium/WebKit at320/393/1440px.",
+      "The host browser preparation initially hit its ten-minute limit while downloading Ubuntu packages; only that job was rerun unchanged and passed. The initial release-contract and same-document navigation-count failures remain retained.",
+      "Normal merge4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c preserves the tested tree. Deploy44199845541, Pages44199934982/44199935015 and protected actual-owner44199845488 passed. The two one-time water comparison steps were skipped.",
+      "The actual Cloud Browser reused its existing authenticated session and opened exact.144 with the report rendered, startup/login hidden and no horizontal overflow. Public index and three relevant assets match the tested bytes. No physical iPhone or owner/global acceptance is claimed."
     ]
   },
   "tasks": [
@@ -4298,7 +4297,7 @@
       "id": "LTS-STARTUP-ASSET-RECOVERY-001",
       "area": "startup and presentation continuity",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Recover transient public stylesheet and module failures without trapping startup, losing open input or reloading an active health screen.",
       "acceptance": [
@@ -4309,14 +4308,213 @@
       ],
       "evidence": [
         "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
-        "Retained production runs44183502867 and44186458378 show public CSS/module HTTP503 failures; the original document has only a manual startup recovery.",
-        "Six local recovery-boundary tests passed. Deployed inventory, production graph/source parity, Home Screen contract, privacy and public-payload checks passed. Browser fault-injection, candidate CI, publication and protected owner checks remain pending."
+        "PR563 candidate221fac198dfce4bab663b563b9ef3e719c5ba42b/treea2f896a0516f2624977c7759df69a4f153ecae89 passed20/20 workflows, including eighteen actual503 baseline/recovery scenarios in Chromium/WebKit at320/393/1440px.",
+        "The host browser preparation initially hit its ten-minute limit while downloading Ubuntu packages; only that job was rerun unchanged and passed. The initial release-contract and same-document navigation-count failures remain retained.",
+        "Normal merge4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c preserves the tested tree. Deploy44199845541, Pages44199934982/44199935015 and protected actual-owner44199845488 passed. The two one-time water comparison steps were skipped.",
+        "The actual Cloud Browser reused its existing authenticated session and opened exact.144 with the report rendered, startup/login hidden and no horizontal overflow. Public index and three relevant assets match the tested bytes. No physical iPhone or owner/global acceptance is claimed."
       ],
-      "next_action": "Finish actual-browser fault cases, publish the exact validated candidate and verify the public and protected application before marking done.",
+      "next_action": "Keep the bounded recovery and original source/authentication boundaries in later releases.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-REPORT-SOURCE-COPY-001",
+      "area": "report source presentation",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Show a human training-source label in the report while retaining the distinction between recorded workout and confirmed or unknown measurement origins.",
+      "acceptance": [
+        "The observed user_chat and decorated telemetry marker read as human source metadata in the primary report card.",
+        "Source keys, original source text, telemetry status, dates, values, free-form clinical notes and comparisons are unchanged.",
+        "Affected source/report contracts, responsive browser gates, exact published assets and protected actual-owner application checks pass."
+      ],
+      "evidence": [
+        "v2/releases/REPORT_SOURCE_COPY_20261117.md",
+        "Authenticated.144 report inspection reproduced a primary training source label containing user_chat and the internal telemetry marker. Original record values and source identity remain intact.",
+        "The actual report renderer and source-label helper passed synthetic regression checks for unknown/confirmed session origins, unchanged stored source/status/duration and exact clinical text. Candidate browser and publication checks remain pending."
+      ],
+      "next_action": "Validate the exact.145 candidate, publish and verify the actual report before closing.",
       "blocker": null
     }
   ],
   "package_history": [
+    {
+      "id": "PKG-STARTUP-ASSET-RECOVERY-059",
+      "status": "done",
+      "goal": "Recover transient public stylesheet and module failures without trapping startup, losing open input or reloading an active health screen.",
+      "task_ids": [
+        "LTS-STARTUP-ASSET-RECOVERY-001"
+      ],
+      "public_build": "health-integrated-20261117.144",
+      "candidate_build": "health-integrated-20261117.144",
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-17",
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "pending_gates": [],
+      "evidence_document": "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+      "evidence": [
+        "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+        "PR563 candidate221fac198dfce4bab663b563b9ef3e719c5ba42b/treea2f896a0516f2624977c7759df69a4f153ecae89 passed20/20 workflows, including eighteen actual503 baseline/recovery scenarios in Chromium/WebKit at320/393/1440px.",
+        "The host browser preparation initially hit its ten-minute limit while downloading Ubuntu packages; only that job was rerun unchanged and passed. The initial release-contract and same-document navigation-count failures remain retained.",
+        "Normal merge4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c preserves the tested tree. Deploy44199845541, Pages44199934982/44199935015 and protected actual-owner44199845488 passed. The two one-time water comparison steps were skipped.",
+        "The actual Cloud Browser reused its existing authenticated session and opened exact.144 with the report rendered, startup/login hidden and no horizontal overflow. Public index and three relevant assets match the tested bytes. No physical iPhone or owner/global acceptance is claimed."
+      ],
+      "completed_on": "2026-11-17",
+      "candidate_commit": "221fac198dfce4bab663b563b9ef3e719c5ba42b",
+      "tested_tree": "a2f896a0516f2624977c7759df69a4f153ecae89",
+      "runtime_promotion_commit": "4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c",
+      "publication_checks_observed": [
+        {
+          "id": 44199934982,
+          "name": "LTS Health v2 Homologation Pages Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199935015,
+          "name": "LTS Health v2 Pages Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845857,
+          "name": "LTS Health Functional Depth",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845720,
+          "name": "LTS Health Isolated Preview",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 44199845745,
+          "name": "LTS Health Polar background",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845983,
+          "name": "LTS Health Visual Training Report",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 44199845488,
+          "name": "LTS Health Real Auth E2E",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845574,
+          "name": "LTS Health v2 Nutrition History Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845439,
+          "name": "LTS Health Polar original history review",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845794,
+          "name": "LTS Health Timeline Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845449,
+          "name": "LTS Health calendar reports and local PDF",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 44199845604,
+          "name": "LTS Health Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845438,
+          "name": "LTS Health Fleury source audit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845541,
+          "name": "Deploy LTS Health",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845719,
+          "name": "LTS Health Auto Export",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845665,
+          "name": "LTS Health Documented Plan Comparison",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845993,
+          "name": "LTS Health Recovery Depth Smoke",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845883,
+          "name": "LTS Health Public Entry Diagnostics",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199846170,
+          "name": "LTS Health Laboratory Originals",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845567,
+          "name": "LTS Health iPhone Home Screen",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845827,
+          "name": "LTS Health Google hydration reader",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845829,
+          "name": "LTS Health Fleury preview",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199846107,
+          "name": "LTS Health Cockpit Experience",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 44199845777,
+          "name": "LTS Health Integrated Production",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
     {
       "id": "PKG-CONNECTION-AND-FILE-STATUS-051",
       "status": "done",
@@ -11786,16 +11984,16 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-17",
-    "source_main_commit": "ec2220faf6c2da7829fc7e6ed332724e734ffb15",
-    "runtime_build": "health-integrated-20261117.143",
-    "candidate_build": "health-integrated-20261117.144",
+    "source_main_commit": "4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c",
+    "runtime_build": "health-integrated-20261117.144",
+    "candidate_build": "health-integrated-20261117.145",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 146,
+      "done": 147,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 3,
@@ -11804,8 +12002,13 @@
     "executable_task_count": 1,
     "evidence": [
       "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
-      "Retained production runs44183502867 and44186458378 show public CSS/module HTTP503 failures; the original document has only a manual startup recovery.",
-      "Six local recovery-boundary tests passed. Deployed inventory, production graph/source parity, Home Screen contract, privacy and public-payload checks passed. Browser fault-injection, candidate CI, publication and protected owner checks remain pending."
+      "PR563 candidate221fac198dfce4bab663b563b9ef3e719c5ba42b/treea2f896a0516f2624977c7759df69a4f153ecae89 passed20/20 workflows, including eighteen actual503 baseline/recovery scenarios in Chromium/WebKit at320/393/1440px.",
+      "The host browser preparation initially hit its ten-minute limit while downloading Ubuntu packages; only that job was rerun unchanged and passed. The initial release-contract and same-document navigation-count failures remain retained.",
+      "Normal merge4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c preserves the tested tree. Deploy44199845541, Pages44199934982/44199935015 and protected actual-owner44199845488 passed. The two one-time water comparison steps were skipped.",
+      "The actual Cloud Browser reused its existing authenticated session and opened exact.144 with the report rendered, startup/login hidden and no horizontal overflow. Public index and three relevant assets match the tested bytes. No physical iPhone or owner/global acceptance is claimed.",
+      "v2/releases/REPORT_SOURCE_COPY_20261117.md",
+      "Authenticated.144 report inspection reproduced a primary training source label containing user_chat and the internal telemetry marker. Original record values and source identity remain intact.",
+      "The actual report renderer and source-label helper passed synthetic regression checks for unknown/confirmed session origins, unchanged stored source/status/duration and exact clinical text. Candidate browser and publication checks remain pending."
     ],
     "open_dependency_policy": "Work outside hydration proceeds independently. Historical source, exact proposal, coverage, lineage, original export diagnostics and physical/global acceptance remain open until their own evidence exists."
   },

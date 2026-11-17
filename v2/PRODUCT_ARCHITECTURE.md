@@ -1,3 +1,7 @@
+## 2026-11-17 — .144 verified; report source presentation in validation
+
+Package059 is delivered: bounded startup/style recovery passed the exact candidate, synthetic503 browsers, public release and protected actual-owner checks. The existing Cloud Browser session opened.144 successfully. Package060 addresses a reproduced primary report source label containing an internal chat identifier and session telemetry marker. Candidate.145 changes source presentation only; original data and provenance remain intact. Its browser/publication/actual-owner gates are pending. Details: v2/releases/STARTUP_ASSET_RECOVERY_20261117.md and v2/releases/REPORT_SOURCE_COPY_20261117.md.
+
 ## 2026-11-17 — Em validação: recuperação de abertura e estilos, .144
 
 O pacote059 trata uma falha concreta independente da água: uma resposta temporária503 de estilo ou módulo pode deixar a abertura parada ou a apresentação incompleta. A candidata recupera arquivos públicos conhecidos com tentativas limitadas; o módulo principal pode obter uma única recarga antes de a interface estar pronta. Formulários preenchidos,retornos de autorização,origens externas,rotas privadas e operações de conta permanecem fora da recarga. Se a falha persistir,a ação manual continua disponível. Não há mudança de servidor,dados clínicos ou integrações.

@@ -57,6 +57,9 @@ assert.match(sourceDisplayLabel(sources[0],sources),/MyFitnessPal via Saúde/);
 assert.match(sourceDisplayNote(sources[0]),/Health Auto Export/,'original descriptive source name is available in the secondary explanation');
 assert.equal(displaySource('healthkit_candidate'),'Apple Saúde');
 assert.equal(displaySource('internal_source_name'),'Origem importada');
+assert.equal(displaySource('user_chat'),'Informado por você');
+assert.equal(displaySource('user_chat · telemetria: origem não explicitada no registro histórico'),'Informado por você · dados da sessão: origem não informada');
+assert.equal(displaySource('user_chat · telemetria: polar_flow + Apple Watch'),'Informado por você · dados da sessão: Polar Flow + Apple Watch');
 assert.equal(userFacingError(new Error('SQLSTATE payload canonical_status=broken')),'Não foi possível concluir agora. Tente novamente.');
 assert.equal(userFacingError(new Error('Proteína diária: informe um valor positivo válido ou deixe em branco.')),'Proteína diária: informe um valor positivo válido ou deixe em branco.');
 
@@ -96,6 +99,18 @@ for(const status of ['candidate','held']){
  assert.match(html,/Nome informado pela origem: Apple Saúde · MyFitnessPal \(Health Auto Export\)/,'full source name is retained in source details');
 }
 assert.deepEqual(insightData,insightBefore);
+// A source decorated by the real data loader must stay understandable on the
+// primary report card, without changing the stored source or measurement data.
+const {decorateWorkoutProvenance}=await import('../src/workout-evidence.js');
+const {renderIntegratedReview}=await import('../src/integrated-review-view.js');
+const {usefulReports}=await import('../src/reports-model.js');
+state.data={...structuredClone(empty),workouts:decorateWorkoutProvenance([{source_record_id:'synthetic-chat-workout',source:'user_chat',workout_date:f.date(1),is_canonical:true,record_status:'validated',duration_minutes:31}])};
+state.domainStatus={...f.status};state.ui={analysisPeriod:'90',reviewView:'overview'};
+const reportBefore=structuredClone(state.data),reportHtml=renderIntegratedReview(usefulReports(state.data,state.domainStatus,state.ui,f.today));
+const trainingOrigin=reportHtml.match(/data-reading-kind="training"[\s\S]*?<p class="ltsReadingOrigin">([^<]*)<\/p>/)?.[1];
+assert.equal(trainingOrigin,'Informado por você · dados da sessão: origem não informada');
+assert.equal(state.data.workouts[0].source_recorded,'user_chat');
+assert.deepEqual(state.data,reportBefore,'display formatting preserves source identity, telemetry status, duration and all records');
 console.log('Consumer health copy: seven cards, empty/partial/conflicting/failed reads, source aliases, exact clinical text, latest labs, workouts and Timeline passed.');
 
 const mainSource=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
