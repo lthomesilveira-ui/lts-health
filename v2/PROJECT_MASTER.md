@@ -1,3 +1,11 @@
+## 2026-11-16 — Publicação autorizada: leituras adicionais de água, .140
+
+O titular autorizou explicitamente a publicação da alteração revisada e a atualização do aplicativo após os testes restantes. O pacote054 volta a in_progress; a recusa automática anterior permanece documentada como histórico. Gates remotos, publicação exata e resultado autenticado ainda não são considerados concluídos.
+
+## 2026-11-16 — Publicação bloqueada: leituras adicionais de água, .140
+
+O pacote054 compara registros conciliados entre fontes e totais por dia quando a tela nativa Google e a listagem existente divergem. A ação explícita reutiliza a autorização somente leitura e a identidade verificada; não altera totais, fontes, snapshots ou frescor automático. Intervalos sem payload e métodos recusados permanecem distintos de consumo zero.118 testes locais e jornadas Chromium320/390/1440px passaram. A revisão automática recusou o envio GitHub por falta de autorização explícita de publicação; a branch não foi publicada. WebKit/CI, publicação exata e resultado autenticado continuam pendentes. Nenhuma condição antiga de água foi encerrada. Detalhes: `v2/releases/GOOGLE_WATER_METHODS_20261116.md`.
+
 ## 2026-11-12 — Publicado e verificado: estados claros de conexões e arquivos, .131
 
 O pacote051 está concluído: o Google Health distingue conta não conectada, conta autorizada e integração indisponível; a área Seus arquivos limita a ausência de ação ao reenvio de arquivos. A configuração técnica não é atribuída ao usuário.

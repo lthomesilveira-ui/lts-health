@@ -50,32 +50,33 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-FULL-PRODUCT-AUDIT-053",
-    "status": "done",
-    "goal": "Reconcile recovered owner requests against actual authenticated journeys and fix demonstrated UI defects without reopening completed data proofs.",
+    "id": "PKG-GOOGLE-WATER-METHODS-054",
+    "status": "in_progress",
+    "goal": "Compare documented reconciled hydration and daily rollups when the native Google app and existing API listing disagree.",
     "task_ids": [
-      "LTS-TIMELINE-TYPED-LABELS-001",
-      "LTS-REPORT-SOURCE-RECOVERY-001",
-      "LTS-ENTRY-READABILITY-001"
+      "LTS-GOOGLE-WATER-METHODS-001"
     ],
-    "public_build": "health-integrated-20261114.134",
-    "candidate_build": null,
+    "public_build": "health-integrated-20261116.139",
+    "candidate_build": "health-integrated-20261116.140",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": false,
+    "server_runtime_changed": true,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
-    "started_on": "2026-11-14",
-    "pending_gates": [],
-    "evidence_document": "v2/reviews/FULL_PRODUCT_AUDIT_20261114.md",
+    "started_on": "2026-11-16",
+    "pending_gates": [
+      "Remote candidate CI including PostgreSQL and WebKit",
+      "Exact server and frontend publication after gates",
+      "Authenticated read-only result"
+    ],
+    "evidence_document": "v2/releases/GOOGLE_WATER_METHODS_20261116.md",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "completed_on": "2026-11-14",
     "evidence": [
-      "Exact candidate e9819dd579bd6c61d961b01048295d12dc0ea010 passed21/21 workflows. Synthetic regression43603045242 passed all six Chromium/WebKit cases at320/390/1440px with unchanged observations and zero writes. Artifact14116993035 SHA2564058e7208bf080c042c497c7952fc74b3490b1fabe62be22ca257e65b87b52ba was verified and readable captures inspected.",
-      "Normal PR543 merge7fbe111b0295dbc7a5326b1b357405bf6f396857 matches tested tree715cb505eb47ed15fe701eb1eb1725be80242279. Deploy43604067956 succeeds; public index, six changed assets and both manifests match exact tested local bytes.",
-      "The exact public .134 was manually inspected with the real authenticated owner session at1363x936: report recovery opens/focuses the native picker while preserving explicit origin and calendar; typed Timeline names retain units/origins; entry form has14px labels,16px fields,44px native series controls, light backgrounds and modal z2000. The clean form was closed without a health write.",
-      "Protected post-merge real-auth43604067943 succeeds with10/10 requested owner cases in desktop Chromium1440x1000 and touch mobile WebKit390x844 plus full-history checks. Private visual evidence was encrypted before upload in artifact14118270111 SHA25652c2cc864f72e0b18878ecd30af2d71a981da191bbbc3af404c498885b3deea6. Physical iPhone and overall owner acceptance remain unclaimed."
+      "118 Node tests pass locally.",
+      "Local pinned Playwright1.56.1 Chromium synthetic journeys pass at320/390/1440px with zero writes and unchanged observations.",
+      "GitHub publication was rejected by automatic approval review; branch does not exist remotely. Current public application and server remain unchanged.",
+      "The owner explicitly authorized publication of the reviewed change and application update after the remaining checks. The previous approval block is resolved; historical rejection remains recorded."
     ]
   },
   "last_verified_release": {
@@ -4086,6 +4087,30 @@
       ],
       "next_action": "Preserve the verified .134 behavior and existing data proofs. Reopen only for a concrete regression or new original evidence.",
       "completed_on": "2026-11-14"
+    },
+    {
+      "id": "LTS-GOOGLE-WATER-METHODS-001",
+      "area": "Google hydration availability",
+      "priority": "P0",
+      "owner": "Codex",
+      "status": "in_progress",
+      "summary": "Compare reconciled hydration and daily rollups with existing read-only authorization.",
+      "blocker": null,
+      "acceptance": [
+        "Only explicit owner action invokes two bounded water-only API methods with verified identity and existing grant.",
+        "Missing rollup payloads remain missing; unavailable methods are not empty results.",
+        "No clinical totals, source approvals, snapshots or read/scheduled freshness are changed.",
+        "Exact affected desktop/mobile UI, server bundle and authenticated result are verified."
+      ],
+      "evidence": [
+        "Existing raw listing and native-app discrepancy are documented privately; no personal values are included in this repository.",
+        "Primary Google v4 reconcile, dailyRollUp and HydrationLogRollupValue documentation reviewed.",
+        "118 local tests pass including independent date/account/volume boundaries and concurrent-disconnect checks.",
+        "Local pinned Playwright1.56.1 Chromium synthetic journeys pass at320/390/1440px with zero writes and unchanged observations.",
+        "GitHub publication was rejected by automatic approval review; branch does not exist remotely. Current public application and server remain unchanged.",
+        "The owner explicitly authorized publication of the reviewed change and application update after the remaining checks. The previous approval block is resolved; historical rejection remains recorded."
+      ],
+      "next_action": "Publish the authorized branch, complete candidate gates and deploy the exact tested code; then run the bounded comparison through the existing authenticated session."
     }
   ],
   "package_history": [
@@ -6099,6 +6124,35 @@
       "candidate_workflows_passed": 22,
       "authenticated_audit_main_commit": "6476bb95bb0ff17ef953262023949041eb784244",
       "protected_actual_auth_run": 42950262629
+    },
+    {
+      "id": "PKG-FULL-PRODUCT-AUDIT-053",
+      "status": "done",
+      "goal": "Reconcile recovered owner requests against actual authenticated journeys and fix demonstrated UI defects without reopening completed data proofs.",
+      "task_ids": [
+        "LTS-TIMELINE-TYPED-LABELS-001",
+        "LTS-REPORT-SOURCE-RECOVERY-001",
+        "LTS-ENTRY-READABILITY-001"
+      ],
+      "public_build": "health-integrated-20261114.134",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-14",
+      "pending_gates": [],
+      "evidence_document": "v2/reviews/FULL_PRODUCT_AUDIT_20261114.md",
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "completed_on": "2026-11-14",
+      "evidence": [
+        "Exact candidate e9819dd579bd6c61d961b01048295d12dc0ea010 passed21/21 workflows. Synthetic regression43603045242 passed all six Chromium/WebKit cases at320/390/1440px with unchanged observations and zero writes. Artifact14116993035 SHA2564058e7208bf080c042c497c7952fc74b3490b1fabe62be22ca257e65b87b52ba was verified and readable captures inspected.",
+        "Normal PR543 merge7fbe111b0295dbc7a5326b1b357405bf6f396857 matches tested tree715cb505eb47ed15fe701eb1eb1725be80242279. Deploy43604067956 succeeds; public index, six changed assets and both manifests match exact tested local bytes.",
+        "The exact public .134 was manually inspected with the real authenticated owner session at1363x936: report recovery opens/focuses the native picker while preserving explicit origin and calendar; typed Timeline names retain units/origins; entry form has14px labels,16px fields,44px native series controls, light backgrounds and modal z2000. The clean form was closed without a health write.",
+        "Protected post-merge real-auth43604067943 succeeds with10/10 requested owner cases in desktop Chromium1440x1000 and touch mobile WebKit390x844 plus full-history checks. Private visual evidence was encrypted before upload in artifact14118270111 SHA25652c2cc864f72e0b18878ecd30af2d71a981da191bbbc3af404c498885b3deea6. Physical iPhone and overall owner acceptance remain unclaimed."
+      ]
     }
   ],
   "latest_published_release": {

@@ -12,7 +12,7 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
  try{for(const width of [320,390,1440]){
   const fixture=makeCalendarReportFixture(),traffic={external:[],writes:[],errors:[]};
   const service=calendarReportService(fixture)+`\n(()=>{
-   window.__googlePeriodCalls=[];window.__googleAvailabilityMode='historical';const create=window.supabase.createClient;
+   window.__googlePeriodCalls=[];window.__googleAvailabilityMode='historical';window.__googleMethodsMode='empty';const create=window.supabase.createClient;
    window.supabase.createClient=(...args)=>{const client=create(...args),invoke=client.functions.invoke;
     client.functions.invoke=async(name,{body})=>{
      if(name!=='health-google-connection'){
@@ -27,6 +27,12 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
       const recent=window.__googleAvailabilityMode==='recent',invalid=window.__googleAvailabilityMode==='invalid',undated=window.__googleAvailabilityMode==='undated',day=recent?body.from:new Date(Date.parse(body.from)-86400000).toISOString().slice(0,10);
       return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,canonical_updated:false,water_received:false,
        probes:['civil_window','latest_all_sources','latest_default_sources'].map((kind,i)=>({kind,observations:invalid?26:i?1:0,recent_observations:recent&&i?1:0,undated_observations:undated&&i?1:0,first_day:i&&!undated?day:null,last_day:i&&!undated?day:null,truncated:false,sources:[]}))},error:null};
+     }
+     if(body.action==='inspect-hydration-methods'&&Object.keys(body).sort().join(',')==='action,from,to'){
+      const mode=window.__googleMethodsMode;
+      return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,canonical_updated:false,water_received:false,
+       probes:['reconciled_window','daily_rollup_window'].map((kind,i)=>mode==='unavailable'&&!i?{kind,status:'unavailable',error_code:'provider_request_rejected'}:
+        {kind,status:'ok',observations:mode==='invalid'?26:mode==='recent'?1:0,recent_observations:mode==='recent'?1:0,undated_observations:0,empty_intervals:mode==='recent'?0:i?7:0,first_day:mode==='recent'?body.from:null,last_day:mode==='recent'?body.from:null,truncated:false})},error:null};
      }
      throw Error('Unexpected synthetic Google operation');
     };return client;
@@ -47,6 +53,7 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='read')),false);
    assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-nutrition')),false);
    assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-hydration')),false);
+   assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-hydration-methods')),false);
    await card.getByText('Última consulta automática: 27/10/2030, 11:36 (Brasília).',{exact:true}).waitFor();
    await card.getByText('De 21/10/2030 a 27/10/2030, o Google não retornou registros de água. Dias sem registro continuam sem informação.',{exact:true}).waitFor();
    await card.getByText('Consultar outro período',{exact:true}).click();
@@ -98,6 +105,19 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    await card.getByRole('status').filter({hasText:'Não foi possível conferir a disponibilidade da água agora.'}).waitFor();
    const availabilityCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration'));
    assert.equal(availabilityCalls.length,4);assert.ok(availabilityCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   const methods=card.getByRole('button',{name:'Comparar outras leituras de água',exact:true});
+   for(const mode of ['empty','recent','unavailable','invalid']){
+    await page.evaluate(value=>{window.__googleMethodsMode=value;},mode);
+    if(!await methods.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
+    const box=await methods.boundingBox();assert.ok(box&&box.height>=44&&box.x>=0&&box.x+box.width<=width+1);
+    await methods.click();
+    await card.getByRole('status').filter({hasText:mode==='invalid'?'Não foi possível comparar as outras leituras de água agora.':mode==='unavailable'?'o Google não permitiu concluir esta leitura':mode==='recent'?'o Google retornou informação de água; a origem ainda precisa ser conferida':'Totais por dia: o Google não retornou informação de água no período.'}).waitFor();
+    assert.doesNotMatch(await card.getByRole('status').innerText(),/0 mL|0 ml|consumo zero/);
+    if(mode==='unavailable')assert.doesNotMatch(await card.getByRole('status').innerText(),/Registros entre fontes: o Google não retornou/);
+    if(mode==='empty')await card.screenshot({path:`${dir}/${engineName}-${width}-water-methods.png`});
+   }
+   const methodCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration-methods'));
+   assert.equal(methodCalls.length,4);assert.ok(methodCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),before);
    assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
    results.push({engine:engineName,width,status:'passed',zeroWrites:true,physicalIPhone:false});
