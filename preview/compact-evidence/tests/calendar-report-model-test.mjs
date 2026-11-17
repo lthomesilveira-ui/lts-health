@@ -197,6 +197,42 @@ test('training keeps canonical sessions, Polar and main sets/extensions separate
   assert.equal(t.sessions,1);assert.equal(t.polar.sessions,1);assert.equal(t.recordedMinutes,30);assert.equal(t.sessionSummaries.length,1);assert.equal(t.recordedGroups[0].primary,1);assert.equal(t.recordedGroups[0].extensions,1);assert.equal(t.groupRoles.primary,null);assert.equal(t.groupRoles.secondary,null);assert.equal(t.sessionComparison.delta,null);
   assert.equal(t.progression.comparable.length,1);assert.equal(t.progression.comparable[0].delta,5);assert.equal(t.progression.comparable[0].previous.date,'2024-03-01');assert.equal(t.progression.comparable[0].latest.date,'2024-03-06');assert.equal(t.progression.comparable[0].conditionsConfirmed,false);
 });
+test('calendar groups combine case and spacing without inflating sessions or changing original exercise labels',()=>{
+  const data=empty();
+  const session=(id,day)=>data.workouts.push({source_record_id:id,workout_date:day,is_canonical:true,record_status:'validated',workout_type:'Synthetic workout',source:'Synthetic diary'});
+  const exercise=(id,parent,day,label,phases)=>{
+    data.exercises.push({source_record_id:id,workout_source_record_id:parent,workout_date:day,exercise:id,muscle_group:label});
+    phases.forEach((phase,index)=>data.sets.push({source_record_id:id+'-'+index,workout_source_record_id:parent,exercise_source_record_id:id,workout_date:day,set_index:index+1,phase,weight:10,reps_numeric:8}));
+  };
+  session('synthetic-a','2024-03-06');session('synthetic-b','2024-03-08');
+  exercise('synthetic-e1','synthetic-a','2024-03-06','peito',['working','drop']);
+  exercise('synthetic-e2','synthetic-a','2024-03-06',' Peito  ',['working']);
+  exercise('synthetic-e3','synthetic-b','2024-03-08','PEITO',['warmup','working','working']);
+  for(const [index,label] of ['Ombros','Deltoides posteriores','Peito / Tríceps',null].entries())exercise('synthetic-other-'+index,'synthetic-b','2024-03-08',label,['working']);
+  const before=structuredClone(data),model=report(deepFreeze(data),status(),{},today).training;
+  assert.deepEqual(model.recordedGroups.find(group=>group.key==='peito'),{key:'peito',label:'Peito',originalLabels:[' Peito  ','PEITO','peito'],sessions:2,exercises:3,primary:5,extensions:1,total:6});
+  assert.equal(model.recordedGroups.length,4,'Different anatomical and compound labels are not aliases');
+  assert.equal(model.unknownGroup.exercises,1);assert.equal(model.unknownGroup.primary,1);
+  assert.equal(model.sessions,2);assert.equal(model.sessionSummaries.reduce((n,row)=>n+row.counts.primary,0),9);
+  assert.equal(model.sessionSummaries.reduce((n,row)=>n+row.counts.extensions,0),1);
+  assert.deepEqual(model.sessionSummaries.flatMap(row=>row.muscleGroups.map(group=>group.label)).sort(),before.exercises.map(row=>row.muscle_group).filter(Boolean).sort(),'Session details retain every exact original label');
+  assert.deepEqual(data,before,'No source record, identity, set or phase is rewritten');
+  const reordered=structuredClone(before);for(const key of ['workouts','exercises','sets'])reordered[key].reverse();
+  assert.deepEqual(report(reordered,status(),{},today).training.recordedGroups,model.recordedGroups,'Display grouping is independent of source-row order');
+  const unavailable=report(before,{...status(),sets:'error'},{},today).training.recordedGroups.find(group=>group.key==='peito');
+  assert.equal(unavailable.primary,null);assert.equal(unavailable.extensions,null);assert.equal(unavailable.sessions,2);
+});
+test('calendar label grouping preserves accents, composed Unicode, sides and anatomical distinctions',()=>{
+  const data=training(),row=data.exercises.find(item=>item.workout_date==='2024-03-06');
+  row.muscle_group='Abdômen';
+  for(const [index,label] of ['abdo\u0302men','abdomen','Bíceps esquerdo','Bíceps direito','Ombros','Deltoides posteriores'].entries())data.exercises.push({...row,source_record_id:'synthetic-label-'+index,exercise:'Synthetic distinct exercise '+index,muscle_group:label});
+  const groups=report(data,status(),{},today).training.recordedGroups;
+  assert.equal(groups.length,6);assert.equal(groups.find(item=>item.key==='abdômen').exercises,2);
+  assert.equal(groups.find(item=>item.key==='abdômen').sessions,1);
+  assert.equal(groups.find(item=>item.key==='abdomen').exercises,1,'Unaccented spellings are not assumed to be the same original label');
+  assert.equal(groups.filter(item=>item.key.startsWith('bíceps ')).length,2,'Sides remain separate');
+  assert.ok(groups.some(item=>item.key==='ombros')&&groups.some(item=>item.key==='deltoides posteriores'));
+});
 test('training today and unknown effort never create comparable progression',()=>{
   let data=training();let model=report(data,status(),{calendarReportSelection:'current'},today);assert.equal(model.training.todaySessions.length,1);assert.equal(model.training.progression.comparable.length,0);
   delete data.sets.find(row=>row.phase==='working'&&row.workout_date==='2024-03-06').near_failure;

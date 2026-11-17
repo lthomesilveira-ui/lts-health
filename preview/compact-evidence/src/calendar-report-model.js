@@ -88,6 +88,19 @@ function metricReadDiagnostics(metric,status){
   const readNote=readComplete?null:readError?(hasValue?'Parte das origens não carregou. O valor e a cobertura usam somente os registros disponíveis da origem indicada.':`${readHasReadySource?'Parte das origens não carregou':'As origens não carregaram'}. Não é possível confirmar se há registros neste período.`):readPending?(hasValue?'Parte das origens ainda está carregando. O valor e a cobertura usam somente os registros disponíveis da origem indicada.':'Há origens ainda carregando. A ausência de valor nesta atualização não confirma falta de registro.'):(hasValue?'Parte das origens está indisponível. O valor e a cobertura usam somente os registros disponíveis da origem indicada.':'As origens necessárias não estão totalmente disponíveis. Não é possível confirmar a cobertura do período.');
   return {domainStates,readyDomains,failedDomains,pendingDomains,readStatus,readError,readPending,readComplete,readHasReadySource,partialRead,coverageUnavailable,readNote};
 }
+function recordedMuscleGroups(summaries){
+  const groups=new Map();
+  for(const summary of summaries)for(const item of summary.muscleGroups){
+    // Presentation identity only: keep accents, compound labels and anatomical
+    // distinctions. The exact exercise labels remain in the session details.
+    const key=item.label.normalize('NFC').trim().replace(/\s+/gu,' ').toLocaleLowerCase('pt-BR');
+    if(!groups.has(key))groups.set(key,{items:[],sessions:new Set(),originalLabels:new Set()});
+    const group=groups.get(key);group.items.push(item);group.sessions.add(summary.workoutId);group.originalLabels.add(item.label);
+  }
+  return [...groups].map(([key,group])=>({key,label:key.charAt(0).toLocaleUpperCase('pt-BR')+key.slice(1),originalLabels:[...group.originalLabels].sort(),sessions:group.sessions.size,
+    exercises:sum(group.items,'exercises'),primary:sum(group.items,'primary'),extensions:sum(group.items,'extensions'),total:sum(group.items,'total')}))
+    .sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'));
+}
 function trainingReport(data,status,calendar){
   const received=dashboardContext(data,status,{bounds:calendar.bounds,today:calendar.today}).training;
   const reviewed=received.history.map(row=>{
@@ -108,11 +121,7 @@ function trainingReport(data,status,calendar){
   const latestAmbiguous=received.lastRecordAmbiguous||Boolean(received.lastObservedDate&&(received.lastObservedDate!==base.lastObservedDate||reviewed.some(item=>!item.summary.sessionAvailable&&item.date===received.lastObservedDate)));
   const workoutIds=new Set(accepted.map(item=>item.original.source_record_id)),exerciseIds=new Set(acceptedExercises.map(row=>row.source_record_id)),setIds=new Set(acceptedSets.map(row=>row.source_record_id));
   const progressionData={...data,workouts:(data.workouts||[]).filter(row=>workoutIds.has(row.source_record_id)),exercises:(data.exercises||[]).filter(row=>exerciseIds.has(row.source_record_id)),sets:(data.sets||[]).filter(row=>setIds.has(row.source_record_id))};
-  const labels=unique(sessionSummaries.flatMap(summary=>summary.muscleGroups.map(group=>group.label)));
-  const recordedGroups=labels.map(label=>{
-    const items=sessionSummaries.flatMap(summary=>summary.muscleGroups.filter(group=>group.label===label));
-    return {label,sessions:items.length,exercises:sum(items,'exercises'),primary:sum(items,'primary'),extensions:sum(items,'extensions'),total:sum(items,'total')};
-  }).sort((a,b)=>a.label.localeCompare(b.label,'pt-BR'));
+  const recordedGroups=recordedMuscleGroups(sessionSummaries);
   const available=['workouts','exercises','sets'].every(key=>status[key]==='ready'&&Array.isArray(data[key]));
   const progression=trainingComparability(available?progressionData:{},{bounds:{start:calendar.previousBounds.start,end:calendar.bounds.closedEnd},today:calendar.today,closedOnly:true});
   // A change must end inside this report. Prior-only evolution is historical
@@ -128,7 +137,7 @@ function trainingReport(data,status,calendar){
     recentSessions:base.latestSessions.length?base.latestSessions:latestAmbiguous?[]:base.recentSessions,
     unknownGroup:{exercises:base.detailsAvailable?sum(unknown,'exercises'):null,primary:base.setsAvailable?sum(unknown,'primary'):null,extensions:base.setsAvailable?sum(unknown,'extensions'):null},
     groupRoles:{primary:null,secondary:null,note:'Grupos principais e secundários não foram informados de forma explícita. Os rótulos dos exercícios são preservados; não inferimos participação muscular.'},
-    groupNote:'Séries principais e prolongamentos são contagens de séries, não papéis musculares. Grupos são os rótulos registrados nos exercícios; não representam volume fisiológico.',
+    groupNote:'Séries principais e prolongamentos são contagens de séries, não papéis musculares. Grupos são os rótulos registrados nos exercícios; não representam volume fisiológico. Maiúsculas e espaços não criam grupos diferentes; os rótulos originais ficam nos detalhes das sessões.',
     progression:{...progression,available,note:available?'Diferenças somente entre condições registradas comparáveis, até ontem. Não confirmam ganho de força, execução ou identidade física do aparelho.':'Detalhes de treino indisponíveis; nenhuma evolução numérica foi calculada.'},
     sessionComparison:{comparable:false,delta:null,note:'Contagens de sessões registradas em cada período. Não comprovam frequência real ou cobertura completa e não recebem uma diferença de desempenho.'},
     todaySessions:base.rows.filter(row=>row.date===calendar.today),

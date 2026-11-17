@@ -1,3 +1,9 @@
+## 2026-11-17 — Em validação: grupos de treino no relatório, .143
+
+O relatório semanal autenticado separava nomes de grupo que diferiam só por maiúsculas ou espaços. O pacote057 consolida essa apresentação e conta sessões distintas, preservando os rótulos originais, exercícios, séries e prolongamentos. Rótulos anatômicos distintos, lados e nomes compostos permanecem separados.44 testes do modelo passaram; navegador/PDF, publicação exata e conferência autenticada continuam como gates.
+
+Esta correção é independente da investigação de água. O processo de execução passa a registrar explicitamente que a água não bloqueia outros trabalhos executáveis. Nenhuma condição de fonte é encerrada por esta implementação. Fila159itens:144done,1in_progress,9blocked_external,3accepted_gap,2superseded.
+
 ## 2026-11-17 — Concluído: limitações em português, .142
 
 PR557 passou21/21 verificações da candidata final. Publicação exata, telas sintéticas nas quatro larguras e acesso real protegido em computador/móvel foram conferidos. A sessão autenticada mostrou as explicações em português, os originais técnicos fechados e a classificação preservada. Os registros, valores clínicos, servidor e integrações não mudaram. A fonte privada mantém o resultado detalhado e a igualdade dos registros de qualidade.

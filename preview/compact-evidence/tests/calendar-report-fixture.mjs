@@ -48,7 +48,7 @@ export function makeCalendarReportFixture(kind='complete'){
     f.data.workouts.push({source_record_id:id,workout_date:date,workout_type:`Sessão sintética ${String(index+1).padStart(2,'0')}`,location:'Academia sintética',source:'Diário sintético',is_canonical:true,record_status:'validated',duration_minutes:date==='2026-10-10'?null:40,muscle_groups:['Peito','Ombros']});
     for(let j=0;j<3;j++){
       const eid=`${id}-exercise-${j}`;
-      f.data.exercises.push({source_record_id:eid,workout_source_record_id:id,workout_date:date,exercise:`Exercício sintético ${j+1} com descrição longa para verificar a quebra de linha`,machine:'Equipamento sintético',muscle_group:j===2?'Ombros':'Peito',order_index:j+1});
+      f.data.exercises.push({source_record_id:eid,workout_source_record_id:id,workout_date:date,exercise:`Exercício sintético ${j+1} com descrição longa para verificar a quebra de linha`,machine:'Equipamento sintético',muscle_group:j===2?'Ombros':['peito',' Peito ','PEITO'][(index+j)%3],order_index:j+1});
       for(let k=0;k<3;k++)f.data.sets.push({source_record_id:`${eid}-set-${k}`,workout_source_record_id:id,exercise_source_record_id:eid,workout_date:date,set_index:k+1,phase:k===2?'drop':'working',weight:35+j*5+index/10,weight_unit:'kg',reps_numeric:8,reps_raw:'8',notes:'Registro inteiramente inventado.'});
     }
     // Deliberately overlapping date/duration: still a separate device record.

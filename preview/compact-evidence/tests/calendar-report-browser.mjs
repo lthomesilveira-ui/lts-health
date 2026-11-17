@@ -109,6 +109,23 @@ async function assertWindow(page,fixture,expected,{partial=false,nominalEnd=expe
     assert.ok(text.includes(`${item.count}/${item.expectedDays} dias encerrados com valor`));
   }
   const bars=page.locator('#calendarReport .ltsCalendarGroupBar');
+  if(m.training.sessions&&fixture.kind==='complete'&&!m.training.partial){
+    const sessions=fixture.data.workouts.filter(row=>row.workout_date>=expected.start&&row.workout_date<=expected.end);
+    const sessionIds=new Set(sessions.map(row=>row.source_record_id));
+    const chestExercises=fixture.data.exercises.filter(row=>sessionIds.has(row.workout_source_record_id)&&row.muscle_group!=='Ombros');
+    const chestIds=new Set(chestExercises.map(row=>row.source_record_id));
+    const chestSets=fixture.data.sets.filter(row=>chestIds.has(row.exercise_source_record_id));
+    const chest=m.training.recordedGroups.find(group=>group.label==='Peito');
+    assert.equal(m.training.recordedGroups.length,2,'Case/space variants do not split one recorded group into several bars');
+    assert.equal(chest.sessions,sessions.length,'Two variants in one session never count as two sessions');
+    assert.equal(chest.exercises,chestExercises.length);
+    assert.equal(chest.primary,chestSets.filter(row=>!['drop','rest_pause'].includes(row.phase)).length);
+    assert.equal(chest.extensions,chestSets.filter(row=>['drop','rest_pause'].includes(row.phase)).length);
+    const visibleLabels=await page.locator('#calendarReport .ltsReportGroupChart > div > span').allTextContents();
+    assert.deepEqual(visibleLabels,['Ombros','Peito'],'The compact report shows each group once');
+    const originalLabels=m.training.sessionSummaries.flatMap(row=>row.acceptedExercises.map(exercise=>exercise.muscle_group));
+    for(const row of chestExercises)assert.ok(originalLabels.includes(row.muscle_group),'Original exercise labels remain exact in the session detail');
+  }
   if(await bars.count()){
     const maximum=Math.max(...m.training.recordedGroups.map(group=>group.primary));
     const widths=await bars.locator('rect:last-child').evaluateAll(nodes=>nodes.map(node=>Number(node.getAttribute('width'))));
