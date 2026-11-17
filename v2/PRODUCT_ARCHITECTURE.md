@@ -1,3 +1,9 @@
+## 2026-11-17 — Concluído: comparação privada dos canais Google
+
+O pacote058 foi executado na conta autorizada, mantendo o frontend .143 e o histórico clínico. A primeira consulta foi recusada pelo provedor; o filtro foi corrigido conforme o contrato de sessões. A candidata original passou17/17 workflows e o código corrigido15/15;133 testes locais passaram. Os6 arquivos da conexão16/JWTtrue foram relidos sem diferenças. A tentativa2 protegida concluiu comparação, integridade, aplicativo e exames; as22 verificações da publicação inicial estão aprovadas nas suas últimas tentativas, com as falhas originais preservadas. O resultado detalhado fica privado e não encerra as dependências de recuperação da água.
+
+Fila160itens:146done,9blocked_external,3accepted_gap,2superseded; zero ready/in_progress. Este seguimento fecha a continuidade do mesmo pacote, sem nova mudança funcional. Referência: `v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md`.
+
 ## 2026-11-17 — Em execução: comparação isolada dos canais Google
 
 Pacote058 prepara a comparação autenticada e somente de leitura entre os canais estável e de prévia. O frontend .143, a consulta automática estável e o histórico clínico permanecem preservados. O novo arquivo original foi analisado; obtê-lo não é mais uma pendência. O titular autorizou explicitamente a publicação deste pacote de código no repositório público e a comparação privada de leitura; o bloqueio de aprovação está resolvido. Validação remota, publicação do servidor e consulta real ainda estão pendentes. Não declarar recuperação de água ou recorrência. Referência: `v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md`.

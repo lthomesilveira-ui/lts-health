@@ -52,7 +52,7 @@
   },
   "current_package": {
     "id": "PKG-GOOGLE-WATER-CHANNELS-058",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Run a bounded stable-versus-preview hydration comparison without changing the production frontend, normal stable reader or canonical history.",
     "task_ids": [
       "LTS-GOOGLE-WATER-CHANNELS-001"
@@ -67,20 +67,22 @@
     "started_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "pending_gates": [
-      "remote_candidate_checks",
-      "deployed_server_readback",
-      "actual_owner_channel_comparison",
-      "private_result_review"
-    ],
+    "pending_gates": [],
     "evidence_document": "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
     "evidence": [
       "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
       "133 local reader, connection, schedule, configuration, channel, private-evidence and one-time activation tests passed.",
       "All six deployed connection files matched the current main baseline before the isolated extension was prepared.",
       "Normal branch push was rejected before publication. The installed GitHub connection verified the same authenticated owner and admin/push permissions for the exact existing repository; the repeated review still requires explicit publication authority for the current code and workflow payload. No server deployment or real channel comparison occurred.",
-      "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending."
-    ]
+      "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending.",
+      "PR561 candidate d72a5c2b114439ecf3c29ef0b30ce75f27656fdf passed17/17 workflows; normal merge80d70353223b5313c769b80b2249fb7bcd623658 preserved tree37f39759c1e4de1b843064be4f7d3ed016d90f57.",
+      "The first protected owner evaluation failed its control after both provider channels rejected the physical session filter. Attempt1 and encrypted artifact14373347161 remain preserved; no empty-water conclusion was drawn.",
+      "Corrected code candidate bd9067d5b5582a24f224a026b5654e1b5ebd58e9/tree99dc2e1af7dacd842c808bb463239ba43d2e5653 uses the documented civil session filter with independent physical boundaries. All15 candidate workflows and133 local Node tests passed.",
+      "Connection16/JWTtrue matched all6 corrected candidate files. Protected workflow44183386297 attempt2/job134397462319 completed the authenticated comparison, integrity check, existing app histories and Labs checks successfully. Private source results are retained outside the repository; no canonical health row changed.",
+      "All22 initial-publication workflows completed successfully on their latest attempts. Original public-entry attempt1 failed when an unchanged script returned HTTP503; diagnostic artifact14373168121 is preserved and the same job passed attempt2. The final continuity-only candidate and follow-up publication checks are not included in these prior counts."
+    ],
+    "blocker": null,
+    "completed_on": "2026-11-17"
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261117.143",
@@ -1936,7 +1938,7 @@
         "A distinct supported source path was exercised: a one-time Google Health export completed, but download required routine account reauthentication and was not confirmed. The previously repaired API credentials remain valid; original recent-water conditions stay open.",
         "The newly supplied original export was reviewed and compared with preserved history. Acquisition is complete; it provides no additional positive typed daily hydration. The owner now expressly requests an isolated stable-versus-preview API evaluation."
       ],
-      "next_action": "Complete the isolated one-time channel comparison in package058; preserve normal stable reads and all previously verified setup. The current export is acquired and must not be requested again. Do not infer missing water as zero or claim a diagnosis from channel availability alone.",
+      "next_action": "Obtain an attributed original hydration history or provider-side synchronization evidence through an authorized route. The isolated stable-versus-preview comparison is complete and privately reviewed; do not repeat it without new source evidence. Preserve the existing connection, normal stable reads and the original export already acquired; do not infer missing water as zero.",
       "blocker": "Recent water is visible in the native Google app but has not been made available through the verified source reads or Apple Health transport. The credential repair is complete; it is not an active blocker.",
       "phone_status_capture_received": true
     },
@@ -4273,7 +4275,7 @@
       "id": "LTS-GOOGLE-WATER-CHANNELS-001",
       "area": "water source diagnosis",
       "priority": "P0",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Run a bounded stable-versus-preview hydration comparison without changing the production frontend, normal stable reader or canonical history.",
       "acceptance": [
@@ -4286,9 +4288,14 @@
         "133 local reader, connection, schedule, configuration, channel, private-evidence and one-time activation tests passed.",
         "All six deployed connection files matched the current main baseline before the isolated extension was prepared.",
         "Normal branch push was rejected before publication. The installed GitHub connection verified the same authenticated owner and admin/push permissions for the exact existing repository; the repeated review still requires explicit publication authority for the current code and workflow payload. No server deployment or real channel comparison occurred.",
-        "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending."
+        "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending.",
+        "PR561 candidate d72a5c2b114439ecf3c29ef0b30ce75f27656fdf passed17/17 workflows; normal merge80d70353223b5313c769b80b2249fb7bcd623658 preserved tree37f39759c1e4de1b843064be4f7d3ed016d90f57.",
+        "The first protected owner evaluation failed its control after both provider channels rejected the physical session filter. Attempt1 and encrypted artifact14373347161 remain preserved; no empty-water conclusion was drawn.",
+        "Corrected code candidate bd9067d5b5582a24f224a026b5654e1b5ebd58e9/tree99dc2e1af7dacd842c808bb463239ba43d2e5653 uses the documented civil session filter with independent physical boundaries. All15 candidate workflows and133 local Node tests passed.",
+        "Connection16/JWTtrue matched all6 corrected candidate files. Protected workflow44183386297 attempt2/job134397462319 completed the authenticated comparison, integrity check, existing app histories and Labs checks successfully. Private source results are retained outside the repository; no canonical health row changed.",
+        "All22 initial-publication workflows completed successfully on their latest attempts. Original public-entry attempt1 failed when an unchanged script returned HTTP503; diagnostic artifact14373168121 is preserved and the same job passed attempt2. The final continuity-only candidate and follow-up publication checks are not included in these prior counts."
       ],
-      "next_action": "Publish the explicitly authorized branch, finish remote candidate checks, deploy and read back the isolated server extension, then perform the one-time private comparison.",
+      "next_action": null,
       "blocker": null
     }
   ],
@@ -11728,7 +11735,7 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-17",
-    "source_main_commit": "bac3174cc3cf32a4a912d8c62439870dc650baa2",
+    "source_main_commit": "80d70353223b5313c769b80b2249fb7bcd623658",
     "runtime_build": "health-integrated-20261117.143",
     "candidate_build": null,
     "runtime_changed": false,
@@ -11737,18 +11744,22 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 145,
+      "done": 146,
       "blocked_external": 9,
       "superseded": 2,
-      "accepted_gap": 3,
-      "in_progress": 1
+      "accepted_gap": 3
     },
-    "executable_task_count": 1,
+    "executable_task_count": 0,
     "evidence": [
       "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
       "133 local reader, connection, schedule, configuration, channel, private-evidence and one-time activation tests passed.",
       "All six deployed connection files matched the current main baseline before the isolated extension was prepared.",
-      "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending."
+      "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending.",
+      "PR561 candidate d72a5c2b114439ecf3c29ef0b30ce75f27656fdf passed17/17 workflows; normal merge80d70353223b5313c769b80b2249fb7bcd623658 preserved tree37f39759c1e4de1b843064be4f7d3ed016d90f57.",
+      "The first protected owner evaluation failed its control after both provider channels rejected the physical session filter. Attempt1 and encrypted artifact14373347161 remain preserved; no empty-water conclusion was drawn.",
+      "Corrected code candidate bd9067d5b5582a24f224a026b5654e1b5ebd58e9/tree99dc2e1af7dacd842c808bb463239ba43d2e5653 uses the documented civil session filter with independent physical boundaries. All15 candidate workflows and133 local Node tests passed.",
+      "Connection16/JWTtrue matched all6 corrected candidate files. Protected workflow44183386297 attempt2/job134397462319 completed the authenticated comparison, integrity check, existing app histories and Labs checks successfully. Private source results are retained outside the repository; no canonical health row changed.",
+      "All22 initial-publication workflows completed successfully on their latest attempts. Original public-entry attempt1 failed when an unchanged script returned HTTP503; diagnostic artifact14373168121 is preserved and the same job passed attempt2. The final continuity-only candidate and follow-up publication checks are not included in these prior counts."
     ],
     "open_dependency_policy": "Unrelated work does not wait for water. Preserve independent recovery, source-history, lineage, coverage and acceptance criteria."
   },
@@ -13917,5 +13928,34 @@
         "retry_job_id": 130903982669
       }
     ]
+  },
+  "last_verified_channel_evaluation": {
+    "kind": "isolated_google_hydration_channel_comparison",
+    "verified_on": "2026-11-17",
+    "code_candidate_commit": "bd9067d5b5582a24f224a026b5654e1b5ebd58e9",
+    "code_candidate_tree": "99dc2e1af7dacd842c808bb463239ba43d2e5653",
+    "code_candidate_workflows_passed": 15,
+    "initial_candidate_workflows_passed": 17,
+    "node_tests_passed": 133,
+    "edge_function": {
+      "name": "health-google-connection",
+      "version": 16,
+      "verify_jwt": true,
+      "exact_files_verified": 6
+    },
+    "protected_workflow": {
+      "run_id": 44183386297,
+      "run_attempt": 2,
+      "job_id": 134397462319,
+      "conclusion": "success",
+      "first_attempt_preserved": true,
+      "encrypted_evidence_artifact": 14374680465,
+      "encrypted_evidence_sha256": "83d2a818664f0b62d85d7d612a6ea39357b854f7f18fe519f8d99a1648bb5633"
+    },
+    "private_results_reviewed": true,
+    "canonical_health_changed": false,
+    "frontend_changed": false,
+    "normal_stable_reader_changed": false,
+    "source_recovery_is_separate": true
   }
 }

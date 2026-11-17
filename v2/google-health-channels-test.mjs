@@ -27,7 +27,7 @@ test('both channels use the same owner grant, physical dates and fixed host with
   assert.equal(t.calls.length,3);
   for(const call of t.calls){assert.equal(call.url.origin,'https://health.googleapis.com');assert.equal(call.init.redirect,'error');assert.equal(call.init.signal,t.calls[0].init.signal);assert.equal(call.init.headers.Authorization,'Bearer invented-access-only');}
   assert.deepEqual([...t.calls[1].url.searchParams],[...t.calls[2].url.searchParams]);
-  assert.equal(t.calls[1].url.searchParams.get('filter'),'hydration_log.interval.start_time >= "2030-02-05T03:00:00.000Z" AND hydration_log.interval.start_time < "2030-02-12T03:00:00.000Z"');
+  assert.equal(t.calls[1].url.searchParams.get('filter'),'hydration_log.interval.civil_start_time >= "2030-02-05" AND hydration_log.interval.civil_start_time < "2030-02-12"');
   assert.equal(t.calls[1].url.searchParams.get('dataSourceFamily'),family);assert.equal(t.calls[1].url.searchParams.get('pageSize'),'100');
   assert.equal(result.canonical_updated,false);assert.equal(result.water_received,false);assert.equal(result.experimental_channel_evaluation,true);
   for(const canary of ['456.25','invented-access-only','invented-user','invented-source-secret-marker','hydrationLog','milliliters'])assert.ok(!JSON.stringify(result).includes(canary));
@@ -70,6 +70,16 @@ test('invalid volume, account, interval, shape and conflicting identity never be
   const auth=transport({},json({},401));await rejects('authorization_expired',()=>inspect({...options,fetcher:auth.fetcher}));
 });
 test('dates retain real Sao Paulo boundaries across the historical daylight-saving transition',async()=>{
-  const t=transport();await inspect({...options,from:'2018-11-04',to:'2018-11-05',fetcher:t.fetcher});
-  assert.equal(t.calls[1].url.searchParams.get('filter'),'hydration_log.interval.start_time >= "2018-11-04T03:00:00.000Z" AND hydration_log.interval.start_time < "2018-11-05T02:00:00.000Z"');
+  const optionsForDay={...options,from:'2018-11-04',to:'2018-11-05'};
+  const p=point();p.hydrationLog.interval={startTime:'2018-11-04T03:00:00Z',endTime:'2018-11-04T03:01:00Z',startUtcOffset:'-7200s',endUtcOffset:'-7200s'};
+  const t=transport({dataPoints:[p]});const result=await inspect({...optionsForDay,fetcher:t.fetcher});
+  assert.equal(t.calls[1].url.searchParams.get('filter'),'hydration_log.interval.civil_start_time >= "2018-11-04" AND hydration_log.interval.civil_start_time < "2018-11-05"');
+  assert.equal(result.probes[0].first_day,'2018-11-04');
+  for(const interval of [
+    {startTime:'2018-11-04T02:59:00Z',endTime:'2018-11-04T03:00:00Z',startUtcOffset:'-7200s',endUtcOffset:'-7200s'},
+    {startTime:'2018-11-05T02:00:00Z',endTime:'2018-11-05T02:01:00Z',startUtcOffset:'-10800s',endUtcOffset:'-10800s'}
+  ]){
+    const outside=point();outside.hydrationLog.interval=interval;const invalid=transport({dataPoints:[outside]});
+    await rejects('record_outside_window',()=>inspect({...optionsForDay,fetcher:invalid.fetcher}));
+  }
 });

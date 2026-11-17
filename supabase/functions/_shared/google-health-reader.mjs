@@ -346,15 +346,16 @@ export async function inspectGoogleHealthHydrationMethods({accessToken,grantedSc
 }
 
 // Explicit one-off evaluation only. Stable/background reads never call beta.
-// Both channels use the same verified owner, physical range, grant and limits.
+// Hydration is a session: query its documented civil start field in both
+// channels, then independently validate the same physical Sao Paulo bounds.
 // Only fixed summary fields leave this function; no point, source ID or amount.
 export async function inspectGoogleHealthHydrationChannels({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch}){
-  hydrationReadParameters(from,to);
+  const civil=hydrationReadParameters(from,to);
   if((Date.parse(to)-Date.parse(from))/86400000>7)fail('invalid_date_window');
   const budget={bytes:0},deadline=AbortSignal.timeout(30000);
   const identity=await verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,budget,deadline);
   const start=physicalDayBoundary(from),end=physicalDayBoundary(to),limit=100,probes=[];
-  const params={filter:`hydration_log.interval.start_time >= "${start}" AND hydration_log.interval.start_time < "${end}"`,dataSourceFamily:GOOGLE_HEALTH_SOURCE_FAMILY,pageSize:String(limit)};
+  const params={...civil,pageSize:String(limit)};
   for(const channel of ['v4','v4beta']){
     try{
       const payload=await get(`/${channel}/users/me/dataTypes/hydration-log/dataPoints`,params,accessToken,fetcher,budget,deadline);
