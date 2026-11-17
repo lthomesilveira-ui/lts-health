@@ -32,7 +32,8 @@
     "force_updates_allowed": false,
     "continue_until_no_executable_tasks": true,
     "completion_requires_evidence": true,
-    "public_health_data_allowed": false
+    "public_health_data_allowed": false,
+    "unrelated_work_must_not_wait_for_hydration": true
   },
   "release_gates": [
     "static and contract tests",
@@ -50,14 +51,14 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-QUALITY-CONSUMER-COPY-056",
-    "status": "done",
-    "goal": "Remove legacy English operational notes from ordinary quality reading without changing original data or issue statuses.",
+    "id": "PKG-REPORT-GROUP-LABELS-057",
+    "status": "in_progress",
+    "goal": "Correct fragmented training report groups independently of the unresolved hydration-source investigation.",
     "task_ids": [
-      "LTS-QUALITY-CONSUMER-COPY-001"
+      "LTS-REPORT-GROUP-LABELS-001"
     ],
     "public_build": "health-integrated-20261117.142",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261117.143",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
@@ -66,23 +67,16 @@
     "started_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "pending_gates": [],
-    "evidence_document": "v2/releases/QUALITY_CONSUMER_COPY_20261117.md",
-    "evidence": [
-      "Actual .141 presentation showed legacy English notes outside the closed technical disclosure.",
-      "The fix changes presentation only, preserves ordinary human notes and safe opt-in originals, and suppresses treatment metadata in quality diagnostics.",
-      "Local render/copy/73-language-case and static production/preview/privacy/continuity contracts passed. Focused synthetic Chromium320/393/1440 quality journeys passed with original loaded rows unchanged and zero writes; complete remote cross-route fixtures remain pending.",
-      "PR557 final1630ccce9e373c6cd914927e318cd27555893f6e and tree3da9ac70ba7a00e62d1b6096309b79748b1a26bf passed21/21 candidate workflows.",
-      "Language browser44113249944/job134144253712 passed17 synthetic full/partial/empty/conflict/loading/error/recovery journeys at320/393/1180/1440. Quality originals, statuses, disclosure defaults and treatment canaries were checked in all12 nonempty cases with zero writes.",
-      "Artifact14341678990 sha256:978150a465a4c2be48aa91afb1673ca83fedfb9de76d165d94c0ab0bab76b006 was verified before inspecting exact320/1440 known-quality-row screenshots.",
-      "Normal merged83ce788397926065eddd3ee2d058b71d8439b93 preserves the tested tree. Deploy44115271899,Pages44115387506 andHomologation44115387555 passed.",
-      "The public .142 index,data-screen module and scoped CSS returned200 and exactly matched their tested SHA256 bytes. The unchanged analysis module also returned200 and exact bytes after an initial isolated503.",
-      "The existing authenticated native owner session reloaded exact.142 and verified Portuguese quality reading,neutral resolved headings,closed diagnostics and suppressed treatment metadata. Independent private full-row fingerprints before/after were equal.",
-      "Real-auth44115271690 initially passed the ten desktop/mobile core journeys but failed its strict runtime-error gate on a503 for the unchanged analysis-screen script during sign-out. Original encrypted evidence14341534780 was retained and only failed job134151500418 was rerun without code or assertion changes.",
-      "Retry job134154942978 on real-auth44115271690 completed successfully on attempt2, including desktop Chromium and mobile WebKit touch. Original503 evidence is retained; neither runtime nor assertions changed for the retry.",
-      "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water."
+    "pending_gates": [
+      "candidate_browser_pdf",
+      "exact_publication",
+      "authenticated_group_totals"
     ],
-    "completed_on": "2026-11-17"
+    "evidence_document": "v2/releases/REPORT_GROUP_LABELS_20261117.md",
+    "evidence": [
+      "A concrete report defect was found in the existing authenticated session while water research continued separately.",
+      "The fix groups only presentation labels; exact originals remain in the session details."
+    ]
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261117.142",
@@ -4244,6 +4238,26 @@
       "next_action": "Preserve original quality records and closed diagnostics; reopen only on new evidence of a presentation regression.",
       "blocker": null,
       "completed_on": "2026-11-17"
+    },
+    {
+      "id": "LTS-REPORT-GROUP-LABELS-001",
+      "area": "calendar training reports",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Consolidate case and spacing variants of recorded muscle-group labels in weekly/monthly reports without inflating session counts.",
+      "acceptance": [
+        "Equivalent capitalization, spacing and Unicode composition produce one report group; accents, sides and different or compound anatomical labels remain distinct.",
+        "Sessions count distinct accepted workout identities; exercise, main-set and extension totals remain exact.",
+        "Original exercise labels, session details, canonical identities, source boundaries and clinical records are preserved.",
+        "Synthetic desktop/mobile and PDF gates, exact publication and authenticated report presentation are verified."
+      ],
+      "evidence": [
+        "The authenticated .142 weekly report displayed duplicate case-only labels in its group distribution.",
+        "44 model tests pass, including two new regressions for mixed-case groups, distinct sessions, original labels, Unicode, missing groups and failed set reads."
+      ],
+      "next_action": "Complete candidate browser/PDF checks, publish the exact tree and compare the existing authenticated weekly report.",
+      "blocker": null
     }
   ],
   "package_history": [
