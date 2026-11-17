@@ -53,11 +53,12 @@ jobs:
           python3 -m http.server 4175 >/tmp/health-production.log 2>&1 &
           python3 -m http.server 4173 --directory v2 >/tmp/health-production-forms.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4175/v2/ >/dev/null && curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+      - name: Verify bounded recovery from public asset failures
+        run: node v2/startup-recovery-browser.mjs
       - name: Verify actual renderer through mocked authentication, mobile routes and repeated cancel
         run: |
           node v2/production-integration-browser.mjs
           node v2/startup-browser.mjs
-          node v2/startup-recovery-browser.mjs
           node v2/real-auth-dashboard-checks-test.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs

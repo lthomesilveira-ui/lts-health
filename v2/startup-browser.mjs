@@ -27,7 +27,7 @@ for(const engine of [chromium,webkit]){
    await context.close();
   }
   const page=await browser.newPage({viewport:{width:393,height:800},serviceWorkers:'block'});let documents=0;
-  page.on('framenavigated',frame=>{if(frame===page.mainFrame())documents++;});
+  page.on('request',request=>{if(request.isNavigationRequest()&&request.frame()===page.mainFrame())documents++;});
   await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:sdk}));
   await page.route('**/src/main.js?*',route=>route.abort());
   await page.clock.install({time:new Date('2030-04-10T12:00:00Z')});
