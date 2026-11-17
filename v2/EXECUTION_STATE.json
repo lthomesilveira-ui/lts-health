@@ -52,13 +52,13 @@
   },
   "current_package": {
     "id": "PKG-REPORT-GROUP-LABELS-057",
-    "status": "in_progress",
+    "status": "done",
     "goal": "Correct fragmented training report groups independently of the unresolved hydration-source investigation.",
     "task_ids": [
       "LTS-REPORT-GROUP-LABELS-001"
     ],
-    "public_build": "health-integrated-20261117.142",
-    "candidate_build": "health-integrated-20261117.143",
+    "public_build": "health-integrated-20261117.143",
+    "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
@@ -67,34 +67,37 @@
     "started_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "pending_gates": [
-      "candidate_browser_pdf",
-      "exact_publication",
-      "authenticated_group_totals"
-    ],
+    "pending_gates": [],
     "evidence_document": "v2/releases/REPORT_GROUP_LABELS_20261117.md",
     "evidence": [
       "A concrete report defect was found in the existing authenticated session while water research continued separately.",
-      "The fix groups only presentation labels; exact originals remain in the session details."
-    ]
+      "The fix groups only presentation labels; exact originals remain in the session details.",
+      "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
+      "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
+      "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
+      "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
+      "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
+      "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
+    ],
+    "completed_on": "2026-11-17"
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261117.142",
+    "build_id": "health-integrated-20261117.143",
     "published_on": "2026-11-17",
-    "release_kind": "quality_limitations_consumer_presentation",
-    "main_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
-    "runtime_promotion_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
-    "candidate_commit": "1630ccce9e373c6cd914927e318cd27555893f6e",
-    "tested_tree": "3da9ac70ba7a00e62d1b6096309b79748b1a26bf",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
-    "manual_exact_public_status": "authenticated_quality_presentation_verified",
-    "automated_runtime_and_responsive_status": "Candidate workflows and actual-owner desktop/mobile protected checks passed; original quality records and statuses preserved. Physical iPhone acceptance remains separate.",
+    "release_kind": "calendar_report_group_presentation",
+    "main_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
+    "runtime_promotion_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
+    "candidate_commit": "a2c8e9f22cac591f714a19f7b8ed1bca570b2618",
+    "tested_tree": "4863641f59fcb6a3c34240f9ab7bb3d7a6570092",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#analise",
+    "manual_exact_public_status": "authenticated_report_group_totals_verified",
+    "automated_runtime_and_responsive_status": "Exact candidate checks, Chromium/WebKit calendar/PDF evidence, publication and protected actual-owner desktop/mobile journeys passed. Physical iPhone acceptance remains separate.",
     "ci_summary": {
       "candidate_success": 21,
       "candidate_total": 21,
-      "deploy_run": 44115271899,
+      "deploy_run": 44148403294,
       "deploy_status": "success",
-      "actual_auth_run": 44115271690,
+      "actual_auth_run": 44148403236,
       "actual_auth_status": "success"
     },
     "physical_device_tested": false,
@@ -105,15 +108,12 @@
     "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
     "preserved_base_build": "health-integrated-20261112.133",
     "evidence": [
-      "PR557 final1630ccce9e373c6cd914927e318cd27555893f6e and tree3da9ac70ba7a00e62d1b6096309b79748b1a26bf passed21/21 candidate workflows.",
-      "Language browser44113249944/job134144253712 passed17 synthetic full/partial/empty/conflict/loading/error/recovery journeys at320/393/1180/1440. Quality originals, statuses, disclosure defaults and treatment canaries were checked in all12 nonempty cases with zero writes.",
-      "Artifact14341678990 sha256:978150a465a4c2be48aa91afb1673ca83fedfb9de76d165d94c0ab0bab76b006 was verified before inspecting exact320/1440 known-quality-row screenshots.",
-      "Normal merged83ce788397926065eddd3ee2d058b71d8439b93 preserves the tested tree. Deploy44115271899,Pages44115387506 andHomologation44115387555 passed.",
-      "The public .142 index,data-screen module and scoped CSS returned200 and exactly matched their tested SHA256 bytes. The unchanged analysis module also returned200 and exact bytes after an initial isolated503.",
-      "The existing authenticated native owner session reloaded exact.142 and verified Portuguese quality reading,neutral resolved headings,closed diagnostics and suppressed treatment metadata. Independent private full-row fingerprints before/after were equal.",
-      "Real-auth44115271690 initially passed the ten desktop/mobile core journeys but failed its strict runtime-error gate on a503 for the unchanged analysis-screen script during sign-out. Original encrypted evidence14341534780 was retained and only failed job134151500418 was rerun without code or assertion changes.",
-      "Retry job134154942978 on real-auth44115271690 completed successfully on attempt2, including desktop Chromium and mobile WebKit touch. Original503 evidence is retained; neither runtime nor assertions changed for the retry.",
-      "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water."
+      "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
+      "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
+      "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
+      "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
+      "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
+      "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
     ]
   },
   "tasks": [
@@ -1931,9 +1931,10 @@
         "Google44104390183 passed reader, PostgreSQL/RLS and six Chromium/WebKit320/390/1440 journeys. Artifact14338391690 SHA2564e434ac4f94853441742987f85bcbd476c81c255a1590e7a222d958c807f5bd6 verified; narrow controls and desktop result inspected.",
         "Normal PR555 mergedd58faff72f64b33102bf4a68c6e3d14e7afc50a preserves tested tree47af41dd48fd10eafaa696034fe29752d109c56e. Connection14 ACTIVE/JWT required and all six files read back exactly; anonymous status401. Callback9, scheduled7 and phone receiver12 preserved.",
         "Deploy44107189572, Pages44107289873, Homologation44107289906, Google44107189701 and protected real-auth44107189807 passed. Exact public index and affected source modules match reviewed bytes.",
-        "The existing authenticated .141 session completed one recent comparison and one selected known historical comparison. All three methods returned a valid empty recent result and a valid positive historical result; metadata, original history and unchanged clinical/snapshot/freshness invariants were verified privately. This does not establish recent-water recovery, automatic new-water receipt or physical-device acceptance."
+        "The existing authenticated .141 session completed one recent comparison and one selected known historical comparison. All three methods returned a valid empty recent result and a valid positive historical result; metadata, original history and unchanged clinical/snapshot/freshness invariants were verified privately. This does not establish recent-water recovery, automatic new-water receipt or physical-device acceptance.",
+        "A distinct supported source path was exercised: a one-time Google Health export completed, but download required routine account reauthentication and was not confirmed. The previously repaired API credentials remain valid; original recent-water conditions stay open."
       ],
-      "next_action": "Resume reconciliation when genuinely available, attributable recent water or a distinct supported source path supplies new evidence. The historical positive comparison verifies these methods without resolving the unavailable recent record; preserve the independently open automatic-new-water condition. Do not repeat completed account, credential, phone or filter tests.",
+      "next_action": "Retrieve the newly completed one-time Google Health export after routine secure reauthentication, review only original typed hydration members and compare genuinely new positive source records without duplicating history. The new archive is not yet acquired; it does not close API availability or automatic recurrence. Do not repeat completed account, credential, phone or filter checks.",
       "blocker": "Recent water is visible in the native Google app but has not been made available through the verified source reads or Apple Health transport. The credential repair is complete; it is not an active blocker.",
       "phone_status_capture_received": true
     },
@@ -4243,7 +4244,7 @@
       "id": "LTS-REPORT-GROUP-LABELS-001",
       "area": "calendar training reports",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "done",
       "owner": "Codex",
       "summary": "Consolidate case and spacing variants of recorded muscle-group labels in weekly/monthly reports without inflating session counts.",
       "acceptance": [
@@ -4254,10 +4255,17 @@
       ],
       "evidence": [
         "The authenticated .142 weekly report displayed duplicate case-only labels in its group distribution.",
-        "44 model tests pass, including two new regressions for mixed-case groups, distinct sessions, original labels, Unicode, missing groups and failed set reads."
+        "44 model tests pass, including two new regressions for mixed-case groups, distinct sessions, original labels, Unicode, missing groups and failed set reads.",
+        "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
+        "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
+        "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
+        "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
+        "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
+        "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
       ],
-      "next_action": "Complete candidate browser/PDF checks, publish the exact tree and compare the existing authenticated weekly report.",
-      "blocker": null
+      "next_action": "Preserve exact source labels and strict session evidence; reopen only for a new presentation regression.",
+      "blocker": null,
+      "completed_on": "2026-11-17"
     }
   ],
   "package_history": [
@@ -6401,25 +6409,56 @@
         "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water."
       ],
       "completed_on": "2026-11-17"
+    },
+    {
+      "id": "PKG-REPORT-GROUP-LABELS-057",
+      "status": "done",
+      "goal": "Correct fragmented training report groups independently of the unresolved hydration-source investigation.",
+      "task_ids": [
+        "LTS-REPORT-GROUP-LABELS-001"
+      ],
+      "public_build": "health-integrated-20261117.143",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-17",
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "pending_gates": [],
+      "evidence_document": "v2/releases/REPORT_GROUP_LABELS_20261117.md",
+      "evidence": [
+        "A concrete report defect was found in the existing authenticated session while water research continued separately.",
+        "The fix groups only presentation labels; exact originals remain in the session details.",
+        "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
+        "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
+        "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
+        "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
+        "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
+        "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
+      ],
+      "completed_on": "2026-11-17"
     }
   ],
   "latest_published_release": {
-    "build_id": "health-integrated-20261117.142",
+    "build_id": "health-integrated-20261117.143",
     "published_on": "2026-11-17",
-    "release_kind": "quality_limitations_consumer_presentation",
-    "main_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
-    "runtime_promotion_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
-    "candidate_commit": "1630ccce9e373c6cd914927e318cd27555893f6e",
-    "tested_tree": "3da9ac70ba7a00e62d1b6096309b79748b1a26bf",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
-    "manual_exact_public_status": "authenticated_quality_presentation_verified",
-    "automated_runtime_and_responsive_status": "Candidate workflows and actual-owner desktop/mobile protected checks passed; original quality records and statuses preserved. Physical iPhone acceptance remains separate.",
+    "release_kind": "calendar_report_group_presentation",
+    "main_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
+    "runtime_promotion_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
+    "candidate_commit": "a2c8e9f22cac591f714a19f7b8ed1bca570b2618",
+    "tested_tree": "4863641f59fcb6a3c34240f9ab7bb3d7a6570092",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#analise",
+    "manual_exact_public_status": "authenticated_report_group_totals_verified",
+    "automated_runtime_and_responsive_status": "Exact candidate checks, Chromium/WebKit calendar/PDF evidence, publication and protected actual-owner desktop/mobile journeys passed. Physical iPhone acceptance remains separate.",
     "ci_summary": {
       "candidate_success": 21,
       "candidate_total": 21,
-      "deploy_run": 44115271899,
+      "deploy_run": 44148403294,
       "deploy_status": "success",
-      "actual_auth_run": 44115271690,
+      "actual_auth_run": 44148403236,
       "actual_auth_status": "success"
     },
     "physical_device_tested": false,
@@ -6430,15 +6469,12 @@
     "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
     "preserved_base_build": "health-integrated-20261112.133",
     "evidence": [
-      "PR557 final1630ccce9e373c6cd914927e318cd27555893f6e and tree3da9ac70ba7a00e62d1b6096309b79748b1a26bf passed21/21 candidate workflows.",
-      "Language browser44113249944/job134144253712 passed17 synthetic full/partial/empty/conflict/loading/error/recovery journeys at320/393/1180/1440. Quality originals, statuses, disclosure defaults and treatment canaries were checked in all12 nonempty cases with zero writes.",
-      "Artifact14341678990 sha256:978150a465a4c2be48aa91afb1673ca83fedfb9de76d165d94c0ab0bab76b006 was verified before inspecting exact320/1440 known-quality-row screenshots.",
-      "Normal merged83ce788397926065eddd3ee2d058b71d8439b93 preserves the tested tree. Deploy44115271899,Pages44115387506 andHomologation44115387555 passed.",
-      "The public .142 index,data-screen module and scoped CSS returned200 and exactly matched their tested SHA256 bytes. The unchanged analysis module also returned200 and exact bytes after an initial isolated503.",
-      "The existing authenticated native owner session reloaded exact.142 and verified Portuguese quality reading,neutral resolved headings,closed diagnostics and suppressed treatment metadata. Independent private full-row fingerprints before/after were equal.",
-      "Real-auth44115271690 initially passed the ten desktop/mobile core journeys but failed its strict runtime-error gate on a503 for the unchanged analysis-screen script during sign-out. Original encrypted evidence14341534780 was retained and only failed job134151500418 was rerun without code or assertion changes.",
-      "Retry job134154942978 on real-auth44115271690 completed successfully on attempt2, including desktop Chromium and mobile WebKit touch. Original503 evidence is retained; neither runtime nor assertions changed for the retry.",
-      "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water."
+      "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
+      "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
+      "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
+      "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
+      "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
+      "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
     ]
   },
   "release_history": [
@@ -11626,12 +11662,50 @@
         "Deploy44107189572, Pages44107289873, Homologation44107289906, Google44107189701 and protected real-auth44107189807 passed. Exact public index and affected source modules match reviewed bytes.",
         "The existing authenticated .141 session completed one recent comparison and one selected known historical comparison. All three methods returned a valid empty recent result and a valid positive historical result; metadata, original history and unchanged clinical/snapshot/freshness invariants were verified privately. This does not establish recent-water recovery, automatic new-water receipt or physical-device acceptance."
       ]
+    },
+    {
+      "build_id": "health-integrated-20261117.142",
+      "published_on": "2026-11-17",
+      "release_kind": "quality_limitations_consumer_presentation",
+      "main_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
+      "runtime_promotion_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
+      "candidate_commit": "1630ccce9e373c6cd914927e318cd27555893f6e",
+      "tested_tree": "3da9ac70ba7a00e62d1b6096309b79748b1a26bf",
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#dados",
+      "manual_exact_public_status": "authenticated_quality_presentation_verified",
+      "automated_runtime_and_responsive_status": "Candidate workflows and actual-owner desktop/mobile protected checks passed; original quality records and statuses preserved. Physical iPhone acceptance remains separate.",
+      "ci_summary": {
+        "candidate_success": 21,
+        "candidate_total": 21,
+        "deploy_run": 44115271899,
+        "deploy_status": "success",
+        "actual_auth_run": 44115271690,
+        "actual_auth_status": "success"
+      },
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "server_runtime_changed": false,
+      "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
+      "preserved_base_build": "health-integrated-20261112.133",
+      "evidence": [
+        "PR557 final1630ccce9e373c6cd914927e318cd27555893f6e and tree3da9ac70ba7a00e62d1b6096309b79748b1a26bf passed21/21 candidate workflows.",
+        "Language browser44113249944/job134144253712 passed17 synthetic full/partial/empty/conflict/loading/error/recovery journeys at320/393/1180/1440. Quality originals, statuses, disclosure defaults and treatment canaries were checked in all12 nonempty cases with zero writes.",
+        "Artifact14341678990 sha256:978150a465a4c2be48aa91afb1673ca83fedfb9de76d165d94c0ab0bab76b006 was verified before inspecting exact320/1440 known-quality-row screenshots.",
+        "Normal merged83ce788397926065eddd3ee2d058b71d8439b93 preserves the tested tree. Deploy44115271899,Pages44115387506 andHomologation44115387555 passed.",
+        "The public .142 index,data-screen module and scoped CSS returned200 and exactly matched their tested SHA256 bytes. The unchanged analysis module also returned200 and exact bytes after an initial isolated503.",
+        "The existing authenticated native owner session reloaded exact.142 and verified Portuguese quality reading,neutral resolved headings,closed diagnostics and suppressed treatment metadata. Independent private full-row fingerprints before/after were equal.",
+        "Real-auth44115271690 initially passed the ten desktop/mobile core journeys but failed its strict runtime-error gate on a503 for the unchanged analysis-screen script during sign-out. Original encrypted evidence14341534780 was retained and only failed job134151500418 was rerun without code or assertion changes.",
+        "Retry job134154942978 on real-auth44115271690 completed successfully on attempt2, including desktop Chromium and mobile WebKit touch. Original503 evidence is retained; neither runtime nor assertions changed for the retry.",
+        "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water."
+      ]
     }
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-17",
-    "source_main_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
-    "runtime_build": "health-integrated-20261117.142",
+    "source_main_commit": "d5b3f85ea8b0c893713abd4e15b3741d62a9aee3",
+    "runtime_build": "health-integrated-20261117.143",
     "candidate_build": null,
     "runtime_changed": false,
     "frontend_runtime_changed": false,
@@ -11639,26 +11713,23 @@
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "status_counts": {
-      "done": 144,
+      "done": 145,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 3
     },
     "executable_task_count": 0,
     "evidence": [
-      "v2/releases/QUALITY_CONSUMER_COPY_20261117.md",
-      "PR557 final1630ccce9e373c6cd914927e318cd27555893f6e and tree3da9ac70ba7a00e62d1b6096309b79748b1a26bf passed21/21 candidate workflows.",
-      "Language browser44113249944/job134144253712 passed17 synthetic full/partial/empty/conflict/loading/error/recovery journeys at320/393/1180/1440. Quality originals, statuses, disclosure defaults and treatment canaries were checked in all12 nonempty cases with zero writes.",
-      "Artifact14341678990 sha256:978150a465a4c2be48aa91afb1673ca83fedfb9de76d165d94c0ab0bab76b006 was verified before inspecting exact320/1440 known-quality-row screenshots.",
-      "Normal merged83ce788397926065eddd3ee2d058b71d8439b93 preserves the tested tree. Deploy44115271899,Pages44115387506 andHomologation44115387555 passed.",
-      "The public .142 index,data-screen module and scoped CSS returned200 and exactly matched their tested SHA256 bytes. The unchanged analysis module also returned200 and exact bytes after an initial isolated503.",
-      "The existing authenticated native owner session reloaded exact.142 and verified Portuguese quality reading,neutral resolved headings,closed diagnostics and suppressed treatment metadata. Independent private full-row fingerprints before/after were equal.",
-      "Real-auth44115271690 initially passed the ten desktop/mobile core journeys but failed its strict runtime-error gate on a503 for the unchanged analysis-screen script during sign-out. Original encrypted evidence14341534780 was retained and only failed job134151500418 was rerun without code or assertion changes.",
-      "Retry job134154942978 on real-auth44115271690 completed successfully on attempt2, including desktop Chromium and mobile WebKit touch. Original503 evidence is retained; neither runtime nor assertions changed for the retry.",
-      "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water.",
-      "This follow-up changes metadata only; original source-dependent conditions remain open."
+      "v2/releases/REPORT_GROUP_LABELS_20261117.md",
+      "PR559 exact candidate a2c8e9f22cac591f714a19f7b8ed1bca570b2618, tree4863641f59fcb6a3c34240f9ab7bb3d7a6570092, passed21/21 workflows. Initial preview timeout evidence was retained; only failed job134206758005 was rerun unchanged as134262673353, which passed.",
+      "Calendar/PDF44130734695 passed34 cases and9 real synthetic PDFs in Chromium/WebKit at320/393/1440px. Artifact14349738122 SHA2565ad2a38fbca77d65a5d141e4c6b8de35404094930b51e3dbbdecc6c81e4b5db6 was verified and mobile/desktop original-resolution report captures inspected.",
+      "Normal merge d5b3f85ea8b0c893713abd4e15b3741d62a9aee3 preserved the tested tree. Deploy44148403294 and Pages44148501137/44148501469 passed.",
+      "Public index SHA25653551267883eb8f9b0b6537806eac879f62fab3dc0b0216282f3130f4cbdea5d and calendar-report-model SHA256b9f0dacb657ab05aa591928221224a9a73e6827556d3b9563a33348ea177f89a matched the tested local bytes.",
+      "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
+      "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly.",
+      "This reconciliation changes metadata only. Source-dependent conditions retain their own evidence requirements."
     ],
-    "open_dependency_policy": "Preserve independent availability, history, source identity, full-day coverage, recurrence and owner/device acceptance criteria. Repeat completed checks only for new evidence or a concrete regression."
+    "open_dependency_policy": "Unrelated work must not wait for hydration. Preserve independent source history, availability, lineage, coverage, recurrence and owner/device acceptance criteria."
   },
   "continuity_review_history": [
     {
@@ -13413,6 +13484,38 @@
         "This follow-up changes project metadata only. Runtime and source observations remain exactly those already reviewed and verified."
       ],
       "open_dependency_policy": "Preserve independent availability, history, source identity, full-day coverage, recurrence and owner/device acceptance criteria. Repeat completed tests only for new source evidence or a concrete regression."
+    },
+    {
+      "reviewed_on": "2026-11-17",
+      "source_main_commit": "d83ce788397926065eddd3ee2d058b71d8439b93",
+      "runtime_build": "health-integrated-20261117.142",
+      "candidate_build": null,
+      "runtime_changed": false,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 144,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 3
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "v2/releases/QUALITY_CONSUMER_COPY_20261117.md",
+        "PR557 final1630ccce9e373c6cd914927e318cd27555893f6e and tree3da9ac70ba7a00e62d1b6096309b79748b1a26bf passed21/21 candidate workflows.",
+        "Language browser44113249944/job134144253712 passed17 synthetic full/partial/empty/conflict/loading/error/recovery journeys at320/393/1180/1440. Quality originals, statuses, disclosure defaults and treatment canaries were checked in all12 nonempty cases with zero writes.",
+        "Artifact14341678990 sha256:978150a465a4c2be48aa91afb1673ca83fedfb9de76d165d94c0ab0bab76b006 was verified before inspecting exact320/1440 known-quality-row screenshots.",
+        "Normal merged83ce788397926065eddd3ee2d058b71d8439b93 preserves the tested tree. Deploy44115271899,Pages44115387506 andHomologation44115387555 passed.",
+        "The public .142 index,data-screen module and scoped CSS returned200 and exactly matched their tested SHA256 bytes. The unchanged analysis module also returned200 and exact bytes after an initial isolated503.",
+        "The existing authenticated native owner session reloaded exact.142 and verified Portuguese quality reading,neutral resolved headings,closed diagnostics and suppressed treatment metadata. Independent private full-row fingerprints before/after were equal.",
+        "Real-auth44115271690 initially passed the ten desktop/mobile core journeys but failed its strict runtime-error gate on a503 for the unchanged analysis-screen script during sign-out. Original encrypted evidence14341534780 was retained and only failed job134151500418 was rerun without code or assertion changes.",
+        "Retry job134154942978 on real-auth44115271690 completed successfully on attempt2, including desktop Chromium and mobile WebKit touch. Original503 evidence is retained; neither runtime nor assertions changed for the retry.",
+        "The server,authorization,clinical history,ingestion and source statuses are unchanged. The9 external conditions and3 accepted original-source gaps remain open; the .141 water comparison is not recovery of recent water.",
+        "This follow-up changes metadata only; original source-dependent conditions remain open."
+      ],
+      "open_dependency_policy": "Preserve independent availability, history, source identity, full-day coverage, recurrence and owner/device acceptance criteria. Repeat completed checks only for new evidence or a concrete regression."
     }
   ],
   "continuation_automation": {

@@ -1,3 +1,9 @@
+## 2026-11-17 — Concluído: grupos de treino no relatório, .143
+
+A correção agrupa diferenças de maiúsculas e espaços na apresentação dos relatórios semanal, mensal e PDF. A contagem usa sessões distintas e preserva séries, prolongamentos, exercícios e todos os rótulos originais. A candidata passou 21/21 workflows; publicação exata, navegador/PDF, acesso real protegido e totais no relatório autenticado foram conferidos. Nenhum dado de saúde ou servidor foi alterado.
+
+Pacote057 encerrado: 159 itens, 145 concluídos, 9 dependências externas, 3 lacunas aceitas e 2 alternativas substituídas; zero ready/in_progress. Água recente e as demais dependências de fontes não foram encerradas por esta correção. Este seguimento altera somente metadados.
+
 ## 2026-11-17 — Em validação: grupos de treino no relatório, .143
 
 O relatório semanal autenticado separava nomes de grupo que diferiam só por maiúsculas ou espaços. O pacote057 consolida essa apresentação e conta sessões distintas, preservando os rótulos originais, exercícios, séries e prolongamentos. Rótulos anatômicos distintos, lados e nomes compostos permanecem separados.44 testes do modelo passaram; navegador/PDF, publicação exata e conferência autenticada continuam como gates.
