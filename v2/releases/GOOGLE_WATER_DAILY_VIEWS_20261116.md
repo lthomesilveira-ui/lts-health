@@ -1,0 +1,11 @@
+# Complementary water views — .140
+
+Water displayed as one daily entry in a provider app may need comparison across the raw record stream, reconciled stream and civil-day aggregate. This explicit owner action adds the two previously untested read-only views: a bounded `dataPoints:reconcile` GET and a `dataPoints:dailyRollUp` query POST. It reuses the existing nutrition read grant, verified provider identity, encrypted credentials and owner lease. There is no new authorization or provider write.
+
+The comparison covers at most seven civil days, one reconciled page of at most 25 points and one aggregate page of at most seven days. Both queries share the existing byte and time budgets. Reconciled resource account, intervals, offsets, volumes and duplicate identities are validated. Daily ranges must be midnight-aligned, unique, one-day buckets inside the requested range. Absent hydration payload, omitted quantity, explicit zero and a positive quantity remain distinct. Query rejection is reported independently and never converted into an empty successful response.
+
+Only counts, presence states and date bounds leave the reader. Amounts, point identifiers, meals, raw payloads and credentials are excluded. Overlapping views and daily totals cannot be added together. This action neither stores a hydration snapshot nor changes canonical totals, source approval, scheduled freshness or the existing background reader. A returned daily aggregate alone is insufficient for source attribution or canonical promotion.
+
+The existing source check exposes this action and gives separate outcomes for positive availability, empty/zero/unquantified responses, undated records, partial provider failure and invalid responses. Production and preview share the same implementation. Meaningful tests cover owner isolation, concurrency, no clinical writes, provider boundaries, omitted quantities and the mobile/desktop controls.
+
+Candidate validation, deployment and real-account results are recorded in the private project checkpoint after verification. No personal measurements or account identifiers belong in this public release note.

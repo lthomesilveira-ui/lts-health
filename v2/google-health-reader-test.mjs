@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {createServer} from 'node:http';
 import {once} from 'node:events';
 import {GOOGLE_HEALTH_NUTRITION_SCOPE as scope,GOOGLE_HEALTH_SOURCE_FAMILY as family,
-  readGoogleHealthHydration as read,hydrationReadParameters,GoogleHealthReadError,inspectGoogleHealthHydrationAvailability as availability} from '../supabase/functions/_shared/google-health-reader.mjs';
+  readGoogleHealthHydration as read,hydrationReadParameters,GoogleHealthReadError,inspectGoogleHealthHydrationAvailability as availability,inspectGoogleHealthHydrationStreams as streams} from '../supabase/functions/_shared/google-health-reader.mjs';
 
 // Entirely invented fixtures. No account credentials, live Google calls or storage.
 const options={accessToken:'synthetic-token-only',grantedScopes:scope,from:'2030-02-11',to:'2030-02-12'};
@@ -277,4 +277,39 @@ test('nutrition absence remains absence and malformed, foreign or conflicting so
     ['invalid_pagination',[{nextPageToken:'again'},{nextPageToken:'again'}]]
   ])await errorCode(code,()=>inspect({...options,fetcher:transport(pages).fetcher}));
   let calls=0;await errorCode('invalid_date_window',()=>inspect({...options,to:'2030-03-20',fetcher:async()=>calls++}));assert.equal(calls,0);
+});
+
+const civilDate=day=>{const [year,month,date]=day.split('-').map(Number);return {date:{year,month,day:date}};};
+const bucket=(ml=321)=>({civilStartTime:civilDate('2030-02-11'),civilEndTime:civilDate('2030-02-12'),hydrationLog:{amountConsumed:{millilitersSum:ml}}});
+const reconciledPoint=()=>{const p=point();delete p.dataSource;p.dataPointName=p.name;delete p.name;return p;};
+test('water streams query reconciled points and daily totals with bounded independent views and no volume disclosure',async()=>{
+  const p=reconciledPoint();p.privateNotes='private-water-stream-canary';
+  const t=transport([{dataPoints:[p],nextPageToken:'do-not-follow'},{rollupDataPoints:[bucket()]}]);
+  const out=await streams({...options,expectedHealthUserId:identity.healthUserId,fetcher:t.fetcher});
+  assert.equal(t.calls.length,3);assert.equal(out.reconciled.positive_observations,1);assert.equal(out.reconciled.truncated,true);assert.equal(out.daily.positive_buckets,1);
+  assert.equal(out.water_received,false);assert.equal(out.canonical_updated,false);
+  assert.equal(t.calls[1].url.pathname,'/v4/users/me/dataTypes/hydration-log/dataPoints:reconcile');assert.equal(t.calls[1].request.method,'GET');
+  assert.equal(t.calls[1].url.searchParams.get('filter'),hydrationReadParameters(options.from,options.to).filter);assert.equal(t.calls[1].url.searchParams.get('pageSize'),'25');
+  assert.equal(t.calls[2].url.pathname,'/v4/users/me/dataTypes/hydration-log/dataPoints:dailyRollUp');assert.equal(t.calls[2].request.method,'POST');
+  assert.deepEqual(JSON.parse(t.calls[2].request.body),{range:{start:civilDate(options.from),end:civilDate(options.to)},windowSizeDays:1,pageSize:7,dataSourceFamily:family});
+  for(const c of t.calls){assert.equal(c.url.origin,'https://health.googleapis.com');assert.equal(c.request.redirect,'error');assert.ok(c.request.signal instanceof AbortSignal);}
+  for(const canary of ['321','water-0001','synthetic-user','private-water-stream-canary','milliliters','raw','MyFitnessPal'])assert.ok(!JSON.stringify(out).includes(canary));
+});
+test('daily water distinguishes an absent amount, omitted scalar, explicit zero and positive value without manufacturing zeros',async()=>{
+  for(const [b,field] of [[{civilStartTime:civilDate(options.from),civilEndTime:civilDate(options.to)},'empty_buckets'],[bucket(0),'zero_buckets'],[{...bucket(),hydrationLog:{amountConsumed:{}}},'unquantified_buckets'],[bucket(),'positive_buckets']]){
+    const t=transport([{}, {rollupDataPoints:[b]}]),out=await streams({...options,fetcher:t.fetcher});assert.equal(out.daily.buckets,1);assert.equal(out.daily[field],1);
+    if(field!=='positive_buckets'){assert.equal(out.daily.positive_buckets,0);assert.equal(out.daily.first_positive_day,null);}
+  }
+});
+test('unsupported alternative water method is isolated, never reinterpreted as an empty successful response',async()=>{
+  const t=transport([json({private:'provider-error-canary'},400),{rollupDataPoints:[bucket()]}]);
+  const out=await streams({...options,fetcher:t.fetcher});assert.deepEqual(out.reconciled,{status:'provider_request_rejected'});assert.equal(out.daily.positive_buckets,1);assert.ok(!JSON.stringify(out).includes('provider-error-canary'));
+});
+test('alternative water checks refuse wrong accounts and out-of-window, oversized, malformed or repeated daily buckets',async()=>{
+  let requests=0;await errorCode('invalid_date_window',()=>streams({...options,from:'2030-02-01',fetcher:async()=>{requests++;}}));assert.equal(requests,0);
+  const p=reconciledPoint();p.dataPointName=p.dataPointName.replace('synthetic-user','another-user');const wrong=transport([{dataPoints:[p]}]);await errorCode('record_account_mismatch',()=>streams({...options,fetcher:wrong.fetcher}));
+  const before=bucket();before.civilStartTime=civilDate('2030-02-10');before.civilEndTime=civilDate('2030-02-11');
+  const cases=[[{rollupDataPoints:[before]},'record_outside_window'],[{rollupDataPoints:[bucket(-1)]},'invalid_volume'],[{rollupDataPoints:[bucket(),bucket()]},'record_limit'],[{rollupDataPoints:null},'invalid_response'],[{rollupDataPoints:[{...bucket(),civilEndTime:civilDate('2030-02-13')}]},'record_outside_window']];
+  for(const [body,code] of cases){const t=transport([{},body]);await errorCode(code,()=>streams({...options,fetcher:t.fetcher}));}
+  const twice=transport([{}, {rollupDataPoints:[bucket(),bucket()]}]);await errorCode('duplicate_identity_conflict',()=>streams({...options,from:'2030-02-10',fetcher:twice.fetcher}));
 });

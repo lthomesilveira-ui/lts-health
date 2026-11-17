@@ -120,6 +120,37 @@ async function inspectWaterAvailability(entry) {
   if (result.probes.some(probe => probe.truncated)) entry.message += ' A conferência dos registros recentes foi limitada a 25 por consulta.';
 }
 
+async function inspectWaterStreams(entry) {
+  const {lastDay, to} = googleHealthReadWindow(), from = addDays(lastDay, -6);
+  const result = await invoke({action: 'inspect-hydration-streams', from, to});
+  if (!isCurrent(entry)) return;
+  if (result.in_progress === true) { entry.message = 'Já existe uma conferência em andamento.'; return; }
+  const {reconciled: stream, daily} = result;
+  const statuses = ['ok','provider_request_rejected','provider_unavailable','permission_denied','rate_limited','network_error'];
+  const count = (n,max) => Number.isInteger(n) && n >= 0 && n <= max;
+  const day = value => { try { googleHealthPeriodWindow(value,value); return value >= from && value < to; } catch { return false; } };
+  if (result.inspected !== true || result.bounded !== true || result.mode !== 'read_only' || result.data_type !== 'hydration-log' ||
+      result.from !== from || result.to_exclusive !== to || result.canonical_updated !== false || result.water_received !== false ||
+      !statuses.includes(stream?.status) || !statuses.includes(daily?.status) ||
+      (stream.status === 'ok' && (!count(stream.observations,25) || !count(stream.undated_observations,25) || !count(stream.positive_observations,25) ||
+        stream.undated_observations + stream.positive_observations > stream.observations || typeof stream.truncated !== 'boolean' ||
+        (stream.observations === stream.undated_observations ? stream.first_day !== null || stream.last_day !== null : !day(stream.first_day) || !day(stream.last_day) || stream.first_day > stream.last_day))) ||
+      (daily.status === 'ok' && (![daily.buckets,daily.positive_buckets,daily.zero_buckets,daily.empty_buckets,daily.unquantified_buckets].every(n => count(n,7)) ||
+        daily.positive_buckets + daily.zero_buckets + daily.empty_buckets + daily.unquantified_buckets !== daily.buckets || typeof daily.truncated !== 'boolean' ||
+        (daily.positive_buckets === 0 ? daily.first_positive_day !== null || daily.last_positive_day !== null : !day(daily.first_positive_day) || !day(daily.last_positive_day) || daily.first_positive_day > daily.last_positive_day)))) {
+    throw Error('Invalid water stream inspection');
+  }
+  const positive = stream.status === 'ok' && stream.positive_observations > 0 || daily.status === 'ok' && daily.positive_buckets > 0;
+  entry.message = positive
+    ? 'O Google disponibilizou água no fluxo unificado ou nos totais diários. A origem ainda precisa ser conferida; nenhum valor foi incluído nos totais.'
+    : stream.status !== 'ok' || daily.status !== 'ok'
+      ? 'Uma das conferências não pôde ser concluída. Ainda não foi possível confirmar a disponibilidade da água pelos dois caminhos.'
+      : stream.undated_observations > 0
+        ? 'Há registros no fluxo unificado sem data local verificável. Não foi possível confirmar água recente; nenhum valor foi incluído nos totais.'
+        : `De ${fmtDate(from)} a ${fmtDate(lastDay)}, não foi confirmado volume positivo de água no fluxo unificado nem nos totais diários. Resumos vazios continuam sem informação; nenhum valor foi incluído nos totais.`;
+  if (stream.truncated || daily.truncated) entry.message += ' A conferência foi limitada à primeira página de cada consulta.';
+}
+
 async function inspectNutrition(entry) {
   const {lastDay, to} = googleHealthReadWindow();
   const from = addDays(lastDay, -6);
@@ -201,6 +232,9 @@ export function actOnGoogleHealth(action, requestedPeriod) {
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
+  if (action === 'inspect-hydration-streams') {
+    return run(entry, () => inspectWaterStreams(entry), 'Não foi possível conferir os totais diários da água agora.');
+  }
   if (action === 'inspect-hydration') {
     return run(entry, () => inspectWaterAvailability(entry), 'Não foi possível conferir a disponibilidade da água agora.');
   }
@@ -287,6 +321,7 @@ export function renderGoogleHealthConnection() {
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Conferir disponibilidade da água</summary>
       <p>Use quando a água aparecer no Google, mas não chegar por esta conexão. Compara o período recente com os últimos registros disponíveis, sem alterar os totais.</p>
       ${button('inspect-hydration', 'Conferir disponibilidade no Google')}
+      ${button('inspect-hydration-streams', 'Conferir totais diários no Google')}
     </details>` : ''}
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Comparar chegada da alimentação</summary>
       <p>Consulta os últimos 7 dias de alimentação no Google para distinguir esse envio do de água. Não importa refeições nem altera os totais.</p>

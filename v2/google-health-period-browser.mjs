@@ -28,6 +28,12 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
       return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,max_points_per_probe:25,canonical_updated:false,water_received:false,
        probes:['civil_window','latest_all_sources','latest_default_sources'].map((kind,i)=>({kind,observations:invalid?26:i?1:0,recent_observations:recent&&i?1:0,undated_observations:undated&&i?1:0,first_day:i&&!undated?day:null,last_day:i&&!undated?day:null,truncated:false,sources:[]}))},error:null};
      }
+     if(body.action==='inspect-hydration-streams'&&Object.keys(body).sort().join(',')==='action,from,to'){
+      const mode=window.__googleStreamsMode||'empty',dailyPositive=mode==='daily',streamPositive=mode==='stream',invalid=mode==='invalid',blocked=mode==='blocked';
+      return{data:{inspected:true,bounded:true,mode:'read_only',data_type:'hydration-log',from:body.from,to_exclusive:body.to,canonical_updated:false,water_received:false,
+       reconciled:blocked?{status:'provider_request_rejected'}:{status:'ok',observations:streamPositive?1:0,undated_observations:0,positive_observations:streamPositive?1:0,first_day:streamPositive?body.from:null,last_day:streamPositive?body.from:null,truncated:false},
+       daily:{status:'ok',buckets:1,positive_buckets:invalid?8:dailyPositive?1:0,zero_buckets:0,empty_buckets:dailyPositive?0:1,unquantified_buckets:0,first_positive_day:dailyPositive?body.from:null,last_positive_day:dailyPositive?body.from:null,truncated:false}},error:null};
+     }
      throw Error('Unexpected synthetic Google operation');
     };return client;
    };
@@ -98,6 +104,19 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    await card.getByRole('status').filter({hasText:'Não foi possível conferir a disponibilidade da água agora.'}).waitFor();
    const availabilityCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration'));
    assert.equal(availabilityCalls.length,4);assert.ok(availabilityCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-hydration-streams')),false);
+   const streams=card.getByRole('button',{name:'Conferir totais diários no Google',exact:true});
+   for(const [mode,message] of [['empty','não foi confirmado volume positivo de água'],['daily','O Google disponibilizou água no fluxo unificado ou nos totais diários.'],['stream','O Google disponibilizou água no fluxo unificado ou nos totais diários.'],['blocked','Uma das conferências não pôde ser concluída.'],['invalid','Não foi possível conferir os totais diários da água agora.']]){
+    await page.evaluate(value=>{window.__googleStreamsMode=value;},mode);
+    if(!await streams.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
+    const box=await streams.boundingBox();assert.ok(box&&box.height>=44&&box.x>=0&&box.x+box.width<=width+1);
+    await streams.click();await card.getByRole('status').filter({hasText:message}).waitFor();
+    assert.doesNotMatch(await card.getByRole('status').innerText(),/0 mL|0 ml|consumo zero/);
+    if(mode==='daily')await card.screenshot({path:`${dir}/${engineName}-${width}-water-daily-view.png`});
+   }
+   const streamCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration-streams'));
+   assert.equal(streamCalls.length,5);assert.ok(streamCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),before);
    assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
    results.push({engine:engineName,width,status:'passed',zeroWrites:true,physicalIPhone:false});

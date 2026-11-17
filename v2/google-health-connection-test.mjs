@@ -363,3 +363,13 @@ test('scheduled status returns bounded owner summary without source payload, ide
   row.scheduled_summary.observations=1;assert.equal((await (await f.post({action:'status'})).json()).scheduled_result,null);
   row.scheduled_summary={from_date:'2030-01-01',to_date_exclusive:'2030-02-12',observations:0,result_status:'empty'};assert.equal((await (await f.post({action:'status'})).json()).scheduled_result,null);
 });
+
+test('alternative water views retain the owner lease, encrypted grant and previous hydration freshness',async()=>{
+ const events=[],f=fixture({reportReadDiagnostic:e=>events.push(e),fetcher:async url=>String(url).includes('/token')?response(token):String(url).endsWith('/identity')?response(identity):response({})});await connected(f);
+ const row=f.store.rows.get(owner);row.last_read_at='2030-02-11T15:00:00Z';row.last_scheduled_read_at='2030-02-11T14:00:00Z';const encrypted=row.tokens_encrypted;
+ const r=await f.post({action:'inspect-hydration-streams',from:'2030-02-05',to:'2030-02-12'}),out=await r.json();assert.equal(r.status,200);assert.equal(out.inspected,true);assert.equal(out.reconciled.status,'ok');assert.equal(out.daily.status,'ok');assert.equal(out.daily.buckets,0);
+ assert.equal(row.last_read_at,'2030-02-11T15:00:00Z');assert.equal(row.last_scheduled_read_at,'2030-02-11T14:00:00Z');assert.equal(row.tokens_encrypted,encrypted);assert.equal(row.lease_token,null);assert.equal(f.store.reads.length,0);
+ assert.equal(events.length,1);assert.equal(events[0].event,'google_health_water_streams_v1');assert.equal(events[0].daily_positive_buckets,0);
+ for(const canary of [owner,encrypted,identity.healthUserId,'synthetic-access-only'])assert.ok(!JSON.stringify(events).includes(canary));
+ const calls=f.calls.length;assert.equal((await f.post({action:'inspect-hydration-streams',from:'2030-02-01',to:'2030-02-12'})).status,400);assert.equal((await f.post({action:'inspect-hydration-streams',from:'2030-02-05',to:'2030-02-12',owner})).status,400);assert.equal((await f.post({action:'inspect-hydration-streams',from:'2030-02-05',to:'2030-02-12'},'unrecognized')).status,401);assert.equal((await f.post({action:'inspect-hydration-streams',from:'2030-02-05',to:'2030-02-12'},'synthetic-other')).status,200);assert.equal(f.calls.length,calls);
+});
