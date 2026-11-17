@@ -1,3 +1,9 @@
+## 2026-11-17 — Publicado: comparação por horário e período escolhido, .141
+
+PR555 passou22/22 verificações da candidata final,123 testes Node e os cenários Chromium/WebKit320/390/1440. O servidor14 foi relido em6arquivos exatos,com autenticação preservada;deploy,ambas as entradasPages e acesso real protegido passaram. A mesma sessão autenticada executou uma comparação recente e uma histórica conhecida,com respostas válidas distintas,sem mudar totais,snapshots ou frescor automático. O resultado e a integridade ficam no checkpoint privado;água recente e recorrência continuam com aceites próprios. As falhas iniciais do contrato de prévia foram corrigidas e preservadas no histórico,sem enfraquecer testes.
+
+O pacote055 concluiu sua comparação técnica dentro da condição original ainda bloqueada. A fila permanece157itens:143concluídos,9dependências externas,3lacunas aceitas e2alternativas substituídas. Nenhuma entrega diagnóstica ou atualização documental foi usada para baixar uma pendência de fonte. Esta conciliação muda apenas os metadados;os arquivos do aplicativo e do servidor são os já testados.
+
 ## 2026-11-17 — Em validação: água por horário e comparação histórica, .141
 
 O pacote055 acrescenta uma consulta opcional por intervalos reais de24horas e permite comparar até7dias escolhidos, usando os campos de período já existentes. A consulta por dia e os registros entre fontes permanecem independentes.123 testes Node passaram, incluindo fronteiras de fuso/DST, intervalos ausentes, zero explícito, resposta recusada, privacidade, concorrência e compatibilidade com a .140. A conta, os registros, os snapshots e a agenda não mudam. Publicação e resultado real ainda dependem dos gates; a ausência atual de água não foi resolvida.
