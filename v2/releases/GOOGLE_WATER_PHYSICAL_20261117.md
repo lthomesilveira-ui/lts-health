@@ -15,3 +15,5 @@ Primary references:
 - https://developers.google.com/health/filters
 
 Local pinned Chromium320/390/1440 journeys passed with zero writes and unchanged invented observations. Narrow historical and desktop screenshots were inspected. Initial missing local browser binaries were resolved by installing the pinned official runtime into scratch; WebKit remains required in the existing remote gate.
+
+The initial remote candidate834440e failed the preview contract because its two pinned module hashes and exact integrated-build reference still described .140. Those three references were updated to the reviewed source bytes and .141; all12 production static/contract checks now pass locally. Runtime code and browser assertions were unchanged by this preparation fix; the initial failures are retained.
