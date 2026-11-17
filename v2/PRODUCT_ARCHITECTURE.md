@@ -1,3 +1,9 @@
+## 2026-11-16 — Concluído: comparação adicional de água, .140
+
+O pacote054 foi entregue após autorização explícita,118 testes locais e22/22 workflows candidatos; a falha inicial de navegação de arquivos foi preservada e a repetição do mesmo job passou. PR553 preserva a árvore testada; conexão13 autenticada, publicação, smokes e acesso real protegido foram conferidos. A sessão existente executou a comparação de registros conciliados e totais diários uma única vez; resultado, origem e limites ficam no checkpoint privado. Nenhum total, snapshot ou frescor automático foi alterado, e recuperação da água não foi declarada. A alternativa552 permanece no histórico com branch preservada.
+
+Reconciliação documental: três entregas anteriores comprovadas (.135, recepção nativa Polar e leitor .137) foram incluídas na fila pública, e o bloqueio antigo de credencial foi atualizado conforme o reparo já validado nos controles privados264–265. Isso não representa quatro novas correções nesta rodada. Fila157 itens:143 concluídos,9 dependências externas,3 lacunas aceitas e2 alternativas substituídas. As condições próprias de água recente, histórico e recebimento automático permanecem abertas. As25 verificações após o merge da .140 passaram; esta conciliação altera somente metadados.
+
 ## 2026-11-16 — Publicação autorizada: leituras adicionais de água, .140
 
 O titular autorizou explicitamente a publicação da alteração revisada e a atualização do aplicativo após os testes restantes. O pacote054 volta a in_progress; a recusa automática anterior permanece documentada como histórico. Gates remotos, publicação exata e resultado autenticado ainda não são considerados concluídos.
