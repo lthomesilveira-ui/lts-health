@@ -11,7 +11,10 @@ export const LANGUAGE_LEGACY_QUALITY=[
   {category:'metadata_only',status:'known',description:'HealthDocument records contain references but original file bytes are unavailable.'},
   {category:'workout_parsing',status:'ignored',description:'Completed synthetic workout sessions lack individual sets and reps.'},
   {category:'source_date_conflict_risk',status:'known',description:'Some synthetic document filenames and structured measurement dates differ.'},
-  {category:'missing_data',status:'resolved',description:'Missing synthetic detail was restored.',resolution_notes:'The source was checked.'}
+  {category:'missing_data',status:'resolved',description:'Missing synthetic detail was restored.',resolution_notes:'The source was checked.'},
+  {category:'architecture',status:'accepted',description:'Keep legacy schemas outside production UI until dependency review.'},
+  {category:'migration',status:'resolved',description:'Future date: 2099-02-03'},
+  {category:'parsing',status:'accepted',description:'O endpoint de importação permanece em quarentena; os metadados e bytes foram preservados.'}
 ];
 export const LANGUAGE_TREATMENT_QUALITY={category:'missing_data',status:'accepted',entity_name:'MedicationApplication',description:'Legacy amount 543.21 mg; synthetic note.',resolution_notes:'Original treatment amount 654.32 mg.'};
 export const LANGUAGE_ROUTES=['hoje','nutricao','timeline','treinos','saude','tratamentos','dados','bio','evolucao','analise'];

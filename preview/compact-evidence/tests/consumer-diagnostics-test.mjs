@@ -19,7 +19,12 @@ const legacyNotes=[
   {category:'source_date_conflict_risk',status:'known',description:'Some document filenames and structured measurement dates differ.'},
   {category:'missing_data',status:'resolved',description:'Missing detail was restored.',resolution_notes:'The source was checked.'},
   {category:'synthetic_unknown',status:'accepted',description:'Legacy source records are preserved.'},
-  {category:'synthetic_unknown',status:'resolved',description:'The issue was resolved.'}
+  {category:'synthetic_unknown',status:'resolved',description:'The issue was resolved.'},
+  {category:'architecture',status:'accepted',description:'Keep legacy schemas outside production UI until dependency review.'},
+  {category:'migration',status:'resolved',description:'Future date: 2099-02-03'},
+  {category:'parsing',status:'accepted',description:'O endpoint de importação permanece em quarentena; os metadados e bytes foram preservados.'},
+  {category:'workouts',status:'resolved',description:'Campo sintético preservado como null.'},
+  {category:'parsing',status:'accepted',description:'Texto de cobertura com checkpoint do PR #123, conferido offline.'}
 ];
 const treatmentNotes=[
   {entity_name:'MedicationApplication',description:'Amount 543.21 mg; historical note.',resolution_notes:'Original treatment detail 654.32 mg.'},

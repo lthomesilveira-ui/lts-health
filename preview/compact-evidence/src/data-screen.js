@@ -58,10 +58,10 @@ const sensitiveQualityPattern=/(^|_)(doses?|dosages?|dosage(?:m|ns)|frequenc(?:y
 const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|source_payload|storage_path|secret|private_field)/i;
 // Quality metadata is not a clinical result. Keep its original technical text
 // available only on request; never rewrite the underlying record.
-const technicalQualityPattern=/\b(can[oô]nic[ao]s?|candidat[ao]s?|retid[ao]s?|payloads?|source_record_id|canonical_status|RPC|SQLSTATE|PostgREST|canonical|candidate|held|quarantined|parser|backlog|backend)\b|dados (?:n[aã]o conferidos|recebidos)|column .*does not exist|relation .*does not exist|\b[a-z]+(?:_[a-z]+){1,}\b/i;
+const technicalQualityPattern=/\b(can[oô]nic[ao]s?|candidat[ao]s?|retid[ao]s?|payloads?|source_record_id|canonical_status|RPC|SQLSTATE|PostgREST|canonical|candidate|held|quarantined|parser|backlog|backend|schemas?|endpoint|checkpoint|offline|bytes?|metadados|null|UI|migra[cç][aã]o|proveni[eê]ncia|quarentena|normalizad[ao]s?|infer[eê]ncia)\b|\bPR\s*#?\s*\d+\b|texto bruto|dados (?:n[aã]o conferidos|recebidos)|column .*does not exist|relation .*does not exist|\b[a-z]+(?:_[a-z]+){1,}\b/i;
 // Legacy operational notes may be English prose or CamelCase model names,
 // without the backend tokens above. Keep those originals opt-in as well.
-const legacyQualityPattern=/\b(?:the|these|those|were|was|missing|completed|structured|filenames|records|source|coverage|reported|preserved|available|unavailable|HealthDocument|Base44)\b/i;
+const legacyQualityPattern=/\b(?:the|these|those|were|was|missing|completed|structured|filenames|records|source|coverage|reported|preserved|available|unavailable|future date|HealthDocument|Base44)\b/i;
 const qualityModelNamePattern=/\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b/;
 const diagnosticQualityText=text=>technicalQualityPattern.test(text)||legacyQualityPattern.test(text)||qualityModelNamePattern.test(text.replace(/\b(?:MyFitnessPal|RingConn)\b/g,''));
 function sourceLabel(value){return sourceLabels[value]||'Outra origem';}
