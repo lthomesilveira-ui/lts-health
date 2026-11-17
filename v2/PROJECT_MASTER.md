@@ -1,3 +1,9 @@
+## 2026-11-17 — Em validação: recuperação de abertura e estilos, .144
+
+O pacote059 trata uma falha concreta independente da água: uma resposta temporária503 de estilo ou módulo pode deixar a abertura parada ou a apresentação incompleta. A candidata recupera arquivos públicos conhecidos com tentativas limitadas; o módulo principal pode obter uma única recarga antes de a interface estar pronta. Formulários preenchidos,retornos de autorização,origens externas,rotas privadas e operações de conta permanecem fora da recarga. Se a falha persistir,a ação manual continua disponível. Não há mudança de servidor,dados clínicos ou integrações.
+
+Seis testes locais de fronteira passaram. A reprodução503 real em navegador,candidata remota,publicação e acesso protegido permanecem pendentes. As dependências originais de fontes e o aceite físico/global mantêm critérios próprios; a água não bloqueia esta correção. Referência:`v2/releases/STARTUP_ASSET_RECOVERY_20261117.md`.
+
 ## 2026-11-17 — Concluído: comparação privada dos canais Google
 
 O pacote058 foi executado na conta autorizada, mantendo o frontend .143 e o histórico clínico. A primeira consulta foi recusada pelo provedor; o filtro foi corrigido conforme o contrato de sessões. A candidata original passou17/17 workflows e o código corrigido15/15;133 testes locais passaram. Os6 arquivos da conexão16/JWTtrue foram relidos sem diferenças. A tentativa2 protegida concluiu comparação, integridade, aplicativo e exames; as22 verificações da publicação inicial estão aprovadas nas suas últimas tentativas, com as falhas originais preservadas. O resultado detalhado fica privado e não encerra as dependências de recuperação da água.

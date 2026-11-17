@@ -21,6 +21,8 @@ jobs:
       - name: Verify source parity, auth, privacy and bounded writes
         run: |
           node v2/production-integration-contract.mjs
+          node --test v2/startup-recovery-test.mjs
+          node --check v2/startup-recovery-browser.mjs
           node v2/deployed-runtime-assets.mjs
           node --check v2/deployed-public-auth-smoke.mjs
           node preview/compact-evidence/tests/preview-contract.mjs
@@ -51,6 +53,8 @@ jobs:
           python3 -m http.server 4175 >/tmp/health-production.log 2>&1 &
           python3 -m http.server 4173 --directory v2 >/tmp/health-production-forms.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4175/v2/ >/dev/null && curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+      - name: Verify bounded recovery from public asset failures
+        run: node v2/startup-recovery-browser.mjs
       - name: Verify actual renderer through mocked authentication, mobile routes and repeated cancel
         run: |
           node v2/production-integration-browser.mjs
@@ -92,6 +96,7 @@ jobs:
             artifacts/production-integration/upload-receipt-evidence.json
             artifacts/deployed-public-login-*.png
             artifacts/public-entry-diagnostic-*.json
+            startup-recovery-synthetic/*
             dashboard-changes-visual/*.png
             source-window-visual/*
             period-readability-visual/*
