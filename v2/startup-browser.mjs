@@ -6,11 +6,12 @@ for(const engine of [chromium,webkit]){
  const browser=await engine.launch({headless:true});
  try{
   for(const width of [320,393,1440]){
-   const context=await browser.newContext({viewport:{width,height:800}}),page=await context.newPage();
+   const context=await browser.newContext({viewport:{width,height:800},serviceWorkers:'block'}),page=await context.newPage();
    let release;
    const sdkReady=new Promise(resolve=>{release=resolve;});
    await page.route('https://cdn.jsdelivr.net/**',async route=>{await sdkReady;await route.fulfill({contentType:'application/javascript',body:sdk});});
-   await page.clock.install();
+   await page.clock.install({time:new Date('2030-04-10T12:00:00Z')});
+   await page.clock.pauseAt(new Date('2030-04-10T12:00:01Z'));
    await page.goto(base,{waitUntil:'commit'});
    await page.locator('#appStartup').waitFor({state:'visible'});
    assert.equal(await page.locator('#login').isVisible(),false);
@@ -25,11 +26,15 @@ for(const engine of [chromium,webkit]){
    assert.equal(await page.locator('#app').isVisible(),false,'no SDK result exposes account data');
    await context.close();
   }
-  const page=await browser.newPage({viewport:{width:393,height:800}});
+  const page=await browser.newPage({viewport:{width:393,height:800},serviceWorkers:'block'});let documents=0;
+  page.on('framenavigated',frame=>{if(frame===page.mainFrame())documents++;});
   await page.route('https://cdn.jsdelivr.net/**',route=>route.fulfill({contentType:'application/javascript',body:sdk}));
   await page.route('**/src/main.js?*',route=>route.abort());
-  await page.clock.install();await page.goto(base);
+  await page.clock.install({time:new Date('2030-04-10T12:00:00Z')});
+  await page.clock.pauseAt(new Date('2030-04-10T12:00:01Z'));await page.goto(base);
+  const reloaded=page.waitForEvent('load');await page.clock.runFor(600);await reloaded;
   await page.clock.runFor(9000);
+  assert.equal(documents,2,'one automatic attempt precedes manual recovery');
   assert.equal(await page.locator('#appStartupRetry').isVisible(),true,'failed entry retains usable recovery');
   assert.equal(await page.locator('#app').isVisible(),false);
   await page.close();

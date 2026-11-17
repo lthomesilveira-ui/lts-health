@@ -51,38 +51,34 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-WATER-CHANNELS-058",
-    "status": "done",
-    "goal": "Run a bounded stable-versus-preview hydration comparison without changing the production frontend, normal stable reader or canonical history.",
+    "id": "PKG-STARTUP-ASSET-RECOVERY-059",
+    "status": "in_progress",
+    "goal": "Recover transient public stylesheet and module failures without trapping startup, losing open input or reloading an active health screen.",
     "task_ids": [
-      "LTS-GOOGLE-WATER-CHANNELS-001"
+      "LTS-STARTUP-ASSET-RECOVERY-001"
     ],
     "public_build": "health-integrated-20261117.143",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261117.144",
     "runtime_changed": true,
-    "frontend_runtime_changed": false,
-    "server_runtime_changed": true,
+    "frontend_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
-    "evidence": [
-      "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
-      "133 local reader, connection, schedule, configuration, channel, private-evidence and one-time activation tests passed.",
-      "All six deployed connection files matched the current main baseline before the isolated extension was prepared.",
-      "Normal branch push was rejected before publication. The installed GitHub connection verified the same authenticated owner and admin/push permissions for the exact existing repository; the repeated review still requires explicit publication authority for the current code and workflow payload. No server deployment or real channel comparison occurred.",
-      "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending.",
-      "PR561 candidate d72a5c2b114439ecf3c29ef0b30ce75f27656fdf passed17/17 workflows; normal merge80d70353223b5313c769b80b2249fb7bcd623658 preserved tree37f39759c1e4de1b843064be4f7d3ed016d90f57.",
-      "The first protected owner evaluation failed its control after both provider channels rejected the physical session filter. Attempt1 and encrypted artifact14373347161 remain preserved; no empty-water conclusion was drawn.",
-      "Corrected code candidate bd9067d5b5582a24f224a026b5654e1b5ebd58e9/tree99dc2e1af7dacd842c808bb463239ba43d2e5653 uses the documented civil session filter with independent physical boundaries. All15 candidate workflows and133 local Node tests passed.",
-      "Connection16/JWTtrue matched all6 corrected candidate files. Protected workflow44183386297 attempt2/job134397462319 completed the authenticated comparison, integrity check, existing app histories and Labs checks successfully. Private source results are retained outside the repository; no canonical health row changed.",
-      "All22 initial-publication workflows completed successfully on their latest attempts. Original public-entry attempt1 failed when an unchanged script returned HTTP503; diagnostic artifact14373168121 is preserved and the same job passed attempt2. The final continuity-only candidate and follow-up publication checks are not included in these prior counts."
+    "pending_gates": [
+      "browser_fault_injection",
+      "remote_candidate_checks",
+      "exact_publication",
+      "protected_authenticated_app"
     ],
-    "blocker": null,
-    "completed_on": "2026-11-17"
+    "evidence_document": "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+    "evidence": [
+      "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+      "Retained production runs44183502867 and44186458378 show public CSS/module HTTP503 failures; the original document has only a manual startup recovery.",
+      "Six local recovery-boundary tests passed. Deployed inventory, production graph/source parity, Home Screen contract, privacy and public-payload checks passed. Browser fault-injection, candidate CI, publication and protected owner checks remain pending."
+    ]
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261117.143",
@@ -4297,6 +4293,27 @@
       ],
       "next_action": null,
       "blocker": null
+    },
+    {
+      "id": "LTS-STARTUP-ASSET-RECOVERY-001",
+      "area": "startup and presentation continuity",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Recover transient public stylesheet and module failures without trapping startup, losing open input or reloading an active health screen.",
+      "acceptance": [
+        "The prior failed startup is reproduced independently and genuine synthetic503 responses recover in Chromium and WebKit at320/393/1440px.",
+        "A failed application entry gets at most one automatic clean document retry; persistent failure retains the manual action.",
+        "Public presentation assets get bounded single retries while form values and focus remain intact; private paths, other origins, callbacks and backend operations stay outside recovery.",
+        "Syntax, affected contracts, exact candidate CI, deployed entry identity and protected authenticated app checks pass; original health records and completed source validations are preserved."
+      ],
+      "evidence": [
+        "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+        "Retained production runs44183502867 and44186458378 show public CSS/module HTTP503 failures; the original document has only a manual startup recovery.",
+        "Six local recovery-boundary tests passed. Deployed inventory, production graph/source parity, Home Screen contract, privacy and public-payload checks passed. Browser fault-injection, candidate CI, publication and protected owner checks remain pending."
+      ],
+      "next_action": "Finish actual-browser fault cases, publish the exact validated candidate and verify the public and protected application before marking done.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -6470,6 +6487,40 @@
         "The reused authenticated Cloud Browser session confirmed exact .143, consolidated report group labels and unchanged actual closed-week session/minute/main-set totals. Private values and source details remain only in the private audit; no physical iPhone acceptance is claimed.",
         "Protected actual-owner workflow44148403236 passed desktop/mobile application journeys, full histories and preserved source-integrity checks. Its encrypted evidence is retained; no actual health payload was uploaded publicly."
       ],
+      "completed_on": "2026-11-17"
+    },
+    {
+      "id": "PKG-GOOGLE-WATER-CHANNELS-058",
+      "status": "done",
+      "goal": "Run a bounded stable-versus-preview hydration comparison without changing the production frontend, normal stable reader or canonical history.",
+      "task_ids": [
+        "LTS-GOOGLE-WATER-CHANNELS-001"
+      ],
+      "public_build": "health-integrated-20261117.143",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": false,
+      "server_runtime_changed": true,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-17",
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "pending_gates": [],
+      "evidence_document": "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
+      "evidence": [
+        "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
+        "133 local reader, connection, schedule, configuration, channel, private-evidence and one-time activation tests passed.",
+        "All six deployed connection files matched the current main baseline before the isolated extension was prepared.",
+        "Normal branch push was rejected before publication. The installed GitHub connection verified the same authenticated owner and admin/push permissions for the exact existing repository; the repeated review still requires explicit publication authority for the current code and workflow payload. No server deployment or real channel comparison occurred.",
+        "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending.",
+        "PR561 candidate d72a5c2b114439ecf3c29ef0b30ce75f27656fdf passed17/17 workflows; normal merge80d70353223b5313c769b80b2249fb7bcd623658 preserved tree37f39759c1e4de1b843064be4f7d3ed016d90f57.",
+        "The first protected owner evaluation failed its control after both provider channels rejected the physical session filter. Attempt1 and encrypted artifact14373347161 remain preserved; no empty-water conclusion was drawn.",
+        "Corrected code candidate bd9067d5b5582a24f224a026b5654e1b5ebd58e9/tree99dc2e1af7dacd842c808bb463239ba43d2e5653 uses the documented civil session filter with independent physical boundaries. All15 candidate workflows and133 local Node tests passed.",
+        "Connection16/JWTtrue matched all6 corrected candidate files. Protected workflow44183386297 attempt2/job134397462319 completed the authenticated comparison, integrity check, existing app histories and Labs checks successfully. Private source results are retained outside the repository; no canonical health row changed.",
+        "All22 initial-publication workflows completed successfully on their latest attempts. Original public-entry attempt1 failed when an unchanged script returned HTTP503; diagnostic artifact14373168121 is preserved and the same job passed attempt2. The final continuity-only candidate and follow-up publication checks are not included in these prior counts."
+      ],
+      "blocker": null,
       "completed_on": "2026-11-17"
     }
   ],
@@ -11735,11 +11786,11 @@
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-17",
-    "source_main_commit": "80d70353223b5313c769b80b2249fb7bcd623658",
+    "source_main_commit": "ec2220faf6c2da7829fc7e6ed332724e734ffb15",
     "runtime_build": "health-integrated-20261117.143",
-    "candidate_build": null,
-    "runtime_changed": false,
-    "frontend_runtime_changed": false,
+    "candidate_build": "health-integrated-20261117.144",
+    "runtime_changed": true,
+    "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
@@ -11747,21 +11798,16 @@
       "done": 146,
       "blocked_external": 9,
       "superseded": 2,
-      "accepted_gap": 3
+      "accepted_gap": 3,
+      "in_progress": 1
     },
-    "executable_task_count": 0,
+    "executable_task_count": 1,
     "evidence": [
-      "v2/releases/GOOGLE_WATER_CHANNEL_COMPARISON_20261117.md",
-      "133 local reader, connection, schedule, configuration, channel, private-evidence and one-time activation tests passed.",
-      "All six deployed connection files matched the current main baseline before the isolated extension was prepared.",
-      "On 2026-11-17 the owner explicitly authorized publication of this concrete code/workflow package and its one-time private channel evaluation. Remote checks, server deployment/readback and actual results remain pending.",
-      "PR561 candidate d72a5c2b114439ecf3c29ef0b30ce75f27656fdf passed17/17 workflows; normal merge80d70353223b5313c769b80b2249fb7bcd623658 preserved tree37f39759c1e4de1b843064be4f7d3ed016d90f57.",
-      "The first protected owner evaluation failed its control after both provider channels rejected the physical session filter. Attempt1 and encrypted artifact14373347161 remain preserved; no empty-water conclusion was drawn.",
-      "Corrected code candidate bd9067d5b5582a24f224a026b5654e1b5ebd58e9/tree99dc2e1af7dacd842c808bb463239ba43d2e5653 uses the documented civil session filter with independent physical boundaries. All15 candidate workflows and133 local Node tests passed.",
-      "Connection16/JWTtrue matched all6 corrected candidate files. Protected workflow44183386297 attempt2/job134397462319 completed the authenticated comparison, integrity check, existing app histories and Labs checks successfully. Private source results are retained outside the repository; no canonical health row changed.",
-      "All22 initial-publication workflows completed successfully on their latest attempts. Original public-entry attempt1 failed when an unchanged script returned HTTP503; diagnostic artifact14373168121 is preserved and the same job passed attempt2. The final continuity-only candidate and follow-up publication checks are not included in these prior counts."
+      "v2/releases/STARTUP_ASSET_RECOVERY_20261117.md",
+      "Retained production runs44183502867 and44186458378 show public CSS/module HTTP503 failures; the original document has only a manual startup recovery.",
+      "Six local recovery-boundary tests passed. Deployed inventory, production graph/source parity, Home Screen contract, privacy and public-payload checks passed. Browser fault-injection, candidate CI, publication and protected owner checks remain pending."
     ],
-    "open_dependency_policy": "Unrelated work does not wait for water. Preserve independent recovery, source-history, lineage, coverage and acceptance criteria."
+    "open_dependency_policy": "Work outside hydration proceeds independently. Historical source, exact proposal, coverage, lineage, original export diagnostics and physical/global acceptance remain open until their own evidence exists."
   },
   "continuity_review_history": [
     {

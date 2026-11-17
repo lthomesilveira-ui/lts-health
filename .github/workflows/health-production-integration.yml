@@ -21,6 +21,8 @@ jobs:
       - name: Verify source parity, auth, privacy and bounded writes
         run: |
           node v2/production-integration-contract.mjs
+          node --test v2/startup-recovery-test.mjs
+          node --check v2/startup-recovery-browser.mjs
           node v2/deployed-runtime-assets.mjs
           node --check v2/deployed-public-auth-smoke.mjs
           node preview/compact-evidence/tests/preview-contract.mjs
@@ -55,6 +57,7 @@ jobs:
         run: |
           node v2/production-integration-browser.mjs
           node v2/startup-browser.mjs
+          node v2/startup-recovery-browser.mjs
           node v2/real-auth-dashboard-checks-test.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
           LTS_HEALTH_BASE_URL=http://127.0.0.1:4175/v2/ node preview/compact-evidence/tests/dashboard-changes-browser.mjs
