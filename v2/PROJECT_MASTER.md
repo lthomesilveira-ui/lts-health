@@ -1,3 +1,9 @@
+## 2026-11-17 — Concluído: limitações em português, .142
+
+PR557 passou21/21 verificações da candidata final. Publicação exata, telas sintéticas nas quatro larguras e acesso real protegido em computador/móvel foram conferidos. A sessão autenticada mostrou as explicações em português, os originais técnicos fechados e a classificação preservada. Os registros, valores clínicos, servidor e integrações não mudaram. A fonte privada mantém o resultado detalhado e a igualdade dos registros de qualidade.
+
+A falha de interface056 está encerrada:158itens,144concluídos,9dependências externas,3lacunas aceitas e2alternativas substituídas;zero ready/in_progress. A água recente continua sem recuperação comprovada e não foi encerrada pela comparação055 nem por esta correção de apresentação. Esta atualização final muda somente metadados.
+
 ## 2026-11-17 — Em validação: limitações em português, .142
 
 A sessão autenticada da .141 revelou anotações antigas em inglês e nomes de modelos na leitura comum de Qualidade e limitações. O pacote056 corrige essa apresentação, conserva o texto original seguro em Diagnóstico técnico fechado e protege os metadados de tratamento. Títulos de itens resolvidos passam a ser neutros. Os registros, classificações, contagens e integrações permanecem preservados. Testes de renderização passaram; navegadores, publicação exata e conferência autenticada ainda são gates.
