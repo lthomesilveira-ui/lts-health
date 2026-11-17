@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {chromium} from 'playwright';
-import {makeConsumerLanguageFixture,consumerLanguageService,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey} from './consumer-language-fixture.mjs';
+import {makeConsumerLanguageFixture,consumerLanguageService,LANGUAGE_TODAY,LANGUAGE_NOTE,LANGUAGE_ERROR,LANGUAGE_LEGACY_QUALITY,LANGUAGE_TREATMENT_QUALITY,LANGUAGE_ROUTES,foodSourceKey,candidateSourceKey} from './consumer-language-fixture.mjs';
 import {technicalMatches} from './consumer-language-html.mjs';
 import {visibleTextGeometry,contrastRatio} from './consumer-language-geometry.mjs';
 import {consumerRouteSettled,consumerDomainSettled} from './consumer-language-readiness.mjs';
@@ -141,6 +141,30 @@ async function nutritionChecks(page,f,label){
 }
 async function dataChecks(page,f,label){
   if(f.kind==='empty')return;
+  const quality=page.locator('details.reviewDetails').filter({has:page.getByText('Qualidade e limitações',{exact:true})});
+  await quality.locator(':scope > summary').click();assert.equal(await quality.evaluate(el=>el.open),true);
+  const before=JSON.stringify(f.data.quality),ordinary=await quality.innerText();
+  for(const row of LANGUAGE_LEGACY_QUALITY)assert.ok(!ordinary.includes(row.description),`${label}: ordinary quality rows are in Portuguese`);
+  assert.equal(await quality.locator('.qualityRow').count(),f.data.quality.length,'no quality row is removed');
+  assert.match(ordinary,/A comparação depende de uma identificação compatível/);
+  assert.match(ordinary,/Informações do registro/,'resolved heading does not claim information is still absent');
+  assert.ok(!ordinary.includes(LANGUAGE_TREATMENT_QUALITY.description));
+  assert.equal(await quality.locator('.technicalDiagnostic[open]').count(),0,'original technical notes start collapsed');
+  const knownRow='details.reviewDetails .qualityColumns > div:nth-child(2) .qualityRow';
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await capture(page,`${label}-quality-portuguese`,knownRow);
+  const row=quality.locator('.qualityColumns > div:nth-child(2) .qualityRow').first();
+  await row.screenshot({path:`${dir}/${label}-quality-row.png`,animations:'disabled',scale:'css'});
+  const box=await row.boundingBox();assert.ok(box&&box.width<=page.viewportSize().width&&box.x>=0&&box.x+box.width<=page.viewportSize().width+1,'known limitation fits the viewport');
+  const original=quality.locator('.technicalDiagnostic').filter({hasText:LANGUAGE_LEGACY_QUALITY[0].description});
+  assert.equal(await original.count(),1);await original.locator(':scope > summary').click();
+  assert.ok((await original.innerText()).includes(LANGUAGE_LEGACY_QUALITY[0].description),'safe original note remains available on explicit request');
+  await original.locator(':scope > summary').click();
+  const allText=await quality.textContent();assert.ok(!allText.includes(LANGUAGE_TREATMENT_QUALITY.description));assert.ok(!allText.includes(LANGUAGE_TREATMENT_QUALITY.resolution_notes),'treatment metadata is not exposed in any diagnostic');
+  assert.equal(JSON.stringify(f.data.quality),before,'the fixture originals are unchanged');
+  const loaded=await page.evaluate(async()=>{const{state}=await import('./src/core.js');return state.data.quality;});
+  for(const row of f.data.quality)assert.deepEqual(loaded.find(value=>value.source_record_id===row.source_record_id),row,'rendered SDK rows retain every original field and status');
+  await quality.locator(':scope > summary').click();assert.equal(await quality.evaluate(el=>el.open),false);
   await disclose(page,'data-record-status');const diagnostic=page.locator('.technicalDiagnostic').first();assert.equal(await diagnostic.evaluate(el=>el.open),false);assert.ok(!(await page.locator('#screenHost').innerText()).includes(LANGUAGE_ERROR));await diagnostic.locator(':scope > summary').click();assert.ok((await diagnostic.innerText()).includes(LANGUAGE_ERROR));await capture(page,`${label}-technical-diagnostic`,'.technicalDiagnostic[open] > summary');await diagnostic.locator(':scope > summary').click();await disclose(page,'data-record-status',false);await primary(page,`${label}-diagnostic-closed`);
 }
 async function trainingChecks(page,f,label){

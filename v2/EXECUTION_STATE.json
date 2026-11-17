@@ -50,37 +50,33 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-GOOGLE-WATER-PHYSICAL-055",
-    "status": "blocked_external",
-    "goal": "Test physical-time water aggregation and compare a selected known historical window while preserving all clinical data.",
+    "id": "PKG-QUALITY-CONSUMER-COPY-056",
+    "status": "in_progress",
+    "goal": "Remove legacy English operational notes from ordinary quality reading without changing original data or issue statuses.",
     "task_ids": [
-      "LTS-WATER-UPSTREAM-STATUS-001"
+      "LTS-QUALITY-CONSUMER-COPY-001"
     ],
     "public_build": "health-integrated-20261117.141",
-    "candidate_build": null,
+    "candidate_build": "health-integrated-20261117.142",
     "runtime_changed": true,
     "frontend_runtime_changed": true,
-    "server_runtime_changed": true,
+    "server_runtime_changed": false,
     "clinical_runtime_changed": false,
     "real_source_observations_changed": false,
     "started_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
-    "pending_gates": [],
-    "evidence_document": "v2/releases/GOOGLE_WATER_PHYSICAL_20261117.md",
-    "evidence": [
-      "123 local Node tests pass, preserving all118 prior tests.",
-      "The added physical-time read is explicit and opt-in; the previous two-method request remains compatible.",
-      "The ordinary source reader, scopes, encryption, snapshots, scheduler and canonical totals are preserved.",
-      "Local pinned Playwright1.56.1 Chromium320/390/1440 passed all period, physical-only, missing/unavailable and unchanged-observation checks. Narrow historical and desktop screenshots inspected. WebKit remains a remote candidate gate.",
-      "Final candidate44b6bcb274dbab4315a0722f6884c8f0fcd4489c passed22/22 workflows and123 Node tests; initial834440e preparation failures remain retained.",
-      "Google44104390183 passed reader, PostgreSQL/RLS and six Chromium/WebKit320/390/1440 journeys. Artifact14338391690 SHA2564e434ac4f94853441742987f85bcbd476c81c255a1590e7a222d958c807f5bd6 verified; narrow controls and desktop result inspected.",
-      "Normal PR555 mergedd58faff72f64b33102bf4a68c6e3d14e7afc50a preserves tested tree47af41dd48fd10eafaa696034fe29752d109c56e. Connection14 ACTIVE/JWT required and all six files read back exactly; anonymous status401. Callback9, scheduled7 and phone receiver12 preserved.",
-      "Deploy44107189572, Pages44107289873, Homologation44107289906, Google44107189701 and protected real-auth44107189807 passed. Exact public index and affected source modules match reviewed bytes.",
-      "The existing authenticated .141 session completed one recent comparison and one selected known historical comparison. All three methods returned a valid empty recent result and a valid positive historical result; metadata, original history and unchanged clinical/snapshot/freshness invariants were verified privately. This does not establish recent-water recovery, automatic new-water receipt or physical-device acceptance."
+    "pending_gates": [
+      "candidate_workflows",
+      "exact_publication",
+      "authenticated_quality_reading"
     ],
-    "investigation_status": "verified_published",
-    "comparison_verified_on": "2026-11-17"
+    "evidence_document": "v2/releases/QUALITY_CONSUMER_COPY_20261117.md",
+    "evidence": [
+      "Actual .141 presentation showed legacy English notes outside the closed technical disclosure.",
+      "The fix changes presentation only, preserves ordinary human notes and safe opt-in originals, and suppresses treatment metadata in quality diagnostics.",
+      "Local render/copy/73-language-case and static production/preview/privacy/continuity contracts passed. Focused synthetic Chromium320/393/1440 quality journeys passed with original loaded rows unchanged and zero writes; complete remote cross-route fixtures remain pending."
+    ]
   },
   "last_verified_release": {
     "build_id": "health-integrated-20261117.141",
@@ -4208,6 +4204,26 @@
       "blocker": null,
       "completed_on": "2026-11-16",
       "reconciliation_note": "Existing completed work restored from retained evidence; not an additional new .140 fix."
+    },
+    {
+      "id": "LTS-QUALITY-CONSUMER-COPY-001",
+      "area": "quality limitations presentation",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Codex",
+      "summary": "Present legacy quality annotations in readable Portuguese while retaining original records and status distinctions.",
+      "acceptance": [
+        "Opening the ordinary quality panel does not expose English operational notes or model identifiers.",
+        "Non-sensitive exact technical originals remain opt-in, escaped and collapsed; treatment metadata is not exposed by that disclosure.",
+        "Resolved headings do not claim unresolved missing information; accepted limitations and resolved counts remain unchanged.",
+        "Synthetic mobile and desktop journeys, exact public runtime and authenticated owner presentation are verified without a clinical write."
+      ],
+      "evidence": [
+        "An authenticated read of .141 found legacy English sentences and model names in ordinary quality rows; source records and statuses were preserved.",
+        "Focused render fixtures cover English prose, CamelCase entities, treatment metadata, resolved/known/unknown categories and untouched source objects."
+      ],
+      "next_action": "Complete candidate browser gates, publish the exact tested UI and inspect the authenticated quality panel.",
+      "blocker": null
     }
   ],
   "package_history": [

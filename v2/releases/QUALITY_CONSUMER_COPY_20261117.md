@@ -1,0 +1,13 @@
+# Quality limitations in Portuguese — .142
+
+The authenticated .141 quality panel still displayed legacy English prose and model identifiers in ordinary rows. This UI-only change sends those operational originals to the existing closed, escaped technical disclosure, gives known limitations a category-specific Portuguese explanation and gives resolved rows neutral headings. Existing useful human notes remain readable.
+
+Treatment identifiers are recognized in snake_case, CamelCase and the legacy entity_type field, as well as in note text. Treatment metadata remains suppressed even inside the technical disclosure. No original description, resolution, status, clinical value, source identity, authorization, server function or ingestion rule is written.
+
+Render regressions cover legacy English, mixed model names, treatment notes, known/resolved/unknown categories, exact opt-in originals, unchanged rows/counts and source equality. The existing browser language suite additionally opens ordinary quality rows, checks actual visible text, explicitly opens/closes one safe original and compares loaded records at all four existing widths and nonempty fixture kinds. Synthetic-only evidence and public source hashes will be recorded after the gates. No physical iPhone test or owner acceptance is implied.
+
+Local verification: render/copy tests,73 synthetic language render cases and static production/preview/privacy/continuity contracts passed. A focused local copy of the existing Chromium browser gate exercised only Dados & fontes at320/393/1440, plus the existing loading-recovery check. All loaded quality originals and statuses were equal, all safe original disclosures opened/closed and all network/write guards passed. Known-row element screenshots were captured for direct inspection. The initial local selector addressed the record-status disclosure rather than the separate quality panel; it was corrected to the real quality summary without changing an assertion. Complete remote four-width/cross-route fixtures remain pending.
+
+Visual inspection also found adjoining inline headings/descriptions in the old unstyled quality rows. The scoped row styling separates heading, explanation and status at14px, wraps long text and stacks the status at narrow widths. Source values and statuses are unchanged.
+
+A narrow private read of the actual quality annotations identified additional legacy English resolution text, an operational future-date note and Portuguese implementation terms. These cases were added to the bounded diagnostic detection and to invented regression fixtures before publication; original source rows were not changed. Initial remote candidate207c1d4 remains historical and is superseded by the repaired candidate.

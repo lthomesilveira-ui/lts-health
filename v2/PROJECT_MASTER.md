@@ -1,3 +1,9 @@
+## 2026-11-17 — Em validação: limitações em português, .142
+
+A sessão autenticada da .141 revelou anotações antigas em inglês e nomes de modelos na leitura comum de Qualidade e limitações. O pacote056 corrige essa apresentação, conserva o texto original seguro em Diagnóstico técnico fechado e protege os metadados de tratamento. Títulos de itens resolvidos passam a ser neutros. Os registros, classificações, contagens e integrações permanecem preservados. Testes de renderização passaram; navegadores, publicação exata e conferência autenticada ainda são gates.
+
+Há uma nova falha de interface registrada:158itens,143concluídos,1em execução,9dependências externas,3lacunas aceitas e2alternativas substituídas. A investigação de água055 foi preservada com seu resultado válido; não equivale a recuperação da água recente.
+
 ## 2026-11-17 — Publicado: comparação por horário e período escolhido, .141
 
 PR555 passou22/22 verificações da candidata final,123 testes Node e os cenários Chromium/WebKit320/390/1440. O servidor14 foi relido em6arquivos exatos,com autenticação preservada;deploy,ambas as entradasPages e acesso real protegido passaram. A mesma sessão autenticada executou uma comparação recente e uma histórica conhecida,com respostas válidas distintas,sem mudar totais,snapshots ou frescor automático. O resultado e a integridade ficam no checkpoint privado;água recente e recorrência continuam com aceites próprios. As falhas iniciais do contrato de prévia foram corrigidas e preservadas no histórico,sem enfraquecer testes.

@@ -6,6 +6,17 @@ import {nutritionHistoryService} from './nutrition-history-access-fixture.mjs';
 export const LANGUAGE_TODAY=FIXED_TODAY;
 export const LANGUAGE_NOTE='Nota sintética original: payload, source_record_id e canonical_status são palavras deste documento; preservar <4 e 1,2345.';
 export const LANGUAGE_ERROR='SQLSTATE 42703: column source_record_id does not exist; RPC payload canonical_status synthetic-diagnostic-only';
+export const LANGUAGE_LEGACY_QUALITY=[
+  {category:'workout_normalization',status:'accepted',description:'The synthetic exercise label was reported with a spelling variation.'},
+  {category:'metadata_only',status:'known',description:'HealthDocument records contain references but original file bytes are unavailable.'},
+  {category:'workout_parsing',status:'ignored',description:'Completed synthetic workout sessions lack individual sets and reps.'},
+  {category:'source_date_conflict_risk',status:'known',description:'Some synthetic document filenames and structured measurement dates differ.'},
+  {category:'missing_data',status:'resolved',description:'Missing synthetic detail was restored.',resolution_notes:'The source was checked.'},
+  {category:'architecture',status:'accepted',description:'Keep legacy schemas outside production UI until dependency review.'},
+  {category:'migration',status:'resolved',description:'Future date: 2099-02-03'},
+  {category:'parsing',status:'accepted',description:'O endpoint de importação permanece em quarentena; os metadados e bytes foram preservados.'}
+];
+export const LANGUAGE_TREATMENT_QUALITY={category:'missing_data',status:'accepted',entity_name:'MedicationApplication',description:'Legacy amount 543.21 mg; synthetic note.',resolution_notes:'Original treatment amount 654.32 mg.'};
 export const LANGUAGE_ROUTES=['hoje','nutricao','timeline','treinos','saude','tratamentos','dados','bio','evolucao','analise'];
 export const LANGUAGE_TABLES={nutrition:'health_daily_nutrition',sourceMetrics:'health_source_daily_metrics',metrics:'health_metrics',body:'health_body_composition',segmental:'health_segmental_composition',workouts:'health_workouts',workoutEvidence:'health_workout_source_evidence',exercises:'health_workout_exercises',sets:'health_workout_sets',labs:'health_lab_results',treatments:'health_medication_events',regimens:'health_medication_regimens',docs:'health_documents',goals:'health_personal_goals',polarSessions:'health_polar_sessions',meals:'health_nutrition_meals',uploads:'health_uploads',activity:'health_activity_records',previews:'health_ingestion_previews',quality:'health_data_quality_issues'};
 export const foodSourceKey=source=>JSON.stringify(['nutrition',source.toLowerCase(),'canonical']);
@@ -24,6 +35,7 @@ export function makeConsumerLanguageFixture(kind='complete'){
   }
   for(const row of f.data.nutrition){const age=Math.round((Date.parse(f.today)-Date.parse(row.nutrition_date))/86400000);Object.assign(row,{carbs_g:age===2?null:210+age,fat_g:57+age,fiber_g:age===1?0:23.25,knownPartial:kind==='partial'&&age===6});}
   f.data.quality=[{source_record_id:'synthetic-language-quality',issue_code:'synthetic_read_problem',category:'parsing',severity:'warning',status:'open',entity_name:'synthetic_record',record_ref:'synthetic-language-record',description:LANGUAGE_ERROR,detected_at:`${f.today}T12:00:00Z`}];
+  f.data.quality.push(...[...LANGUAGE_LEGACY_QUALITY,LANGUAGE_TREATMENT_QUALITY].map((row,index)=>({source_record_id:`synthetic-legacy-quality-${index}`,detected_at:`${f.today}T12:00:00Z`,...row})));
   f.data.nutritionPlans=[syntheticNutritionPlanRow(f.date(30),'synthetic-language-plan','c'.repeat(64))];
   f.data.nutritionPlans[0].nutrition_plan.notes=[{text:LANGUAGE_NOTE,source_pages:[1]}];
   f.data.meals=[{source_record_id:'synthetic-language-meal',meal_date:f.date(1),meal_name:'Refeição sintética registrada',source:'Synthetic A food',calories_kcal:423.75,protein_g:24.25,carbs_g:38.5,fat_g:12.5,record_status:'validated'}];

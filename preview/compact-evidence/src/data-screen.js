@@ -53,21 +53,33 @@ const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed
 const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
 const metricTopicLabels={sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',oxygen_saturation_pct:'Saturação de oxigênio',weight_kg:'Peso',dietary_energy_kcal:'Alimentação',dietary_protein_g:'Alimentação',dietary_carbs_g:'Alimentação',dietary_fat_g:'Alimentação',dietary_fiber_g:'Alimentação',dietary_water_ml:'Hidratação'};
 const metricCoverageLabels={...metricTopicLabels,dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína alimentar',dietary_carbs_g:'Carboidratos alimentares',dietary_fat_g:'Gordura alimentar',dietary_fiber_g:'Fibra alimentar',dietary_water_ml:'Volume de água'};
-const sensitiveQualityPattern=/(^|_)(dose|dosage|frequency|injection|application|aplicacao|medication|medicacao|treatment|tratamento)(_|$)/i;
+const resolvedIssueLabels={limited_longitudinal_coverage:'Cobertura do histórico',metadata_only:'Disponibilidade do arquivo original',migration_integrity:'Conferência de histórico',missing_data:'Informações do registro',parsing:'Leitura do arquivo',source_date_conflict_risk:'Datas da fonte',workout_normalization:'Identificação do exercício',workout_parsing:'Detalhes do treino'};
+const sensitiveQualityPattern=/(^|_)(doses?|dosages?|dosage(?:m|ns)|frequenc(?:y|ies|ia|ias)|injections?|injec(?:ao|oes)|applications?|aplicac(?:ao|oes)|medications?|medicac(?:ao|oes)|medicamentos?|treatments?|tratamentos?)(_|$)/i;
 const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|source_payload|storage_path|secret|private_field)/i;
 // Quality metadata is not a clinical result. Keep its original technical text
 // available only on request; never rewrite the underlying record.
-const technicalQualityPattern=/\b(can[oô]nic[ao]s?|candidat[ao]s?|retid[ao]s?|payloads?|source_record_id|canonical_status|RPC|SQLSTATE|PostgREST|canonical|candidate|held|quarantined|parser|backlog|backend)\b|dados (?:n[aã]o conferidos|recebidos)|column .*does not exist|relation .*does not exist|\b[a-z]+(?:_[a-z]+){1,}\b/i;
+const technicalQualityPattern=/\b(can[oô]nic[ao]s?|candidat[ao]s?|retid[ao]s?|payloads?|source_record_id|canonical_status|RPC|SQLSTATE|PostgREST|canonical|candidate|held|quarantined|parser|backlog|backend|schemas?|endpoint|checkpoint|offline|bytes?|metadados|null|UI|migra[cç][aã]o|proveni[eê]ncia|quarentena|normalizad[ao]s?|infer[eê]ncia)\b|\bPR\s*#?\s*\d+\b|texto bruto|dados (?:n[aã]o conferidos|recebidos)|column .*does not exist|relation .*does not exist|\b[a-z]+(?:_[a-z]+){1,}\b/i;
+// Legacy operational notes may be English prose or CamelCase model names,
+// without the backend tokens above. Keep those originals opt-in as well.
+const legacyQualityPattern=/\b(?:the|these|those|were|was|missing|completed|structured|filenames|records|source|coverage|reported|preserved|available|unavailable|future date|HealthDocument|Base44)\b/i;
+const qualityModelNamePattern=/\b[A-Z][a-z]+(?:[A-Z][a-z]+)+\b/;
+const diagnosticQualityText=text=>technicalQualityPattern.test(text)||legacyQualityPattern.test(text)||qualityModelNamePattern.test(text.replace(/\b(?:MyFitnessPal|RingConn)\b/g,''));
 function sourceLabel(value){return sourceLabels[value]||'Outra origem';}
 function sourceFamilyLabel(value){return sourceFamilyLabels[value]||'Outra origem';}
 function uploadStatus(upload,preview){return isConfirmedFleuryUpload(upload,preview)?'laudo conferido':uploadStatusLabels[upload?.status]||'situação não informada';}
-function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name].some(value=>sensitiveQualityPattern.test(norm(value).replaceAll(' ','_')));}
-function issueTitle(issue){return sensitiveQuality(issue)?'Contexto histórico de tratamento':issueCategoryLabels[issue?.category]||'Revisão de qualidade';}
+function sensitiveQuality(issue){return [issue?.category,issue?.issue_code,issue?.entity_name,issue?.entity_type,issue?.description,issue?.resolution_notes].some(value=>sensitiveQualityPattern.test(norm(String(value||'').replace(/([a-z0-9])([A-Z])/g,'$1_$2')).replace(/[^a-z0-9]+/g,'_')));}
+function issueTitle(issue,mode){return sensitiveQuality(issue)?'Contexto histórico de tratamento':(mode==='resolved'?resolvedIssueLabels[issue?.category]:issueCategoryLabels[issue?.category])||'Revisão de qualidade';}
+function qualityFallback(issue,mode){
+  if(sensitiveQuality(issue))return'O registro histórico permanece guardado.';
+  if(mode==='resolved')return'Esta observação foi resolvida. O registro histórico permanece preservado.';
+  const details={limited_longitudinal_coverage:'O histórico tem registros em poucas datas, o que limita comparações ao longo do tempo.',metadata_only:'O histórico contém a referência ao documento. O arquivo original ainda não está disponível por essa referência.',migration_integrity:'O histórico foi preservado com uma observação sobre sua conferência.',missing_data:'O registro histórico foi preservado. Parte das informações não está disponível na fonte.',parsing:'A leitura tem uma limitação registrada. Os registros existentes foram preservados.',source_date_conflict_risk:'Há uma diferença entre datas informadas pela fonte; a comparação deve considerar essa limitação.',workout_normalization:'O nome original do exercício foi preservado. A comparação depende de uma identificação compatível.',workout_parsing:'O treino foi preservado. Alguns detalhes não puderam ser lidos com segurança.'};
+  return mode==='known'?(details[issue?.category]||'Esta observação foi mantida como limitação conhecida do histórico.'):'Este registro tem uma observação em análise.';
+}
 function safeIssueText(value,fallback){const text=String(value||'').trim();return text&&!internalTextPattern.test(text)?text:fallback;}
-function safeQualityDescription(issue,fallback){const text=sensitiveQuality(issue)?fallback:safeIssueText(issue?.description,fallback);return technicalQualityPattern.test(text)?fallback:text;}
+function safeQualityDescription(issue,fallback){const text=sensitiveQuality(issue)?fallback:safeIssueText(issue?.description,fallback);return diagnosticQualityText(text)?fallback:text;}
 function qualityDiagnostics(issue){
   if(sensitiveQuality(issue))return'';
-  const parts=[['Observação original',safeIssueText(issue?.description,'')],['Resolução original',safeIssueText(issue?.resolution_notes,'')]].filter(([,text])=>technicalQualityPattern.test(text));
+  const parts=[['Observação original',safeIssueText(issue?.description,'')],['Resolução original',safeIssueText(issue?.resolution_notes,'')]].filter(([,text])=>diagnosticQualityText(text));
   return parts.length?`<details class="sourceMore technicalDiagnostic"><summary>Diagnóstico técnico</summary>${parts.map(([label,text])=>`<p><b>${esc(label)}</b></p><p>${esc(text)}</p>`).join('')}</details>`:'';
 }
 
@@ -188,10 +200,9 @@ function provenanceOverview(metricRows,workoutEvidenceRows){
 }
 
 function qualityRow(issue,mode){
-  const known=!!issueCategoryLabels[issue?.category],sensitive=sensitiveQuality(issue);
-  const fallback=sensitive?'O registro histórico permanece guardado.':!known?'Este registro tem uma observação em análise.':'Há uma observação sobre este registro.';
+  const sensitive=sensitiveQuality(issue),fallback=qualityFallback(issue,mode);
   const detail=safeQualityDescription(issue,fallback),resolution=sensitive?'':safeIssueText(issue?.resolution_notes,'');
-  return `<div class="qualityRow"><div><b>${esc(issueTitle(issue))}</b><small>${esc(detail)}</small>${resolution&&!technicalQualityPattern.test(resolution)?`<em>${esc(resolution)}</em>`:''}${qualityDiagnostics(issue)}</div>${pill(mode==='resolved'?'resolvido':mode==='known'?'limitação conhecida':'em análise',mode==='resolved'?'ok':'')}</div>`;
+  return `<div class="qualityRow"><div><b>${esc(issueTitle(issue,mode))}</b><small>${esc(detail)}</small>${resolution&&!diagnosticQualityText(resolution)?`<em>${esc(resolution)}</em>`:''}${qualityDiagnostics(issue)}</div>${pill(mode==='resolved'?'resolvido':mode==='known'?'limitação conhecida':'em análise',mode==='resolved'?'ok':'')}</div>`;
 }
 function qualitySections(issues){
   if(failed('quality'))return '<div class="errorState"><b>Não foi possível verificar a qualidade dos dados agora.</b><span>Os registros continuam preservados; atualize para tentar novamente.</span></div>';
