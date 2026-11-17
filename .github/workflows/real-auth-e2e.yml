@@ -41,6 +41,7 @@ jobs:
           node --check v2/real-auth-labs-visual.mjs
           node --check v2/seal-visual-evidence.mjs
           node --check v2/mfp-water-audit-auth.mjs
+          node --check v2/google-health-channel-auth.mjs
       - name: Install browser runtime
         run: |
           npm init -y >/dev/null 2>&1
