@@ -36,7 +36,8 @@ test('alternative reads use documented GET reconciliation and POST daily rollup 
 
 test('daily buckets with no water payload remain absent and zero-valued payloads remain distinct',async()=>{
   const empty=bucket(false),zero=bucket();zero.hydrationLog.amountConsumed.millilitersSum=0;
-  for(const [payload,observations,emptyIntervals] of [[{},0,0],[{rollupDataPoints:[empty]},0,1],[{rollupDataPoints:[zero]},1,0]]){
+  const midnightDefault=bucket();delete midnightDefault.civilStartTime.time;delete midnightDefault.civilEndTime.time;
+  for(const [payload,observations,emptyIntervals] of [[{},0,0],[{rollupDataPoints:[empty]},0,1],[{rollupDataPoints:[zero]},1,0],[{rollupDataPoints:[midnightDefault]},1,0]]){
     const t=transport({},payload),out=await inspect({...options,fetcher:t.fetcher});
     assert.equal(out.probes[1].observations,observations);assert.equal(out.probes[1].empty_intervals,emptyIntervals);
   }
@@ -69,6 +70,7 @@ test('malformed, conflicting, out-of-range and excessive rollups cannot masquera
   const cases=[
     [{rollupDataPoints:[{...bucket(),civilEndTime:civil(11)}]},'invalid_interval'],
     [{rollupDataPoints:[{...bucket(),civilStartTime:{date:{year:2030,month:2,day:11},time:{hours:1}}}]},'invalid_interval'],
+    [{rollupDataPoints:[{...bucket(),civilStartTime:{date:{year:2030,month:2,day:11},time:null}}]},'invalid_interval'],
     [{rollupDataPoints:[{...bucket(),civilStartTime:civil(4),civilEndTime:civil(5)}]},'record_outside_window'],
     [{rollupDataPoints:[{...bucket(),hydrationLog:{amountConsumed:{millilitersSum:-1}}}]},'invalid_volume'],
     [{rollupDataPoints:[bucket(),conflict]},'duplicate_identity_conflict'],

@@ -284,7 +284,8 @@ export async function inspectGoogleHealthHydrationMethods({accessToken,grantedSc
         let day,key;
         if(daily){
           day=civilDay(point.civilStartTime);const end=civilDay(point.civilEndTime);
-          const aligned=value=>object(value?.time)&&['hours','minutes','seconds','nanos'].every(k=>value.time[k]===undefined||value.time[k]===0);
+          // CivilDateTime.time is optional and defaults to midnight in v4.
+          const aligned=value=>value.time===undefined||object(value.time)&&['hours','minutes','seconds','nanos'].every(k=>value.time[k]===undefined||value.time[k]===0);
           if(!day||!end||!aligned(point.civilStartTime)||!aligned(point.civilEndTime)||Date.parse(end)-Date.parse(day)!==86400000)fail('invalid_interval');
           if(day<from||end>to)fail('record_outside_window');key=day;
         }else{
