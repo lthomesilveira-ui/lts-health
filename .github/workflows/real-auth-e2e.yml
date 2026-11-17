@@ -45,6 +45,22 @@ jobs:
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.56.1
+      - name: Obtain one-time channel comparison token hash
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[health-water-channel-read]')
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_RESPONSE="$(curl -fsS --connect-timeout 10 --max-time 45 -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lts-health-e2e")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_RESPONSE" | node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(0,'utf8'));if(!x.value)process.exit(2);process.stdout.write(x.value)")"
+          echo "::add-mask::$OIDC_TOKEN"
+          curl -fsS --connect-timeout 10 --max-time 45 -X POST -H "Authorization: Bearer $OIDC_TOKEN" 'https://plztdqyuqcjohiimudnr.supabase.co/functions/v1/health-e2e-bootstrap' -o /tmp/lts-health-channels-token.json
+          TOKEN_HASH="$(node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/lts-health-channels-token.json','utf8'));if(!x.token_hash||x.otp_type!=='email')process.exit(2);process.stdout.write(x.token_hash)")"
+          echo "::add-mask::$TOKEN_HASH"
+          umask 077
+          printf '%s' "$TOKEN_HASH" > /tmp/lts-health-channels-token-hash
+      - name: Run the expressly requested one-time channel evaluation
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[health-water-channel-read]')
+        run: node v2/google-health-channel-auth.mjs
       - name: Obtain one-time audit token hash
         shell: bash
         run: |
