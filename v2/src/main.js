@@ -332,7 +332,7 @@ function bindStaticEvents(){
     const googleHealthAction=event.target.closest('[data-google-health-action]');
     if(googleHealthAction){
       const card=googleHealthAction.closest('[data-google-health]');
-      const period=googleHealthAction.dataset.googleHealthAction==='read-period'?{
+      const period=['read-period','inspect-methods-period'].includes(googleHealthAction.dataset.googleHealthAction)?{
         from:card.querySelector('[data-google-health-from]')?.value,
         lastDay:card.querySelector('[data-google-health-through]')?.value
       }:undefined;

@@ -256,33 +256,55 @@ export async function inspectGoogleHealthHydrationAvailability({accessToken,gran
 // Explicit, bounded comparison of documented alternative hydration reads. Daily
 // rollup buckets without a hydration payload are missing data, never zero water.
 // Amounts are validated privately and never returned, logged or persisted.
-export async function inspectGoogleHealthHydrationMethods({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch}){
+const physicalDayFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'});
+function physicalCivilDay(ms){
+  const parts=Object.fromEntries(physicalDayFormatter.formatToParts(new Date(ms)).map(p=>[p.type,p.value]));
+  return `${parts.year.padStart(4,'0')}-${parts.month}-${parts.day}`;
+}
+function physicalDayBoundary(day){
+  // Find the first instant of this local date, including a skipped midnight at
+  // historical DST transitions. A fixed -03:00 offset would change that range.
+  const nominal=Date.parse(`${day}T00:00:00Z`);
+  let low=nominal-86400000,high=nominal+86400000;
+  while(low<high){const mid=Math.floor((low+high)/2);if(physicalCivilDay(mid)<day)low=mid+1;else high=mid;}
+  if(physicalCivilDay(low)!==day)fail('invalid_date_window');
+  return new Date(low).toISOString();
+}
+export async function inspectGoogleHealthHydrationMethods({accessToken,grantedScopes,from,to,expectedHealthUserId=null,fetcher=fetch,includePhysicalTime=false}){
   const civil=hydrationReadParameters(from,to);
   if((Date.parse(to)-Date.parse(from))/86400000>7)fail('invalid_date_window');
   const budget={bytes:0},deadline=AbortSignal.timeout(30000);
   const identity=await verifiedIdentity(accessToken,grantedScopes,expectedHealthUserId,fetcher,budget,deadline);
   const midnight=day=>{const [year,month,date]=day.split('-').map(Number);return {date:{year,month,day:date},time:{hours:0,minutes:0,seconds:0,nanos:0}};};
   const probes=[];
-  for(const kind of ['reconciled_window','daily_rollup_window']){
+  const physicalRange=includePhysicalTime?{startTime:physicalDayBoundary(from),endTime:physicalDayBoundary(to)}:null;
+  for(const kind of ['reconciled_window','daily_rollup_window',...(includePhysicalTime?['physical_rollup_window']:[])]){
     try{
-      const daily=kind==='daily_rollup_window';
-      const payload=await get('/v4/users/me/dataTypes/hydration-log/dataPoints:'+(daily?'dailyRollUp':'reconcile'),
-        daily?{}:{...civil,pageSize:'25'},accessToken,fetcher,budget,deadline,
+      const daily=kind==='daily_rollup_window',physical=kind==='physical_rollup_window',rollup=daily||physical;
+      const payload=await get('/v4/users/me/dataTypes/hydration-log/dataPoints:'+(physical?'rollUp':daily?'dailyRollUp':'reconcile'),
+        rollup?{}:{...civil,pageSize:'25'},accessToken,fetcher,budget,deadline,
+        physical?{range:physicalRange,windowSize:'86400s',pageSize:8,dataSourceFamily:GOOGLE_HEALTH_SOURCE_FAMILY}:
         daily?{range:{start:midnight(from),end:midnight(to)},windowSizeDays:1,pageSize:7,dataSourceFamily:GOOGLE_HEALTH_SOURCE_FAMILY}:undefined);
-      const field=daily?'rollupDataPoints':'dataPoints';
+      const field=rollup?'rollupDataPoints':'dataPoints';
       const omitted=!Object.hasOwn(payload,field)&&Object.keys(payload).every(key=>key==='nextPageToken');
       if(!omitted&&!Array.isArray(payload[field]))fail('invalid_response');
-      const points=omitted?[]:payload[field],limit=daily?7:25;
+      const points=omitted?[]:payload[field],limit=physical?8:daily?7:25;
       if(points.length>limit)fail('record_limit');
       const next=payload.nextPageToken;
       if(next!==undefined&&next!==''&&(typeof next!=='string'||next.length>4096||/[^\x21-\x7e]/.test(next)))fail('invalid_pagination');
       const seen=new Map(),days=[];let observations=0,undated=0,emptyIntervals=0;
       for(const point of points){
         const fingerprint=stable(point);if(!object(point))fail('invalid_response');
-        const fields=daily?['civilStartTime','civilEndTime','hydrationLog']:['dataPointName','hydrationLog'];
+        const fields=physical?['startTime','endTime','hydrationLog']:daily?['civilStartTime','civilEndTime','hydrationLog']:['dataPointName','hydrationLog'];
         if(Object.keys(point).some(key=>!fields.includes(key)))fail('invalid_response');
         let day,key;
-        if(daily){
+        if(physical){
+          const start=instant(point.startTime),end=instant(point.endTime),rangeStart=instant(physicalRange.startTime),rangeEnd=instant(physicalRange.endTime),width=86400000000000n;
+          if(start<rangeStart||start>=rangeEnd||end>rangeEnd)fail('record_outside_window');
+          if((start-rangeStart)%width!==0n||end!==(start+width<rangeEnd?start+width:rangeEnd))fail('invalid_interval');
+          day=physicalCivilDay(Number(start/1000000n));key=start.toString();
+          if(day<from||day>=to)fail('record_outside_window');
+        }else if(daily){
           day=civilDay(point.civilStartTime);const end=civilDay(point.civilEndTime);
           // CivilDateTime.time is optional and defaults to midnight in v4.
           const aligned=value=>value.time===undefined||object(value.time)&&['hours','minutes','seconds','nanos'].every(k=>value.time[k]===undefined||value.time[k]===0);
@@ -304,9 +326,9 @@ export async function inspectGoogleHealthHydrationMethods({accessToken,grantedSc
         }
         if(key!==undefined&&seen.has(key)){if(seen.get(key)!==fingerprint)fail('duplicate_identity_conflict');continue;}
         if(key!==undefined)seen.set(key,fingerprint);
-        if(daily&&point.hydrationLog===undefined){emptyIntervals++;continue;}
+        if(rollup&&point.hydrationLog===undefined){emptyIntervals++;continue;}
         const amount=point.hydrationLog?.amountConsumed;
-        const ml=amount?.[daily?'millilitersSum':'milliliters'];
+        const ml=amount?.[rollup?'millilitersSum':'milliliters'];
         if(!object(amount)||typeof ml!=='number'||!Number.isFinite(ml)||ml<0||ml>100000)fail('invalid_volume');
         observations++;if(day===null)undated++;else days.push(day);
       }
@@ -320,7 +342,7 @@ export async function inspectGoogleHealthHydrationMethods({accessToken,grantedSc
     }
   }
   return {mode:'read_only',bounded:true,data_type:'hydration-log',from,to_exclusive:to,max_points_per_probe:25,
-    probes,canonical_updated:false,water_received:false};
+    probes,physical_time_included:includePhysicalTime,canonical_updated:false,water_received:false};
 }
 
 // Caller supplies a server-held OAuth token and the grant returned by Google.

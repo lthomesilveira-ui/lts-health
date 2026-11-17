@@ -106,7 +106,7 @@ function status(c,row,scheduled=null){
 
 // Dependencies are injected for invented-fixture HTTP/transaction tests. Production only injects verified Auth and a service-only store.
 export function createGoogleHealthHandlers({config,authenticate,storeFactory,resolveConfig=async c=>c,fetcher=fetch,now=()=>Date.now(),reportCallbackFailure=()=>{},reportReadDiagnostic=()=>{}}){
-  async function performRead(c,userId,from,to,trigger='manual',inspection=null){
+  async function performRead(c,userId,from,to,trigger='manual',inspection=null,includePhysicalTime=false){
     hydrationReadParameters(from,to);
     if(['hydration','hydration-methods'].includes(inspection)&&(Date.parse(to)-Date.parse(from))/86400000>7)error('invalid_date_window');
     const store=storeFactory(c,{trigger}),row=await store.connection(userId);
@@ -123,7 +123,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       }
       if(inspection){
         const inspect=inspection==='hydration-methods'?inspectGoogleHealthHydrationMethods:inspection==='hydration'?inspectGoogleHealthHydrationAvailability:inspectGoogleHealthNutrition;
-        const result=await inspect({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher});
+        const result=await inspect({accessToken:token.access_token,grantedScopes:token.scope,expectedHealthUserId:row.health_user_id,from,to,fetcher,includePhysicalTime});
         if(!await store.release(userId,row.generation,lease,null))error('authorization_superseded');
         if(inspection==='hydration'){
           const summary={event:'google_health_water_availability_v1'};
@@ -165,8 +165,9 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
       let c=config();const user=await authenticate(request,c);
       if(!user||user.is_anonymous===true)error('unauthorized');
       const body=await boundedJson(request,2048),action=body?.action;
-      const allowed=['read','inspect-nutrition','inspect-hydration','inspect-hydration-methods'].includes(action)?['action','from','to']:['action'];
+      const allowed=action==='inspect-hydration-methods'?['action','from','to','physical_time']:['read','inspect-nutrition','inspect-hydration'].includes(action)?['action','from','to']:['action'];
       if(!body||typeof body!=='object'||Array.isArray(body)||!['status','authorize','read','inspect-nutrition','inspect-hydration','inspect-hydration-methods','disconnect'].includes(action)||Object.keys(body).some(k=>!allowed.includes(k)))error('invalid_action');
+      if(action==='inspect-hydration-methods'&&body.physical_time!==undefined&&body.physical_time!==true)error('invalid_action');
       if(action==='disconnect'){
         await storeFactory(c).disconnect(user.id);
         try{c=await resolveConfig(c);}catch{c={...c,enabled:false,encryptionKey:null};}
@@ -189,7 +190,7 @@ export function createGoogleHealthHandlers({config,authenticate,storeFactory,res
           access_type:'offline',prompt:'consent',include_granted_scopes:'false',state,code_challenge:challenge,code_challenge_method:'S256'}).toString();
         return json({authorization_url:url.href});
       }
-      return json(await performRead(c,user.id,body.from,body.to,'manual',action==='inspect-hydration-methods'?'hydration-methods':action==='inspect-hydration'?'hydration':action==='inspect-nutrition'?'nutrition':null));
+      return json(await performRead(c,user.id,body.from,body.to,'manual',action==='inspect-hydration-methods'?'hydration-methods':action==='inspect-hydration'?'hydration':action==='inspect-nutrition'?'nutrition':null,body.physical_time===true));
     }catch(e){return failResponse(e);}
   }
   async function callback(request){
