@@ -120,8 +120,9 @@ async function inspectWaterAvailability(entry) {
   if (result.probes.some(probe => probe.truncated)) entry.message += ' A conferência dos registros recentes foi limitada a 25 por consulta.';
 }
 
-async function inspectWaterStreams(entry) {
-  const {lastDay, to} = googleHealthReadWindow(), from = addDays(lastDay, -6);
+async function inspectWaterStreams(entry, period = null) {
+  const current = googleHealthReadWindow();
+  const {from, lastDay, to} = period || {...current, from:addDays(current.lastDay, -6)};
   const result = await invoke({action: 'inspect-hydration-streams', from, to});
   if (!isCurrent(entry)) return;
   if (result.in_progress === true) { entry.message = 'Já existe uma conferência em andamento.'; return; }
@@ -232,6 +233,15 @@ export function actOnGoogleHealth(action, requestedPeriod) {
     }, 'Não foi possível abrir a autorização do Google agora.');
   }
   if (!entry.status.connected) return;
+  if (action === 'inspect-hydration-streams-period') {
+    entry.period = {from:requestedPeriod?.from || '',lastDay:requestedPeriod?.lastDay || ''};
+    return run(entry, async () => {
+      let period;
+      try { period = googleHealthPeriodWindow(requestedPeriod?.from,requestedPeriod?.lastDay); if ((Date.parse(period.to)-Date.parse(period.from))/86400000 > 7) throw Error('range'); }
+      catch { entry.message = 'Escolha até 7 dias para conferir os totais diários da água.'; return; }
+      await inspectWaterStreams(entry,period);
+    }, 'Não foi possível conferir os totais diários da água agora.');
+  }
   if (action === 'inspect-hydration-streams') {
     return run(entry, () => inspectWaterStreams(entry), 'Não foi possível conferir os totais diários da água agora.');
   }
@@ -317,6 +327,7 @@ export function renderGoogleHealthConnection() {
         <label>Data inicial<input type="date" data-google-health-from value="${esc(selected.from)}"${disabled}></label>
         <label>Data final<input type="date" data-google-health-through value="${esc(selected.lastDay)}"${disabled}></label>
       </div>${button('read-period', 'Conferir água deste período')}
+      <p>Para comparar totais diários, escolha até 7 dias.</p>${button('inspect-hydration-streams-period', 'Conferir totais diários deste período')}
     </details>` : ''}
     ${status?.connected && !reconnect ? `<details class="googleHealthSourceCheck"><summary>Conferir disponibilidade da água</summary>
       <p>Use quando a água aparecer no Google, mas não chegar por esta conexão. Compara o período recente com os últimos registros disponíveis, sem alterar os totais.</p>

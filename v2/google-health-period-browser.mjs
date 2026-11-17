@@ -105,6 +105,16 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    const availabilityCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration'));
    assert.equal(availabilityCalls.length,4);assert.ok(availabilityCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
    assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-hydration-streams')),false);
+   if(!await card.locator('details.googleHealthPeriod').evaluate(el=>el.open))await card.getByText('Consultar outro período',{exact:true}).click();
+   await card.getByRole('button',{name:'Conferir totais diários deste período',exact:true}).click();
+   await card.getByRole('status').filter({hasText:'Escolha até 7 dias para conferir os totais diários da água.'}).waitFor();
+   assert.equal(await page.evaluate(()=>window.__googlePeriodCalls.some(call=>call.action==='inspect-hydration-streams')),false);
+   if(!await card.locator('details.googleHealthPeriod').evaluate(el=>el.open))await card.getByText('Consultar outro período',{exact:true}).click();
+   await card.getByLabel('Data inicial',{exact:true}).fill('2030-10-14');await card.getByLabel('Data final',{exact:true}).fill('2030-10-15');
+   await page.evaluate(()=>{window.__googleStreamsMode='daily';});
+   await card.getByRole('button',{name:'Conferir totais diários deste período',exact:true}).click();
+   await card.getByRole('status').filter({hasText:'O Google disponibilizou água no fluxo unificado ou nos totais diários.'}).waitFor();
+
    const streams=card.getByRole('button',{name:'Conferir totais diários no Google',exact:true});
    for(const [mode,message] of [['empty','não foi confirmado volume positivo de água'],['daily','O Google disponibilizou água no fluxo unificado ou nos totais diários.'],['stream','O Google disponibilizou água no fluxo unificado ou nos totais diários.'],['blocked','Uma das conferências não pôde ser concluída.'],['invalid','Não foi possível conferir os totais diários da água agora.']]){
     await page.evaluate(value=>{window.__googleStreamsMode=value;},mode);
@@ -116,7 +126,7 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
     if(mode==='daily')await card.screenshot({path:`${dir}/${engineName}-${width}-water-daily-view.png`});
    }
    const streamCalls=await page.evaluate(()=>window.__googlePeriodCalls.filter(call=>call.action==='inspect-hydration-streams'));
-   assert.equal(streamCalls.length,5);assert.ok(streamCalls.every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
+   assert.equal(streamCalls.length,6);assert.deepEqual(streamCalls[0],{action:'inspect-hydration-streams',from:'2030-10-14',to:'2030-10-16'});assert.ok(streamCalls.slice(1).every(call=>(Date.parse(call.to)-Date.parse(call.from))/86400000===7));
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
    assert.equal(await page.evaluate(()=>JSON.stringify(window.__historyDb)),before);
    assert.deepEqual(traffic,{external:[],writes:[],errors:[]});
