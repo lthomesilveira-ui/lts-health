@@ -19,4 +19,4 @@
 .googleHealthPeriod>button{min-height:44px;max-width:100%;white-space:normal}
 .googleHealthSourceCheck{margin-top:12px;max-width:100%}
 .googleHealthSourceCheck>summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
-.googleHealthSourceCheck>button{box-sizing:border-box;min-height:44px;max-width:100%;white-space:normal;font:inherit;padding:10px 14px}
+.googleHealthSourceCheck>button{display:block;box-sizing:border-box;min-height:48px;margin-block:6px;max-width:100%;white-space:normal;font:inherit;padding:10px 14px}

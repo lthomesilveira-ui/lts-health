@@ -109,7 +109,8 @@ for(const [engineName,engine] of [['chromium',chromium],['webkit',webkit]]){
    for(const [mode,message] of [['empty','não foi confirmado volume positivo de água'],['daily','O Google disponibilizou água no fluxo unificado ou nos totais diários.'],['stream','O Google disponibilizou água no fluxo unificado ou nos totais diários.'],['blocked','Uma das conferências não pôde ser concluída.'],['invalid','Não foi possível conferir os totais diários da água agora.']]){
     await page.evaluate(value=>{window.__googleStreamsMode=value;},mode);
     if(!await streams.isVisible())await card.getByText('Conferir disponibilidade da água',{exact:true}).click();
-    const box=await streams.boundingBox();assert.ok(box&&box.height>=44&&box.x>=0&&box.x+box.width<=width+1);
+    await streams.waitFor({state:'visible'});await streams.scrollIntoViewIfNeeded();
+    const box=await streams.boundingBox();assert.ok(box&&box.height>=44&&box.x>=0&&box.x+box.width<=width+1,JSON.stringify({engineName,width,mode,box}));
     await streams.click();await card.getByRole('status').filter({hasText:message}).waitFor();
     assert.doesNotMatch(await card.getByRole('status').innerText(),/0 mL|0 ml|consumo zero/);
     if(mode==='daily')await card.screenshot({path:`${dir}/${engineName}-${width}-water-daily-view.png`});
