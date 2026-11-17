@@ -12,13 +12,30 @@ const {sourceStatusFor,sourceCoverageFor}=await import('../src/source-status.js'
 // Entirely invented fixtures. Render presentation without a network or login.
 const diagnostic='SQLSTATE 42703: column source_record_id does not exist; RPC payload canonical_status <synthetic-only>';
 const resolution='candidate held canonical_status: synthetic resolution 1,2345';
+const legacyNotes=[
+  {category:'workout_normalization',status:'accepted',description:'The exercise label was reported with a spelling variation.'},
+  {category:'metadata_only',status:'known',description:'HealthDocument records contain references but original file bytes are unavailable.'},
+  {category:'workout_parsing',status:'ignored',description:'Completed workout sessions lack individual sets and reps.'},
+  {category:'source_date_conflict_risk',status:'known',description:'Some document filenames and structured measurement dates differ.'},
+  {category:'missing_data',status:'resolved',description:'Missing detail was restored.',resolution_notes:'The source was checked.'},
+  {category:'synthetic_unknown',status:'accepted',description:'Legacy source records are preserved.'},
+  {category:'synthetic_unknown',status:'resolved',description:'The issue was resolved.'}
+];
+const treatmentNotes=[
+  {entity_name:'MedicationApplication',description:'Amount 543.21 mg; historical note.',resolution_notes:'Original treatment detail 654.32 mg.'},
+  {entity_type:'MedicationEvent',description:'Historical note 765.43 mg.'},
+  {description:'Medication application dates are known; doses remain absent.'},
+  {description:'As aplicações e as doses constam no histórico original.'}
+].map(row=>({category:'missing_data',status:'known',...row}));
 state.data={
   uploads:[{id:'synthetic-upload',source_type:'myfitnesspal',status:'failed',original_filename:'synthetic-food.csv',created_at:'2025-04-10'}],
   previews:[{upload_id:'synthetic-upload',status:'failed',detected_format:'csv',row_count:12,date_min:'2025-04-01',date_max:'2025-04-09'}],
   quality:[
     {category:'parsing',status:'open',description:diagnostic,resolution_notes:resolution},
     {category:'limited_longitudinal_coverage',status:'known',description:'Há registros em somente 3 dias deste período.'},
-    {category:'parsing',status:'resolved',description:'Leitura do arquivo concluída.',resolution_notes:'As datas foram preservadas.'}
+    {category:'parsing',status:'resolved',description:'Leitura do arquivo concluída.',resolution_notes:'As datas foram preservadas.'},
+    {category:'missing_data',status:'known',description:'O histórico de água do MyFitnessPal permanece disponível nas datas registradas.'},
+    ...legacyNotes,...treatmentNotes
   ],
   sourceMetrics:[
     {source_record_id:'synthetic-candidate',source_family:'apple_watch',canonical_status:'candidate',metric_type:'sleep_duration_h',metric_date:'2025-04-12',unit:'h',value:7.25},
@@ -66,6 +83,24 @@ assert.match(expanded,/12 registros/,'upload counts are unchanged');
 assert.match(expanded,/Apple Watch/);assert.match(expanded,/Polar Flow/);
 const noDiagnostics=html.replace(/<details class="sourceMore technicalDiagnostic">[\s\S]*?<\/details>/g,'');
 assert.deepEqual(technicalMatches(htmlText(noDiagnostics,{expanded:true})),[],'opening ordinary source details does not expose technical errors');
+const ordinaryQuality=htmlText(noDiagnostics,{expanded:true});
+assert.match(ordinaryQuality,/O histórico de água do MyFitnessPal permanece disponível nas datas registradas/,'a familiar source name is not mistaken for a model identifier');
+for(const row of legacyNotes){
+  assert.ok(!ordinaryQuality.includes(row.description),'legacy English is not shown by opening ordinary source details');
+  assert.ok(expanded.includes(row.description),'safe original note is retained only in the opt-in diagnostic');
+}
+for(const row of treatmentNotes){
+  assert.ok(!expanded.includes(row.description),'treatment metadata is not displayed even in technical disclosures');
+  if(row.resolution_notes)assert.ok(!expanded.includes(row.resolution_notes));
+}
+assert.match(ordinaryQuality,/A comparação depende de uma identificação compatível/);
+assert.match(ordinaryQuality,/O arquivo original ainda não está disponível por essa referência/);
+assert.match(ordinaryQuality,/Esta observação foi mantida como limitação conhecida do histórico/);
+assert.match(ordinaryQuality,/Esta observação foi resolvida\. O registro histórico permanece preservado/);
+assert.match(html,/<b>Informações do registro<\/b>/,'resolved rows use a neutral heading, not a claim that information is still absent');
+assert.equal((html.match(/<div class="qualityRow">/g)||[]).length,original.quality.length,'all quality rows and statuses are preserved');
+assert.equal((html.match(/>limitação conhecida<\/span>/g)||[]).length,original.quality.filter(row=>['accepted','known','ignored'].includes(row.status)).length);
+assert.equal((html.match(/>resolvido<\/span>/g)||[]).length,original.quality.filter(row=>row.status==='resolved').length);
 assert.deepEqual(state.data,original,'all clinical values, notes, source identities and record statuses remain untouched');
 
 for(const connection of [null,{status:'loading'},{status:'error'},{status:'ready',configured:false,connected:false},{status:'ready',configured:true,connected:false},{status:'ready',configured:true,connected:true,update_mode:'unverified',sync_error:diagnostic}]){

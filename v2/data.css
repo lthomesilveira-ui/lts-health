@@ -20,3 +20,13 @@
 .googleHealthSourceCheck{margin-top:12px;max-width:100%}
 .googleHealthSourceCheck>summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
 .googleHealthSourceCheck>button{box-sizing:border-box;min-height:44px;max-width:100%;white-space:normal;font:inherit;padding:10px 14px}
+
+/* Quality annotations keep their heading, explanation and status distinct. */
+.reviewDetails .qualityColumns{display:grid;gap:20px;min-width:0}
+.reviewDetails .qualityColumns>div{min-width:0}
+.reviewDetails .qualityRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.reviewDetails .qualityRow>div{display:grid;gap:6px;min-width:0}
+.reviewDetails .qualityRow>div>b,.reviewDetails .qualityRow>div>small,.reviewDetails .qualityRow>div>em{display:block;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.reviewDetails .qualityRow>div>em{font-style:normal;color:#43566c}
+.reviewDetails .qualityRow>.pill{align-self:start;justify-self:start;max-width:100%;white-space:normal;text-align:center}
+@media(max-width:600px){.reviewDetails .qualityRow{grid-template-columns:minmax(0,1fr)}}
