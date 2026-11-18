@@ -1,4 +1,5 @@
 import {sourceDisplayLabel} from './source-display.js';
+import {confirmedTelemetryEvidence} from './workout-evidence.js';
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
 import {renderTrainingHistory,renderExerciseHistory,exerciseHistoryTitle,renderExerciseDirectory} from './training-history.js';
 import {failed,errorCard} from './history-tools.js';
@@ -55,18 +56,47 @@ function sessionHero(workout){
   return `<section class="ltsRefTrainHero"><span class="ltsTrainingSessionIcon" aria-hidden="true">↗</span><div><span>Sessão registrada</span><strong>${fmtDate(workout.workout_date)}</strong><small>${esc(workout.location||'Local não informado')}</small></div><button type="button" data-depth-training-view="history">Outras sessões ›</button></section>`;
 }
 
-function hrPanel(workout){
-  const min=num(workout.heart_rate_min),avg=num(workout.heart_rate_avg),max=num(workout.heart_rate_max);
-  if(min==null&&avg==null&&max==null)return `<section class="ltsRefTrainPanel"><header><div><span>Medidas do aparelho</span><h2>Frequência cardíaca</h2></div></header><div class="ltsRefTrainEmpty">Ainda não há frequência cardíaca registrada para esta sessão.</div></section>`;
-  const sourceLabel=sourceDisplayLabel(workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada');
-  const telemetryLabel=workout.telemetry_heart_rate_is_partial?`Trecho parcial · ${sourceLabel}`:sourceLabel;
+function deviceReferences(workout, evidence){
+  const rows=[];
+  for(const row of evidence){
+    const polar=row.source_family==='polar_flow';
+    const apple=row.source_family==='apple_watch';
+    const link=polar && typeof row.source_file==='string' && /^https:\/\/flow\.polar\.com\/training\/analysis\/\d+$/.test(row.source_file.trim())
+      ? row.source_file.trim() : null;
+    const possible=row.evidence_kind==='session_reference' && row.evidence_status==='candidate' && (polar||apple);
+    const confirmed=row.evidence_kind==='telemetry' && row.evidence_status==='confirmed' && link;
+    if(!possible&&!confirmed)continue;
+    const source=polar?'Polar Flow':'Apple Watch';
+    const status=possible?'Possível correspondência':'Vínculo confirmado';
+    rows.push(`<li><strong>${esc(source)} · ${status}</strong>
+      ${row.notes?`<p class="ltsRefSessionContextNote">${esc(row.notes)}</p>`:''}
+      ${link?`<a class="ltsDeviceRecordLink" href="${esc(link)}" target="_blank" rel="noopener noreferrer">Abrir registro no Polar Flow ↗</a>`:''}
+    </li>`);
+  }
+  if(!rows.length)return '';
+  return `<details class="ltsRefSessionContext ltsDeviceRecords" data-disclosure="training-device-${esc(workout.source_record_id)}"><summary>Registro do aparelho</summary><ul class="ltsRefSessionGroups">${rows.join('')}</ul></details>`;
+}
+
+function hrPanel(workout, evidence){
+  const confirmed=confirmedTelemetryEvidence(evidence);
+  const fields=[['Mín.','heart_rate_min'],['Média','heart_rate_avg'],['Máx.','heart_rate_max']];
+  const measures=fields.map(([label,field])=>{
+    const names=new Set();
+    for(const row of confirmed){
+      if(row.source_name && Array.isArray(row.field_names) && row.field_names.some(name=>name===field||name==='partial_'+field)){
+        names.add(sourceDisplayLabel(row.source_name));
+      }
+    }
+    return {label,value:num(workout[field]),origin:[...names].sort().join(' + ')};
+  });
+  const present=measures.filter(m=>m.value!=null);
+  if(!present.length)return '<section class="ltsRefTrainPanel"><header><h2>Frequência cardíaca</h2></header><div class="ltsRefTrainEmpty">Ainda não há frequência cardíaca registrada para esta sessão.</div></section>';
+  const commonOrigin=present.every(m=>m.origin===present[0].origin);
+  const sharedLabel=(workout.telemetry_heart_rate_is_partial?'Trecho parcial · ':'')+(present[0].origin||'Registro do treino');
+  const cards=measures.map(({label,value,origin})=>`<div><small>${label}</small><b>${value!=null?fmtNum(value,0):'—'}</b><span>bpm</span>${value!=null&&!commonOrigin?`<small>${esc(origin||'Registro do treino')}</small>`:''}</div>`);
   return `<section class="ltsRefTrainPanel ltsRefHrPanel">
-    <header><div><span>${workout.telemetry_provenance_status==='confirmed'?'Medidas do aparelho':'Valores registrados'}</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>
-    <div class="ltsRefHrNumbers">
-      <div><small>Mín.</small><b>${min!=null?fmtNum(min,0):'—'}</b><span>bpm</span></div>
-      <div><small>Média</small><b>${avg!=null?fmtNum(avg,0):'—'}</b><span>bpm</span></div>
-      <div><small>Máx.</small><b>${max!=null?fmtNum(max,0):'—'}</b><span>bpm</span></div>
-    </div>
+    <header><div><span>${present.every(m=>m.origin)?'Medidas do aparelho':'Valores registrados'}</span><h2>Frequência cardíaca</h2></div>${commonOrigin?`<small>${esc(sharedLabel)}</small>`:''}</header>
+    <div class="ltsRefHrNumbers">${cards.join('')}</div>
     <p>${workout.telemetry_heart_rate_is_partial?'Valores medidos somente no trecho registrado; não representam a sessão inteira.':'Faixa descritiva da sessão registrada.'} Não representa distribuição por zonas nem série temporal.</p>
   </section>`;
 }
@@ -97,6 +127,9 @@ function recordedSessionContext(workout){
 }
 
 function summaryView(workout){
+  const evidence=state.domainStatus.workoutEvidence==='ready'
+    ? (state.data.workoutEvidence||[]).filter(row=>row.workout_source_record_id===workout.source_record_id && (!row.workout_date||row.workout_date===workout.workout_date))
+    : [];
   const{exercises,acceptedSets,setsAvailable,exerciseCount,setCount,extensionCount}=workoutCounts(workout);
   const textualSets=setsAvailable&&setCount===0&&(exercises.some(exercise=>String(exercise.source_text||'').trim())||String(workout.raw_exercises||'').trim());
   const model=trainingSessionSummary(workout,state.data,state.domainStatus);
@@ -108,8 +141,9 @@ function summaryView(workout){
       ${metric(setCount==null||textualSets?'—':' '+setCount,'',textualSets?'Séries em texto':'Séries')}
     </section>
     ${measurementNote(workout)}
+    ${deviceReferences(workout,evidence)}
     <div class="ltsTrainingReportGrid">${sessionGroupChart(model)}${sessionHistoryChart(workout)}</div>
-    ${hrPanel(workout)}
+    ${hrPanel(workout,evidence)}
     <section class="ltsRefTrainPanel ltsRefSessionOverview">
       <header><div><span>Seu treino</span><h2>Exercícios da sessão</h2></div><button type="button" data-depth-training-view="exercises">Abrir exercícios ›</button></header>
       <div class="ltsRefOverviewGrid"><div><b>${exerciseCount==null?'—':exerciseCount}</b><span>exercícios registrados</span></div><div><b>${setCount==null||textualSets?'—':setCount}</b><span>${textualSets?'séries preservadas em texto':'séries registradas'}</span></div></div>
