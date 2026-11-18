@@ -38,6 +38,12 @@ assert.deepEqual(data,original,'rendering preserves fractional repetitions, phas
 assert.equal(hasReportedMeasurementIssue(workout,[{...evidence,evidence_status:'candidate'}]),false);
 assert.equal(hasReportedMeasurementIssue(workout,[{...evidence,workout_source_record_id:'other-session'}]),false);
 assert.equal(hasReportedMeasurementIssue(workout,[]),false);
+for(const flags of [{measurement_issue_reported:true},{polar_measurement_issue_reported:true},{polar_reliability:'user_disputed'},{polar_reliability:'user_reported_inaccurate'}]){
+  assert.equal(hasReportedMeasurementIssue({...workout,...flags},[]),true);
+}
+for(const flags of [{measurement_issue_reported:'false'},{polar_measurement_issue_reported:false},{polar_reliability:'unknown'},{notes:'sensor'}]){
+  assert.equal(hasReportedMeasurementIssue({...workout,...flags},[]),false);
+}
 assert.deepEqual(trainingSetCounts([{phase:null},{phase:'other'}]),{primary:2,extensions:0,total:2});
 state.ui.productTrainingView='summary';state.domainStatus.sets='error';
 assert.doesNotMatch(renderProductTraining(),/3 prolongamentos/,'failed detail loading never presents a fabricated count');

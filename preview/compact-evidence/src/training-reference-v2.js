@@ -40,7 +40,7 @@ function workoutCounts(workout){
 
 function measurementNote(workout){
   if(!hasReportedMeasurementIssue(workout,state.data.workoutEvidence||[]))return '';
-  return '<details class="ltsRefMeasurementNote"><summary>FC e calorias: leitura com ressalva</summary><p>Você relatou imprecisão na medição do Polar. A frequência cardíaca e as calorias exibidas são as leituras do aparelho para esta sessão.</p></details>';
+  return '<details class="ltsRefMeasurementNote"><summary>FC e calorias: leitura com ressalva</summary><p>Você relatou imprecisão na medição do Polar. Isso limita o uso da frequência cardíaca e das calorias para avaliar o treino.</p></details>';
 }
 
 function exerciseNotes(exercise,sets){

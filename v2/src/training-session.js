@@ -10,6 +10,8 @@ export function trainingSetCounts(sets=[]){
 }
 
 export function hasReportedMeasurementIssue(workout,evidence=[]){
+  if(workout?.measurement_issue_reported===true || workout?.polar_measurement_issue_reported===true)return true;
+  if(workout?.polar_reliability==='user_disputed' || workout?.polar_reliability==='user_reported_inaccurate')return true;
   return evidence.some(row=>row?.workout_source_record_id===workout?.source_record_id&&
     row.evidence_kind==='telemetry'&&row.evidence_status==='confirmed'&&
     (row.field_names||[]).includes('measurement_issue_reported'));

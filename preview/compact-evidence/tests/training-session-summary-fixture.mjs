@@ -43,7 +43,7 @@ export function makeTrainingSessionSummaryFixture(){
     workout(SUMMARY_IDS.current,1,'Sessão sintética atual',{
       // This is the SQL alias returned by the real loader's restricted
       // session_comment:source_payload->>user_reported_completion_note projection.
-      session_comment:SUMMARY_COMMENT,raw_exercises:SUMMARY_REPORT
+      session_comment:SUMMARY_COMMENT,raw_exercises:SUMMARY_REPORT,measurement_issue_reported:true
     }),
     workout(SUMMARY_IDS.old,8,'Sessão sintética antiga',{raw_exercises:SUMMARY_OLD_REPORT}),
     workout(SUMMARY_IDS.empty,14,'Sessão sintética sem detalhes')
