@@ -48,6 +48,9 @@ export function makeTrainingSessionSummaryFixture(){
     workout(SUMMARY_IDS.old,8,'Sessão sintética antiga',{raw_exercises:SUMMARY_OLD_REPORT}),
     workout(SUMMARY_IDS.empty,14,'Sessão sintética sem detalhes')
   ];
+  data.workoutEvidence=[{source_record_id:'synthetic-device-reference',workout_source_record_id:SUMMARY_IDS.current,workout_date:date(1),
+    source_family:'polar_flow',source_name:'Polar Flow',evidence_status:'candidate',evidence_kind:'session_reference',field_names:[],
+    source_file:'https://flow.polar.com/training/analysis/42',notes:'Registro sintético de força às 09h.'}];
   const exercise=(suffix,index,group,workoutId=SUMMARY_IDS.current)=>({
     source_record_id:`${workoutId}-${suffix}`,workout_source_record_id:workoutId,
     workout_date:workoutId===SUMMARY_IDS.current?date(1):date(8),order_index:index,

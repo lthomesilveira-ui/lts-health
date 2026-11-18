@@ -343,6 +343,12 @@ try{
       const progressTab=page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="progress"]');assert.equal(await progressTab.evaluate(el=>el===document.activeElement),true,'The exercise index is keyboard-reachable as the fourth destination with tablist arrows');
       await page.keyboard.press('Enter');await stableTraining(page,'progress');assert.ok(await page.locator('.ltsExerciseDirectory').isVisible(),'The real fourth tab opens observed exercise history');await chooseTab(page,'summary');await checkCurrent(page);
       for(const kind of ['distribution','original'])assert.equal(await page.locator(disclosureSelector(kind)).evaluate(el=>el.open),false,'New session details begin collapsed');
+      const device=page.locator(disclosureSelector('device'));
+      await device.locator('summary').click();
+      assert.match(await device.innerText(),/Possível correspondência/);
+      assert.equal(await device.locator('a').getAttribute('href'),'https://flow.polar.com/training/analysis/42');
+      await capture(page,`${label}-device-record`,disclosureSelector('device'));
+      await device.locator('summary').click();
       await capture(page,`${label}-summary`);
       await capture(page,`${label}-group-chart`,'[data-training-chart="groups"]');
       await capture(page,`${label}-session-chart`,'[data-training-chart="sessions"]');

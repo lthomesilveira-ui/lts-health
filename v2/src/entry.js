@@ -115,10 +115,10 @@ function waterImportForm(){
       <a class="primary" href="./mfp-water-extractor.html" target="_blank" rel="noopener">Ver passo a passo no notebook</a>
     </div>
     <div class="waterTransferFile">
-      <label>Etapa 2 · Arquivo gerado pelo extrator<input id="mfpWaterImportFile" name="mfp_water_file" type="file" accept="application/json,.json" required></label>
+      <label>Etapa 2 · Histórico de água em JSON<input id="mfpWaterImportFile" name="mfp_water_file" type="file" accept="application/json,.json" required></label>
       <p>O arquivo é validado localmente. Somente data e total em mL entram no histórico; o JSON original não é enviado nem armazenado.</p>
     </div>
-    <div id="mfpWaterImportPreview" class="waterImportPreview" role="status"><b>Aguardando arquivo</b><span>Selecione o JSON criado ao final da extração.</span></div>
+    <div id="mfpWaterImportPreview" class="waterImportPreview" role="status"><b>Aguardando arquivo</b><span>Selecione o JSON de água preparado a partir da sua conta MyFitnessPal.</span></div>
     <label class="entryConfirm"><input id="mfpWaterImportConfirm" name="confirmed" type="checkbox" required disabled><span>Confirmo a importação das datas e dos totais mostrados na prévia.</span></label>
     <p class="entryHint">Reimportar o mesmo arquivo é seguro. A mesma data é atualizada, sem criar duplicata e sem alterar refeições ou outros dados de nutrição.</p>
     <div class="waterImportFooter"><button type="button" class="ghostSmall" data-water-manual>Registrar apenas um dia</button><div class="entryFooter"><span id="entryMsg" class="msg" role="status"></span><button id="mfpWaterImportSubmit" class="primary" type="submit" disabled>Importar histórico</button></div></div>

@@ -40,7 +40,7 @@ jobs:
           retention-days: 7
   visual-training-host:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,6 +48,13 @@ jobs:
           node-version: '22'
       - name: Install the browser engines used by the broader isolated gate
         run: |
+          # The regional Ubuntu mirror can time out while fetching WebKit dependencies.
+          # Keep the same signed Ubuntu archive and the same host browser engines.
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+            if [ -f "$source" ]; then
+              sudo sed -Ei 's|https?://([a-z0-9-]+\.)?ec2\.archive\.ubuntu\.com/ubuntu/?|https://archive.ubuntu.com/ubuntu/|g' "$source"
+            fi
+          done
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium webkit
       - name: Verify source qualifiers, native filters and full session flow on the host

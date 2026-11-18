@@ -3,6 +3,7 @@ import {normalizeWaterMl,validLocalDate} from './hydration.js';
 export const MFP_WATER_EXPORT_SCHEMA='lts-health-mfp-water-export';
 export const MFP_WATER_EXPORT_VERSION=1;
 export const MFP_WATER_EXPORT_METHOD='mfp_food_water_v1';
+export const MFP_WATER_DATA_ACCESS_METHOD='mfp_data_access_xlsx_v1';
 export const MFP_WATER_ENTRY_METHOD='mfp_authenticated_water_export_v1';
 export const MAX_MFP_WATER_DAYS=10000;
 
@@ -35,6 +36,30 @@ export function parseMfpWaterEndpoint(payload,expectedDate){
   return Math.round(value);
 }
 
+// The source workbook stays private. This transfer contains only dated water
+// rows from the official account export and the hash of its encrypted original.
+function parseDataAccessWater(documentValue){
+  const {period,archive_sha256,rows}=documentValue;
+  const from=String(period?.from||''),to=String(period?.to||'');
+  const span=inclusiveDayCount(from,to);
+  if(span>MAX_MFP_WATER_DAYS||!Array.isArray(rows)||!rows.length||rows.length>span)throw transferError('mfp_export_invalid_rows');
+  if(typeof archive_sha256!=='string'||!/^[a-f0-9]{64}$/.test(archive_sha256)||documentValue.unit!=='mL')throw transferError('mfp_export_wrong_schema');
+  const dates=new Set(),sourceRows=new Set();
+  const normalized=rows.map(row=>{
+    const date=row?.date,source_row=row?.source_row,water_ml=row?.water_ml;
+    if(typeof date!=='string'||!validLocalDate(date)||date<from||date>to||dates.has(date))throw transferError('mfp_export_invalid_row_date');
+    if(!Number.isSafeInteger(source_row)||source_row<3||source_row>1048576||sourceRows.has(source_row))throw transferError('mfp_export_invalid_rows');
+    if(!Number.isSafeInteger(water_ml)||water_ml<=0||water_ml>100000)throw transferError('mfp_export_invalid_row_value');
+    dates.add(date);sourceRows.add(source_row);
+    return {date,water_ml,source_row};
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+  const positive=normalized.length,zero=integer(documentValue.days_without_positive_total);
+  if(zero===null||zero<0||positive+zero>span||documentValue.positive_days!==positive||documentValue.days_scanned!==positive+zero)throw transferError('mfp_export_invalid_counts');
+  return {schema:MFP_WATER_EXPORT_SCHEMA,version:MFP_WATER_EXPORT_VERSION,method:MFP_WATER_DATA_ACCESS_METHOD,
+    status:'complete',completed_at:documentValue.completed_at,period:{from,to},unit:'mL',archive_sha256,
+    days_scanned:positive+zero,positive_days:positive,days_without_positive_total:zero,rows:normalized};
+}
+
 export function parseMyFitnessPalWaterExport(input){
   let documentValue=input;
   if(typeof input==='string'){
@@ -42,8 +67,9 @@ export function parseMyFitnessPalWaterExport(input){
   }
   if(!documentValue||typeof documentValue!=='object'||Array.isArray(documentValue))throw transferError('mfp_export_invalid_document');
   if(documentValue.schema!==MFP_WATER_EXPORT_SCHEMA||documentValue.version!==MFP_WATER_EXPORT_VERSION)throw transferError('mfp_export_wrong_schema');
-  if(documentValue.method!==MFP_WATER_EXPORT_METHOD)throw transferError('mfp_export_wrong_method');
   if(documentValue.status!=='complete'||!documentValue.completed_at)throw transferError('mfp_export_incomplete');
+  if(documentValue.method===MFP_WATER_DATA_ACCESS_METHOD)return parseDataAccessWater(documentValue);
+  if(documentValue.method!==MFP_WATER_EXPORT_METHOD)throw transferError('mfp_export_wrong_method');
 
   const from=String(documentValue.period?.from||''),to=String(documentValue.period?.to||'');
   const expectedDays=inclusiveDayCount(from,to);
@@ -83,6 +109,7 @@ export function parseMyFitnessPalWaterExport(input){
 export function myFitnessPalWaterRecords(parsedExport,userId){
   if(!userId)throw transferError('authentication_required');
   const parsed=parseMyFitnessPalWaterExport(parsedExport);
+  const archive=parsed.method===MFP_WATER_DATA_ACCESS_METHOD;
   return parsed.rows.map(row=>({
     user_id:userId,
     source_record_id:`mfp-water:${row.date}`,
@@ -94,13 +121,14 @@ export function myFitnessPalWaterRecords(parsedExport,userId){
     source_family:'myfitnesspal',
     canonical_status:'canonical',
     confidence:'account_authenticated_export',
-    source_file:null,
+    source_file:archive?'MyFitnessPal · Exportação oficial de dados':null,
     source_payload:{
       entry_method:MFP_WATER_ENTRY_METHOD,
       export_schema:MFP_WATER_EXPORT_SCHEMA,
       export_version:MFP_WATER_EXPORT_VERSION,
       export_period_from:parsed.period.from,
-      export_period_to:parsed.period.to
+      export_period_to:parsed.period.to,
+      ...(archive?{export_method:parsed.method,archive_sha256:parsed.archive_sha256,original_row:row.source_row,original_unit:'ml'}:{})
     }
   }));
 }

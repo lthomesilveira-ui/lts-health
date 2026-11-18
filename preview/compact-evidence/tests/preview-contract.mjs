@@ -78,7 +78,7 @@ const manifest={
     "src/documented-nutrition-plan.js": "a7a4fa51a6d982cc9edad5f566466a35d2ace003da291c4337cbcca7c8411d46",
     "src/documented-training-plan.js": "6d0d1415c129327585047b8e8c3477ddcec178fdb8c4c9ad43a25524a56d3bf5",
     "src/documented-water-reference.js": "a5e46672d5050cba9746fadbb9821ba8978a78fc69cf9b8822652603866fe213",
-    "src/entry.js": "ecb2ae8192b6842e770fd472acb11280c7f5851be5385250a9dbc833547a636c",
+    "src/entry.js": "fc7cc055f729a2ccc2a6f7b5abdc9acf77a27ed059535a86ee7acc8d9099bbec",
     "src/evidence-insights-view.js": "b2dababf8c8ae008af62c3f49362e9e2f62173653eb566dec5504c28a58a6141",
     "src/evidence-insights.js": "46fd88e8c3d7be0ab6de361201581d5a6cab1c4ee785ebf3f53f2bac9387f1a3",
     "src/evidence-priority.js": "a35801fda348552067a5e334643b364ad75304db92c72494325f2c83b275a47a",
@@ -114,7 +114,7 @@ const manifest={
     "src/home-reference-experience.js": "8dc96430d36d70fc5a80e8c33d8baca658fb1db163e0eed3a97070a773458427",
     "src/home-reference.js": "f23182afbbdc87dd2861a3171951cae2fa5febe8f1affd2aa2df9ae987f78267",
     "src/home-useful-content.js": "2be13d47f2b8beab91347fc47588a50f4df6fdc4c19f8615dae861b9d440062e",
-    "src/water-source-review.js": "93919cafb6610aa9d8f6ea64523ae975a495dc8acbfb4511d28e62b0a5223676",
+    "src/water-source-review.js": "ca863ff8f05cdae2040813fd2202a58e89594b3770bf57ddf95fb7e19486ab21",
     "src/hydration.js": "9664ed7df262e117e17255e621bfa178b35005d24b579f2b0c984c5031a9e391",
     "src/integrated-analysis.js": "3a32d46636af4853d20cf02a6692d1751c3351d9446cbf6cec7d405afc677ea4",
     "src/integrated-review-view.js": "d77bc1c336601b272d15ca432dd630e9281abcd6d41907f6faaaf491d7a458fb",
@@ -127,12 +127,12 @@ const manifest={
     "src/main.js": "7b7a6e20a231cf7d48422c9e603bf1f3bd3845c5302cd3b12acbf8e83ad5dbf1",
     "src/progress-photos.js": "a634ba17cab35b6581de797aab2569367c8f745b6b56285f1f1355ccedafaca3",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
-    "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
+    "src/mfp-water-transfer.js": "582373491971cc31de92783596265808625f746dd828142ef78222cdabaf9d82",
     "src/mobile-study.js": "110f7b52b14bf6c2a893fd953bdb84f3f59bb1f7af3eaac6008efd1065c1529b",
     "src/nutrition-archive.js": "3e9cb8ca446b34bb206543f010b54c1164b8bdff1d929f073f2dfa342499c34a",
     "src/nutrition-plan-comparison.js": "ec7ae5bbe82c4425001b7ae34e8b64a290d7b0311d87e04e4dee0ac22505efd8",
     "src/nutrition-plan-view.js": "e7a68a59c374215734ff4f3be79d3f91d70dc814fe3a5215a3d70fbf78a025cc",
-    "src/nutrition-product.js": "db54b59632fdfb94a0e9d840cfdd7318a2f1e29be435add7e68203f2669e819b",
+    "src/nutrition-product.js": "0bce5175e1b34f5efbb6e2d2e05bbb9c4cc89cb60199e185bb02a02c4b38d15c",
     "src/nutrition-screen.js": "25efdbf671db9358d6fbec292ae1fd6580869baf8731b4c0b3be634019434aba",
     "src/nutrition-source-review.js": "47709c72d0fb86d6391241d2c0677492dd1d657c80f71c7f2b4f693733bc865b",
     "src/personal-goals.js": "8451a8c46108fb01124e1774958f4319498a46b8dc991279bd49f381c03b6d3f",
@@ -159,7 +159,7 @@ const manifest={
     "src/training-load-qualifier.js": "f3024be1f935a1b2b18d3f02d160a210ceefe2466af8b7ac2a97dd08cf23a9a8",
     "src/training-plan-view.js": "2b859001112a578207586c83d64594431f29b4c8981d0df49bf3ae2954fa6b63",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
-    "src/training-reference-v2.js": "495405f449d1adbdf4c4573d744a9371ca80ee01c86efa03108aa5bf5a0804b4",
+    "src/training-reference-v2.js": "93a5886158f17b3494d91c14b2b184771d647cd5ee7ad01266b09d2bb1899a59",
     "src/training-screen.js": "255481f1cfc2439d091bc7e0b138259206f1920804b8fcf795c53d90a229c759",
     "src/training-session-summary.js": "48bd4cad251ec9d2ea5b4d20f4fda79496a8874da1128f53ba246a1516e4bd43",
     "src/training-session-visuals.js": "c5818d875368342aeb0aa36d5cf80f0647d14d916feb4419400f484fa918399a",
@@ -171,7 +171,7 @@ const manifest={
     "src/writes.js": "b2150072e1a5cfb1ff45fb9f5721969e1ff00ddad353a58351d061aee9fc9c09",
     "styles.css": "90ca5a32254ba77ebb7394dffc85254f1790b7a70d6071c5772cf5b60336a274",
     "today.css": "c52c17b8471960e744307201f228dd3fcc6e3ed58819489add627a349f1fd21d",
-    "training-reference-v2.css": "18e0738372f0d7443e8a6fc7db3a7c377710263845b1459f3623417c8ac8c7d1",
+    "training-reference-v2.css": "3784e86f48bc4964416ae55bd8c20ff29ef333b29183e49b22ab2fa64b65045a",
     "training-reference.css": "4336e64042148a3ea94353dc3f98d3e5010930f14635d90158c480a440c6df10",
     "training.css": "123b48543b6e97893371bba86c15784644fad7096da4e4a2a1d38a99d72970ce",
     "ux-coherence.css": "5f51f49e3d9312c54523257544daa86769ee093f31a35c349aefb73b0abbe6f7",
@@ -198,7 +198,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.147/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.149/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261112.133'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);
