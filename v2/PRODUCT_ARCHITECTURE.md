@@ -1,3 +1,7 @@
+## 17 November 2026 — Composition measurement details in .146
+
+The measurement detail shows the recorded basal estimate, preserves the precision of numeric ratios and levels, and identifies imported records in ordinary language. Public evidence covers synthetic rendering and the protected authenticated release. The source reconciliation is documented privately.
+
 ## 2026-11-17 — .145 verified: readable report sources
 
 Package060 is delivered after exact candidate, responsive synthetic browsers, public publication, a reused authenticated Cloud Browser session and protected actual-owner checks. The observed internal source label is now readable while original source identity and certainty remain intact. Queue:148 done,9 blocked_external,3 accepted_gap,2 superseded; zero ready/in_progress. The original dependencies remain open. Evidence:v2/releases/REPORT_SOURCE_COPY_20261117.md.
