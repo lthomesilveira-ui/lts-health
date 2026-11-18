@@ -51,77 +51,77 @@
     "reason": "A date and time were not selected."
   },
   "current_package": {
-    "id": "PKG-REPORT-SOURCE-COPY-060",
+    "id": "PKG-COMPOSITION-MEASUREMENTS-061",
     "status": "done",
-    "goal": "Show a human training-source label in the report while retaining the distinction between recorded workout and confirmed or unknown measurement origins.",
+    "goal": "Recover source-backed historical gaps and show documented composition measurements accurately.",
     "task_ids": [
-      "LTS-REPORT-SOURCE-COPY-001"
+      "LTS-COMPOSITION-DOCUMENT-RECOVERY-001",
+      "LTS-COMPOSITION-MEASUREMENT-DISPLAY-001"
     ],
-    "public_build": "health-integrated-20261117.145",
+    "public_build": "health-integrated-20261117.146",
     "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": false,
+    "real_source_observations_changed": true,
     "started_on": "2026-11-17",
+    "completed_on": "2026-11-17",
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
     "pending_gates": [],
-    "evidence_document": "v2/releases/REPORT_SOURCE_COPY_20261117.md",
+    "evidence_document": "v2/releases/COMPOSITION_MEASUREMENT_DETAIL_20261117.md",
     "evidence": [
-      "v2/releases/REPORT_SOURCE_COPY_20261117.md",
-      "Authenticated.144 report inspection reproduced a primary training source label containing user_chat and the internal telemetry marker. Original record values and source identity remain intact.",
-      "The actual report renderer and source-label helper passed synthetic regression checks for unknown/confirmed session origins, unchanged stored source/status/duration and exact clinical text. Candidate browser and publication checks remain pending.",
-      "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
-      "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
-      "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
-      "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
-      "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
-      "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
-    ],
-    "completed_on": "2026-11-17"
+      "A separate private reconciliation filled documented gaps where an existing measurement had an explicit source link. The source, field-level comparison and readback are retained in the private audit.",
+      "PR567 candidate c0bddf7cda038d685e9b16a2f699487ecf4b6573 passed all 19 workflows. Its tested tree bf55f15b8b0b5f1ac0730184eaa468de94a64c5a was preserved by merge bf3f2674117f67d676f250de42a0668ff710be47.",
+      "All 22 applicable publication workflows passed. The deployment, Pages checks and protected authenticated browser run completed. Public runtime assets matched the tested files.",
+      "Synthetic history workflow 44215784563 exercised the measurement detail at mobile and desktop sizes. The responsive screenshots and the actual field assertions were verified.",
+      "The existing authenticated browser session opened the published historical details and verified the displayed precision, units and record source wording.",
+      "The first integrated startup check timed out waiting for the simulated delayed-load control. The individual job passed on the same published commit on its second attempt. Both results are retained.",
+      "The independent host training browser job passed on attempt 2. Its 1 earlier dependency-installation timeout(s) are retained separately from completed browser assertions."
+    ]
   },
   "last_verified_release": {
-    "build_id": "health-integrated-20261117.145",
+    "build_id": "health-integrated-20261117.146",
     "published_on": "2026-11-17",
-    "release_kind": "report_source_presentation",
-    "main_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
-    "runtime_promotion_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
-    "candidate_commit": "68e02fa79b5b288521b8cdff4a1936e133a8176c",
-    "tested_tree": "13367f086568052ee1ce4c7e7fd69fffacbabadd",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#analise",
-    "manual_exact_public_status": "existing_authenticated_session_verified_human_report_source_label",
-    "automated_runtime_and_responsive_status": "Exact candidate, Chromium/WebKit source and session journeys, public publication and protected actual-owner checks passed.",
+    "release_kind": "composition_measurement_presentation",
+    "main_commit": "bf3f2674117f67d676f250de42a0668ff710be47",
+    "runtime_promotion_commit": "bf3f2674117f67d676f250de42a0668ff710be47",
+    "candidate_commit": "c0bddf7cda038d685e9b16a2f699487ecf4b6573",
+    "tested_tree": "bf55f15b8b0b5f1ac0730184eaa468de94a64c5a",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#bio",
+    "manual_exact_public_status": "authenticated_historical_measurement_details_verified",
+    "automated_runtime_and_responsive_status": "Responsive history, isolated preview, public deployment and protected authenticated checks passed.",
     "ci_summary": {
-      "candidate_success": 21,
-      "candidate_total": 22,
-      "candidate_host_setup_cancellations_retained": 2,
-      "publication_success": 24,
-      "publication_total": 24,
-      "deploy_run": 44206349625,
+      "candidate_success": 19,
+      "candidate_total": 19,
+      "publication_success": 22,
+      "publication_total": 22,
+      "deploy_run": 44217320994,
       "deploy_status": "success",
-      "actual_auth_run": 44206349360,
+      "actual_auth_run": 44217320789,
       "actual_auth_status": "success",
-      "host_assertions_job": 134473152297,
-      "host_assertions_status": "success",
-      "qa_preparation_candidate": "04efc596372a0f79a1a22df0b81b8a6c36a7b455",
-      "qa_preparation_status": "closed_without_merge"
+      "candidate_history_run": 44215784563,
+      "candidate_history_status": "success",
+      "pages_smoke_runs": [
+        44217388057,
+        44217388064
+      ]
     },
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": false,
+    "real_source_observations_changed": true,
     "server_runtime_changed": false,
     "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
     "preserved_base_build": "health-integrated-20261112.133",
     "evidence": [
-      "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
-      "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
-      "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
-      "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
-      "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
-      "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
+      "PR567 candidate c0bddf7cda038d685e9b16a2f699487ecf4b6573 passed all 19 workflows. Its tested tree bf55f15b8b0b5f1ac0730184eaa468de94a64c5a was preserved by merge bf3f2674117f67d676f250de42a0668ff710be47.",
+      "All 22 applicable publication workflows passed. The deployment, Pages checks and protected authenticated browser run completed. Public runtime assets matched the tested files.",
+      "Synthetic history workflow 44215784563 exercised the measurement detail at mobile and desktop sizes. The responsive screenshots and the actual field assertions were verified.",
+      "The existing authenticated browser session opened the published historical details and verified the displayed precision, units and record source wording.",
+      "The first integrated startup check timed out waiting for the simulated delayed-load control. The individual job passed on the same published commit on its second attempt. Both results are retained.",
+      "The independent host training browser job passed on attempt 2. Its 1 earlier dependency-installation timeout(s) are retained separately from completed browser assertions."
     ]
   },
   "tasks": [
@@ -1088,10 +1088,11 @@
         "Missing measurements are not reconstructed from targets or nearby dates."
       ],
       "evidence": [
-        "v2/DATA_AUDIT.md"
+        "v2/DATA_AUDIT.md",
+        "A separate private reconciliation filled documented gaps where an existing measurement had an explicit source link. The source, field-level comparison and readback are retained in the private audit."
       ],
-      "next_action": "Create an import task when a dated source is supplied.",
-      "blocker": "No additional dated source is currently available."
+      "next_action": "Recover additional fields only when another dated source can be linked to the corresponding assessment.",
+      "blocker": "Other missing historical measurements still require a dated, attributable original."
     },
     {
       "id": "LTS-AUTH-SECURITY-001",
@@ -4351,6 +4352,46 @@
       ],
       "next_action": "Resume only on new evidence or a concrete defect; the original independent source and owner-acceptance dependencies remain open.",
       "blocker": null
+    },
+    {
+      "id": "LTS-COMPOSITION-DOCUMENT-RECOVERY-001",
+      "area": "composition",
+      "priority": "P2",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Recover documented measurements in existing historical assessments.",
+      "acceptance": [
+        "Require a dated original, an explicit link to each existing assessment, and an independent transcription check.",
+        "Fill empty fields only and verify the remaining row contents and provenance after the transaction."
+      ],
+      "evidence": [
+        "A separate private reconciliation filled documented gaps where an existing measurement had an explicit source link. The source, field-level comparison and readback are retained in the private audit."
+      ],
+      "next_action": "Reopen only when another attributable original supplies missing observations.",
+      "blocker": null
+    },
+    {
+      "id": "LTS-COMPOSITION-MEASUREMENT-DISPLAY-001",
+      "area": "composition",
+      "priority": "P1",
+      "status": "done",
+      "owner": "Codex",
+      "summary": "Display recorded composition values at their documented precision in measurement details.",
+      "acceptance": [
+        "Display the basal estimate with its recorded unit and preserve ratio and level precision.",
+        "Keep missing values explicit and retain history navigation and source identity."
+      ],
+      "evidence": [
+        "v2/releases/COMPOSITION_MEASUREMENT_DETAIL_20261117.md",
+        "PR567 candidate c0bddf7cda038d685e9b16a2f699487ecf4b6573 passed all 19 workflows. Its tested tree bf55f15b8b0b5f1ac0730184eaa468de94a64c5a was preserved by merge bf3f2674117f67d676f250de42a0668ff710be47.",
+        "All 22 applicable publication workflows passed. The deployment, Pages checks and protected authenticated browser run completed. Public runtime assets matched the tested files.",
+        "Synthetic history workflow 44215784563 exercised the measurement detail at mobile and desktop sizes. The responsive screenshots and the actual field assertions were verified.",
+        "The existing authenticated browser session opened the published historical details and verified the displayed precision, units and record source wording.",
+        "The first integrated startup check timed out waiting for the simulated delayed-load control. The individual job passed on the same published commit on its second attempt. Both results are retained.",
+        "The independent host training browser job passed on attempt 2. Its 1 earlier dependency-installation timeout(s) are retained separately from completed browser assertions."
+      ],
+      "next_action": "Resume on new evidence or a specific observed defect.",
+      "blocker": null
     }
   ],
   "package_history": [
@@ -6736,48 +6777,81 @@
       ],
       "blocker": null,
       "completed_on": "2026-11-17"
+    },
+    {
+      "id": "PKG-REPORT-SOURCE-COPY-060",
+      "status": "done",
+      "goal": "Show a human training-source label in the report while retaining the distinction between recorded workout and confirmed or unknown measurement origins.",
+      "task_ids": [
+        "LTS-REPORT-SOURCE-COPY-001"
+      ],
+      "public_build": "health-integrated-20261117.145",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "started_on": "2026-11-17",
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "pending_gates": [],
+      "evidence_document": "v2/releases/REPORT_SOURCE_COPY_20261117.md",
+      "evidence": [
+        "v2/releases/REPORT_SOURCE_COPY_20261117.md",
+        "Authenticated.144 report inspection reproduced a primary training source label containing user_chat and the internal telemetry marker. Original record values and source identity remain intact.",
+        "The actual report renderer and source-label helper passed synthetic regression checks for unknown/confirmed session origins, unchanged stored source/status/duration and exact clinical text. Candidate browser and publication checks remain pending.",
+        "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
+        "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
+        "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
+        "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
+        "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
+        "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
+      ],
+      "completed_on": "2026-11-17"
     }
   ],
   "latest_published_release": {
-    "build_id": "health-integrated-20261117.145",
+    "build_id": "health-integrated-20261117.146",
     "published_on": "2026-11-17",
-    "release_kind": "report_source_presentation",
-    "main_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
-    "runtime_promotion_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
-    "candidate_commit": "68e02fa79b5b288521b8cdff4a1936e133a8176c",
-    "tested_tree": "13367f086568052ee1ce4c7e7fd69fffacbabadd",
-    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#analise",
-    "manual_exact_public_status": "existing_authenticated_session_verified_human_report_source_label",
-    "automated_runtime_and_responsive_status": "Exact candidate, Chromium/WebKit source and session journeys, public publication and protected actual-owner checks passed.",
+    "release_kind": "composition_measurement_presentation",
+    "main_commit": "bf3f2674117f67d676f250de42a0668ff710be47",
+    "runtime_promotion_commit": "bf3f2674117f67d676f250de42a0668ff710be47",
+    "candidate_commit": "c0bddf7cda038d685e9b16a2f699487ecf4b6573",
+    "tested_tree": "bf55f15b8b0b5f1ac0730184eaa468de94a64c5a",
+    "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#bio",
+    "manual_exact_public_status": "authenticated_historical_measurement_details_verified",
+    "automated_runtime_and_responsive_status": "Responsive history, isolated preview, public deployment and protected authenticated checks passed.",
     "ci_summary": {
-      "candidate_success": 21,
-      "candidate_total": 22,
-      "candidate_host_setup_cancellations_retained": 2,
-      "publication_success": 24,
-      "publication_total": 24,
-      "deploy_run": 44206349625,
+      "candidate_success": 19,
+      "candidate_total": 19,
+      "publication_success": 22,
+      "publication_total": 22,
+      "deploy_run": 44217320994,
       "deploy_status": "success",
-      "actual_auth_run": 44206349360,
+      "actual_auth_run": 44217320789,
       "actual_auth_status": "success",
-      "host_assertions_job": 134473152297,
-      "host_assertions_status": "success",
-      "qa_preparation_candidate": "04efc596372a0f79a1a22df0b81b8a6c36a7b455",
-      "qa_preparation_status": "closed_without_merge"
+      "candidate_history_run": 44215784563,
+      "candidate_history_status": "success",
+      "pages_smoke_runs": [
+        44217388057,
+        44217388064
+      ]
     },
     "physical_device_tested": false,
     "owner_acceptance_granted": false,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": false,
+    "real_source_observations_changed": true,
     "server_runtime_changed": false,
     "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
     "preserved_base_build": "health-integrated-20261112.133",
     "evidence": [
-      "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
-      "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
-      "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
-      "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
-      "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
-      "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
+      "PR567 candidate c0bddf7cda038d685e9b16a2f699487ecf4b6573 passed all 19 workflows. Its tested tree bf55f15b8b0b5f1ac0730184eaa468de94a64c5a was preserved by merge bf3f2674117f67d676f250de42a0668ff710be47.",
+      "All 22 applicable publication workflows passed. The deployment, Pages checks and protected authenticated browser run completed. Public runtime assets matched the tested files.",
+      "Synthetic history workflow 44215784563 exercised the measurement detail at mobile and desktop sizes. The responsive screenshots and the actual field assertions were verified.",
+      "The existing authenticated browser session opened the published historical details and verified the displayed precision, units and record source wording.",
+      "The first integrated startup check timed out waiting for the simulated delayed-load control. The individual job passed on the same published commit on its second attempt. Both results are retained.",
+      "The independent host training browser job passed on attempt 2. Its 1 earlier dependency-installation timeout(s) are retained separately from completed browser assertions."
     ]
   },
   "release_history": [
@@ -12037,32 +12111,75 @@
         "Normal merge4f2a50a9eaf49dc4586a2fedef12963c5e45ea5c preserves the tested tree. Deploy44199845541, Pages44199934982/44199935015 and protected actual-owner44199845488 passed. The two one-time water comparison steps were skipped.",
         "The actual Cloud Browser reused its existing authenticated session and opened exact.144 with the report rendered, startup/login hidden and no horizontal overflow. Public index and three relevant assets match the tested bytes. No physical iPhone or owner/global acceptance is claimed."
       ]
+    },
+    {
+      "build_id": "health-integrated-20261117.145",
+      "published_on": "2026-11-17",
+      "release_kind": "report_source_presentation",
+      "main_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
+      "runtime_promotion_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
+      "candidate_commit": "68e02fa79b5b288521b8cdff4a1936e133a8176c",
+      "tested_tree": "13367f086568052ee1ce4c7e7fd69fffacbabadd",
+      "public_url": "https://lthomesilveira-ui.github.io/lts-health/v2/#analise",
+      "manual_exact_public_status": "existing_authenticated_session_verified_human_report_source_label",
+      "automated_runtime_and_responsive_status": "Exact candidate, Chromium/WebKit source and session journeys, public publication and protected actual-owner checks passed.",
+      "ci_summary": {
+        "candidate_success": 21,
+        "candidate_total": 22,
+        "candidate_host_setup_cancellations_retained": 2,
+        "publication_success": 24,
+        "publication_total": 24,
+        "deploy_run": 44206349625,
+        "deploy_status": "success",
+        "actual_auth_run": 44206349360,
+        "actual_auth_status": "success",
+        "host_assertions_job": 134473152297,
+        "host_assertions_status": "success",
+        "qa_preparation_candidate": "04efc596372a0f79a1a22df0b81b8a6c36a7b455",
+        "qa_preparation_status": "closed_without_merge"
+      },
+      "physical_device_tested": false,
+      "owner_acceptance_granted": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "server_runtime_changed": false,
+      "preserved_base_commit": "91b9638aee56c13dff90f2e9b75a3c1891be4e0d",
+      "preserved_base_build": "health-integrated-20261112.133",
+      "evidence": [
+        "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
+        "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
+        "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
+        "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
+        "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
+        "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
+      ]
     }
   ],
   "last_continuity_review": {
     "reviewed_on": "2026-11-17",
-    "source_main_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
-    "runtime_build": "health-integrated-20261117.145",
+    "source_main_commit": "bf3f2674117f67d676f250de42a0668ff710be47",
+    "runtime_build": "health-integrated-20261117.146",
     "candidate_build": null,
     "runtime_changed": true,
     "frontend_runtime_changed": true,
     "server_runtime_changed": false,
     "clinical_runtime_changed": false,
-    "real_source_observations_changed": false,
+    "real_source_observations_changed": true,
     "status_counts": {
-      "done": 148,
+      "done": 150,
       "blocked_external": 9,
       "superseded": 2,
       "accepted_gap": 3
     },
     "executable_task_count": 0,
     "evidence": [
-      "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
-      "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
-      "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
-      "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
-      "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
-      "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
+      "A separate private reconciliation filled documented gaps where an existing measurement had an explicit source link. The source, field-level comparison and readback are retained in the private audit.",
+      "PR567 candidate c0bddf7cda038d685e9b16a2f699487ecf4b6573 passed all 19 workflows. Its tested tree bf55f15b8b0b5f1ac0730184eaa468de94a64c5a was preserved by merge bf3f2674117f67d676f250de42a0668ff710be47.",
+      "All 22 applicable publication workflows passed. The deployment, Pages checks and protected authenticated browser run completed. Public runtime assets matched the tested files.",
+      "Synthetic history workflow 44215784563 exercised the measurement detail at mobile and desktop sizes. The responsive screenshots and the actual field assertions were verified.",
+      "The existing authenticated browser session opened the published historical details and verified the displayed precision, units and record source wording.",
+      "The first integrated startup check timed out waiting for the simulated delayed-load control. The individual job passed on the same published commit on its second attempt. Both results are retained.",
+      "The independent host training browser job passed on attempt 2. Its 1 earlier dependency-installation timeout(s) are retained separately from completed browser assertions."
     ],
     "open_dependency_policy": "Work outside hydration proceeds independently. Historical source, exact proposal, coverage, lineage, original export diagnostics and physical/global acceptance remain open until their own evidence exists."
   },
@@ -13908,6 +14025,33 @@
         "v2/releases/REPORT_SOURCE_COPY_20261117.md",
         "Authenticated.144 report inspection reproduced a primary training source label containing user_chat and the internal telemetry marker. Original record values and source identity remain intact.",
         "The actual report renderer and source-label helper passed synthetic regression checks for unknown/confirmed session origins, unchanged stored source/status/duration and exact clinical text. Candidate browser and publication checks remain pending."
+      ],
+      "open_dependency_policy": "Work outside hydration proceeds independently. Historical source, exact proposal, coverage, lineage, original export diagnostics and physical/global acceptance remain open until their own evidence exists."
+    },
+    {
+      "reviewed_on": "2026-11-17",
+      "source_main_commit": "18106d0b9de1fa48cb93c6e92d82f430802f0078",
+      "runtime_build": "health-integrated-20261117.145",
+      "candidate_build": null,
+      "runtime_changed": true,
+      "frontend_runtime_changed": true,
+      "server_runtime_changed": false,
+      "clinical_runtime_changed": false,
+      "real_source_observations_changed": false,
+      "status_counts": {
+        "done": 148,
+        "blocked_external": 9,
+        "superseded": 2,
+        "accepted_gap": 3
+      },
+      "executable_task_count": 0,
+      "evidence": [
+        "Initial PR564 candidate ab7161aa1ba4815e276999afab5adc241771f655 failed one exact UI-text assertion because it expected the retired telemetry wording. Commit 68e02fa79b5b288521b8cdff4a1936e133a8176c updated only that literal expectation; source identity, certainty, canonical-session, failure and zero-write checks were preserved. Its 21 application workflows passed. The additional host setup hit its ten-minute download limit in jobs134465387994 and134470739821 before application assertions; neither attempt is counted as passed.",
+        "Exact source candidate artifacts14382054262 (SHA2564cea8c7c7b3346ca41b0d599e5cec67db6aef6da33785f8b4e8642423b39a280) and14383186219 (SHA256f69c2583e3987c6ada5f0dffa96124dd94159c46a78ac30bb686fa0149fd99c9) were byte-verified. Seventeen language scenarios and eight Chromium/WebKit training scenarios at320/393/1180/1440px passed with zero writes. Synthetic mobile/desktop report and training images were actually inspected.",
+        "Normal PR564 merge18106d0b9de1fa48cb93c6e92d82f430802f0078 preserved candidate tree13367f086568052ee1ce4c7e7fd69fffacbabadd. All24 publication workflows passed, including Deploy44206349625, public Pages44206986379, homologation44206986406 and protected actual-owner44206349360. In the publication, host job134473152297 actually executed its source/filter/full-session assertions and passed; the candidate setup cancellations remain retained separately.",
+        "The authenticated owner workflow passed the public app, full desktop/mobile histories and Labs visual capture. Its two expressly activated water-channel steps were skipped. Encrypted artifact14384820413 SHA2561d592f751bd129cbbe46977032306d82083516e26153f136318f96ffab0785cb remains private and was not downloaded or shown as a public image.",
+        "The exact public index SHA256096be9c506c8609affb8728b250e01cd21e38c7f506b53a809fc0df047079d97 and the source-display, integrated-review-view and training-reference-v2 modules matched the tested bytes. The existing Cloud Browser session opened exact.145, showed the human source label with unknown session origin retained, hid the internal source/telemetry marker and had no horizontal overflow (1363px viewport,1348px content). The actual report was visually inspected; no new login, physical iPhone test or global owner acceptance was requested or inferred.",
+        "PR565 evaluated an optional Ubuntu archive URL change after two candidate setup cancellations. The original .145 publication subsequently passed every24 workflow, including the actual host assertions. The experiment's container repetition timed out in one synthetic WebKit1440 deliberate-series-failure scenario, and its separate host setup was still pending when it was closed without merge. Artifact14384991560 SHA2561a0ebe141602e77b9579f438a995b12472b9926392bb0b0096ec605d49429688 was verified and its synthetic diagnostic/image inspected. No cause or reliable improvement was established; the branch/evidence were preserved and no production workflow changed. This experiment is not counted as an approval."
       ],
       "open_dependency_policy": "Work outside hydration proceeds independently. Historical source, exact proposal, coverage, lineage, original export diagnostics and physical/global acceptance remain open until their own evidence exists."
     }
