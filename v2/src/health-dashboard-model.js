@@ -2,6 +2,7 @@ import {dailyCoverageAudit} from './health-data-quality.js';
 import {homePeriodSnapshot} from './home-period-model.js';
 import {nutritionSourceReview} from './nutrition-source-review.js';
 import {stepCountReview,stepEvidence} from './steps-evidence.js';
+import {reviewedWaterConflictDates} from './water-source-review.js';
 
 // Pure presentation model. No ingestion, database, browser or global UI state.
 const DAY=86400000;
@@ -91,6 +92,7 @@ function partialFlag(row){
 }
 function observationsFor(definition,data,status,today){
   const observations=[];let invalidRows=0,unknownRows=0;
+  const waterConflicts=definition.key==='water'&&ready(status,'sourceMetrics')?reviewedWaterConflictDates(data.sourceMetrics):null;
   for(const domain of definition.domains){
     if(!ready(status,domain))continue;
     for(const row of data[domain]||[]){
@@ -116,7 +118,7 @@ function observationsFor(definition,data,status,today){
       const knownPartial=partialFlag(row)||Boolean(review?.partial);
       observations.push({date,value,key,label,domain,status:statusName,unit,displayUnit:definition.unit,sourceFamily:family,
         hasReceivedValue:raw!=null&&!(typeof raw==='string'&&!raw.trim()),receivedValue:steps?.receivedValue??value,receivedRaw:steps?.receivedRaw??value,stepReviewReason:steps?.reason||null,receivedAt:row.updated_at||null,
-        unresolvedOverlap:definition.key==='steps'&&label.includes('|'),partial:knownPartial||date===today,knownPartial,excludeFromClosedMeans:knownPartial||Boolean(review?.excludeFromClosedMeans),
+        unresolvedOverlap:definition.key==='steps'&&label.includes('|'),partial:knownPartial||date===today,knownPartial,excludeFromClosedMeans:knownPartial||Boolean(review?.excludeFromClosedMeans)||Boolean(waterConflicts?.has(date)),
         reviewVerified:Boolean(review?.verified),reviewInvalid:review?.state==='review_invalid',exportedAt:review?.exportedAt||null});
     }
   }

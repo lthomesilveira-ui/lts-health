@@ -62,8 +62,45 @@ def build_review(archive):
                     raise ValueError("invalid_hydration_interval") from exc
                 positives[local.date().isoformat()].append((row, name, line, start, end, int(amount), local))
 
+    def evidence_record(observation, date, scope):
+        row, member, line, start, end, amount, local = observation
+        identity = json.dumps([row[k] for k in HEADERS], separators=(",", ":"), ensure_ascii=False)
+        record_hash = hashlib.sha256(identity.encode()).hexdigest()
+        daily = scope != "event"
+        canonical = scope == "canonical"
+        namespace = {"canonical": "water", "source": "water-source", "event": "water-event"}[scope]
+        return {
+            "source_record_id": f"google_health_takeout:{namespace}:{record_hash}",
+            "metric_date": date,
+            "metric_type": {"canonical": "dietary_water_ml", "source": "dietary_water_source_total_ml",
+                            "event": "dietary_water_source_event_ml"}[scope],
+            "value": amount, "unit": "mL",
+            "source_name": "MyFitnessPal · Google Health" if daily else "Google Health App",
+            "source_family": "google_health_takeout", "canonical_status": "canonical" if canonical else "held",
+            "confidence": "authenticated_google_takeout", "source_file": archive.name,
+            "source_payload": {
+                "entry_method": "google_health_takeout_water_v1" if canonical else "google_health_takeout_water_review_v1",
+                "export_version": 1, "archive_sha256": digest, "archive_member": member, "csv_line": line,
+                "original_start": row["start time"], "original_end": row["end time"],
+                "original_amount": row["amount consumed"], "original_unit": "MILLILITER",
+                "original_source": row["data source"], "aggregation": "day" if daily else "event",
+                "local_date": date, "timezone": "America/Sao_Paulo",
+                "scope": {"canonical": "one_unambiguous_positive_daily_source_log",
+                          "source": "single_daily_total_for_named_source", "event": "individual_named_source_event"}[scope],
+            },
+        }
+
     records = []
+    source_review = []
     for date, observations in sorted(positives.items()):
+        producer_rows = [item for item in observations if item[0]["data source"] == MFP]
+        if len(producer_rows) == 1:
+            item = producer_rows[0]
+            if item[6].time() == datetime.min.time() and item[4] - item[3] == timedelta(minutes=1):
+                source_review.append(evidence_record(item, date, "source"))
+        for item in observations:
+            if item[0]["data source"] == "Google Health App" and item[4] - item[3] == timedelta(seconds=1):
+                source_review.append(evidence_record(item, date, "event"))
         if len(observations) != 1:
             exclusions["ambiguous_day"] += len(observations)
             continue
@@ -74,27 +111,10 @@ def build_review(archive):
         if (local.hour, local.minute, local.second, local.microsecond) != (0, 0, 0, 0) or end - start != timedelta(minutes=1):
             exclusions["unverified_daily_interval"] += 1
             continue
-        # Stable across export archive names and CSV ordering; never use a mutable line as identity.
-        identity = json.dumps([row[k] for k in HEADERS], separators=(",", ":"), ensure_ascii=False)
-        record_hash = hashlib.sha256(identity.encode()).hexdigest()
-        records.append({
-            "source_record_id": "google_health_takeout:water:" + record_hash,
-            "metric_date": date, "metric_type": "dietary_water_ml", "value": amount, "unit": "mL",
-            "source_name": "MyFitnessPal · Google Health", "source_family": "google_health_takeout",
-            "canonical_status": "canonical", "confidence": "authenticated_google_takeout",
-            "source_file": archive.name,
-            "source_payload": {
-                "entry_method": "google_health_takeout_water_v1", "export_version": 1,
-                "archive_sha256": digest, "archive_member": member, "csv_line": line,
-                "original_start": row["start time"], "original_end": row["end time"],
-                "original_amount": row["amount consumed"], "original_unit": "MILLILITER",
-                "original_source": row["data source"], "aggregation": "day",
-                "local_date": date, "timezone": "America/Sao_Paulo",
-                "scope": "one_unambiguous_positive_daily_source_log",
-            },
-        })
+        records.append(evidence_record(observations[0], date, "canonical"))
     return {"archive_sha256": digest, "hydration_rows": row_count,
-            "eligible_days": len(records), "excluded": dict(exclusions), "records": records}
+            "eligible_days": len(records), "excluded": dict(exclusions), "records": records,
+            "source_review": source_review}
 
 
 if __name__ == "__main__":

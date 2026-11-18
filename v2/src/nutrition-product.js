@@ -5,9 +5,26 @@ import {nutritionPlanComparison} from './nutrition-plan-comparison.js';
 import {renderNutritionPlanComparison} from './nutrition-plan-view.js';
 import {nutritionArchiveModel,nutritionArchiveSourceLabel} from './nutrition-archive.js';
 import {sourceDisplayLabel,sourceDisplayNote} from './source-display.js';
+import {waterSourceReview} from './water-source-review.js';
 
 const v=(n,unit)=>num(n)==null?'Não informado':`${fmtNum(n,0)} ${unit}`;
 const originalValue=(value,unit)=>value==null||!['string','number'].includes(typeof value)||String(value).trim()===''?'Não informado':`${esc(String(value))} ${esc(unit)}`;
+
+function waterHistoryBySource(data, status) {
+  if (status.sourceMetrics !== 'ready') return '';
+  const rows = waterSourceReview(data.sourceMetrics);
+  if (!rows.length) return '';
+  const quantities = values => values.length ? values.map(value => fmtNum(value, 0)).join(' / ') : 'Sem registro';
+  const divergent = rows.filter(row => row.conflict);
+  const note = divergent.length
+    ? `Os totais de ${divergent.map(row => fmtDate(row.date)).join(', ')} diferem por origem. Esses dias ficam fora das médias de água.`
+    : 'Cada coluna preserva o valor recebido daquela origem.';
+  const lines = rows.map(row => {
+    const entries = row.events.map(amount => `<tr><td colspan="3">Lançamento do app Google em ${fmtDate(row.date)} · ${fmtNum(amount, 0)} mL</td></tr>`).join('');
+    return `<tr><th scope="row">${fmtDate(row.date)}${row.conflict ? '<small>Totais diferentes</small>' : ''}</th><td>${quantities(row.mfp)}</td><td>${quantities(row.iphone)}</td></tr>${entries}`;
+  }).join('');
+  return `<section class="ltsCockpitPanel" aria-label="Histórico de água por origem"><header><h2>Histórico de água por origem</h2></header><p>${note}</p><details data-disclosure="water-source-history"><summary>Conferir ${rows.length} ${rows.length === 1 ? 'dia' : 'dias'} com registro no arquivo Google</summary><div class="ltsEvolutionTableWrap"><table class="ltsEvolutionTable ltsWaterSourceTable"><caption>Totais diários em mL. Cada coluna tem uma origem e os valores podem ser parciais.</caption><thead><tr><th scope="col">Data</th><th scope="col">MyFitnessPal no Google</th><th scope="col">Recebido do iPhone</th></tr></thead><tbody>${lines}</tbody></table></div></details></section>`;
+}
 
 const archiveFields=[['calories_kcal','Energia','kcal'],['protein_g','Proteína','g'],['carbs_g','Carboidratos','g'],['fat_g','Gorduras','g'],['fiber_g','Fibra','g']];
 const monthLabel=date=>new Intl.DateTimeFormat('pt-BR',{month:'long',timeZone:'UTC'}).format(new Date(`${date}-01T12:00:00Z`));
@@ -41,5 +58,5 @@ export function renderProductNutrition(){
   const diary=renderArchiveDiary(archive,c.goals);
   const comparisons=c.evo.insights.nutrition.rows.filter(r=>r.comparable);
   const contrast=comparisons.length?`<section class="ltsCockpitPanel"><header><h2>Alimentação e dias de treino</h2></header><div class="ltsNutritionDiaryMetrics">${comparisons.map(r=>`<article><span>${esc(r.label)}</span><b>${v(r.withMean,r.unit)}</b><small>Nos dias com treino registrado</small><b>${v(r.withoutMean,r.unit)}</b><small>Nos dias sem treino registrado</small></article>`).join('')}</div><p>Mesma origem alimentar; ${esc(sourceDisplayLabel(n.source,n.sources))}. Comparações de dias encerrados, com ao menos 5 valores por grupo. Descrevem o registro; não provam efeito do treino nem adequação do plano.</p></section>`:'';
-  return `<section class="ltsHomeV2 ltsHomeReference ltsEvolutionHome ltsNutritionProduct"><div class="ltsCockpitWindow"><span>Janela de análise</span><div class="ltsHomePeriod" role="group" aria-label="Janela de análise">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Histórico']].map(([key,label])=>`<button data-period="${key}" aria-pressed="${period===key}">${label}</button>`).join('')}</div></div><header class="ltsCockpitHeading"><div><span class="ltsEvolutionEyebrow">ALIMENTAÇÃO E HIDRATAÇÃO</span><h1>Seu consumo.<br>O contexto do seu plano.</h1><p>Seu diário alimentar, consumo de água e referências do plano.</p></div></header>${nutritionPlan}<div class="ltsCockpitGrid nutrition">${nutritionPanel(c,{inlineDetails:true})}${waterPanel(c,{inlineDetails:true})}</div>${renderArchiveControls(archive)}<section id="nutritionArchiveDiary" class="ltsCockpitPanel ltsNutritionDiary"><header><h2>Diário alimentar selecionado</h2></header>${diary}</section>${contrast}${renderGoals()}<details class="ltsEvolutionDiagnostics"><summary>Sobre estes dados</summary><p>Diário usado nas médias: ${esc(sourceDisplayLabel(n.source,n.sources))}. Último diário: ${n.rows.length?fmtDate(n.rows.at(-1).date):'nenhum'}. Dias ausentes não representam consumo zero. Dias com totais repetidos ou conflitantes ficam fora das comparações.</p><p>A água mostra o consumo registrado em cada data. Uma atualização não confirma que a sincronização continuará automaticamente.</p><button data-route="dados">Conferir integrações ↗</button></details></section>`;
+  return `<section class="ltsHomeV2 ltsHomeReference ltsEvolutionHome ltsNutritionProduct"><div class="ltsCockpitWindow"><span>Janela de análise</span><div class="ltsHomePeriod" role="group" aria-label="Janela de análise">${[['30','30 dias'],['90','90 dias'],['365','1 ano'],['all','Histórico']].map(([key,label])=>`<button data-period="${key}" aria-pressed="${period===key}">${label}</button>`).join('')}</div></div><header class="ltsCockpitHeading"><div><span class="ltsEvolutionEyebrow">ALIMENTAÇÃO E HIDRATAÇÃO</span><h1>Seu consumo.<br>O contexto do seu plano.</h1><p>Seu diário alimentar, consumo de água e referências do plano.</p></div></header>${nutritionPlan}<div class="ltsCockpitGrid nutrition">${nutritionPanel(c,{inlineDetails:true})}${waterPanel(c,{inlineDetails:true})}</div>${waterHistoryBySource(state.data,state.domainStatus)}${renderArchiveControls(archive)}<section id="nutritionArchiveDiary" class="ltsCockpitPanel ltsNutritionDiary"><header><h2>Diário alimentar selecionado</h2></header>${diary}</section>${contrast}${renderGoals()}<details class="ltsEvolutionDiagnostics"><summary>Sobre estes dados</summary><p>Diário usado nas médias: ${esc(sourceDisplayLabel(n.source,n.sources))}. Último diário: ${n.rows.length?fmtDate(n.rows.at(-1).date):'nenhum'}. Dias ausentes não representam consumo zero. Dias com totais repetidos ou conflitantes ficam fora das comparações.</p><p>A água mostra o consumo registrado em cada data. Uma atualização não confirma que a sincronização continuará automaticamente.</p><button data-route="dados">Conferir integrações ↗</button></details></section>`;
 }
