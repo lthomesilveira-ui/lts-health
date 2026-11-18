@@ -13,6 +13,32 @@ assert.equal(validDay('2025-02-30'),null);assert.equal(validDay('2025-13-01'),nu
 const session={identifier:{id:'synthetic-session'},startTime:'2025-02-28T22:30:00',durationMillis:3600000,hrAvg:120,hrMax:160,timezoneOffsetMinutes:-180,deviceId:'synthetic-device',name:'Synthetic training',latitude:10,note:'private-unneeded'};
 const rows=await polarSessions({trainingSessions:[session]},'owner-a');assert.equal(rows.length,1);assert.equal(rows[0].duration_minutes,60);assert.equal(rows[0].workout_date,'2025-02-28');assert.equal(rows[0].source_payload.timezone_offset_minutes,-180);
 assert.doesNotMatch(JSON.stringify(rows),/private-unneeded|latitude|synthetic-device/);
+const basePayload = {schema: 'polar_accesslink_v4', timezone_offset_minutes: -180};
+assert.deepEqual(rows[0].source_payload, basePayload, 'absence leaves the original source projection intact');
+const detailedSession = {
+  ...session,
+  stopTime: '2025-03-01T00:04:05.125',
+  startTrigger: 'TRAINING_START_AUTOMATIC_TRAINING_DETECTION',
+  sport: {id: '0015', name: 'private-unneeded'},
+  calories: '87',
+  exercises: [{calories: 999, note: 'private-unneeded'}],
+};
+const [detailed] = await polarSessions({trainingSessions: [detailedSession]}, 'owner-a');
+assert.deepEqual(detailed.source_payload, {
+  ...basePayload, recorded_stop: detailedSession.stopTime, start_trigger: detailedSession.startTrigger,
+  sport_id: '0015', session_calories_kcal: 87,
+});
+assert.equal(detailed.duration_minutes, 60, 'pauses can make elapsed time differ from active duration');
+assert.equal(detailed.source_record_id, rows[0].source_record_id, 'new details reuse the original device record');
+assert.doesNotMatch(JSON.stringify(detailed), /private-unneeded|latitude|synthetic-device/);
+const [zero] = await polarSessions({trainingSessions: [{...session, stopTime: '2025-02-28T23:45:07-03:00', startTrigger: 'TRAINING_START_MANUAL', calories: 0}]}, 'owner-a');
+assert.equal(zero.source_payload.session_calories_kcal, 0);
+assert.equal(zero.source_payload.start_trigger, 'TRAINING_START_MANUAL');
+assert.equal(zero.source_payload.recorded_stop, '2025-02-28T23:45:07-03:00');
+for (const [stopTime, calories] of [['2025-02-30T00:01:02', null], ['2025-02-28T29:00:00', false], ['2025-02-28T22:00:00+15:00', -1], [null, 3.5], [undefined, ''], [undefined, '9007199254740992']]) {
+  const [invalid] = await polarSessions({trainingSessions: [{...detailedSession, stopTime, calories, startTrigger: 'unknown', sport: {id: 'private note'}}]}, 'owner-a');
+  assert.deepEqual(invalid.source_payload, basePayload, 'invalid details and nested exercise values cannot fill a session field');
+}
 assert.equal((await polarSessions({trainingSessions:[session,session]},'owner-a')).length,0,'ambiguous provider duplicates are not chosen');
 assert.equal((await polarSessions({trainingSessions:[{...session,startTime:'2025-02-30T10:00:00'}]},'owner-a')).length,0);
 assert.equal((await polarSessions({trainingSessions:[{...session,durationMillis:null,hrAvg:0}]},'owner-a'))[0].duration_minutes,null);

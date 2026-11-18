@@ -25,6 +25,30 @@ export function localDay(now=new Date()){
 const numeric=(v,max=Infinity)=>v!==null&&v!==undefined&&String(v).trim()!==''&&Number.isFinite(Number(v))&&Number(v)>=0&&Number(v)<=max?Number(v):null;
 const seconds=value=>/^\d+(?:\.\d{1,9})?s$/.test(String(value))?numeric(String(value).slice(0,-1),86400):null;
 const clean=(value,max=120)=>String(value||'').trim().slice(0,max);
+const trainingStartTriggers = new Set([
+  'TRAINING_START_TRIGGER_UNSPECIFIED',
+  'TRAINING_START_MANUAL',
+  'TRAINING_START_AUTOMATIC_TRAINING_DETECTION',
+]);
+const localTimestamp = /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-](?:(?:0\d|1[0-3]):[0-5]\d|14:00))?$/;
+
+function trainingSourcePayload(session) {
+  const offset = session.timezoneOffsetMinutes;
+  const payload = {
+    schema: 'polar_accesslink_v4',
+    timezone_offset_minutes: offset != null && Number.isInteger(Number(offset)) && Math.abs(Number(offset)) <= 840 ? Number(offset) : null,
+  };
+  // The provider reports a local stop time separately from active duration.
+  const stop = session.stopTime;
+  if (typeof stop === 'string' && localTimestamp.test(stop) && validDay(stop)) payload.recorded_stop = stop;
+  if (trainingStartTriggers.has(session.startTrigger)) payload.start_trigger = session.startTrigger;
+  const sport = session.sport?.id;
+  if (typeof sport === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(sport)) payload.sport_id = sport;
+  const calories = typeof session.calories === 'string' && /^\d{1,16}$/.test(session.calories) ? Number(session.calories) : session.calories;
+  if (Number.isSafeInteger(calories) && calories >= 0) payload.session_calories_kcal = calories;
+  return payload;
+}
+
 export async function polarSessions(payload,userId){
   if(!Array.isArray(payload?.trainingSessions))throw Error('unexpected_provider_schema');
   const rows=[],seen=new Set(),duplicates=new Set();
@@ -34,7 +58,7 @@ export async function polarSessions(payload,userId){
     if(!id||!date||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(String(r.startTime)))continue;
     seen.add(id);const duration=numeric(r.durationMillis),device=clean(r.deviceId),alias=device?(await digest(device)).slice(0,10):null;
     const hr=numeric(r.hrAvg,300),max=numeric(r.hrMax,300);
-    rows.push({user_id:userId,source_record_id:`polar_v4:session:${id}`,workout_date:date,recorded_start:clean(r.startTime,60),session_name:clean(r.name)||'Sessão Polar',duration_minutes:duration==null?null:duration/60000,heart_rate_avg:hr>0?hr:null,heart_rate_max:max>0?max:null,source_name:alias?`Polar Flow · aparelho ${alias}`:'Polar Flow · aparelho não informado',source_payload:{schema:'polar_accesslink_v4',timezone_offset_minutes:r.timezoneOffsetMinutes!=null&&Number.isInteger(Number(r.timezoneOffsetMinutes))&&Math.abs(Number(r.timezoneOffsetMinutes))<=840?Number(r.timezoneOffsetMinutes):null},updated_at:new Date().toISOString()});
+    rows.push({user_id:userId,source_record_id:`polar_v4:session:${id}`,workout_date:date,recorded_start:clean(r.startTime,60),session_name:clean(r.name)||'Sessão Polar',duration_minutes:duration==null?null:duration/60000,heart_rate_avg:hr>0?hr:null,heart_rate_max:max>0?max:null,source_name:alias?`Polar Flow · aparelho ${alias}`:'Polar Flow · aparelho não informado',source_payload:trainingSourcePayload(r),updated_at:new Date().toISOString()});
   }
   return rows.filter(r=>!duplicates.has(r.source_record_id));
 }
