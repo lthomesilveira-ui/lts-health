@@ -14,6 +14,7 @@ export function workoutComposerFields(){
  return `<div class="workoutComposerModes" role="group" aria-label="Como registrar o treino">
   <button type="button" data-workout-mode="picker" aria-pressed="true">Escolher exercícios</button>
   <button type="button" data-workout-mode="text" aria-pressed="false">Escrever treino</button></div>
+  <details data-polar-day class="workoutPolarDay" hidden><summary>Registros do Polar nesta data</summary><ul></ul></details>
   <section data-composer-text hidden><label>Descreva seu treino<textarea name="training_text" maxlength="16000" rows="5" placeholder="Supino: 60 kg x 10, 70 kg x 8. Remada: 3 séries de 10 com 40 kg."></textarea></label>
   <button type="button" class="ghostSmall" data-interpret-workout>Interpretar e revisar</button></section>
   <section data-composer-picker><label>Buscar exercício<input type="search" name="exercise_search" autocomplete="off" placeholder="Nome, máquina ou grupo muscular"></label>
@@ -67,8 +68,25 @@ function sameDay(form){
  const date=field(form,'workout_date').value;
  return (state.data.workouts||[]).filter(w=>w.is_canonical===true&&w.record_status!=='quarantined'&&w.workout_date===date);
 }
+function polarClock(stamp){
+ const time=String(stamp||'').match(/^\d{4}-\d{2}-\d{2}[T ](\d{2}:\d{2})(?::(\d{2}))?/);
+ return time?time[1]+(time[2]?':'+time[2]:''):'';
+}
+function polarDay(form,date){
+ const panel=form.querySelector('[data-polar-day]');
+ const rows=state.domainStatus?.polarSessions==='ready'?(state.data.polarSessions||[]).filter(row=>row.workout_date===date):[];
+ panel.hidden=!rows.length;
+ const value=(v,u)=>v==null||v===''||!Number.isFinite(Number(v))?'':Number(v).toLocaleString('pt-BR',{maximumFractionDigits:1})+' '+u;
+ const list=rows.slice().sort((a,b)=>String(a.recorded_start||'').localeCompare(String(b.recorded_start||'')));
+ panel.querySelector('ul').innerHTML=list.map(row=>{
+   const start=polarClock(row.recorded_start),stop=polarClock(row.recorded_stop);
+   const time=start&&stop?start+' a '+stop:start||'Horário não informado';
+   return '<li>'+esc([time,value(row.duration_minutes,'min de atividade'),value(row.recorded_calories,'kcal do aparelho'),value(row.heart_rate_avg,'bpm de média')].filter(Boolean).join(' · '))+'</li>';
+ }).join('');
+}
 function dayMessage(form){
  const n=sameDay(form).length,out=form.querySelector('[data-present-workouts]');
+ polarDay(form,field(form,'workout_date').value);
  out.textContent=n?(n===1?'Já existe um treino nesta data.':'Já existem '+n+' treinos nesta data.'):'';
 }
 function describeSet(set){

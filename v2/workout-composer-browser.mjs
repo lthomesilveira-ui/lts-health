@@ -8,6 +8,7 @@ const shell=`<!doctype html><meta name="viewport" content="width=device-width,in
 window.qa={attempts:[],committed:new Map(),lose:false};
 window.supabase={createClient:()=>({rpc:async(name,args)=>{if(name!=='health_log_structured_workout')throw Error('unexpected RPC');const p=args.p_payload;qa.attempts.push(p);qa.committed.set(p.entry_id,p);if(qa.lose){qa.lose=false;return {error:{message:'synthetic transport failure'}};}return {data:{ok:true,source_record_id:'manual-structured:'+p.entry_id},error:null};}})};
 const {state}=await import('/src/core.js');state.session={user:{id:'synthetic'}};state.data={workouts:[{source_record_id:'owned-a',is_canonical:true,record_status:'validated',workout_date:'2024-03-15'}],exercises:[{workout_source_record_id:'owned-a',exercise:'Remada sintética',machine:'Equipamento de teste',muscle_group:'Costas'}]};
+state.domainStatus={polarSessions:'ready'};state.data.polarSessions=[{workout_date:'2024-03-15',recorded_start:'2024-03-15T09:12:00',recorded_stop:'2024-03-15T09:32:00',duration_minutes:20,recorded_calories:0,heart_rate_avg:98}];
 const {openEntry,setupEntryController}=await import('/src/entry.js');setupEntryController({onSaved:async()=>{}});document.getElementById('open').onclick=()=>openEntry('workout');document.body.dataset.ready='true';</script>`;
 const server=http.createServer(async(req,res)=>{
   const path=new URL(req.url,'http://localhost').pathname;
@@ -26,7 +27,7 @@ try{
   await page.goto(origin);await page.locator('body[data-ready="true"]').waitFor();
   const open=async()=>{await page.getByRole('button',{name:'Registrar treino'}).click();await page.getByLabel('Data',{exact:true}).fill('2024-03-15');};
   const checkWidth=async()=>assert.ok(await page.locator('.entryPanel').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'form fits at '+width);
-  await open();await page.getByLabel('Buscar exercício').fill('rema teste');await page.getByRole('button',{name:/Remada sintética/}).click();
+  await open();await page.getByText('Registros do Polar nesta data',{exact:true}).click();assert.match(await page.locator('[data-polar-day]').innerText(),/09:12:00 a 09:32:00.*0 kcal do aparelho/);await page.getByLabel('Buscar exercício').fill('rema teste');await page.getByRole('button',{name:/Remada sintética/}).click();
   await page.getByLabel('Carga da série 1',{exact:true}).fill('12,5');await page.getByLabel('Repetições da série 1').fill('8');await checkWidth();
   await page.getByRole('button',{name:'Revisar treino'}).click();assert.match(await page.getByRole('region',{name:'Revisão do treino'}).innerText(),/12,5 kg/);
   await page.getByRole('button',{name:'Salvar treino'}).click();assert.equal(await page.evaluate(()=>qa.attempts.length),0,'separate workout on the same date requires a deliberate choice');

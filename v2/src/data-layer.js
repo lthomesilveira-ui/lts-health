@@ -8,7 +8,7 @@ import {labOriginalColumns,labOriginalDocumentColumns,attachLabOriginals} from '
 const initialKeys=['body','segmental','workouts','workoutEvidence','exercises','sets'];
 const routeDomains={
   bio:[],
-  treinos:['trainingPlans','workoutPlans'],
+  treinos:['trainingPlans','workoutPlans','polarSessions'],
   evolucao:['labs'],
   analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans'],
   tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses'],
@@ -55,7 +55,7 @@ const loaders={
   nutritionPlans:()=>fetchNutritionPlans(),
   waterReferences:()=>fetchAll('health_documents','source_record_id,document_date,document_type,source_file,source,checksum,extraction_status,confidence,water_reference:source_payload->water_reference_ui,clinical_baseline:source_payload->clinical_baseline','document_date',false),
   goals:()=>fetchAll('health_personal_goals','effective_from,calories_kcal,protein_g,carbs_g,fat_g,fiber_g,water_ml,notes','effective_from',true,null),
-  polarSessions:()=>fetchAll('health_polar_sessions','source_record_id,workout_date,recorded_start,session_name,duration_minutes,heart_rate_avg,heart_rate_max,source_name','workout_date',false),
+  polarSessions:()=>fetchAll('health_polar_sessions','source_record_id,workout_date,recorded_start,session_name,duration_minutes,heart_rate_avg,heart_rate_max,source_name,recorded_stop:source_payload->>recorded_stop,recorded_calories:source_payload->session_calories_kcal','workout_date',false),
   body:()=>fetchAll('health_body_composition','source_record_id,measured_at,weight_kg,skeletal_muscle_mass_kg,fat_mass_kg,body_fat_pct,body_water_l,visceral_fat_level,score,waist_hip_ratio,bmr_kcal,source,source_file,confidence,notes,device_name:source_payload->>device','measured_at',true),
   segmental:()=>fetchAll('health_segmental_composition','source_record_id,measured_at,lean_right_arm_kg,lean_left_arm_kg,lean_trunk_kg,lean_right_leg_kg,lean_left_leg_kg,fat_right_arm_kg,fat_left_arm_kg,fat_trunk_kg,fat_right_leg_kg,fat_left_leg_kg,source,source_file,confidence,notes,body_source_record_id:source_payload->>body_source_record_id','measured_at',true),
   workouts:()=>fetchAll('health_workouts','source_record_id,workout_date,workout_type,location,duration_minutes,calories_kcal,heart_rate_avg,heart_rate_min,heart_rate_max,muscle_groups,sets_by_group,raw_exercises,source,source_file,confidence,notes,record_status,is_canonical,session_comment:source_payload->>user_reported_completion_note,measurement_issue_reported:source_payload->measurement_issue_reported,polar_measurement_issue_reported:source_payload->polar->measurement_issue_reported,polar_reliability:source_payload->>polar_reliability,documented_energy_kind:source_payload->>energy_kind,documented_duration_kind:source_payload->>duration_kind','workout_date',false),

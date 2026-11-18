@@ -33,3 +33,5 @@
 #entryModal .workoutChoice input{width:22px;min-height:22px}
 .workoutComposerReview{padding:13px;border:1px solid #aecbdc;border-radius:12px;background:#f1f8fb;color:#17324f}
 .workoutComposerReview h3{margin:0 0 8px}.workoutComposerReview small{display:block}.workoutOriginal{white-space:pre-wrap;overflow-wrap:anywhere}
+
+.workoutPolarDay{color:#294962;font-size:14px}.workoutPolarDay summary{min-height:44px;align-content:center;cursor:pointer}.workoutPolarDay li{margin:5px 0;overflow-wrap:anywhere}
