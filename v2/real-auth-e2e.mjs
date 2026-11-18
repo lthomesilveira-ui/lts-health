@@ -5,7 +5,7 @@ import {auditIntegratedDashboard,auditIntegratedEvolution} from './real-auth-das
 import {verifyDocumentedPlanFlows} from './real-auth-plan-checks.mjs';
 import {verifyLaboratoryOriginalFlow} from './real-auth-lab-original-checks.mjs';
 import {verifyRecordedLoadSourceProjection} from './real-auth-training-load-checks.mjs';
-import {verifyOriginalPolarHistory} from './real-auth-polar-history-checks.mjs';
+import {verifyOriginalPolarHistory,verifyTrainingDeviceRecords} from './real-auth-polar-history-checks.mjs';
 import {verifyReviewedLaboratoryPresentation} from './real-auth-lab-documentary-checks.mjs';
 import {verifyOwnerBrowserFlows} from './real-auth-owner-flows.mjs';
 import {deployedRuntimeAssets} from './deployed-runtime-assets.mjs';
@@ -523,6 +523,10 @@ try{
 
   verificationStage='reviewed-laboratory-presentation';
   await verifyReviewedLaboratoryPresentation(page,{waitForRoute,evidenceDir});
+
+  await waitForRoute('treinos');
+  verificationStage='training-device-records';
+  await verifyTrainingDeviceRecords(page);
 
   verificationStage='sign-out';
   await page.evaluate(async ({url,key})=>{const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});await client.auth.signOut({scope:'local'});},{url:supabaseUrl,key:supabaseKey});

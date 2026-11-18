@@ -32,3 +32,45 @@ export async function verifyOriginalPolarHistory(page){
     throw new Error('Original Polar history failed protected read, loaded-data or separate-observation verification');
   }
 }
+
+// Compare the published session disclosure with independent owner-scoped reads.
+// Source notes, dates and account identifiers stay in the protected process.
+export async function verifyTrainingDeviceRecords(page){
+  const samples=await page.evaluate(async()=>{
+    const {sb,state,fmtDate}=await import('./src/core.js');
+    if(state.domainStatus.workouts!=='ready'||state.domainStatus.workoutEvidence!=='ready')throw new Error('Workout sources unavailable');
+    const visibleDates=new Map(state.data.workouts.map(row=>[row.source_record_id,row.workout_date]));
+    const visible=row=>visibleDates.get(row.workout_source_record_id)===row.workout_date;
+    const select='workout_source_record_id,workout_date,source_family,source_file,notes';
+    const source=()=>sb.from('health_workout_source_evidence').select(select);
+    const [possible,confirmed]=await Promise.all([
+      source().eq('evidence_kind','session_reference').eq('evidence_status','candidate')
+        .in('source_family',['apple_watch','polar_flow']).order('workout_date',{ascending:false}).limit(8),
+      source().eq('evidence_kind','telemetry').eq('evidence_status','confirmed').eq('source_family','polar_flow')
+        .like('source_file','https://flow.polar.com/training/analysis/%').order('workout_date',{ascending:false}).limit(1)
+    ]);
+    if(possible.error||confirmed.error)throw new Error('Unable to read device records');
+    const format=(row,status)=>({
+      selector:'[data-depth-workout="'+CSS.escape(row.workout_source_record_id)+'"]',
+      date:fmtDate(row.workout_date),note:row.notes||null,
+      link:/^https:\/\/flow\.polar\.com\/training\/analysis\/\d+$/.test(row.source_file||'')?row.source_file:null,
+      title:(row.source_family==='apple_watch'?'Apple Watch':'Polar Flow')+' · '+status
+    });
+    return [...possible.data.filter(visible).map(row=>format(row,'Possível correspondência')),...confirmed.data.filter(visible).map(row=>format(row,'Vínculo confirmado'))];
+  });
+  for(const sample of samples){
+    await page.locator('.ltsRefTrainTabs [data-depth-training-view="history"]').click();
+    await page.locator('[data-depth-clear="training"]').click();
+    await page.locator('#productTrainingQuery').fill(sample.date);
+    await page.locator('.ltsWorkoutList '+sample.selector).click();
+    const panel=page.locator('.ltsTrainingReference .ltsDeviceRecords');
+    if(!await panel.evaluate(element=>element.open))await panel.locator('summary').click();
+    await panel.locator('li').first().waitFor({state:'visible'});
+    const found=await panel.locator('li').evaluateAll((items,sample)=>items.some(item=>
+      item.querySelector('strong')?.textContent===sample.title&&
+      (!sample.note||item.querySelector('p')?.textContent===sample.note)&&
+      (item.querySelector('a')?.getAttribute('href')??null)===sample.link
+    ),sample);
+    if(!found)throw new Error('Published device record differs from the source');
+  }
+}

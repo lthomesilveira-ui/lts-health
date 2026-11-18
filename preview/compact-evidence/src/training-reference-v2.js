@@ -92,8 +92,8 @@ function hrPanel(workout, evidence){
   const present=measures.filter(m=>m.value!=null);
   if(!present.length)return '<section class="ltsRefTrainPanel"><header><h2>Frequência cardíaca</h2></header><div class="ltsRefTrainEmpty">Ainda não há frequência cardíaca registrada para esta sessão.</div></section>';
   const commonOrigin=present.every(m=>m.origin===present[0].origin);
-  const sharedLabel=(workout.telemetry_heart_rate_is_partial?'Trecho parcial · ':'')+(present[0].origin||'Registro do treino');
-  const cards=measures.map(({label,value,origin})=>`<div><small>${label}</small><b>${value!=null?fmtNum(value,0):'—'}</b><span>bpm</span>${value!=null&&!commonOrigin?`<small>${esc(origin||'Registro do treino')}</small>`:''}</div>`);
+  const sharedLabel=(workout.telemetry_heart_rate_is_partial?'Trecho parcial · ':'')+(present[0].origin||'Registro LTS · dados da sessão: origem não informada');
+  const cards=measures.map(({label,value,origin})=>`<div><small>${label}</small><b>${value!=null?fmtNum(value,0):'—'}</b><span>bpm</span>${value!=null&&!commonOrigin?`<small>${esc(origin||'Registro do treino · origem não informada')}</small>`:''}</div>`);
   return `<section class="ltsRefTrainPanel ltsRefHrPanel">
     <header><div><span>${present.every(m=>m.origin)?'Medidas do aparelho':'Valores registrados'}</span><h2>Frequência cardíaca</h2></div>${commonOrigin?`<small>${esc(sharedLabel)}</small>`:''}</header>
     <div class="ltsRefHrNumbers">${cards.join('')}</div>

@@ -159,7 +159,7 @@ const manifest={
     "src/training-load-qualifier.js": "f3024be1f935a1b2b18d3f02d160a210ceefe2466af8b7ac2a97dd08cf23a9a8",
     "src/training-plan-view.js": "2b859001112a578207586c83d64594431f29b4c8981d0df49bf3ae2954fa6b63",
     "src/training-reference-runtime.js": "4c4beddd0c7d62983c603632f0b178a1fdcba823e2f9bdf63a490ca7f9907b23",
-    "src/training-reference-v2.js": "c973e3259a3b5790c808011dd10764e130242517cf36c3bb292d441cffd82916",
+    "src/training-reference-v2.js": "bd26bc4e9fac689ceee4303bd8df62a0da976be0d22436c3dabf49e8c0ff27c8",
     "src/training-screen.js": "255481f1cfc2439d091bc7e0b138259206f1920804b8fcf795c53d90a229c759",
     "src/training-session-summary.js": "48bd4cad251ec9d2ea5b4d20f4fda79496a8874da1128f53ba246a1516e4bd43",
     "src/training-session-visuals.js": "c5818d875368342aeb0aa36d5cf80f0647d14d916feb4419400f484fa918399a",
