@@ -49,6 +49,21 @@ jobs:
       - name: Install the browser engines used by the broader isolated gate
         run: |
           npm install --no-save playwright@1.56.1
+          # The regional EC2 mirror repeatedly exhausted this job during downloads.
+          # Keep Ubuntu suites, components and archive signature verification intact.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          import re
+          pattern = r'https?://[a-z0-9-]+\.ec2\.archive\.ubuntu\.com/ubuntu\b'
+          for path in (Path('/etc/apt/sources.list'), Path('/etc/apt/sources.list.d/ubuntu.sources')):
+              if not path.exists():
+                  continue
+              original = path.read_text()
+              updated, count = re.subn(pattern, 'https://archive.ubuntu.com/ubuntu', original)
+              if count:
+                  path.write_text(updated)
+              print(f'{path}: {count} regional archive URL(s) replaced')
+          PY
           npx playwright install --with-deps chromium webkit
       - name: Verify source qualifiers, native filters and full session flow on the host
         run: |
