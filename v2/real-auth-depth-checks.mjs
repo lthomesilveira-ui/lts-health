@@ -2,7 +2,7 @@ import {auditObservedNutritionContrast} from './real-auth-dashboard-checks.mjs';
 // Called inside the authorized real-auth session before signing out. Never print record identifiers or values.
 export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,evidenceDir,waitForRoute,assertStableMobileShell}){
   let depthCheck=0;
-  const check=(ok,message)=>{depthCheck++;if(!ok){const error=new Error(`Real-data depth contract: ${message}`);error.auditCode=`depth-check-${depthCheck}`;throw error;}};
+  const check=(ok,message,code)=>{depthCheck++;if(!ok){const error=new Error(`Real-data depth contract: ${message}`);error.auditCode=code||`depth-check-${depthCheck}`;throw error;}};
   const truth=await page.evaluate(async ({url,key})=>{
     const client=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:false,detectSessionInUrl:false}});
     async function all(table,select){
@@ -122,20 +122,28 @@ export async function runDepthChecks(page,{appUrl,supabaseUrl,supabaseKey,eviden
   await page.locator('#reportRegion').selectOption('left_arm');check(await page.locator('#reportRegion').inputValue()==='left_arm','regional report control failed');
   await noOverflow();await page.evaluate(()=>document.querySelector('#screenHost').scrollTo(0,0));await page.screenshot({path:`${evidenceDir}/desktop-useful-reports.png`});
   await page.setViewportSize({width:390,height:844});await noOverflow();await assertStableMobileShell('mobile useful reports');await page.screenshot({path:`${evidenceDir}/mobile-useful-reports.png`});
-  await page.locator('[data-review-view="overview"]').click();await page.waitForSelector('.ltsReviewContrasts');
+  await page.locator('[data-review-view="overview"]').click();
+  const numerical=page.locator('#reviewPanel[aria-labelledby="reviewTab-overview"] [data-disclosure="review-numeric-contrasts"]');
+  await numerical.waitFor({state:'visible'});
+  if(!await numerical.evaluate(section=>section.open))await numerical.locator(':scope > summary').click();
+  await page.waitForSelector('#reviewPanel [data-disclosure="review-numeric-contrasts"][open]');
   const reviewTruth=await page.evaluate(async()=>{
     const {state}=await import('./src/core.js'),{usefulReports}=await import('./src/reports-model.js'),{integratedReview}=await import('./src/integrated-review.js');
     const m=usefulReports(state.data,state.domainStatus,state.ui),r=integratedReview(state.data,state.domainStatus,m.current,state.ui,m.today);
     const avg=rows=>rows.length?rows.reduce((sum,row)=>sum+row.value,0)/rows.length:null;
     return{waterConsistent:r.water.mean===avg(r.water.closedRows),sleepConsistent:r.sleep.mean===avg(r.sleep.closedRows),closed:r.closed.every(d=>d.date<m.today),waterAvailable:r.water.available,waterComparable:r.contrasts.water.comparable,waterWith:avg(r.contrasts.water.withTraining),waterWithout:avg(r.contrasts.water.withoutTraining),dates:r.dates.length};
   });
-  check(reviewTruth.waterConsistent&&reviewTruth.sleepConsistent&&reviewTruth.closed,'integrated means include an open day or disagree with observations');
+  check(reviewTruth.waterConsistent&&reviewTruth.sleepConsistent&&reviewTruth.closed,'integrated means include an open day or disagree with observations','review-closed-means');
   check(await page.locator('.ltsReviewCoverage,.ltsReviewOverlap').count()===0,'record coverage is promoted as a health outcome');
-  const waterCard=page.locator('.ltsReviewContrast').filter({has:page.locator('h3', {hasText:'Água × treino registrado'})});
-  check(await waterCard.count()===(reviewTruth.waterComparable?1:0),'water comparison appears without enough closed observations');
+  const waterCard=numerical.locator('.ltsReviewContrast').filter({has:page.getByRole('heading',{name:'Água × treino registrado',exact:true})});
+  check(await waterCard.count()===(reviewTruth.waterComparable?1:0),'water comparison visibility disagrees with the eligible closed observations','review-water-presence');
   if(reviewTruth.waterComparable){
-    const text=await waterCard.innerText(),format=value=>Number(value).toLocaleString('pt-BR',{maximumFractionDigits:0})+' mL';
-    check(text.includes(format(reviewTruth.waterWith))&&text.includes(format(reviewTruth.waterWithout)),'rendered water means disagree with the selected source observations');
+    const valuesMatch=await waterCard.evaluate((card,means)=>{
+      const shown=Array.from(card.querySelectorAll(':scope > p > b'),el=>el.innerText.trim());
+      const expected=means.map(value=>value.toLocaleString('pt-BR',{maximumFractionDigits:0})+' mL');
+      return shown.length===2&&shown.every((value,index)=>value===expected[index]);
+    },[reviewTruth.waterWith,reviewTruth.waterWithout]);
+    check(valuesMatch,'rendered water means disagree with the selected source observations','review-water-values');
   }
   await noOverflow();await page.evaluate(()=>document.querySelector('#reportIntegratedReview')?.scrollIntoView({block:'start'}));await page.screenshot({path:`${evidenceDir}/mobile-integrated-review.png`});
   await page.locator('[data-review-view="day"]').click();await page.waitForSelector('#reviewDate');
