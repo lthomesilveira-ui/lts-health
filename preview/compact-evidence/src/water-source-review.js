@@ -17,6 +17,15 @@ function channel(row) {
   return null;
 }
 
+export function originalMyFitnessPalWater(row) {
+  if (row?.source_family !== 'myfitnesspal' || row.source_name !== 'MyFitnessPal' ||
+      row.confidence !== 'account_authenticated_export' || row.canonical_status !== 'canonical' ||
+      row.metric_type !== 'dietary_water_ml' || row.unit !== 'mL' || !/^\d{4}-\d{2}-\d{2}$/.test(row.metric_date) ||
+      row.source_record_id !== 'mfp-water:' + row.metric_date || !['string','number'].includes(typeof row.value)) return false;
+  const value = Number(row.value), day = new Date(row.metric_date + 'T12:00:00Z');
+  return Number.isFinite(day.getTime()) && day.toISOString().slice(0,10) === row.metric_date && Number.isInteger(value) && value > 0 && value <= 100000;
+}
+
 export function waterSourceReview(rows = []) {
   const byDate = new Map();
   for (const row of rows) {
@@ -33,12 +42,18 @@ export function waterSourceReview(rows = []) {
     const identity = type === 'mfp' ? row.source_record_id.split(':').at(-1) : row.source_record_id;
     byDate.get(date)[type].set(identity + '/' + value, value);
   }
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (!originalMyFitnessPalWater(row)) continue;
+    const group = byDate.get(row.metric_date);
+    if (group) (group.original ??= new Set()).add(Number(row.value));
+  }
   const result = [];
-  for (const {date, mfp, iphone, events} of byDate.values()) {
+  for (const {date, mfp, iphone, events, original} of byDate.values()) {
     if (!mfp.size && !events.size) continue;
-    const totals = [...mfp.values(), ...iphone.values()];
+    const totals = [...mfp.values(), ...iphone.values(), ...(original || [])];
     result.push({date, mfp: [...mfp.values()], iphone: [...iphone.values()], events: [...events.values()],
-      conflict: mfp.size > 1 || (mfp.size > 0 && new Set(totals).size > 1)});
+      ...(original ? {original: [...original]} : {}),
+      conflict: mfp.size > 1 || ((mfp.size > 0 || Boolean(original)) && new Set(totals).size > 1)});
   }
   return result.sort((a, b) => a.date.localeCompare(b.date));
 }

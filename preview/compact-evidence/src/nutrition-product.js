@@ -5,7 +5,7 @@ import {nutritionPlanComparison} from './nutrition-plan-comparison.js';
 import {renderNutritionPlanComparison} from './nutrition-plan-view.js';
 import {nutritionArchiveModel,nutritionArchiveSourceLabel} from './nutrition-archive.js';
 import {sourceDisplayLabel,sourceDisplayNote} from './source-display.js';
-import {waterSourceReview} from './water-source-review.js';
+import {waterSourceReview,originalMyFitnessPalWater} from './water-source-review.js';
 
 const v=(n,unit)=>num(n)==null?'Não informado':`${fmtNum(n,0)} ${unit}`;
 const originalValue=(value,unit)=>value==null||!['string','number'].includes(typeof value)||String(value).trim()===''?'Não informado':`${esc(String(value))} ${esc(unit)}`;
@@ -13,7 +13,11 @@ const originalValue=(value,unit)=>value==null||!['string','number'].includes(typ
 function waterHistoryBySource(data, status) {
   if (status.sourceMetrics !== 'ready') return '';
   const rows = waterSourceReview(data.sourceMetrics);
-  if (!rows.length) return '';
+  const originals = (data.sourceMetrics || []).filter(originalMyFitnessPalWater);
+  const days = new Set(originals.map(row => row.metric_date)).size;
+  const latest = originals.reduce((last,row) => !last || row.metric_date > last.metric_date ? row : last, null);
+  const archive = latest ? `<p class="ltsWaterArchiveSummary">O arquivo do MyFitnessPal tem água em <b>${fmtNum(days,0)} ${days === 1 ? 'dia' : 'dias'}</b>. Último registro em ${fmtDate(latest.metric_date)} · <b>${fmtNum(latest.value,0)} mL</b>. Esta importação atualiza o histórico.</p>` : '';
+  if (!rows.length) return archive ? `<section class="ltsCockpitPanel" aria-label="Histórico de água por origem"><header><h2>Histórico de água por origem</h2></header>${archive}</section>` : '';
   const quantities = values => values.length ? values.map(value => fmtNum(value, 0)).join(' / ') : 'Sem registro';
   const divergent = rows.filter(row => row.conflict);
   const note = divergent.length
@@ -21,9 +25,9 @@ function waterHistoryBySource(data, status) {
     : 'Cada coluna preserva o valor recebido daquela origem.';
   const lines = rows.map(row => {
     const entries = row.events.map(amount => `<tr><td colspan="3">Lançamento do app Google em ${fmtDate(row.date)} · ${fmtNum(amount, 0)} mL</td></tr>`).join('');
-    return `<tr><th scope="row">${fmtDate(row.date)}${row.conflict ? '<small>Totais diferentes</small>' : ''}</th><td>${quantities(row.mfp)}</td><td>${quantities(row.iphone)}</td></tr>${entries}`;
+    return `<tr><th scope="row">${fmtDate(row.date)}${row.original ? `<small>Original MyFitnessPal · ${quantities(row.original)} mL</small>` : ''}${row.conflict ? '<small>Totais diferentes</small>' : ''}</th><td>${quantities(row.mfp)}</td><td>${quantities(row.iphone)}</td></tr>${entries}`;
   }).join('');
-  return `<section class="ltsCockpitPanel" aria-label="Histórico de água por origem"><header><h2>Histórico de água por origem</h2></header><p>${note}</p><details data-disclosure="water-source-history"><summary>Conferir ${rows.length} ${rows.length === 1 ? 'dia' : 'dias'} com registro no arquivo Google</summary><div class="ltsEvolutionTableWrap"><table class="ltsEvolutionTable ltsWaterSourceTable"><caption>Totais diários em mL. Cada coluna tem uma origem e os valores podem ser parciais.</caption><thead><tr><th scope="col">Data</th><th scope="col">MyFitnessPal no Google</th><th scope="col">Recebido do iPhone</th></tr></thead><tbody>${lines}</tbody></table></div></details></section>`;
+  return `<section class="ltsCockpitPanel" aria-label="Histórico de água por origem"><header><h2>Histórico de água por origem</h2></header>${archive}<p>${note}</p><details data-disclosure="water-source-history"><summary>Conferir ${rows.length} ${rows.length === 1 ? 'dia' : 'dias'} com registro no arquivo Google</summary><div class="ltsEvolutionTableWrap"><table class="ltsEvolutionTable ltsWaterSourceTable"><caption>Totais diários em mL. Cada coluna tem uma origem e os valores podem ser parciais.</caption><thead><tr><th scope="col">Data</th><th scope="col">MyFitnessPal no Google</th><th scope="col">Recebido do iPhone</th></tr></thead><tbody>${lines}</tbody></table></div></details></section>`;
 }
 
 const archiveFields=[['calories_kcal','Energia','kcal'],['protein_g','Proteína','g'],['carbs_g','Carboidratos','g'],['fat_g','Gorduras','g'],['fiber_g','Fibra','g']];
