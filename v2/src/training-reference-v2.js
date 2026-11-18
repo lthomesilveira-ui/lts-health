@@ -53,7 +53,9 @@ function metric(value,unit,label){
 }
 
 function sessionHero(workout){
-  return `<section class="ltsRefTrainHero"><span class="ltsTrainingSessionIcon" aria-hidden="true">↗</span><div><span>Sessão registrada</span><strong>${fmtDate(workout.workout_date)}</strong><small>${esc(workout.location||'Local não informado')}</small></div><button type="button" data-depth-training-view="history">Outras sessões ›</button></section>`;
+  const reportedClock=String(workout.reported_start_clock||'');
+  const start=/^([01]\d|2[0-3]):[0-5]\d$/.test(reportedClock)?'Início informado às '+reportedClock:'';
+  return `<section class="ltsRefTrainHero"><span class="ltsTrainingSessionIcon" aria-hidden="true">↗</span><div><span>Sessão registrada</span><strong>${fmtDate(workout.workout_date)}</strong><small>${start?esc(start)+' · ':''}${esc(workout.location||'Local não informado')}</small></div><button type="button" data-depth-training-view="history">Outras sessões ›</button></section>`;
 }
 
 function deviceReferences(workout, evidence){

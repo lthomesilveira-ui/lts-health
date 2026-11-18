@@ -26,7 +26,15 @@ try{
   await page.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
   await page.goto(origin);await page.locator('body[data-ready="true"]').waitFor();
   const open=async()=>{await page.getByRole('button',{name:'Registrar treino'}).click();await page.getByLabel('Data',{exact:true}).fill('2024-03-15');};
-  const checkWidth=async()=>assert.ok(await page.locator('.entryPanel').evaluate(e=>e.scrollWidth<=e.clientWidth+1),'form fits at '+width);
+  const checkWidth=async()=>{
+    const geometry=await page.locator('.entryPanel').evaluate(panel=>{
+      const bounds=panel.getBoundingClientRect();
+      const overflow=[...panel.querySelectorAll('*')].filter(el=>el.getBoundingClientRect().right>bounds.right+1)
+        .slice(0,10).map(el=>[el.tagName,el.className,el.getAttribute('name'),Math.round(el.getBoundingClientRect().right)]);
+      return {client:panel.clientWidth,scroll:panel.scrollWidth,overflow};
+    });
+    assert.ok(geometry.scroll<=geometry.client+1,'form fits at '+width+' '+JSON.stringify(geometry));
+  };
   await open();await page.getByText('Registros do Polar nesta data',{exact:true}).click();assert.match(await page.locator('[data-polar-day]').innerText(),/09:12:00 a 09:32:00.*0 kcal do aparelho/);await page.getByLabel('Buscar exercício').fill('rema teste');await page.getByRole('button',{name:/Remada sintética/}).click();
   await page.getByLabel('Carga da série 1',{exact:true}).fill('12,5');await page.getByLabel('Repetições da série 1').fill('8');await checkWidth();
   await page.getByRole('button',{name:'Revisar treino'}).click();assert.match(await page.getByRole('region',{name:'Revisão do treino'}).innerText(),/12,5 kg/);
