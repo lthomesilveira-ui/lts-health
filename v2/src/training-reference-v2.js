@@ -53,7 +53,9 @@ function metric(value,unit,label){
 }
 
 function sessionHero(workout){
-  return `<section class="ltsRefTrainHero"><span class="ltsTrainingSessionIcon" aria-hidden="true">↗</span><div><span>Sessão registrada</span><strong>${fmtDate(workout.workout_date)}</strong><small>${esc(workout.location||'Local não informado')}</small></div><button type="button" data-depth-training-view="history">Outras sessões ›</button></section>`;
+  const reportedClock=String(workout.reported_start_clock||'');
+  const start=/^([01]\d|2[0-3]):[0-5]\d$/.test(reportedClock)?'Início informado às '+reportedClock:'';
+  return `<section class="ltsRefTrainHero"><span class="ltsTrainingSessionIcon" aria-hidden="true">↗</span><div><span>Sessão registrada</span><strong>${fmtDate(workout.workout_date)}</strong><small>${start?esc(start)+' · ':''}${esc(workout.location||'Local não informado')}</small></div><button type="button" data-depth-training-view="history">Outras sessões ›</button></section>`;
 }
 
 function deviceReferences(workout, evidence){
@@ -209,9 +211,8 @@ export function renderProductTraining(){
   const subtitle=view==='plan'?'Planeje suas sessões e consulte a comparação com o plano recebido.':view==='progress'?'Escolha um exercício para ver datas, cargas e repetições registradas.':view==='history'?'Busque qualquer sessão por ano, exercício ou local.':view==='exercise'?'Datas, cargas e repetições registradas por sessão.':selected?`${fmtDate(selected.workout_date)}${selected.location?` · ${selected.location}`:''}`:'Selecione uma sessão.';
   const returnRoute=state.ui.trainingReturnRoute==='analise'?'analise':'hoje';
   return `<section class="ltsTrainingV2 ltsTrainingReference" data-training-design="visual-session" data-training-view="${view}" data-workout-id="${esc(selected?.source_record_id||'')}">
-    <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':`data-route="${returnRoute}"${returnRoute==='analise'?' data-consume-training-return':' data-route-back'}`} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino">+</button></header>
+    <header class="ltsRefTrainHeader"><button class="ltsRefTrainBack" ${view==='exercise'?'data-depth-training-view="exercises"':`data-route="${returnRoute}"${returnRoute==='analise'?' data-consume-training-return':' data-route-back'}`} aria-label="Voltar">‹</button><div><span>Treinos</span><h1 tabindex="-1" id="productTrainingTitle">${esc(heading)}</h1><p>${esc(subtitle)}</p></div><button class="ltsRefTrainAdd" data-entry="workout" aria-label="Registrar treino"><span aria-hidden="true">+</span> Registrar treino</button></header>
     ${view==='exercise'?exerciseNav():tabs(view)}
     <div id="training-tab-panel" ${view==='exercise'?'':'role="tabpanel" aria-labelledby="training-tab-'+view+'"'}>${view==='plan'?renderPersonalWorkoutPlans(state.data,state.domainStatus)+renderTrainingPlan(state.data,state.domainStatus,state.ui):failed(state,'workouts')?errorCard('Os treinos não carregaram agora.'):view==='progress'?renderExerciseDirectory():view==='history'?renderTrainingHistory():view==='exercise'?renderExerciseHistory():selected?(view==='exercises'?exercisesView(selected):summaryView(selected)):'<div class="ltsRefTrainEmpty">Ainda não há treinos registrados.</div>'}</div>
   </section>`;
 }
-

@@ -28,6 +28,7 @@ jobs:
           node preview/compact-evidence/tests/preview-contract.mjs
           node v2/privacy-contract-smoke.mjs
           node v2/production-write-boundary-test.mjs
+          node v2/workout-composer-test.mjs
           node v2/upload-transport-test.mjs
           node v2/production-connection-boundary-test.mjs
           node v2/polar-contract-test.mjs
@@ -58,6 +59,7 @@ jobs:
       - name: Verify actual renderer through mocked authentication, mobile routes and repeated cancel
         run: |
           node v2/production-integration-browser.mjs
+          node v2/workout-composer-browser.mjs
           node v2/startup-browser.mjs
           node v2/real-auth-dashboard-checks-test.mjs
           LTS_PUBLIC_ROOT=http://127.0.0.1:4175/ node v2/deployed-public-auth-smoke.mjs
@@ -107,3 +109,23 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+
+  reviewed-workout-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432/tcp']
+        options: --health-cmd pg_isready --health-interval 3s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify text, structured records, rollback and retry in disposable PostgreSQL
+        env:
+          PGHOST: localhost
+          PGPORT: ${{ job.services.postgres.ports[5432] }}
+          PGUSER: postgres
+          PGDATABASE: postgres
+        run: psql -X -f supabase/tests/reviewed-workout-entry.sql

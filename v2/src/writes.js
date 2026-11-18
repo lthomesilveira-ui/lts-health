@@ -69,15 +69,22 @@ export async function saveWorkout(payload){
     machine:String(ex.machine||'').trim()||null,
     notes:workoutExerciseNotes(ex),
     sets:(ex.sets||[]).map(s=>({
-      phase:['warmup','working','other'].includes(s.phase)?s.phase:'working',
+      phase:['warmup','working','drop','rest_pause','other'].includes(s.phase)?s.phase:'working',
       weight:optionalNonNegativeNumber(s.weight),
       weight_unit:['kg','lb','plate_index','unitless'].includes(s.weight_unit)?s.weight_unit:null,
       reps:optionalNonNegativeNumber(s.reps),
-      notes:String(s.notes||'').trim()||null
+      notes:String(s.notes||'').trim()||null,
+      ...(s.failure===true?{failure:true}:{})
     }))
   })).filter(ex=>ex.name&&ex.sets.length);
-  if(!payload.workout_date||!String(payload.workout_type||'').trim()||!exercises.length) throw new Error('workout_fields_required');
+  const originalText=String(payload.original_text||'').trim();
+  if(originalText.length>16000)throw new Error('workout_text_too_long');
+  const textOnly=payload.text_only===true&&Boolean(originalText)&&!exercises.length;
+  if(!payload.workout_date||!String(payload.workout_type||'').trim()||(!exercises.length&&!textOnly)) throw new Error('workout_fields_required');
   const body={
+    ...(payload.entry_id?{entry_id:String(payload.entry_id)}:{}),
+    ...(originalText?{original_text:originalText,text_only:textOnly}:{}),
+    ...(payload.start_clock?{start_clock:String(payload.start_clock)}:{}),
     workout_date:String(payload.workout_date),
     workout_type:String(payload.workout_type).trim(),
     location:String(payload.location||'').trim()||null,
