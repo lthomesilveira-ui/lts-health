@@ -50,6 +50,27 @@ try{
   await page.locator('#entryModal.hidden').waitFor({state:'attached'});
   const fact=await page.evaluate(()=>({payload:qa.attempts.at(-1),same:qa.attempts[1].entry_id===qa.attempts[2].entry_id,count:qa.committed.size}));
   assert.equal(fact.same,true);assert.equal(fact.count,2);assert.equal(fact.payload.original_text,raw);assert.equal(fact.payload.exercises[1].sets.length,2);assert.equal(fact.payload.exercises[0].sets[1].failure,true);
+  await open();
+  await page.getByLabel('Data',{exact:true}).fill('2024-03-16');
+  await page.getByRole('button',{name:'Escrever treino'}).click();
+  const machineText='Remada de teste: nível 4 x 9 reps\nPuxada de teste: 18 kg x 8 a 10 reps\nSupino de teste: 24 kg x 7 reps sem chegar à falha';
+  await page.getByLabel('Descreva seu treino').fill(machineText);
+  await page.getByRole('button',{name:'Interpretar e revisar'}).click();
+  await page.getByRole('button',{name:'Revisar treino'}).click();
+  const reviewText=await review.innerText();
+  assert.match(reviewText,/nível 4 · 9 rep/);
+  assert.match(reviewText,/Trechos mantidos no relato original[\s\S]*Puxada de teste: 18 kg x 8 a 10 reps/);
+  assert.doesNotMatch(reviewText,/· até a falha/);
+  await checkWidth();
+  await page.getByRole('button',{name:'Salvar treino'}).click();
+  await page.locator('#entryModal.hidden').waitFor({state:'attached'});
+  saved=await page.evaluate(()=>qa.attempts.at(-1));
+  assert.equal(saved.original_text,machineText);
+  assert.deepEqual(saved.exercises.map(e=>[e.name,e.sets.length]),[['Remada de teste',1],['Supino de teste',1]]);
+  const plateSet=saved.exercises[0].sets[0], effortSet=saved.exercises[1].sets[0];
+  assert.deepEqual([plateSet.weight,plateSet.weight_unit,plateSet.reps],[4,'plate_index',9]);
+  assert.equal(effortSet.failure,undefined);
+  assert.equal(effortSet.notes,'sem chegar à falha');
   await open();await page.getByLabel('Data',{exact:true}).fill('2024-03-17');await page.getByRole('button',{name:'Escrever treino'}).click();await page.getByLabel('Descreva seu treino').fill('Treino leve sem detalhes');await page.getByRole('button',{name:'Interpretar e revisar'}).click();await page.getByRole('button',{name:'Revisar treino'}).click();await page.getByRole('button',{name:'Salvar treino'}).click();await page.locator('#entryModal.hidden').waitFor({state:'attached'});
   saved=await page.evaluate(()=>qa.attempts.at(-1));assert.equal(saved.text_only,true);assert.deepEqual(saved.exercises,[]);await page.close();
  }

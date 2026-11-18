@@ -27,20 +27,42 @@ export function searchWorkoutCatalog(catalog,term,limit=10){
 }
 
 const N=String.raw`\d+(?:[.,]\d+)?`, U=String.raw`(?:kgs?|quilos?|lbs?|libras?)`;
+const rangeSeparator=String.raw`(?:\s*[-–—]\s*|\s+(?:a|at[ée])\s+)`;
+const loadAmount=`${N}(?:${rangeSeparator}${N})?`;
+// A dash before another load or set count separates two sets.
+const repsAmount=String.raw`${N}(?:${rangeSeparator}${N}(?!\d|[.,]\d|\s*(?:${U}\b|[x×]\s*\d|s[ée]ries?\b)))?`;
+const plateLabel=String.raw`(?:n[ií]vel|(?:[ií]ndice\s+da\s+)?placa)`;
+const repLabel=String.raw`(?:reps?|repeti[çc][õo]es)`;
 const pattern = source => new RegExp(source,'gi');
 function setValues(weight,unit,reps,count=1){
-  return {count,weight:weight==null?'':numeric(weight),unit:weight==null?'unitless':/^(lb|libra)/i.test(unit||'')?'lb':'kg',reps:numeric(reps)};
+  const weightUnit=unit==='plate_index'?'plate_index':/^(lb|libra)/i.test(unit||'')?'lb':'kg';
+  return {count,weight:weight==null?'':numeric(weight),unit:weight==null?'unitless':weightUnit,reps:numeric(reps)};
 }
 const rules=[
- [String.raw`\b(\d+)\s*[x×]\s*(${N})\s+(?:@\s*)?(${N})\s*(${U})\b`,m=>setValues(m[3],m[4],m[2],+m[1])],
- [String.raw`\b(\d+)\s*(?:s[ée]ries?\s*(?:de|com)?\s*|[x×]\s*)(${N})\s*(?:repeti[çc][õo]es|reps?)?\s*(?:com|a|@|de)\s*(${N})\s*(${U})\b`,m=>setValues(m[3],m[4],m[2],+m[1])],
- [String.raw`\b(${N})\s*(${U})\s*[,–:-]?\s*(?:em\s*)?(\d+)\s*s[ée]ries?\s*de\s*(${N})(?:\s*(?:reps?|repeti[çc][õo]es))?`,m=>setValues(m[1],m[2],m[4],+m[3])],
- [String.raw`\b(\d+)\s*s[ée]ries?\s*de\s*(${N})(?:\s*(?:reps?|repeti[çc][õo]es))?`,m=>setValues(null,null,m[2],+m[1])],
- [String.raw`\b(${N})\s*(?:reps?|repeti[çc][õo]es)\s*(?:com|a|@|de)\s*(${N})\s*(${U})\b`,m=>setValues(m[2],m[3],m[1])],
- [String.raw`\b(${N})\s*(${U})\s*(?:[x×,:-]\s*|por\s+|para\s+)?(${N})(?:\s*(?:reps?|repeti[çc][õo]es))?(?![\d])`,m=>setValues(m[1],m[2],m[3])],
- [String.raw`\b(${N})\s*[x×]\s*(${N})(?:\s*(?:reps?|repeti[çc][õo]es))?(?![\d])`,m=>Number.isInteger(+m[1])&&+m[1]<=6?setValues(null,null,m[2],+m[1]):setValues(m[1],'kg',m[2])],
- [String.raw`\b(${N})\s*(?:reps?\b|repeti[çc][õo]es\b)`,m=>setValues(null,null,m[1])]
+ [String.raw`\b(\d+)\s*(?:[x×]\s*|s[ée]ries?\s*de\s*)(${repsAmount})\s*(?:${repLabel}\s*)?(?:no|na|com|em|@)?\s*${plateLabel}\s*:?\s*(${loadAmount})\b`,m=>setValues(m[3],'plate_index',m[2],+m[1])],
+ [String.raw`\b(${repsAmount})\s*${repLabel}\s*(?:no|na|com|em|@)\s*${plateLabel}\s*:?\s*(${loadAmount})\b`,m=>setValues(m[2],'plate_index',m[1])],
+ [String.raw`\b${plateLabel}\s*:?\s*(${loadAmount})(?:\s*[x×,:-]\s*|\s+(?:por|para)\s+|\s+)(${repsAmount})(?:\s*${repLabel})?`,m=>setValues(m[1],'plate_index',m[2])],
+ [String.raw`\b(\d+)\s*[x×]\s*(${repsAmount})\s+(?:@\s*)?(${loadAmount})\s*(${U})\b`,m=>setValues(m[3],m[4],m[2],+m[1])],
+ [String.raw`\b(\d+)\s*(?:s[ée]ries?\s*(?:de|com)?\s*|[x×]\s*)(${repsAmount})\s*(?:${repLabel})?\s*(?:com|a|@|de)\s*(${loadAmount})\s*(${U})\b`,m=>setValues(m[3],m[4],m[2],+m[1])],
+ [String.raw`\b(${loadAmount})\s*(${U})\s*[,–:-]?\s*(?:em\s*)?(\d+)\s*s[ée]ries?\s*de\s*(${repsAmount})(?:\s*${repLabel})?`,m=>setValues(m[1],m[2],m[4],+m[3])],
+ [String.raw`\b(\d+)\s*s[ée]ries?\s*de\s*(${repsAmount})(?:\s*${repLabel})?`,m=>setValues(null,null,m[2],+m[1])],
+ [String.raw`\b(${repsAmount})\s*${repLabel}\s*(?:com|a|@|de)\s*(${loadAmount})\s*(${U})\b`,m=>setValues(m[2],m[3],m[1])],
+ [String.raw`\b(${loadAmount})\s*(${U})\s*(?:[x×,:-]\s*|por\s+|para\s+)?(${repsAmount})(?:\s*${repLabel})?(?!\d)`,m=>setValues(m[1],m[2],m[3])],
+ [String.raw`\b(${loadAmount})\s*[x×]\s*(${repsAmount})(?:\s*${repLabel})?(?!\d)`,m=>Number.isInteger(+m[1])&&+m[1]<=6?setValues(null,null,m[2],+m[1]):setValues(m[1],'kg',m[2])],
+ [String.raw`\b(${repsAmount})\s*${repLabel}\b`,m=>setValues(null,null,m[1])]
 ];
+
+function reportsFailure(marker){
+  // Keep a negated or near-failure description in the note. Only an affirmative
+  // mention of muscular failure sets the checkbox.
+  const qualifiedBefore=/\b(?:sem|nao|nunca|quase|antes|perto|proxim[oa]|longe|evit\w*)(?:\s+(?:cheg\w*|ating\w*|alcanc\w*|ir|fui|foi|vou|levei|levar|ate|a|da|de|na))*\s*$/;
+  for(const mention of marker.matchAll(/\bfalha\b/g)){
+    const before=marker.slice(0,mention.index);
+    const after=marker.slice(mention.index+mention[0].length);
+    if(!qualifiedBefore.test(before)&&!/^\s+(?:nao\s+(?:atingida|alcancada)|(?:do|no)\s+(?:aparelho|polar))\b/.test(after))return true;
+  }
+  return false;
+}
 function readSets(text) {
   const hits=[];
   for(const [source,build] of rules)for(const match of text.matchAll(pattern(source))){
@@ -105,27 +127,26 @@ export function parseWorkoutText(input,referenceDate) {
       if(possibleHeading(name)){if(heading)mark(heading);heading=name;}else mark(line);
       continue;
     }
-    const prefix=exerciseName(line.slice(0,hits[0].start)).replace(/\s+(?:com|em|de)$/i,'').trim();
+    const prefix=exerciseName(line.slice(0,hits[0].start)).replace(/\s+(?:com|em|de|no|na)$/i,'').trim();
     const tagged=/^(?:s[ée]rie\s*\d*|aquecimento|s[ée]rie de trabalho|rest[ -]?pause|drop(?:set)?)$/i.test(prefix);
     const name=prefix&&!tagged&&possibleHeading(prefix)?prefix:heading;
     if(name){current={name,muscle_group:'',machine:'',notes:'',sets:[]};exercises.push(current);if(heading&&name!==heading)mark(heading);heading=null;}
     if(!current){mark(line);continue;}
     for(let i=0;i<hits.length;i++){
-      const hit=hits[i];if(hit.count<1||hit.count>50||current.sets.length+hit.count>99){mark(line);continue;}
+      const hit=hits[i];
+      if(!Number.isFinite(hit.reps)||(hit.weight!==''&&!Number.isFinite(hit.weight))){mark(line);continue;}
+      if(hit.count<1||hit.count>50||current.sets.length+hit.count>99){mark(line);continue;}
       const extra=line.slice(hit.end,hits[i+1]?.start??line.length).replace(/^[\s.,/:–\-]+|[\s.,/:–\-]+$/g,'').trim();
-      const after=line.slice(hit.end,hits[i+1]?.start??line.length);
-      if(/^\s*[-–]\s*\d|^\s+a\s+\d/i.test(after)){mark(line);continue;}
       const before=i?line.slice(hits[i-1].end,hit.start):prefix;
       const extension=/rest[ -]?pause|pausa[^/]{0,30}\+/i.test(before)?'rest_pause':/drop(?:set)?/i.test(before)?'drop':null;
       if(i&&/\+/.test(before)&&!extension){mark(line);continue;}
       const marker=norm([tagged?prefix:'',extra].filter(Boolean).join(' '));
       if(/rest[ -]?pause|dropset|\bdrop\b|parciais|curtas/.test(marker))mark(line);
       const phase=extension||(/aquecimento/.test(marker)?'warmup':/^(?:rest[ -]?pause|drop(?:set)?)$/i.test(prefix)?(/rest/i.test(prefix)?'rest_pause':'drop'):'working');
-      const failure=/\bfalha\b/.test(marker)&&!/(?:sem|antes da|longe da|quase) falha/.test(marker);
+      const failure=reportsFailure(marker);
       for(let j=0;j<hit.count;j++)current.sets.push({phase,weight:hit.weight,weight_unit:hit.unit,reps:hit.reps,notes:extra||'',failure:failure||null});
     }
-    if(!current.sets.length){exercises.pop();current=null;}
   }
   if(heading)mark(heading);
-  return {raw,exercises,unresolved,metadata,error:null};
+  return {raw,exercises:exercises.filter(exercise=>exercise.sets.length),unresolved,metadata,error:null};
 }
