@@ -1,3 +1,4 @@
+import {sourceDisplayLabel} from './source-display.js';
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
 import {renderTrainingHistory,renderExerciseHistory,exerciseHistoryTitle,renderExerciseDirectory} from './training-history.js';
 import {failed,errorCard} from './history-tools.js';
@@ -57,7 +58,7 @@ function sessionHero(workout){
 function hrPanel(workout){
   const min=num(workout.heart_rate_min),avg=num(workout.heart_rate_avg),max=num(workout.heart_rate_max);
   if(min==null&&avg==null&&max==null)return `<section class="ltsRefTrainPanel"><header><div><span>Medidas do aparelho</span><h2>Frequência cardíaca</h2></div></header><div class="ltsRefTrainEmpty">Ainda não há frequência cardíaca registrada para esta sessão.</div></section>`;
-  const sourceLabel=workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada';
+  const sourceLabel=sourceDisplayLabel(workout.telemetry_source_names?.join(' + ')||workout.source||'Origem não informada');
   const telemetryLabel=workout.telemetry_heart_rate_is_partial?`Trecho parcial · ${sourceLabel}`:sourceLabel;
   return `<section class="ltsRefTrainPanel ltsRefHrPanel">
     <header><div><span>${workout.telemetry_provenance_status==='confirmed'?'Medidas do aparelho':'Valores registrados'}</span><h2>Frequência cardíaca</h2></div><small>${esc(telemetryLabel)}</small></header>

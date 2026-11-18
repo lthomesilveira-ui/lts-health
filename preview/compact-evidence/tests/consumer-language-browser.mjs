@@ -271,7 +271,9 @@ async function contextFor(browser,f,width,height,options={}){
 const browser=await chromium.launch({headless:true});
 try{
   for(const [size,width,height] of [['small',320,740],['mobile',393,844],['desktopNarrow',1180,757],['desktop',1440,900]])for(const kind of ['complete','partial','empty','conflict']){
-    const f=makeConsumerLanguageFixture(kind),label=`${size}-${kind}`,{context,page,traffic}=await contextFor(browser,f,width,height);
+    const f=makeConsumerLanguageFixture(kind),label=`${size}-${kind}`;
+    if(kind==='complete')for(const workout of f.db.health_workouts)workout.source='user_chat';
+    const {context,page,traffic}=await contextFor(browser,f,width,height);
     const failureStart=failures.length;
     try{
       await page.goto(base+'#hoje');await stable(page,'hoje');
@@ -284,6 +286,12 @@ try{
         if(route==='saude')await labChecks(page,f,label);
         if(route==='dados')await dataChecks(page,f,label);
         if(route==='evolucao')await evolutionChecks(page,label);
+        if(route==='analise'&&kind==='complete'){
+          await page.locator('#reviewTab-overview').click();await stable(page,'analise');
+          const source=page.locator('[data-reading-kind="training"] .ltsReadingOrigin');
+          assert.equal(await source.innerText(),'Informado por você · dados da sessão: origem não informada');
+          await capture(page,`${label}-chat-source`,'[data-reading-kind="training"]');
+        }
       }
       if(kind==='complete'){
         // Repeated route/back transitions retain the explicit diary selection.

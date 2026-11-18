@@ -104,7 +104,7 @@ await page.waitForSelector('[data-training-total="2"]');
 assert.deepEqual(await page.locator('[data-depth-workout]').evaluateAll(nodes=>nodes.map(node=>node.dataset.depthWorkout)),['workout-2','workout-1'],'complementary evidence must not create or remove a canonical session');
 await page.locator('[data-depth-workout="workout-1"]').click();
 await page.waitForSelector('.ltsTrainingReference[data-workout-id="workout-1"]');
-assert.equal(await page.locator('.ltsRefHrPanel header>small').innerText(),'Registro LTS · telemetria: origem não explicitada no registro histórico','unproven historical telemetry stays unknown');
+assert.equal(await page.locator('.ltsRefHrPanel header>small').innerText(),'Registro LTS · dados da sessão: origem não informada','unproven historical telemetry stays explicitly unknown with human source wording');
 
 const contract=await page.evaluate(async()=>{
   const {state,fixtureMode}=await import('./src/core.js');

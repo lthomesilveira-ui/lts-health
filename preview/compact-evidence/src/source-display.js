@@ -1,9 +1,9 @@
 // Presentation only. Source identities, selection keys, statuses and clinical
 // text are never rewritten. Use this helper only for source metadata labels.
 const normalized=value=>String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-export function displaySource(value,family=''){
+function displaySourceName(value,family=''){
   const label=String(value??'').trim(),key=normalized(label);
-  const exact={apple_health:'Apple Saúde',healthkit_candidate:'Apple Saúde',apple_activity_summary:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',nutrition:'Histórico alimentar',sourceMetrics:'Diário importado'};
+  const exact={apple_health:'Apple Saúde',healthkit_candidate:'Apple Saúde',apple_activity_summary:'Apple Saúde',polar_flow:'Polar Flow',myfitnesspal:'MyFitnessPal',nutrition:'Histórico alimentar',sourceMetrics:'Diário importado',user_chat:'Informado por você'};
   const names={'Apple Saúde · MyFitnessPal (Health Auto Export)':'MyFitnessPal via Saúde','MyFitnessPal export':'MyFitnessPal · histórico','Apple Saúde · Health Sync':'Água do Saúde'};
   if(names[label])return names[label];
   if(exact[label])return exact[label];
@@ -15,6 +15,15 @@ export function displaySource(value,family=''){
   if(key==='user-reported completed workout'||key==='workout log')return'Registro de treino';
   if(!label)return exact[family]||'Origem não informada';
   return label;
+}
+export function displaySource(value,family=''){
+  const label=String(value??'').trim(),marker=' · telemetria: ',at=label.indexOf(marker);
+  if(at>0){
+    const base=displaySourceName(label.slice(0,at),family),origin=label.slice(at+marker.length);
+    const detail=origin==='origem não explicitada no registro histórico'?'origem não informada':origin.split(' + ').map(name=>displaySourceName(name)).join(' + ');
+    return `${base} · dados da sessão: ${detail}`;
+  }
+  return displaySourceName(label,family);
 }
 function sourceKind(source){
   if(source?.status==='held')return'Registro com limitações';
