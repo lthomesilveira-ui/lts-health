@@ -101,6 +101,14 @@ function trainingContext(data,status,bounds,today){
     note:'Somente sessões registradas sem conflito. Minutos somam apenas durações informadas; grupos vêm de campos explícitos e podem compartilhar sessões. Falta de registro não confirma descanso.'};
 }
 
+export function dashboardTodayWorkouts(data,status,today){
+  const date=day(today);
+  if(!date||status?.workouts!=='ready')return [];
+  const workouts=(data?.workouts||[]).filter(row=>day(row?.workout_date)===date);
+  const current=trainingContext({workouts},status,{start:date,end:date},date);
+  return current.rows.filter(row=>row.sourceRecordId);
+}
+
 /**
  * dashboardContext(data, status, {bounds, today, mode}) -> {labs, training}.
  * `today` is a supplied local calendar date; defaults to bounds.end, never to a

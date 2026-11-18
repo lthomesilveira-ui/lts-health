@@ -76,6 +76,15 @@ function labPanel(l,labAction,labValue){
  return `<article class="healthCockpitPanel labs" data-cockpit-panel="labs"><header>${icon('labs')}<div><h2>${attention.length?'Exames para acompanhar':'Seus exames'}</h2><p>${l.latestCollectionDate?`Última coleta · ${date(l.latestCollectionDate)}`:'Resultados e referências'}</p></div></header>${!l.available?unavailable('Os exames não carregaram.'):featured.length?`<div class="healthCockpitLabList">${featured.map(item=>`<section><div><h3>${esc(item.biomarker)}</h3><strong>${item.ambiguous?'Conferir':labValue(item)}</strong><span>${position(item)}</span></div>${labAction(item,'Ver histórico')}</section>`).join('')}</div><p class="healthCockpitNote">${attention.length?'Sinalização do próprio laudo; não define diagnóstico.':'As referências não classificadas continuam disponíveis no histórico.'}</p>`:unavailable('Ainda não há coleta disponível até esta data.')}${action('saude','Abrir todos os exames')}</article>`;
 }
 
-export function renderHealthCockpit(d,c,g,b,changes,{labAction,labValue}){
- return `<div class="healthCockpit" data-health-cockpit>${overview(d,c,b)}${priorities(d,c,g)}<section class="healthCockpitPanels" aria-label="Corpo, treino e exames">${bodyPanel(b,changes,d)}${trainingPanel(c.training,d)}${labPanel(c.labs,labAction,labValue)}</section></div>`;
+function todayTrainingAccess(rows,today){
+ if(!rows.length)return '';
+ const links=rows.map(row=>{
+   const label=[row.workout_type||'Treino registrado',row.location,row.duration!=null?value(row.duration,'min',0):null].filter(Boolean).join(' · ');
+   return action('treinos',label,`data-home-workout="${esc(row.sourceRecordId)}"`);
+ });
+ return `<section class="healthCockpitToday" aria-label="Treinos de hoje"><h2>${rows.length===1?'Treino de hoje':'Treinos de hoje'} <small>· ${date(today)}</small></h2><div>${links.join('')}</div></section>`;
+}
+
+export function renderHealthCockpit(d,c,g,b,changes,{labAction,labValue,todayWorkouts=[]}){
+ return `<div class="healthCockpit" data-health-cockpit>${todayTrainingAccess(todayWorkouts,d.today)}${overview(d,c,b)}${priorities(d,c,g)}<section class="healthCockpitPanels" aria-label="Corpo, treino e exames">${bodyPanel(b,changes,d)}${trainingPanel(c.training,d)}${labPanel(c.labs,labAction,labValue)}</section></div>`;
 }
