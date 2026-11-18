@@ -35,7 +35,7 @@ assert.equal(hydrationModel({sourceMetrics:[takeout,{...takeout}]}).rows[0].valu
 assert.equal(hydrationModel({sourceMetrics:[takeout,{...canonical,value:2500}]}).rows.length,0,'different source totals remain conflicts');
 assert.equal(hydrationModel({sourceMetrics:[takeout,{...canonical,value:2500}]}).conflicts.length,1);
 
-const {waterSourceReview} = await import('./src/water-source-review.js');
+const {waterSourceReview,latestIPhoneWaterDate,reviewedWaterConflictDates} = await import('./src/water-source-review.js');
 const {homePeriodModel} = await import('./src/home-period-model.js');
 const {healthDashboardModel} = await import('./src/health-dashboard-model.js');
 const {renderProductNutrition} = await import('./src/nutrition-product.js');
@@ -54,6 +54,30 @@ const firstParty={...dated,source_record_id:'mfp-water:'+dated.metric_date,metri
 assert.deepEqual(waterSourceReview([original,firstParty])[0].original,[1500]);
 assert.equal(waterSourceReview([original,firstParty])[0].conflict,true);
 assert.deepEqual(waterSourceReview([firstParty]),[]);
+// A phone receipt may overlap the provider archive without a Google Takeout row.
+const directOverlap={sourceMetrics:[firstParty,phone]};
+assert.deepEqual(waterSourceReview(directOverlap.sourceMetrics),[
+  {date:dated.metric_date,mfp:[],iphone:[phone.value],events:[],original:[firstParty.value],conflict:true}
+]);
+assert.deepEqual([...reviewedWaterConflictDates(directOverlap.sourceMetrics)],[dated.metric_date]);
+assert.equal(homePeriodModel(directOverlap,statuses,'30',{},'2030-02-15').water.closedRows.length,0);
+assert.equal(healthDashboardModel(directOverlap,statuses,{dashboardMode:'period',dashboardPeriod:'30'},'2030-02-15').metrics.find(row=>row.key==='water').count,0);
+const matchedPhone={...phone,value:firstParty.value};
+const mirror={sourceMetrics:[matchedPhone,firstParty,matchedPhone]};
+assert.deepEqual(waterSourceReview(mirror.sourceMetrics)[0].iphone,[firstParty.value]);
+assert.equal(reviewedWaterConflictDates(mirror.sourceMetrics).size,0);
+assert.deepEqual(hydrationModel(mirror).rows.map(row=>row.value),[firstParty.value]);
+assert.equal(homePeriodModel(mirror,statuses,'30',{},'2030-02-15').water.closedRows.length,1);
+assert.deepEqual(waterSourceReview([phone]),[]);
+assert.deepEqual(waterSourceReview([firstParty,{...phone,confidence:'unverified'}]),[]);
+const laterDay='2030-02-12';
+const laterArchive={...firstParty,metric_date:laterDay,source_record_id:'mfp-water:'+laterDay};
+const laterPhone={...phone,metric_date:laterDay,source_record_id:'health_auto_export:next-day'};
+assert.equal(latestIPhoneWaterDate([firstParty,laterArchive]),null);
+assert.equal(latestIPhoneWaterDate([laterArchive,phone]),dated.metric_date);
+assert.equal(latestIPhoneWaterDate([laterPhone,laterArchive,phone]),laterDay);
+for (const invalid of [{confidence:'unverified'}, {unit:'L'}, {value:0}, {metric_date:'2030-02-31'}, {metric_type:'activity_kcal'}, {canonical_status:'held'}])
+  assert.equal(latestIPhoneWaterDate([phone,{...laterPhone,...invalid}]),dated.metric_date);
 assert.equal(waterSourceReview([original,{...firstParty,value:1234}])[0].conflict,false);
 assert.equal(waterSourceReview([original,{...firstParty,confidence:'unverified'}])[0].original,undefined);
 assert.equal(waterSourceReview([original,{...takeout,...dated},phone,original])[0].conflict,false);
@@ -75,6 +99,8 @@ for(const label of ['Histórico de água por origem','11/02/2030','1.234','1.364
 const {nutritionSummary}=await import('./src/reports-model.js');
 const {bodyIntervalModel}=await import('./src/body-interval-model.js');
 const {renderTimelineHub}=await import('./src/timeline-screen.js');
+const directDiary={...directOverlap,nutrition:[{nutrition_date:dated.metric_date,source:'Diário de teste',water_ml:phone.value}]};
+assert.equal(nutritionSummary(directDiary,statuses,{start:'2030-02-10',end:'2030-02-12'}).means.water_ml,null);
 const duplicateDay={...evidence,nutrition:[{nutrition_date:dated.metric_date,source:'Diário de teste',water_ml:1364,protein_g:78}]};
 const report=nutritionSummary(duplicateDay,statuses,{start:'2030-02-10',end:'2030-02-12'});
 assert.equal(report.means.water_ml,null);assert.equal(report.means.protein_g,78);

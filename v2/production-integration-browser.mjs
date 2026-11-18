@@ -328,19 +328,24 @@ for(const width of [320,393,1440]){
   window.__reviewDb.health_source_daily_metrics.push(
    {...common,source_record_id:'google_health_takeout:water-source:'+'a'.repeat(64),metric_type:'dietary_water_source_total_ml',value:1234},
    {...common,source_name:'Google Health App',source_record_id:'google_health_takeout:water-event:'+'b'.repeat(64),metric_type:'dietary_water_source_event_ml',value:130},
-   {...common,source_family:'health_auto_export',confidence:'authenticated_auto_export',canonical_status:'canonical',source_name:'Telefone de teste',source_record_id:'health_auto_export:synthetic-water-source',metric_type:'dietary_water_ml',value:1364}
+   {...common,source_family:'health_auto_export',confidence:'authenticated_auto_export',canonical_status:'canonical',source_name:'Telefone de teste',source_record_id:'health_auto_export:synthetic-water-source',metric_type:'dietary_water_ml',value:1364},
+   {...common,metric_date:'2030-02-11',source_family:'myfitnesspal',source_name:'MyFitnessPal',confidence:'account_authenticated_export',canonical_status:'canonical',source_record_id:'mfp-water:2030-02-11',metric_type:'dietary_water_ml',value:1500},
+   {...common,metric_date:'2030-02-11',source_family:'health_auto_export',source_name:'Telefone de teste',confidence:'authenticated_auto_export',canonical_status:'canonical',source_record_id:'health_auto_export:next-day',metric_type:'dietary_water_ml',value:1800}
   );
   const {refreshData}=await import('./src/data-layer.js');
   await refreshData('nutricao');
  });
  await navigate('nutricao');
  const waterHistory=page.getByRole('region',{name:'Histórico de água por origem',exact:true});
- const historyToggle=waterHistory.getByText('Conferir 1 dia com registro no arquivo Google');
+ assert.ok((await waterHistory.innerText()).includes('O registro de água mais recente recebido do iPhone é de 11/02/2030.'));
+ const historyToggle=waterHistory.getByText('Comparar registros de 2 dias');
  await historyToggle.click();
  const sourceTable=waterHistory.getByRole('table');
  await sourceTable.waitFor({state:'visible'});
  const sourceText=await sourceTable.innerText();
  for(const label of ['23/09/2026','1.234','1.364','130 mL','Totais diferentes'])assert.ok(sourceText.includes(label),label);
+ const directRow=await sourceTable.getByRole('row').filter({hasText:'11/02/2030'}).innerText();
+ for(const label of ['Original MyFitnessPal','1.500','Sem registro','1.800','Totais diferentes'])assert.ok(directRow.includes(label),label);
  assert.equal(await waterHistory.evaluate(el=>el.querySelector('table').getBoundingClientRect().width<=el.querySelector('table').parentElement.clientWidth+1),true,'source history fits '+width);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'nutrition fits '+width);
  await waterHistory.screenshot({path:`artifacts/production-integration/water-source-history-${width}.png`});
