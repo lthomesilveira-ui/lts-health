@@ -23,7 +23,8 @@ state.data=data;state.domainStatus=status;state.ui={openWorkout:workout.source_r
 let html=renderProductTraining();
 assert.match(html,/<strong> 3<\/strong>[\s\S]*?<small>Séries<\/small>/);
 assert.match(html,/3 prolongamentos por drop ou rest-pause/);
-assert.match(html,/possível mau posicionamento do sensor/);
+assert.match(html,/Você relatou imprecisão na medição do Polar/);
+assert.doesNotMatch(html,/mau posicionamento do sensor/);
 state.ui.productTrainingView='exercises';html=renderProductTraining();
 assert.match(html,/3 séries \+ 3 prolong\./);
 assert.match(html,/Rest-pause/);assert.match(html,/<i>2.5<\/i>/);assert.match(html,/>Repetições<\/span>/);

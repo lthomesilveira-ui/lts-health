@@ -346,6 +346,9 @@ try{
       const device=page.locator(disclosureSelector('device'));
       await device.locator('summary').click();
       assert.match(await device.innerText(),/Possível correspondência/);
+      assert.match(await device.innerText(),/Polar Flow · Vínculo confirmado/);
+      assert.match(await device.innerText(),/Duração confirmada na sessão sincronizada/);
+      assert.equal(await device.locator('a').count(),1,'only the evidence with a real public URL exposes a link');
       assert.equal(await device.locator('a').getAttribute('href'),'https://flow.polar.com/training/analysis/42');
       await capture(page,`${label}-device-record`,disclosureSelector('device'));
       await device.locator('summary').click();
