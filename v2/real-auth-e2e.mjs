@@ -165,7 +165,12 @@ async function readIntegritySnapshot(){
       return{rows};
     }
     const specs=[
-      ['workouts','health_workouts','source_record_id,workout_date,is_canonical,record_status,source_file,raw_exercises'],
+      ['workouts','health_workouts',[
+        'source_record_id,workout_date,is_canonical,record_status,source_file,raw_exercises',
+        'reported_issue:source_payload->measurement_issue_reported',
+        'reported_polar_issue:source_payload->polar_measurement_issue_reported',
+        'reported_reliability:source_payload->>polar_reliability'
+      ].join(',')],
       ['exercises','health_workout_exercises','source_record_id,workout_source_record_id'],
       ['sets','health_workout_sets','source_record_id,workout_source_record_id,exercise_source_record_id,phase'],
       ['evidence','health_workout_source_evidence','source_record_id,workout_source_record_id,evidence_kind,evidence_status,field_names'],
@@ -184,6 +189,11 @@ async function readIntegritySnapshot(){
     const latest=visibleWorkouts[0]||null;
     const latestSetRows=latest?data.sets.filter(r=>r.workout_source_record_id===latest.source_record_id):[];
     const extensionRows=latestSetRows.filter(r=>['drop','rest_pause'].includes(r.phase));
+    const reportedInWorkout=latest?.reported_issue===true || latest?.reported_polar_issue===true ||
+      ['user_disputed','user_reported_inaccurate'].includes(latest?.reported_reliability);
+    const confirmedInEvidence=latest && data.evidence.some(row=>
+      row.workout_source_record_id===latest.source_record_id && row.evidence_kind==='telemetry' &&
+      row.evidence_status==='confirmed' && (row.field_names||[]).includes('measurement_issue_reported'));
     const allowedCanonical=new Set(['apple_activity_summary|active_energy_kcal','apple_activity_summary|exercise_minutes','apple_activity_summary|stand_hours']);
     const bridgeTypes={dietary_energy_kcal:['kcal',20000],dietary_protein_g:['g',2000],dietary_carbs_g:['g',5000],dietary_fat_g:['g',2000],dietary_fiber_g:['g',1000],dietary_water_ml:['mL',100000]};
     const validBridge=r=>r.source_family==='health_auto_export'&&r.confidence==='authenticated_auto_export'&&String(r.source_record_id||'').startsWith('health_auto_export:')&&bridgeTypes[r.metric_type]?.[0]===r.unit&&Number.isFinite(Number(r.value))&&Number(r.value)>=0&&Number(r.value)<=bridgeTypes[r.metric_type][1];
@@ -205,7 +215,7 @@ async function readIntegritySnapshot(){
       latestExpectedSets:latestSetRows.length,
       latestExpectedPrimarySets:latestSetRows.length-extensionRows.length,
       latestExpectedExtensions:extensionRows.length,
-      latestMeasurementIssue:latest?data.evidence.some(r=>r.workout_source_record_id===latest.source_record_id&&r.evidence_kind==='telemetry'&&r.evidence_status==='confirmed'&&(r.field_names||[]).includes('measurement_issue_reported')):false,
+      latestMeasurementIssue:Boolean(reportedInWorkout || confirmedInEvidence),
       internalQualityCount:data.quality.filter(r=>['open','in_progress'].includes(String(r.status||'').toLowerCase())).length,
       uploadActionCount:data.uploads.filter(r=>['rejected','failed'].includes(String(r.status||'').toLowerCase())).length
     };
