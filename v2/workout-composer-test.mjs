@@ -14,6 +14,34 @@ p=parse('Remada: 3x8');assert.equal(p.exercises[0].sets.length,3);assert.equal(p
 p=parse('Remada 42x8 / 44x6');assert.deepEqual(p.exercises[0].sets.map(s=>s.weight),[42,44]);
 p=parse('Rosca: 40 kg x 4, pausa 15s + 1,5 rep até a falha');assert.deepEqual(p.exercises[0].sets.map(s=>s.phase),['working','rest_pause']);assert.equal(p.exercises[0].sets[1].reps,1.5);
 p=parse('Remada: 20 kg x 8-12');assert.equal(p.exercises.length,0);assert.equal(p.unresolved.length,1);
+p=parse('Remada na máquina\nNível 4 x 9 reps\nplaca 7 × 6\n3 séries de 8 no nível 5');
+assert.equal(p.exercises[0].name,'Remada na máquina');
+assert.deepEqual(p.exercises[0].sets.map(s=>[s.weight,s.weight_unit,s.reps]),[
+  [4,'plate_index',9],[7,'plate_index',6],...[1,2,3].map(()=>[5,'plate_index',8])
+]);
+assert.deepEqual(p.unresolved,[]);
+p=parse('Remada: 9 reps na placa 3');
+assert.deepEqual([p.exercises[0].sets[0].weight,p.exercises[0].sets[0].weight_unit],[3,'plate_index']);
+for(const expression of ['18 kg x 8–10 reps','18 kg 8 a 10 repetições','6 até 9 reps com 12 kg','3 séries de 6 a 9 com 12 kg','18–22 kg x 9 reps','nível 4–6 x 9 reps']){
+  const original='Puxada: '+expression;
+  p=parse(original);
+  assert.deepEqual(p.exercises,[],original);
+  assert.deepEqual(p.unresolved,[original]);
+  assert.equal(p.raw,original);
+}
+p=parse('Remada: 18 kg x 8–10 reps, 25 kg x 6\n30 kg x 5 - 35 kg x 4');
+assert.deepEqual(p.exercises.map(e=>e.name),['Remada']);
+assert.deepEqual(p.exercises[0].sets.map(s=>[s.weight,s.reps]),[[25,6],[30,5],[35,4]]);
+p=parse('Remada: 18 kg x 8–10 reps\n25 kg x 6 reps');
+assert.deepEqual(p.exercises.map(e=>[e.name,e.sets.length]),[['Remada',1]]);
+for(const note of ['sem chegar à falha','não fui até a falha','perto da falha','próxima da falha','falha não atingida']){
+  const set=parse('Remada: 24 kg × 7 reps '+note).exercises[0].sets[0];
+  assert.equal(set.failure,null,note);
+  assert.equal(set.notes,note);
+}
+for(const note of ['até a falha','sem pausa até a falha','quase falha, mas depois cheguei à falha']){
+  assert.equal(parse('Remada: 24 kg × 7 reps '+note).exercises[0].sets[0].failure,true,note);
+}
 p=parse('Treino leve sem detalhes');assert.equal(p.exercises.length,0);assert.equal(p.raw,'Treino leve sem detalhes');assert.deepEqual(p.unresolved,[p.raw]);
 p=parse('18 kg x 8');assert.equal(p.exercises.length,0);assert.equal(p.unresolved[0],p.raw);
 p=parse('Data: 31/02/2024\nDuração: indefinida');assert.equal(Object.keys(p.metadata).length,0);assert.equal(p.unresolved.length,2);

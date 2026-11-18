@@ -167,8 +167,8 @@ const manifest={
     "src/treatment-screen.js": "22862bd58022a1eb584e594eae202ed0b8e1fde56914da2795fae547e16cc623",
     "src/user-facing-errors.js": "bd8af0c7ac826a0d911a09906b64b547962f81402902d8a819e682f605cb5b2a",
     "src/water-reference-context.js": "05f44d253519d19db310bac7a586a05bbc1b5959f0aedc2aaf1dec13d1271ae5",
-    "src/workout-composer.js": "3c213b06d2b7f59682c57a65c55fdc77760f9bec94063eab26c8fb0824f6f029",
-    "src/workout-entry-ui.js": "a5cc2559b4131a8e513eed03eae80590805f3e02f3c7f15f0d77815fa2de8c49",
+    "src/workout-composer.js": "e0467b238f336cd35e36502efc0baafa3cabf0c04d5879693190c0dedb00e956",
+    "src/workout-entry-ui.js": "010b8eb04bd608167239e5839b5f45648ef28ab7c9429343dffdd4eb72daae85",
     "src/workout-evidence.js": "d964bca40266d0651ff269cb4d586b29945db1ff7b6bc9c629bb8f0b812f0960",
     "src/writes.js": "f1e332a53118605615789ab37e811692bbab605429e2d1ca1af9270994994f4b",
     "styles.css": "90ca5a32254ba77ebb7394dffc85254f1790b7a70d6071c5772cf5b60336a274",
@@ -200,7 +200,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.152/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.153/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261112.133'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);

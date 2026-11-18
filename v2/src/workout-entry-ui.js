@@ -91,7 +91,9 @@ function dayMessage(form){
 }
 function describeSet(set){
  const weight=clean(set.weight),reps=clean(set.reps);
- return [phases[set.phase]||'Série',weight?[weight,units[set.weight_unit]].filter(Boolean).join(' '):'',reps?reps+' rep.':'',set.failure?'até a falha':'',set.notes].filter(Boolean).join(' · ');
+ let load='';
+ if(weight)load=set.weight_unit==='plate_index'?'nível '+weight:[weight,units[set.weight_unit]].filter(Boolean).join(' ');
+ return [phases[set.phase]||'Série',load,reps?reps+' rep.':'',set.failure?'até a falha':'',set.notes].filter(Boolean).join(' · ');
 }
 function draftSummary(form,payload){
  const d=drafts.get(form),rows=payload.exercises.filter(ex=>clean(ex.name)),raw=d.blocks.join('\n\n');
