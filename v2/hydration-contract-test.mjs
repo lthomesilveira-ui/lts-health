@@ -66,6 +66,19 @@ for(const bad of [{unit:'L'}, {value:0}, {value:true}, {metric_date:'2030-02-31'
 state.data={...fixtureData(), ...evidence};state.domainStatus=statuses;
 const sourceScreen=renderProductNutrition();
 for(const label of ['Histórico de água por origem','11/02/2030','1.234','1.364','130 mL','Totais diferentes'])assert.ok(sourceScreen.includes(label),label);
+const {nutritionSummary}=await import('./src/reports-model.js');
+const {bodyIntervalModel}=await import('./src/body-interval-model.js');
+const {renderTimelineHub}=await import('./src/timeline-screen.js');
+const duplicateDay={...evidence,nutrition:[{nutrition_date:dated.metric_date,source:'Diário de teste',water_ml:1364,protein_g:78}]};
+const report=nutritionSummary(duplicateDay,statuses,{start:'2030-02-10',end:'2030-02-12'});
+assert.equal(report.means.water_ml,null);assert.equal(report.means.protein_g,78);
+const pair=['2030-02-10','2030-02-12'].map(date=>({source_record_id:'scale-'+date,measured_at:date,source:'Escala de teste',device_name:'Balança de teste',weight_kg:80}));
+const interval=bodyIntervalModel({...duplicateDay,body:pair},{...statuses,body:'ready'},{},'2030-02-15');
+assert.ok(interval.water.sources.length);assert.ok(interval.water.sources.every(source=>source.days===0&&source.mean===null));
+state.ui.timelinePeriod='all';state.ui.timelineYear='2030';
+const timeline=renderTimelineHub();
+assert.ok(timeline.includes('Água registrada no MyFitnessPal 1.234 mL'));
+assert.ok(timeline.includes('Lançamento de água no Google 130 mL'));
 
 const equalSources=hydrationModel({nutrition:[{nutrition_date:'2026-09-08',water_ml:2500,source:'MFP ZIP'}],sourceMetrics:[canonical]});
 assert.equal(equalSources.rows.length,1);

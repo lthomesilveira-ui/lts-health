@@ -6,6 +6,7 @@ import {labGroups,labCohorts,labCohortPoints} from './labs-layout-v2.js';
 import {compareLabResults} from './health-dashboard-labs.js';
 import {addDays,normalizeMuscleGroup} from './integrated-analysis.js';
 import {hydrationModel} from './hydration.js';
+import {reviewedWaterConflictDates} from './water-source-review.js';
 import {nutritionPeriodModel} from './home-period-model.js';
 
 const ready=(status,key)=>status?.[key]==='ready';
@@ -94,7 +95,11 @@ export function nutritionSummary(data,status,bounds){
   if(!ready(status,'nutrition'))return {available:false,days:null,means:{},counts:{},rows:[],origins:[]};
   const rows=uniqueDates((data.nutrition||[]).filter(r=>inside(r.nutrition_date,bounds)),'nutrition_date');
   const fields=['calories_kcal','protein_g','carbs_g','fat_g','fiber_g','water_ml'],means={},counts={};
-  for(const k of fields){const values=rows.map(r=>num(r[k])).filter(v=>v!=null);means[k]=mean(values);counts[k]=values.length;}
+  const waterConflicts=reviewedWaterConflictDates(ready(status,'sourceMetrics')?data.sourceMetrics:[]);
+  for(const k of fields){
+    const eligible=k==='water_ml'?rows.filter(row=>!waterConflicts.has(day(row.nutrition_date))):rows;
+    const values=eligible.map(r=>num(r[k])).filter(v=>v!=null);means[k]=mean(values);counts[k]=values.length;
+  }
   return {available:true,days:rows.length,intervalDays:days(bounds.start,bounds.end),means,counts,rows,origins:[...new Set(rows.map(r=>norm(r.source)))]};
 }
 export function polarTrainingSummary(data,status,bounds){
