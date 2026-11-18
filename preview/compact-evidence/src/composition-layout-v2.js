@@ -37,7 +37,9 @@ export function compositionModel(){
 }
 const metricTile=(label,value,unit)=>`<div class="ltsCompositionMetric"><span>${esc(label)}</span><b>${num(value)==null?'—':fmtNum(value,1)}${num(value)==null?'':` <small>${esc(unit)}</small>`}</b></div>`;
 function header(detail=false){return `<header class="ltsPageHeader"><button class="ltsBack" ${detail?'data-depth-composition-back':'data-route="hoje" data-route-back'} aria-label="Voltar">‹</button><div><span class="ltsEyebrow">Composição</span><h1 tabindex="-1" id="productCompositionTitle">${detail?'Detalhes da medição':'Composição corporal'}</h1><p>${detail?'Valores registrados e análise segmentar.':'Suas medições e mudanças ao longo do tempo.'}</p></div><button class="ltsRoundAction" data-entry="body" aria-label="Registrar bioimpedância">+</button></header>`;}
-function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${esc(valueText(value,unit))}</b></div>`;}
+function detailValue(label, value, unit='', digits=1, maxDigits=digits){
+  return `<div><span>${esc(label)}</span><b>${esc(valueText(value,unit,digits,maxDigits))}</b></div>`;
+}
 export function linkedSegmental(record,bodyRows,segmentalRows){
   const date=validDay(record?.measured_at),source=identity(record);
   if(!date||!source)return{row:null,reason:'Não foi possível confirmar a data e a origem das medidas por região.'};
@@ -60,7 +62,19 @@ function renderRecordDetail(model){
   const r=model.record,seg=linkedSegmental(r,model.all,state.data.segmental||[]);
   const parts=[['Braço direito','right_arm'],['Braço esquerdo','left_arm'],['Tronco','trunk'],['Perna direita','right_leg'],['Perna esquerda','left_leg']];
   const ambiguous=model.counts.get(validDay(r.measured_at))>1;
-  return `<section class="ltsCompositionV2" data-composition-view="detail">${header(true)}<div class="ltsHistoryContext"><b>${esc(fmtDate(r.measured_at))} · ${esc(sourceDisplay(r))}</b>${r.source_file?esc(r.source_file):'Arquivo de origem não informado'}${ambiguous?'<br>Data com múltiplos registros: leitura individual, fora das comparações automáticas.':''}</div><section class="ltsRecordDetails"><h2>Valores da medição</h2><div class="ltsDetailGrid">${detailValue('Peso',r.weight_kg,'kg')}${detailValue('Massa muscular esquelética',r.skeletal_muscle_mass_kg,'kg')}${detailValue('Massa de gordura',r.fat_mass_kg,'kg')}${detailValue('Gordura corporal',r.body_fat_pct,'%')}${detailValue('Água corporal',r.body_water_l,'L')}${detailValue('Nível de gordura visceral',r.visceral_fat_level)}${detailValue('Relação cintura/quadril',r.waist_hip_ratio)}</div></section><section class="ltsRecordDetails"><h2>Análise segmentar</h2>${failed(state,'segmental')?errorCard('Os dados segmentares não carregaram agora.'):seg.row?`<p class="ltsDepthNote">Massa magra e massa de gordura, em kg. Valores da mesma data e origem; massa magra segmentar não é sinônimo de músculo esquelético.</p><table class="ltsSegmentTable"><thead><tr><th scope="col">Segmento</th><th scope="col">Magra · kg</th><th scope="col">Gordura · kg</th></tr></thead><tbody>${parts.map(([name,key])=>`<tr><th scope="row">${esc(name)}</th><td>${num(seg.row[`lean_${key}_kg`])==null?'—':fmtNum(seg.row[`lean_${key}_kg`],2)}</td><td>${num(seg.row[`fat_${key}_kg`])==null?'—':fmtNum(seg.row[`fat_${key}_kg`],2)}</td></tr>`).join('')}</tbody></table>`:emptyCard(seg.reason)}</section><button class="ltsDepthLink" data-depth-composition-back>Voltar ao histórico de medições</button></section>`;
+  const measuredValues=[
+    detailValue('Peso',r.weight_kg,'kg'),
+    detailValue('Massa muscular esquelética',r.skeletal_muscle_mass_kg,'kg'),
+    detailValue('Massa de gordura',r.fat_mass_kg,'kg'),
+    detailValue('Gordura corporal',r.body_fat_pct,'%'),
+    detailValue('Água corporal',r.body_water_l,'L'),
+    detailValue('Nível de gordura visceral',r.visceral_fat_level,'',0,20),
+    detailValue('Relação cintura/quadril',r.waist_hip_ratio,'',2,20),
+    detailValue('Metabolismo basal estimado',r.bmr_kcal,'kcal',0,20)
+  ].join('');
+  const fileLabel=/\.[jt]sx? \(SEED_BIO\)$/i.test(r.source_file||'')
+    ? 'Medição importada do histórico anterior' : (r.source_file||'Arquivo de origem não informado');
+  return `<section class="ltsCompositionV2" data-composition-view="detail">${header(true)}<div class="ltsHistoryContext"><b>${esc(fmtDate(r.measured_at))} · ${esc(sourceDisplay(r))}</b>${esc(fileLabel)}${ambiguous?'<br>Data com múltiplos registros: leitura individual, fora das comparações automáticas.':''}</div><section class="ltsRecordDetails"><h2>Valores da medição</h2><div class="ltsDetailGrid">${measuredValues}</div></section><section class="ltsRecordDetails"><h2>Análise segmentar</h2>${failed(state,'segmental')?errorCard('Os dados segmentares não carregaram agora.'):seg.row?`<p class="ltsDepthNote">Massa magra e massa de gordura, em kg. Valores da mesma data e origem; massa magra segmentar não é sinônimo de músculo esquelético.</p><table class="ltsSegmentTable"><thead><tr><th scope="col">Segmento</th><th scope="col">Magra · kg</th><th scope="col">Gordura · kg</th></tr></thead><tbody>${parts.map(([name,key])=>`<tr><th scope="row">${esc(name)}</th><td>${num(seg.row[`lean_${key}_kg`])==null?'—':fmtNum(seg.row[`lean_${key}_kg`],2)}</td><td>${num(seg.row[`fat_${key}_kg`])==null?'—':fmtNum(seg.row[`fat_${key}_kg`],2)}</td></tr>`).join('')}</tbody></table>`:emptyCard(seg.reason)}</section><button class="ltsDepthLink" data-depth-composition-back>Voltar ao histórico de medições</button></section>`;
 }
 function comparison(model){
   if(model.source==='all'||model.series.length<2||!documentedSeries(model.series))return '';
