@@ -67,6 +67,7 @@ function exerciseCard(){
 function workoutForm(){
   exerciseCounter=0;
   return `<form id="workoutEntryForm" class="entryForm">
+    ${workoutComposerFields()}
     <div class="entryGrid cols3">
       <label>Data<input name="workout_date" type="date" value="${today()}" required></label>
       <label>Treino<input name="workout_type" required value="Treino de força" maxlength="150"></label>
@@ -75,7 +76,6 @@ function workoutForm(){
       <label>Duração (min)<input name="duration_minutes" inputmode="decimal"></label>
       <label>Calorias<input name="calories_kcal" inputmode="decimal"></label>
     </div>
-    ${workoutComposerFields()}
     <div class="entrySectionHead"><div><b>Exercícios</b><small>Registre apenas o que você realmente fez; campos desconhecidos podem ficar em branco.</small></div><button type="button" class="ghostSmall" data-add-exercise>+ Exercício</button></div>
     <div id="exerciseEntries">${exerciseCard()}</div>
     <label>Observação<textarea name="notes" rows="2" placeholder="Opcional"></textarea></label>
