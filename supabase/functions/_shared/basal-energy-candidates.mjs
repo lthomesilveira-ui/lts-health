@@ -14,10 +14,16 @@ export function validCandidateDate(value,today=localToday()){
   const h=Number(value.slice(11,13)),m=Number(value.slice(14,16)),s=Number(value.slice(17,19)),oh=Number(value.slice(21,23)),om=Number(value.slice(23,25));
   return h<24&&m<60&&s<60&&oh<=14&&om<60&&(oh<14||om===0);
 }
-function optionalDate(point,key,today){
-  if(point[key]==null)return null;
-  if(!validCandidateDate(point[key],today))throw Error('invalid_candidate');
-  return point[key];
+function optionalDate(value,today){
+  if(value==null)return null;
+  if(!validCandidateDate(value,today))throw Error('invalid_candidate');
+  return value;
+}
+function intervalBoundary(longNameValue,shortNameValue,today){
+  if(longNameValue!=null&&shortNameValue!=null&&longNameValue!==shortNameValue){
+    throw Error('invalid_candidate');
+  }
+  return optionalDate(longNameValue??shortNameValue,today);
 }
 function candidate(point,unit,index,today){
   if(!point||typeof point!=='object'||Array.isArray(point))throw Error('invalid_candidate');
@@ -28,7 +34,9 @@ function candidate(point,unit,index,today){
   if(source==null||source==='')source=null;
   else if(typeof source!=='string'||source.length>160||controls.test(source)||loneSurrogate.test(source))throw Error('invalid_candidate');
   return {point_index:index,quantity:point.qty,unit,source_date:point.date,metric_date:point.date.slice(0,10),original_source:source,
-    source_start_date:optionalDate(point,'startDate',today),source_end_date:optionalDate(point,'endDate',today),source_creation_date:optionalDate(point,'creationDate',today)};
+    source_start_date:intervalBoundary(point.startDate,point.start,today),
+    source_end_date:intervalBoundary(point.endDate,point.end,today),
+    source_creation_date:optionalDate(point.creationDate,today)};
 }
 // Call only after normalizeExport has validated the common envelope/size limits.
 // Invalid formerly ignored points must not reject otherwise valid legacy metrics.

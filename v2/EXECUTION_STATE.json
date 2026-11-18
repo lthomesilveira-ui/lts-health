@@ -1995,10 +1995,11 @@
         "Home Screen continuation: a fresh read-only aggregate source check confirms general receipts continue while water/verified daily-total dependencies remain unmet. No source values or provenance are rewritten.",
         "The supplied original native archive was audited without imports or energy summation. Its available historical intervals do not establish eligible whole-day coverage for the prospective candidates. Unknown source/coverage remains held.",
         "2026-11-12 evidence review: Fresh candidates include some declared source names but no record establishes both interval bounds and verified full-day coverage. Subsequent fully received daily requests also report coverage_verified=false. No basal total was promoted.",
-        "2026-11-14 incremental read: nine new prospective candidates contain an original-source field, but zero have both original interval bounds and zero have verified full-day coverage. No total expenditure was promoted."
+        "2026-11-14 incremental read: nine new prospective candidates contain an original-source field, but zero have both original interval bounds and zero have verified full-day coverage. No total expenditure was promoted.",
+        "The receiver preserves original start/end and startDate/endDate fields on prospective basal observations. A synthetic mixed request exercises private interval storage and the existing daily nutrition projection independently."
       ],
       "next_action": "Wait for an attributable original interval with independently established full-day coverage; ordinary daily receipt alone is insufficient.",
-      "blocker": "Available prospective candidates do not establish source identity or full-day coverage."
+      "blocker": "Some observations name their source. An attributable original interval and independent evidence of whole-day coverage are still required."
     },
     {
       "id": "LTS-MOBILE-NAV-COVERAGE-001",

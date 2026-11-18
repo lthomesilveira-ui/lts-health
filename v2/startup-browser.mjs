@@ -10,12 +10,15 @@ for(const engine of [chromium,webkit]){
    let release;
    const sdkReady=new Promise(resolve=>{release=resolve;});
    await page.route('https://cdn.jsdelivr.net/**',async route=>{await sdkReady;await route.fulfill({contentType:'application/javascript',body:sdk});});
+   const sdkRequested=page.waitForRequest('https://cdn.jsdelivr.net/**');
    await page.clock.install({time:new Date('2030-04-10T12:00:00Z')});
    await page.clock.pauseAt(new Date('2030-04-10T12:00:01Z'));
    await page.goto(base,{waitUntil:'commit'});
    await page.locator('#appStartup').waitFor({state:'visible'});
    assert.equal(await page.locator('#login').isVisible(),false);
    assert.equal(await page.locator('#app').isVisible(),false);
+   // The page starts its recovery timer immediately before requesting the SDK.
+   await sdkRequested;
    await page.clock.runFor(9000);
    await page.locator('#appStartupRetry').waitFor({state:'visible'});
    assert.match(await page.locator('#appStartupMessage').innerText(),/demorando/);

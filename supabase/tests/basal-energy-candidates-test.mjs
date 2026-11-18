@@ -25,6 +25,29 @@ check('optional timestamps retained without coverage inference',()=>{
   const x={...point,startDate:'2026-10-19 00:00:00 -0300',endDate:'2026-10-19 01:00:00 -0300',creationDate:'2026-10-20 00:00:00 -0300'};
   const c=capture(basal([x])).candidates[0];assert.equal(c.source_start_date,x.startDate);assert.equal(c.source_end_date,x.endDate);assert.equal(c.source_creation_date,x.creationDate);assert.ok(!('coverage_verified' in c));assert.ok(!('value_kcal' in c));
 });
+check('short and mixed interval names retain the exact supplied boundaries',()=>{
+  const start='2024-02-28 23:55:00 -0300',end='2024-02-29 00:10:00 -0300';
+  for(const fields of [{start,end},{startDate:start,end},{start,endDate:end},{start,startDate:start,end,endDate:end}]){
+    const {candidates:[row],rejected_points}=capture(basal([{...point,...fields}]));
+    assert.equal(rejected_points,0);
+    assert.equal(row.source_start_date,start);
+    assert.equal(row.source_end_date,end);
+    assert.equal(row.source_date,point.date);
+  }
+  for(const [fields,expected] of [[{start},[start,null]],[{end},[null,end]],[{startDate:null,start},[start,null]]]){
+    const [row]=capture(basal([{...point,...fields}])).candidates;
+    assert.deepEqual([row.source_start_date,row.source_end_date],expected);
+  }
+});
+check('malformed or conflicting interval aliases reject only the affected observation',()=>{
+  const start='2024-02-28',end='2024-02-29';
+  for(const fields of [{start:'bad'},{end:false},{start,startDate:end},{end,endDate:start},{start:'',startDate:start}]){
+    const result=capture(basal([{...point,...fields},point]));
+    assert.equal(result.rejected_points,1);
+    assert.equal(result.ignored_blocks,1);
+    assert.deepEqual(result.candidates,capture(basal([point])).candidates);
+  }
+});
 check('revisions and equal points are never summed or deduplicated',()=>{
   const c=capture(basal([point,point,{...point,qty:1900}]));assert.equal(c.candidates.length,3);assert.deepEqual(c.candidates.map(x=>x.quantity),[1800.25,1800.25,1900]);assert.deepEqual(c.candidates.map(x=>x.point_index),[0,1,2]);
 });
