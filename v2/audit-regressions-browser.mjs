@@ -77,6 +77,8 @@ for(const [engine,type] of [['chromium',chromium],['webkit',webkit]]){
     const control=page.getByRole(role,{name,exact:true}),box=await control.boundingBox();assert.ok(box.height>=44,name+' touch target');
    }
    await page.getByRole('combobox',{name:'Unidade da carga da série 1',exact:true}).selectOption('plate_index');
+   await page.getByText('Detalhes da série',{exact:true}).click();
+   await page.getByLabel('Até a falha',{exact:true}).waitFor({state:'visible'});
    const geometry=await page.evaluate(()=>{
     const luminance=color=>{const v=color.match(/[\d.]+/g).slice(0,3).map(Number).map(n=>{n/=255;return n<=.04045?n/12.92:((n+.055)/1.055)**2.4;});return .2126*v[0]+.7152*v[1]+.0722*v[2];};
     const field=document.querySelector('.setEntry input'),css=getComputedStyle(field),a=luminance(css.color),b=luminance(css.backgroundColor);

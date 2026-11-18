@@ -57,7 +57,8 @@ if(/health_source_daily_metrics','\*'/.test(dataLayer))throw new Error('source m
 if(!dataLayer.includes("dados:['nutrition','meals','activity','metrics','sourceMetrics','labs','docs','uploads','previews','quality','treatments','regimens','polarSessions']"))throw new Error('Data route no longer owns all structured provenance/context domains');
 if(!dataLayer.includes("analise:['nutrition','metrics','sourceMetrics','labs','treatments','regimens','polarSessions','goals','waterReferences','nutritionPlans']"))throw new Error('Insights no longer loads preserved source and protocol context');
 const polarProjection=dataLayer.match(/polarSessions:\(\)=>fetchAll\('health_polar_sessions','([^']+)'/)?.[1]||'';
-if(!polarProjection||/source_payload|user_id|tokens_encrypted/.test(polarProjection))throw new Error('Polar session projection exposed private connection/raw data');
+const allowedPolarFields=['source_record_id','workout_date','recorded_start','session_name','duration_minutes','heart_rate_avg','heart_rate_max','source_name','recorded_stop:source_payload->>recorded_stop','recorded_calories:source_payload->session_calories_kcal'];
+if(JSON.stringify(polarProjection.split(','))!==JSON.stringify(allowedPolarFields))throw new Error('Polar session projection exceeded its bounded device fields');
 if(/health_polar_(connections|oauth_states)/.test(dataLayer+core))throw new Error('service-only credentials entered client table access');
 if(!dataLayer.includes("hoje:['nutrition','meals','metrics','sourceMetrics','labs','docs','uploads','treatments','regimens','goals','waterReferences','nutritionPlans','polarSessions']"))throw new Error('Cockpit no longer loads protocol context on first open');
 if(!dataLayer.includes("tratamentos:['treatments','regimens','docs','nutritionPlans','treatmentStatuses']"))throw new Error('Protocol route no longer loads events, source documents and the separate owner statement together');

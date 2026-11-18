@@ -23,7 +23,7 @@ const manifest={
     "data.css": "d1e0252be7859f2b71988511a0459ec3ee3da170afb65b422566db150951b2d7",
     "details.css": "9dc9aba99add9f399f395bf9312c0db6b690a21739cba44e38036d24f1df8eb0",
     "domain-reference-parity-20260914.css": "1de1275a52a7af5d07bd6a0a74f8cb0badd7d57969f91c92ef3e8d1cdab7cde1",
-    "entry.css": "afc977748925fc1322b6e1671fa817d02542cb4d3b87d9839cb5028e89715e33",
+    "entry.css": "23f1578e23f1a23e018e569ffc9b57f04431a750099ddd82fdb1b860b30c4320",
     "evidence-priority.css": "a2de4cffa12b132bc6d610672f602b6db2f83950c88a04e0b51de27f2f3c36ba",
     "evolution-access.css": "13ade8c7da88fbb2342fa1ba3031d5a5ee0bae93ac232a05ccf7f4477e41021b",
     "evolution-product.css": "ebf799bf7d7779e3d8ca79c1f51c4cfca3408739ae257c0b5d128bc6c4fb69dc",

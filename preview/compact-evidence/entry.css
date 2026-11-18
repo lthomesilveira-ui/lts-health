@@ -30,7 +30,7 @@
 .workoutSetDetails{grid-column:1/-1;font-size:14px;color:#36536c}
 .workoutSetDetails summary,.workoutComposerReview summary{cursor:pointer;min-height:44px;align-content:center}
 #entryModal .workoutChoice{display:flex;align-items:center;gap:8px}
-#entryModal .workoutChoice input{width:22px;min-height:22px}
+#entryModal .workoutChoice input{width:44px;height:44px;min-height:44px;flex:0 0 44px;margin:0}
 .workoutComposerReview{padding:13px;border:1px solid #aecbdc;border-radius:12px;background:#f1f8fb;color:#17324f}
 .workoutComposerReview h3{margin:0 0 8px}.workoutComposerReview small{display:block}.workoutOriginal{white-space:pre-wrap;overflow-wrap:anywhere}
 
