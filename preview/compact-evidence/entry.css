@@ -17,3 +17,19 @@
 #entryModal :is(input,select,textarea,button):focus-visible{outline:3px solid #176dc6;outline-offset:2px}
 @media(max-width:720px){#entryModal .setEntry{grid-template-columns:repeat(2,minmax(0,1fr))}#entryModal .setEntry .iconBtn{grid-column:2}}
 @media(max-width:460px){#entryModal .setEntry{grid-template-columns:minmax(0,1fr)}#entryModal .setEntry .iconBtn{grid-column:1}}
+
+#entryModal [hidden]{display:none!important}
+.workoutComposerModes{display:flex;gap:4px;padding:4px;border:1px solid #b9cddf;border-radius:12px;background:#eef4f8}
+.workoutComposerModes button{flex:1;min-height:44px;padding:7px 10px;border:0;border-radius:9px;font:inherit;font-weight:600;color:#284b68;background:transparent;cursor:pointer}
+.workoutComposerModes button[aria-pressed="true"]{background:#204c71;color:#fff}
+.workoutComposerChoices{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#entryModal .workoutComposerChoices button{max-width:100%;text-align:left;white-space:normal}
+#entryModal [data-composer-text] button{margin-top:8px}
+#entryModal [data-composer-status]:empty,#entryModal [data-present-workouts]:empty{display:none}
+#entryModal [data-composer-status],#entryModal [data-present-workouts]{font-size:14px;line-height:1.45;margin:0;color:#31516d}
+.workoutSetDetails{grid-column:1/-1;font-size:14px;color:#36536c}
+.workoutSetDetails summary,.workoutComposerReview summary{cursor:pointer;min-height:44px;align-content:center}
+#entryModal .workoutChoice{display:flex;align-items:center;gap:8px}
+#entryModal .workoutChoice input{width:22px;min-height:22px}
+.workoutComposerReview{padding:13px;border:1px solid #aecbdc;border-radius:12px;background:#f1f8fb;color:#17324f}
+.workoutComposerReview h3{margin:0 0 8px}.workoutComposerReview small{display:block}.workoutOriginal{white-space:pre-wrap;overflow-wrap:anywhere}

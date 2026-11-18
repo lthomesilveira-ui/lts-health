@@ -1,6 +1,7 @@
 import {saveBodyRecord,saveWorkout,saveWorkoutPlan,workoutPlanSource,saveMyFitnessPalWater,importMyFitnessPalWaterExport} from './writes.js';
 import {parseMyFitnessPalWaterExport} from './mfp-water-transfer.js';
 import {countLabel,esc,state} from './core.js';
+import {initWorkoutComposer,workoutComposerFields,workoutComposerReview,workoutSubmitExtras} from './workout-entry-ui.js';
 
 const $=id=>document.getElementById(id);
 let refreshCallback=async()=>{};
@@ -36,11 +37,12 @@ function bodyForm(){
 
 function setRow(exId,setId){
   return `<div class="setEntry" data-set-id="${setId}">
-    <select name="phase" aria-label="Tipo da série ${setId}"><option value="working">Série</option><option value="warmup">Aquecimento</option><option value="other">Outro</option></select>
+    <select name="phase" aria-label="Tipo da série ${setId}"><option value="working">Série</option><option value="warmup">Aquecimento</option><option value="drop">Drop</option><option value="rest_pause">Rest-pause</option><option value="other">Outro</option></select>
     <input name="weight" inputmode="decimal" placeholder="Carga" aria-label="Carga da série ${setId}">
     <select name="weight_unit" aria-label="Unidade da carga da série ${setId}"><option value="kg">kg</option><option value="lb">lb</option><option value="plate_index">índice da placa</option><option value="unitless">sem unidade</option></select>
     <input name="reps" inputmode="decimal" placeholder="Reps" aria-label="Repetições da série ${setId}">
     <button type="button" class="iconBtn" data-remove-set aria-label="Remover série">×</button>
+    <details class="workoutSetDetails"><summary>Detalhes da série</summary><label class="workoutChoice"><input type="checkbox" name="failure"> Até a falha</label><label>Observação da série<input name="set_notes" maxlength="600" placeholder="Opcional"></label></details>
   </div>`;
 }
 
@@ -67,15 +69,17 @@ function workoutForm(){
   return `<form id="workoutEntryForm" class="entryForm">
     <div class="entryGrid cols3">
       <label>Data<input name="workout_date" type="date" value="${today()}" required></label>
-      <label>Treino<input name="workout_type" required placeholder="Ex.: Peito + ombros"></label>
+      <label>Treino<input name="workout_type" required value="Treino de força" maxlength="150"></label>
+      <label>Início<input type="time" name="start_clock"></label>
       <label>Local<input name="location" placeholder="Opcional"></label>
       <label>Duração (min)<input name="duration_minutes" inputmode="decimal"></label>
       <label>Calorias<input name="calories_kcal" inputmode="decimal"></label>
     </div>
+    ${workoutComposerFields()}
     <div class="entrySectionHead"><div><b>Exercícios</b><small>Registre apenas o que você realmente fez; campos desconhecidos podem ficar em branco.</small></div><button type="button" class="ghostSmall" data-add-exercise>+ Exercício</button></div>
     <div id="exerciseEntries">${exerciseCard()}</div>
     <label>Observação<textarea name="notes" rows="2" placeholder="Opcional"></textarea></label>
-    <div class="entryFooter"><span id="entryMsg" class="msg"></span><button class="primary" type="submit">Salvar treino</button></div>
+    ${workoutComposerReview()}
   </form>`;
 }
 
@@ -143,6 +147,7 @@ export function openEntry(type,workoutPlanId=null){
   modal.classList.remove('hidden');
   $('entryTitle').textContent=isPlan?(plan?'Editar planejamento':'Planejar treino'):type==='workout'?'Registrar treino':type==='water-import'?'Importar água do MyFitnessPal':type==='water'?'Registrar água manualmente':'Registrar bio';
   $('entryHost').innerHTML=isPlan?workoutPlanForm(plan):type==='workout'?workoutForm():type==='water-import'?waterImportForm():type==='water'?waterForm():bodyForm();
+  if(type==='workout')initWorkoutComposer($('workoutEntryForm'),{exerciseCard,setRow,collect:collectWorkout,markDirty:markEntryDirty});
 }
 
 function closeEntry(){
@@ -169,7 +174,9 @@ function collectWorkout(form){
       phase:set.querySelector('[name="phase"]')?.value||'working',
       weight:set.querySelector('[name="weight"]')?.value||'',
       weight_unit:set.querySelector('[name="weight_unit"]')?.value||'kg',
-      reps:set.querySelector('[name="reps"]')?.value||''
+      reps:set.querySelector('[name="reps"]')?.value||'',
+      notes:set.querySelector('[name="set_notes"]')?.value||'',
+      failure:set.querySelector('[name="failure"]')?.checked||null
     }))
   }));
   return {...root,exercises};
@@ -180,6 +187,10 @@ const validationMessages={
   invalid_number:'Há um número inválido. Confira os campos numéricos.',
   date_required:'Informe a data da medição.',
   metric_required:'Informe pelo menos uma medida corporal.',
+  workout_review_required:'Revise a ficha antes de salvar.',
+  workout_text_too_long:'O relato pode ter até 16.000 caracteres.',
+  workout_entry_changed:'Esta ficha já foi salva. Feche o formulário e consulte o histórico.',
+  too_many_workout_items:'Use até 99 exercícios e até 99 séries por exercício.',
   workout_fields_required:'Informe data, tipo de treino e pelo menos um exercício com série.',
   workout_effort_out_of_range:'Informe um número inteiro de 0 a 10 para o esforço percebido.',
   workout_plan_fields_required:'Informe a data, o nome e os exercícios do treino planejado.',
@@ -273,7 +284,10 @@ export function setupEntryController({onSaved}={}){
         if(!form.querySelector('[name="confirmed"]')?.checked)throw new Error('water_import_confirmation_required');
         importResult=await importMyFitnessPalWaterExport(pendingWaterImport,{onProgress:({imported,total})=>{msg.textContent=`Importando ${imported.toLocaleString('pt-BR')} de ${total.toLocaleString('pt-BR')} datas…`;}});
       }
-      else await saveWorkout(collectWorkout(form));
+      else {
+        const saved=await saveWorkout({...collectWorkout(form),...workoutSubmitExtras(form)});
+        if(saved?.source_record_id){state.ui.openWorkout=saved.source_record_id;state.ui.productTrainingView='summary';}
+      }
     }catch(error){
       modal.dataset.saving='false';
       if(!validationMessages[error?.message])console.error(error);
