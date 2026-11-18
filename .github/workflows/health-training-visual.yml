@@ -50,7 +50,7 @@ jobs:
         run: |
           # The regional Ubuntu mirror can time out while fetching WebKit dependencies.
           # Keep the same signed Ubuntu archive and the same host browser engines.
-          for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources; do
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt; do
             if [ -f "$source" ]; then
               sudo sed -Ei 's|https?://([a-z0-9-]+\.)?ec2\.archive\.ubuntu\.com/ubuntu/?|https://archive.ubuntu.com/ubuntu/|g' "$source"
             fi
