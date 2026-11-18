@@ -1,3 +1,7 @@
+## 2026-11-17 — .145 verified: readable report sources
+
+Package060 is delivered after exact candidate, responsive synthetic browsers, public publication, a reused authenticated Cloud Browser session and protected actual-owner checks. The observed internal source label is now readable while original source identity and certainty remain intact. Queue:148 done,9 blocked_external,3 accepted_gap,2 superseded; zero ready/in_progress. The original dependencies remain open. Evidence:v2/releases/REPORT_SOURCE_COPY_20261117.md.
+
 ## 2026-11-17 — .144 verified; report source presentation in validation
 
 Package059 is delivered: bounded startup/style recovery passed the exact candidate, synthetic503 browsers, public release and protected actual-owner checks. The existing Cloud Browser session opened.144 successfully. Package060 addresses a reproduced primary report source label containing an internal chat identifier and session telemetry marker. Candidate.145 changes source presentation only; original data and provenance remain intact. Its browser/publication/actual-owner gates are pending. Details: v2/releases/STARTUP_ASSET_RECOVERY_20261117.md and v2/releases/REPORT_SOURCE_COPY_20261117.md.
