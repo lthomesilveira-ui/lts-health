@@ -127,7 +127,7 @@ const manifest={
     "src/main.js": "7b7a6e20a231cf7d48422c9e603bf1f3bd3845c5302cd3b12acbf8e83ad5dbf1",
     "src/progress-photos.js": "a634ba17cab35b6581de797aab2569367c8f745b6b56285f1f1355ccedafaca3",
     "src/mfp-water-extractor.js": "4f7be9329688ec004c2b4514829a7ec0c5474bd098fd77cf99d30d5e5822a81f",
-    "src/mfp-water-transfer.js": "93b5f1d900fdec823bd2e0b1f60538833c56f1ba7053e18fbf9a1e3ac65ec15e",
+    "src/mfp-water-transfer.js": "582373491971cc31de92783596265808625f746dd828142ef78222cdabaf9d82",
     "src/mobile-study.js": "110f7b52b14bf6c2a893fd953bdb84f3f59bb1f7af3eaac6008efd1065c1529b",
     "src/nutrition-archive.js": "3e9cb8ca446b34bb206543f010b54c1164b8bdff1d929f073f2dfa342499c34a",
     "src/nutrition-plan-comparison.js": "ec7ae5bbe82c4425001b7ae34e8b64a290d7b0311d87e04e4dee0ac22505efd8",
@@ -198,7 +198,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.148/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.149/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261112.133'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);

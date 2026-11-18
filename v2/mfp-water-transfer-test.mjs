@@ -38,6 +38,18 @@ const valid={
   rows:[{date:'2026-09-07',water_ml:700},{date:'2026-09-08',water_ml:2500}]
 };
 
+const archive={...valid,method:'mfp_data_access_xlsx_v1',unit:'mL',archive_sha256:'a'.repeat(64),
+  rows:valid.rows.map((row,i)=>({...row,source_row:i+3}))};
+const archiveRecord=myFitnessPalWaterRecords(parseMyFitnessPalWaterExport(archive),'fixture-owner')[0];
+assert.equal(archiveRecord.source_payload.original_row,3);
+assert.equal(archiveRecord.source_payload.archive_sha256,archive.archive_sha256);
+assert.equal(archiveRecord.source_payload.export_method,archive.method);
+assert.equal(archiveRecord.source_record_id,'mfp-water:2026-09-07');
+assert.equal(archiveRecord.source_file,'MyFitnessPal · Exportação oficial de dados');
+for(const broken of [{unit:'oz'},{archive_sha256:'invalid'},{days_scanned:19},{rows:[archive.rows[0],archive.rows[0]]},
+  {rows:[{...archive.rows[0],water_ml:0}]},{rows:[{...archive.rows[0],source_row:2}]}])
+  assert.throws(()=>parseMyFitnessPalWaterExport({...archive,...broken}),/mfp_export_/);
+
 const parsed=parseMyFitnessPalWaterExport(JSON.stringify(valid));
 assert.deepEqual(parsed.rows,valid.rows);
 assert.equal(parsed.days_without_positive_total,1);
