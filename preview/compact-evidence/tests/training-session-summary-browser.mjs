@@ -305,6 +305,9 @@ async function security(page,traffic){
   for(const table of ['health_workouts','health_workout_exercises','health_workout_sets'])assert.ok(proof.reads.some(read=>read.table===table),`The real loader read ${table}`);
   const workoutReads=proof.reads.filter(read=>read.table==='health_workouts');
   assert.ok(workoutReads.every(read=>read.projection.includes('session_comment:source_payload->>user_reported_completion_note')&&read.projection.includes('raw_exercises')),'Real loader requests the explicit comment alias and original report');
+  for(const field of ['measurement_issue_reported:source_payload->measurement_issue_reported','polar_measurement_issue_reported:source_payload->polar->measurement_issue_reported','polar_reliability:source_payload->>polar_reliability']){
+    assert.ok(workoutReads.every(read=>read.projection.split(',').includes(field)),'Request only the bounded sensor markers');
+  }
   assert.ok(workoutReads.every(read=>!read.projection.split(',').some(field=>field==='*'||field==='source_payload')),'Do not broaden reads to the whole source payload');
   assert.equal(proof.payloadExecuted,false);
   assert.deepEqual(proof.writes,[]);assert.deepEqual(traffic.writes,[]);assert.deepEqual(traffic.external,[]);assert.deepEqual(traffic.errors,[]);
@@ -343,9 +346,16 @@ try{
       const progressTab=page.locator('.ltsRefTrainPrimaryTabs [data-depth-training-view="progress"]');assert.equal(await progressTab.evaluate(el=>el===document.activeElement),true,'The exercise index is keyboard-reachable as the fourth destination with tablist arrows');
       await page.keyboard.press('Enter');await stableTraining(page,'progress');assert.ok(await page.locator('.ltsExerciseDirectory').isVisible(),'The real fourth tab opens observed exercise history');await chooseTab(page,'summary');await checkCurrent(page);
       for(const kind of ['distribution','original'])assert.equal(await page.locator(disclosureSelector(kind)).evaluate(el=>el.open),false,'New session details begin collapsed');
+      const caution=page.locator('.ltsRefMeasurementNote');
+      await caution.locator('summary').click();
+      assert.match(await caution.innerText(),/Você relatou imprecisão na medição do Polar/);
+      await caution.locator('summary').click();
       const device=page.locator(disclosureSelector('device'));
       await device.locator('summary').click();
       assert.match(await device.innerText(),/Possível correspondência/);
+      assert.match(await device.innerText(),/Polar Flow · Vínculo confirmado/);
+      assert.match(await device.innerText(),/Duração confirmada na sessão sincronizada/);
+      assert.equal(await device.locator('a').count(),1,'only the evidence with a real public URL exposes a link');
       assert.equal(await device.locator('a').getAttribute('href'),'https://flow.polar.com/training/analysis/42');
       await capture(page,`${label}-device-record`,disclosureSelector('device'));
       await device.locator('summary').click();

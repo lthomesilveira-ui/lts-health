@@ -52,6 +52,15 @@ assert.doesNotMatch(hr(),/Polar Flow|Medidas do aparelho/,'a confirmed duration 
 state.data.workoutEvidence[0].field_names=['heart_rate_avg'];
 assert.match(hr(),/Mín\.<\/small><b>71<\/b><span>bpm<\/span><small>Registro do treino/);
 assert.match(hr(),/Média<\/small><b>99<\/b><span>bpm<\/span><small>Polar Flow/);
+const nativeSource='workout-evidence:polar-synced:polar_v4:session:00000000-0000-4000-8000-000000000001';
+const nativeRow={...deviceRow,source_record_id:nativeSource,source_file:null,evidence_kind:'telemetry',evidence_status:'confirmed'};
+state.data.workoutEvidence=[nativeRow];
+assert.match(devicePanel(),/Polar Flow · Vínculo confirmado/);
+assert.doesNotMatch(devicePanel(),/<a |workout-evidence:|00000000-0000/,'private native identifiers are never displayed or converted to links');
+for(const overrides of [{source_record_id:'image-reference'},{source_record_id:nativeSource+'-bad'},{source_family:'apple_watch'},{evidence_status:'candidate'},{evidence_kind:'session_reference'}]){
+  state.data.workoutEvidence=[{...nativeRow,...overrides}];
+  assert.equal(devicePanel(),'','only confirmed native telemetry with a matching provider qualifies');
+}
 for(const source_file of ['https://example.invalid/training/analysis/42','https://flow.polar.com/training/analysis/42?token=test','javascript:void(0)']){
   state.data.workoutEvidence=[{...deviceRow,source_file}];assert.doesNotMatch(devicePanel(),/<a /);
 }

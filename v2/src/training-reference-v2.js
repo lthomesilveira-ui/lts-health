@@ -40,7 +40,7 @@ function workoutCounts(workout){
 
 function measurementNote(workout){
   if(!hasReportedMeasurementIssue(workout,state.data.workoutEvidence||[]))return '';
-  return '<details class="ltsRefMeasurementNote"><summary>FC e calorias: leitura com ressalva</summary><p>Você relatou possível mau posicionamento do sensor. A frequência cardíaca e as calorias foram preservadas como medidas pelo Polar, com confiabilidade limitada; não confirmam a intensidade real do treino.</p></details>';
+  return '<details class="ltsRefMeasurementNote"><summary>FC e calorias: leitura com ressalva</summary><p>Você relatou imprecisão na medição do Polar. Isso limita o uso da frequência cardíaca e das calorias para avaliar o treino.</p></details>';
 }
 
 function exerciseNotes(exercise,sets){
@@ -64,7 +64,8 @@ function deviceReferences(workout, evidence){
     const link=polar && typeof row.source_file==='string' && /^https:\/\/flow\.polar\.com\/training\/analysis\/\d+$/.test(row.source_file.trim())
       ? row.source_file.trim() : null;
     const possible=row.evidence_kind==='session_reference' && row.evidence_status==='candidate' && (polar||apple);
-    const confirmed=row.evidence_kind==='telemetry' && row.evidence_status==='confirmed' && link;
+    const syncedPolar=polar && /^workout-evidence:polar-synced:polar_v4:session:[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(row.source_record_id || '');
+    const confirmed=row.evidence_kind==='telemetry' && row.evidence_status==='confirmed' && (link || syncedPolar);
     if(!possible&&!confirmed)continue;
     const source=polar?'Polar Flow':'Apple Watch';
     const status=possible?'Possível correspondência':'Vínculo confirmado';

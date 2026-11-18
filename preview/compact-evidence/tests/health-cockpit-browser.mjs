@@ -27,12 +27,19 @@ async function quality(page){
 try{
  for(const [width,height] of [[1536,864],[393,650],[320,740]])for(const sparse of [false,true]){
   const f=makeDashboardFixture(FIXED_TODAY,{sparse});
+  const todayId='synthetic-current-day-strength';
+  f.data.workouts.push({source_record_id:todayId,workout_date:FIXED_TODAY,workout_type:'Treino sintético de hoje',location:'Academia de teste',duration_minutes:32,is_canonical:true,record_status:'validated'});
   // Realistic gap: other data exists after the last genuine water observation.
   for(const row of f.data.nutrition)row.water_ml=null;
   const sdk=sourceWindowService(languageDatabase(f.data)),context=await browser.newContext({viewport:{width,height},timezoneId:'America/Sao_Paulo',serviceWorkers:'block'}),page=await context.newPage(),errors=[],blocked=[];
   page.on('pageerror',e=>errors.push(e.message));
   await context.route('**/*',route=>{const r=route.request(),u=new URL(r.url());if(u.hostname==='cdn.jsdelivr.net'&&u.pathname==='/npm/@supabase/supabase-js@2')return route.fulfill({contentType:'application/javascript',body:sdk});if(u.origin===origin.origin&&['GET','HEAD'].includes(r.method()))return route.continue();blocked.push({method:r.method(),origin:u.origin});return route.abort();});
   await page.clock.setFixedTime(new Date(FIXED_TODAY+'T15:00:00Z'));await page.goto(base+'#hoje');await settled(page);
+  const todayButton=page.getByRole('region',{name:'Treinos de hoje'}).getByRole('button',{name:/Treino sintético de hoje/});
+  assert.equal(await todayButton.getAttribute('data-home-workout'),todayId);
+  await todayButton.click();await page.locator('#productTrainingTitle').waitFor();
+  assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.openWorkout;}),todayId);
+  await page.goto(base+'#hoje');await settled(page);
   assert.equal(await page.locator('[data-cockpit-summary]').count(),5);assert.equal(await page.locator('[data-cockpit-panel]').count(),3);
   assert.equal(await page.locator('[data-dashboard-card]:visible').count(),7,'daily readings are preserved');
   assert.match(await page.locator('.healthCockpitPriorities').innerText(),/Água sem atualização/);
