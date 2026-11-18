@@ -74,7 +74,7 @@ function deviceReferences(workout, evidence){
     </li>`);
   }
   if(!rows.length)return '';
-  return `<details class="ltsRefSessionContext ltsDeviceRecords" data-disclosure="training-device-${esc(workout.source_record_id)}"><summary>Registro do aparelho</summary><ul class="ltsRefSessionGroups">${rows.join('')}</ul></details>`;
+  return `<details class="ltsRefSessionContext ltsDeviceRecords" data-disclosure="training-device-${esc(workout.source_record_id)}"><summary>Registro do aparelho</summary><ul class="ltsDeviceRecordList">${rows.join('')}</ul></details>`;
 }
 
 function hrPanel(workout, evidence){

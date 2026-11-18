@@ -8,8 +8,8 @@
 .ltsRefSessionContext[open]>summary::before{transform:rotate(90deg)}
 .ltsDeviceRecords{padding:0 14px;background:#fff;border-radius:12px}
 .ltsDeviceRecordLink{display:inline-flex;align-items:center;min-height:44px;width:fit-content;color:#174c72;text-decoration:underline}
-.ltsRefSessionGroups{list-style:none;padding:0;margin:4px 0 12px;display:grid;gap:10px}
-.ltsRefSessionGroups>li{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.ltsRefSessionGroups,.ltsDeviceRecordList{list-style:none;padding:0;margin:4px 0 12px;display:grid;gap:10px}
+.ltsRefSessionGroups>li,.ltsDeviceRecordList>li{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
 .ltsRefSessionGroups>li>small{color:#516277;font-size:12px}
 .ltsRefSessionContextNote{font-size:12px!important;line-height:1.55!important;color:#516277!important;margin:10px 0!important;overflow-wrap:anywhere}
 .ltsRefSessionOriginal{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px!important;line-height:1.6!important;color:#25354a!important;margin:8px 0 12px!important}
