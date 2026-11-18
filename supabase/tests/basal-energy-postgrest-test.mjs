@@ -73,7 +73,20 @@ try{
     const before=baseline(),r=await send([basal]);assert.equal(r.status,200,JSON.stringify(r));assert.equal(r.body.accepted_basal_candidates,1);assert.equal(r.body.accepted_metrics,0);assert.equal(r.body.coverage_verified,false);assert.deepEqual(baseline(),before);
     const rows=json('select jsonb_agg(to_jsonb(x)) from health_ingest_private.basal_energy_candidates x');assert.equal(rows.length,1);assert.equal(rows[0].quantity,7000.125);assert.equal(rows[0].unit,'kJ');assert.equal(rows[0].metric_date,'2026-10-19');assert.equal(rows[0].source_date,basal.data[0].date);assert.equal(rows[0].original_source,'Synthetic basal source');assert.equal(rows[0].coverage_verified,false);assert.equal(rows[0].receipt_id,r.body.correlation_id);
   });
-  await check('real mixed capture preserves legacy nutrition',async()=>{const r=await send([food,basal]);assert.equal(r.status,200,JSON.stringify(r));assert.equal(r.body.accepted_basal_candidates,1);assert.equal(r.body.accepted_metrics,1);assert.equal(Number(sql('select protein_g from public.health_daily_nutrition')),123);assert.equal(count('public.health_source_daily_metrics'),1);});
+  await check('mixed capture stores short interval bounds privately and preserves daily nutrition',async()=>{
+    const bounded=structuredClone(basal);
+    const start='2026-10-18 23:55:00 -0300',end='2026-10-19 00:10:00 -0300';
+    Object.assign(bounded.data[0],{start,end});
+    const r=await send([food,bounded]);
+    assert.equal(r.status,200,JSON.stringify(r));
+    assert.equal(r.body.accepted_basal_candidates,1);
+    assert.equal(r.body.accepted_metrics,1);
+    assert.equal(r.body.coverage_verified,false);
+    const row=json(`select jsonb_build_array(source_start_date,source_end_date,coverage_verified) from health_ingest_private.basal_energy_candidates where receipt_id='${r.body.correlation_id}'`);
+    assert.deepEqual(row,[start,end,false]);
+    assert.equal(Number(sql('select protein_g from public.health_daily_nutrition')),123);
+    assert.equal(count('public.health_source_daily_metrics'),1);
+  });
   await check('repeated HTTP payloads remain distinct unmerged receipts',async()=>{await send([basal]);await send([basal]);assert.equal(count('health_ingest_private.basal_energy_candidates'),4);assert.equal(count('health_ingest_private.ingest_receipts'),4);});
   await check('original source missing stays null',async()=>{const b=structuredClone(basal);delete b.data[0].source;const r=await send([b]);assert.equal(r.status,200);assert.equal(Number(sql(`select count(*) from health_ingest_private.basal_energy_candidates where receipt_id='${r.body.correlation_id}' and original_source is null`)),1);});
   await check('JS accepted Unicode provenance round-trips through SQL',async()=>{
