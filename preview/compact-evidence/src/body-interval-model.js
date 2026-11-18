@@ -1,4 +1,5 @@
 import {nutritionSourceReview} from './nutrition-source-review.js';
+import {reviewedWaterConflictDates} from './water-source-review.js';
 import {num,norm} from './core.js';
 import {validDay} from './history-tools.js';
 import {localHealthDay} from './health-context.js';
@@ -191,7 +192,7 @@ function scalarSources(observed,bounds,today){
   return [...groupBy(observed,row=>row.originKey)].map(([key,items])=>{
     const groups=groupBy(items,row=>row.date),duplicates=[...groups].filter(([,rows])=>rows.length>1).map(([date,rows])=>({date,rows,conflicting:new Set(rows.map(row=>row.value)).size>1}));
     const rows=[...groups.values()].filter(rows=>rows.length===1&&rows[0].value!=null&&rows[0].eligible!==false).map(([row])=>({...row,open:row.date===today})).sort((a,b)=>a.date.localeCompare(b.date));
-    const closedRows=rows.filter(row=>!row.open),openRows=rows.filter(row=>row.open);
+    const closedRows=rows.filter(row=>!row.open&&!row.waterConflict),openRows=rows.filter(row=>row.open);
     return {key,label:items[0].label,status:items[0].status,unit:items[0].unit,sourceFamily:items[0].sourceFamily,
       rows,closedRows,mean:mean(closedRows.map(row=>row.value)),days:closedRows.length,counts:{value:closedRows.length},means:{value:mean(closedRows.map(row=>row.value))},
       intervalDays:bounds.days,closedIntervalDays:bounds.closedDays,recordedDays:groups.size,ambiguousDays:duplicates.length,duplicates,openRows,openDays:openRows.length};
@@ -237,6 +238,8 @@ function waterContext(data,status,bounds,today,canonical){
   const sourceRows=sourceMetricsAvailable?(data.sourceMetrics||[]).filter(row=>row.metric_type==='dietary_water_ml'&&acceptedStatus(row)&&inside(row.metric_date,bounds)).map(row=>sourceMetricObservation(row)):[];
   const identified=sourceRows.filter(row=>row.label&&row.unit==='ml'),valid=identified.filter(row=>row.value!=null);
   observed.push(...identified);
+  const conflicts=reviewedWaterConflictDates(sourceMetricsAvailable?data.sourceMetrics:[]);
+  for(const observation of observed)observation.waterConflict=conflicts.has(observation.date);
   const sources=scalarSources(observed,bounds,today);
   return {available:true,partial,reason:partial?'partial':sources.length?'recorded':'empty',sources,recordedDays:new Set(sources.flatMap(source=>source.rows.map(row=>row.date))).size,canonicalAvailable,sourceMetricsAvailable,
     invalidRows:sourceRows.length-valid.length,duplicates:canonical.duplicates,

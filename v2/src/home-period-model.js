@@ -1,4 +1,5 @@
 import {nutritionSourceReview} from './nutrition-source-review.js';
+import {reviewedWaterConflictDates} from './water-source-review.js';
 import {trainingSetCounts,isSetExtension} from './training-session.js';
 
 // A read-only calendar contract for the Home. This module intentionally has no
@@ -63,7 +64,7 @@ function sourceStats(key,items,fields,bounds,today){
   const dates=groups(items,row=>row.date),rows=[],duplicates=[];
   for(const[date,list]of dates){
     const reviews=list.map(item=>item.review).filter(Boolean);const knownPartial=reviews.some(r=>r.partial),reviewInvalid=reviews.some(r=>r.state==='review_invalid');
-    const row={date,open:date===today,knownPartial,excludeFromClosedMeans:knownPartial||reviewInvalid,reviewVerified:reviews.length===list.length&&reviews.length>0&&reviews.every(r=>r.verified),exportedAt:reviews.find(r=>r.exportedAt)?.exportedAt||null,source:key,context:items[0].label,cohort:key};
+    const row={date,open:date===today,knownPartial,excludeFromClosedMeans:knownPartial||reviewInvalid||list.some(item=>item.waterConflict),reviewVerified:reviews.length===list.length&&reviews.length>0&&reviews.every(r=>r.verified),exportedAt:reviews.find(r=>r.exportedAt)?.exportedAt||null,source:key,context:items[0].label,cohort:key};
     for(const field of fields){
       const observations=list.filter(item=>Object.hasOwn(item.values,field));
       row[field]=observations.length===1?observations[0].values[field]:null;
@@ -145,6 +146,8 @@ function waterModel(data,status,bounds,ui,today){
     const point=metricObservation(row,'sourceMetrics','value',nonnegative(row.value));
     if(!point.label){unknownRows++;continue;}if(point.unit!=='ml'){invalidRows++;continue;}if(point.values.value==null)invalidRows++;observed.push(point);
   }
+  const conflicts=reviewedWaterConflictDates(ready(status,'sourceMetrics')?data.sourceMetrics:[]);
+  for(const observation of observed)observation.waterConflict=conflicts.has(observation.date);
   return {...domainSources(observed,['value'],status,['nutrition','sourceMetrics'],bounds,today,ui.homeWaterSource||ui.reviewWaterSource),unknownRows,invalidRows,
     note:'Água registrada por origem, sem soma entre fontes. Zero explícito é preservado; ausência não vira zero nem consumo completo.'};
 }

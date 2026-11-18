@@ -6,7 +6,7 @@ import {nutritionArchiveSourceKey} from './nutrition-archive.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus[key]==='error';
-const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Tempo na cama',sleep_awake_h:'Tempo acordado',sleep_core_h:'Sono leve/Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio informado',heart_rate_avg_bpm:'Frequência cardíaca média',oxygen_saturation_pct:'Saturação de oxigênio',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',polar_step_samples_count:'Passos nas amostras Polar',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Calorias',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibras',dietary_water_ml:'Água'};
+const metricLabels={sleep_duration_h:'Sono',sleep_in_bed_h:'Tempo na cama',sleep_awake_h:'Tempo acordado',sleep_core_h:'Sono leve/Core',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_asleep_unspecified_h:'Sono sem estágio informado',heart_rate_avg_bpm:'Frequência cardíaca média',oxygen_saturation_pct:'Saturação de oxigênio',active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',steps:'Passos',polar_step_samples_count:'Passos nas amostras Polar',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',weight_kg:'Peso',dietary_energy_kcal:'Calorias',dietary_protein_g:'Proteína',dietary_carbs_g:'Carboidratos',dietary_fat_g:'Gorduras',dietary_fiber_g:'Fibras',dietary_water_ml:'Água',dietary_water_source_total_ml:'Água registrada no MyFitnessPal',dietary_water_source_event_ml:'Lançamento de água no Google'};
 const domainMap={workouts:'Treinos',body:'Composição corporal',labs:'Exames',docs:'Documentos',nutrition:'Alimentação',activity:'Atividade',metrics:'Atividade e sono',sourceMetrics:'Registros adicionais',treatments:'Tratamentos'};
 const preservedStatuses=new Set(['candidate','held']);
 const domainLabel=value=>({'Métricas confirmadas':'Atividade e sono','Sono em conferência':'Sono · registros adicionais','Hidratação em conferência':'Água · registros adicionais','Alimentação em conferência':'Alimentação · registros adicionais','Métricas em conferência':'Atividade · registros adicionais'})[value]||value;
@@ -46,7 +46,7 @@ function metricValueText(row){
   if(type==='respiratory_rate_bpm')return`${fmtNum(value,1)} resp./min`;
   if(type.startsWith('sleep_'))return`${fmtNum(value,1)} h`;
   if(type==='weight_kg')return`${fmtNum(value,1)} kg`;
-  if(type==='dietary_water_ml')return`${fmtNum(value,0)} mL`;
+  if(['dietary_water_ml','dietary_water_source_total_ml','dietary_water_source_event_ml'].includes(type))return`${fmtNum(value,0)} mL`;
   if(type==='dietary_energy_kcal'||type==='active_energy_kcal')return`${fmtNum(value,0)} kcal`;
   if(type==='exercise_minutes')return`${fmtNum(value,0)} min`;
   if(type==='stand_hours')return`${fmtNum(value,1)} h`;
@@ -56,7 +56,7 @@ function metricValueText(row){
 function sourceMetricDomain(type){
   type=String(type||'');
   if(type.startsWith('sleep_'))return'Sono em conferência';
-  if(type==='dietary_water_ml')return'Hidratação em conferência';
+  if(['dietary_water_ml','dietary_water_source_total_ml','dietary_water_source_event_ml'].includes(type))return'Hidratação em conferência';
   if(type.startsWith('dietary_'))return'Alimentação em conferência';
   return'Métricas em conferência';
 }

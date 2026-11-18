@@ -65,6 +65,24 @@ class TakeoutWaterTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing_or_duplicate"):
             water.build_review(path)
 
+    def test_source_specific_total_and_event_do_not_promote_a_mixed_day(self):
+        event = ["2030-02-11T17:00:10Z", "2030-02-11T17:00:11Z", "130.0 MILLILITER", "Google Health App"]
+        result = water.build_review(self.archive([self.row, event]))
+        self.assertEqual(result["records"], [])
+        daily, single = result["source_review"]
+        self.assertEqual([daily["canonical_status"], single["canonical_status"]], ["held", "held"])
+        self.assertEqual((daily["value"], daily["metric_type"]), (1234, "dietary_water_source_total_ml"))
+        self.assertEqual((single["value"], single["source_payload"]["aggregation"]), (130, "event"))
+        self.assertNotEqual(daily["source_record_id"], single["source_record_id"])
+        reordered = water.build_review(self.archive([event, self.row], "new.zip"))
+        self.assertEqual([r["source_record_id"] for r in reordered["source_review"]],
+                         [daily["source_record_id"], single["source_record_id"]])
+        repeated = water.build_review(self.archive([self.row, self.row, event]))
+        self.assertEqual([row["metric_type"] for row in repeated["source_review"]], ["dietary_water_source_event_ml"])
+        zero = self.row.copy()
+        zero[2] = "0.0 VOLUME_UNIT_UNSPECIFIED"
+        self.assertEqual(water.build_review(self.archive([zero]))["source_review"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

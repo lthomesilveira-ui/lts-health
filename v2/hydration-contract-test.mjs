@@ -35,6 +35,51 @@ assert.equal(hydrationModel({sourceMetrics:[takeout,{...takeout}]}).rows[0].valu
 assert.equal(hydrationModel({sourceMetrics:[takeout,{...canonical,value:2500}]}).rows.length,0,'different source totals remain conflicts');
 assert.equal(hydrationModel({sourceMetrics:[takeout,{...canonical,value:2500}]}).conflicts.length,1);
 
+const {waterSourceReview} = await import('./src/water-source-review.js');
+const {homePeriodModel} = await import('./src/home-period-model.js');
+const {healthDashboardModel} = await import('./src/health-dashboard-model.js');
+const {renderProductNutrition} = await import('./src/nutrition-product.js');
+const dated = {metric_date:'2030-02-11', unit:'mL', value:1234};
+const original = {...takeout, ...dated, canonical_status:'held', metric_type:'dietary_water_source_total_ml',
+  source_record_id:'google_health_takeout:water-source:'+'a'.repeat(64)};
+const phone = {...dated, metric_type:'dietary_water_ml', canonical_status:'canonical', source_family:'health_auto_export',
+  confidence:'authenticated_auto_export', source_name:'Ponte sintética', source_record_id:'health_auto_export:synthetic-day'};
+const event = {...original, value:130, metric_type:'dietary_water_source_event_ml', source_name:'Google Health App',
+  source_record_id:'google_health_takeout:water-event:'+'b'.repeat(64)};
+const altered = {...phone, value:1364};
+const evidence = {sourceMetrics:[original,event,altered]};
+const statuses = {nutrition:'ready',sourceMetrics:'ready'};
+assert.deepEqual(waterSourceReview(evidence.sourceMetrics), [{date:dated.metric_date,mfp:[1234],iphone:[1364],events:[130],conflict:true}]);
+assert.equal(waterSourceReview([original,{...takeout,...dated},phone,original])[0].conflict,false);
+assert.equal(waterSourceReview([original,{...takeout,...dated},phone,original])[0].mfp.length,1);
+assert.deepEqual(hydrationModel({sourceMetrics:[original,event]}),{rows:[],conflicts:[]});
+assert.deepEqual(hydrationModel(evidence).conflicts.map(row=>row.date),[dated.metric_date]);
+assert.equal(hydrationModel({sourceMetrics:[original,phone,event]}).rows[0].value,1234);
+assert.equal(homePeriodModel(evidence,statuses,'30',{},'2030-02-15').water.closedRows.length,0);
+const dashboardWater=healthDashboardModel(evidence,statuses,{dashboardMode:'period',dashboardPeriod:'30'},'2030-02-15').metrics.find(row=>row.key==='water');
+assert.equal(dashboardWater.count,0);
+assert.equal(waterSourceReview([original, {...phone, confidence:'unverified'}])[0].iphone.length,0);
+for(const bad of [{unit:'L'}, {value:0}, {value:true}, {metric_date:'2030-02-31'}, {source_record_id:'unverified'},
+  {canonical_status:'candidate'}, {confidence:'unverified'}, {source_name:'Unidentified publisher'}]){
+  assert.equal(waterSourceReview([{...original,...bad}]).length,0);
+}
+state.data={...fixtureData(), ...evidence};state.domainStatus=statuses;
+const sourceScreen=renderProductNutrition();
+for(const label of ['Histórico de água por origem','11/02/2030','1.234','1.364','130 mL','Totais diferentes'])assert.ok(sourceScreen.includes(label),label);
+const {nutritionSummary}=await import('./src/reports-model.js');
+const {bodyIntervalModel}=await import('./src/body-interval-model.js');
+const {renderTimelineHub}=await import('./src/timeline-screen.js');
+const duplicateDay={...evidence,nutrition:[{nutrition_date:dated.metric_date,source:'Diário de teste',water_ml:1364,protein_g:78}]};
+const report=nutritionSummary(duplicateDay,statuses,{start:'2030-02-10',end:'2030-02-12'});
+assert.equal(report.means.water_ml,null);assert.equal(report.means.protein_g,78);
+const pair=['2030-02-10','2030-02-12'].map(date=>({source_record_id:'scale-'+date,measured_at:date,source:'Escala de teste',device_name:'Balança de teste',weight_kg:80}));
+const interval=bodyIntervalModel({...duplicateDay,body:pair},{...statuses,body:'ready'},{},'2030-02-15');
+assert.ok(interval.water.sources.length);assert.ok(interval.water.sources.every(source=>source.days===0&&source.mean===null));
+state.ui.timelinePeriod='all';state.ui.timelineYear='2030';
+const timeline=renderTimelineHub();
+assert.ok(timeline.includes('Água registrada no MyFitnessPal 1.234 mL'));
+assert.ok(timeline.includes('Lançamento de água no Google 130 mL'));
+
 const equalSources=hydrationModel({nutrition:[{nutrition_date:'2026-09-08',water_ml:2500,source:'MFP ZIP'}],sourceMetrics:[canonical]});
 assert.equal(equalSources.rows.length,1);
 assert.equal(equalSources.conflicts.length,0);

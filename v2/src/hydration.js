@@ -1,4 +1,5 @@
 import {day,num,norm} from './core.js';
+import {reviewedWaterConflictDates} from './water-source-review.js';
 
 const datePattern=/^\d{4}-\d{2}-\d{2}$/;
 
@@ -57,11 +58,12 @@ export function hydrationModel(data={}){
     else addValue(byDate,date,NaN,'conflito');
   }
 
+  const reviewedConflicts=reviewedWaterConflictDates(data.sourceMetrics);
   const rows=[],conflicts=[];
   for(const[date,items]of byDate){
     const values=[...new Set(items.map(item=>item.value).filter(Number.isFinite))];
     const hasInvalid=items.some(item=>!Number.isFinite(item.value));
-    if(hasInvalid||values.length!==1){conflicts.push({date,count:items.length});continue;}
+    if(reviewedConflicts.has(date)||hasInvalid||values.length!==1){conflicts.push({date,count:items.length});continue;}
     rows.push({date,value:values[0],source:items.map(item=>item.source).filter(Boolean).join(' + ')});
   }
   rows.sort((a,b)=>a.date.localeCompare(b.date));

@@ -323,6 +323,29 @@ for(const width of [320,393,1440]){
  assert.ok((await page.locator('[data-health-auto-export]').innerText()).includes('04/04/2001, 05:20:00'),'returning to Sources refreshes its receipt status');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'source dates fit '+width);
  assert.deepEqual(await page.evaluate(()=>window.__healthQA.writes),[],'status refresh and historical reading cannot mutate records or renew authorisation');
+ await page.evaluate(async()=>{
+  const common={metric_date:'2026-09-23',unit:'mL',canonical_status:'held',source_family:'google_health_takeout',confidence:'authenticated_google_takeout',source_name:'MyFitnessPal · Google Health'};
+  window.__reviewDb.health_source_daily_metrics.push(
+   {...common,source_record_id:'google_health_takeout:water-source:'+'a'.repeat(64),metric_type:'dietary_water_source_total_ml',value:1234},
+   {...common,source_name:'Google Health App',source_record_id:'google_health_takeout:water-event:'+'b'.repeat(64),metric_type:'dietary_water_source_event_ml',value:130},
+   {...common,source_family:'health_auto_export',confidence:'authenticated_auto_export',canonical_status:'canonical',source_name:'Telefone de teste',source_record_id:'health_auto_export:synthetic-water-source',metric_type:'dietary_water_ml',value:1364}
+  );
+  const {refreshData}=await import('./src/data-layer.js');
+  await refreshData('nutricao');
+ });
+ await navigate('nutricao');
+ const waterHistory=page.getByRole('region',{name:'Histórico de água por origem',exact:true});
+ const historyToggle=waterHistory.getByText('Conferir 1 dia com registro no arquivo Google');
+ await historyToggle.click();
+ const sourceTable=waterHistory.getByRole('table');
+ await sourceTable.waitFor({state:'visible'});
+ const sourceText=await sourceTable.innerText();
+ for(const label of ['23/09/2026','1.234','1.364','130 mL','Totais diferentes'])assert.ok(sourceText.includes(label),label);
+ assert.equal(await waterHistory.evaluate(el=>el.querySelector('table').getBoundingClientRect().width<=el.querySelector('table').parentElement.clientWidth+1),true,'source history fits '+width);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'nutrition fits '+width);
+ await waterHistory.screenshot({path:`artifacts/production-integration/water-source-history-${width}.png`});
+ await historyToggle.click();assert.equal(await sourceTable.isVisible(),false);
+ assert.deepEqual(await page.evaluate(()=>window.__healthQA.writes),[],'source inspection is read-only');
  await page.locator('#logoutBtn').click();await page.locator('#login:not(.hidden)').waitFor();
  assert.equal(await page.locator('#app').evaluate(e=>e.classList.contains('hidden')),true);
  assert.deepEqual(errors,[]);assert.deepEqual(external,[],'no unexpected external request');await page.close();
