@@ -17,23 +17,35 @@ function channel(row) {
   return null;
 }
 
-export function originalMyFitnessPalWater(row) {
-  if (row?.source_family !== 'myfitnesspal' || row.source_name !== 'MyFitnessPal' ||
-      row.confidence !== 'account_authenticated_export' || row.canonical_status !== 'canonical' ||
-      row.metric_type !== 'dietary_water_ml' || row.unit !== 'mL' || !/^\d{4}-\d{2}-\d{2}$/.test(row.metric_date) ||
-      row.source_record_id !== 'mfp-water:' + row.metric_date || !['string','number'].includes(typeof row.value)) return false;
+function validWaterObservation(row) {
+  if (row?.unit !== 'mL' || !['string','number'].includes(typeof row.value) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(row.metric_date)) return false;
   const value = Number(row.value), day = new Date(row.metric_date + 'T12:00:00Z');
-  return Number.isFinite(day.getTime()) && day.toISOString().slice(0,10) === row.metric_date && Number.isInteger(value) && value > 0 && value <= 100000;
+  return Number.isFinite(value) && value > 0 && value <= 100000 &&
+    Number.isFinite(day.getTime()) && day.toISOString().slice(0, 10) === row.metric_date;
+}
+
+export function originalMyFitnessPalWater(row) {
+  return row?.source_family === 'myfitnesspal' && row.source_name === 'MyFitnessPal' &&
+    row.confidence === 'account_authenticated_export' && row.canonical_status === 'canonical' &&
+    row.metric_type === 'dietary_water_ml' && row.source_record_id === 'mfp-water:' + row.metric_date &&
+    validWaterObservation(row) && Number.isInteger(Number(row.value));
+}
+
+export function latestIPhoneWaterDate(rows = []) {
+  let latest = null;
+  for (const row of rows) {
+    if (row && channel(row) === 'iphone' && validWaterObservation(row) && (!latest || row.metric_date > latest))
+      latest = row.metric_date;
+  }
+  return latest;
 }
 
 export function waterSourceReview(rows = []) {
   const byDate = new Map();
   for (const row of rows) {
-    if (!row || row.unit !== 'mL' || !['string','number'].includes(typeof row.value)) continue;
+    if (!validWaterObservation(row)) continue;
     const value = Number(row.value), date = row.metric_date;
-    if (!Number.isFinite(value) || value <= 0 || value > 100000 || !/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
-    const parsed = new Date(date + 'T12:00:00Z');
-    if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) continue;
     const type = channel(row);
     if (!type) continue;
     if (!byDate.has(date)) byDate.set(date, {date, mfp: new Map(), iphone: new Map(), events: new Map()});
@@ -49,7 +61,7 @@ export function waterSourceReview(rows = []) {
   }
   const result = [];
   for (const {date, mfp, iphone, events, original} of byDate.values()) {
-    if (!mfp.size && !events.size) continue;
+    if (!mfp.size && !events.size && !(original && iphone.size)) continue;
     const totals = [...mfp.values(), ...iphone.values(), ...(original || [])];
     result.push({date, mfp: [...mfp.values()], iphone: [...iphone.values()], events: [...events.values()],
       ...(original ? {original: [...original]} : {}),
