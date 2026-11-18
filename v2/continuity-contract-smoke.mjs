@@ -67,10 +67,12 @@ else{
   }else assert.equal(state.current_package.status,'done','a package with no pending acceptance or executable work must be done');
 }
 const water=state.tasks.find(task=>task.id==='LTS-HYD-IMPORT-001');
-assert.equal(water?.status,'blocked_external');
+assert.equal(water?.status,'done');
 assert.equal(water?.priority,'P0');
-assert.match(water?.next_action||'',/notebook/i);
-assert.equal(state.reminder.task_id,water.id);
+assert.equal(water.next_action,null);
+assert.equal(water.blocker,null);
+assert.ok(water.evidence.includes('v2/releases/MFP_ORIGINAL_WATER_AND_TRAINING_20261118.md'));
+assert.equal(state.reminder.task_id,'LTS-WATER-RECURRENCE-001');
 assert.equal(state.reminder.surface_on_each_project_checkpoint,true);
 const longitudinal=state.tasks.find(task=>task.id==='LTS-LONGITUDINAL-001');
 assert.equal(longitudinal?.status,'done');
