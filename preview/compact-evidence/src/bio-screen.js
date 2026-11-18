@@ -83,13 +83,16 @@ function compare(rows){
   if(knownSourceMismatch(a,b))return `${selectors}${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}${empty('Origens diferentes. Os valores foram preservados, mas a diferença entre essas datas não foi calculada.')}`;
   return `${selectors}${intervalText?`<p class="compareContext">${esc(intervalText)}</p>`:''}<div class="grid cols2 compact">${metric('Peso',neutralDelta(b?.weight_kg,a?.weight_kg,1,'kg'))}${metric('Massa muscular',neutralDelta(b?.skeletal_muscle_mass_kg,a?.skeletal_muscle_mass_kg,1,'kg'))}${metric('Massa de gordura',neutralDelta(b?.fat_mass_kg,a?.fat_mass_kg,1,'kg'))}${metric('Gordura corporal',neutralDelta(b?.body_fat_pct,a?.body_fat_pct,1,'%'))}${metric('Pontuação InBody',neutralDelta(b?.score,a?.score,0,''))}</div>`;
 }
-function detailValue(label,value,unit=''){return `<div><span>${esc(label)}</span><b>${value==null?'—':`${fmtNum(value,Number.isInteger(num(value))?0:1)}${unit?` ${esc(unit)}`:''}`}</b></div>`;}
+function detailValue(label, value, unit='', digits=Number.isInteger(num(value))?0:1, maxDigits=digits){
+  const text=num(value)==null ? '—' : `${fmtNum(value,digits,maxDigits)}${unit ? ` ${unit}` : ''}`;
+  return `<div><span>${esc(label)}</span><b>${esc(text)}</b></div>`;
+}
 function measurementDetail(row){
   if(!row)return empty('Selecione uma medição no histórico.');
   return `<div class="bioDetailHead"><div><span>${fmtDate(row.measured_at)}</span><b>Detalhes da medição</b><small>${esc(sourceDisplay(row.source))}</small></div></div>
     <div class="bioDetailGrid">
       ${detailValue('Peso',row.weight_kg,'kg')}${detailValue('Massa muscular',row.skeletal_muscle_mass_kg,'kg')}${detailValue('Massa de gordura',row.fat_mass_kg,'kg')}${detailValue('Gordura corporal',row.body_fat_pct,'%')}
-      ${detailValue('Água corporal',row.body_water_l,'L')}${detailValue('Gordura visceral',row.visceral_fat_level,'nível')}${detailValue('Relação cintura/quadril',row.waist_hip_ratio,'')}${detailValue('Metabolismo basal',row.bmr_kcal,'kcal')}${detailValue('Pontuação InBody',row.score,'')}
+      ${detailValue('Água corporal',row.body_water_l,'L')}${detailValue('Gordura visceral',row.visceral_fat_level,'nível',0,20)}${detailValue('Relação cintura/quadril',row.waist_hip_ratio,'',2,20)}${detailValue('Metabolismo basal estimado',row.bmr_kcal,'kcal',0,20)}${detailValue('Pontuação InBody',row.score,'')}
     </div>${row.notes?`<p class="footerNote">${esc(row.notes)}</p>`:''}`;
 }
 function historyRow(row,ambiguousDays){

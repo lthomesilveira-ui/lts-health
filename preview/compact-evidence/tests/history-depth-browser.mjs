@@ -14,6 +14,7 @@ db.health_body_composition=Array.from({length:30},(_,i)=>({source_record_id:`b-$
 // Two invented records form a documented positive-control cohort; the other
 // 28 remain model-unknown and must never acquire comparison eligibility.
 for(const row of db.health_body_composition.slice(0,2))row.device_name='Modelo sintético de teste';
+Object.assign(db.health_body_composition[0],{waist_hip_ratio:0.834,bmr_kcal:1678.25,visceral_fat_level:4});
 db.health_segmental_composition=db.health_body_composition.map((r,i)=>({source_record_id:`seg-${i}`,measured_at:r.measured_at,source:'Teste',source_file:'synthetic.csv',lean_right_arm_kg:3,lean_left_arm_kg:3,lean_trunk_kg:20,lean_right_leg_kg:7,lean_left_leg_kg:7,fat_right_arm_kg:1,fat_left_arm_kg:1,fat_trunk_kg:6,fat_right_leg_kg:2,fat_left_leg_kg:2}));
 db.health_lab_results=Array.from({length:22},(_,i)=>Array.from({length:25},(_,j)=>({source_record_id:`lab-${i}-${j}`,biomarker:`Marcador ${String(i+1).padStart(2,'0')}`,collection_date:`2024-01-${String(j+1).padStart(2,'0')}`,laboratory:'Laboratório A sintético',unit:'u',result_numeric:10+j%4,result_raw:String(10+j%4),reference_range:'Faixa sintética',source:'Teste'}))).flat();
 db.health_lab_results.push({source_record_id:'text-only',biomarker:'Marcador textual único',collection_date:'2026-01-01',laboratory:'Laboratório A sintético',result_raw:'Resultado textual sintético',source:'Teste'});
@@ -137,6 +138,10 @@ try{
   const ids=[];for(let i=0;i<4;i++){ids.push(...await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').evaluateAll(es=>es.map(e=>e.dataset.depthCompositionRecord)));if(i<3)await page.locator('[data-depth-page="productCompositionPage"]').last().click();}
   assert.equal(new Set(ids).size,30,'all body records past former 8 cap');await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().click();
   await page.waitForSelector('.ltsSegmentTable');assert.equal(await page.locator('.ltsSegmentTable tbody tr').count(),5);await overflow(page);
+  const details=page.locator('.ltsRecordDetails .ltsDetailGrid > div');
+  assert.equal(await details.filter({hasText:'Relação cintura/quadril'}).locator('b').innerText(),'0,834');
+  assert.equal(await details.filter({hasText:'Metabolismo basal estimado'}).locator('b').innerText(),'1.678,25 kcal');
+  assert.equal(await details.filter({hasText:'Nível de gordura visceral'}).locator('b').innerText(),'4');
   if(label!=='small')await page.screenshot({path:`${dir}/synthetic-${label}-measurement.png`});
   await page.locator('[data-depth-composition-back]').last().click();assert.equal(await page.locator('.ltsCompositionHistoryList [data-depth-composition-record]').last().getAttribute('data-depth-composition-record'),'b-0');
   assert.equal(await page.locator('[data-disclosure="product-composition-compare"]').count(),0,'all-source observed history does not offer cross-source comparisons');

@@ -57,7 +57,8 @@ export const num = value => {
   const n=Number(value);
   return Number.isFinite(n)?n:null;
 };
-export const fmtNum = (value,digits=1) => num(value)==null?'—':Number(value).toLocaleString('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits});
+export const fmtNum = (value, digits=1, maxDigits=digits) => num(value)==null ? '—' :
+  Number(value).toLocaleString('pt-BR', {minimumFractionDigits:digits, maximumFractionDigits:maxDigits});
 export const fmtDate = value => { const s=day(value);if(!s)return'—';const[y,m,d]=s.split('-');return y&&m&&d?`${d}/${m}/${y}`:s; };
 export const unique = values => [...new Set((values||[]).filter(Boolean))];
 export const norm = value => String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
