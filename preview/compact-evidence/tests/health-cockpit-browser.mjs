@@ -42,6 +42,15 @@ try{
   await page.goto(base+'#hoje');await settled(page);
   assert.equal(await page.locator('[data-cockpit-summary]').count(),5);assert.equal(await page.locator('[data-cockpit-panel]').count(),3);
   assert.equal(await page.locator('[data-dashboard-card]:visible').count(),7,'daily readings are preserved');
+  const firstItems=await page.locator('.healthReadingGrid').evaluate(grid=>[...grid.children].slice(0,3).map(item=>item.dataset.dashboardCard||item.dataset.cockpitPanel));
+  assert.deepEqual(firstItems,['water','protein','training']);
+  const report=page.getByRole('heading',{name:'Visão geral',exact:true}).locator('..').getByRole('button',{name:'Relatórios de saúde'});
+  assert.equal(await report.isVisible(),true);
+  const positions=await page.locator('[data-health-dashboard]').evaluate(root=>{
+   const top=selector=>root.querySelector(selector).getBoundingClientRect().top;
+   return {readings:top('.healthReadingGrid'),alerts:top('.healthCockpitPriorities'),protein:top('[data-dashboard-card="protein"]'),water:top('[data-dashboard-card="water"]')};
+  });
+  assert.ok(positions.readings<positions.alerts&&Math.abs(positions.water-positions.protein)<2,'water and protein share the top row before alerts');
   assert.match(await page.locator('.healthCockpitPriorities').innerText(),/Água sem atualização/);
   assert.equal(await page.locator('[data-disclosure="cockpit-details"]').getAttribute('open'),null);
   assert.equal(await page.locator('.healthPeriodContext').isVisible(),false,'source-selection algorithm is secondary');

@@ -106,7 +106,8 @@ export function dashboardTodayWorkouts(data,status,today){
   if(!date||status?.workouts!=='ready')return [];
   const workouts=(data?.workouts||[]).filter(row=>day(row?.workout_date)===date);
   const current=trainingContext({workouts},status,{start:date,end:date},date);
-  return current.rows.filter(row=>row.sourceRecordId);
+  if(!current.rows.length)return [];
+  return enrichDashboardTraining(current,data,status,{start:date,end:date}).rows.filter(row=>row.sourceRecordId);
 }
 
 /**
