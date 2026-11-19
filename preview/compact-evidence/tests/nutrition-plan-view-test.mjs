@@ -98,7 +98,7 @@ const {renderProductNutrition}=await import('../src/nutrition-product.js');
 test('Dashboard summary remains byte-identical; the new card follows insights and nutrition uses its own period',()=>{
   const{data,status}=fixture(),before=structuredClone(data),withPlan=renderHealthDashboard(data,status,dayUi,testToday);
   const withoutPlan=renderHealthDashboard({...data,nutritionPlans:[]},status,dayUi,testToday);
-  const summary=html=>html.match(/<section class="healthMetricGrid"[\s\S]*?<\/section>/)[0];
+  const summary=html=>html.match(/<section class="healthMetricGrid\b[^"]*"[\s\S]*?<\/section>/)[0];
   assert.equal(summary(withPlan),summary(withoutPlan));
   assert.ok(withPlan.indexOf('data-nutrition-plan')>withPlan.indexOf('class="healthGuidance"'));
   assert.ok(withPlan.indexOf('data-nutrition-plan')<withPlan.indexOf('class="studyCards healthContextGrid"'));

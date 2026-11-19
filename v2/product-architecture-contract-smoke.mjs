@@ -53,7 +53,8 @@ assert.match(index,/data-route="evolucao">Evolução detalhada<\/button>/);
 
 const cockpit=await read('v2/src/home-cockpit.js'),evolutionCss=await read('v2/evolution-product.css');
 assert.match(home,/data-health-dashboard/);assert.match(home,/data-dashboard-period/);
-for(const control of ['data-dashboard-mode','data-dashboard-date','healthMetricGrid','healthContextGrid'])assert.ok(home.includes(control),'accepted dashboard control missing: '+control);
+for(const control of ['data-dashboard-mode','data-dashboard-date','healthContextGrid'])assert.ok(home.includes(control),'accepted dashboard control missing: '+control);
+assert.ok((await read('v2/src/health-cockpit.js')).includes('healthMetricGrid'),'dashboard readings remain in the cockpit grid');
 for(const phrase of ['Gordura, músculo e peso','Progressão no treino','Consumo e plano alimentar','Água consumida','Sono em contexto','Evolução dos exames','Resumo para consulta'])assert.ok(cockpit.includes(phrase),phrase);
 assert.match(cockpit,/data-home-body-metric/);assert.match(cockpit,/data-home-goals/);assert.doesNotMatch(cockpit,/ltsRefRing|ltsReviewOverlap/);
 assert.match(evolutionCss,/repeat\(5/);assert.match(evolutionCss,/repeat\(3/);assert.match(evolutionCss,/ltsDesktopCockpit\{display:block!important/);
