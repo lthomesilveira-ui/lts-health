@@ -30,7 +30,7 @@ const manifest={
     "evolution.css": "1ec73c327865ecbe99acc8ccc9fd1816dc288ccc9f492085feb72561d7d6f63e",
     "executive-shell.css": "76e903ad654a2592443f6270dc22facc190f047d46a782ac8c2dac77e844d0b7",
     "health-auto-export.css": "a07db1e6dcfb099c7dfdb38e5fb0392e866d7070324d657dde8675f3dee84572",
-    "health-cockpit.css": "97b87cdf1e3fbb583ed7b468f352197ead3a983fe438313b860e6c392380fcdd",
+    "health-cockpit.css": "eb5fe4a858fde9b1c2b33f9ea0cb1c513a0c1a384c3a5ccc6093137712c5a3cb",
     "health-dashboard.css": "d0778e0d97c3639cd73a68ea31455e4ab29f22d4206466c70987d2b7be270257",
     "health.css": "cb1f904927c5e7f44927d83145abe0076bc618547f27460e8854336a5dfa5004",
     "history-depth.css": "a1a32d6a4c79a65d89223a7c1a3bcdd657d0af586b5a3d2fb400942f93e21cb0",
@@ -91,15 +91,15 @@ const manifest={
     "src/google-health-connection.js": "b990f9328ae0c5f62cfd0e4b59938dc17d838dec57e710ffef45bcea14aa3549",
     "src/health-auto-export-connection.js": "0b7c3deab61df8671c32acc779ef5d71b2f18e3a035b36ebb4d4f5fdd36b621c",
     "src/health-auto-export-data.js": "241dd41d8a5372f25dbd7c395028c51ebb43b25490f135a22b5fcffde5b415f2",
-    "src/health-cockpit.js": "888c04e812acfeb7e0ffe36417911d9abdc336eb765456bb90026a2a58241022",
+    "src/health-cockpit.js": "f8719c5d5330cccd337b146694ae8631fc35a2e931e265311fb4cf61b9cf6883",
     "src/health-context.js": "26af9d2436d1145f0e4b155eb1ea26c7138adf6a68db12e26d7dd7fe4c359bf7",
     "src/health-dashboard-body.js": "29c26568e4f0cca387df73a40b1cc157d22bd46e73476e5eb156a70416134f42",
-    "src/health-dashboard-context.js": "f8446bc35662bf8e279dcb7d9d50381116963662634ec7594005b16643f2a571",
+    "src/health-dashboard-context.js": "5a08075d0e970346f646aa5d37e1665a8e25a5024da596e185efaa1515533a41",
     "src/health-dashboard-guidance.js": "40383b198066d52e5e4f8d3b725747b49ae1024815dfd219dd2baaf5244a191a",
     "src/health-dashboard-labs.js": "ff872dce35a698e382bbe557bd33d169edb6d6825aa15cb22736eddd5fd86bdf",
     "src/health-dashboard-model.js": "482adf1a28498dac3e950dd815194a8db23be75a65b60dcc4bb644d28235061a",
     "src/health-dashboard-training.js": "309e7137ba62c5e44797a31fa70968cf6fb30484bce436254e840c0178d8925d",
-    "src/health-dashboard.js": "7a3a41ecb4482ee7c36699cdb3e6d629c9fa76f09b7a345187f13cb6871bf0c8",
+    "src/health-dashboard.js": "53bf0b6246502792e46c7ee797505a1de9492be32bdec855e8ce1746912075c0",
     "src/health-data-quality-view.js": "aa48eb819ef7624801a65574f2b7d993f38f8b49fad4b616d0c138644b595a0d",
     "src/health-data-quality.js": "1fd3a3f8ba59475e52616414187a6cff5c11578ac506c50eefe3de9c6d10c41d",
     "src/health-lab-documentary-numeric.js": "d6ffaced7ecd6e09c78b37b79019fce42573155690c844ce3490ef37dca61b7e",
@@ -200,7 +200,7 @@ assert.deepEqual(runtimeFiles.sort(),Object.keys(manifest.files).sort(),'every r
 const production=path.resolve(root,'../../v2'),core=fs.readFileSync(path.join(root,'src/core.js'),'utf8'),productionCore=fs.readFileSync(path.join(production,'src/core.js'),'utf8');
 assert.equal(core,productionCore,'authentication/configuration is unchanged from production');
 const productionIndex=fs.readFileSync(path.join(production,'index.html'),'utf8');
-assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261118\.153/,'production is either the legacy entry or the independently tested integrated build');
+assert.match(productionIndex,/mobile-parity-20261014\.58|health-integrated-20261119\.154/,'production is either the legacy entry or the independently tested integrated build');
 if(productionIndex.includes('health-integrated-20261112.133'))await import('../../../v2/production-integration-contract.mjs');
 assert.match(fs.readFileSync(path.join(root,'src/main.js'),'utf8'),/if\(!session\)\{showLogin\(\);\}/,'missing auth stays behind login');
 assert.doesNotMatch(core,/service_role|sb_secret_/);

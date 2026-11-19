@@ -226,7 +226,7 @@ export async function runRenderTests(){
   }
   const candidateFixture=makeDashboardFixture();candidateFixture.data.sourceMetrics.forEach(row=>{row.canonical_status='candidate';});const candidateHtml=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{},candidateFixture.today);assert.match(candidateHtml,/versão adicional do registro/);assert.doesNotMatch(candidateHtml,/Origem ainda não validada/);
   const candidateDay=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{dashboardMode:'day'},candidateFixture.today);
-  assert.match(primary(card(candidateDay,'activeEnergy')),/Registro adicional, ainda sem confirmação/,'unconfirmed active energy remains visible without opening details');
+  assert.match(primary(card(candidateDay,'activeEnergy')),/Pode cobrir apenas parte do dia/,'unconfirmed active energy remains visible without opening details');
   const missingOriginDay=renderHealthDashboard(candidateFixture.data,candidateFixture.status,{dashboardMode:'day',dashboardSources:{water:'synthetic-missing-origin'}},candidateFixture.today);
   assert.match(primary(card(missingOriginDay,'water')),/origem escolhida não está disponível; nenhuma outra foi usada/,'an unavailable explicit daily origin never becomes an unexplained blank');
   const documentary=makeDashboardFixture();documentary.data.goals=[];documentary.data.nutrition=documentary.data.nutrition.filter(row=>row.nutrition_date<documentary.today);documentary.data.sourceMetrics=[];
@@ -254,7 +254,7 @@ export async function runRenderTests(){
       assert.match(content,/Automática/);assert.match(top,new RegExp(`${m.count}/${m.expectedDays} dias usados na média`));
       assert.match(content,/<details[\s\S]*data-dashboard-source=/,'the source picker remains in the card disclosure');
     }
-    assert.match(primary(card(html,'activeEnergy')),/Ainda não confirmado/);
+    assert.doesNotMatch(primary(card(html,'activeEnergy')),/Ainda não confirmado/);
     assert.match(primary(card(html,'steps')),/Parcial · 1 dia em revisão\. 1 dia divergente/);
     assert.doesNotMatch(primary(card(html,'steps')),/Resumo parcial|valores fracionados ou inválidos/,'specific steps warning replaces repeated generic/method text');
     assert.match(card(html,'steps'),/valores fracionados ou inválidos/,'full steps limitation remains available');

@@ -11,8 +11,7 @@ const glyphs={body:'M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4M8 10l-3 6m11-6 3 6M9 9h6l-
 const icon=key=>`<span class="healthCockpitIcon ${key}" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="${glyphs[key]||glyphs.care}"/></svg></span>`;
 const action=(route,label,attrs='')=>`<button type="button" class="healthCockpitAction" data-route="${route}" ${attrs}>${esc(label)}${arrow}</button>`;
 const unavailable=text=>`<p class="healthCockpitEmpty">${esc(text)}</p>`;
-const flagged=metric=>metric?.source&&['candidate','held'].includes(metric.source.status);
-const review=metric=>flagged(metric)?'Em conferência':metric?.availability==='partial'?'Leitura parcial':'';
+const review=metric=>metric?.ambiguousDays?'Dias com valores diferentes':metric?.source?.status==='held'?'Registro com limitações':metric?.availability==='partial'?'Leitura parcial':'';
 const actualMetric=m=>m&&!['error','unavailable'].includes(m.availability)&&number(m.value)!=null;
 const missingMetric=m=>['error','unavailable'].includes(m?.availability)?'Não carregou':'Sem informação';
 const observedDays=(m,d)=>d.mode==='period'&&actualMetric(m)?`Média em ${m.count} de ${m.expectedDays} dias`:'';
@@ -25,8 +24,8 @@ const changeLabel=(m,d)=>{
  return `${delta>0?'+':''}${value(delta,m.unit,precision)} vs. período anterior`;
 };
 
-function summaryCard(key,route,label,reading,context,detail,caution=false){
- return `<button type="button" class="healthCockpitSummaryCard ${key}" data-route="${route}" data-cockpit-summary="${key}"><span class="healthCockpitSummaryLabel">${icon(key)}${esc(label)}</span><strong>${esc(reading)}</strong><span class="healthCockpitSummaryContext">${esc(context)}</span>${detail?`<small>${esc(detail)}</small>`:''}${caution?`<span class="healthCockpitReview">${esc(typeof caution==='string'?caution:'Em conferência')}</span>`:''}</button>`;
+function summaryCard(key,route,label,reading,context,detail,caution=''){
+ return `<button type="button" class="healthCockpitSummaryCard ${key}" data-route="${route}" data-cockpit-summary="${key}"><span class="healthCockpitSummaryLabel">${icon(key)}${esc(label)}</span><strong>${esc(reading)}</strong><span class="healthCockpitSummaryContext">${esc(context)}</span>${detail?`<small>${esc(detail)}</small>`:''}${caution?`<span class="healthCockpitReview">${esc(caution)}</span>`:''}</button>`;
 }
 
 function overview(d,c,b){
@@ -34,7 +33,7 @@ function overview(d,c,b){
  const attention=l.available?number(s.attention):null;
  return `<nav class="healthCockpitSummary" aria-label="Panorama da sua saúde">${[
   summaryCard('body','bio','Corpo',body?value(body.weight_kg,'kg',1):b.latestKnownAmbiguous?'Conferir avaliações':b.available?'Sem avaliação':'Indisponível',body?`Avaliação de ${date(body.date)}`:b.latestKnownAmbiguous?'Mais de uma avaliação na última data':b.available?'Sem avaliação até esta data':'Não carregou',body?`Gordura ${number(body.body_fat_pct)!=null?value(body.body_fat_pct,'%',1):value(body.fat_mass_kg,'kg',1)} · Músculo ${value(body.skeletal_muscle_mass_kg,'kg',1)}`:null),
-  summaryCard('training','treinos','Treinos',t.available?(t.sessions===0&&t.partial?'Conferir sessões':count(t.sessions||0,'treino','treinos')):'Indisponível',periodLabel(d),t.latest?`Último ${date(t.latest.date)}`:t.partial?'Resumo em conferência':t.available?'Nenhuma sessão até esta data':null,t.partial?'Leitura parcial':''),
+  summaryCard('training','treinos','Treinos',t.available?(t.sessions===0&&t.partial?'Conferir sessões':count(t.sessions||0,'treino','treinos')):'Indisponível',periodLabel(d),t.latest?`Último ${date(t.latest.date)}`:t.partial?'Há registros divergentes':t.available?'Nenhuma sessão até esta data':null,t.partial?'Leitura parcial':''),
   summaryCard('nutrition','nutricao','Alimentação',actualMetric(food)?value(food.value,d.mode==='day'?'g':'g/dia'):missingMetric(food),'Proteína registrada',[observedDays(food,d),actualMetric(metrics.energy)?value(metrics.energy.value,d.mode==='day'?'kcal':'kcal/dia'):null,changeLabel(food,d)].filter(Boolean).join(' · '),review(food)),
   summaryCard('sleep','analise','Sono',actualMetric(sleep)?value(sleep.value,'h',1):missingMetric(sleep),d.mode==='day'?'Neste dia':observedDays(sleep,d)||'Sono registrado',changeLabel(sleep,d),review(sleep)),
   summaryCard('labs','saude','Exames',attention!=null?count(attention,'sinalizado','sinalizados'):l.available?'Sem coleta':'Indisponível',l.latestCollectionDate?`Coleta de ${date(l.latestCollectionDate)}`:'Até a data selecionada',attention!=null?(s.unclassified?`${s.unclassified} sem faixa classificada`:'Pelas referências do laudo'):null)
@@ -67,7 +66,7 @@ function trainingChart(t,d){
 
 function trainingPanel(t,d){
  const w=t.latest;
- return `<article class="healthCockpitPanel training" data-cockpit-panel="training"><header>${icon('training')}<div><h2>Seu ritmo de treino</h2><p>${d.mode==='day'?'Na data selecionada':'No período selecionado'}</p></div></header>${!t.available?unavailable('Os treinos não carregaram.'):t.sessions?`<div class="healthCockpitTrainingTotal"><strong>${t.sessions}</strong><span>${t.sessions===1?'treino registrado':'treinos registrados'}${number(t.recordedMinutes)!=null?`<small>${value(t.recordedMinutes,'min')} com duração informada</small>`:''}</span></div>${trainingChart(t,d)}`:unavailable(t.partial?'O resumo deste período precisa ser conferido.':'Nenhum treino registrado neste período.')}${t.partial||t.detailsPartial?'<p class="healthCockpitNote">Parte do histórico precisa de conferência. Os detalhes disponíveis estão preservados.</p>':''}${w?`<div class="healthCockpitLastSession"><span>Último treino · ${date(w.date)}</span><strong>${esc(w.workout_type||w.type||'Treino registrado')}</strong><small>${w.exerciseCount!=null?count(w.exerciseCount,'exercício','exercícios'):''}${w.setCount!=null?` · ${count(w.setCount,'série','séries')}`:''}${w.inPeriod===false?' · anterior ao período':''}</small></div>${action('treinos','Abrir último treino',`data-home-workout="${esc(w.source_record_id||w.sourceRecordId||w.key)}"`)}`:action('treinos','Ver histórico de treinos')}</article>`;
+ return `<article class="healthCockpitPanel training" data-cockpit-panel="training"><header>${icon('training')}<div><h2>Seu ritmo de treino</h2><p>${d.mode==='day'?date(d.bounds.end):`${date(d.bounds.start)} a ${date(d.bounds.end)}`}</p></div></header>${!t.available?unavailable('Os treinos não carregaram.'):t.sessions?`<div class="healthCockpitTrainingTotal"><strong>${t.sessions}</strong><span>${t.sessions===1?'treino registrado':'treinos registrados'}${number(t.recordedMinutes)!=null?`<small>${value(t.recordedMinutes,'min')} com duração informada</small>`:''}</span></div>${trainingChart(t,d)}`:unavailable(t.partial?'O resumo deste período precisa ser conferido.':'Nenhum treino registrado neste período.')}${t.partial||t.detailsPartial?'<p class="healthCockpitNote">Parte do histórico precisa de conferência. Os detalhes disponíveis estão preservados.</p>':''}${w?`<div class="healthCockpitLastSession"><span>${w.inPeriod===false?'Treino anterior ao período':d.mode==='day'?'Treino da data selecionada':'Treino mais recente do período'} · ${date(w.date)}</span><strong>${esc(w.workout_type||w.type||'Treino registrado')}</strong><small>${w.exerciseCount!=null?count(w.exerciseCount,'exercício','exercícios'):''}${w.setCount!=null?` · ${count(w.setCount,'série','séries')}`:''}${w.inPeriod===false?' · anterior ao período':''}</small></div>${action('treinos','Ver exercícios e séries',`data-home-workout="${esc(w.source_record_id||w.sourceRecordId||w.key)}"`)}`:action('treinos','Ver histórico de treinos')}</article>`;
 }
 
 function labPanel(l,labAction,labValue){
@@ -79,12 +78,25 @@ function labPanel(l,labAction,labValue){
 function todayTrainingAccess(rows,today){
  if(!rows.length)return '';
  const links=rows.map(row=>{
-   const label=[row.workout_type||'Treino registrado',row.location,row.duration!=null?value(row.duration,'min',0):null].filter(Boolean).join(' · ');
+   const label=[row.workout_type||'Treino registrado',row.location,row.duration!=null?value(row.duration,'min',0):null,
+     row.exerciseCount>0?count(row.exerciseCount,'exercício','exercícios'):null,
+     row.setCount>0?count(row.setCount,'série','séries'):null].filter(Boolean).join(' · ');
    return action('treinos',label,`data-home-workout="${esc(row.sourceRecordId)}"`);
  });
  return `<section class="healthCockpitToday" aria-label="Treinos de hoje"><h2>${rows.length===1?'Treino de hoje':'Treinos de hoje'} <small>· ${date(today)}</small></h2><div>${links.join('')}</div></section>`;
 }
 
-export function renderHealthCockpit(d,c,g,b,changes,{labAction,labValue,todayWorkouts=[]}){
- return `<div class="healthCockpit" data-health-cockpit>${todayTrainingAccess(todayWorkouts,d.today)}${overview(d,c,b)}${priorities(d,c,g)}<section class="healthCockpitPanels" aria-label="Corpo, treino e exames">${bodyPanel(b,changes,d)}${trainingPanel(c.training,d)}${labPanel(c.labs,labAction,labValue)}</section></div>`;
+export function renderHealthCockpit(d,c,g,b,changes,{labAction,labValue,todayWorkouts=[],renderMetric=()=>''}){
+ const firstReadings=['water','protein'];
+ return `<div class="healthCockpit" data-health-cockpit>
+  ${todayTrainingAccess(todayWorkouts,d.today)}
+  <section class="healthMetricGrid healthReadingGrid" aria-label="Indicadores e treinos" aria-describedby="health-dashboard-window">
+   ${firstReadings.map(key=>renderMetric(d.metricsByKey[key])).join('')}
+   ${trainingPanel(c.training,d)}
+   ${d.metrics.filter(metric=>!firstReadings.includes(metric.key)).map(renderMetric).join('')}
+  </section>
+  ${overview(d,c,b)}
+  ${priorities(d,c,g)}
+  <section class="healthCockpitPanels healthReadingPanels" aria-label="Corpo e exames">${bodyPanel(b,changes,d)}${labPanel(c.labs,labAction,labValue)}</section>
+ </div>`;
 }
