@@ -12,8 +12,8 @@ const cohort=model.item.cohorts.find(c=>c.origin==='Laboratório sintético A'&&
 assert.equal(cohort.rows.length,25);assert.equal(labCohortComparison(cohort).comparable,true);
 state.ui.productLabCohort=cohort.key;
 let html=renderProductLabs();
-const positions=['id="productLabQuery"','id="productLabMarkerSelect"','id="productLabsTrend"','id="productLabsHistory"','id="productLabsCollection"'].map(x=>html.indexOf(x));
-assert.ok(positions.every((p,i)=>p>=0&&(!i||p>positions[i-1])),'search/select/graph/history precede long collection panels');
+const positions=['class="ltsLabsHero"','id="productLabsTrend"','id="productLabQuery"','id="productLabMarkerSelect"','id="productLabsHistory"','id="productLabsCollection"'].map(x=>html.indexOf(x));
+assert.ok(positions.every((p,i)=>p>=0&&(!i||p>positions[i-1])),'selected result and chart precede catalogue and detailed history');
 for(const id of ['productLabsTrend','productLabsHistory','productLabsCollection'])assert.ok(html.includes(`data-ux-scroll="${id}"`));
 assert.match(html,/Período de Exames/);assert.match(html,/independente da Visão geral/);assert.doesNotMatch(html,/mesma janela selecionada|período global/);
 assert.match(html,/828 resultados/);assert.match(html,/data-lab-history-total="27"/);

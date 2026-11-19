@@ -80,14 +80,16 @@ try{
       await toTop(page);
       const positions=await page.evaluate(()=>{
         const rect=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right};};
-        return {search:rect('#productLabQuery'),selector:rect('#productLabMarkerSelect'),chart:rect('#productLabsTrend'),history:rect('#productLabsHistory'),collection:rect('#productLabsCollection'),jump:rect('.ltsLabsJump'),viewport:{width:innerWidth,height:innerHeight},hostTop:document.querySelector('#screenHost').getBoundingClientRect().top};
+        return {hero:rect('.ltsLabsHero'),shortcut:rect('[data-ux-scroll="productLabsMarkers"]'),search:rect('#productLabQuery'),selector:rect('#productLabMarkerSelect'),chart:rect('#productLabsTrend'),history:rect('#productLabsHistory'),collection:rect('#productLabsCollection'),jump:rect('.ltsLabsJump'),viewport:{width:innerWidth,height:innerHeight},hostTop:document.querySelector('#screenHost').getBoundingClientRect().top};
       });
-      assert.ok(positions.search.top>=positions.hostTop&&positions.search.bottom<height,'search is discoverable in the initial viewport');
+      assert.ok(positions.hero.top>=positions.hostTop&&positions.shortcut.top<height,'search is discoverable in the initial viewport');
       assert.ok(positions.jump.bottom<height,'chart/history shortcuts are visible without scrolling');
       assert.ok(await page.locator('#productLabQuery,#productLabMarkerSelect').evaluateAll(controls=>controls.every(el=>{const r=el.getBoundingClientRect();return r.width>=43.5&&r.height>=43.5;})),'primary laboratory search and selector have at least 44px touch targets');
       assert.ok(await page.locator('.ltsLabsJump button').evaluateAll(buttons=>buttons.every(el=>{const r=el.getBoundingClientRect();return r.width>=43.5&&r.height>=43.5;})),'new jump buttons have at least 44px touch targets');
-      assert.ok(positions.search.top<positions.selector.top&&positions.selector.top<positions.chart.top&&positions.chart.top<positions.history.top&&positions.history.top<positions.collection.top);
+      assert.ok(positions.search.top<positions.selector.top&&positions.hero.top<positions.chart.top&&positions.chart.top<positions.search.top&&positions.selector.top<positions.history.top&&positions.history.top<positions.collection.top);
       await capture(page,width,'top');
+      await page.locator('[data-ux-scroll="productLabsMarkers"]').click();
+      assert.equal(await page.locator('#productLabQuery').evaluate(el=>el===document.activeElement),true);
       await page.locator('#productLabQuery').fill('sem correspondência inventada');await stable(page);
       assert.equal(await page.locator('#productLabMarkerSelect option').count(),1);
       assert.match(await page.locator('.ltsLabsMarkerRail').innerText(),/Nenhum marcador corresponde/);

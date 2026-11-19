@@ -103,7 +103,7 @@ if(!fixtureMode){
     });
     document.addEventListener('click',event=>{
       const target=event.target instanceof Element?event.target:null;if(!target)return;
-      const jump=target.closest('[data-ux-scroll]');if(jump&&['productCompositionHistory','productCompositionTrend','productLabsTrend','productLabsHistory','productLabsCollection'].includes(jump.dataset.uxScroll)){const el=document.getElementById(jump.dataset.uxScroll);if(el){el.scrollIntoView({block:'start'});const heading=el.querySelector('h2');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}}return;}
+      const jump=target.closest('[data-ux-scroll]');if(jump&&['productCompositionHistory','productCompositionTrend','productLabsTrend','productLabsHistory','productLabsCollection','productLabsMarkers'].includes(jump.dataset.uxScroll)){const el=document.getElementById(jump.dataset.uxScroll);if(el){el.scrollIntoView({block:'start'});const heading=jump.dataset.uxScroll==='productLabsMarkers'?el.querySelector('input'):el.querySelector('h2');if(heading){if(heading.matches('h2'))heading.tabIndex=-1;heading.focus({preventScroll:true});}}return;}
       const metric=target.closest('[data-composition-metric]');
       if(metric&&route()==='bio'){state.ui.productCompositionMetric=metric.dataset.compositionMetric;state.ui.productCompositionPoint=null;redraw();return;}
       const marker=target.closest('[data-lab-marker]');if(marker&&route()==='saude'){selectMarker(marker.dataset.labMarker);return;}

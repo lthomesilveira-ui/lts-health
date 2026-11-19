@@ -64,6 +64,32 @@ try{
   await page.locator('[data-dashboard-mode="period"]').click();await settled(page);await page.locator('#dashboard-period').selectOption('90');await settled(page);await quality(page);
   const source=page.locator('[data-disclosure="dashboard-metric-protein"]>summary');await source.click();assert.ok(await page.locator('[data-dashboard-source="protein"]').isVisible(),'source choice remains reachable');
   const workout=page.locator('[data-cockpit-panel="training"] [data-home-workout]');if(await workout.count()){const id=await workout.getAttribute('data-home-workout');await workout.click();await page.locator('#productTrainingTitle').waitFor();assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.openWorkout;}),id,'workout action opens the exact selected session');}
+  if(!sparse){
+   const areas=[
+    ['nutricao','.nutritionIntake','.nutritionIntake','.nutritionPlanSource'],
+    ['timeline','#timelineDomain','.timelineGroups','.timelineAreaTotals'],
+    ['tratamentos','[data-latest-applications]','[data-latest-applications]','.protocolSummaryGrid'],
+    ['analise','#calendarReport','.ltsCalendarHeading','.ltsReportHistory'],
+    ['dados','[data-connections]','[data-connections]','.dataActions']
+   ];
+   for(const [route,selector,lead,detail] of areas){
+    await page.goto(base+'#'+route);
+    await page.waitForFunction(consumerRouteSettled,{route,selector});
+    assert.ok(await page.locator(lead).first().isVisible(),route+' lead is visible');
+    const layout=await page.evaluate(([a,b])=>{
+     const first=document.querySelector(a),second=document.querySelector(b);
+     return {first:first.getBoundingClientRect().top,second:second.getBoundingClientRect().top,fits:document.documentElement.scrollWidth<=innerWidth+1};
+    },[lead,detail]);
+    assert.ok(layout.first<layout.second,route+' presents results before detail');
+    assert.ok(layout.fits,route+' fits viewport width '+width);
+    if(route==='nutricao'){
+     assert.deepEqual(await page.locator('.nutritionIntake dt').allTextContents(),['Água','Proteína','Energia']);
+     await page.locator('[data-period="30"]').click();
+     await page.waitForFunction(()=>document.querySelector('.ltsNutritionProduct [data-period="30"]')?.getAttribute('aria-pressed')==='true');
+    }
+    if(route==='timeline'){await page.locator('.timelineAreaTotals summary').click();assert.ok(await page.locator('.timelineAreaTotals').evaluate(el=>el.open));}
+   }
+  }
   assert.deepEqual(errors,[]);assert.deepEqual(blocked,[]);assert.deepEqual(await page.evaluate(()=>window.__historyQA.writes),[]);
   results.push({width,height,sparse,status:'passed'});await context.close();
  }

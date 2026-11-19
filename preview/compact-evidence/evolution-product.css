@@ -242,3 +242,16 @@ body:has(.ltsEvolutionHome),body:has(.ltsEvolutionHome) .app,body:has(.ltsEvolut
 
 /* Local detail links keep their native disclosure focus below the app header. */
 .ltsNutritionProduct .ltsEvolutionPanelDetail>summary{scroll-margin-top:64px}
+
+.nutritionIntake { margin-block: 12px 18px; }
+.nutritionIntake > p, .compositionBaseline { font-size: .875rem; }
+.nutritionIntake dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .45rem; margin: 0; }
+.nutritionIntake dl > div { min-width: 0; padding: .65rem; border: 1px solid #d1dfdb; border-radius: .8rem; }
+.nutritionIntake dt { font-weight: 600; }
+.nutritionIntake dd { margin: .3rem 0 0; font-size: clamp(1rem,3.8vw,1.45rem); font-weight: 700; }
+.nutritionIntake dd small, .compositionMetricDelta { display: block; font-size: .8rem; font-weight: 500; line-height: 1.4; margin-top: .35rem; }
+.nutritionIntake dt, .nutritionIntake dd { overflow-wrap: anywhere; }
+.sourceMetricDates { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,16rem),1fr)); gap: .4rem 1rem; }
+.sourceMetricDates > div { display: flex; justify-content: space-between; align-items: baseline; gap: .65rem; padding: .45rem 0; border-bottom: 1px solid #d1dfdb; }
+.sourceMetricDates dd { margin: 0; white-space: nowrap; }
+.timelineAreaTotals > summary { cursor: pointer; padding: .75rem; }

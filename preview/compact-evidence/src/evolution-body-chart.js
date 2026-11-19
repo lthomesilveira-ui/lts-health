@@ -1,12 +1,17 @@
-import {esc,fmtDate,fmtNum,num} from './core.js';
+import {esc,fmtDate,fmtNum,num,norm} from './core.js';
 import {validDay,rowKey} from './history-tools.js';
 import {bodySourceLabel,localHealthDay} from './health-context.js';
 const colors=['#2363b5','#a34d09','#157467','#8548a4','#b33c5a','#566575'];
 const monthStart=(end,months)=>{const [y,m,d]=end.split('-').map(Number),first=new Date(Date.UTC(y,m-1-months,1));const last=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();first.setUTCDate(Math.min(d,last));return first.toISOString().slice(0,10);};
+function originLabel(row){
+ const source=String(row.source_name||row.source||'').trim(),device=bodySourceLabel(row);
+ const clean=value=>norm(value).replace(/\s+(?:report|laudo|relatorio)$/,'').replace(/\s+/g,'');
+ return source&&device&&clean(source)!==clean(device)?`${source} · ${device}`:device||source||'Origem não informada';
+}
 export function evolutionBodyModel(rows,key,{period='12m',selected=null,today=localHealthDay()}={}){
  period=['6m','12m','all'].includes(period)?period:'12m';
  const keyed=rows.map((row,i)=>({row,key:rowKey(row,i),i}));
- const all=keyed.filter(({row})=>validDay(row.measured_at)&&validDay(row.measured_at)<=today&&num(row[key])!=null).map(({row,key:id,i})=>({id:String(i),recordKey:id,linkable:keyed.filter(r=>r.key===id).length===1,date:validDay(row.measured_at),value:num(row[key]),origin:JSON.stringify([String(row.source_name||row.source||'').trim(),String(row.device_name||'').trim()]),label:[String(row.source_name||row.source||'').trim(),bodySourceLabel(row)].filter((s,i,a)=>s&&a.indexOf(s)===i).join(' · ')||'Origem não informada'})).sort((a,b)=>a.date.localeCompare(b.date)||Number(a.id)-Number(b.id));
+ const all=keyed.filter(({row})=>validDay(row.measured_at)&&validDay(row.measured_at)<=today&&num(row[key])!=null).map(({row,key:id,i})=>({id:String(i),recordKey:id,linkable:keyed.filter(r=>r.key===id).length===1,date:validDay(row.measured_at),value:num(row[key]),origin:JSON.stringify([String(row.source_name||row.source||'').trim(),String(row.device_name||'').trim()]),label:originLabel(row)})).sort((a,b)=>a.date.localeCompare(b.date)||Number(a.id)-Number(b.id));
  const seen=new Map();all.forEach(p=>{const stable=encodeURIComponent(JSON.stringify([p.recordKey,p.date,p.value,p.origin]));const ordinal=seen.get(stable)||0;seen.set(stable,ordinal+1);p.id=stable+'~'+ordinal;});
  const start=period==='all'?(all[0]?.date||today):monthStart(today,period==='6m'?6:12);
  const points=all.filter(p=>p.date>=start),origins=[...new Set(points.map(p=>p.origin))].map((origin,i)=>({key:origin,label:points.find(p=>p.origin===origin).label,color:colors[i%colors.length]}));

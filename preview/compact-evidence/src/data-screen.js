@@ -1,5 +1,7 @@
-import {state,esc,fmtDate,norm,countLabel} from './core.js';
-import {sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
+import {latestIPhoneWaterDate,originalMyFitnessPalWater} from './water-source-review.js';
+import {validDay} from './history-tools.js';
+import {state,esc,fmtDate,norm,countLabel,num} from './core.js';
+import {directMyFitnessPal,confirmedAutoExport,sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
@@ -217,12 +219,54 @@ function waterSourceBridge(){
   return `<section class="card sectionGap waterSourceBridge" ${status==='pending'?'data-water-import-pending':''}><details><summary>Histórico adicional</summary><div><span>Água · MyFitnessPal</span><p>${esc(detail)}</p><p>Esta opção é para acrescentar datas antigas. Não é necessário repetir a importação para consultar os registros já disponíveis, e ela não ativa a sincronização da conta.</p></div>${status==='unknown'?'':'<button type="button" data-entry="water-import">Ver opção de importação</button>'}</details></section>`;
 }
 
+function latestMetricDates(rows){
+  const dates=new Map();
+  function observe(source,label,date){
+    if(!date)return;
+    if(!dates.has(source))dates.set(source,new Map());
+    const metrics=dates.get(source);
+    if(!metrics.has(label)||date>metrics.get(label))metrics.set(label,date);
+  }
+  const iphone='Saúde do iPhone';
+  const received=state.domainStatus.sourceMetrics==='ready'?rows:[];
+  for(const row of received){
+    const day=validDay(row.metric_date);
+    if(!day||num(row.value)==null)continue;
+    if(originalMyFitnessPalWater(row))observe('Arquivo MyFitnessPal','Água',day);
+    if(!confirmedAutoExport(row)||row.metric_type==='dietary_water_ml')continue;
+    const label=metricCoverageLabels[row.metric_type];
+    if(label)observe(iphone,label,day);
+  }
+  observe(iphone,'Água',latestIPhoneWaterDate(received));
+  if(state.domainStatus.nutrition==='ready'){
+    const fields={protein_g:'Proteína',carbs_g:'Carboidratos',fat_g:'Gorduras',fiber_g:'Fibra',calories_kcal:'Energia',water_ml:'Água'};
+    for(const row of state.data.nutrition||[]){
+      if(!directMyFitnessPal(row))continue;
+      for(const [key,label] of Object.entries(fields)){
+        const value=num(row[key]);
+        if(value!=null&&(key==='water_ml'?value>0:value>=0))observe('Arquivo MyFitnessPal',label,validDay(row.nutrition_date));
+      }
+    }
+  }
+  if(state.domainStatus.polarSessions==='ready'){
+    for(const row of state.data.polarSessions||[]){
+      const date=validDay(row.workout_date);
+      observe('Polar Flow','Treino',date);
+      for(const [key,label] of [['duration_minutes','Duração do treino'],['heart_rate_avg','Frequência cardíaca média'],['heart_rate_max','Frequência cardíaca máxima'],['recorded_calories','Energia do treino']]){
+        if(num(row[key])>0)observe('Polar Flow',label,date);
+      }
+    }
+  }
+  if(!dates.size)return '';
+  return `<section class="card sectionGap" data-metric-dates><h2>Último registro por indicador</h2><p>Data da medição ou do diário em cada origem.</p>${[...dates].map(([source,metrics])=>`<h3>${esc(source)}</h3><dl class="sourceMetricDates">${[...metrics].sort(([a],[b])=>a.localeCompare(b,'pt-BR')).map(([label,date])=>`<div><dt>${esc(label)}</dt><dd><time datetime="${esc(date)}">${fmtDate(date)}</time></dd></div>`).join('')}</dl>`).join('')}</section>`;
+}
 export function renderDataHub(){
   const feedback=state.ui.uploadFeedback,busy=feedback?.busy===true,disabled=busy?' disabled':'';
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados & fontes','Conecte seus aplicativos, envie arquivos e acompanhe as atualizações do seu histórico.','Seu histórico')}
     ${renderConnections()}
     ${renderGoogleHealthConnection()}
+    ${latestMetricDates(sourceMetrics)}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
     ${waterSourceBridge()}
