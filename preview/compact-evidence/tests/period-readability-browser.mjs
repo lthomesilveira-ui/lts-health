@@ -43,7 +43,7 @@ try{
    assert.equal(await card.locator(':scope > details').evaluate(el=>el.open),false);
    assert.equal(await card.locator(':scope > .healthTodayValue,:scope > .healthMetricPeriod,:scope > .healthAggregation').count(),0);
   }
-  assert.match(await page.locator('[data-dashboard-card="activeEnergy"] > .healthSourceCaution').innerText(),/não confirmado/);
+  assert.match(await page.locator('[data-dashboard-card="activeEnergy"] > .healthSourceCaution').innerText(),/Pode cobrir apenas parte do dia/);
   assert.match(await page.locator('[data-dashboard-card="water"]').innerText(),/Último valor desta origem/);
   const steps=page.locator('[data-dashboard-card="steps"]');assert.match(await steps.innerText(),/1 dia em revisão.*1 dia divergente/s);assert.doesNotMatch(await steps.innerText(),/valores fracionados ou inválidos/);
   await quality(page);
