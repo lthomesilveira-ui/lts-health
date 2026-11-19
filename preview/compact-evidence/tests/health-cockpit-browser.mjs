@@ -31,7 +31,7 @@ try{
   f.data.workouts.push({source_record_id:todayId,workout_date:FIXED_TODAY,workout_type:'Treino sintético de hoje',location:'Academia de teste',duration_minutes:32,is_canonical:true,record_status:'validated'});
   // Realistic gap: other data exists after the last genuine water observation.
   for(const row of f.data.nutrition)row.water_ml=null;
-  const sdk=sourceWindowService(languageDatabase(f.data)),context=await browser.newContext({viewport:{width,height},timezoneId:'America/Sao_Paulo',serviceWorkers:'block'}),page=await context.newPage(),errors=[],blocked=[];
+  const sdk=sourceWindowService(languageDatabase(f.data),{connectionStatusReads:true}),context=await browser.newContext({viewport:{width,height},timezoneId:'America/Sao_Paulo',serviceWorkers:'block'}),page=await context.newPage(),errors=[],blocked=[];
   page.on('pageerror',e=>errors.push(e.message));
   await context.route('**/*',route=>{const r=route.request(),u=new URL(r.url());if(u.hostname==='cdn.jsdelivr.net'&&u.pathname==='/npm/@supabase/supabase-js@2')return route.fulfill({contentType:'application/javascript',body:sdk});if(u.origin===origin.origin&&['GET','HEAD'].includes(r.method()))return route.continue();blocked.push({method:r.method(),origin:u.origin});return route.abort();});
   await page.clock.setFixedTime(new Date(FIXED_TODAY+'T15:00:00Z'));await page.goto(base+'#hoje');await settled(page);

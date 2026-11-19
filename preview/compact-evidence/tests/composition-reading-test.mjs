@@ -31,3 +31,14 @@ assert.match(html,/Nível de gordura visceral<\/span><b>Não informado<\/b>/);
 assert.match(html,/Metabolismo basal estimado<\/span><b>0 kcal<\/b>/);
 assert.ok(html.includes('synthetic report.pdf'));
 console.log('Composition reading: recent default, full archive, chart before secondary context, original values and empty-window honesty pass.');
+
+state.ui={productCompositionPeriod:'all'};
+const observation=(date,device,weight,source='Synthetic report')=>({source_record_id:date+device,measured_at:date,device_name:device,source,weight_kg:weight});
+state.data.body=[observation('2026-06-01','Device A',80),observation('2026-06-02','Device B',78),observation('2026-06-03','Device A',81)];
+assert.match(renderProductComposition(),/compositionMetricDelta">\+1,0 kg/);
+assert.match(renderProductComposition(),/Comparação com 01\/06\/2026/);
+state.ui.productCompositionSource=compositionModel().origins.find(([,name])=>name==='Device B')[0];
+assert.doesNotMatch(renderProductComposition(),/class="compositionMetricDelta"|class="compositionBaseline"/);
+state.ui.productCompositionSource='all';
+state.data.body.push(observation('2026-06-03','Device B',76));
+assert.doesNotMatch(renderProductComposition(),/class="compositionBaseline"|class="ltsCompositionHero ltsCompositionHeroCompact"/);

@@ -1,7 +1,7 @@
 import {latestIPhoneWaterDate,originalMyFitnessPalWater} from './water-source-review.js';
 import {validDay} from './history-tools.js';
 import {state,esc,fmtDate,norm,countLabel,num} from './core.js';
-import {directMyFitnessPal,confirmedAutoExport,sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
+import {directMyFitnessPal,authenticatedAutoExport,sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
@@ -54,7 +54,7 @@ const sourceFamilyLabels={apple_activity_summary:'Apple Saúde',apple_watch:'App
 const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'aguardando leitura segura',rejected:'não processado',failed:'falha no processamento'};
 const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
 const metricTopicLabels={sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',oxygen_saturation_pct:'Saturação de oxigênio',weight_kg:'Peso',dietary_energy_kcal:'Alimentação',dietary_protein_g:'Alimentação',dietary_carbs_g:'Alimentação',dietary_fat_g:'Alimentação',dietary_fiber_g:'Alimentação',dietary_water_ml:'Hidratação',dietary_water_source_total_ml:'Hidratação',dietary_water_source_event_ml:'Hidratação'};
-const metricCoverageLabels={...metricTopicLabels,dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína alimentar',dietary_carbs_g:'Carboidratos alimentares',dietary_fat_g:'Gordura alimentar',dietary_fiber_g:'Fibra alimentar',dietary_water_ml:'Volume de água',dietary_water_source_total_ml:'Água registrada no MyFitnessPal',dietary_water_source_event_ml:'Lançamento de água no Google'};
+const metricCoverageLabels={...metricTopicLabels,active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',heart_rate_avg_bpm:'Frequência cardíaca média',sleep_in_bed_h:'Tempo na cama',sleep_core_h:'Sono leve',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_awake_h:'Tempo acordado',dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína alimentar',dietary_carbs_g:'Carboidratos alimentares',dietary_fat_g:'Gordura alimentar',dietary_fiber_g:'Fibra alimentar',dietary_water_ml:'Volume de água',dietary_water_source_total_ml:'Água registrada no MyFitnessPal',dietary_water_source_event_ml:'Lançamento de água no Google'};
 const resolvedIssueLabels={limited_longitudinal_coverage:'Cobertura do histórico',metadata_only:'Disponibilidade do arquivo original',migration_integrity:'Conferência de histórico',missing_data:'Informações do registro',parsing:'Leitura do arquivo',source_date_conflict_risk:'Datas da fonte',workout_normalization:'Identificação do exercício',workout_parsing:'Detalhes do treino'};
 const sensitiveQualityPattern=/(^|_)(doses?|dosages?|dosage(?:m|ns)|frequenc(?:y|ies|ia|ias)|injections?|injec(?:ao|oes)|applications?|aplicac(?:ao|oes)|medications?|medicac(?:ao|oes)|medicamentos?|treatments?|tratamentos?)(_|$)/i;
 const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|source_payload|storage_path|secret|private_field)/i;
@@ -221,11 +221,12 @@ function waterSourceBridge(){
 
 function latestMetricDates(rows){
   const dates=new Map();
-  function observe(source,label,date){
+  function observe(source,label,date,additional=false){
     if(!date)return;
     if(!dates.has(source))dates.set(source,new Map());
     const metrics=dates.get(source);
-    if(!metrics.has(label)||date>metrics.get(label))metrics.set(label,date);
+    const prior=metrics.get(label);
+    if(!prior||date>prior.date||(date===prior.date&&!additional))metrics.set(label,{date,additional});
   }
   const iphone='Saúde do iPhone';
   const received=state.domainStatus.sourceMetrics==='ready'?rows:[];
@@ -233,9 +234,9 @@ function latestMetricDates(rows){
     const day=validDay(row.metric_date);
     if(!day||num(row.value)==null)continue;
     if(originalMyFitnessPalWater(row))observe('Arquivo MyFitnessPal','Água',day);
-    if(!confirmedAutoExport(row)||row.metric_type==='dietary_water_ml')continue;
+    if(!authenticatedAutoExport(row)||!['canonical','candidate','held'].includes(row.canonical_status)||row.metric_type==='dietary_water_ml')continue;
     const label=metricCoverageLabels[row.metric_type];
-    if(label)observe(iphone,label,day);
+    if(label)observe(iphone,label,day,row.canonical_status!=='canonical');
   }
   observe(iphone,'Água',latestIPhoneWaterDate(received));
   if(state.domainStatus.nutrition==='ready'){
@@ -258,7 +259,7 @@ function latestMetricDates(rows){
     }
   }
   if(!dates.size)return '';
-  return `<section class="card sectionGap" data-metric-dates><h2>Último registro por indicador</h2><p>Data da medição ou do diário em cada origem.</p>${[...dates].map(([source,metrics])=>`<h3>${esc(source)}</h3><dl class="sourceMetricDates">${[...metrics].sort(([a],[b])=>a.localeCompare(b,'pt-BR')).map(([label,date])=>`<div><dt>${esc(label)}</dt><dd><time datetime="${esc(date)}">${fmtDate(date)}</time></dd></div>`).join('')}</dl>`).join('')}</section>`;
+  return `<section class="card sectionGap" data-metric-dates><h2>Último registro por indicador</h2><p>Data da medição ou do diário em cada origem.</p>${[...dates].map(([source,metrics])=>`<h3>${esc(source)}</h3><dl class="sourceMetricDates">${[...metrics].sort(([a],[b])=>a.localeCompare(b,'pt-BR')).map(([label,{date,additional}])=>`<div><dt>${esc(label)}${additional?'<small>Registro adicional</small>':''}</dt><dd><time datetime="${esc(date)}">${fmtDate(date)}</time></dd></div>`).join('')}</dl>`).join('')}</section>`;
 }
 export function renderDataHub(){
   const feedback=state.ui.uploadFeedback,busy=feedback?.busy===true,disabled=busy?' disabled':'';

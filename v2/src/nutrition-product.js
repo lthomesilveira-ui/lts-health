@@ -67,9 +67,9 @@ export function renderProductNutrition(){
   const diary=renderArchiveDiary(archive,c.goals);
   const comparisons=c.evo.insights.nutrition.rows.filter(r=>r.comparable);
   const contrast=comparisons.length?`<section class="ltsCockpitPanel"><header><h2>Alimentação e dias de treino</h2></header><div class="ltsNutritionDiaryMetrics">${comparisons.map(r=>`<article><span>${esc(r.label)}</span><b>${v(r.withMean,r.unit)}</b><small>Nos dias com treino registrado</small><b>${v(r.withoutMean,r.unit)}</b><small>Nos dias sem treino registrado</small></article>`).join('')}</div><p>Mesma origem alimentar; ${esc(sourceDisplayLabel(n.source,n.sources))}. Comparações de dias encerrados, com ao menos 5 valores por grupo. Descrevem o registro; não provam efeito do treino nem adequação do plano.</p></section>`:'';
-  const latestWater=c.evo.latestWater,food=c.evo.latestFood,w=c.r.water;
+  const latestWater=c.evo.latestWater,w=c.r.water;
   const nutrients=[['Proteína','protein_g','g'],['Energia','calories_kcal','kcal']].map(([label,key,unit])=>{
-    const count=n.counts?.[key]||0,mean=count>=5;
+    const count=n.counts?.[key]||0,mean=count>=5,food=n.rows.findLast(row=>num(row[key])!=null);
     return {label,unit,amount:mean?n.means[key]:food?.[key],
       caption:!n.available?'Diário indisponível':mean?`Média de ${count} dias`:food&&num(food[key])!=null?`${food.knownPartial?'Diário parcial':'Último diário'} · ${fmtDate(food.date)}`:'Sem registro no período'};
   });

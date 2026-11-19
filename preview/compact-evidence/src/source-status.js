@@ -14,7 +14,8 @@ const candidateFromFamily=(rows,family)=>(rows||[]).some(row=>norm(row?.source_f
 const appleCandidate=row=>appleNativeFamilies.has(norm(row?.source_family))&&isPreservedCandidate(row);
 const anyCandidateMetric=rows=>(rows||[]).some(appleCandidate);
 const appleSourceMetric=row=>appleNativeFamilies.has(norm(row?.source_family));
-export const confirmedAutoExport=row=>row?.source_family==='health_auto_export'&&row?.canonical_status==='canonical'&&row?.confidence==='authenticated_auto_export'&&String(row?.source_record_id||'').startsWith('health_auto_export:');
+export const authenticatedAutoExport=row=>row?.source_family==='health_auto_export'&&row?.confidence==='authenticated_auto_export'&&String(row?.source_record_id||'').startsWith('health_auto_export:');
+const confirmedAutoExport=row=>authenticatedAutoExport(row)&&row.canonical_status==='canonical';
 const workoutEvidenceFor=(rows,family,statuses=null)=>(rows||[]).filter(row=>norm(row?.source_family)===norm(family)&&(!statuses||statuses.has(norm(row?.evidence_status))));
 const confirmedWorkoutEvidence=(rows,family)=>workoutEvidenceFor(rows,family,new Set(['confirmed']));
 const preservedWorkoutEvidence=(rows,family)=>workoutEvidenceFor(rows,family,preservedCandidateStatuses);
