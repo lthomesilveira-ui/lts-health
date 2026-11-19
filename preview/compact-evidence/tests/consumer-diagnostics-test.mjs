@@ -108,7 +108,7 @@ assert.equal((html.match(/>limitação conhecida<\/span>/g)||[]).length,original
 assert.equal((html.match(/>resolvido<\/span>/g)||[]).length,original.quality.filter(row=>row.status==='resolved').length);
 assert.deepEqual(state.data,original,'all clinical values, notes, source identities and record statuses remain untouched');
 
-for(const connection of [null,{status:'loading'},{status:'error'},{status:'ready',configured:false,connected:false},{status:'ready',configured:true,connected:false},{status:'ready',configured:true,connected:true,update_mode:'unverified',sync_error:diagnostic}]){
+for(const connection of [null,{status:'loading'},{status:'error'},{status:'ready',configured:false,connected:false},{status:'ready',configured:true,connected:false},{status:'ready',configured:true,connected:true,sync_error:'authorization_expired'},{status:'ready',configured:true,connected:true,update_mode:'unverified',sync_error:diagnostic}]){
   state.polarConnection=connection;
   const view=renderConnections(),text=htmlText(view);
   assert.deepEqual(technicalMatches(text),[]);
@@ -118,7 +118,8 @@ for(const connection of [null,{status:'loading'},{status:'error'},{status:'ready
     assert.doesNotMatch(text,/A conexão ainda precisa ser configurada/,'failed status does not pretend configuration is absent');
     assert.doesNotMatch(view,/data-polar-action="start"|data-polar-action="sync"/);
   }
-  if(connection?.status==='ready'&&connection.configured)assert.match(view,/data-polar-action="start"/);
+  if(connection?.status==='ready'&&connection.configured&&(!connection.connected||connection.sync_error==='authorization_expired'))assert.match(view,/data-polar-action="start"/);
+  if(connection?.connected&&connection.sync_error!=='authorization_expired')assert.doesNotMatch(view,/data-polar-action="start"/);
   if(connection?.connected)assert.match(view,/data-polar-action="sync"/);
 }
 for(const connection of [null,{status:'error'},{status:'ready',configured:false},{status:'ready',configured:true,received:false}]){

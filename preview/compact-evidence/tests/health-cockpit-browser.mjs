@@ -31,7 +31,7 @@ try{
   f.data.workouts.push({source_record_id:todayId,workout_date:FIXED_TODAY,workout_type:'Treino sintético de hoje',location:'Academia de teste',duration_minutes:32,is_canonical:true,record_status:'validated'});
   // Realistic gap: other data exists after the last genuine water observation.
   for(const row of f.data.nutrition)row.water_ml=null;
-  const sdk=sourceWindowService(languageDatabase(f.data)),context=await browser.newContext({viewport:{width,height},timezoneId:'America/Sao_Paulo',serviceWorkers:'block'}),page=await context.newPage(),errors=[],blocked=[];
+  const sdk=sourceWindowService(languageDatabase(f.data),{connectionStatusReads:true}),context=await browser.newContext({viewport:{width,height},timezoneId:'America/Sao_Paulo',serviceWorkers:'block'}),page=await context.newPage(),errors=[],blocked=[];
   page.on('pageerror',e=>errors.push(e.message));
   await context.route('**/*',route=>{const r=route.request(),u=new URL(r.url());if(u.hostname==='cdn.jsdelivr.net'&&u.pathname==='/npm/@supabase/supabase-js@2')return route.fulfill({contentType:'application/javascript',body:sdk});if(u.origin===origin.origin&&['GET','HEAD'].includes(r.method()))return route.continue();blocked.push({method:r.method(),origin:u.origin});return route.abort();});
   await page.clock.setFixedTime(new Date(FIXED_TODAY+'T15:00:00Z'));await page.goto(base+'#hoje');await settled(page);
@@ -64,6 +64,32 @@ try{
   await page.locator('[data-dashboard-mode="period"]').click();await settled(page);await page.locator('#dashboard-period').selectOption('90');await settled(page);await quality(page);
   const source=page.locator('[data-disclosure="dashboard-metric-protein"]>summary');await source.click();assert.ok(await page.locator('[data-dashboard-source="protein"]').isVisible(),'source choice remains reachable');
   const workout=page.locator('[data-cockpit-panel="training"] [data-home-workout]');if(await workout.count()){const id=await workout.getAttribute('data-home-workout');await workout.click();await page.locator('#productTrainingTitle').waitFor();assert.equal(await page.evaluate(async()=>{const {state}=await import('./src/core.js');return state.ui.openWorkout;}),id,'workout action opens the exact selected session');}
+  if(!sparse){
+   const areas=[
+    ['nutricao','.nutritionIntake','.nutritionIntake','.nutritionPlanSource'],
+    ['timeline','#timelineDomain','.timelineGroups','.timelineAreaTotals'],
+    ['tratamentos','[data-latest-applications]','[data-latest-applications]','.protocolSummaryGrid'],
+    ['analise','#calendarReport','.ltsCalendarHeading','.ltsReportHistory'],
+    ['dados','[data-connections]','[data-connections]','.dataActions']
+   ];
+   for(const [route,selector,lead,detail] of areas){
+    await page.goto(base+'#'+route);
+    await page.waitForFunction(consumerRouteSettled,{route,selector});
+    assert.ok(await page.locator(lead).first().isVisible(),route+' lead is visible');
+    const layout=await page.evaluate(([a,b])=>{
+     const first=document.querySelector(a),second=document.querySelector(b);
+     return {first:first.getBoundingClientRect().top,second:second.getBoundingClientRect().top,fits:document.documentElement.scrollWidth<=innerWidth+1};
+    },[lead,detail]);
+    assert.ok(layout.first<layout.second,route+' presents results before detail');
+    assert.ok(layout.fits,route+' fits viewport width '+width);
+    if(route==='nutricao'){
+     assert.deepEqual(await page.locator('.nutritionIntake dt').allTextContents(),['Água','Proteína','Energia']);
+     await page.locator('[data-period="30"]').click();
+     await page.waitForFunction(()=>document.querySelector('.ltsNutritionProduct [data-period="30"]')?.getAttribute('aria-pressed')==='true');
+    }
+    if(route==='timeline'){await page.locator('.timelineAreaTotals summary').click();assert.ok(await page.locator('.timelineAreaTotals').evaluate(el=>el.open));}
+   }
+  }
   assert.deepEqual(errors,[]);assert.deepEqual(blocked,[]);assert.deepEqual(await page.evaluate(()=>window.__historyQA.writes),[]);
   results.push({width,height,sparse,status:'passed'});await context.close();
  }

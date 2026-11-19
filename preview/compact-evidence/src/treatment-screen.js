@@ -1,12 +1,14 @@
 import {state,esc,fmtDate,norm,unique,countLabel} from './core.js';
 import {screenTitle as title} from './product-shell.js';
-import {medicationContext} from './health-context.js';
+import {validDay} from './history-tools.js';
+import {localHealthDay,medicationContext} from './health-context.js';
 import {renderCareFollowup} from './care-followup.js';
 import {renderCurrentTreatmentStatus} from './training-plan-view.js';
 
 const empty=text=>`<div class="empty">${esc(text)}</div>`;
 const failed=key=>state.domainStatus?.[key]==='error';
 
+const isScheduled=row=>row.event_type==='scheduled';
 function query(){return norm(state.ui.treatmentQuery||'');}
 function events(){
   const q=query();
@@ -27,14 +29,20 @@ function itemSummary(name,allEvents,regimen){
 
 export function renderTreatmentHub(){
   if(failed('treatments')||failed('regimens'))return `${title('Protocolos','Histórico de protocolos, tratamentos e suplementação registrados ao longo do tempo.')}<div class="errorState"><b>O histórico de protocolos não carregou completamente.</b><span>Os demais dados continuam disponíveis. Tente atualizar para carregar esta área novamente.</span></div>`;
-  const allEvents=state.data.treatments||[],allRegimens=state.data.regimens||[],filteredEvents=events(),filteredRegimens=regimens(),names=unique([...allRegimens.map(r=>r.medication),...allEvents.map(r=>r.medication)]).filter(Boolean).sort((a,b)=>String(a).localeCompare(String(b),'pt-BR')),filteredNames=names.filter(name=>{const q=query();return !q||norm(name).includes(q)||filteredEvents.some(r=>r.medication===name)||filteredRegimens.some(r=>r.medication===name);}),dates=unique(allEvents.map(r=>r.event_date)).filter(Boolean).sort(),groups=new Map();
-  for(const r of filteredEvents){const k=monthKey(r.event_date);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
+  const allEvents=state.data.treatments||[],allRegimens=state.data.regimens||[],filteredEvents=events(),filteredRegimens=regimens(),names=unique([...allRegimens.map(r=>r.medication),...allEvents.map(r=>r.medication)]).filter(Boolean).sort((a,b)=>String(a).localeCompare(String(b),'pt-BR')),filteredNames=names.filter(name=>{const q=query();return !q||norm(name).includes(q)||filteredEvents.some(r=>r.medication===name)||filteredRegimens.some(r=>r.medication===name);}),groups=new Map();
+  for(const r of filteredEvents){if(isScheduled(r))continue;const k=monthKey(r.event_date);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);}
   const regimenByName=new Map(allRegimens.map(r=>[r.medication,r]));
+  const today=localHealthDay(),applications=allEvents.filter(row=>row.event_type==='application'&&validDay(row.event_date)===row.event_date&&row.event_date<=today);
+  const mostRecent=applications.reduce((last,row)=>row.event_date>last?row.event_date:last,'');
+  const lastApplications=applications.filter(row=>row.event_date===mostRecent);
+  const nextDate=allEvents.filter(row=>row.event_type==='scheduled'&&validDay(row.event_date)===row.event_date&&row.event_date>=today).map(row=>row.event_date).sort()[0];
+  const nextEvents=nextDate?allEvents.filter(row=>row.event_type==='scheduled'&&row.event_date===nextDate):[];
   return `${title('Protocolos','Seus protocolos e aplicações ao longo do tempo. Consulte datas e detalhes registrados.')}
+    <section class="card sectionGap" data-latest-applications><div class="cardHead"><div><h2>Últimas aplicações</h2>${mostRecent?`<time datetime="${esc(mostRecent)}">${fmtDate(mostRecent)}</time>`:''}</div></div>${lastApplications.map(row=>`<p><b>${esc(row.medication||'Aplicação registrada')}</b> · ${esc(medicationContext(row))}</p>`).join('')||empty('Nenhuma aplicação registrada até hoje.')}</section>
+    ${nextEvents.length?`<section class="card sectionGap" data-next-protocol><h2>Próximo evento agendado</h2>${nextEvents.map(row=>`<p><b>${esc(row.medication||'Evento agendado')}</b> · ${fmtDate(nextDate)}${row.local_time?' · '+esc(row.local_time):''}</p>`).join('')}</section>`:''}
     ${renderCurrentTreatmentStatus(state.data,state.domainStatus)}
-    ${renderCareFollowup(state.data.docs||[],state.domainStatus?.docs,{nutritionPlans:state.data.nutritionPlans||[],nutritionPlanStatus:state.domainStatus?.nutritionPlans})}
-    <div class="card sectionGap"><b>Últimas aplicações: ${dates.length?fmtDate(dates.at(-1)):'sem registros'}</b><p>Consulte abaixo horário, local e lado efetivamente registrados. Uma aplicação passada não define a próxima nem confirma um protocolo atual.</p></div>
-    <section class="card sectionGap"><div class="cardHead"><div><b>Seus protocolos</b><small>Resumo por item, sem reconstruir orientação de uso ou situação atual.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar protocolo ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="protocolSummaryGrid">${filteredNames.map(name=>itemSummary(name,allEvents,regimenByName.get(name))).join('')||empty('Ainda não há protocolo para mostrar com esta busca.')}</div></section>
+    <section class="card sectionGap"><div class="cardHead"><div><b>Seus protocolos</b><small>Resumo por item, sem reconstruir orientação de uso ou situação atual.</small></div></div><input id="treatmentQuery" class="fullInput" type="search" placeholder="Buscar protocolo ou origem" value="${esc(state.ui.treatmentQuery||'')}"><div class="protocolSummaryGrid">${filteredNames.map(name=>itemSummary(name,applications,regimenByName.get(name))).join('')||empty('Ainda não há protocolo para mostrar com esta busca.')}</div></section>
     <section class="card sectionGap"><div class="cardHead"><div><b>Linha do tempo de eventos</b><small>Somente ocorrências históricas efetivamente registradas.</small></div></div><div class="timelineGroups">${[...groups.entries()].map(([month,items])=>`<section class="timelineDay"><div class="timelineDate"><b>${esc(monthLabel(month))}</b><span>${countLabel(items.length,'registro','registros')}</span></div><div class="card timelineDayCard">${items.map(r=>`<div class="timelineItem rich"><span>${fmtDate(r.event_date)}</span><div><b>${esc(r.medication||'Registro de protocolo')}</b><em>${esc(medicationContext(r))}</em><details><summary>Sobre estes dados</summary><p>Data, horário e local são registros históricos, não recomendações.</p><small>${esc(r.source||'Origem não informada')}</small></details></div></div>`).join('')}</div></section>`).join('')||empty('Nenhum evento histórico corresponde à busca.')}</div></section>
+    ${renderCareFollowup(state.data.docs||[],state.domainStatus?.docs,{nutritionPlans:state.data.nutritionPlans||[],nutritionPlanStatus:state.domainStatus?.nutritionPlans})}
     <p class="footerNote">Protocolos são usados apenas como contexto temporal. Cadastro de contexto não significa uso atual, e o aplicativo não fornece instruções de uso ou mudança de tratamento.</p>`;
 }

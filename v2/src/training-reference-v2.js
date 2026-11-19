@@ -2,7 +2,8 @@ import {sourceDisplayLabel} from './source-display.js';
 import {confirmedTelemetryEvidence} from './workout-evidence.js';
 import {state,esc,fmtDate,fmtNum,num,workoutRows,exercisesFor,setsFor} from './core.js';
 import {renderTrainingHistory,renderExerciseHistory,exerciseHistoryTitle,renderExerciseDirectory} from './training-history.js';
-import {failed,errorCard} from './history-tools.js';
+import {localHealthDay} from './health-context.js';
+import {validDay,failed,errorCard} from './history-tools.js';
 import {trainingSetCounts,hasReportedMeasurementIssue,setStepLabel} from './training-session.js';
 import {trainingSessionSummary} from './training-session-summary.js';
 import {sessionGroupChart,sessionHistoryChart} from './training-session-visuals.js';
@@ -185,20 +186,22 @@ function tabs(view){
 
 function exerciseNav(){return `<div class="ltsRefTrainTabs ltsRefExerciseNav" role="navigation" aria-label="Retorno do histórico do exercício"><button type="button" data-depth-training-view="exercises">Exercícios</button><button type="button" data-depth-training-view="progress">Todos os exercícios</button><button type="button" data-depth-training-view="history">Sessões</button></div>`;}
 
-function renderPersonalWorkoutPlans(data,status){
+function renderPersonalWorkoutPlans(data,status,today=localHealthDay()){
   const plans=(data.workoutPlans||[]).filter(row=>row.status==='planned');
-  const cards=plans.map(plan=>`<article class="personalWorkoutPlan">
-    <h3>${esc(plan.title)}</h3><p><time datetime="${esc(plan.plan_date)}">${fmtDate(plan.plan_date)}</time>${plan.location?` · ${esc(plan.location)}`:''}</p>
+  const upcoming=plans.filter(plan=>validDay(plan.plan_date)>=today).sort((a,b)=>a.plan_date.localeCompare(b.plan_date));
+  const older=plans.filter(plan=>validDay(plan.plan_date)<today).sort((a,b)=>String(b.plan_date||'').localeCompare(String(a.plan_date||'')));
+  const card=plan=>`<article class="personalWorkoutPlan">
+    <h3>${esc(plan.title)}</h3><p>${validDay(plan.plan_date)?`<time datetime="${esc(plan.plan_date)}">${fmtDate(plan.plan_date)}</time>`:'Data não informada'}${plan.location?` · ${esc(plan.location)}`:''}</p>
     <p class="personalWorkoutPlanText">${esc(plan.planned_content)}</p>
     ${plan.notes?`<p class="personalWorkoutPlanText">${esc(plan.notes)}</p>`:''}
     ${plan.source===workoutPlanSource?`<button type="button" class="ghostSmall" data-entry="workout-plan" data-workout-plan-id="${esc(plan.source_record_id)}">Editar planejamento</button>`:''}
-  </article>`).join('');
+  </article>`;
   const message=status.workoutPlans==='error'?'Não foi possível atualizar os planejamentos.':status.workoutPlans!=='ready'?'Carregando seus planejamentos.':plans.length?'':'Você ainda não salvou um planejamento.';
   return `<section class="planReview" id="personalWorkoutPlans">
     <h2>Meus treinos planejados</h2>
-    <p>Organize suas próximas sessões aqui. Use <b>Registrar treino</b> para salvar o que você executou.</p>
     <button type="button" class="primary" data-entry="workout-plan">Planejar treino</button>
-    ${message?`<p role="status">${esc(message)}</p>`:''}${cards}
+    ${message?`<p role="status">${esc(message)}</p>`:''}
+    ${status.workoutPlans==='ready'&&plans.length?`<h3>Próximas sessões</h3>${upcoming.map(card).join('')||'<p>Nenhuma sessão agendada a partir de hoje.</p>'}${older.length?`<section class="workoutPlanArchive"><h3>Fichas anteriores ou sem data</h3>${older.map(card).join('')}</section>`:''}`:''}
   </section>`;
 }
 

@@ -1,5 +1,7 @@
-import {state,esc,fmtDate,norm,countLabel} from './core.js';
-import {sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
+import {latestIPhoneWaterDate,originalMyFitnessPalWater} from './water-source-review.js';
+import {validDay} from './history-tools.js';
+import {state,esc,fmtDate,norm,countLabel,num} from './core.js';
+import {directMyFitnessPal,authenticatedAutoExport,sourceStatusFor,sourceCoverageFor,sourceTransportCoverageFor,uploadBucket} from './source-status.js';
 import {historicalMyFitnessPalWaterStatus} from './hydration.js';
 import {screenTitle as title} from './product-shell.js';
 import {renderConnections} from './polar-connection.js';
@@ -52,7 +54,7 @@ const sourceFamilyLabels={apple_activity_summary:'Apple Saúde',apple_watch:'App
 const uploadStatusLabels={uploaded:'recebido',processing:'processando',processed:'processado',imported:'importado',review_required:'aguardando leitura segura',rejected:'não processado',failed:'falha no processamento'};
 const issueCategoryLabels={limited_longitudinal_coverage:'Histórico ainda limitado',metadata_only:'Arquivo original ainda não disponível',migration_integrity:'Conferência de histórico',missing_data:'Informação ainda ausente',parsing:'Leitura do arquivo precisa de revisão',source_date_conflict_risk:'Data da fonte precisa de conferência',workout_normalization:'Nome do treino precisa de conferência',workout_parsing:'Detalhe do treino precisa de revisão',missing_event_dose:'Contexto histórico de tratamento'};
 const metricTopicLabels={sleep_duration_h:'Sono',steps:'Passos',resting_heart_rate_bpm:'Frequência cardíaca em repouso',hrv_sdnn_ms:'Variabilidade da frequência cardíaca',respiratory_rate_bpm:'Frequência respiratória',oxygen_saturation_pct:'Saturação de oxigênio',weight_kg:'Peso',dietary_energy_kcal:'Alimentação',dietary_protein_g:'Alimentação',dietary_carbs_g:'Alimentação',dietary_fat_g:'Alimentação',dietary_fiber_g:'Alimentação',dietary_water_ml:'Hidratação',dietary_water_source_total_ml:'Hidratação',dietary_water_source_event_ml:'Hidratação'};
-const metricCoverageLabels={...metricTopicLabels,dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína alimentar',dietary_carbs_g:'Carboidratos alimentares',dietary_fat_g:'Gordura alimentar',dietary_fiber_g:'Fibra alimentar',dietary_water_ml:'Volume de água',dietary_water_source_total_ml:'Água registrada no MyFitnessPal',dietary_water_source_event_ml:'Lançamento de água no Google'};
+const metricCoverageLabels={...metricTopicLabels,active_energy_kcal:'Energia ativa',exercise_minutes:'Minutos de exercício',stand_hours:'Horas em pé',heart_rate_avg_bpm:'Frequência cardíaca média',sleep_in_bed_h:'Tempo na cama',sleep_core_h:'Sono leve',sleep_deep_h:'Sono profundo',sleep_rem_h:'Sono REM',sleep_awake_h:'Tempo acordado',dietary_energy_kcal:'Energia alimentar',dietary_protein_g:'Proteína alimentar',dietary_carbs_g:'Carboidratos alimentares',dietary_fat_g:'Gordura alimentar',dietary_fiber_g:'Fibra alimentar',dietary_water_ml:'Volume de água',dietary_water_source_total_ml:'Água registrada no MyFitnessPal',dietary_water_source_event_ml:'Lançamento de água no Google'};
 const resolvedIssueLabels={limited_longitudinal_coverage:'Cobertura do histórico',metadata_only:'Disponibilidade do arquivo original',migration_integrity:'Conferência de histórico',missing_data:'Informações do registro',parsing:'Leitura do arquivo',source_date_conflict_risk:'Datas da fonte',workout_normalization:'Identificação do exercício',workout_parsing:'Detalhes do treino'};
 const sensitiveQualityPattern=/(^|_)(doses?|dosages?|dosage(?:m|ns)|frequenc(?:y|ies|ia|ias)|injections?|injec(?:ao|oes)|applications?|aplicac(?:ao|oes)|medications?|medicac(?:ao|oes)|medicamentos?|treatments?|tratamentos?)(_|$)/i;
 const internalTextPattern=/(RAW_|STACK_TRACE|INTERNAL_|SENSITIVE_|backend_|source_payload|storage_path|secret|private_field)/i;
@@ -217,12 +219,55 @@ function waterSourceBridge(){
   return `<section class="card sectionGap waterSourceBridge" ${status==='pending'?'data-water-import-pending':''}><details><summary>Histórico adicional</summary><div><span>Água · MyFitnessPal</span><p>${esc(detail)}</p><p>Esta opção é para acrescentar datas antigas. Não é necessário repetir a importação para consultar os registros já disponíveis, e ela não ativa a sincronização da conta.</p></div>${status==='unknown'?'':'<button type="button" data-entry="water-import">Ver opção de importação</button>'}</details></section>`;
 }
 
+function latestMetricDates(rows){
+  const dates=new Map();
+  function observe(source,label,date,additional=false){
+    if(!date)return;
+    if(!dates.has(source))dates.set(source,new Map());
+    const metrics=dates.get(source);
+    const prior=metrics.get(label);
+    if(!prior||date>prior.date||(date===prior.date&&!additional))metrics.set(label,{date,additional});
+  }
+  const iphone='Saúde do iPhone';
+  const received=state.domainStatus.sourceMetrics==='ready'?rows:[];
+  for(const row of received){
+    const day=validDay(row.metric_date);
+    if(!day||num(row.value)==null)continue;
+    if(originalMyFitnessPalWater(row))observe('Arquivo MyFitnessPal','Água',day);
+    if(!authenticatedAutoExport(row)||!['canonical','candidate','held'].includes(row.canonical_status)||row.metric_type==='dietary_water_ml')continue;
+    const label=metricCoverageLabels[row.metric_type];
+    if(label)observe(iphone,label,day,row.canonical_status!=='canonical');
+  }
+  observe(iphone,'Água',latestIPhoneWaterDate(received));
+  if(state.domainStatus.nutrition==='ready'){
+    const fields={protein_g:'Proteína',carbs_g:'Carboidratos',fat_g:'Gorduras',fiber_g:'Fibra',calories_kcal:'Energia',water_ml:'Água'};
+    for(const row of state.data.nutrition||[]){
+      if(!directMyFitnessPal(row))continue;
+      for(const [key,label] of Object.entries(fields)){
+        const value=num(row[key]);
+        if(value!=null&&(key==='water_ml'?value>0:value>=0))observe('Arquivo MyFitnessPal',label,validDay(row.nutrition_date));
+      }
+    }
+  }
+  if(state.domainStatus.polarSessions==='ready'){
+    for(const row of state.data.polarSessions||[]){
+      const date=validDay(row.workout_date);
+      observe('Polar Flow','Treino',date);
+      for(const [key,label] of [['duration_minutes','Duração do treino'],['heart_rate_avg','Frequência cardíaca média'],['heart_rate_max','Frequência cardíaca máxima'],['recorded_calories','Energia do treino']]){
+        if(num(row[key])>0)observe('Polar Flow',label,date);
+      }
+    }
+  }
+  if(!dates.size)return '';
+  return `<section class="card sectionGap" data-metric-dates><h2>Último registro por indicador</h2><p>Data da medição ou do diário em cada origem.</p>${[...dates].map(([source,metrics])=>`<h3>${esc(source)}</h3><dl class="sourceMetricDates">${[...metrics].sort(([a],[b])=>a.localeCompare(b,'pt-BR')).map(([label,{date,additional}])=>`<div><dt>${esc(label)}${additional?'<small>Registro adicional</small>':''}</dt><dd><time datetime="${esc(date)}">${fmtDate(date)}</time></dd></div>`).join('')}</dl>`).join('')}</section>`;
+}
 export function renderDataHub(){
   const feedback=state.ui.uploadFeedback,busy=feedback?.busy===true,disabled=busy?' disabled':'';
   const uploads=failed('uploads')?[]:[...(state.data.uploads||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))),previews=failed('previews')?[]:(state.data.previews||[]),issues=failed('quality')?[]:(state.data.quality||[]),sourceMetrics=state.data.sourceMetrics||[],workoutEvidence=state.data.workoutEvidence||[],filtered=filteredUploads(uploads);
   return `${title('Dados & fontes','Conecte seus aplicativos, envie arquivos e acompanhe as atualizações do seu histórico.','Seu histórico')}
     ${renderConnections()}
     ${renderGoogleHealthConnection()}
+    ${latestMetricDates(sourceMetrics)}
     ${reviewInbox(uploads,previews,issues,sourceMetrics)}
 
     ${waterSourceBridge()}
